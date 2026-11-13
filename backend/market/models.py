@@ -110,3 +110,15 @@ class Listing(Base):
     unit_price: Mapped[int | None] = mapped_column(BigInteger)
     bid: Mapped[int | None] = mapped_column(BigInteger)
     time_left: Mapped[str | None] = mapped_column(String(32))
+
+
+class CollectionRun(Base):
+    __tablename__ = "collection_runs"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    market_id: Mapped[int] = mapped_column(ForeignKey("markets.id"), index=True)
+    checked_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+    status: Mapped[str] = mapped_column(String(24))
+    http_status: Mapped[int | None] = mapped_column(Integer)
+    duration_seconds: Mapped[int] = mapped_column(Integer, default=0)
+    payload_bytes: Mapped[int] = mapped_column(Integer, default=0)
+    error: Mapped[str | None] = mapped_column(String(200))

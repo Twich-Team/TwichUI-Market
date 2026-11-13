@@ -14,12 +14,17 @@ MAX_BYTES = 32 * 1024 * 1024
 REGIONS = ("us", "eu", "kr", "tw")
 
 
-def request(url, *, token=None, data=None, authorization=None):
+def request(url, *, token=None, data=None, authorization=None, conditional=None):
     headers = {"Accept": "application/json", "User-Agent": "TwichUI-Market/0.1 feasibility"}
     if token:
         headers["Authorization"] = f"Bearer {token}"
     if authorization:
         headers["Authorization"] = authorization
+    if data is not None:
+        headers["Content-Type"] = "application/x-www-form-urlencoded"
+    for name in ("If-None-Match", "If-Modified-Since"):
+        if conditional and conditional.get(name):
+            headers[name] = conditional[name]
     started = time.monotonic()
     try:
         response = urlopen(Request(url, data=data, headers=headers), timeout=45)
