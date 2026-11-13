@@ -9,4 +9,5 @@ dist/
 target/
 *.db
 artifacts/
+.cache/
 backups/

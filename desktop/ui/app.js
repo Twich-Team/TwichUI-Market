@@ -1,0 +1,16 @@
+const invoke=window.__TAURI__?.core.invoke;
+const $=id=>document.getElementById(id);
+let connected=false,busy=false,paused=false;
+function message(text,error=false){$('message').textContent=text;$('message').classList.toggle('error',error);}
+function market(){const id=Number($('market').value);if(!Number.isInteger(id)||id<1||id>2147483647)throw new Error('Enter a valid market ID.');return id;}
+function buttons(){for(const id of ['sync','reset','disconnect'])$(id).disabled=!connected||busy;$('pause').disabled=!busy;$('market').disabled=busy;$('connect').querySelector('button').disabled=busy;}
+async function refresh(){if(!connected)return;const state=await invoke('status',{market:market()});$('count').textContent=state.has_completed_cache?`${state.item_count} item variants${state.downloading?' · new download paused':''}`:'No completed download';$('observed').textContent=state.observed_at?new Date(state.observed_at).toLocaleString():'—';$('export').disabled=!state.has_completed_cache||busy;}
+async function action(job){try{await job();}catch(error){message(String(error?.message||error),true);}finally{buttons();}}
+$('connect').onsubmit=event=>{event.preventDefault();action(async()=>{if(!invoke)throw new Error('Run the installed Windows companion to connect.');const token=$('token').value;$('token').value='';busy=true;buttons();try{const server=await invoke('connect',{server:$('server').value,token});connected=true;$('connected').textContent=`Connected to ${server}`;message('Connected. Your device token is stored in Windows Credential Manager.');}finally{busy=false;}await refresh();});};
+$('sync').onclick=()=>action(async()=>{busy=true;paused=false;buttons();try{let pages=0;do{const result=await invoke('sync_page',{market:market()});pages++;message(`Downloaded ${pages} page${pages===1?'':'s'}. ${result.has_more?'Continuing…':'Synchronization complete.'}`);if(!result.has_more)break;if(pages>=10000)throw new Error('Page limit reached; synchronize again to resume.');}while(!paused);if(paused)message('Paused after saving the current page. Synchronize to resume.');}finally{busy=false;await refresh();}});
+$('pause').onclick=()=>{paused=true;message('Pausing after the current page is safely saved…');};
+$('reset').onclick=()=>action(async()=>{await invoke('reset_market',{market:market()});await refresh();message('The next synchronization will rebuild this market. Your last completed cache is still available.');});
+$('export').onclick=()=>action(async()=>{const path=await invoke('export_market',{market:market()});message(`Data-only JSON exported: ${path}`);});
+$('disconnect').onclick=()=>action(async()=>{await invoke('disconnect');connected=false;$('connected').textContent='No server connected';$('export').disabled=true;message('Local credential removed. Revoke the device on the website to invalidate its server token.');});
+$('market').onchange=()=>action(refresh);
+action(async()=>{if(!invoke){message('Companion interface preview. Native Windows features require the installed application.');return;}const server=await invoke('connection');if(server){connected=true;$('server').value=server;$('connected').textContent=`Configured server: ${server}`;await refresh();message('Offline cache ready. Synchronize when your server is available.');}});
