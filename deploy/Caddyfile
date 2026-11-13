@@ -5,6 +5,10 @@
     handle /api/* {
         reverse_proxy api:8000
     }
+    handle_path /design/* {
+        root * /srv/design
+        file_server
+    }
     handle {
         respond "TwichUI Market — private research service. Website under development." 200
     }

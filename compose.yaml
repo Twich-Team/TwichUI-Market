@@ -52,7 +52,7 @@ services:
     <<: *limits
     image: caddy:2-alpine
     ports: ["127.0.0.1:${MARKET_PORT:-18780}:80"]
-    volumes: [./deploy/Caddyfile:/etc/caddy/Caddyfile:ro]
+    volumes: [./deploy/Caddyfile:/etc/caddy/Caddyfile:ro, ./web/public/design:/srv/design:ro]
     depends_on: {api: {condition: service_healthy}}
     mem_limit: 128m
     cpus: 0.25

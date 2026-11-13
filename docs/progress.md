@@ -14,4 +14,6 @@ S2.1 verified locally: PostgreSQL migration upgrade, schema drift check, downgra
 
 S2.3 local Compose starts with healthy API and database. Actual HTTP `GET http://127.0.0.1:18780/api/v1/health` returns 200 and contract_version 1. Database cgroup reads memory.max=805306368 and cpu.max=100000 100000 (limits enforced). PostgreSQL has no host port; proxy binds 127.0.0.1:18780. Ignored .env contains random local database password. No initial administrator created in persistent development DB. GitHub Actions workflow added; remote run not yet checked. Transitive dependency lock captured from tested image. HTTPS, persistence restart, backup/restore verification remain pending.
 
-Next: finish checkpoint review/CI, then ingestion and pricing foundation. Design approval has not yet been requested because no mockups exist.
+S4.1 mockups rendered and verified in actual Chromium: three desktop/mobile pages, six screenshots, no page errors or horizontal overflow; navigation and review dialogs pass. See design-review.md. Explicit visual approval requested; pending. Final player-facing design remains gated.
+
+GitHub combined status tool returned no statuses for c34659e; this does not verify Actions success. Next: ingestion and pricing foundation, independent of design approval and Blizzard credentials.
