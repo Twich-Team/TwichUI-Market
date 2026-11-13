@@ -16,4 +16,8 @@ S2.3 local Compose starts with healthy API and database. Actual HTTP `GET http:/
 
 S4.1 mockups rendered and verified in actual Chromium: three desktop/mobile pages, six screenshots, no page errors or horizontal overflow; navigation and review dialogs pass. See design-review.md. Explicit visual approval requested; pending. Final player-facing design remains gated.
 
-GitHub combined status tool returned no statuses for c34659e; this does not verify Actions success. Next: ingestion and pricing foundation, independent of design approval and Blizzard credentials.
+GitHub combined status tool returned no statuses for c34659e; this does not verify Actions success.
+
+S3.1/S3.3 foundation: markets, canonical listing snapshots, fetch observations and variant-specific listings implemented. Snapshot contents deduplicate per market; repeated fetches preserve provenance and idempotency keys. Strict normalization covers auction stack totals, commodity unit prices, bid-only listings, bounds and explicit empty arrays. Missing auctions arrays fail closed pending live verification. New migration passes PostgreSQL upgrade/check/downgrade/re-upgrade. Twenty-one source regression tests pass against PostgreSQL. A first source-mounted run imported the older installed package; rerunning with `python -m pytest` correctly tested the current source. Provisional quantity-weighted recent and daily-sampled 14/60-day references are documented in pricing.md; Workshop compatibility remains unverified.
+
+Next: verify final ingestion checkpoint, then collection worker/API queries and operational backup/restore. No live collection is enabled. Credentials and explicit design approval remain pending.
