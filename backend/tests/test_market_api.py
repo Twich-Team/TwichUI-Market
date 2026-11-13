@@ -1,0 +1,77 @@
+import json
+from datetime import timedelta
+from sqlalchemy import select
+from market.db import now
+from market.ingest import ingest
+from market.models import Listing, Market
+
+
+def seed(database):
+    with database.begin() as db:
+        market = Market(region='eu',ruleset_id=2,house_id=113,source_kind='auctions',label='Synthetic market')
+        db.add(market)
+        db.flush()
+        for days,price in [(3,1000),(2,1000),(1,1000),(0,200)]:
+            data = json.dumps({'auctions':[{'id':2**53+1,'item':{'id':12363},'quantity':10,'buyout':price}]}).encode()
+            observation = ingest(db,market.id,data,request_key=str(days),retrieved_at=now()-timedelta(days=days),synthetic=True)
+        variant = db.scalar(select(Listing.variant_key).where(Listing.snapshot_id==observation.snapshot_id))
+        return market.id,variant
+
+
+def test_authenticated_research_contract(owner,database):
+    market,variant = seed(database)
+    rows = owner.get('/api/v1/markets').json()['markets']
+    assert rows[0]['freshness'] == 'unknown'
+    assert rows[0]['source_age_seconds'] is None
+    result = owner.get(f'/api/v1/markets/{market}/items?q=12363').json()
+    assert result['items'][0]['name_verified'] is False
+    assert result['synthetic']
+    result = owner.get(f'/api/v1/markets/{market}/items/12363/{variant}').json()
+    assert result['valuation']['recent_price'] == '20'
+    assert result['valuation']['market_value'] == '80'
+    assert result['listings'][0]['auction_id'] == str(2**53+1)
+    assert result['listings'][0]['buyout'] == '200'
+    assert result['provenance'] == 'asking_listings_only'
+    assert owner.get(f'/api/v1/markets/{market}/items?q=Arcane').json()['search_notice']
+    assert owner.get(f'/api/v1/markets/{market}/items?q=999999999999999999999999').json()['items'] == []
+
+
+def test_explainable_deals_and_filters(owner,database):
+    market,variant = seed(database)
+    path = f'/api/v1/markets/{market}/deals'
+    result = owner.get(path).json()
+    assert result['synthetic']
+    assert len(result['deals']) == 1
+    deal = result['deals'][0]
+    assert deal['discount_percent'] == 75
+    assert deal['coverage_days'] == 4
+    assert deal['total_buyout'] == '200'
+    assert deal['confidence'] == 'limited'
+    assert 'provisional' in deal['reason']
+    assert owner.get(path+'?maximum_spend=199').json()['deals'] == []
+    assert owner.get(path+'?minimum_discount=80').json()['deals'] == []
+    assert owner.get(path+'?minimum_coverage=5').json()['deals'] == []
+
+
+def test_market_creation_guards_and_monitoring(owner):
+    body = {'region':'eu','ruleset_id':2,'house_id':113,'source_kind':'auctions','label':'EU Alliance'}
+    response = owner.post('/api/v1/admin/markets',json=body)
+    assert response.status_code == 201
+    market = response.json()
+    assert not market['verified'] and not market['enabled']
+    assert owner.post('/api/v1/admin/markets',json=body).status_code == 409
+    path = f"/api/v1/admin/markets/{market['id']}/schedule"
+    assert owner.patch(path,json={'enabled':True,'interval_seconds':1800}).status_code == 409
+    assert owner.patch(path,json={'enabled':False,'interval_seconds':60}).status_code == 422
+    assert owner.patch(path,json={'enabled':False,'interval_seconds':3600}).json()['interval_seconds'] == 3600
+    assert owner.get('/api/v1/admin/storage').json()['observations'] == 0
+    assert owner.get('/api/v1/admin/collection-runs').json()['runs'] == []
+
+
+def test_research_private_and_unknown_market(client,owner):
+    owner.post('/api/v1/auth/logout')
+    assert client.get('/api/v1/markets').status_code == 401
+    login = client.post('/api/v1/auth/login',json={'username':'owner','password':'correct horse battery'})
+    assert login.status_code == 200
+    assert client.get('/api/v1/markets/999/items').status_code == 404
+    assert client.get('/api/v1/markets/999999999999999999999/items').status_code == 422

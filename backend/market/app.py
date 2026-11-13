@@ -13,6 +13,8 @@ from .models import Credential, Invitation, LoginAttempt, SecurityEvent, User
 from .security import DUMMY_HASH, admin, audit, aware, digest, hasher, identity, issue, verify
 
 app = FastAPI(title="TwichUI Market", version="0.1.0", docs_url=None, redoc_url=None)
+from .market_api import router as market_router
+app.include_router(market_router)
 COOKIE_SECURE = os.environ.get("COOKIE_SECURE", "true").lower() == "true"
 ORIGIN = os.environ.get("APP_ORIGIN", "https://localhost")
 

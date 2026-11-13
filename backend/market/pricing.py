@@ -1,5 +1,6 @@
 """Version 1 provisional asking-price references; Workshop compatibility pending."""
 from datetime import timedelta, timezone
+from collections import defaultdict
 from decimal import Decimal, ROUND_HALF_UP
 from sqlalchemy import select
 from .db import now
@@ -32,17 +33,18 @@ def values(db, market_id, item_id, variant_key, *, at=None):
     if not observations:
         return {'algorithm': ALGORITHM, 'recent_price': None, 'market_value': None, 'historical_value': None,
                 'supply': 0, 'priced_supply': 0, 'listing_count': 0, 'lowest_buyout': None,
-                'coverage_days': 0, 'observed_at': None, 'synthetic': False, 'history': []}
+                'coverage_days': 0, 'market_coverage_days': 0, 'observed_at': None, 'synthetic': False, 'history': []}
     # Last observation each UTC day: polling frequency does not overweight a day.
     days = {}
     for observation in observations:
         days[aware(observation.retrieved_at).astimezone(timezone.utc).date()] = observation
-    cache = {}
+    snapshot_ids = {observation.snapshot_id for observation in days.values()}
+    grouped = defaultdict(list)
+    for row in db.scalars(select(Listing).where(Listing.snapshot_id.in_(snapshot_ids),
+        Listing.item_id == item_id, Listing.variant_key == variant_key)):
+        grouped[row.snapshot_id].append(row)
+    cache = {snapshot_id:summarize(grouped[snapshot_id]) for snapshot_id in snapshot_ids}
     def summary(observation):
-        if observation.snapshot_id not in cache:
-            rows = list(db.scalars(select(Listing).where(Listing.snapshot_id == observation.snapshot_id,
-                Listing.item_id == item_id, Listing.variant_key == variant_key)))
-            cache[observation.snapshot_id] = summarize(rows)
         return cache[observation.snapshot_id]
     history = [{'date': day.isoformat(), **summary(observation)} for day, observation in sorted(days.items())]
     def average(window):
@@ -52,5 +54,7 @@ def values(db, market_id, item_id, variant_key, *, at=None):
     latest = observations[-1]
     return {**summary(latest), 'algorithm': ALGORITHM, 'market_value': average(14), 'historical_value': average(60),
             'coverage_days': sum(row['recent_price'] is not None for row in history),
+            'market_coverage_days': sum(aware(obs.retrieved_at) >= at-timedelta(days=14)
+                and summary(obs)['recent_price'] is not None for obs in days.values()),
             'observed_at': aware(latest.retrieved_at).isoformat(),
             'synthetic': any(obs.synthetic for obs in observations), 'history': history}
