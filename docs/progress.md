@@ -8,4 +8,6 @@ Python 3.12 exists but pip/ensurepip and Node/npm are absent. Use bounded rootle
 
 S1.1 in progress. S1 live verification pending: credentials have not been located or requested, and no authenticated API observations exist. Official developer documentation redirected to an inaccessible endpoint in research tool. Community endpoint reports are hypotheses, not verification.
 
-Next: implement bounded environment-driven probe and synthetic fixtures; verify via rootless Python container. Then backend schema/auth foundation. Design approval has not yet been requested because no mockups exist.
+S1.1 complete. S1.2 initial probe implemented: five sequential ruleset/house requests, bounded payloads, safe metadata output, credential-safe failures. Three synthetic regression tests pass using Python unittest. Missing credentials exits 2 with an explicit blocker; no live API success claimed. S1.3 remains blocked. See api-feasibility.md for research and reproducible procedure.
+
+Next: backend schema/auth foundation and PostgreSQL integration tests. Design approval has not yet been requested because no mockups exist.
