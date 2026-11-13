@@ -1,5 +1,6 @@
 """Private research and collection administration endpoints."""
 import json
+from pathlib import Path as FilePath
 from decimal import Decimal
 from email.utils import parsedate_to_datetime
 from typing import Annotated, Literal
@@ -16,6 +17,19 @@ from .security import admin, audit, aware, identity
 router = APIRouter(prefix='/api/v1')
 MarketId = Annotated[int,Path(ge=1,le=2**31-1)]
 MONEY_KEYS = {'recent_price','lowest_buyout','market_value','historical_value','buyout','unit_price','bid','total_buyout'}
+BACKUP_DIRECTORY = FilePath('/backup-status')
+
+
+def backup_state():
+    status = {'status':'not_configured','last_restoration_verified_at':None}
+    try:
+        path=BACKUP_DIRECTORY/'status.json'
+        if path.is_file() and path.stat().st_size<16384:
+            data=json.loads(path.read_text())
+            status.update({key:data[key] for key in ('status','last_success','checked_at','bytes','keep','error','last_restoration_verified_at') if key in data})
+    except (OSError,ValueError,TypeError):
+        status['status']='unavailable'
+    return status
 
 
 def money_contract(value):
@@ -199,4 +213,4 @@ def storage(user: User = Depends(admin),db: Session = Depends(session)):
     return {'database_bytes':size,'snapshots':db.scalar(select(func.count()).select_from(Snapshot)),
             'observations':db.scalar(select(func.count()).select_from(Observation)),
             'retention':{'historical_observations':'indefinite_private','guidance':'owner_provided_original_pending'},
-            'backup_status':'not_configured'}
+            'backup':backup_state()}

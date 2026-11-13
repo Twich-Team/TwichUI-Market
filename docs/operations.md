@@ -18,10 +18,24 @@ Bootstrap the first administrator using `docker --context rootless compose run -
 
 The test overlay uses an isolated tmpfs database; tests refuse non-test PostgreSQL database names. Clean up only its resources with the same compose arguments followed by `down`. Never use the overlay with the development project name. PostgreSQL tests recreate schema; migration verification must run separately against a disposable database before tests. SQLite provides quick tests but does not establish PostgreSQL concurrency correctness.
 
-Backup, restoration and Windows release instructions will be added alongside verified implementations. No production deployment or backup verification exists yet.
+Windows release instructions will be added alongside the companion implementation. No production deployment exists yet.
 
 ## Collector
 
 The collector is opt-in: `docker --context rootless compose --profile collector up -d worker`. It does not run for disabled or unverified markets. Do not mark markets verified until S1 live evidence establishes their mapping and payload semantics. Set BLIZZARD_CLIENT_ID/BLIZZARD_CLIENT_SECRET in ignored .env; they are passed only to the worker. OAuth tokens remain in worker memory. Never print Compose's rendered configuration because it contains credentials.
 
 Collection is sequential across processes using a PostgreSQL advisory lock. Failed payload ingestion rolls back while the failure run is retained. HTTP errors trigger bounded exponential backoff, honoring Retry-After up to 24 hours. Polling is at least five minutes. Source modification timestamps stay separate from successful HTTP check time. A 304 reuses existing contents without inventing an upstream modification. Missing auctions arrays fail closed until empty-house behavior is verified. The default MAX_DATABASE_BYTES is 5 GiB; reaching it suspends new ingestion rather than deleting long-term history. This is a collection guard, not a filesystem quota: leave disk headroom for WAL, backups and other VM uses. No raw response bodies are retained.
+
+## Backups and restore rehearsals
+
+Start daily backups with `docker --context rootless compose --profile operations up -d --build backup`. The bounded PostgreSQL-client container uses no Docker socket or host scheduler. It takes a custom-format dump at startup and every BACKUP_INTERVAL_SECONDS (default 86400, minimum 3600). BACKUP_KEEP defaults to seven archives (1–30). MAX_BACKUP_BYTES defaults to 2 GiB total; a further 2 GiB of free filesystem headroom is reserved before starting. Insufficient budget stops backup creation for operator review. Rotation happens only after a successful dump and never deletes market history.
+
+Archives and manifests are in ignored backups/ (directory 700, files 600). They contain private application data; arrange an owner-managed encrypted off-host copy for disaster recovery. This implementation verifies local restoration but does not provide off-host durability. API administration reads only a separate status mount, not archives or credentials. Backups use PostgreSQL's consistent pg_dump snapshot, atomically rename completed archives and record SHA-256. Shared locking serializes the scheduled worker, manual backup and restore verification.
+
+Manual dump: `python3 scripts/backups.py create`. Restore rehearsal: `python3 scripts/backups.py verify-restore backups/<archive>.dump`. The rehearsal verifies SHA-256 and size, starts a fresh memory-limited PostgreSQL instance without a host port, runs pg_restore with constraints, queries revision/data counts and records evidence before removing that disposable instance. It never restores over the running application database. The 512 MiB tmpfs rehearsal supports current small datasets; larger backups require a separately planned bounded restore volume and sufficient capacity.
+
+Run `python3 scripts/verify-backup.py` for a repeatable nonempty synthetic-data rehearsal plus corrupted-archive rejection. It uses dedicated twichui-market-recovery and twichui-market-restore projects, separate from regression tests. Verified locally on 2026-11-13: synthetic administrator, market, observation, listing and buyout sum survive restoration; corrupted archive rejected. A real scheduled development archive (currently empty application data) was also restored successfully. Persistent development PostgreSQL retained migration 2541add7d379 across restart, and the HTTP health check recovered with 200.
+
+## Operational retention
+
+`python -m market.maintenance` reports a dry run; `--apply` prunes only operational records. The collector invokes this once per day. COLLECTION_LOG_DAYS defaults to 90 (range 7–3650); SECURITY_EVENT_DAYS defaults to 365 (30–3650). Login rate-limit windows older than one day and expired credentials/invitations older than 30 days are pruned. All historical market observations, snapshots and listings are preserved indefinitely. Tests explicitly verify that 500-day-old market history survives operational cleanup. No automatic database vacuum-full or host disk maintenance is performed.

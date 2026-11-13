@@ -38,6 +38,7 @@ services:
     <<: *limits
     image: twichui-market-backend:dev
     environment: *api-env
+    volumes: [./artifacts/backup-status:/backup-status:ro]
     depends_on: {migrate: {condition: service_completed_successfully}}
     mem_limit: 384m
     cpus: 0.5
@@ -65,10 +66,32 @@ services:
       BLIZZARD_CLIENT_ID: ${BLIZZARD_CLIENT_ID:-}
       BLIZZARD_CLIENT_SECRET: ${BLIZZARD_CLIENT_SECRET:-}
       MAX_DATABASE_BYTES: ${MAX_DATABASE_BYTES:-5368709120}
+      COLLECTION_LOG_DAYS: ${COLLECTION_LOG_DAYS:-90}
+      SECURITY_EVENT_DAYS: ${SECURITY_EVENT_DAYS:-365}
     depends_on: {migrate: {condition: service_completed_successfully}}
     command: [python, -m, market.worker]
     mem_limit: 384m
     cpus: 0.5
+    read_only: true
+    tmpfs: [/tmp:size=32m]
+  backup:
+    <<: *limits
+    profiles: [operations]
+    build: ./deploy/backup
+    image: twichui-market-backup:dev
+    environment:
+      PGHOST: db
+      PGUSER: market
+      PGDATABASE: market
+      PGCONNECT_TIMEOUT: 10
+      PGPASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      BACKUP_KEEP: ${BACKUP_KEEP:-7}
+      BACKUP_INTERVAL_SECONDS: ${BACKUP_INTERVAL_SECONDS:-86400}
+      MAX_BACKUP_BYTES: ${MAX_BACKUP_BYTES:-2147483648}
+    volumes: [./backups:/backups, ./artifacts/backup-status:/status]
+    depends_on: {migrate: {condition: service_completed_successfully}}
+    mem_limit: 256m
+    cpus: 0.25
     read_only: true
     tmpfs: [/tmp:size=32m]
 volumes:

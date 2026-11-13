@@ -149,8 +149,13 @@ def main():
     signal.signal(signal.SIGTERM, stop)
     signal.signal(signal.SIGINT, stop)
     client = BlizzardClient()
+    next_maintenance = 0
     while not stopping:
         try:
+            if time.monotonic() >= next_maintenance:
+                from .maintenance import maintain
+                maintain(apply=True)
+                next_maintenance = time.monotonic()+86400
             worked = collect_once(client=client)
         except Exception:
             # The transaction rolls back; safe generic message, no DSNs or response content.

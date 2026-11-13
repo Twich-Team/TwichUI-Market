@@ -75,3 +75,15 @@ def test_research_private_and_unknown_market(client,owner):
     assert login.status_code == 200
     assert client.get('/api/v1/markets/999/items').status_code == 404
     assert client.get('/api/v1/markets/999999999999999999999/items').status_code == 422
+
+
+def test_backup_status_reports_missing_corrupt_and_verified_metadata(owner,monkeypatch,tmp_path):
+    monkeypatch.setattr('market.market_api.BACKUP_DIRECTORY',tmp_path)
+    assert owner.get('/api/v1/admin/storage').json()['backup']['status']=='not_configured'
+    (tmp_path/'status.json').write_text('{bad')
+    assert owner.get('/api/v1/admin/storage').json()['backup']['status']=='unavailable'
+    (tmp_path/'status.json').write_text(json.dumps({'status':'ok','last_success':'2026-11-13T12:00:00+00:00',
+        'last_restoration_verified_at':'2026-11-13T13:00:00+00:00','secret':'never return arbitrary keys'}))
+    result=owner.get('/api/v1/admin/storage').json()['backup']
+    assert result['last_restoration_verified_at']=='2026-11-13T13:00:00+00:00'
+    assert 'secret' not in result

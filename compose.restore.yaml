@@ -1,0 +1,20 @@
+# Disposable restoration rehearsal; never restores over the running application database.
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: market_restore
+      POSTGRES_USER: market
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+    tmpfs: [/var/lib/postgresql/data:size=512m]
+    mem_limit: 512m
+    cpus: 0.5
+    security_opt: [no-new-privileges:true]
+    logging:
+      driver: json-file
+      options: {max-size: "5m", max-file: "2"}
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U market -d market_restore"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
