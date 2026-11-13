@@ -1,0 +1,15 @@
+# Isolated disposable database, never apply this overlay to the development stack.
+services:
+  db:
+    environment:
+      POSTGRES_DB: market_test
+    volumes: !override []
+    tmpfs: [/var/lib/postgresql/data:size=256m]
+  test:
+    image: twichui-market-backend:dev
+    environment:
+      DATABASE_URL: postgresql+psycopg://market:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@db:5432/market_test
+    depends_on: {db: {condition: service_healthy}}
+    command: [pytest, -q, -p, no:cacheprovider]
+    mem_limit: 384m
+    cpus: 1

@@ -1,0 +1,60 @@
+name: twichui-market
+x-limits: &limits
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options: {max-size: "5m", max-file: "2"}
+  security_opt: [no-new-privileges:true]
+services:
+  db:
+    <<: *limits
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: market
+      POSTGRES_USER: market
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+    volumes: [market-data:/var/lib/postgresql/data]
+    shm_size: 128mb
+    mem_limit: 768m
+    cpus: 1
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U market -d market"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  migrate:
+    build: ./backend
+    image: twichui-market-backend:dev
+    environment: &api-env
+      DATABASE_URL: postgresql+psycopg://market:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@db:5432/market
+      APP_ORIGIN: ${APP_ORIGIN:-http://127.0.0.1:18780}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+    depends_on: {db: {condition: service_healthy}}
+    command: [alembic, upgrade, head]
+    mem_limit: 256m
+    cpus: 0.5
+    security_opt: [no-new-privileges:true]
+  api:
+    <<: *limits
+    image: twichui-market-backend:dev
+    environment: *api-env
+    depends_on: {migrate: {condition: service_completed_successfully}}
+    mem_limit: 384m
+    cpus: 0.5
+    read_only: true
+    tmpfs: [/tmp:size=32m]
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health',timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+  proxy:
+    <<: *limits
+    image: caddy:2-alpine
+    ports: ["127.0.0.1:${MARKET_PORT:-18780}:80"]
+    volumes: [./deploy/Caddyfile:/etc/caddy/Caddyfile:ro]
+    depends_on: {api: {condition: service_healthy}}
+    mem_limit: 128m
+    cpus: 0.25
+volumes:
+  market-data:

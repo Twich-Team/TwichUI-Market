@@ -1,0 +1,11 @@
+:80 {
+    request_body {
+        max_size 16KB
+    }
+    handle /api/* {
+        reverse_proxy api:8000
+    }
+    handle {
+        respond "TwichUI Market — private research service. Website under development." 200
+    }
+}
