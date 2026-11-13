@@ -8,6 +8,8 @@ Never put credentials in command arguments, Git, logs or fixtures. Read Blizzard
 
 Copy .env.example to .env (mode 600), choose a random URL-safe POSTGRES_PASSWORD, recheck port 18780, then run `docker --context rootless compose up -d --build`. Alembic runs before API startup. Caddy exposes only 127.0.0.1:18780. Health: `/api/v1/health`. Local HTTP uses COOKIE_SECURE=false; HTTPS deployment requires true and exact APP_ORIGIN. External HTTPS is not deployed yet.
 
+Set SYNC_CURSOR_SECRET to a separate random secret of at least 32 characters before using desktop synchronization. Retain it across restarts; rotation requires clients to rebuild their cache. Never expose it to clients or place it in Git. Server sync returns 503 if this configuration is absent.
+
 Bootstrap the first administrator using `docker --context rootless compose run --rm -e MARKET_ADMIN_USERNAME -e MARKET_ADMIN_PASSWORD api python -m market.bootstrap` with credentials already exported in the shell. Never pass secret values in arguments. Bootstrap refuses if any users exist. Browser login returns a CSRF token required as X-CSRF-Token on mutations; session cookies are HttpOnly/SameSite Strict. Invitations are single-use, expire in seven days and create members only. Administrator browser sessions can change roles/disable users; the final active administrator is protected. Device tokens expire in 90 days, are stored hashed server-side, cannot mint more devices and cannot perform administrator actions.
 
 ## Tests

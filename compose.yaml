@@ -29,6 +29,7 @@ services:
       DATABASE_URL: postgresql+psycopg://market:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@db:5432/market
       APP_ORIGIN: ${APP_ORIGIN:-http://127.0.0.1:18780}
       COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      SYNC_CURSOR_SECRET: ${SYNC_CURSOR_SECRET:-}
     depends_on: {db: {condition: service_healthy}}
     command: [alembic, upgrade, head]
     mem_limit: 256m

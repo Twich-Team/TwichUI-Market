@@ -25,11 +25,14 @@ def rounded(value):
     return int(value.quantize(Decimal(1), rounding=ROUND_HALF_UP))
 
 
-def values(db, market_id, item_id, variant_key, *, at=None):
+def values(db, market_id, item_id, variant_key, *, at=None, through_observation_id=None):
     at = at or now()
-    observations = list(db.scalars(select(Observation).where(
+    query = select(Observation).where(
         Observation.market_id == market_id, Observation.retrieved_at <= at,
-        Observation.retrieved_at >= at - timedelta(days=60)).order_by(Observation.retrieved_at, Observation.id)))
+        Observation.retrieved_at >= at - timedelta(days=60))
+    if through_observation_id is not None:
+        query = query.where(Observation.id <= through_observation_id)
+    observations = list(db.scalars(query.order_by(Observation.retrieved_at, Observation.id)))
     if not observations:
         return {'algorithm': ALGORITHM, 'recent_price': None, 'market_value': None, 'historical_value': None,
                 'supply': 0, 'priced_supply': 0, 'listing_count': 0, 'lowest_buyout': None,

@@ -2,7 +2,7 @@
 import hashlib
 import json
 from datetime import timedelta
-from sqlalchemy import select
+from sqlalchemy import select, text
 from .db import now
 from .models import Listing, Market, Observation, Snapshot
 from .security import aware
@@ -79,6 +79,9 @@ def ingest(db, market_id, payload_bytes, *, request_key, retrieved_at=None, modi
         raise ValueError('Invalid retrieval timestamp')
     if modified is not None and len(modified) > 100:
         raise ValueError('Invalid upstream timestamp')
+    # Commit order is serialized for stable incremental synchronization watermarks.
+    if db.bind.dialect.name == 'postgresql':
+        db.execute(text('SELECT pg_advisory_xact_lock(7140232)'))
     # One writer per market. Worker takes the same lock before fetching.
     market = db.scalar(select(Market).where(Market.id == market_id).with_for_update())
     if not market:
