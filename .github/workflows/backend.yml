@@ -27,6 +27,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install -r requirements.lock && pip install --no-deps .
+      - run: pip install pip-audit==2.10.1 && pip-audit -r requirements.lock --no-deps --disable-pip
       - run: alembic upgrade head
       - run: alembic check
       - run: alembic downgrade base

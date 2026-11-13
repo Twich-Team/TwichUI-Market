@@ -24,4 +24,6 @@ S3.2 worker foundation verified with 30 total PostgreSQL regression tests. Globa
 
 Authenticated research/admin API foundation passes 34 total PostgreSQL tests: explicit market freshness, current item variants, variant history/listings, explainable below-reference deals with spend/discount/coverage filters, disabled market creation, schedule guards, collection runs and storage size. Monetary amounts and auction IDs are precision-safe strings. Query work is bounded with truncation flags. Name metadata is not implemented; numeric ID search works and name searches explicitly explain the limit. Daily valuation queries batch snapshot listings to avoid one database request per historical snapshot. API contracts documented under contracts/README.md. This is not completion of the website or all opportunity types.
 
+Security maintenance: pip-audit found vulnerabilities in initial pytest 8.4.2 and Starlette 0.49.3. Updated FastAPI 0.162.7, Starlette 1.10.0, pytest 9.2.0 and matching httpx2 test client; regenerated the transitive lock. All 34 PostgreSQL tests pass with no warnings, and a repeat audit reports no known vulnerabilities. CI now audits the lock with pip-audit 2.10.1.
+
 Next: operational backup/restore and incremental desktop sync contracts. Credentials and explicit design approval remain pending.
