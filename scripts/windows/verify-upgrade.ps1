@@ -1,7 +1,7 @@
 # Real compatibility upgrade, isolated to this disposable runner's fresh app data.
 $ErrorActionPreference='Stop'
 if ($env:GITHUB_ACTIONS -ne 'true' -or $env:RUNNER_OS -ne 'Windows') { throw 'Disposable Windows CI only' }
-$old=@(Get-ChildItem 'artifacts/companion-legacy-installer' -Recurse -Filter '*-setup.exe')
+$old=@(Get-Item 'desktop/test-fixtures/legacy-0.1.0-unsigned-setup.exe')
 $current=@(Get-ChildItem 'desktop/src-tauri/target/release/bundle/nsis/*-setup.exe')
 if ($old.Count -ne 1 -or $current.Count -ne 1) { throw 'Expected one old and one current installer' }
 if ((Get-FileHash $old[0].FullName -Algorithm SHA256).Hash -ne '16D1B2E10813A7692FA641EA6E23B6DB9A1386BAF448508A43C2A17C28CDCED4') { throw 'Legacy installer differs from verified ab1c886 artifact' }

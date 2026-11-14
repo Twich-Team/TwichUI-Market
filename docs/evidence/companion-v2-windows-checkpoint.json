@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "source_commit": "e55807c58c4cf68560729471019b88cc518fb5b0",
+  "run_id": 43652127596,
+  "fixture": true,
+  "tray_actions_verified": false,
+  "stable_release": false,
+  "signed_updater_sdk_install": "unverified; requires owner keys",
+  "artifact_sha256": "7e5ddcde7fa5bf061a18ecd12f8378eb1ad50a124b765339ae70accd918c8fb4",
+  "receipts": {
+    "legacy-upgrade.json": {
+      "sha256": "db1cbd6873e51ef10cfda6df2b2ab2e1895f411fa523bfe51aa705c99c4506d1",
+      "data": {
+        "fixture": true,
+        "source_commit": "e55807c58c4cf68560729471019b88cc518fb5b0",
+        "from_version": "0.1.0",
+        "to_version": "2.0.0-beta.1",
+        "actual_old_installer": true,
+        "actual_new_installer": true,
+        "legacy_credentials_preserved": true,
+        "cache_preserved": true,
+        "connection_settings_preserved": true,
+        "legacy_metadata_migrated": true,
+        "new_native_sync": true,
+        "export_contract_preserved": true,
+        "signed_updater_sdk_install": false,
+        "uninstall_data_preservation_verified_by_parent": true
+      }
+    },
+    "installed-smoke.json": {
+      "sha256": "0c74e9490842dde8442b5ad34ca0059b41eb609d3b488259d19c11a4efadbdd4",
+      "data": {
+        "fixture": true,
+        "source_commit": "e55807c58c4cf68560729471019b88cc518fb5b0",
+        "acceptance_scope": "Installed non-tray workflows; tray actions are a separate explicit gate",
+        "version": "2.0.0-beta.1",
+        "native_browser_approval_api": true,
+        "native_browser_approval_ui": true,
+        "native_thread_hidden_sync": true,
+        "single_instance_restore": true,
+        "preferences_saved": true,
+        "credential_and_cache_restart": true,
+        "hidden_startup": true,
+        "current_user_autostart_enable_disable": true,
+        "actual_tray_menu": false,
+        "tray_settings_sync_pause_open_quit": false,
+        "native_minimize_close_to_tray": true,
+        "export_valid": true,
+        "server_revocation": true,
+        "offline_cache_preserved": true,
+        "website_approval_ui_verified": true,
+        "tray_rendering_evidence": {
+          "run_id": 43647891422,
+          "real_menu_rendering_verified": true,
+          "actions_verified": false
+        },
+        "tray_acceptance": "unverified",
+        "tray_limitation": "Focused runner attempt opened the real notification menu; UIA exposed no menu items. Owner manual acceptance required.",
+        "full_tray_autostart_upgrade_acceptance_complete": false,
+        "uninstall_settings_and_cache_preserved": true
+      }
+    },
+    "launch-metrics.json": {
+      "sha256": "1911564e57eec643cec5cae973eb850e7b2022e54ebe10c2d8aed698ce0dd77b",
+      "data": {
+        "fixture": true,
+        "cold_start_to_native_window_ms": 570.2944,
+        "poll_resolution_ms": 50,
+        "installer_bytes": 4404245
+      }
+    },
+    "performance.json": {
+      "sha256": "c79dcbc29cad35fc4f588333e2c66e1237fc27b5cd6130d53205bab9716c7eaf",
+      "data": {
+        "fixture": true,
+        "source_commit": "e55807c58c4cf68560729471019b88cc518fb5b0",
+        "initial_sync_ms": 1754.0081,
+        "incremental_noop_sync_ms": 917.280999999999,
+        "sync_fixture": {
+          "variants": 2,
+          "page_limit": 1,
+          "injected_delay_ms_per_page": 500
+        },
+        "second_launch_restore_ms": 93.49099999999817,
+        "idle_market_api_requests": {
+          "before": {
+            "bearer_requests": 10,
+            "token_requests": 3,
+            "sync_requests": 3
+          },
+          "after": {
+            "bearer_requests": 10,
+            "token_requests": 3,
+            "sync_requests": 3
+          }
+        },
+        "resources": {
+          "processes": 7,
+          "cpu_one_core_percent": 0.4655,
+          "private_bytes_sum": 128155648,
+          "established_tcp_connections": 1,
+          "scope": "installed native process and owned WebView2 children; browser and test driver excluded",
+          "cpu_host_percent": 0.1164,
+          "working_set_sum_bytes": 376655872,
+          "sample_ms": 10069.28
+        },
+        "desktop_frontend_bytes": 28603
+      }
+    }
+  }
+}

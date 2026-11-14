@@ -14,7 +14,7 @@ Evidence: [focused Windows run](https://github.com/Twich-Team/TwichUI-Market/act
 
 ## Prepare the test
 
-Use the exact candidate installer and SHA-256 recorded with the next successful non-tray Windows acceptance. It remains an engineering candidate until signing, owner visual review and release gates are complete. Prefer a separate Windows test account if an older companion is already installed. Keep any existing companion data; do not reset its cache to perform this test.
+Use the exact candidate installer recorded in [acceptance](companion-v2-acceptance.md): sourcee55807c, Windows43652127596, [engineering artifact14136930503](https://github.com/Twich-Team/TwichUI-Market/actions/runs/43652127596/artifacts/14136930503). The raw2.0.0-beta.1 installer is4,404,245bytes, SHA-256 `da9dc6d9a00ec716211d5a716a2a5bc5902373b5b938c3576e0c8482732c5f00`. Check the downloaded installer with Windows Properties or PowerShell `Get-FileHash` before use. This owner test artifact requires GitHub access and expires; it is never the ordinary-user download path. A later owner-signed candidate needs its own exact installer hash and manual acceptance. It remains an engineering candidate until signing, owner visual review and release gates are complete. Prefer a separate Windows test account if an older companion is already installed. Keep any existing companion data; do not reset its cache to perform this test.
 
 Record the installer version/hash, Windows version, display scaling and whether you use more than one monitor. If Windows blocks an unsigned candidate, stop and report the message rather than changing system-wide security settings.
 

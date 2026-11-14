@@ -87,13 +87,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - uses: actions/download-artifact@v4
-        if: inputs.mode == 'prepare-signed-candidate'
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          run-id: ${{ inputs.windows_run_id }}
-          name: companion-v2-acceptance
-          path: artifacts/source-acceptance
       - run: pip install -r backend/requirements.lock
         if: inputs.mode == 'prepare-signed-candidate'
       - run: npm ci --prefix web
@@ -102,13 +95,6 @@ jobs:
         if: inputs.mode == 'prepare-signed-candidate'
       - run: npm ci --prefix desktop
         if: inputs.mode == 'prepare-signed-candidate'
-      - uses: actions/download-artifact@v4
-        if: inputs.mode == 'prepare-signed-candidate'
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          run-id: 43542957765
-          artifact-ids: '14092971157'
-          path: artifacts/companion-legacy-installer
       - name: Provision optional owner certificate without changing trust roots
         if: inputs.mode == 'prepare-signed-candidate'
         shell: pwsh

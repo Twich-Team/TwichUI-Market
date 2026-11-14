@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "purpose": "Disposable Windows upgrade compatibility fixture only; never a user release",
+  "unsigned_engineering_fixture": true,
+  "filename": "legacy-0.1.0-unsigned-setup.exe",
+  "bytes": 3679427,
+  "sha256": "16d1b2e10813a7692fa641ea6e23b6db9a1386baf448508a43c2a17c28cdced4",
+  "source_commit": "ab1c8867ad9891bd4c4e8c59edb9bd1f1fd49fb8",
+  "workflow_run_id": 43542957765,
+  "artifact_id": 14092971157,
+  "source_url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/43542957765/artifacts/14092971157",
+  "actual_installed_acceptance_passed": true
+}
