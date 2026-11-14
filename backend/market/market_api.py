@@ -223,12 +223,12 @@ def signals(market_id: MarketId,kind: Literal['supply','price'],minimum_change: 
 
 @router.get('/markets/{market_id}/items/{item_id}/{variant_key}/history')
 def historical_series(market_id: MarketId,item_id: Annotated[int,Path(ge=1,le=2**31-1)],variant_key: str,
-                      days: int = Query(365,ge=1,le=3650),user: User = Depends(identity),db: Session = Depends(session)):
+                      days: int = Query(365,ge=1,le=3650),view: Literal['full','chart']='full',user: User = Depends(identity),db: Session = Depends(session)):
     require_market(db,market_id)
     if len(variant_key)!=64 or any(char not in '0123456789abcdef' for char in variant_key):
         raise HTTPException(422,'Invalid variant key')
     return money_contract({'contract_version':1,'market_id':market_id,'item_id':item_id,'variant_key':variant_key,
-                           **daily_history(db,market_id,item_id,variant_key,days)})
+                           **daily_history(db,market_id,item_id,variant_key,days,compact=view=='chart')})
 
 
 class MarketCreate(BaseModel):

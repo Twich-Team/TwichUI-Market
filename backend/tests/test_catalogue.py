@@ -74,3 +74,50 @@ def test_private_catalogue_requires_authentication(client,database):
     ident=seed(database)
     assert client.get(f'/api/v1/markets/{ident}/catalogue').status_code==401
     assert client.get(f'/api/v1/markets/{ident}/catalogue/25/variants').status_code==401
+
+
+def test_rolling_history_overlays_match_original_point_in_time_reference(owner,database):
+    from market.pricing import daily_history
+    from datetime import datetime
+    ident=seed(database)
+    key=owner.get(f'/api/v1/markets/{ident}/catalogue/25/variants').json()['variants'][0]['variant_key']
+    with database() as db:
+        history=daily_history(db,ident,25,key,days=365)
+        for point in history['points']:
+            expected=values(db,ident,25,key,at=datetime.fromisoformat(point['observed_at']))
+            assert point['market_value']==expected['market_value']
+            assert point['historical_value']==expected['historical_value']
+
+
+def test_distribution_uses_every_listing_including_rows_beyond_display_limit(owner,database):
+    with database.begin() as db:
+        market=Market(region='us',ruleset_id=2,house_id=110,source_kind='auctions',label='Distribution fixture')
+        db.add(market);db.flush();ident=market.id
+        auctions=[{'id':i+1,'item':{'id':25},'quantity':2,'buyout':1000+i} for i in range(250)]
+        auctions.append({'id':999,'item':{'id':25},'quantity':3,'bid':10})
+        observation=ingest(db,ident,json.dumps({'auctions':auctions}).encode(),request_key='distribution',synthetic=True)
+        key=db.scalar(select(Listing.variant_key).where(Listing.snapshot_id==observation.snapshot_id).limit(1))
+    result=owner.get(f'/api/v1/markets/{ident}/distribution/25/{key}').json()
+    assert result['priced_supply']==500 and result['unpriced_supply']==3 and result['priced_listing_count']==250 and result['listing_count']==251
+    assert sum(b['supply'] for b in result['bands'])==500
+    assert len(result['bands'])<=12 and result['synthetic']
+
+
+def test_variant_expansion_rejects_a_changed_snapshot(owner,database):
+    ident=seed(database)
+    snapshot=owner.get(f'/api/v1/markets/{ident}/catalogue').json()['snapshot_id']
+    assert owner.get(f'/api/v1/markets/{ident}/catalogue/25/variants?expected_snapshot={snapshot}').status_code==200
+    assert owner.get(f'/api/v1/markets/{ident}/catalogue/25/variants?expected_snapshot=stale').status_code==409
+
+
+def test_compact_chart_history_preserves_exact_prices_and_provenance_flags(owner,database):
+    ident=seed(database)
+    variant=owner.get(f'/api/v1/markets/{ident}/catalogue/25/variants').json()['variants'][0]['variant_key']
+    path=f'/api/v1/markets/{ident}/items/25/{variant}/history'
+    full=owner.get(path).json();chart=owner.get(path+'?view=chart').json()
+    assert chart['synthetic'] and len(chart['points'])==len(full['points'])
+    for actual,expected in zip(chart['points'],full['points']):
+        assert actual=={key:expected[key] for key in actual}
+        assert isinstance(actual['recent_price'],str)
+        assert 'payload_hash' not in actual and actual['reference_synthetic']
+    assert owner.get(path+'?view=unknown').status_code==422

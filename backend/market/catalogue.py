@@ -30,9 +30,11 @@ def references(market_id,at):
 def cash(value):return str(int(value)) if value is not None else None
 
 
-def context(db,market_id):
+def context(db,market_id,expected_snapshot=None):
     market=require_market(db,market_id)
     latest=latest_observation(db,market_id)
+    if expected_snapshot is not None and (latest is None or str(latest.snapshot_id)!=expected_snapshot):
+        raise HTTPException(409,"Market snapshot changed; refresh the catalogue before expanding variants")
     if latest and db.scalar(select(SnapshotStatistic.item_id).where(SnapshotStatistic.snapshot_id==latest.snapshot_id,
             SnapshotStatistic.algorithm!=ALGORITHM).limit(1)) is not None:
         raise HTTPException(409,'Current pricing algorithm is not supported')
@@ -90,8 +92,8 @@ def catalogue(market_id: MarketId,q: str=Query('',max_length=64),sort: Sort='ite
 
 @router.get('/markets/{market_id}/catalogue/{item_id}/variants')
 def variants(market_id: MarketId,item_id: MarketId,page: int=Query(0,ge=0,le=100000),page_size: int=Query(50,ge=1,le=100),
-             user: User=Depends(identity),db: Session=Depends(session)):
-    market,latest=context(db,market_id)
+             expected_snapshot: str | None=Query(None,max_length=64),user: User=Depends(identity),db: Session=Depends(session)):
+    market,latest=context(db,market_id,expected_snapshot)
     result={'contract_version':1,'market_id':market_id,'item_id':item_id,'snapshot_id':str(latest.snapshot_id) if latest else None,
             'page':page,'page_size':page_size,'total_variants':0,'variants':[],'algorithm':ALGORITHM,'synthetic':bool(latest and latest.synthetic)}
     if not latest:return result

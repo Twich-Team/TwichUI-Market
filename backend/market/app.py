@@ -19,6 +19,8 @@ from .catalogue import router as catalogue_router
 app.include_router(catalogue_router)
 from .item_profiles import router as profile_router
 app.include_router(profile_router)
+from .distribution import router as distribution_router
+app.include_router(distribution_router)
 from .sync_api import router as sync_router
 app.include_router(sync_router)
 COOKIE_SECURE = os.environ.get("COOKIE_SECURE", "true").lower() == "true"
