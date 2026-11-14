@@ -4,6 +4,8 @@ Current owner objective: [persistent per-user preferences](user-preferences-plan
 
 Latest mapping investigation: [US Normal Horde findings](market-identity-findings.md) now reconcile house 114 with high corroborated confidence. The owner-approved atomic switch executed at 15:15:50 UTC after CI/backup checks: market 2 / house 114 is the sole collector at 300 seconds, and market 1 / house 110 is disabled with history intact. See [switch acceptance](market-switch-acceptance.md). No additional feed was activated.
 
+Switch follow-up at 16:16 UTC confirms the same single collector, all original history fingerprints, 12 successful collection checks, correct genuine data in both browser interfaces, and a newly restored current backup with all 15 previous archives preserved. The existing transition was not replayed. [Fresh acceptance evidence](evidence/forever-us-normal-horde-recheck.json) records resources, unchanged production containers and passing code CI; separate uncommitted preferences changes remain outside this checkpoint.
+
 Current owner milestone: [Market usability, configuration and historical retention](market-usability-plan.md). Latest status, measurements and approval gates are in [its progress record](market-usability-progress.md). Earlier deployment records below remain historical.
 
 Current owner task: [Interactive preview and Traefik deployment](traefik-preview-plan.md), [progress](traefik-preview-progress.md), [operations/admin action](traefik-preview-operations.md). Modernization is accessible on localhost18444 and remains unpromoted. Public ingress is deliberately403 pending an external source-filter dependency.
