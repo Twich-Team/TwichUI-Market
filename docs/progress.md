@@ -1,5 +1,7 @@
 # Active milestone
 
+Latest mapping investigation: [US Normal Horde findings](market-identity-findings.md) now reconcile house 114 with high corroborated confidence. Market 2 is registered/verified but disabled; market 1 / house 110 continues unchanged pending explicit owner confirmation of the prepared atomic switch. No additional feed was activated.
+
 Current owner milestone: [Market usability, configuration and historical retention](market-usability-plan.md). Latest status, measurements and approval gates are in [its progress record](market-usability-progress.md). Earlier deployment records below remain historical.
 
 Current owner task: [Interactive preview and Traefik deployment](traefik-preview-plan.md), [progress](traefik-preview-progress.md), [operations/admin action](traefik-preview-operations.md). Modernization is accessible on localhost18444 and remains unpromoted. Public ingress is deliberately403 pending an external source-filter dependency.

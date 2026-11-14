@@ -1,0 +1,95 @@
+{
+  "prepared_at": "2026-11-14T14:59:06.865551+00:00",
+  "status": "awaiting_explicit_owner_confirmation",
+  "owner_confirmed": false,
+  "executed": false,
+  "from": {
+    "market_id": 1,
+    "region": "us",
+    "house_id": 110,
+    "source_kind": "auctions",
+    "enabled": true,
+    "interval_seconds": 300
+  },
+  "to": {
+    "market_id": 2,
+    "region": "us",
+    "ruleset": "Normal",
+    "faction": "Horde",
+    "house_id": 114,
+    "source_kind": "auctions",
+    "enabled": false,
+    "interval_seconds": 300
+  },
+  "registration": {
+    "market_id": 2,
+    "mapping_id": 1,
+    "verification_id": 2,
+    "review_sha256": "e1ec0c93d2efc1e5bf96b7dfa353f92ca985c1dcdac1bca5548b040999aa3a37",
+    "mapping_evidence_hash": "9b638e0a304e77792d053750d8a2a20e70712a7ea92cb73bea724ba0ac800e2b",
+    "verification_evidence_hash": "aec00913f63e14841e3ecd7dfd9ed10c3565d53f298bfdc0ca4a248d3dc49da2",
+    "registered_at": "2026-11-14T14:58:19.565561+00:00",
+    "enabled": false,
+    "interval_seconds": 300,
+    "transition_executed": false
+  },
+  "request_after_confirmation_only": {
+    "method": "POST",
+    "path": "/api/v1/admin/market-transition",
+    "body": {
+      "from_market_id": 1,
+      "to_market_id": 2,
+      "confirm": true
+    }
+  },
+  "execution_requirements": [
+    "Explicit owner confirmation referencing US Normal Horde 114 replacing house 110.",
+    "Recheck current identities and exactly one enabled feed, then validate intact identity and upstream receipts.",
+    "Receipt must be under 24 hours old; use existing live verifier to refresh if necessary.",
+    "Execute existing atomic transition once as owner. It holds the collector/configuration advisory locks; it disables market 1 and enables market 2 in one transaction.",
+    "Recheck only 114 enabled, 110 disabled, transition audit event and initial genuine collection. Preserve all old observations, snapshots, listings, daily references, statistics, receipts and cursors; never relabel or migrate house 110 history.",
+    "Do not configure commodities, PvP 113, additional regions, collectors or duplicate aliases."
+  ],
+  "preservation_check": {
+    "before_at": "2026-11-14T14:57:19.169319+00:00",
+    "after_at": "2026-11-14T14:59:06.865551+00:00",
+    "before_observations": 141,
+    "after_observations": 141,
+    "before_snapshots": 13,
+    "after_snapshots": 13,
+    "every_previous_observation_unchanged": true,
+    "every_previous_snapshot_unchanged": true,
+    "before_observations_sha256": "b7186cf23e4201eb4bc5d1f82992a8eb5abf77f3b23a17d88122b150032ebdf4",
+    "after_observations_sha256": "b7186cf23e4201eb4bc5d1f82992a8eb5abf77f3b23a17d88122b150032ebdf4",
+    "before_snapshots_sha256": "2b62774d961d76e60a753d4ffa1c57efb06fd0925e55f19c3308761881b7246a",
+    "after_snapshots_sha256": "2b62774d961d76e60a753d4ffa1c57efb06fd0925e55f19c3308761881b7246a"
+  },
+  "active_collection_after_preparation": [
+    {
+      "id": 1,
+      "region": "us",
+      "ruleset_id": 2,
+      "house_id": 110,
+      "source_kind": "auctions",
+      "enabled": true,
+      "verified": true,
+      "interval_seconds": 300,
+      "failures": 0
+    }
+  ],
+  "tests": {
+    "backend_postgresql_passed": 148,
+    "synthetic_only": true,
+    "covered": [
+      "Registration rollback",
+      "Research hash/mapping/freshness rejection",
+      "Disabled registration and audit",
+      "Duplicate or alias registration rejection",
+      "Atomic transition preserves history",
+      "Missing confirmation rejected",
+      "Stale/corrupt receipt rejected without disabling previous market",
+      "Third active feed blocks switch"
+    ]
+  },
+  "scope": "Only additive mapping, disabled market, verification receipt and audit events written. No switch, retention, frontend, network, AMP or service changes."
+}
