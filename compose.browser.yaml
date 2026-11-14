@@ -1,0 +1,19 @@
+# Browser integration project only; no host ports or persistent development data.
+services:
+  db:
+    environment:
+      POSTGRES_DB: market_test
+    volumes: !override []
+    tmpfs: [/var/lib/postgresql/data:size=256m]
+  migrate:
+    environment:
+      DATABASE_URL: postgresql+psycopg://market:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@db:5432/market_test
+  api:
+    environment:
+      DATABASE_URL: postgresql+psycopg://market:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@db:5432/market_test
+      APP_ORIGIN: http://proxy
+      COOKIE_SECURE: "false"
+      SYNC_CURSOR_SECRET: synthetic-browser-signing-key-not-for-deployment
+    volumes: !override []
+  proxy:
+    ports: !override []

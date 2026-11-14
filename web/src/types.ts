@@ -1,0 +1,6 @@
+export interface Market {id:number;label:string;region:string;ruleset_id:number;house_id:number;source_kind:string;enabled:boolean;verified:boolean;interval_seconds:number;last_success:string|null;last_modified:string|null;freshness:'unknown'|'stale'|'current';last_error:string|null;failures:number}
+export interface Item {item_id:number;name:string;name_verified:boolean;variant_key:string;variant:unknown}
+export interface History {date:string;recent_price:string|null;supply:number}
+export interface Valuation {recent_price:string|null;lowest_buyout:string|null;market_value:string|null;historical_value:string|null;supply:number;priced_supply:number;listing_count:number;coverage_days:number;market_coverage_days:number;observed_at:string|null;synthetic:boolean;algorithm:string;history:History[]}
+export interface Detail {market:Market;item_id:number;variant_key:string;name:string;name_verified:boolean;valuation:Valuation;listings:{auction_id:string;quantity:number;buyout:string|null;unit_price:string|null;bid:string|null;time_left:string|null}[];listings_truncated:boolean}
+export interface Deal {auction_id:string;item_id:number;variant_key:string;quantity:number;total_buyout:string;market_value:string;discount_percent:number;coverage_days:number;confidence:string;reason:string;cautions:string[]}

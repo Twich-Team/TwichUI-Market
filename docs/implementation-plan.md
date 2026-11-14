@@ -14,9 +14,12 @@ Each task requires tests, diff review and a committed/pushed evidence checkpoint
 | S3.2 Worker | S3.1 | Schedules, backoff, freshness/failures and recovery tests |
 | S3.3 Valuation/history | S3.1 | Quantity-weighted recent, 14/60 day formulas and known fixtures; Workshop compatibility evidence separately tracked |
 | S3.4 Operations | S2.3 | Retention, growth, backups and isolated restoration verified |
+| S3.5 Storage longevity | S3.1,S3.3 | Compact historical daily references preserve provenance; recent raw listing retention is bounded; pricing/cursor regressions prove cleanup safety |
+| S3.6 Item metadata | S3.1 | Bounded upstream metadata resolution, explicit unresolved names, indexed name search, provenance and synthetic fixtures |
 | S4.1 Design review | S1.1 | Three browser-renderable high fidelity mockups presented; explicit approval recorded |
 | S4.2 Explorer/deals | S2.2,S3.3,S4.1 approval | Authenticated workflows, charts, explainable filters, freshness; browser tests |
 | S4.3 Administration | S2.2,S3.4,S4.1 approval | Users/markets/schedules/failures/retention/backups/devices/security browser tests |
+| S4.4 Opportunity breadth | S3.5 | Supply changes and price changes with explainable thresholds/confidence and regression/browser coverage |
 | S5.1 Sync contract | S2.2,S3.3 | Authenticated incremental cursor, pagination, validation, recovery tests |
 | S5.2 Companion | S5.1 | Tauri credential vault, cache, offline/resumable sync, safe data-only export tested |
 | S5.3 Windows releases | S5.2 | Windows CI builds/tests release artifact |

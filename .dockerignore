@@ -1,0 +1,11 @@
+.git
+.env*
+.local
+.cache
+artifacts
+backups
+**/node_modules
+**/target
+**/__pycache__
+**/.pytest_cache
+web/dist

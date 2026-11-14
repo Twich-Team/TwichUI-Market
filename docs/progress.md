@@ -38,4 +38,6 @@ Draft PR: https://github.com/Twich-Team/TwichUI-Market/pull/1. Backend PR workfl
 
 Browser authentication support now includes reload-safe CSRF recovery, password changes revoking all credentials, invitation listing/revocation and admin device listings; 43 PostgreSQL regressions pass. React/Vite application infrastructure is in progress as an explicitly unapproved review candidate. No visual approval is inferred.
 
-Next: end-to-end browser verification of real React/private API workflows and Docker web packaging. Credentials and explicit design approval remain pending.
+React review candidate now passes TypeScript/Vite build, two Vitest precision tests, production npm audit (zero findings) and three real Playwright/PostgreSQL workflows. Explorer/history/comparisons, filtered deals, invitation/member/admin/password/device flows and administration work against real private endpoints. A redeemed-invitation URL bug was caught and fixed; all browser workflows then passed from fresh fixtures. Actual React screenshots were inspected. Docker web packaging and browser CI are implemented. Design remains explicitly unapproved, and names/additional opportunity types remain incomplete. See website.md.
+
+Next: verify/deploy local HTTPS and initial owner access, then bounded raw storage with long-term compact history, name metadata and additional opportunity types. Credentials and explicit design approval remain pending.
