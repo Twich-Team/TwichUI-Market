@@ -89,3 +89,13 @@ Start the review-only candidate reproducibly with `docker --context rootless com
 ## Current interactive preview / Traefik task
 
 The earlier no-host-port preview instructions above are historical. The owner now explicitly authorized https://localhost:18444 with a separate read-only API and isolated origin/cookie. Use [the current deployment and cleanup instructions](traefik-preview-operations.md) and [actual progress](traefik-preview-progress.md). The public hostname currently returns403 intentionally; do not infer public authentication from local tests.
+
+## Personal preferences preview
+
+The active review candidate adds PostgreSQL migration 0012 and account-owned preferences, while keeping the production frontend/API and collector images unchanged. See [the complete acceptance audit](user-preferences-acceptance.md). The preview API permits only the exact authenticated preference PATCH/reset mutations in addition to login/logout; collection, users and device administration remain read-only. Personal settings never enable collection or alter its interval.
+
+Build candidate images with `docker --context rootless build -f backend/Dockerfile -t twichui-market-backend:preferences .` and `docker --context rootless build -f deploy/web.Dockerfile -t twichui-market-web:preferences .`. After a checksum-verified backup and isolated restore, apply additive migrations with the candidate backend image through the existing migration service. Do not downgrade a populated preference table: its guard requires an explicit export first.
+
+Deploy only the existing preview services using `docker --context rootless compose -f compose.item-preview.yaml -f compose.preferences-preview.yaml up -d --no-deps --wait preview-api preview`. This retains localhost:18444, preview origin/cookie, shared genuine database, 256/128 MiB API/web limits and 0.25 CPU per service. Verify using `python3 scripts/verify-live-market.py --script verify-preferences-browser.cjs`; temporary members are audited and disabled/session-revoked afterward, with no owner password reset or fixture market insertion. The verifier trusts project CAs only inside its disposable browser.
+
+Future owner-approved promotion must account for the preference-capable API as well as the reviewed frontend; the old production API intentionally does not serve these new endpoints yet. Until that approval, retain the production-approved frontend image and all existing production service identities, collection schedules, history and backups. No public ingress changes are part of preferences acceptance.
