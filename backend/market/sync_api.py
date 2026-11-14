@@ -92,12 +92,19 @@ def synchronize(market_id: MarketId,request: Request,cursor: str | None = Query(
             raise HTTPException(409,'Historical reference support compacted; start a full synchronization')
         if observation and not db.get(Snapshot,observation.snapshot_id).statistics_retained:
             raise HTTPException(409,'Detailed sync history compacted; start a full synchronization')
-    if state['base']==state['target']:
+    from .sync_generation import signature
+    target_signature=signature(db,target,state['target'])
+    base_signature=signature(db,base,state['base']) if base else None
+    unchanged=(base_signature is not None and target_signature is not None
+        and base_signature.digest==target_signature.digest)
+    if target_signature is None or (base and base_signature is None):
+        raise HTTPException(409,'Detailed sync history compacted; start a full synchronization')
+    if state['base']==state['target'] or unchanged:
         state['done']=True
         result = {'contract_version':1,'market_id':market_id,'algorithm':ALGORITHM,'changes':[],
                 'cursor':encode_cursor(state),'has_more':False,'target_observation_id':str(state['target']),
                 'observed_at':aware(target.retrieved_at).isoformat() if target else None,
-                'synthetic':target.synthetic if target else False}
+                'synthetic':target_signature.synthetic}
         from .companion_devices import record_sync
         record_sync(db,request,market_id,state['target'],True)
         return result
@@ -120,8 +127,7 @@ def synchronize(market_id: MarketId,request: Request,cursor: str | None = Query(
     result = {'contract_version':1,'market_id':market_id,'algorithm':ALGORITHM,'changes':changes,
             'cursor':encode_cursor(state),'has_more':not state['done'],'target_observation_id':str(state['target']),
             'observed_at':aware(target.retrieved_at).isoformat() if target else None,
-            'synthetic':bool((target and target.synthetic) or (base and base.synthetic)
-                or any(row['value'] and row['value']['synthetic'] for row in changes))}
+            'synthetic':target_signature.synthetic}
     from .companion_devices import record_sync
     record_sync(db,request,market_id,state['target'],state['done'])
     return result

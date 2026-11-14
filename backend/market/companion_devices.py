@@ -17,7 +17,7 @@ router = APIRouter(prefix='/api/v1/companion')
 DeviceId = Annotated[int, Path(ge=1, le=2**31-1)]
 
 
-def metadata(db, market, observation):
+def metadata(db, market, observation, *, watermark=None):
     snapshot = db.get(Snapshot, observation.snapshot_id) if observation else None
     upstream = None
     if observation and observation.upstream_modified:
@@ -25,11 +25,19 @@ def metadata(db, market, observation):
             upstream = aware(parsedate_to_datetime(observation.upstream_modified)).isoformat()
         except (ValueError, TypeError, OverflowError):
             pass
+    from .sync_generation import signature
+    if watermark is None:
+        watermark = db.scalar(select(Observation.id).where(Observation.market_id == market.id)
+            .order_by(Observation.id.desc()).limit(1))
+    valuation = signature(db, observation, watermark or 0)
     return {'market_id': market.id, 'server_checked_at': market.last_success,
             'upstream_updated_at': upstream,
             'observation_id': str(observation.id) if observation else None,
+            'watermark_observation_id': str(watermark) if watermark else None,
             'snapshot_id': str(snapshot.id) if snapshot else None,
             'generation': f'{snapshot.id}:{snapshot.content_hash}' if snapshot else None,
+            'valuation_generation': valuation.digest if valuation else None,
+            'valuation_synthetic': valuation.synthetic if valuation else None,
             'synthetic': observation.synthetic if observation else False}
 
 
@@ -81,7 +89,9 @@ def observation_metadata(market_id: MarketId, observation_id: Annotated[int, Pat
     observation = db.get(Observation, observation_id)
     if market is None or not market.verified or observation is None or observation.market_id != market_id:
         raise HTTPException(404, 'Observed market data unavailable')
-    return metadata(db, market, observation)
+    head = db.scalar(select(Observation).where(Observation.market_id == market_id, Observation.id <= observation_id)
+        .order_by(Observation.retrieved_at.desc(), Observation.id.desc()).limit(1))
+    return metadata(db, market, head, watermark=observation_id)
 
 
 class Activity(Strict):

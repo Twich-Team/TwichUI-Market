@@ -333,3 +333,83 @@ fn native_windows_credential_round_trip() {
     vault::remove(&server).unwrap();
     assert!(vault::load(&server).is_err());
 }
+
+#[test]
+fn completed_noop_advances_provenance_without_rewriting_cached_items() {
+    let directory = tempfile::tempdir().unwrap();
+    let file = directory.path().join("cache.sqlite");
+    let mut cache = Cache::open(&file).unwrap();
+    cache
+        .apply(
+            SERVER,
+            1,
+            None,
+            &page("first", "1", false, &[(1, Some("100"))]),
+        )
+        .unwrap();
+    let inspect = rusqlite::Connection::open(&file).unwrap();
+    inspect.execute_batch("CREATE TRIGGER protect_cached_rows BEFORE DELETE ON active BEGIN SELECT RAISE(ABORT,'no-op rewrote active data'); END;
+        CREATE TRIGGER protect_staging_rows BEFORE INSERT ON staging BEGIN SELECT RAISE(ABORT,'no-op copied active data'); END;").unwrap();
+    let mut noop = page("checked", "2", false, &[]);
+    noop.observed_at = Some("2026-11-13T12:05:00+00:00".into());
+    cache.apply(SERVER, 1, Some("first"), &noop).unwrap();
+    assert_eq!(cache.cursor(SERVER, 1).unwrap().as_deref(), Some("checked"));
+    let status = cache.status(SERVER, 1).unwrap();
+    assert_eq!(status.item_count, 1);
+    assert!(status.has_completed_cache && !status.downloading);
+    assert_eq!(status.observed_at, noop.observed_at);
+    assert_eq!(
+        cache.items(SERVER, 1).unwrap()[0]
+            .value
+            .recent_price
+            .as_deref(),
+        Some("100")
+    );
+    inspect
+        .execute_batch("DROP TRIGGER protect_cached_rows; DROP TRIGGER protect_staging_rows;")
+        .unwrap();
+    // A full empty replacement after reset must still clear the old completed generation.
+    cache.reset(SERVER, 1).unwrap();
+    cache
+        .apply(SERVER, 1, None, &page("empty", "3", false, &[]))
+        .unwrap();
+    assert_eq!(cache.status(SERVER, 1).unwrap().item_count, 0);
+}
+#[test]
+fn empty_final_page_promotes_pending_changes_instead_of_treating_them_as_a_noop() {
+    let mut cache = Cache::memory().unwrap();
+    cache
+        .apply(
+            SERVER,
+            1,
+            None,
+            &page("first", "1", false, &[(1, Some("100"))]),
+        )
+        .unwrap();
+    cache
+        .apply(
+            SERVER,
+            1,
+            Some("first"),
+            &page("pending", "2", true, &[(1, Some("200"))]),
+        )
+        .unwrap();
+    assert_eq!(
+        cache.items(SERVER, 1).unwrap()[0]
+            .value
+            .recent_price
+            .as_deref(),
+        Some("100")
+    );
+    cache
+        .apply(SERVER, 1, Some("pending"), &page("final", "2", false, &[]))
+        .unwrap();
+    assert_eq!(
+        cache.items(SERVER, 1).unwrap()[0]
+            .value
+            .recent_price
+            .as_deref(),
+        Some("200")
+    );
+    assert!(!cache.status(SERVER, 1).unwrap().downloading);
+}

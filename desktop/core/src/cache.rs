@@ -97,15 +97,28 @@ impl Cache {
             "INSERT OR IGNORE INTO state(server,market) VALUES(?1,?2)",
             params![server, market],
         )?;
-        let (saved, downloading, target): (Option<String>, bool, Option<String>) = tx.query_row(
-            "SELECT cursor,downloading,target FROM state WHERE server=?1 AND market=?2",
+        let (saved, downloading, target, completed): (Option<String>, bool, Option<String>, bool) = tx.query_row(
+            "SELECT cursor,downloading,target,completed FROM state WHERE server=?1 AND market=?2",
             params![server, market],
-            |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)),
+            |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?, row.get(3)?)),
         )?;
         if saved.as_deref() != requested_cursor
             || (downloading && target.as_deref() != Some(&page.target_observation_id))
         {
             return Err(Error::Invalid("stale page or changed download target"));
+        }
+        if completed
+            && !downloading
+            && requested_cursor.is_some()
+            && !page.has_more
+            && page.changes.is_empty()
+        {
+            // A completed incremental no-op changes only provenance/cursor state.
+            // Avoid copying and rewriting every cached item on an idle check.
+            tx.execute("UPDATE state SET cursor=?3,target=?4,observed_at=?5,synthetic=?6 WHERE server=?1 AND market=?2",
+                params![server,market,page.cursor,page.target_observation_id,page.observed_at,page.synthetic])?;
+            tx.commit()?;
+            return Ok(());
         }
         if !downloading {
             tx.execute(
