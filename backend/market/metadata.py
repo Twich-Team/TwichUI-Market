@@ -34,6 +34,8 @@ def store_metadata(db,region,item_id,body,*,at=None,synthetic=False,resolved_nam
     row.resolved_at=at
     row.http_status,row.payload_hash,row.synthetic=200,hashlib.sha256(body).hexdigest(),synthetic
     db.flush()
+    from .metadata_catalog import sync_blizzard
+    sync_blizzard(db,row,at=at)
     return row
 
 

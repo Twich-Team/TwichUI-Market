@@ -1,6 +1,6 @@
 """Bounded metadata scheduler independent of auction collection.
 
-One primary item, one artwork lookup and one optional community item per tick.
+One budgeted provider request and one independent artwork lookup per tick.
 Provider failure never prevents collection; negative caches/backoff remain in adapters.
 """
 import logging
@@ -11,13 +11,13 @@ from .worker import BlizzardClient
 
 
 def tick(factory=Session,client=None):
-    from .metadata import resolve_once
+    from .metadata_recovery import tick as recover, fetch
     from .item_media import resolve_media_once
-    from .community_metadata import resolve_community_once
     client=client or BlizzardClient()
-    return {'primary':resolve_once(factory,client),
-            'media':resolve_media_once(factory,client),
-            'community':resolve_community_once(factory)}
+    def fetcher(provider,item_id,**kwargs):
+        return fetch(provider,item_id,client=client,**kwargs)
+    return {'recovery':recover(factory,fetcher=fetcher),
+            'media':resolve_media_once(factory,client)}
 
 
 def main():
