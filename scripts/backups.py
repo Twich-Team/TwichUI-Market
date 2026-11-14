@@ -141,7 +141,10 @@ def restore_check(path):
             status_directory.mkdir(mode=0o755,parents=True,exist_ok=True)
             target=status_directory/'status.json'
             status=json.loads(target.read_text()) if target.exists() else {'status':'manual_backup_verified'}
-            status['last_restoration_verified_at']=manifest['restoration_verified_at']
+            status.update({'status':'ok','last_success':manifest['created_at'],'filename':manifest['filename'],
+                'bytes':manifest['bytes'],'last_restoration_verified_at':manifest['restoration_verified_at'],
+                'restored_archive_filename':manifest['filename'],'restored_archive_sha256':manifest['sha256'],
+                'restored_archive_created_at':manifest['created_at']})
             temp=target.with_suffix('.partial')
             temp.write_text(json.dumps(status)+'\n')
             temp.chmod(0o644)

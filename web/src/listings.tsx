@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { SortingState } from "@tanstack/react-table";
 import { api } from "./api";
 import { DataTable } from "./data-table";
@@ -55,6 +55,7 @@ export function CurrentListings({
       sort,
     ],
     refetchInterval: 60000,
+    placeholderData: keepPreviousData,
     queryFn: ({ signal }) =>
       api<{ listings: Auction[]; total: number; snapshot_id: string }>(
         `/markets/${market}/items/${item}/${variant}/listings?page=${pagination.pageIndex}&page_size=${pagination.pageSize}&sort=${sort.id}&direction=${sort.desc ? "desc" : "asc"}`,
@@ -66,7 +67,11 @@ export function CurrentListings({
   const listings = response.data?.listings || [];
 
   return (
-    <section className="panel padded" aria-label="Current auctions">
+    <section
+      className="panel padded"
+      aria-label="Current auctions"
+      aria-busy={response.isFetching}
+    >
       <div className="panel-heading">
         <h3>Current listings</h3>
         <span className="muted">

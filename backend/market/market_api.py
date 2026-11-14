@@ -28,7 +28,7 @@ def backup_state():
         path=BACKUP_DIRECTORY/'status.json'
         if path.is_file() and path.stat().st_size<16384:
             data=json.loads(path.read_text())
-            status.update({key:data[key] for key in ('status','last_success','checked_at','bytes','keep','error','last_restoration_verified_at') if key in data})
+            status.update({key:data[key] for key in ('status','last_success','checked_at','bytes','keep','error','last_restoration_verified_at','filename','restored_archive_filename','restored_archive_sha256','restored_archive_created_at') if key in data})
     except (OSError,ValueError,TypeError):
         status['status']='unavailable'
     return status

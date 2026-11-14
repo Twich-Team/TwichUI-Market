@@ -21,7 +21,7 @@ def write_status(payload):
     target=public/'status.json'
     if target.exists():
         previous=json.loads(target.read_text())
-        for key in ('last_success','last_restoration_verified_at'):
+        for key in ('last_success','last_restoration_verified_at','restored_archive_filename','restored_archive_sha256','restored_archive_created_at'):
             if key not in payload and key in previous:
                 payload[key]=previous[key]
     temporary=public/'status.partial'

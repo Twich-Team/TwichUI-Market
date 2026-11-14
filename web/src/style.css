@@ -1532,3 +1532,7 @@ small,
 .currency {
   position: relative;
 }
+.account-info strong {
+  overflow-wrap: anywhere;
+  max-width: 100%;
+}

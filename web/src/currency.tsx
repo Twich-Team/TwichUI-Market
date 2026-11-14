@@ -46,12 +46,17 @@ export function Currency({ value }: { value: string | null | undefined }) {
     >
       <span className="sr-only">{money(value)}</span>
       <span aria-hidden="true">
-        {parts.map(([amount, metal]) => (
-          <span className="currency-part" key={metal}>
-            {amount.toLocaleString()}
-            <Coin metal={metal} />
-          </span>
-        ))}
+        {parts
+          .filter(
+            ([amount, metal]) =>
+              amount > 0n || (total === 0n && metal === "copper"),
+          )
+          .map(([amount, metal]) => (
+            <span className="currency-part" key={metal}>
+              {amount.toLocaleString()}
+              <Coin metal={metal} />
+            </span>
+          ))}
       </span>
     </span>
   );

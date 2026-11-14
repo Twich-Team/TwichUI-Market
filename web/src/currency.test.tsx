@@ -18,3 +18,11 @@ it("does not invent a value for missing or invalid copper", () => {
     "Invalid price",
   );
 });
+it("omits zero denominations visually while keeping a complete exact accessible equivalent", () => {
+  const gold = renderToStaticMarkup(<Currency value="20000" />);
+  expect((gold.match(/<svg/g) || []).length).toBe(1);
+  expect(gold).toContain('aria-label="2 gold, 0 silver, 0 copper"');
+  const zero = renderToStaticMarkup(<Currency value="0" />);
+  expect((zero.match(/<svg/g) || []).length).toBe(1);
+  expect(zero).toContain('aria-label="0 gold, 0 silver, 0 copper"');
+});

@@ -120,7 +120,10 @@ def backup_ready():
     try:
         stamp=aware(datetime.fromisoformat(backup['last_restoration_verified_at']))
         dump=aware(datetime.fromisoformat(backup['last_success']))
-        return backup.get('status') in ('ok','available','success','healthy','manual_backup_verified') and now()-timedelta(days=1)<=stamp<=now() and now()-timedelta(days=1)<=dump<=now()
+        if not backup.get('filename') or backup.get('restored_archive_filename')!=backup['filename'] or backup.get('restored_archive_created_at')!=backup['last_success']:return False
+        digest=backup.get('restored_archive_sha256','')
+        if len(digest)!=64 or any(c not in '0123456789abcdef' for c in digest):return False
+        return stamp>=dump and backup.get('status') in ('ok','available','success','healthy','manual_backup_verified') and now()-timedelta(days=1)<=stamp<=now() and now()-timedelta(days=1)<=dump<=now()
     except (KeyError,TypeError,ValueError):return False
 
 

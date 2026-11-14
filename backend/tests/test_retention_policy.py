@@ -127,3 +127,16 @@ def test_apply_rejects_absent_backup_even_with_approved_policy(owner,database,mo
     report=owner.get('/api/v1/admin/retention/preview').json()
     monkeypatch.setattr(retention,'backup_ready',lambda:False)
     assert owner.post('/api/v1/admin/retention/apply',json={'confirmation':report['confirmation'],'confirm':True}).status_code==409
+
+
+def test_backup_gate_binds_restoration_to_the_current_archive(monkeypatch):
+    stamp=now();created=stamp-timedelta(minutes=1)
+    state={'status':'ok','last_success':created.isoformat(),'last_restoration_verified_at':stamp.isoformat(),
+        'filename':'market-fixture.dump','restored_archive_filename':'market-fixture.dump',
+        'restored_archive_created_at':created.isoformat(),'restored_archive_sha256':'a'*64}
+    monkeypatch.setattr('market.market_api.backup_state',lambda:state)
+    assert retention.backup_ready()
+    state['filename']='new-unrestored-archive.dump'
+    assert not retention.backup_ready()
+    state['filename']='market-fixture.dump';state['restored_archive_sha256']='invalid'
+    assert not retention.backup_ready()
