@@ -33,7 +33,7 @@ def test_same_day_unchanged_payload_skips_variant_work_and_advances_cursor(owner
     market=seed(database,stamp);path=f'/api/v1/sync/markets/{market}'
     initial=owner.get(path).json()
     with database.begin() as db:add(db,market,'conditional-check',stamp+timedelta(minutes=5))
-    monkeypatch.setattr(sync_api,'compact',fail_compact)
+    monkeypatch.setattr(sync_api,'compact_many',fail_compact)
     result=owner.get(path,params={'cursor':initial['cursor']});assert result.status_code==200,result.text
     page=result.json();assert page['changes']==[] and not page['has_more']
     assert page['target_observation_id']!=initial['target_observation_id'] and page['cursor']!=initial['cursor']
@@ -80,7 +80,7 @@ def test_non_winning_synthetic_observation_changes_warning_and_noop_preserves_it
     with database.begin() as db:add(db,market,'late-synthetic-earlier-same-day',stamp-timedelta(minutes=5),synthetic=True)
     page=owner.get(path,params={'cursor':initial['cursor']}).json()
     assert page['synthetic'] and page['changes'][0]['value']['synthetic']
-    monkeypatch.setattr(sync_api,'compact',fail_compact)
+    monkeypatch.setattr(sync_api,'compact_many',fail_compact)
     noop=owner.get(path,params={'cursor':page['cursor']}).json();assert noop['changes']==[] and noop['synthetic']
     metadata=owner.get(f'/api/v1/companion/markets/{market}/observations/'+page['target_observation_id']).json()
     assert metadata['observation_id']==initial['target_observation_id']
@@ -94,7 +94,7 @@ def test_irrelevant_late_history_keeps_generation_and_historical_metadata_is_wat
     market=seed(database,stamp);path=f'/api/v1/sync/markets/{market}';initial=owner.get(path).json()
     old=owner.get(f'/api/v1/companion/markets/{market}/observations/'+initial['target_observation_id']).json()
     with database.begin() as db:add(db,market,'outside-window',stamp-timedelta(days=61),price=999,synthetic=True)
-    monkeypatch.setattr(sync_api,'compact',fail_compact)
+    monkeypatch.setattr(sync_api,'compact_many',fail_compact)
     page=owner.get(path,params={'cursor':initial['cursor']}).json();assert page['changes']==[] and not page['synthetic']
     after=owner.get(f'/api/v1/companion/markets/{market}/observations/'+initial['target_observation_id']).json()
     assert old==after

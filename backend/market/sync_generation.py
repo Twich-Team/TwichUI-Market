@@ -17,6 +17,7 @@ from .security import aware
 class Signature(NamedTuple):
     digest: str
     synthetic: bool
+    daily: tuple = ()
 
 
 def signature(db, head, watermark):
@@ -38,4 +39,4 @@ def signature(db, head, watermark):
     synthetic = bool(rows[0].any_synthetic)
     daily = [(str(row.day), row.snapshot_id, aware(row.retrieved_at) >= stamp-timedelta(days=14)) for row in rows]
     payload = json.dumps([ALGORITHM, head.snapshot_id, synthetic, daily], separators=(',', ':')).encode()
-    return Signature(hashlib.sha256(payload).hexdigest(), synthetic)
+    return Signature(hashlib.sha256(payload).hexdigest(), synthetic, tuple(daily))

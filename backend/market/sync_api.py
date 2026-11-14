@@ -5,13 +5,14 @@ import hashlib
 import hmac
 import json
 import os
+from decimal import Decimal
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
-from sqlalchemy import and_, or_, select, text
+from sqlalchemy import and_, or_, select, text, tuple_
 from sqlalchemy.orm import Session
 from .db import session
 from .market_api import MarketId, money_contract, require_market
 from .models import Observation, Snapshot, SnapshotStatistic, User
-from .pricing import ALGORITHM, HistoryUnavailable, values
+from .pricing import ALGORITHM, HistoryUnavailable, rounded, values
 from .security import aware, identity
 
 router=APIRouter(prefix='/api/v1/sync')
@@ -64,6 +65,45 @@ def compact(db,observation,item_id,variant_key,watermark):
         'supply','priced_supply','listing_count','coverage_days','market_coverage_days','synthetic')})
 
 
+def compact_many(db, observation, keys, generation):
+    """One bounded statistics query for this page, reusing exact daily winners.
+
+    The unchanged asking-v1 implementation above remains the independent reference
+    for equivalence checks. At most 100 keys × 61 UTC days are materialized.
+    """
+    keys=[tuple(key) for key in keys]
+    if len(keys)>100:
+        raise ValueError('Compact pricing batch exceeds page limit')
+    if observation is None or not keys:
+        return {key:None for key in keys}
+    if generation is None:
+        raise HTTPException(409,'Detailed sync history compacted; start a full synchronization')
+    snapshots={snapshot_id for _,snapshot_id,_ in generation.daily}
+    rows=list(db.scalars(select(SnapshotStatistic).where(SnapshotStatistic.snapshot_id.in_(snapshots),
+        tuple_(SnapshotStatistic.item_id,SnapshotStatistic.variant_key).in_(keys))))
+    if any(row.algorithm!=ALGORITHM for row in rows):
+        raise HTTPException(409,'Detailed sync history compacted; start a full synchronization')
+    statistics={(row.snapshot_id,row.item_id,row.variant_key):row for row in rows}
+    result={}
+    for key in keys:
+        current=statistics.get((observation.snapshot_id,*key))
+        if current is None or not current.listing_count:
+            result[key]=None
+            continue
+        prices=[];recent=[]
+        for _,snapshot_id,in_recent_window in generation.daily:
+            row=statistics.get((snapshot_id,*key))
+            if row is not None and row.recent_price is not None:
+                prices.append(Decimal(row.recent_price))
+                if in_recent_window:recent.append(Decimal(row.recent_price))
+        result[key]=money_contract({**{name:getattr(current,name) for name in
+            ('recent_price','lowest_buyout','supply','priced_supply','listing_count')},
+            'market_value':rounded(sum(recent)/len(recent)) if recent else None,
+            'historical_value':rounded(sum(prices)/len(prices)) if prices else None,
+            'coverage_days':len(prices),'market_coverage_days':len(recent),'synthetic':generation.synthetic})
+    return result
+
+
 @router.get('/markets/{market_id}')
 def synchronize(market_id: MarketId,request: Request,cursor: str | None = Query(None,max_length=2048),
                 limit: int = Query(50,ge=1,le=100),user: User = Depends(identity),db: Session = Depends(session)):
@@ -114,9 +154,11 @@ def synchronize(market_id: MarketId,request: Request,cursor: str | None = Query(
         or_(SnapshotStatistic.item_id>after_item,and_(SnapshotStatistic.item_id==after_item,SnapshotStatistic.variant_key>after_variant)))
         .distinct().order_by(SnapshotStatistic.item_id,SnapshotStatistic.variant_key).limit(limit+1)))
     changes=[]
+    current_values=compact_many(db,target,keys[:limit],target_signature)
+    previous_values=compact_many(db,base,keys[:limit],base_signature)
     for item_id,variant_key in keys[:limit]:
-        current=compact(db,target,item_id,variant_key,state['target'])
-        previous=compact(db,base,item_id,variant_key,state['base'])
+        current=current_values[item_id,variant_key]
+        previous=previous_values[item_id,variant_key]
         if current==previous:
             continue
         changes.append({'operation':'upsert' if current is not None else 'delete',
