@@ -48,6 +48,7 @@ def device_view(db, device):
     return {'id': device.id, 'user_id': device.user_id, 'name': device.name,
             'platform': device.platform, 'app_version': device.app_version,
             'authorized_at': stamp(device.created_at), 'expires_at': stamp(device.expires_at),
+            'renewal_expires_at': stamp(device.refresh_expires_at),
             'last_connection_at': stamp(device.last_connection_at), 'last_sync_at': stamp(device.last_sync_at),
             'selected_market_id': device.selected_market_id,
             'selected_market_name': market.label if market else None, 'revoked': device.revoked}

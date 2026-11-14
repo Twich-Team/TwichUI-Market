@@ -14,6 +14,9 @@ const Administration = lazy(() =>
 const Account = lazy(() =>
   import("./settings").then((m) => ({ default: m.Account })),
 );
+const Companion = lazy(() => import("./companion").then(m=>({default:m.CompanionSetup})));
+const CompanionApproval = lazy(() => import("./companion-approval").then(m=>({default:m.CompanionApproval})));
+function routedPage(){const path=location.pathname;return path==='/companion'?'companion':path==='/account'?'account':path==='/deals'?'deals':path==='/administration'?'admin':'explorer';}
 import { Market } from "./types";
 import { PreferencesProvider, PreferenceStatus, usePreferences } from "./preferences";
 import { preferredMarket } from "./preferences-store";
@@ -46,7 +49,8 @@ function Login({
           invitation: String(form.get("invitation")),
         });
         setRegister(false);
-        history.replaceState(null, "", location.pathname);
+        const query=new URLSearchParams(location.search);query.delete("invite");
+        history.replaceState(null, "", location.pathname+(query.size?`?${query}`:''));
         setNotice("Account created. Sign in with your new credentials.");
       } else onSession(await api<BrowserSession>("/auth/login", "POST", body));
     } catch (error) {
@@ -71,6 +75,7 @@ function Login({
             ? "An invitation from an administrator is required."
             : "Sign in to your private market research."}
         </p>
+        {location.pathname==='/companion/authorize'&&<p className="notice">Sign in to review a Windows companion connection. Your approval request will remain open.</p>}
         <form onSubmit={submit}>
           <label>
             Username
@@ -166,13 +171,16 @@ function App() {
   }
   if (loading) return <main className="login" role="status">Opening your ledger…</main>;
   if (!user) return <><Login onSession={result => { restore(result); announceSessionChange(); }} />{error && <p className="notice error" role="alert">{error}</p>}</>;
+  if(location.pathname==='/companion/authorize')return <CompanionApproval key={user.id} user={user} logout={logout} authError={error}/>;
   return <PreferencesProvider key={`${user.id}:${user.role}`} userId={user.id}>
     <Workspace user={user} logout={logout} signedOut={signedOut} authError={error} />
   </PreferencesProvider>;
 }
 
 function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:()=>Promise<void>;signedOut:()=>void;authError:string}) {
-  const [page,setPage]=useState("explorer");
+  const [page,changePage]=useState(routedPage);
+  const setPage=(page:string)=>{changePage(page);history.pushState(null,'',({explorer:'/',deals:'/deals',admin:'/administration',account:'/account',companion:'/companion'} as Record<string,string>)[page]||'/');};
+  useEffect(()=>{const update=()=>changePage(routedPage());window.addEventListener('popstate',update);return()=>window.removeEventListener('popstate',update);},[]);
   const [markets,setMarkets]=useState<Market[]>([]);
   const [error,setError]=useState("");
   const [readOnly,setReadOnly]=useState(true);
@@ -196,6 +204,7 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
     deals: "Deal Finder",
     admin: "Administration",
     account: "Account & devices",
+    companion: "Get Desktop Companion",
   };
   return (
     <>
@@ -203,7 +212,7 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
         <a
           href="#explorer"
           className="brand"
-          onClick={() => setPage("explorer")}
+          onClick={event => {event.preventDefault();setPage("explorer");}}
         >
           <span className="sigil">T</span>
           <span>
@@ -217,6 +226,7 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
             "deals",
             ...(user.role === "admin" ? ["admin"] : []),
             "account",
+            "companion",
           ].map((key) => (
             <button
               key={key}
@@ -282,10 +292,11 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
             />
           )}{" "}
           {page === "account" && (
-            <Account readOnly={readOnly}
+            <Account readOnly={readOnly} userId={user.id} openCompanion={()=>setPage('companion')}
               signedOut={signedOut}
             />
           )}
+          {page === 'companion' && <Companion user={user}/>}
         </main>
         <footer>
           TWICHUI MARKET <span>Private knowledge. Better decisions.</span>

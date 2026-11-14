@@ -4,11 +4,14 @@ from datetime import timedelta
 from market.db import Session,engine,now
 from market.ingest import ingest
 from market.metadata import store_metadata
-from market.models import Market,User,StorageMeasurement,CollectionRun
+from market.models import Market,User,StorageMeasurement,CollectionRun,CompanionAuthorization
 from market.security import hasher
 
 assert engine.url.database=='market_test','Refusing to seed a non-test database'
 with Session.begin() as db:
+    db.add(CompanionAuthorization(id='E'*43,device_name='Expired browser fixture',platform='Windows',app_version='2.0.0-beta.1',issuer_origin='http://proxy',
+        redirect_uri='http://127.0.0.1:43123/companion/callback',state_value='S'*43,state_hash=__import__('hashlib').sha256(('S'*43).encode()).hexdigest(),code_challenge='C'*43,
+        created_at=now()-timedelta(minutes=6),expires_at=now()-timedelta(minutes=1)))
     db.add_all([StorageMeasurement(sampled_at=now()-timedelta(days=1),database_bytes=10485760),StorageMeasurement(sampled_at=now(),database_bytes=11534336)])
     store_metadata(db,'eu',12363,b'{"id":12363,"name":"Synthetic Arcane Crystal","quality":{"type":"UNCOMMON"},"level":60,"required_level":55,"preview_item":{"item":{"id":12363},"stats":[{"display":{"display_string":"+10 Fixture Strength"}}]}}',synthetic=True)
     store_metadata(db,'eu',20000,b'{"id":20000,"name":"Synthetic Enchanted Blade","quality":{"type":"RARE"},"level":40}',synthetic=True)

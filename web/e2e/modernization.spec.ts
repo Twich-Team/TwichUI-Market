@@ -214,6 +214,7 @@ test("shared deal tooltips and manageable account/admin tables", async ({
   await page
     .getByRole("button", { name: "Account & devices", exact: true })
     .click();
+  await page.locator('.legacy-device-access > summary').click();
   await page.getByLabel("Device name").fill("Modernization browser fixture");
   await page
     .getByRole("button", { name: "Create device token", exact: true })

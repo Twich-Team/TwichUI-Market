@@ -182,6 +182,7 @@ test("invitation acceptance, member permissions, device sync/revocation and pass
   await page
     .getByRole("button", { name: "Account & devices", exact: true })
     .click();
+  await page.locator('.legacy-device-access > summary').click();
   await page.getByLabel("Device name").fill("Browser Windows fixture");
   await page
     .getByRole("button", { name: "Create device token", exact: true })

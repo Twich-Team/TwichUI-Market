@@ -1,6 +1,7 @@
 import { MyPreferences } from "./user-preferences";
 import { MarketConfiguration } from "./market-configuration";
 import { RetentionControls } from "./retention-controls";
+import { CompanionDevices } from "./companion-devices";
 import { useState } from "react";
 import { DataTable } from "./data-table";
 import { api, User, when } from "./api";
@@ -94,9 +95,11 @@ const bytes = (value: number | null | undefined) =>
 export function Account({
   signedOut,
   readOnly = false,
+  userId,openCompanion,
 }: {
   signedOut: () => void;
   readOnly?: boolean;
+  userId:number;openCompanion:()=>void;
 }) {
   const devices = useLoad(
       "account-devices",
@@ -138,11 +141,14 @@ export function Account({
         </p>
       )}
       <MyPreferences />
+      <section className="panel padded"><div className="eyebrow">WINDOWS COMPANION</div><h2>Your market, ready on your PC.</h2><p>Install the companion, then approve this device in your browser. Your password stays on the website.</p><button className="primary" onClick={openCompanion}>Get Desktop Companion</button></section>
+      <CompanionDevices userId={userId}/>
       <section className="panel padded">
-        <h2>Connect a desktop companion</h2>
+        <details className="legacy-device-access"><summary>Older companions &amp; API clients</summary>
+        <h2>Legacy device tokens</h2>
         <p>
-          Create a named device token, then paste it into the Windows companion.
-          Tokens expire after 90 days.
+          These credentials are for older companions and API clients. New Windows
+          installations use browser approval above. Legacy tokens expire after 90 days.
         </p>
         <form
           className="toolbar"
@@ -234,6 +240,7 @@ export function Account({
         {devices.data?.length === 0 && (
           <p className="empty">No connected devices.</p>
         )}
+        </details>
       </section>
       <section className="panel padded">
         <h2>Change password</h2>
@@ -894,6 +901,7 @@ export function Administration({
           )}
           {tab === "devices" && (
             <section className="panel padded">
+              <CompanionDevices userId={user.id} admin readOnly={readOnly} owners={Object.fromEntries(state.users.map(member=>[member.id,member.username]))}/>
               <h3>Connected devices</h3>
               <DataTable<Device>
                 label="connected devices"
