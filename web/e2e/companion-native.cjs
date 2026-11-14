@@ -13,6 +13,7 @@ const fs=require('node:fs');const path=require('node:path');const {execFile,spaw
     let page=browser.contexts()[0].pages()[0];
     const powershell=async script=>JSON.parse((await promisify(execFile)('powershell.exe',['-NoProfile','-NonInteractive','-Command',script],{timeout:20000})).stdout.trim());
     const startup=()=>powershell('@{user=(Get-ItemPropertyValue -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run" -Name "TwichUI Market Companion" -ErrorAction SilentlyContinue);machine=(Get-ItemPropertyValue -Path "HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run" -Name "TwichUI Market Companion" -ErrorAction SilentlyContinue)} | ConvertTo-Json -Compress');
+    const nativeControl=async action=>JSON.parse((await promisify(execFile)('powershell.exe',['-NoProfile','-NonInteractive','-File',path.resolve('scripts/windows/native-controls.ps1'),'-Action',action],{timeout:20000})).stdout.trim());
     const invoke=(command,args={})=>page.evaluate(({command,args})=>window.__TAURI__.core.invoke(command,args),{command,args});
     await expect(page.locator('#welcome')).toBeVisible();
     await expect(page.locator('#sign-in')).toBeVisible();await expect(page.locator('#token')).toHaveCount(0);
@@ -24,16 +25,18 @@ const fs=require('node:fs');const path=require('node:path');const {execFile,spaw
     await expect.poll(async()=>(await invoke('app_state')).approval?.request_id,{timeout:15000}).toBeTruthy();
     const approval=(await invoke('app_state')).approval;const url=new URL(approval.authorization_url);
     expect(url.origin).toBe(process.env.MARKET_TEST_SERVER);expect(url.pathname).toBe('/companion/authorize');
-    const login=await api.post('/api/v1/auth/login',{data:{username:'native-fixture',password:'synthetic browser fixture password'}});expect(login.ok()).toBe(true);
+    const login=await api.post('/api/v1/auth/login',{data:{username:'native_fixture',password:'synthetic browser fixture password'}});expect(login.ok()).toBe(true);
     const csrf=(await login.json()).csrf_token;const headers={'x-csrf-token':csrf};
     // Run the production website bundle in actual Edge, following the same
     // approval URL opened by the native default-browser action. No consent API shortcut.
     websiteBrowser=await chromium.launch({channel:'msedge',headless:false});
     const website=await websiteBrowser.newPage({viewport:{width:1240,height:900}});
     await website.goto(approval.authorization_url);
-    await website.getByLabel('Username').fill('native-fixture');
+    await website.getByLabel('Username').fill('native_fixture');
     await website.getByLabel('Password',{exact:true}).fill('synthetic browser fixture password');
-    await website.getByRole('button',{name:'Sign in',exact:true}).click();
+    expect(await website.locator('form').evaluate(form=>form.checkValidity())).toBe(true);
+    const websiteLogin=website.waitForResponse(response=>response.url().endsWith('/api/v1/auth/login')&&response.request().method()==='POST');
+    await website.getByRole('button',{name:'Sign in',exact:true}).click();expect((await websiteLogin).ok()).toBe(true);
     await expect(website.getByRole('heading',{name:'Installed Windows fixture',exact:true})).toBeVisible();
     await expect(website.getByRole('button',{name:'Approve this device',exact:true})).toBeVisible();
     await website.screenshot({path:path.join(shots,'website-approval.png'),fullPage:true});
@@ -74,9 +77,21 @@ const fs=require('node:fs');const path=require('node:path');const {execFile,spaw
     await expect.poll(async()=>(await invoke('app_state')).window_visible).toBe(true);
     // A normal second launch restores the original process and retains its cache/settings.
     expect((await invoke('app_state')).cache.item_count).toBe(2);expect((await invoke('app_state')).settings.interval_minutes).toBe(60);
+    const tray=await nativeControl('Capture');expect(tray.actual_tray).toBe(true);
+    await nativeControl('Settings');await expect(page.locator('#settings-panel')).toBeVisible();
+    await page.locator('#settings-cancel').click();
+    await nativeControl('Minimize');await expect.poll(async()=>(await invoke('app_state')).window_visible).toBe(false);
+    await nativeControl('Open');await expect.poll(async()=>(await invoke('app_state')).window_visible).toBe(true);
+    await nativeControl('Close');await expect.poll(async()=>(await invoke('app_state')).window_visible).toBe(false);
+    await nativeControl('Open');await expect.poll(async()=>(await invoke('app_state')).window_visible).toBe(true);
+    const traySyncBefore=(await invoke('app_state')).sync.sync.last_sync_ms;
+    await nativeControl('Sync');await expect.poll(async()=>(await invoke('app_state')).sync.sync.last_sync_ms,{timeout:20000}).toBeGreaterThan(traySyncBefore);
+    await nativeControl('Pause');await expect.poll(async()=>(await invoke('app_state')).sync.sync.automatic_sync).toBe(true);
+    await nativeControl('Pause');await expect.poll(async()=>(await invoke('app_state')).sync.sync.automatic_sync).toBe(false);
+    await expect.poll(async()=>(await invoke('app_state')).sync.sync.running).toBe(false);
     // Restart the installed process normally. Credential Manager, settings and
     // completed SQLite cache must survive; opted-in tray startup stays hidden.
-    await invoke('quit').catch(()=>{});
+    await nativeControl('Quit');
     await expect.poll(async()=>{try{return(await fetch(`${endpoint}/json/version`)).ok}catch{return false}}).toBe(false);
     await browser.close().catch(()=>{});
     const restarted=spawn(process.env.MARKET_TEST_INSTALLED_EXE,[],{detached:true,stdio:'ignore'});restarted.unref();
@@ -97,9 +112,9 @@ const fs=require('node:fs');const path=require('node:path');const {execFile,spaw
     expect((await invoke('app_state')).cache.item_count).toBe(2);
     const revoked=(await(await api.get('/api/v1/companion/devices')).json()).devices.find(row=>row.id===device.id);expect(revoked.revoked).toBe(true);
     fs.writeFileSync(path.join(shots,'installed-smoke.json'),JSON.stringify({fixture:true,version:(await invoke('app_state')).version,native_browser_approval_api:true,native_browser_approval_ui:true,
-      native_thread_hidden_sync:true,single_instance_restore:true,preferences_saved:true,credential_and_cache_restart:true,hidden_startup:true,current_user_autostart_enable_disable:true,export_valid:true,server_revocation:true,offline_cache_preserved:true,
+      native_thread_hidden_sync:true,single_instance_restore:true,preferences_saved:true,credential_and_cache_restart:true,hidden_startup:true,current_user_autostart_enable_disable:true,actual_tray_menu:true,tray_settings_sync_pause_open_quit:true,native_minimize_close_to_tray:true,export_valid:true,server_revocation:true,offline_cache_preserved:true,
       website_approval_ui_verified:true,full_tray_autostart_upgrade_acceptance_complete:false},null,2));
-    await invoke('quit').catch(()=>{});
+    await nativeControl('Quit');
     console.log('Installed v2: actual Edge website approval, real Rust hidden-window sync, preference save, single-instance restore, export, revocation and offline cache passed.');
   }finally{await websiteBrowser?.close();await api.dispose();await browser.close().catch(()=>{});}
 })().catch(error=>{console.error(error);process.exitCode=1});

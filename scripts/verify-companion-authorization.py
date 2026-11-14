@@ -27,7 +27,7 @@ from market.security import hasher
 assert engine.url.database.endswith('native-authorization-fixture.db')
 Base.metadata.create_all(engine)
 with Session.begin() as db:
-    db.add(User(username='native-fixture',password_hash=hasher.hash('synthetic browser fixture password'),role='member'))
+    db.add(User(username='native_fixture',password_hash=hasher.hash('synthetic browser fixture password'),role='member'))
     market=Market(region='us',ruleset_id=2,house_id=114,source_kind='auctions',label='Synthetic only',verified=True,enabled=True)
     db.add(market);db.flush()
     evidence=json.dumps({'region':'us','house_id':114,'ruleset':'Normal','faction':'Horde',
@@ -111,7 +111,7 @@ def main():
                 url=urlsplit(info['info']['authorization_url'])
                 assert url.scheme=='http' and url.netloc==f'127.0.0.1:{port}' and url.path=='/companion/authorize'
                 ident=parse_qs(url.query)['request'][0]
-                csrf=request('/api/v1/auth/login',{'username':'native-fixture','password':'synthetic browser fixture password'})['csrf_token']
+                csrf=request('/api/v1/auth/login',{'username':'native_fixture','password':'synthetic browser fixture password'})['csrf_token']
                 approval=request('/api/v1/companion/authorizations/'+ident)
                 assert approval['application']=='TwichUI Market Companion' and approval['status']=='pending'
                 result=request('/api/v1/companion/authorizations/'+ident+'/decision',{'decision':'approve','consent_token':approval['consent_token']})
