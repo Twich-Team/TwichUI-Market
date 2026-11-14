@@ -42,13 +42,13 @@ def atomic_json(path,value):
 
 
 @contextmanager
-def locked(store):
+def locked(store, purpose='companion-release-assets'):
     store=Path(store)
     if store.is_symlink():raise ValueError('Release store must not be a symlink')
     store.mkdir(mode=0o755,parents=True,exist_ok=True)
     store=store.resolve(strict=True)
     marker=store/'.companion-release-store.json'
-    identity={'schema_version':1,'purpose':'companion-release-assets'}
+    identity={'schema_version':1,'purpose':purpose}
     if marker.exists():
         if bounded_json(marker)!=identity:raise ValueError('Unexpected release store identity')
     elif any(store.iterdir()):

@@ -52,6 +52,9 @@ jobs:
         shell: pwsh
         timeout-minutes: 5
         run: ./scripts/windows/verify-installer.ps1
+      - name: Record actual unsigned candidate and disabled updater evidence
+        shell: pwsh
+        run: ./scripts/windows/record-private-beta-candidate.ps1
       - uses: actions/upload-artifact@v4
         if: always()
         with:

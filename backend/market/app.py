@@ -40,8 +40,10 @@ from .companion_auth import router as companion_auth_router
 app.include_router(companion_auth_router)
 from .companion_devices import DeviceId, Rename, router as companion_devices_router
 from .companion_releases import router as companion_releases_router
+from .companion_private_beta import router as companion_private_beta_router
 app.include_router(companion_devices_router)
 app.include_router(companion_releases_router)
+app.include_router(companion_private_beta_router)
 COOKIE_SECURE = os.environ.get("COOKIE_SECURE", "true").lower() == "true"
 ORIGIN = os.environ.get("APP_ORIGIN", "https://localhost")
 
