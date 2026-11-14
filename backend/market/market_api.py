@@ -77,7 +77,11 @@ def item_name(db,region,item_id):
 
 def metadata_name(metadata,item_id):
     available=metadata is not None and metadata.name is not None
-    return {'name':metadata.name if available else f'Item #{item_id}',
+    fallback=json.loads(metadata.fallback) if metadata and metadata.fallback else None
+    return {'name':metadata.name if available else (fallback.get('name') if fallback else f'Item #{item_id}'),
+            'quality':metadata.quality if available else (fallback.get('attributes',{}).get('quality') if fallback else None),
+            'metadata_provider':'blizzard' if available else ('thewowdb' if fallback else None),
+            'metadata_attribution':fallback['source']['attribution'] if fallback and not available else None,
             'name_verified':bool(available and not metadata.synthetic and metadata.status=='available'),
             'metadata_synthetic':bool(metadata and metadata.synthetic),
             'metadata_observed_at':metadata.resolved_at if metadata else None,
@@ -101,7 +105,7 @@ def items(market_id: MarketId, q: str = Query('',max_length=64), after_id: int =
     if q:
         if not q.isdigit():
             query=query.join(ItemMetadata,(ItemMetadata.region==market.region)&(ItemMetadata.item_id==Listing.item_id))
-            query=query.where(func.lower(ItemMetadata.name).contains(q.lower(),autoescape=True))
+            query=query.where(func.lower(func.coalesce(ItemMetadata.name,ItemMetadata.fallback_name)).contains(q.lower(),autoescape=True))
         else:
             if int(q) > 2**31-1:
                 return {'items':[],'market':market_view(market),'next_after_id':None,'synthetic':latest.synthetic}
@@ -116,7 +120,7 @@ def items(market_id: MarketId, q: str = Query('',max_length=64), after_id: int =
         if q.isdigit(): query=query.where(SnapshotStatistic.item_id==int(q))
         else:
             query=query.join(ItemMetadata,(ItemMetadata.region==market.region)&(ItemMetadata.item_id==SnapshotStatistic.item_id))
-            query=query.where(func.lower(ItemMetadata.name).contains(q.lower(),autoescape=True))
+            query=query.where(func.lower(func.coalesce(ItemMetadata.name,ItemMetadata.fallback_name)).contains(q.lower(),autoescape=True))
         ids=list(db.scalars(query.with_only_columns(SnapshotStatistic.item_id).distinct().order_by(SnapshotStatistic.item_id).limit(limit+1)))
         historical=True
     page_ids = ids[:limit]

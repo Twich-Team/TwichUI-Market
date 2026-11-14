@@ -34,6 +34,7 @@ services:
       SYNC_CURSOR_SECRET: ${SYNC_CURSOR_SECRET:-}
       RAW_LISTING_DAYS: ${RAW_LISTING_DAYS:-2}
       DETAILED_STATISTICS_DAYS: ${DETAILED_STATISTICS_DAYS:-64}
+      ITEM_COMMUNITY_FALLBACK_ENABLED: ${ITEM_COMMUNITY_FALLBACK_ENABLED:-false}
       HISTORY_COMPACTION_ENABLED: ${HISTORY_COMPACTION_ENABLED:-false}
     depends_on: {db: {condition: service_healthy}}
     command: [alembic, upgrade, head]

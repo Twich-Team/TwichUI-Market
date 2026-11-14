@@ -6,7 +6,7 @@ from fastapi import APIRouter,Depends,HTTPException,Query
 from sqlalchemy import Integer,case,cast,func,select
 from sqlalchemy.orm import Session
 from .db import now,session
-from .models import DailyObservation,ItemMetadata,Listing,Observation,SnapshotStatistic,User
+from .models import DailyObservation,ItemMedia,ItemMetadata,Listing,Observation,SnapshotStatistic,User
 from .market_api import MarketId,identity,latest_observation,market_view,metadata_name,require_market
 from .pricing import ALGORITHM
 
@@ -56,7 +56,7 @@ def catalogue(market_id: MarketId,q: str=Query('',max_length=64),sort: Sort='ite
         if term.isascii() and term.isdigit():
             if int(term)>2**31-1:return envelope
             base=base.where(stat.item_id==int(term))
-        else:base=base.where(func.lower(ItemMetadata.name).contains(term.lower(),autoescape=True))
+        else:base=base.where(func.lower(func.coalesce(ItemMetadata.name,ItemMetadata.fallback_name)).contains(term.lower(),autoescape=True))
     ids=base.distinct().subquery('matching_items')
     envelope['total_items']=db.scalar(select(func.count()).select_from(ids))
     refs=references(market_id,now())
@@ -65,7 +65,7 @@ def catalogue(market_id: MarketId,q: str=Query('',max_length=64),sort: Sort='ite
         func.max(stat.recent_price).label('recent_max'),func.min(refs.c.market_value).label('market_min'),
         func.max(refs.c.market_value).label('market_max'),func.min(refs.c.historical_value).label('historical_min'),
         func.max(refs.c.historical_value).label('historical_max'),func.count(stat.recent_price).label('priced_variants'),
-        func.max(refs.c.synthetic).label('historical_synthetic'),func.max(ItemMetadata.name).label('name'))
+        func.max(refs.c.synthetic).label('historical_synthetic'),func.max(func.coalesce(ItemMetadata.name,ItemMetadata.fallback_name)).label('name'))
     grouped=joined.join(ids,ids.c.item_id==stat.item_id).outerjoin(refs,(refs.c.item_id==stat.item_id)&(refs.c.variant_key==stat.variant_key)
         ).outerjoin(ItemMetadata,(ItemMetadata.region==market.region)&(ItemMetadata.item_id==stat.item_id)
         ).where(stat.snapshot_id==latest.snapshot_id).group_by(stat.item_id).subquery('item_groups')
@@ -74,9 +74,11 @@ def catalogue(market_id: MarketId,q: str=Query('',max_length=64),sort: Sort='ite
         'supply':grouped.c.supply,'listing_count':grouped.c.listing_count}[sort]
     ordering=(sort_column.desc() if direction=='desc' else sort_column.asc()).nulls_last()
     rows=list(db.execute(select(grouped).order_by(ordering,grouped.c.item_id.asc()).offset(page*page_size).limit(page_size)).mappings())
-    metadata={row.item_id:row for row in db.scalars(select(ItemMetadata).where(ItemMetadata.region==market.region,ItemMetadata.item_id.in_([r['item_id'] for r in rows])))} if rows else {}
+    metadata={record[0].item_id:record for record in db.execute(select(ItemMetadata,ItemMedia.asset_hash,ItemMedia.source).outerjoin(ItemMedia,(ItemMedia.region==ItemMetadata.region)&(ItemMedia.item_id==ItemMetadata.item_id)).where(ItemMetadata.region==market.region,ItemMetadata.item_id.in_([r['item_id'] for r in rows])))} if rows else {}
     for row in rows:
-        envelope['items'].append({'item_id':row['item_id'],**metadata_name(metadata.get(row['item_id']),row['item_id']),
+        envelope['items'].append({'item_id':row['item_id'],**metadata_name(metadata[row['item_id']][0] if row['item_id'] in metadata else None,row['item_id']),
+            'icon_attribution':json.loads(metadata[row['item_id']][0].fallback)['source']['attribution'] if row['item_id'] in metadata and metadata[row['item_id']][2]=='thewowdb' and metadata[row['item_id']][0].fallback else None,
+            'icon_url':f'/api/v1/items/{market.region}/{row["item_id"]}/icon?v={metadata[row["item_id"]][1]}' if row['item_id'] in metadata and metadata[row['item_id']][1] else None,
             'variant_count':row['variant_count'],'priced_variant_count':row['priced_variants'],
             'supply':row['supply'],'listing_count':row['listing_count'],
             'price_ranges':{key:{'minimum':cash(row[prefix+'_min']),'maximum':cash(row[prefix+'_max'])} for key,prefix in

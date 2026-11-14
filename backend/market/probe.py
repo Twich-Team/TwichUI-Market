@@ -22,7 +22,7 @@ class NoRedirect(HTTPRedirectHandler):
 opener=build_opener(NoRedirect())
 
 
-def request(url, *, token=None, data=None, authorization=None, conditional=None):
+def request(url, *, token=None, data=None, authorization=None, conditional=None,timeout=45,max_bytes=MAX_BYTES):
     headers = {"Accept": "application/json", "User-Agent": "TwichUI-Market/0.1 feasibility"}
     if token:
         headers["Authorization"] = f"Bearer {token}"
@@ -35,13 +35,13 @@ def request(url, *, token=None, data=None, authorization=None, conditional=None)
             headers[name] = conditional[name]
     started = time.monotonic()
     try:
-        response = opener.open(Request(url, data=data, headers=headers), timeout=45)
+        response = opener.open(Request(url, data=data, headers=headers), timeout=timeout)
     except HTTPError as exc:
         response = exc
     with response:
-        body = response.read(MAX_BYTES + 1)
-        if len(body) > MAX_BYTES:
-            raise ValueError("Response exceeds 32 MiB safety limit")
+        body = response.read(max_bytes + 1)
+        if len(body) > max_bytes:
+            raise ValueError("Response exceeds configured safety limit")
         metadata = {
             "url": url, "status": response.status,
             "retrieved_at": datetime.now(timezone.utc).isoformat(),

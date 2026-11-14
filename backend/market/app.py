@@ -17,6 +17,8 @@ from .market_api import router as market_router
 app.include_router(market_router)
 from .catalogue import router as catalogue_router
 app.include_router(catalogue_router)
+from .item_profiles import router as profile_router
+app.include_router(profile_router)
 from .sync_api import router as sync_router
 app.include_router(sync_router)
 COOKIE_SECURE = os.environ.get("COOKIE_SECURE", "true").lower() == "true"
@@ -35,7 +37,8 @@ async def security_headers(request, call_next):
     response = await call_next(request)
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
-    response.headers["Cache-Control"] = "no-store"
+    artwork=request.method=="GET" and response.status_code in (200,304) and re.fullmatch(r"/api/v1/items/(?:us|eu|kr|tw)/[0-9]+/icon",request.url.path)
+    if not artwork:response.headers["Cache-Control"] = "no-store"
     response.headers["Referrer-Policy"] = "same-origin"
     return response
 

@@ -6,10 +6,10 @@ from datetime import timedelta
 from urllib.error import URLError
 from sqlalchemy import and_,or_,select,text
 from .db import Session,now
-from .models import ItemMetadata,Listing,Market,Observation
+from .models import ItemMetadata,SnapshotStatistic,Market,Observation
 
 
-def store_metadata(db,region,item_id,body,*,at=None,synthetic=False):
+def store_metadata(db,region,item_id,body,*,at=None,synthetic=False,resolved_namespace=None):
     at=at or now()
     if region not in ('eu','us','kr','tw') or type(item_id) is not int or not 1<=item_id<=2**31-1 or len(body)>262144:
         raise ValueError('Invalid item metadata request')
@@ -20,11 +20,16 @@ def store_metadata(db,region,item_id,body,*,at=None,synthetic=False):
     if isinstance(name,dict): name=name.get('en_US')
     if not isinstance(name,str) or not 1<=len(name.strip())<=255 or any(ord(char)<32 for char in name):
         raise ValueError('Invalid item name')
+    from .item_attributes import attributes,valid_namespace
+    details=attributes(payload)
+    if resolved_namespace is not None and not valid_namespace(resolved_namespace,region):raise ValueError('Wrong metadata namespace')
     row=db.get(ItemMetadata,(region,item_id))
     if row is None:
         row=ItemMetadata(region=region,item_id=item_id,namespace=f'static-forever-{region}')
         db.add(row)
     row.name,row.status=name.strip(),'available'
+    row.quality,row.details=details['quality'],json.dumps(details)
+    row.resolved_namespace=resolved_namespace or f'static-forever-{region}'
     row.checked_at,row.retry_after=at,at+timedelta(days=30)
     row.resolved_at=at
     row.http_status,row.payload_hash,row.synthetic=200,hashlib.sha256(body).hexdigest(),synthetic
@@ -45,9 +50,9 @@ def resolve_once(factory=Session,client=None,*,at=None):
             latest=db.scalar(select(Observation).where(Observation.market_id==market.id)
                 .order_by(Observation.retrieved_at.desc(),Observation.id.desc()).limit(1))
             if not latest: continue
-            item=db.scalar(select(Listing.item_id).outerjoin(ItemMetadata,and_(ItemMetadata.region==market.region,
-                ItemMetadata.item_id==Listing.item_id)).where(Listing.snapshot_id==latest.snapshot_id,
-                or_(ItemMetadata.item_id.is_(None),ItemMetadata.retry_after<=at)).distinct().order_by(Listing.item_id).limit(1))
+            item=db.scalar(select(SnapshotStatistic.item_id).outerjoin(ItemMetadata,and_(ItemMetadata.region==market.region,
+                ItemMetadata.item_id==SnapshotStatistic.item_id)).where(SnapshotStatistic.snapshot_id==latest.snapshot_id,
+                or_(ItemMetadata.item_id.is_(None),ItemMetadata.retry_after<=at)).group_by(SnapshotStatistic.item_id,ItemMetadata.requested_at).order_by(ItemMetadata.requested_at.desc().nulls_last(),SnapshotStatistic.item_id).limit(1))
             if item is not None:
                 candidate=(market.region,item)
                 break
@@ -61,7 +66,7 @@ def resolve_once(factory=Session,client=None,*,at=None):
             metadata,body=client.fetch_item(region,item)
             row.http_status=metadata['status']
             if metadata['status']==200:
-                store_metadata(db,region,item,body,at=at,synthetic=metadata.get('synthetic',False))
+                store_metadata(db,region,item,body,at=at,synthetic=metadata.get('synthetic',False),resolved_namespace=metadata['headers'].get('Battlenet-Namespace'))
             else:
                 row.status='missing' if metadata['status']==404 else 'error'
                 delay=7*86400 if metadata['status']==404 else max(900,retry_seconds(metadata['headers'].get('Retry-After'),at))

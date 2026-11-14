@@ -90,10 +90,20 @@ class BlizzardClient:
             raise UpstreamFailure('Invalid metadata mapping')
         url=f'https://{region}.api.blizzard.com/data/wow/item/{item_id}?'+urlencode({
             'namespace':f'static-forever-{region}','locale':'en_US'})
-        metadata,body=self.transport(url,token=self.authenticate())
+        metadata,body=self.transport(url,token=self.authenticate(),timeout=10,max_bytes=262144)
         self.throttle(metadata)
         if metadata['status']==401:
             self.token,self.expires=None,0
+        return metadata,body
+
+    def fetch_item_media(self,region,item_id):
+        if region not in REGIONS or type(item_id) is not int or not 1<=item_id<=2**31-1:
+            raise UpstreamFailure('Invalid metadata mapping')
+        url=f'https://{region}.api.blizzard.com/data/wow/media/item/{item_id}?'+urlencode({
+            'namespace':f'static-forever-{region}','locale':'en_US'})
+        metadata,body=self.transport(url,token=self.authenticate(),timeout=10,max_bytes=262144)
+        self.throttle(metadata)
+        if metadata['status']==401:self.token,self.expires=None,0
         return metadata,body
 
 
@@ -184,6 +194,10 @@ def main():
             if time.monotonic() >= next_metadata:
                 from .metadata import resolve_once
                 resolve_once(client=client)
+                from .item_media import resolve_media_once
+                resolve_media_once(client=client)
+                from .community_metadata import resolve_community_once
+                resolve_community_once()
                 next_metadata=time.monotonic()+15
         except Exception:
             # The transaction rolls back; safe generic message, no DSNs or response content.

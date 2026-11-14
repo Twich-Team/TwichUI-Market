@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from sqlalchemy import BigInteger, Boolean, Date, DateTime, ForeignKey, Index, Integer, String, Text, UniqueConstraint, func
+from sqlalchemy import BigInteger, Boolean, Date, DateTime, ForeignKey, Index, Integer, LargeBinary, String, Text, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column
 from .db import Base, now
 
@@ -160,6 +160,13 @@ class ItemMetadata(Base):
     http_status: Mapped[int | None] = mapped_column(Integer)
     payload_hash: Mapped[str | None] = mapped_column(String(64))
     synthetic: Mapped[bool] = mapped_column(Boolean,default=False)
+    quality: Mapped[str | None] = mapped_column(String(32))
+    details: Mapped[str | None] = mapped_column(Text)
+    resolved_namespace: Mapped[str | None] = mapped_column(String(100))
+    requested_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    fallback: Mapped[str | None] = mapped_column(Text)
+    fallback_name: Mapped[str | None] = mapped_column(String(255))
+    fallback_retry_after: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     __table_args__=(Index('ix_item_metadata_region_name',region,func.lower(name)),)
 
 
@@ -178,3 +185,22 @@ class MarketVerification(Base):
     evidence: Mapped[str] = mapped_column(Text)
     evidence_hash: Mapped[str] = mapped_column(String(64))
     notes: Mapped[str] = mapped_column(Text)
+
+
+class ItemMedia(Base):
+    __tablename__='item_media'
+    region: Mapped[str] = mapped_column(String(2),primary_key=True)
+    item_id: Mapped[int] = mapped_column(Integer,primary_key=True)
+    status: Mapped[str] = mapped_column(String(16),default='pending')
+    source: Mapped[str] = mapped_column(String(32),default='blizzard')
+    source_url: Mapped[str | None] = mapped_column(String(512))
+    namespace: Mapped[str | None] = mapped_column(String(100))
+    metadata_hash: Mapped[str | None] = mapped_column(String(64))
+    asset_hash: Mapped[str | None] = mapped_column(String(64))
+    content_type: Mapped[str | None] = mapped_column(String(32))
+    data: Mapped[bytes | None] = mapped_column(LargeBinary)
+    byte_count: Mapped[int] = mapped_column(Integer,default=0)
+    checked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    retry_after: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    http_status: Mapped[int | None] = mapped_column(Integer)
+    resolved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
