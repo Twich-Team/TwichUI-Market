@@ -1,5 +1,7 @@
 # Implementation plan
 
+Current owner-authorized task: [approve and promote the verified frontend/API to production](production-promotion-plan.md). Visual/usability approval is explicit for Item Experience, Market Configuration, Historical Retention controls and User Preferences. Destructive retention remains unauthorized; preserve history, accounts, sessions, preferences and the single house-114 collector.
+
 Persistent per-user preferences are complete in preview: [original plan](user-preferences-plan.md), [progress](user-preferences-progress.md), [full requirement acceptance](user-preferences-acceptance.md). Review at https://localhost:18444; frontend/API promotion remains pending owner approval. Collector and all live market history remain protected.
 
 Current milestone: [Market usability, configuration and retention](market-usability-plan.md), [progress](market-usability-progress.md).

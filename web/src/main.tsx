@@ -244,10 +244,6 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
         </header>
         <main>
           {readOnly && <p className="notice" role="status">Interactive preview · Your preferences save automatically. Collection and account administration are read-only.</p>}
-          <div className="notice review">
-            Design review in progress · The three major page designs await owner
-            approval.
-          </div>
           <PreferenceStatus />
           {preferences.values.market_id !== null && !markets.some(m => m.id === preferences.values.market_id) && markets.length > 0 && <p className="notice">Your preferred market is unavailable. Showing an available market; your saved choice is retained.</p>}
           {(error || authError) && (

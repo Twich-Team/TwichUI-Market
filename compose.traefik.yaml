@@ -1,12 +1,13 @@
-# Apply after compose.yaml and compose.tls.yaml. Preserves approved assets.
+# Apply after compose.yaml and compose.tls.yaml. Pinned owner-approved frontend/API.
 services:
   api:
+    image: twichui-market-backend:production-approved
     environment:
       APP_ORIGIN: https://market.twich.gg
       COOKIE_SECURE: "true"
       TRUSTED_INGRESS_TOKEN: ${INGRESS_PROXY_TOKEN:?Configure private ingress token}
   local-api:
-    image: twichui-market-backend:dev
+    image: twichui-market-backend:production-approved
     environment:
       DATABASE_URL: postgresql+psycopg://market:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@db:5432/market
       APP_ORIGIN: https://localhost:18443
