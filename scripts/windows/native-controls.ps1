@@ -86,14 +86,30 @@ function Tray-Elements {
         }
     }
 }
-$elements=@(Tray-Elements)
-$icon=$elements | Where-Object { $_.Current.Name.StartsWith('TwichUI Market Companion ') -and -not $_.Current.IsOffscreen } | Select-Object -First 1
+function Notification-Icon {
+    # Taskbar app buttons have decorated accessible names too. Search the actual
+    # notification overflow window first; never select a task-list button.
+    foreach ($window in $root.FindAll([System.Windows.Automation.TreeScope]::Children,$trueCondition)) {
+        if ($window.Current.ClassName -in @('NotifyIconOverflowWindow','TopLevelWindowForOverflowXamlIsland')) {
+            foreach ($element in $window.FindAll($scope,$trueCondition)) {
+                if ($element.Current.Name.StartsWith('TwichUI Market Companion') -and -not $element.Current.IsOffscreen) { return $element }
+            }
+        }
+    }
+    # A promoted icon is accepted only with notification-specific identity.
+    foreach ($element in @(Tray-Elements)) {
+        if ($element.Current.Name.StartsWith('TwichUI Market Companion') -and -not $element.Current.IsOffscreen -and
+            ($element.Current.AutomationId -eq 'NotifyItemIcon' -or $element.Current.ClassName -like 'SystemTray.*')) { return $element }
+    }
+    return $null
+}
+$icon=Notification-Icon
 if ($null -eq $icon) {
-    $chevron=$elements | Where-Object { $_.Current.Name -match 'Show hidden icons|Notification Chevron' -and -not $_.Current.IsOffscreen } | Select-Object -First 1
-    if ($null -eq $chevron) { throw 'Companion icon and notification overflow control unavailable' }
+    $chevron=@(Tray-Elements) | Where-Object { $_.Current.Name -match 'Show hidden icons|Notification Chevron' -and -not $_.Current.IsOffscreen } | Select-Object -First 1
+    if ($null -eq $chevron) { throw 'Companion notification icon and overflow control unavailable' }
     Click-Element $chevron
     Start-Sleep -Milliseconds 300
-    $icon=@(Tray-Elements) | Where-Object { $_.Current.Name.StartsWith('TwichUI Market Companion ') -and -not $_.Current.IsOffscreen } | Select-Object -First 1
+    $icon=Notification-Icon
 }
 if ($null -eq $icon) { throw 'Actual companion tray icon unavailable' }
 Click-Element $icon $true
@@ -120,7 +136,7 @@ $names=@($items | ForEach-Object { $_.Current.Name })
 $windows=@(foreach ($window in $root.FindAll([System.Windows.Automation.TreeScope]::Children,$trueCondition)) {
     @{name=$window.Current.Name;class=$window.Current.ClassName;process=$window.Current.ProcessId;type=$window.Current.ControlType.ProgrammaticName}
 })
-@{menus=$names;windows=$windows} | ConvertTo-Json -Depth 4 | Set-Content 'artifacts/companion-v2/tray-discovery.json'
+@{menus=$names;windows=$windows;selected_icon=@{name=$icon.Current.Name;class=$icon.Current.ClassName;automation_id=$icon.Current.AutomationId}} | ConvertTo-Json -Depth 4 | Set-Content 'artifacts/companion-v2/tray-discovery.json'
 foreach ($expected in @('Open companion','Sync now','Quit')) {
     if ($names -notcontains $expected) { throw "Actual tray menu missing $expected" }
 }
