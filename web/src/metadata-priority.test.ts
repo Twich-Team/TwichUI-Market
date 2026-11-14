@@ -65,3 +65,5 @@ it("does not restore old account state when an outstanding request fails", async
   await expect(pending).rejects.toThrow();
   expect(queryClient.getQueryCache().getAll()).toHaveLength(0);
 });
+
+it("does not request metadata writes in a read-only preview",async()=>{queryClient.setQueryData(["private","environment"],{read_only:true});await requestItemMetadata(1,[25]);expect(api).not.toHaveBeenCalled()});

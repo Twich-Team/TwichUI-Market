@@ -22,6 +22,7 @@ class Credential(Base):
     kind: Mapped[str] = mapped_column(String(16))
     name: Mapped[str] = mapped_column(String(80), default="browser")
     csrf_hash: Mapped[str | None] = mapped_column(String(64))
+    audience: Mapped[str | None] = mapped_column(String(255))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     revoked: Mapped[bool] = mapped_column(Boolean, default=False)

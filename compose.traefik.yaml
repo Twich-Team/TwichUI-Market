@@ -1,0 +1,41 @@
+# Apply after compose.yaml and compose.tls.yaml. Preserves approved assets.
+services:
+  api:
+    environment:
+      APP_ORIGIN: https://market.twich.gg
+      COOKIE_SECURE: "true"
+      TRUSTED_INGRESS_TOKEN: ${INGRESS_PROXY_TOKEN:?Configure private ingress token}
+  local-api:
+    image: twichui-market-backend:dev
+    environment:
+      DATABASE_URL: postgresql+psycopg://market:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@db:5432/market
+      APP_ORIGIN: https://localhost:18443
+      COOKIE_SECURE: "true"
+      ALLOW_LEGACY_SESSIONS: "true"
+      SYNC_CURSOR_SECRET: ${SYNC_CURSOR_SECRET:?Retain sync secret}
+    volumes: [./artifacts/backup-status:/backup-status:ro]
+    restart: unless-stopped
+    read_only: true
+    tmpfs: [/tmp:size=16m]
+    mem_limit: 256m
+    cpus: 0.25
+    pids_limit: 100
+    security_opt: [no-new-privileges:true]
+    logging: {driver: json-file, options: {max-size: 5m, max-file: "2"}}
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health',timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+  proxy:
+    image: twichui-market-web:production-approved
+    build: !reset null
+    environment:
+      INGRESS_PROXY_TOKEN: ${INGRESS_PROXY_TOKEN:?Configure private ingress token}
+      MARKET_TRANSPORT_PEER: ${MARKET_TRANSPORT_PEER:-10.0.4.3}
+    ports: !override ["127.0.0.1:18443:443", "10.0.4.46:18780:80"]
+    volumes: !override
+      - ./deploy/Caddyfile.production:/etc/caddy/Caddyfile:ro
+      - ./deploy/routes.production.caddy:/etc/caddy/routes.production.caddy:ro
+      - ./deploy/routes.local.caddy:/etc/caddy/routes.local.caddy:ro
+      - caddy-data:/data

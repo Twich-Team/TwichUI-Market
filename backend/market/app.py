@@ -1,3 +1,6 @@
+import ipaddress
+import secrets
+from . import environment as settings
 import os
 import re
 import secrets
@@ -29,10 +32,19 @@ ORIGIN = os.environ.get("APP_ORIGIN", "https://localhost")
 
 @app.middleware("http")
 async def security_headers(request, call_next):
+    if settings.INGRESS_TOKEN and request.url.path!='/api/v1/health':
+        if not secrets.compare_digest(request.headers.get('x-market-proxy-token',''),settings.INGRESS_TOKEN):
+            return Response(status_code=403)
+        try:client=str(ipaddress.ip_address(request.headers.get('x-market-client-ip','')))
+        except ValueError:return Response(status_code=400)
+        request.scope['client']=(client,0)
+        request.scope['scheme']='https'
     if request.method not in ("GET", "HEAD", "OPTIONS"):
         origin = request.headers.get("origin")
         if origin and origin != ORIGIN:
             return Response(status_code=403)
+        if settings.READ_ONLY and request.url.path not in ('/api/v1/auth/login','/api/v1/auth/logout'):
+            return Response(status_code=403,content='{"detail":"Interactive preview is read-only; use production for changes."}',media_type='application/json')
         length = request.headers.get("content-length", "0")
         if not length.isdigit() or int(length) > 16384:
             return Response(status_code=413)
@@ -125,9 +137,14 @@ def login(body: Login, request: Request, response: Response, db: Session = Depen
     token, csrf, _ = issue(db, user, "session")
     audit(db, user.id, "login.succeeded")
     db.commit()
-    response.set_cookie("market_session", token, httponly=True, secure=COOKIE_SECURE,
+    response.set_cookie(settings.SESSION_COOKIE_NAME, token, httponly=True, secure=COOKIE_SECURE,
                         samesite="strict", max_age=86400, path="/api")
     return {"user": user_view(user), "csrf_token": csrf}
+
+
+@app.get('/api/v1/environment')
+def environment(user: User=Depends(identity)):
+    return {'read_only':settings.READ_ONLY,'origin':ORIGIN}
 
 
 @app.get("/api/v1/auth/me")
@@ -139,7 +156,7 @@ def me(user: User = Depends(identity)):
 def browser_session(request: Request,user: User = Depends(identity)):
     if request.state.credential.kind!='session':
         raise HTTPException(403,'Browser session required')
-    return {'user':user_view(user),'csrf_token':digest('csrf:'+request.cookies['market_session'])}
+    return {'user':user_view(user),'csrf_token':digest('csrf:'+request.cookies[settings.SESSION_COOKIE_NAME])}
 
 
 class PasswordChange(BaseModel):
@@ -164,7 +181,7 @@ def logout(request: Request, response: Response, user: User = Depends(identity),
     request.state.credential.revoked = True
     audit(db, user.id, "logout")
     db.commit()
-    response.delete_cookie("market_session", path="/api")
+    response.delete_cookie(settings.SESSION_COOKIE_NAME, path="/api")
 
 
 @app.post("/api/v1/devices", status_code=201)

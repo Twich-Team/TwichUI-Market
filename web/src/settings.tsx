@@ -81,7 +81,7 @@ const bytes = (value: number | null | undefined) =>
       ? `${(value / 1024).toFixed(1)} KiB`
       : `${(value / 1048576).toFixed(1)} MiB`;
 
-export function Account({ signedOut }: { signedOut: () => void }) {
+export function Account({ signedOut,readOnly=false }: { signedOut: () => void;readOnly?:boolean }) {
   const devices = useLoad(
       "account-devices",
       () => api<Device[]>("/devices"),
@@ -90,8 +90,10 @@ export function Account({ signedOut }: { signedOut: () => void }) {
     [message, setMessage] = useState(""),
     [error, setError] = useState(""),
     [token, setToken] = useState(""),
-    [busy, setBusy] = useState(false);
+    [working, setBusy] = useState(false);
+  const busy=working||readOnly;
   async function action(job: () => Promise<void>) {
+    if(readOnly)return;
     setError("");
     setBusy(true);
     try {
@@ -271,16 +273,18 @@ export function Administration({
   user,
   markets,
   refreshMarkets,
+  readOnly=false,
 }: {
   user: User;
   markets: Market[];
   refreshMarkets: () => Promise<void>;
+  readOnly?:boolean;
 }) {
   const [tab, setTab] = useState("overview"),
     [message, setMessage] = useState(""),
     [error, setError] = useState(""),
     [invitation, setInvitation] = useState(""),
-    [busy, setBusy] = useState(false);
+    [working, setBusy] = useState(false);
   const data = useLoad(
     "administration",
     async () => {
@@ -316,7 +320,9 @@ export function Administration({
     },
     [],
   );
+  const busy=working||readOnly;
   async function action(job: () => Promise<void>) {
+    if(readOnly)return;
     setBusy(true);
     setError("");
     setMessage("");
@@ -778,7 +784,7 @@ export function Administration({
                         name="enabled"
                         type="checkbox"
                         defaultChecked={row.enabled}
-                        disabled={!row.verified}
+                        disabled={!row.verified || readOnly}
                       />
                       Enabled
                       {!row.verified && (

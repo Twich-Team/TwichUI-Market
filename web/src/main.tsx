@@ -145,6 +145,7 @@ function App() {
     [markets, setMarkets] = useState<Market[]>([]),
     [market, setMarket] = useState(0),
     [error, setError] = useState("");
+  const [readOnly,setReadOnly]=useState(true);
   const [focus, setFocus] = useState<{
     item_id: number;
     variant_key: string;
@@ -184,7 +185,7 @@ function App() {
       .finally(() => setLoading(false));
   }, []);
   useEffect(() => {
-    if (user) loadMarkets().catch((error) => setError(error.message));
+    if (user) {loadMarkets().catch((error) => setError(error.message));api<{read_only:boolean}>("/environment").then(result=>{queryClient.setQueryData(["private","environment"],result);setReadOnly(result.read_only);}).catch(error=>setError(error.message));}
   }, [user?.id]);
   function session(result: BrowserSession) {
     setPage("explorer");
@@ -274,6 +275,7 @@ function App() {
           <span className="badge">PRIVATE</span>
         </header>
         <main>
+          {readOnly && <p className="notice" role="status">Interactive preview · Genuine shared market data. Operational and account changes are disabled.</p>}
           <div className="notice review">
             Design review in progress · The three major page designs await owner
             approval.
@@ -309,11 +311,12 @@ function App() {
             <Administration
               user={user}
               markets={markets}
+              readOnly={readOnly}
               refreshMarkets={loadMarkets}
             />
           )}{" "}
           {page === "account" && (
-            <Account
+            <Account readOnly={readOnly}
               signedOut={() => {
                 clearPrivateCache();
                 setCsrf("");

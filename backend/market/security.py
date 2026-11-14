@@ -8,6 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 from .db import now, session
 from .models import Credential, SecurityEvent, User
+from . import environment as settings
 
 hasher = PasswordHasher(time_cost=3, memory_cost=19456, parallelism=1)
 DUMMY_HASH = hasher.hash(secrets.token_urlsafe(32))
@@ -35,7 +36,7 @@ def audit(db, actor, action, detail=""):
 def issue(db, user, kind, name="browser"):
     token = secrets.token_urlsafe(32)
     csrf = digest('csrf:'+token)
-    row = Credential(user_id=user.id, token_hash=digest(token), kind=kind, name=name,
+    row = Credential(user_id=user.id, token_hash=digest(token), kind=kind, name=name, audience=settings.SESSION_ORIGIN if kind=="session" else None,
                      csrf_hash=digest(csrf) if kind == "session" else None,
                      expires_at=now() + timedelta(days=1 if kind == "session" else 90))
     db.add(row)
@@ -45,13 +46,16 @@ def issue(db, user, kind, name="browser"):
 def identity(request: Request, db: Session = Depends(session)):
     authorization = request.headers.get("authorization", "")
     bearer = authorization.startswith("Bearer ")
-    token = authorization[7:] if bearer else request.cookies.get("market_session")
+    token = authorization[7:] if bearer else request.cookies.get(settings.SESSION_COOKIE_NAME)
     if not token or len(token) > 256:
         raise HTTPException(401, "Authentication required")
     credential = db.scalar(select(Credential).where(Credential.token_hash == digest(token)))
     if (not credential or credential.revoked or aware(credential.expires_at) <= now()
             or credential.kind != ("device" if bearer else "session")):
         raise HTTPException(401, "Authentication required")
+    if not bearer and credential.audience != settings.SESSION_ORIGIN:
+        if not (credential.audience is None and settings.ALLOW_LEGACY_SESSIONS):
+            raise HTTPException(401,"Session belongs to another application origin")
     user = db.get(User, credential.user_id)
     if not user or not user.active:
         raise HTTPException(401, "Authentication required")

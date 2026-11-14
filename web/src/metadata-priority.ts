@@ -2,6 +2,7 @@ import { api } from "./api";
 import { queryClient } from "./query";
 // Memory only, cleared with the account cache. Priorities never bypass worker backoff.
 export async function requestItemMetadata(market: number, ids: number[]) {
+  if(queryClient.getQueryData<{read_only:boolean}>(["private","environment"])?.read_only)return;
   const key = ["private", "metadata-priority", market];
   const previous = queryClient.getQueryData<Record<number, number>>(key) || {};
   const stamp = Date.now();
