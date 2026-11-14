@@ -37,9 +37,10 @@ def inspect_mapping(market,client=None,pause=time.sleep):
     parent,body=fetch(f'/data/wow/ruleset/{market.ruleset_id}/auctions/{market.house_id}')
     if parent.get('id')!=market.house_id or parent.get('name')!=house.get('name'):
         raise ValueError('House identity disagrees with live index')
-    if market.source_kind=='commodities':
-        _,body=fetch(f'/data/wow/ruleset/{market.ruleset_id}/auctions/{market.house_id}/commodities')
     del parent
+    if market.source_kind=='commodities':
+        commodity,body=fetch(f'/data/wow/ruleset/{market.ruleset_id}/auctions/{market.house_id}/commodities')
+        del commodity
     rows=normalize(json.loads(body),market.source_kind)
     if not rows:raise ValueError('Initial verification requires observed nonempty listings')
     return {'version':1,'verified_at':now().isoformat(),

@@ -17,6 +17,7 @@ class FixtureClient:
         if '/ruleset/index?' in url:data={'rulesets':[{'id':2}]}
         elif '/auctions/?' in url:data={'auctions':[{'id':110,'name':'Fixture house'}]}
         else:data={'id':self.house,'name':'Fixture house','auctions':[{'id':1,'item':{'id':12363},'quantity':2,'buyout':100}]}
+        if '/commodities?' in url:data={'auctions':[{'id':1,'item':{'id':12363},'quantity':2,'unit_price':50}]}
         if self.missing:data={'_links':{}}
         body=json.dumps(data).encode()
         return {'url':url,'status':self.status,'headers':{'Battlenet-Namespace':self.namespace},'bytes':len(body)},body
@@ -90,3 +91,12 @@ def test_altered_evidence_cannot_activate(database):
     verify_market(ident,'owner','Fixture verification',factory=database,client=FixtureClient(),pause=lambda _:None)
     with database.begin() as db:db.scalar(select(MarketVerification)).evidence='{}'
     with pytest.raises(ValueError):enable_initial(ident,'owner','test',factory=database)
+
+
+def test_commodity_verification_uses_parent_identity_and_unit_price(database):
+    from market.verification import enable_initial
+    ident=mapping(database)
+    with database.begin() as db:db.get(Market,ident).source_kind='commodities'
+    result=verify_market(ident,'owner','Fixture commodity validation',factory=database,client=FixtureClient(),pause=lambda _:None)
+    assert result['report']['mapping']['source_kind']=='commodities' and len(result['report']['requests'])==4
+    with pytest.raises(ValueError):enable_initial(ident,'owner','Do not broaden auction activation',factory=database)
