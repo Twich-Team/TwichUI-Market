@@ -42,6 +42,24 @@ with call('/api/v1/auth/session') as response:
     assert restored['csrf_token']==session['csrf_token']
 with call('/api/v1/admin/users') as response:
     assert any(row['username']==username and row['role']=='admin' for row in json.load(response))
+if os.environ.get('MARKET_TLS_SMOKE_BINARY'):
+    with call('/api/v1/devices','POST',{'name':'Temporary native TLS verification'},csrf=session['csrf_token']) as response:
+        device=json.load(response)
+    try:
+        env=os.environ.copy()
+        env['MARKET_TEST_SERVER']=origin
+        env['MARKET_TEST_TOKEN']=device['token']
+        env.pop('SSL_CERT_FILE',None)
+        env.pop('SSL_CERT_DIR',None)
+        env['MARKET_EXPECT_UNTRUSTED']='true'
+        subprocess.run([env['MARKET_TLS_SMOKE_BINARY']],env=env,check=True)
+        env['SSL_CERT_FILE']=str(certificate)
+        env['MARKET_EXPECT_UNTRUSTED']='false'
+        subprocess.run([env['MARKET_TLS_SMOKE_BINARY']],env=env,check=True)
+        print('Native client rejects untrusted TLS and authenticates with explicit project CA trust.')
+    finally:
+        with call(f"/api/v1/devices/{device['id']}",'DELETE',csrf=session['csrf_token']) as response:
+            assert response.status==204
 with call('/api/v1/auth/logout','POST',csrf=session['csrf_token']) as response:
     assert response.status==204
 try:

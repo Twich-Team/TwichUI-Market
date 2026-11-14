@@ -12,7 +12,7 @@ const fs = require('node:fs');
     await expect(page.locator('#server')).toBeVisible();
     await page.locator('#server').fill(process.env.MARKET_TEST_SERVER);
     await page.locator('#token').fill(process.env.MARKET_TEST_TOKEN);
-    await page.locator('#connect button').click();
+    await page.getByRole('button', { name: 'Connect securely', exact: true }).click();
     await expect(page.locator('#message')).toContainText('Connected.');
     await expect(page.locator('#token')).toHaveValue('');
     await page.locator('#market').fill('1');
