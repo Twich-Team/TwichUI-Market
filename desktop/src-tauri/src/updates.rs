@@ -233,13 +233,17 @@ mod tests {
     const SIGNATURE: &str = include_str!("../tests/fixtures/synthetic-update.txt.sig");
     #[test]
     fn supported_updater_verifies_bytes_and_binds_the_signed_version() {
+        let mut context = mock_context(noop_assets());
+        context.config_mut().plugins.0.insert("updater".into(), json!({
+            "pubkey":KEY.trim(),"requireSignedVersion":true,"allowDowngrades":false
+        }));
         let app = mock_builder()
             .plugin(
                 tauri_plugin_updater::Builder::new()
                     .pubkey(KEY.trim())
                     .build(),
             )
-            .build(mock_context(noop_assets()))
+            .build(context)
             .unwrap();
         let updater = app
             .updater_builder()
