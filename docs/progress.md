@@ -1,6 +1,6 @@
 # Active milestone
 
-Latest mapping investigation: [US Normal Horde findings](market-identity-findings.md) now reconcile house 114 with high corroborated confidence. Market 2 is registered/verified but disabled; market 1 / house 110 continues unchanged pending explicit owner confirmation of the prepared atomic switch. No additional feed was activated.
+Latest mapping investigation: [US Normal Horde findings](market-identity-findings.md) now reconcile house 114 with high corroborated confidence. The owner-approved atomic switch executed at 15:15:50 UTC after CI/backup checks: market 2 / house 114 is the sole collector at 300 seconds, and market 1 / house 110 is disabled with history intact. See [switch acceptance](market-switch-acceptance.md). No additional feed was activated.
 
 Current owner milestone: [Market usability, configuration and historical retention](market-usability-plan.md). Latest status, measurements and approval gates are in [its progress record](market-usability-progress.md). Earlier deployment records below remain historical.
 

@@ -1,8 +1,8 @@
 {
   "prepared_at": "2026-11-14T14:59:06.865551+00:00",
-  "status": "awaiting_explicit_owner_confirmation",
-  "owner_confirmed": false,
-  "executed": false,
+  "status": "executed_and_verified",
+  "owner_confirmed": true,
+  "executed": true,
   "from": {
     "market_id": 1,
     "region": "us",
@@ -91,5 +91,9 @@
       "Third active feed blocks switch"
     ]
   },
-  "scope": "Only additive mapping, disabled market, verification receipt and audit events written. No switch, retention, frontend, network, AMP or service changes."
+  "scope": "Only additive mapping, disabled market, verification receipt and audit events written. No switch, retention, frontend, network, AMP or service changes.",
+  "executed_at": "2026-11-14T15:15:50.030499+00:00",
+  "execution_audit_event_id": 233,
+  "execution_evidence_file": "forever-us-normal-horde-switch.json",
+  "note": "The from/to/active_collection_after_preparation entries below preserve the original pre-switch proposal state; current enabled state is recorded in the execution evidence."
 }

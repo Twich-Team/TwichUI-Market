@@ -1,6 +1,6 @@
 # Forever player-facing market identities — 2026-11-14
 
-**US Normal Horde is house 114 with high mapping confidence.** It is registered as market 2, verified and **disabled**. Only market 1 / house 110 remains scheduled at 300 seconds. Owner confirmation of the collection switch is pending. This finding supersedes the earlier unresolved numeric correspondence; the in-game verification workflow remains available for stronger first-hand evidence.
+**US Normal Horde is house 114 with high mapping confidence.** After explicit owner approval, market 2 is now the **only enabled collector**, at 300 seconds. House 110 / market 1 is disabled with its history intact. Pre-switch CI and fresh backup restoration passed. See [executed switch acceptance](market-switch-acceptance.md). This finding supersedes the earlier unresolved numeric correspondence; the in-game verification workflow remains available for stronger first-hand evidence.
 
 ## Evidence and applicability
 
@@ -46,7 +46,7 @@ The rendered research page omits expandable table evidence; the publisher's inde
 
 The privileged registration command validates the exact reviewed file, scope, freshness and four paired observations, performs fresh authenticated verification itself, refuses an upstream generation change or duplicate/alias destination, then atomically adds the disabled destination, registry, live receipt and audit events. It cannot activate any market. All previous 141 observations and 13 snapshots were compared before/after and remained identical, with identical hashes. No old history is relabeled as Normal Horde.
 
-[Prepared atomic transition](evidence/forever-us-normal-horde-transition.json) names market 1 → market 2 and the existing authenticated `/api/v1/admin/market-transition` request. It requires explicit owner confirmation, fresh intact receipts and no third active feed. The existing transaction locks serialize it with collection; it disables 110 and enables only 114 at 300 seconds in one commit. All prior market history remains under house 110. No commodity, PvP, regional or duplicate feed is configured. No transition has been executed.
+[Prepared atomic transition](evidence/forever-us-normal-horde-transition.json) names market 1 → market 2 and the existing authenticated `/api/v1/admin/market-transition` request. It requires explicit owner confirmation, fresh intact receipts and no third active feed. The existing transaction locks serialize it with collection; it disables 110 and enables only 114 at 300 seconds in one commit. All prior market history remains under house 110. No commodity, PvP, regional or duplicate feed is configured. The owner subsequently approved this exact transition; it executed at 15:15:50 UTC through the existing audited handler. The prepared file is retained as the original proposal; execution and post-switch evidence are recorded separately.
 
 Reproduce read-only API comparison in the bounded worker environment:
 
@@ -54,4 +54,4 @@ Reproduce read-only API comparison in the bounded worker environment:
 docker --context rootless compose -f compose.yaml -f compose.tls.yaml run --rm -T --no-deps worker python - < scripts/research-forever-horde.py
 ```
 
-The registration is already applied; do not rerun it to activate collection. After owner confirmation, recheck the prepared transition and latest database state. Refresh an expired upstream receipt using `python -m market.verification` before switching. Retain the wizard for a character-associated auction/listing match if stronger evidence is desired; this research does not claim that in-game step occurred.
+The registration is already applied; do not rerun it to activate collection. For a future owner-authorized transition, recheck the plan and latest database state. Refresh an expired upstream receipt using `python -m market.verification` before switching. Retain the wizard for a character-associated auction/listing match if stronger evidence is desired; this research does not claim that in-game step occurred.
