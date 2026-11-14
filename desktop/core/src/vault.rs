@@ -1,6 +1,11 @@
 //! Native Windows Credential Manager. Unsupported platforms fail closed; no plaintext fallback.
-use crate::{client::server_url, Error, Result};
+use crate::{
+    authorization::{CredentialStore, Session},
+    client::server_url,
+    Error, Result,
+};
 use sha2::{Digest, Sha256};
+use zeroize::Zeroize;
 
 pub fn credential_target(server: &str) -> Result<String> {
     let normalized = server_url(server)?.to_string();
@@ -8,6 +13,42 @@ pub fn credential_target(server: &str) -> Result<String> {
         "TwichUI-Market/{:x}",
         Sha256::digest(normalized.as_bytes())
     ))
+}
+pub fn session_target(server: &str) -> Result<String> {
+    Ok(format!("{}:companion-v2", credential_target(server)?))
+}
+
+/// The v2 entry is separate: approving a new connection never destroys the legacy key.
+pub struct NativeCredentialStore;
+impl CredentialStore for NativeCredentialStore {
+    fn load(&self, server: &str) -> Result<Session> {
+        let mut bytes = native::load_blob(&session_target(server)?, 4096)?;
+        let result = Session::decode(server, &bytes);
+        bytes.zeroize();
+        result
+    }
+    fn save(&self, server: &str, session: &Session) -> Result<()> {
+        let mut bytes = serde_json::to_vec(session).map_err(|_| Error::Vault)?;
+        let result = native::save_blob(&session_target(server)?, &bytes, 4096);
+        bytes.zeroize();
+        result
+    }
+    fn remove(&self, server: &str) -> Result<()> {
+        native::remove_blob(&session_target(server)?)
+    }
+}
+
+pub fn save(server: &str, token: &str) -> Result<()> {
+    native::save_blob(&credential_target(server)?, token.as_bytes(), 256)
+}
+pub fn load(server: &str) -> Result<String> {
+    let mut bytes = native::load_blob(&credential_target(server)?, 256)?;
+    let result = String::from_utf8(bytes.clone()).map_err(|_| Error::Vault);
+    bytes.zeroize();
+    result
+}
+pub fn remove(server: &str) -> Result<()> {
+    native::remove_blob(&credential_target(server)?)
 }
 
 #[cfg(windows)]
@@ -17,14 +58,14 @@ mod native {
     fn wide(value: &str) -> Vec<u16> {
         value.encode_utf16().chain(std::iter::once(0)).collect()
     }
-    pub fn save(server: &str, token: &str) -> Result<()> {
-        if token.is_empty() || token.len() > 256 {
+    pub fn save_blob(target_name: &str, blob: &[u8], max: usize) -> Result<()> {
+        if blob.is_empty() || blob.len() > max {
             return Err(Error::Invalid("credential length"));
         }
-        let mut target = wide(&credential_target(server)?);
+        let mut target = wide(target_name);
         let mut username = wide("TwichUI Market device");
-        let mut bytes = token.as_bytes().to_vec();
-        // Win32 copies the input blob before returning; all pointers remain live for the call.
+        let mut bytes = blob.to_vec();
+        // CredWriteW atomically replaces this generic entry and copies the input before returning.
         let credential = CREDENTIALW {
             Flags: 0,
             Type: CRED_TYPE_GENERIC,
@@ -40,54 +81,51 @@ mod native {
             UserName: username.as_mut_ptr(),
         };
         let success = unsafe { CredWriteW(&credential, 0) };
-        bytes.fill(0);
+        bytes.zeroize();
         if success == 0 {
             return Err(Error::Vault);
         }
         Ok(())
     }
-    pub fn load(server: &str) -> Result<String> {
-        let target = wide(&credential_target(server)?);
+    pub fn load_blob(target_name: &str, max: usize) -> Result<Vec<u8>> {
+        let target = wide(target_name);
         let mut credential: *mut CREDENTIALW = std::ptr::null_mut();
         if unsafe { CredReadW(target.as_ptr(), CRED_TYPE_GENERIC, 0, &mut credential) } == 0 {
             return Err(Error::Vault);
         }
-        // CredReadW owns this allocation; copy the bounded blob before freeing it.
-        let result = unsafe {
+        // CredReadW owns this allocation. Wipe both the native blob and any bounded copy on failure.
+        unsafe {
             let size = (*credential).CredentialBlobSize as usize;
-            let result = if size == 0 || size > 256 {
+            let result = if size == 0 || size > max {
                 Err(Error::Vault)
             } else {
-                String::from_utf8(
-                    std::slice::from_raw_parts((*credential).CredentialBlob, size).to_vec(),
-                )
-                .map_err(|_| Error::Vault)
+                Ok(std::slice::from_raw_parts((*credential).CredentialBlob, size).to_vec())
             };
+            if size <= 4096 && !(*credential).CredentialBlob.is_null() {
+                std::slice::from_raw_parts_mut((*credential).CredentialBlob, size).zeroize();
+            }
             CredFree(credential.cast());
             result
-        };
-        result
+        }
     }
-    pub fn remove(server: &str) -> Result<()> {
-        let target = wide(&credential_target(server)?);
+    pub fn remove_blob(target_name: &str) -> Result<()> {
+        let target = wide(target_name);
         if unsafe { CredDeleteW(target.as_ptr(), CRED_TYPE_GENERIC, 0) } == 0 {
             return Err(Error::Vault);
         }
         Ok(())
     }
 }
-
-#[cfg(windows)]
-pub use native::{load, remove, save};
 #[cfg(not(windows))]
-pub fn save(_server: &str, _token: &str) -> Result<()> {
-    Err(Error::Vault)
-}
-#[cfg(not(windows))]
-pub fn load(_server: &str) -> Result<String> {
-    Err(Error::Vault)
-}
-#[cfg(not(windows))]
-pub fn remove(_server: &str) -> Result<()> {
-    Err(Error::Vault)
+mod native {
+    use super::*;
+    pub fn save_blob(_: &str, _: &[u8], _: usize) -> Result<()> {
+        Err(Error::Vault)
+    }
+    pub fn load_blob(_: &str, _: usize) -> Result<Vec<u8>> {
+        Err(Error::Vault)
+    }
+    pub fn remove_blob(_: &str) -> Result<()> {
+        Err(Error::Vault)
+    }
 }

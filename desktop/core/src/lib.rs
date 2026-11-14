@@ -1,3 +1,4 @@
+pub mod authorization;
 pub mod cache;
 pub mod client;
 pub mod protocol;
@@ -17,8 +18,18 @@ pub enum Error {
     Json(#[from] serde_json::Error),
     #[error("Server request failed; cached data remains available")]
     Network,
-    #[error("Device authentication failed; connect a valid device token")]
+    #[error("This connection needs approval; sign in again in your browser")]
     Authentication,
+    #[error("Connection approval was cancelled")]
+    Cancelled,
+    #[error("Connection approval was denied in your browser")]
+    AuthorizationDenied,
+    #[error("Connection approval expired; start again")]
+    AuthorizationExpired,
+    #[error("Desktop connection is temporarily unavailable; please try again later")]
+    ServiceUnavailable,
+    #[error("Please wait before trying again")]
+    RateLimited(u64),
     #[error("Server rejected the saved cursor; reset this market to synchronize again")]
     ResetRequired,
     #[error("Windows Credential Manager is unavailable")]

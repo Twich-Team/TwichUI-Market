@@ -229,8 +229,8 @@ def _access(db, device, token):
 def _tokens(device, credential, access, refresh):
     return {'issuer': device.issuer_origin, 'access_token': access, 'token_type': 'Bearer',
             'expires_in': max(0, int((aware(credential.expires_at) - now()).total_seconds())),
-            'refresh_token': refresh, 'refresh_expires_at': device.refresh_expires_at,
-            'authorization_expires_at': device.expires_at, 'scope': SCOPE,
+            'refresh_token': refresh, 'refresh_expires_at': aware(device.refresh_expires_at),
+            'authorization_expires_at': aware(device.expires_at), 'scope': SCOPE,
             'device': {'id': device.id, 'name': device.name, 'platform': device.platform, 'app_version': device.app_version}}
 
 

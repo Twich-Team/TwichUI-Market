@@ -4128,16 +4128,21 @@ dependencies = [
 name = "twichui-market-core"
 version = "0.1.0"
 dependencies = [
+ "base64 0.22.1",
  "chrono",
+ "getrandom 0.2.17",
  "reqwest 0.12.28",
  "rusqlite",
  "serde",
  "serde_json",
  "sha2",
+ "socket2",
+ "subtle",
  "tempfile",
  "thiserror 2.0.21",
  "url",
  "windows-sys 0.61.2",
+ "zeroize",
 ]
 
 [[package]]
