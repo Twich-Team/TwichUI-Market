@@ -52,10 +52,18 @@ try {
         $null = $app.CloseMainWindow()
         if (-not $app.WaitForExit(10000)) { $app.Kill(); $app.WaitForExit() }
     }
+    # Acceptance deliberately restarts the installed executable. Cleanup only
+    # this exact installation, including a failed hidden-startup assertion.
+    Get-Process -Name 'twichui-market-companion' -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq $executable } | ForEach-Object {
+        $null = $_.CloseMainWindow()
+        if (-not $_.WaitForExit(10000)) { $_.Kill(); $_.WaitForExit() }
+    }
 }
 $uninstaller = Join-Path $installPath 'uninstall.exe'
 if (-not (Test-Path $uninstaller)) { throw 'Uninstaller is missing' }
 $remove = Start-Process -FilePath $uninstaller -ArgumentList @('/S', "_?=$installPath") -Wait -PassThru
 if ($remove.ExitCode -ne 0) { throw "Uninstaller failed: $($remove.ExitCode)" }
 if (Test-Path $executable) { throw 'Uninstall left the application executable behind' }
+$startup = Get-ItemPropertyValue -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run' -Name 'TwichUI Market Companion' -ErrorAction SilentlyContinue
+if ($startup -eq "`"$executable`" --background") { throw 'Uninstall left its current-user startup entry behind' }
 Write-Output 'NSIS per-user install, native-window launch and uninstall verified.'

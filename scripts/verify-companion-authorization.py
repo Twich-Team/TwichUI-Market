@@ -44,6 +44,18 @@ import os, asyncio
 # Short-lived access is fixture-only; force the real native renewal path immediately.
 companion_auth.ACCESS_SECONDS=60
 if os.environ.get('MARKET_NATIVE_UI_TEST')=='true':
+    from pathlib import Path
+    from fastapi.responses import FileResponse
+    from fastapi.staticfiles import StaticFiles
+    website=Path('web/dist').resolve()
+    if not (website/'index.html').is_file():raise RuntimeError('Build the actual website before installed UI acceptance')
+    app.mount('/assets',StaticFiles(directory=website/'assets'),name='fixture_website_assets')
+    @app.get('/')
+    @app.get('/companion')
+    @app.get('/companion/authorize')
+    @app.get('/account')
+    def fixture_website():
+        return FileResponse(website/'index.html')
     @app.middleware('http')
     async def observable_fixture_pages(request,call_next):
         if request.url.path.startswith('/api/v1/sync/markets/'):
