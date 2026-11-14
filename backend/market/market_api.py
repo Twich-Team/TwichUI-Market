@@ -122,7 +122,8 @@ def items(market_id: MarketId, q: str = Query('',max_length=64), after_id: int =
     page_ids = ids[:limit]
     source=SnapshotStatistic if historical else Listing
     rows = db.execute(query.where(source.item_id.in_(page_ids)).distinct().order_by(source.item_id,source.variant_key)) if page_ids else []
-    return {'items':[{'item_id':row.item_id,**item_name(db,market.region,row.item_id),
+    metadata={row.item_id:row for row in db.scalars(select(ItemMetadata).where(ItemMetadata.region==market.region,ItemMetadata.item_id.in_(page_ids)))} if page_ids else {}
+    return {'items':[{'item_id':row.item_id,**metadata_name(metadata.get(row.item_id),row.item_id),
                       'variant_key':row.variant_key,'variant':json.loads(row.variant) if row.variant else None} for row in rows],
             'market':market_view(market),'next_after_id':page_ids[-1] if len(ids)>limit else None,
             'synthetic':latest.synthetic or (historical and bool(db.scalar(select(func.count()).select_from(Observation).where(Observation.market_id==market_id,Observation.synthetic.is_(True))))),

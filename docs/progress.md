@@ -1,3 +1,7 @@
+# Active milestone
+
+The owner requested Item Experience and Frontend Modernization. Follow [the milestone plan](item-modernization-plan.md) and [current progress](item-modernization-progress.md). Live collection/history remain protected; earlier evidence below is chronological.
+
 # Progress
 
 Current checkpoint: implementation code at ab1c886 passes Backend 43542957761, website 43542957773 and Windows 43542957765. Windows installation/native UI and release artifact are verified. Local HTTPS deployment at revision 0007 is healthy; owner, telemetry, restart persistence and actual development backup restoration are verified. See [acceptance.md](acceptance.md). US live collection is now independently verified and running as recorded below. Remaining inputs are Workshop formulas/fixtures, explicit three-page design approval and the original retention clarification; exact in-game house routing and refresh cadence remain under observation.

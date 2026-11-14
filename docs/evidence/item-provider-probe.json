@@ -1,0 +1,130 @@
+{
+  "research": "Credential-free, bounded public-provider metadata probes. No Blizzard credentials used. Item bodies below are selected fields, not full responses. Provider market-price fields are deliberately excluded.",
+  "requests": [
+    {
+      "url": "https://thewowdb.com/api/v1/forever/item/25",
+      "retrieved_at": "2026-11-14T03:38:43.560204+00:00",
+      "http_status": 200,
+      "bytes": 1402,
+      "payload_sha256": "c89c17156498c6d3c610abc5bbfd56e7ca97ae0abaf4e8d289f4a64476b9bebc",
+      "headers": {
+        "ETag": "W/\"f103f195478a518df527e097\"",
+        "Cache-Control": "public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400",
+        "Content-Type": "application/json; charset=utf-8",
+        "Retry-After": null
+      },
+      "excerpt": {
+        "id": 25,
+        "kind": "item",
+        "version": "forever",
+        "build": "wow_classic_beta-1.60.1.70532",
+        "name": "Worn Shortsword",
+        "quality": "common",
+        "icon_url": "https://render.worldofwarcraft.com/us/icons/56/inv_sword_04.jpg",
+        "item_level": 2,
+        "required_level": null,
+        "slot": "Main Hand",
+        "item_type": "Weapon",
+        "item_subtype": "One-Handed Sword",
+        "binding": null,
+        "stats": [],
+        "armor": null,
+        "weapon": {
+          "damage_max": 3,
+          "damage_min": 1,
+          "dps": 1.1,
+          "speed": 1.9
+        },
+        "vendor_sell": 7,
+        "effects": [],
+        "flavor": null,
+        "unique": null,
+        "sockets": [],
+        "socket_bonus": null,
+        "classes": [],
+        "item_set": null,
+        "attribution": {
+          "required": true,
+          "terms": "https://thewowdb.com/developers/#terms",
+          "text": "Data from TheWoWDB (thewowdb.com)",
+          "url": "https://thewowdb.com/wow-forever/item/worn-shortsword-25/"
+        },
+        "links": {
+          "api": "https://thewowdb.com/api/v1/forever/item/25",
+          "html": "https://thewowdb.com/wow-forever/item/worn-shortsword-25/",
+          "tooltip": "https://thewowdb.com/api/v1/tooltip/forever/item/25"
+        }
+      }
+    },
+    {
+      "url": "https://thewowdb.com/api/v1/forever/item/720",
+      "retrieved_at": "2026-11-14T03:38:44.729235+00:00",
+      "http_status": 200,
+      "bytes": 1347,
+      "payload_sha256": "9966235f0971fc88da67ed3afff33baf63539484059accc2b77ce2235eab8d6b",
+      "headers": {
+        "ETag": "W/\"5ce0be7e600b5bb3faa4e705\"",
+        "Cache-Control": "public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400",
+        "Content-Type": "application/json; charset=utf-8",
+        "Retry-After": null
+      },
+      "excerpt": {
+        "id": 720,
+        "kind": "item",
+        "version": "forever",
+        "build": "wow_classic_beta-1.60.1.70532",
+        "name": "Brawler Gloves",
+        "quality": "rare",
+        "icon_url": "https://thewowdb.com/assets/icons/inv_gauntlets_05.jpg",
+        "item_level": 28,
+        "required_level": 23,
+        "slot": "Hands",
+        "item_type": "Armor",
+        "item_subtype": "Leather",
+        "binding": "Binds when equipped",
+        "stats": [],
+        "armor": null,
+        "weapon": null,
+        "vendor_sell": 1070,
+        "effects": [],
+        "flavor": null,
+        "unique": null,
+        "sockets": [],
+        "socket_bonus": null,
+        "classes": [],
+        "item_set": null,
+        "attribution": {
+          "required": true,
+          "terms": "https://thewowdb.com/developers/#terms",
+          "text": "Data from TheWoWDB (thewowdb.com)",
+          "url": "https://thewowdb.com/wow-forever/item/brawler-gloves-720/"
+        },
+        "links": {
+          "api": "https://thewowdb.com/api/v1/forever/item/720",
+          "html": "https://thewowdb.com/wow-forever/item/brawler-gloves-720/",
+          "tooltip": "https://thewowdb.com/api/v1/tooltip/forever/item/720"
+        }
+      }
+    },
+    {
+      "url": "https://thewowdb.com/api/v1/forever/item/25",
+      "retrieved_at": "2026-11-14T03:38:45.885971+00:00",
+      "http_status": 304,
+      "bytes": 0,
+      "request_if_none_match": "W/\"f103f195478a518df527e097\"",
+      "headers": {
+        "ETag": "W/\"f103f195478a518df527e097\"",
+        "Cache-Control": "public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400",
+        "Content-Type": null
+      }
+    },
+    {
+      "url": "https://foreverdb.net/api/v1/meta",
+      "retrieved_at": "2026-11-14T03:38:47.125279+00:00",
+      "http_status": 401,
+      "bytes": 158,
+      "payload_sha256": "d26aab47326cec70ec83f4acf83f9e4c2da0d2772a92a3ac49bcc96b5814e099",
+      "note": "No key supplied. Error response body not retained."
+    }
+  ]
+}

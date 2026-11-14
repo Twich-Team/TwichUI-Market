@@ -15,6 +15,8 @@ from .security import DUMMY_HASH, admin, audit, aware, digest, hasher, identity,
 app = FastAPI(title="TwichUI Market", version="0.1.0", docs_url=None, redoc_url=None)
 from .market_api import router as market_router
 app.include_router(market_router)
+from .catalogue import router as catalogue_router
+app.include_router(catalogue_router)
 from .sync_api import router as sync_router
 app.include_router(sync_router)
 COOKIE_SECURE = os.environ.get("COOKIE_SECURE", "true").lower() == "true"
