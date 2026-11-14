@@ -1,5 +1,6 @@
 """Private research and collection administration endpoints."""
 import json
+import os
 from pathlib import Path as FilePath
 from decimal import Decimal
 from email.utils import parsedate_to_datetime
@@ -11,7 +12,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from .db import now, session
 from .models import CollectionRun, Listing, Market, Observation, Snapshot, User
-from .pricing import values
+from .pricing import daily_history, values
 from .security import admin, audit, aware, identity
 
 router = APIRouter(prefix='/api/v1')
@@ -157,6 +158,16 @@ def deals(market_id: MarketId, minimum_discount: int = Query(15,ge=1,le=99),
         'market':market_view(market),'algorithm':'asking-v1-provisional'})
 
 
+@router.get('/markets/{market_id}/items/{item_id}/{variant_key}/history')
+def historical_series(market_id: MarketId,item_id: Annotated[int,Path(ge=1,le=2**31-1)],variant_key: str,
+                      days: int = Query(365,ge=1,le=3650),user: User = Depends(identity),db: Session = Depends(session)):
+    require_market(db,market_id)
+    if len(variant_key)!=64 or any(char not in '0123456789abcdef' for char in variant_key):
+        raise HTTPException(422,'Invalid variant key')
+    return money_contract({'contract_version':1,'market_id':market_id,'item_id':item_id,'variant_key':variant_key,
+                           **daily_history(db,market_id,item_id,variant_key,days)})
+
+
 class MarketCreate(BaseModel):
     region: Literal['us','eu','kr','tw']
     ruleset_id: int = Field(gt=0,le=2**31-1)
@@ -212,5 +223,9 @@ def storage(user: User = Depends(admin),db: Session = Depends(session)):
     size = db.scalar(text('SELECT pg_database_size(current_database())')) if db.bind.dialect.name=='postgresql' else None
     return {'database_bytes':size,'snapshots':db.scalar(select(func.count()).select_from(Snapshot)),
             'observations':db.scalar(select(func.count()).select_from(Observation)),
-            'retention':{'historical_observations':'indefinite_private','guidance':'owner_provided_original_pending'},
+            'retention':{'historical_observations':'indefinite_private','guidance':'owner_provided_original_pending',
+                         'raw_listing_days':int(os.environ.get('RAW_LISTING_DAYS','2')),
+                         'detailed_statistics_days':int(os.environ.get('DETAILED_STATISTICS_DAYS','64')),
+                         'daily_statistics':'indefinite_private',
+                         'compaction_enabled':os.environ.get('HISTORY_COMPACTION_ENABLED','false').lower()=='true'},
             'backup':backup_state()}

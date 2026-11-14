@@ -194,6 +194,46 @@ fn server_and_credential_scoping_requires_secure_origin() {
     );
 }
 
+#[test]
+fn compacted_cursor_automatically_rebuilds_without_losing_completed_offline_data() {
+    use std::io::{Read, Write};
+    let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+    let server = format!("http://{}/", listener.local_addr().unwrap());
+    let body =
+        serde_json::to_string(&page("fresh-cursor", "2", false, &[(2, Some("200"))])).unwrap();
+    let worker = std::thread::spawn(move || {
+        for (status, body) in [("409 Conflict", "{}".to_string()), ("200 OK", body)] {
+            let (mut connection, _) = listener.accept().unwrap();
+            let mut request = [0u8; 8192];
+            connection.read(&mut request).unwrap();
+            write!(connection,"HTTP/1.1 {status}\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}",body.len()).unwrap();
+        }
+    });
+    let mut cache = Cache::memory().unwrap();
+    cache
+        .apply(
+            &server,
+            1,
+            None,
+            &page("old-cursor", "1", false, &[(1, Some("100"))]),
+        )
+        .unwrap();
+    let client = twichui_market_core::client::MarketClient::new(
+        &server,
+        "synthetic-test-device-token".into(),
+    )
+    .unwrap();
+    assert!(!client.synchronize_page(&mut cache, 1).unwrap());
+    assert_eq!(
+        cache.cursor(&server, 1).unwrap().as_deref(),
+        Some("fresh-cursor")
+    );
+    let items = cache.items(&server, 1).unwrap();
+    assert_eq!(items.len(), 1);
+    assert_eq!(items[0].item_id, 2);
+    worker.join().unwrap();
+}
+
 #[cfg(windows)]
 #[test]
 fn native_windows_credential_round_trip() {

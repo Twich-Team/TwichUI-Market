@@ -1,10 +1,12 @@
 """Transactional normalization; callers own transaction and rollback on failure."""
 import hashlib
 import json
-from datetime import timedelta
-from sqlalchemy import select, text
+from collections import defaultdict
+from types import SimpleNamespace
+from datetime import timedelta, timezone
+from sqlalchemy import insert, select, text
 from .db import now
-from .models import Listing, Market, Observation, Snapshot
+from .models import DailyObservation, Listing, Market, Observation, Snapshot, SnapshotStatistic
 from .security import aware
 
 
@@ -24,7 +26,7 @@ def normalize(payload, kind):
     if not isinstance(payload, dict) or not isinstance(payload.get('auctions'), list):
         # Missing auctions must be confirmed as empty by a live mapping; fail closed for now.
         raise ValueError('Expected explicit auctions array')
-    if len(payload['auctions']) > 250000:
+    if len(payload['auctions']) > 100000:
         raise ValueError('Too many listings')
     rows, seen = [], set()
     for auction in payload['auctions']:
@@ -66,6 +68,17 @@ def normalize(payload, kind):
     return sorted(rows, key=lambda row: row['auction_id'])
 
 
+def record_daily(db,observation):
+    day=aware(observation.retrieved_at).astimezone(timezone.utc).date()
+    current=db.get(DailyObservation,(observation.market_id,day))
+    if current is None:
+        db.add(DailyObservation(market_id=observation.market_id,day=day,observation_id=observation.id))
+    else:
+        previous=db.get(Observation,current.observation_id)
+        if (aware(previous.retrieved_at),previous.id)<(aware(observation.retrieved_at),observation.id):
+            current.observation_id=observation.id
+
+
 def ingest(db, market_id, payload_bytes, *, request_key, retrieved_at=None, modified=None, synthetic=False):
     existing = db.scalar(select(Observation).where(Observation.request_key == request_key))
     if existing:
@@ -99,7 +112,28 @@ def ingest(db, market_id, payload_bytes, *, request_key, retrieved_at=None, modi
         snapshot = Snapshot(market_id=market_id, content_hash=content_hash, listing_count=len(rows))
         db.add(snapshot)
         db.flush()
-        db.add_all([Listing(snapshot_id=snapshot.id, **row) for row in rows])
+    if snapshot.raw_retained:
+        # Newly inserted snapshots have no raw rows; existing retained snapshots already do.
+        needs_raw = db.scalar(select(Listing.id).where(Listing.snapshot_id==snapshot.id).limit(1)) is None
+    else:
+        needs_raw = True
+    if needs_raw and rows:
+        for offset in range(0,len(rows),1000):
+            db.execute(insert(Listing),[{'snapshot_id':snapshot.id,**row} for row in rows[offset:offset+1000]])
+    snapshot.raw_retained=True
+    if not snapshot.statistics_retained or db.scalar(select(SnapshotStatistic.item_id).where(
+            SnapshotStatistic.snapshot_id==snapshot.id).limit(1)) is None:
+        from .pricing import ALGORITHM, summarize
+        grouped=defaultdict(list)
+        for row in rows:
+            grouped[(row['item_id'],row['variant_key'])].append(row)
+        statistics=[]
+        for (item_id,variant_key),entries in grouped.items():
+            statistics.append({'snapshot_id':snapshot.id,'item_id':item_id,'variant_key':variant_key,'algorithm':ALGORITHM,
+                               **summarize([SimpleNamespace(**row) for row in entries])})
+        for offset in range(0,len(statistics),1000):
+            db.execute(insert(SnapshotStatistic),statistics[offset:offset+1000])
+    snapshot.statistics_retained=True
     observation = Observation(market_id=market_id, snapshot_id=snapshot.id, request_key=request_key,
                               retrieved_at=retrieved_at, upstream_modified=modified,
                               namespace=f'dynamic-forever-{market.region}',
@@ -108,5 +142,7 @@ def ingest(db, market_id, payload_bytes, *, request_key, retrieved_at=None, modi
     db.add(observation)
     if market.last_success is None or aware(market.last_success) <= retrieved_at:
         market.last_success, market.last_modified = retrieved_at, modified
+    db.flush()
+    record_daily(db,observation)
     db.flush()
     return observation

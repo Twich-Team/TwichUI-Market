@@ -118,6 +118,12 @@ def restore_check(path):
         sql = "SELECT json_build_object('migration',(SELECT version_num FROM alembic_version),'users',(SELECT count(*) FROM users),'markets',(SELECT count(*) FROM markets),'observations',(SELECT count(*) FROM observations),'listings',(SELECT count(*) FROM listings),'synthetic_observations',(SELECT count(*) FROM observations WHERE synthetic),'buyout_total',(SELECT COALESCE(sum(buyout),0)::text FROM listings))"
         result = run(command+['exec','-T','db','psql','-U','market','-d','market_restore','-Atc',sql],stdout=subprocess.PIPE)
         evidence = json.loads(result.stdout)
+        present=run(command+['exec','-T','db','psql','-U','market','-d','market_restore','-Atc',
+            "SELECT to_regclass('snapshot_statistics') IS NOT NULL"],stdout=subprocess.PIPE).stdout.strip()==b't'
+        if present:
+            statistics=run(command+['exec','-T','db','psql','-U','market','-d','market_restore','-Atc',
+                "SELECT json_build_object('snapshot_statistics',(SELECT count(*) FROM snapshot_statistics),'daily_observations',(SELECT count(*) FROM daily_observations))"],stdout=subprocess.PIPE)
+            evidence.update(json.loads(statistics.stdout))
         if not evidence['migration']:
             raise ValueError('Restored database has no migration revision')
         # PostgreSQL also restores and validates foreign-key/unique constraints through pg_restore.

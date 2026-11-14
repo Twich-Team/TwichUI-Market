@@ -87,3 +87,13 @@ def test_backup_status_reports_missing_corrupt_and_verified_metadata(owner,monke
     result=owner.get('/api/v1/admin/storage').json()['backup']
     assert result['last_restoration_verified_at']=='2026-11-13T13:00:00+00:00'
     assert 'secret' not in result
+
+
+def test_extended_history_is_authenticated_and_retains_provenance(owner,database):
+    market,variant=seed(database)
+    result=owner.get(f'/api/v1/markets/{market}/items/12363/{variant}/history?days=365').json()
+    assert len(result['points'])==4
+    assert result['points'][-1]['recent_price']=='20'
+    assert result['points'][0]['namespace']=='dynamic-forever-eu'
+    assert result['synthetic']
+    assert owner.get(f'/api/v1/markets/{market}/items/12363/{variant}/history?days=99999').status_code==422

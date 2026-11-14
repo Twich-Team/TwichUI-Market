@@ -81,7 +81,7 @@ def test_quantity_weighting_stack_total_and_rounding():
 
 
 def test_windows_daily_sampling_no_sales_inference(database, market_id):
-    at = now().replace(hour=12, minute=0, second=0, microsecond=0)
+    at = now().replace(hour=12, minute=0, second=0, microsecond=0)-timedelta(days=1)
     with database.begin() as db:
         ingest(db, market_id, payload(1000), request_key='old', retrieved_at=at-timedelta(days=30), synthetic=True)
         ingest(db, market_id, payload(2000), request_key='week', retrieved_at=at-timedelta(days=7), synthetic=True)

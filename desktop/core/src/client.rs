@@ -40,6 +40,21 @@ pub struct MarketClient {
 }
 
 impl MarketClient {
+    pub fn synchronize_page(&self, cache: &mut crate::cache::Cache, market: u32) -> Result<bool> {
+        let server = self.server.as_str();
+        let mut cursor = cache.cursor(server, market)?;
+        let page = match self.page(market, cursor.as_deref()) {
+            Err(Error::ResetRequired) if cursor.is_some() => {
+                // Reset only pending download state; the completed offline generation remains intact.
+                cache.reset(server, market)?;
+                cursor = None;
+                self.page(market, None)?
+            }
+            result => result?,
+        };
+        cache.apply(server, market, cursor.as_deref(), &page)?;
+        Ok(page.has_more)
+    }
     pub fn new(server: &str, token: String) -> Result<Self> {
         if token.len() < 20
             || token.len() > 256

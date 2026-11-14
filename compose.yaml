@@ -30,6 +30,9 @@ services:
       APP_ORIGIN: ${APP_ORIGIN:-http://127.0.0.1:18780}
       COOKIE_SECURE: ${COOKIE_SECURE:-false}
       SYNC_CURSOR_SECRET: ${SYNC_CURSOR_SECRET:-}
+      RAW_LISTING_DAYS: ${RAW_LISTING_DAYS:-2}
+      DETAILED_STATISTICS_DAYS: ${DETAILED_STATISTICS_DAYS:-64}
+      HISTORY_COMPACTION_ENABLED: ${HISTORY_COMPACTION_ENABLED:-false}
     depends_on: {db: {condition: service_healthy}}
     command: [alembic, upgrade, head]
     mem_limit: 256m

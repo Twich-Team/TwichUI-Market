@@ -1,5 +1,5 @@
-from datetime import datetime
-from sqlalchemy import BigInteger, Boolean, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint
+from datetime import date, datetime
+from sqlalchemy import BigInteger, Boolean, Date, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 from .db import Base, now
 
@@ -80,6 +80,8 @@ class Snapshot(Base):
     content_hash: Mapped[str] = mapped_column(String(64))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
     listing_count: Mapped[int] = mapped_column(Integer)
+    raw_retained: Mapped[bool] = mapped_column(Boolean, default=True)
+    statistics_retained: Mapped[bool] = mapped_column(Boolean, default=True)
 
 
 class Observation(Base):
@@ -122,3 +124,23 @@ class CollectionRun(Base):
     duration_seconds: Mapped[int] = mapped_column(Integer, default=0)
     payload_bytes: Mapped[int] = mapped_column(Integer, default=0)
     error: Mapped[str | None] = mapped_column(String(200))
+
+
+class SnapshotStatistic(Base):
+    __tablename__ = 'snapshot_statistics'
+    snapshot_id: Mapped[int] = mapped_column(ForeignKey('snapshots.id'),primary_key=True)
+    item_id: Mapped[int] = mapped_column(Integer,primary_key=True)
+    variant_key: Mapped[str] = mapped_column(String(64),primary_key=True)
+    algorithm: Mapped[str] = mapped_column(String(80),default='asking-v1-provisional')
+    recent_price: Mapped[int | None] = mapped_column(BigInteger)
+    lowest_buyout: Mapped[int | None] = mapped_column(BigInteger)
+    supply: Mapped[int] = mapped_column(BigInteger)
+    priced_supply: Mapped[int] = mapped_column(BigInteger)
+    listing_count: Mapped[int] = mapped_column(Integer)
+
+
+class DailyObservation(Base):
+    __tablename__ = 'daily_observations'
+    market_id: Mapped[int] = mapped_column(ForeignKey('markets.id'),primary_key=True)
+    day: Mapped[date] = mapped_column(Date,primary_key=True)
+    observation_id: Mapped[int] = mapped_column(ForeignKey('observations.id'),index=True)

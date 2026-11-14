@@ -12,7 +12,7 @@ from urllib.error import URLError
 from urllib.parse import urlencode
 from sqlalchemy import select, text
 from .db import Session, now
-from .ingest import ingest
+from .ingest import ingest, record_daily
 from .models import CollectionRun, Market, Observation
 from .probe import REGIONS, request
 from .security import aware
@@ -113,10 +113,13 @@ def collect_once(factory=Session, client=None, *, at=None, max_database_bytes=No
                 if not latest:
                     market.etag, market.last_modified = None, None
                     raise UpstreamFailure('304 without prior snapshot')
-                db.add(Observation(market_id=market.id, snapshot_id=latest.snapshot_id,
+                observation=Observation(market_id=market.id, snapshot_id=latest.snapshot_id,
                     request_key=uuid.uuid4().hex, retrieved_at=at, upstream_modified=latest.upstream_modified,
                     namespace=latest.namespace, payload_hash=latest.payload_hash, payload_bytes=0,
-                    synthetic=latest.synthetic))
+                    synthetic=latest.synthetic)
+                db.add(observation)
+                db.flush()
+                record_daily(db,observation)
                 market.last_success = at
                 run.status = 'unchanged'
             else:

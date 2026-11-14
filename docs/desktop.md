@@ -6,6 +6,8 @@ The Windows UI accepts a server origin and a browser-created device token. Rust 
 
 Each page and cursor are committed in one SQLite transaction. A staging generation preserves the previous completed cache until the entire new generation is downloaded; restarting resumes at the saved page. Invalid responses or stale retries cannot advance the cursor. The cache has a conservative 128 MiB page budget. Network/authentication errors preserve offline data. A server cursor reset clears only pending download state; the completed generation remains available until replacement completes.
 
+If the server returns 409 because detailed history was compacted or cursors were invalidated, the client automatically resets pending state and begins a complete refresh. The completed offline generation remains intact. A real HTTP regression verifies this recovery path. Core regression count is now seven on Linux (plus the native credential test on Windows).
+
 Exports are atomic, versioned JSON data in the companion's application-data exports directory. They contain compact values, provenance flags and observation times, never code, tokens or cursor material. Even the core export API rejects a canonical directory with a SavedVariables component. The UI exposes no arbitrary file-write command or shell execution. Workshop's actual addon ingestion is S6 and remains excluded. Provisional algorithm compatibility and live upstream verification are explicitly disclosed.
 
 ## Reproducible checks

@@ -109,15 +109,11 @@ async fn sync_page(app: AppHandle, market: u32) -> Result<SyncResult, String> {
         let token = vault::load(&server).map_err(|e| e.to_string())?;
         let client = MarketClient::new(&server, token).map_err(|e| e.to_string())?;
         let mut cache = cache(&path)?;
-        let cursor = cache.cursor(&server, market).map_err(|e| e.to_string())?;
-        let page = client
-            .page(market, cursor.as_deref())
-            .map_err(|e| e.to_string())?;
-        cache
-            .apply(&server, market, cursor.as_deref(), &page)
+        let has_more = client
+            .synchronize_page(&mut cache, market)
             .map_err(|e| e.to_string())?;
         Ok(SyncResult {
-            has_more: page.has_more,
+            has_more,
             status: cache.status(&server, market).map_err(|e| e.to_string())?,
         })
     })

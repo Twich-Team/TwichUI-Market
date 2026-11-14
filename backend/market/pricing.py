@@ -1,13 +1,16 @@
 """Version 1 provisional asking-price references; Workshop compatibility pending."""
 from datetime import timedelta, timezone
-from collections import defaultdict
 from decimal import Decimal, ROUND_HALF_UP
 from sqlalchemy import select
 from .db import now
-from .models import Listing, Observation
+from .models import DailyObservation, Observation, Snapshot, SnapshotStatistic
 from .security import aware
 
 ALGORITHM = 'asking-v1-provisional'
+
+
+class HistoryUnavailable(ValueError):
+    pass
 
 
 def summarize(listings):
@@ -42,11 +45,15 @@ def values(db, market_id, item_id, variant_key, *, at=None, through_observation_
     for observation in observations:
         days[aware(observation.retrieved_at).astimezone(timezone.utc).date()] = observation
     snapshot_ids = {observation.snapshot_id for observation in days.values()}
-    grouped = defaultdict(list)
-    for row in db.scalars(select(Listing).where(Listing.snapshot_id.in_(snapshot_ids),
-        Listing.item_id == item_id, Listing.variant_key == variant_key)):
-        grouped[row.snapshot_id].append(row)
-    cache = {snapshot_id:summarize(grouped[snapshot_id]) for snapshot_id in snapshot_ids}
+    retained=list(db.scalars(select(Snapshot.statistics_retained).where(Snapshot.id.in_(snapshot_ids))))
+    if not all(retained):
+        raise HistoryUnavailable('Detailed history compacted; restart synchronization')
+    cache={snapshot_id:summarize([]) for snapshot_id in snapshot_ids}
+    for row in db.scalars(select(SnapshotStatistic).where(SnapshotStatistic.snapshot_id.in_(snapshot_ids),
+        SnapshotStatistic.item_id == item_id, SnapshotStatistic.variant_key == variant_key)):
+        if row.algorithm!=ALGORITHM:
+            raise HistoryUnavailable('Historical reference algorithm is not supported by this version')
+        cache[row.snapshot_id]={key:getattr(row,key) for key in ('recent_price','lowest_buyout','supply','priced_supply','listing_count')}
     def summary(observation):
         return cache[observation.snapshot_id]
     history = [{'date': day.isoformat(), **summary(observation)} for day, observation in sorted(days.items())]
@@ -61,3 +68,24 @@ def values(db, market_id, item_id, variant_key, *, at=None, through_observation_
                 and summary(obs)['recent_price'] is not None for obs in days.values()),
             'observed_at': aware(latest.retrieved_at).isoformat(),
             'synthetic': any(obs.synthetic for obs in observations), 'history': history}
+
+
+def daily_history(db,market_id,item_id,variant_key,days=365,*,at=None):
+    at=at or now()
+    observations=list(db.execute(select(DailyObservation.day,Observation).join(Observation,
+        Observation.id==DailyObservation.observation_id).where(DailyObservation.market_id==market_id,
+        DailyObservation.day>=(at-timedelta(days=days)).date(),DailyObservation.day<=at.date())
+        .order_by(DailyObservation.day)))
+    ids={observation.snapshot_id for _,observation in observations}
+    statistics={row.snapshot_id:row for row in db.scalars(select(SnapshotStatistic).where(
+        SnapshotStatistic.snapshot_id.in_(ids),SnapshotStatistic.item_id==item_id,SnapshotStatistic.variant_key==variant_key))}
+    points=[]
+    for day,observation in observations:
+        row=statistics.get(observation.snapshot_id)
+        points.append({'date':day.isoformat(),**({key:getattr(row,key) for key in
+            ('recent_price','lowest_buyout','supply','priced_supply','listing_count')} if row else summarize([])),
+            'observed_at':aware(observation.retrieved_at).isoformat(),'synthetic':observation.synthetic,
+            'algorithm':row.algorithm if row else ALGORITHM,
+            'observation_id':str(observation.id),'namespace':observation.namespace,
+            'payload_hash':observation.payload_hash,'upstream_modified':observation.upstream_modified})
+    return {'algorithm':ALGORITHM,'points':points,'synthetic':any(row['synthetic'] for row in points)}

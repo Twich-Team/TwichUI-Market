@@ -11,12 +11,12 @@ def signing_key(monkeypatch):
     monkeypatch.setenv('SYNC_CURSOR_SECRET','synthetic-test-signing-key-32-characters-long')
 
 
-def setup(database,count=3):
+def setup(database,count=3,when=None):
     with database.begin() as db:
         market=Market(region='eu',ruleset_id=2,house_id=113,source_kind='auctions',label='Synthetic sync')
         db.add(market)
         db.flush()
-        insert(db,market.id,range(1,count+1),'initial',when=now()-timedelta(days=1))
+        insert(db,market.id,range(1,count+1),'initial',when=when or now()-timedelta(days=1))
         return market.id
 
 
@@ -96,3 +96,33 @@ def test_late_history_import_does_not_rewind_current_supply(owner,database):
     assert value['recent_price']=='100'
     assert value['market_value']=='200'
     assert value['supply']==1
+
+
+def test_incremental_sync_survives_raw_listing_pruning(owner,database):
+    from market.maintenance import maintain
+    market=setup(database,count=2,when=now()-timedelta(days=5))
+    path=f'/api/v1/sync/markets/{market}'
+    initial=owner.get(path).json()
+    with database.begin() as db:
+        insert(db,market,[2,3],'after-raw-prune',price=200)
+    maintain(database,apply=True,compact=True)
+    updated=owner.get(path,params={'cursor':initial['cursor']}).json()
+    assert {row['item_id']:row['operation'] for row in updated['changes']}=={1:'delete',2:'upsert',3:'upsert'}
+
+
+def test_compacted_non_daily_cursor_requires_full_reset(owner,database):
+    from market.maintenance import maintain
+    from market.models import Market
+    at=now().replace(hour=12,minute=0,second=0,microsecond=0)-timedelta(days=500)
+    with database.begin() as db:
+        market=Market(region='eu',ruleset_id=2,house_id=113,source_kind='auctions',label='Compacted cursor fixture')
+        db.add(market);db.flush();market_id=market.id
+        insert(db,market_id,[1],'compacted-first',when=at)
+    path=f'/api/v1/sync/markets/{market_id}'
+    initial=owner.get(path).json()
+    with database.begin() as db:
+        insert(db,market_id,[1],'compacted-daily',when=at+timedelta(hours=1),price=200)
+        insert(db,market_id,[],'compacted-current')
+    maintain(database,apply=True,compact=True)
+    assert owner.get(path,params={'cursor':initial['cursor']}).status_code==409
+    assert owner.get(path).json()['changes']==[]

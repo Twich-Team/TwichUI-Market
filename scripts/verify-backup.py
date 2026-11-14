@@ -32,6 +32,7 @@ def main():
         assert result['users']==1 and result['markets']==1
         assert result['observations']==1 and result['listings']==1
         assert result['synthetic_observations']==1 and result['buyout_total']=='1200'
+        assert result['snapshot_statistics']==1 and result['daily_observations']==1
         # A damaged archive must fail integrity verification before PostgreSQL starts.
         content=archive.read_bytes()
         archive.write_bytes(content+b'corruption')

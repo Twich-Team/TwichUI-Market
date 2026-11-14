@@ -11,6 +11,8 @@ test('private Explorer, history, comparison, Deal Finder and browser reload use 
   await expect(page.getByRole('img',{name:'Observed asking-price history'})).toBeVisible();
   await expect(page.getByRole('cell',{name:'9007199254740993',exact:true})).toBeVisible();
   await page.getByRole('button',{name:'60D',exact:true}).click();
+  await Promise.all([page.waitForResponse(response=>response.url().includes('/history?days=365')&&response.status()===200),page.getByRole('button',{name:'365D',exact:true}).click()]);
+  await expect(page.getByRole('img',{name:'Observed asking-price history'})).toBeVisible();
   await page.getByLabel('Comparison market').selectOption('2');
   await expect(page.locator('.comparison')).toContainText('Synthetic Horde');
   await page.getByRole('button',{name:'Deal Finder',exact:true}).click();

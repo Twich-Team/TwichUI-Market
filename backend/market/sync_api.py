@@ -10,8 +10,8 @@ from sqlalchemy import and_, or_, select, text
 from sqlalchemy.orm import Session
 from .db import session
 from .market_api import MarketId, money_contract, require_market
-from .models import Listing, Observation, User
-from .pricing import ALGORITHM, values
+from .models import Observation, Snapshot, SnapshotStatistic, User
+from .pricing import ALGORITHM, HistoryUnavailable, values
 from .security import aware, identity
 
 router=APIRouter(prefix='/api/v1/sync')
@@ -53,8 +53,11 @@ def decode_cursor(cursor,market_id):
 def compact(db,observation,item_id,variant_key,watermark):
     if not observation:
         return None
-    result=values(db,observation.market_id,item_id,variant_key,at=aware(observation.retrieved_at),
-                  through_observation_id=watermark)
+    try:
+        result=values(db,observation.market_id,item_id,variant_key,at=aware(observation.retrieved_at),
+                      through_observation_id=watermark)
+    except HistoryUnavailable:
+        raise HTTPException(409,'Detailed sync history compacted; start a full synchronization')
     if result['listing_count']==0:
         return None
     return money_contract({key:result[key] for key in ('recent_price','lowest_buyout','market_value','historical_value',
@@ -82,6 +85,9 @@ def synchronize(market_id: MarketId,cursor: str | None = Query(None,max_length=2
             .order_by(Observation.retrieved_at.desc(),Observation.id.desc()).limit(1)) if watermark else None
     # Late historical imports may have a newer ID but must not replace current supply.
     target,base=head(state['target']),head(state['base'])
+    for observation in (target,base):
+        if observation and not db.get(Snapshot,observation.snapshot_id).statistics_retained:
+            raise HTTPException(409,'Detailed sync history compacted; start a full synchronization')
     if state['base']==state['target']:
         state['done']=True
         return {'contract_version':1,'market_id':market_id,'algorithm':ALGORITHM,'changes':[],
@@ -90,9 +96,9 @@ def synchronize(market_id: MarketId,cursor: str | None = Query(None,max_length=2
                 'synthetic':target.synthetic if target else False}
     snapshots=[observation.snapshot_id for observation in (target,base) if observation]
     after_item,after_variant=state['after']
-    keys=list(db.execute(select(Listing.item_id,Listing.variant_key).where(Listing.snapshot_id.in_(snapshots),
-        or_(Listing.item_id>after_item,and_(Listing.item_id==after_item,Listing.variant_key>after_variant)))
-        .distinct().order_by(Listing.item_id,Listing.variant_key).limit(limit+1)))
+    keys=list(db.execute(select(SnapshotStatistic.item_id,SnapshotStatistic.variant_key).where(SnapshotStatistic.snapshot_id.in_(snapshots),
+        or_(SnapshotStatistic.item_id>after_item,and_(SnapshotStatistic.item_id==after_item,SnapshotStatistic.variant_key>after_variant)))
+        .distinct().order_by(SnapshotStatistic.item_id,SnapshotStatistic.variant_key).limit(limit+1)))
     changes=[]
     for item_id,variant_key in keys[:limit]:
         current=compact(db,target,item_id,variant_key,state['target'])
