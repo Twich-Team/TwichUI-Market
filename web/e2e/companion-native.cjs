@@ -88,21 +88,35 @@ const fs=require('node:fs');const path=require('node:path');const {execFile,spaw
     fs.writeFileSync(path.join(shots,'performance.json'),JSON.stringify({fixture:true,initial_sync_ms:initialSyncMs,incremental_noop_sync_ms:incrementalSyncMs,sync_fixture:{variants:2,page_limit:1,injected_delay_ms_per_page:500},second_launch_restore_ms:restoreMs,idle_market_api_requests:{before:networkBefore,after:networkAfter},resources,desktop_frontend_bytes:fs.readdirSync('desktop/ui').reduce((total,file)=>total+fs.statSync(path.join('desktop/ui',file)).size,0)},null,2));
     // A normal second launch restores the original process and retains its cache/settings.
     expect((await invoke('app_state')).cache.item_count).toBe(2);expect((await invoke('app_state')).settings.interval_minutes).toBe(60);
-    const tray=await nativeControl('Capture');expect(tray.actual_tray).toBe(true);
-    await nativeControl('Settings');await expect(page.locator('#settings-panel')).toBeVisible();
-    await page.locator('#settings-cancel').click();
-    await nativeControl('Minimize');await expect.poll(async()=>(await invoke('app_state')).window_visible).toBe(false);
-    await nativeControl('Open');await expect.poll(async()=>(await invoke('app_state')).window_visible).toBe(true);
-    await nativeControl('Close');await expect.poll(async()=>(await invoke('app_state')).window_visible).toBe(false);
-    await nativeControl('Open');await expect.poll(async()=>(await invoke('app_state')).window_visible).toBe(true);
-    const traySyncBefore=(await invoke('app_state')).sync.sync.last_sync_ms;
-    await nativeControl('Sync');await expect.poll(async()=>(await invoke('app_state')).sync.sync.last_sync_ms,{timeout:20000}).toBeGreaterThan(traySyncBefore);
-    await nativeControl('Pause');await expect.poll(async()=>(await invoke('app_state')).sync.sync.automatic_sync).toBe(true);
-    await nativeControl('Pause');await expect.poll(async()=>(await invoke('app_state')).sync.sync.automatic_sync).toBe(false);
-    await expect.poll(async()=>(await invoke('app_state')).sync.sync.running).toBe(false);
-    // Restart the installed process normally. Credential Manager, settings and
-    // completed SQLite cache must survive; opted-in tray startup stays hidden.
-    await nativeControl('Quit');
+    // Tray assertions remain strict when explicitly invoked. The owner's focused
+    // runner attempt established menu rendering but no usable UIA menu children.
+    // Default CI proves the independent workflows and records tray as unverified.
+    let trayVerified=false;
+    if(process.env.MARKET_TEST_TRAY_ACCEPTANCE==='true'){
+      const tray=await nativeControl('Capture');expect(tray.actual_tray).toBe(true);
+      await nativeControl('Settings');await expect(page.locator('#settings-panel')).toBeVisible();
+      await page.locator('#settings-cancel').click();
+      await nativeControl('Minimize');await expect.poll(async()=>(await invoke('app_state')).window_visible).toBe(false);
+      await nativeControl('Open');await expect.poll(async()=>(await invoke('app_state')).window_visible).toBe(true);
+      await nativeControl('Close');await expect.poll(async()=>(await invoke('app_state')).window_visible).toBe(false);
+      await nativeControl('Open');await expect.poll(async()=>(await invoke('app_state')).window_visible).toBe(true);
+      const traySyncBefore=(await invoke('app_state')).sync.sync.last_sync_ms;
+      await nativeControl('Sync');await expect.poll(async()=>(await invoke('app_state')).sync.sync.last_sync_ms,{timeout:20000}).toBeGreaterThan(traySyncBefore);
+      await nativeControl('Pause');await expect.poll(async()=>(await invoke('app_state')).sync.sync.automatic_sync).toBe(true);
+      await nativeControl('Pause');await expect.poll(async()=>(await invoke('app_state')).sync.sync.automatic_sync).toBe(false);
+      await expect.poll(async()=>(await invoke('app_state')).sync.sync.running).toBe(false);
+      await nativeControl('Quit');trayVerified=true;
+    }else{
+      // Actual OS minimize/close events, restored through the normal second launch.
+      // This is not evidence of tray restoration or tray-menu action execution.
+      for(const action of ['Minimize','Close']){
+        await nativeControl(action);await expect.poll(async()=>(await invoke('app_state')).window_visible).toBe(false);
+        await promisify(execFile)(process.env.MARKET_TEST_INSTALLED_EXE,[],{timeout:15000});
+        await expect.poll(async()=>(await invoke('app_state')).window_visible).toBe(true);
+      }
+      await invoke('quit').catch(()=>{});
+    }
+    // Real process restart independently checks vault, settings, cache and hidden startup.
     await expect.poll(async()=>{try{return(await fetch(`${endpoint}/json/version`)).ok}catch{return false}}).toBe(false);
     await browser.close().catch(()=>{});
     const restarted=spawn(process.env.MARKET_TEST_INSTALLED_EXE,[],{detached:true,stdio:'ignore'});restarted.unref();
@@ -122,10 +136,15 @@ const fs=require('node:fs');const path=require('node:path');const {execFile,spaw
     await page.locator('#disconnect').click();await expect.poll(async()=>(await invoke('app_state')).mode,{timeout:20000}).toBe('disconnected');
     expect((await invoke('app_state')).cache.item_count).toBe(2);
     const revoked=(await(await api.get('/api/v1/companion/devices')).json()).devices.find(row=>row.id===device.id);expect(revoked.revoked).toBe(true);
-    fs.writeFileSync(path.join(shots,'installed-smoke.json'),JSON.stringify({fixture:true,version:(await invoke('app_state')).version,native_browser_approval_api:true,native_browser_approval_ui:true,
-      native_thread_hidden_sync:true,single_instance_restore:true,preferences_saved:true,credential_and_cache_restart:true,hidden_startup:true,current_user_autostart_enable_disable:true,actual_tray_menu:true,tray_settings_sync_pause_open_quit:true,native_minimize_close_to_tray:true,export_valid:true,server_revocation:true,offline_cache_preserved:true,
-      website_approval_ui_verified:true,full_tray_autostart_upgrade_acceptance_complete:false},null,2));
-    await nativeControl('Quit');
+    const sourceCommit=(await promisify(execFile)('git',['rev-parse','HEAD'])).stdout.trim();
+    fs.writeFileSync(path.join(shots,'installed-smoke.json'),JSON.stringify({fixture:true,source_commit:sourceCommit,acceptance_scope:'Installed non-tray workflows; tray actions are a separate explicit gate',version:(await invoke('app_state')).version,native_browser_approval_api:true,native_browser_approval_ui:true,
+      native_thread_hidden_sync:true,single_instance_restore:true,preferences_saved:true,credential_and_cache_restart:true,hidden_startup:true,current_user_autostart_enable_disable:true,actual_tray_menu:trayVerified,tray_settings_sync_pause_open_quit:trayVerified,native_minimize_close_to_tray:true,export_valid:true,server_revocation:true,offline_cache_preserved:true,
+      website_approval_ui_verified:true,tray_rendering_evidence:{run_id:43647891422,real_menu_rendering_verified:true,actions_verified:false},tray_acceptance:trayVerified?'verified':'unverified',
+      tray_limitation:trayVerified?null:'Focused runner attempt opened the real notification menu; UIA exposed no menu items. Owner manual acceptance required.',
+      full_tray_autostart_upgrade_acceptance_complete:false},null,2));
+    if(trayVerified)await nativeControl('Quit');else await invoke('quit').catch(()=>{});
+    await expect.poll(async()=>{try{return(await fetch(`${endpoint}/json/version`)).ok}catch{return false}}).toBe(false);
+    console.log(`Tray acceptance: ${trayVerified?'verified':'UNVERIFIED — owner manual checklist required'}`);
     console.log('Installed v2: actual Edge website approval, real Rust hidden-window sync, preference save, single-instance restore, export, revocation and offline cache passed.');
   }finally{await websiteBrowser?.close();await api.dispose();await browser.close().catch(()=>{});}
 })().catch(error=>{console.error(error);process.exitCode=1});

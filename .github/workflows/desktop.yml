@@ -8,12 +8,23 @@ concurrency:
   cancel-in-progress: true
 permissions:
   contents: read
+  actions: read
 jobs:
   windows:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: 43542957765
+          artifact-ids: '14092971157'
+          path: artifacts/companion-legacy-installer
       - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.100.0
       - uses: Swatinem/rust-cache@v2
         with:
           cache-on-failure: true
@@ -35,9 +46,15 @@ jobs:
       - run: python scripts/verify-companion-authorization.py
       - run: npm ci --prefix desktop
       - run: npm --prefix desktop run tauri build -- --ci
+        id: bundle
       - run: npm ci --prefix web
       - run: npm --prefix web run build
+      - name: Verify actual legacy installer upgrade
+        shell: pwsh
+        timeout-minutes: 5
+        run: ./scripts/windows/verify-upgrade.ps1
       - name: Verify installed Windows release
+        if: ${{ !cancelled() && steps.bundle.outcome == 'success' }}
         shell: pwsh
         timeout-minutes: 5
         run: ./scripts/windows/verify-installer.ps1
@@ -48,7 +65,8 @@ jobs:
           path: artifacts/companion-v2/
           if-no-files-found: ignore
       - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() && steps.bundle.outcome == 'success' }}
         with:
-          name: twichui-market-companion-windows
+          name: twichui-market-companion-windows-candidate
           path: desktop/src-tauri/target/release/bundle/nsis/*.exe
           if-no-files-found: error

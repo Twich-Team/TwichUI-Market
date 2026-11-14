@@ -1,4 +1,6 @@
 # Runs only on the disposable Windows CI runner; no server or addon files involved.
+param([switch]$CheckTray)
+if ($CheckTray) { $env:MARKET_TEST_TRAY_ACCEPTANCE='true' } else { Remove-Item Env:MARKET_TEST_TRAY_ACCEPTANCE -ErrorAction SilentlyContinue }
 $ErrorActionPreference = 'Stop'
 if ($env:GITHUB_ACTIONS -ne 'true' -or $env:RUNNER_OS -ne 'Windows') {
     throw 'This script is restricted to disposable GitHub Windows runners'
@@ -64,6 +66,12 @@ try {
         if (-not $_.WaitForExit(10000)) { $_.Kill(); $_.WaitForExit() }
     }
 }
+$retained=@{}
+foreach ($file in @('market-v1.sqlite','settings.json')) {
+    $path=Join-Path $env:MARKET_TEST_APP_DATA $file
+    if (-not(Test-Path $path)) { throw 'Expected retained companion data before uninstall' }
+    $retained[$path]=(Get-FileHash $path -Algorithm SHA256).Hash
+}
 $uninstaller = Join-Path $installPath 'uninstall.exe'
 if (-not (Test-Path $uninstaller)) { throw 'Uninstaller is missing' }
 $remove = Start-Process -FilePath $uninstaller -ArgumentList @('/S', "_?=$installPath") -Wait -PassThru
@@ -71,4 +79,14 @@ if ($remove.ExitCode -ne 0) { throw "Uninstaller failed: $($remove.ExitCode)" }
 if (Test-Path $executable) { throw 'Uninstall left the application executable behind' }
 $startup = [Microsoft.Win32.Registry]::GetValue('HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run','TwichUI Market Companion',$null)
 if ($startup -eq "`"$executable`" --background") { throw 'Uninstall left its current-user startup entry behind' }
-Write-Output 'NSIS per-user install, native-window launch and uninstall verified.'
+foreach ($path in $retained.Keys) {
+    if (-not(Test-Path $path) -or (Get-FileHash $path -Algorithm SHA256).Hash -ne $retained[$path]) { throw 'Uninstall changed saved settings or offline data' }
+}
+$receipt=Join-Path (Get-Location) 'artifacts/companion-v2/installed-smoke.json'
+$accepted=Get-Content $receipt -Raw | ConvertFrom-Json
+$accepted | Add-Member -NotePropertyName uninstall_settings_and_cache_preserved -NotePropertyValue $true -Force
+$accepted | ConvertTo-Json -Depth 5 | Set-Content $receipt
+if ($env:GITHUB_STEP_SUMMARY) {
+    Add-Content $env:GITHUB_STEP_SUMMARY 'Native workflows, restart and uninstall retention are checked independently. Tray action acceptance remains UNVERIFIED unless explicitly recorded; see docs/companion-v2-windows-manual-acceptance.md. This is a candidate, not a signed stable release.'
+}
+Write-Output 'NSIS per-user install, native-window launch and uninstall retention verified. See separate tray acceptance status.'

@@ -84,7 +84,7 @@ def main():
             probe.bind(('127.0.0.1',0));port=probe.getsockname()[1]
         origin=f'http://127.0.0.1:{port}'
         env.update(APP_ORIGIN=origin, MARKET_TEST_SERVER=origin, MARKET_TEST_PORT=str(port), ALLOW_LEGACY_SESSIONS='false')
-        if '--ui' in sys.argv:env['MARKET_NATIVE_UI_TEST']='true'
+        if '--ui' in sys.argv or '--upgrade' in sys.argv:env['MARKET_NATIVE_UI_TEST']='true'
         subprocess.run([sys.executable,'-c',SEED],cwd=ROOT,env=env,check=True)
         jar=http.cookiejar.CookieJar();browser=urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
         csrf=None
@@ -103,8 +103,9 @@ def main():
                         request('/api/v1/health');break
                     except OSError:time.sleep(.1)
                 else:raise RuntimeError('Isolated authorization API did not become healthy')
-                if '--ui' in sys.argv:
-                    subprocess.run(['node',str(ROOT/'web'/'e2e'/'companion-native.cjs')],cwd=ROOT,env=env,check=True)
+                if '--ui' in sys.argv or '--upgrade' in sys.argv:
+                    script='companion-upgrade.cjs' if '--upgrade' in sys.argv else 'companion-native.cjs'
+                    subprocess.run(['node',str(ROOT/'web'/'e2e'/script)],cwd=ROOT,env=env,check=True)
                     print('Installed v2 native UI/API authorization and background synchronization smoke passed.')
                     return
                 native=subprocess.Popen([str(binary.resolve())],cwd=ROOT,env=env,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
