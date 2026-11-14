@@ -11,7 +11,7 @@ from sqlalchemy import func, select, text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from .db import now, session
-from .models import CollectionRun, Listing, Market, Observation, Snapshot, User
+from .models import CollectionRun, ItemMetadata, Listing, Market, Observation, Snapshot, User
 from .pricing import daily_history, values
 from .security import admin, audit, aware, identity
 
@@ -68,13 +68,23 @@ def latest_observation(db, market_id):
         .order_by(Observation.retrieved_at.desc(),Observation.id.desc()).limit(1))
 
 
+def item_name(db,region,item_id):
+    metadata=db.get(ItemMetadata,(region,item_id))
+    available=metadata is not None and metadata.name is not None
+    return {'name':metadata.name if available else f'Item #{item_id}',
+            'name_verified':bool(available and not metadata.synthetic and metadata.status=='available'),
+            'metadata_synthetic':bool(metadata and metadata.synthetic),
+            'metadata_observed_at':metadata.resolved_at if metadata else None,
+            'metadata_status':metadata.status if metadata else 'unresolved'}
+
+
 @router.get('/markets')
 def markets(user: User = Depends(identity), db: Session = Depends(session)):
     return {'contract_version':1,'markets':[market_view(row) for row in db.scalars(select(Market).order_by(Market.id))]}
 
 
 @router.get('/markets/{market_id}/items')
-def items(market_id: MarketId, q: str = Query('',max_length=32), after_id: int = Query(0,ge=0,le=2**31-1),
+def items(market_id: MarketId, q: str = Query('',max_length=64), after_id: int = Query(0,ge=0,le=2**31-1),
           limit: int = Query(50,ge=1,le=100), user: User = Depends(identity), db: Session = Depends(session)):
     market = require_market(db,market_id)
     latest = latest_observation(db,market_id)
@@ -84,19 +94,20 @@ def items(market_id: MarketId, q: str = Query('',max_length=32), after_id: int =
         Listing.snapshot_id == latest.snapshot_id,Listing.item_id > after_id)
     if q:
         if not q.isdigit():
-            # Item metadata lookup is deliberately explicit until upstream names are verified.
-            return {'items':[],'market':market_view(market),'next_after_id':None,'synthetic':latest.synthetic,
-                    'search_notice':'Item names are not indexed yet; search by numeric item ID.'}
-        if int(q) > 2**31-1:
-            return {'items':[],'market':market_view(market),'next_after_id':None,'synthetic':latest.synthetic}
-        query = query.where(Listing.item_id == int(q))
+            query=query.join(ItemMetadata,(ItemMetadata.region==market.region)&(ItemMetadata.item_id==Listing.item_id))
+            query=query.where(func.lower(ItemMetadata.name).contains(q.lower(),autoescape=True))
+        else:
+            if int(q) > 2**31-1:
+                return {'items':[],'market':market_view(market),'next_after_id':None,'synthetic':latest.synthetic}
+            query = query.where(Listing.item_id == int(q))
     # Paginate item IDs, keeping every variant of the last item together.
     ids = list(db.scalars(query.with_only_columns(Listing.item_id).distinct().order_by(Listing.item_id).limit(limit+1)))
     page_ids = ids[:limit]
     rows = db.execute(query.where(Listing.item_id.in_(page_ids)).distinct().order_by(Listing.item_id,Listing.variant_key)) if page_ids else []
-    return {'items':[{'item_id':row.item_id,'name':f'Item #{row.item_id}','name_verified':False,
+    return {'items':[{'item_id':row.item_id,**item_name(db,market.region,row.item_id),
                       'variant_key':row.variant_key,'variant':json.loads(row.variant)} for row in rows],
-            'market':market_view(market),'next_after_id':page_ids[-1] if len(ids)>limit else None,'synthetic':latest.synthetic}
+            'market':market_view(market),'next_after_id':page_ids[-1] if len(ids)>limit else None,'synthetic':latest.synthetic,
+            'search_notice':'Some names may be unresolved; numeric item-ID search remains available.' if q and not q.isdigit() else None}
 
 
 @router.get('/markets/{market_id}/items/{item_id}/{variant_key}')
@@ -110,7 +121,7 @@ def item_detail(market_id: MarketId, item_id: Annotated[int,Path(ge=1,le=2**31-1
         Listing.item_id == item_id,Listing.variant_key == variant_key).order_by(Listing.auction_id).limit(201))) if latest else []
     result = values(db,market_id,item_id,variant_key)
     return money_contract({'contract_version':1,'market':market_view(market),'item_id':item_id,'variant_key':variant_key,
-        'name':f'Item #{item_id}','name_verified':False,'valuation':result,
+        **item_name(db,market.region,item_id),'valuation':result,
         'listings':[{'auction_id':str(row.auction_id),'quantity':row.quantity,'buyout':row.buyout,
                      'unit_price':row.unit_price,'bid':row.bid,'time_left':row.time_left} for row in listings[:200]],
         'listings_truncated':len(listings)>200,'provenance':'asking_listings_only'})
@@ -146,6 +157,7 @@ def deals(market_id: MarketId, minimum_discount: int = Query(15,ge=1,le=99),
         if total > maximum_spend or discount < minimum_discount:
             continue
         result.append({'auction_id':str(row.auction_id),'item_id':row.item_id,'variant_key':row.variant_key,
+            **item_name(db,market.region,row.item_id),
             'quantity':row.quantity,'total_buyout':total,'market_value':reference,
             'discount_percent':round(float(discount),2),'coverage_days':valuation['market_coverage_days'],
             'confidence':'limited' if market_view(market)['freshness']!='current' else 'moderate',
@@ -229,3 +241,11 @@ def storage(user: User = Depends(admin),db: Session = Depends(session)):
                          'daily_statistics':'indefinite_private',
                          'compaction_enabled':os.environ.get('HISTORY_COMPACTION_ENABLED','false').lower()=='true'},
             'backup':backup_state()}
+
+
+@router.get('/admin/metadata-failures')
+def metadata_failures(user: User = Depends(admin),db: Session = Depends(session)):
+    rows=db.scalars(select(ItemMetadata).where(ItemMetadata.status!='available')
+        .order_by(ItemMetadata.checked_at.desc()).limit(200))
+    return [{'region':row.region,'item_id':row.item_id,'status':row.status,'http_status':row.http_status,
+             'checked_at':row.checked_at,'retry_after':row.retry_after} for row in rows]

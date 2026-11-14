@@ -41,8 +41,15 @@ class BlizzardClient:
         self.transport = transport
         self.token = None
         self.expires = 0
+        self.blocked_until = 0
+
+    def throttle(self,metadata):
+        if metadata['status']==429:
+            self.blocked_until=time.monotonic()+max(300,retry_seconds(metadata['headers'].get('Retry-After'),now()))
 
     def authenticate(self):
+        if time.monotonic()<self.blocked_until:
+            raise UpstreamFailure('Upstream rate-limit cooldown',retry_after=str(int(self.blocked_until-time.monotonic())+1))
         if self.token and self.expires > time.monotonic():
             return self.token
         client_id, secret = os.environ.get('BLIZZARD_CLIENT_ID'), os.environ.get('BLIZZARD_CLIENT_SECRET')
@@ -51,6 +58,7 @@ class BlizzardClient:
         basic = base64.b64encode(f'{client_id}:{secret}'.encode()).decode()
         metadata, body = self.transport('https://oauth.battle.net/token', data=b'grant_type=client_credentials',
                                         authorization=f'Basic {basic}')
+        self.throttle(metadata)
         if metadata['status'] != 200:
             raise UpstreamFailure('OAuth request failed', metadata['status'], metadata['headers'].get('Retry-After'))
         result = json.loads(body)
@@ -72,9 +80,21 @@ class BlizzardClient:
             'namespace':f'dynamic-forever-{market.region}', 'locale':'en_US'})
         metadata, body = self.transport(url, token=self.authenticate(), conditional={
             'If-None-Match':market.etag, 'If-Modified-Since':market.last_modified})
+        self.throttle(metadata)
         if metadata['status'] == 401:
             self.token, self.expires = None, 0
         return metadata, body
+
+    def fetch_item(self,region,item_id):
+        if region not in REGIONS or type(item_id) is not int or not 1<=item_id<=2**31-1:
+            raise UpstreamFailure('Invalid metadata mapping')
+        url=f'https://{region}.api.blizzard.com/data/wow/item/{item_id}?'+urlencode({
+            'namespace':f'static-forever-{region}','locale':'en_US'})
+        metadata,body=self.transport(url,token=self.authenticate())
+        self.throttle(metadata)
+        if metadata['status']==401:
+            self.token,self.expires=None,0
+        return metadata,body
 
 
 def collect_once(factory=Session, client=None, *, at=None, max_database_bytes=None):
@@ -153,6 +173,7 @@ def main():
     signal.signal(signal.SIGINT, stop)
     client = BlizzardClient()
     next_maintenance = 0
+    next_metadata = 0
     while not stopping:
         try:
             if time.monotonic() >= next_maintenance:
@@ -160,6 +181,10 @@ def main():
                 maintain(apply=True)
                 next_maintenance = time.monotonic()+86400
             worked = collect_once(client=client)
+            if time.monotonic() >= next_metadata:
+                from .metadata import resolve_once
+                resolve_once(client=client)
+                next_metadata=time.monotonic()+15
         except Exception:
             # The transaction rolls back; safe generic message, no DSNs or response content.
             log.error('Collector transaction failed; will retry')

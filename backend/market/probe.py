@@ -8,10 +8,18 @@ import time
 from datetime import datetime, timezone
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
-from urllib.request import Request, urlopen
+from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 MAX_BYTES = 32 * 1024 * 1024
 REGIONS = ("us", "eu", "kr", "tw")
+
+
+class NoRedirect(HTTPRedirectHandler):
+    def redirect_request(self,*args,**kwargs):
+        return None
+
+
+opener=build_opener(NoRedirect())
 
 
 def request(url, *, token=None, data=None, authorization=None, conditional=None):
@@ -27,7 +35,7 @@ def request(url, *, token=None, data=None, authorization=None, conditional=None)
             headers[name] = conditional[name]
     started = time.monotonic()
     try:
-        response = urlopen(Request(url, data=data, headers=headers), timeout=45)
+        response = opener.open(Request(url, data=data, headers=headers), timeout=45)
     except HTTPError as exc:
         response = exc
     with response:

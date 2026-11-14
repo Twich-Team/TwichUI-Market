@@ -1,9 +1,31 @@
 import json
 import unittest
+import threading
+from http.server import BaseHTTPRequestHandler,HTTPServer
 from market.probe import summarize, targets
 
 
 class ProbeTests(unittest.TestCase):
+    def test_authorized_requests_do_not_follow_redirects(self):
+        from market.probe import request
+        visited=[]
+        class Handler(BaseHTTPRequestHandler):
+            def do_GET(self):
+                visited.append(self.path)
+                self.send_response(302)
+                self.send_header('Location','/target')
+                self.end_headers()
+            def log_message(self,*args): pass
+        server=HTTPServer(('127.0.0.1',0),Handler)
+        thread=threading.Thread(target=server.serve_forever,daemon=True)
+        thread.start()
+        try:
+            result,_=request(f'http://127.0.0.1:{server.server_port}/source',token='synthetic-secret')
+            self.assertEqual(result['status'],302)
+            self.assertEqual(visited,['/source'])
+        finally:
+            server.shutdown();server.server_close();thread.join(timeout=2)
+
     def test_trailing_slash_and_scoped_commodities(self):
         paths = targets(2, 113)
         self.assertIn('/data/wow/ruleset/2/auctions/', paths)

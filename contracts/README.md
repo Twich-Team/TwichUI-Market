@@ -7,7 +7,7 @@ Money is represented as a decimal string of integer copper (or null if unknown).
 Research endpoints:
 
 - GET /markets: explicit source mapping, enabled/verified flags, source/check freshness separately.
-- GET /markets/{id}/items?q={numeric item ID}&after_id=0&limit=50: current item variants; item-ID pagination retains variants together. Names are explicitly unverified placeholders until upstream metadata integration exists. Name search returns a notice, not fabricated matches.
+- GET /markets/{id}/items?q={name or numeric item ID}&after_id=0&limit=50: current item variants; item-ID pagination retains variants together. Name search is case-insensitive and escapes wildcard characters. Names are region-scoped cached Forever metadata; unresolved names retain item-ID fallback. Responses distinguish verified, synthetic and unresolved metadata and expose its last successful observation timestamp.
 - GET /markets/{id}/items/{item_id}/{variant_key}: prices, 60-day daily history, current listings (bounded at 200, truncation flag), algorithm/provenance and synthetic flags.
 - GET /markets/{id}/deals?minimum_discount=15&maximum_spend=5000000&minimum_coverage=3: explainable below-reference listings with filters. maximum_spend is copper. Candidate scans are bounded to 1,000 listings/50 variants and 100 results; candidates_truncated explicitly indicates limits. Confidence is limited when source freshness is unknown or stale. Daily coverage is measured within the 14-day reference window.
 

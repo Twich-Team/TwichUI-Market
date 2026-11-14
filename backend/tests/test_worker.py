@@ -146,3 +146,19 @@ def test_global_collector_lock_prevents_duplicate_fetch(database, scheduled):
         client = Client()
         assert not collect_once(database,client)
         assert client.calls == 0
+
+
+def test_metadata_rate_limit_cools_down_all_requests(monkeypatch):
+    monkeypatch.setenv('BLIZZARD_CLIENT_ID','fixture-id')
+    monkeypatch.setenv('BLIZZARD_CLIENT_SECRET','fixture-secret')
+    calls=[]
+    def transport(url,**kwargs):
+        calls.append(url)
+        if url.endswith('/token'):
+            return {'status':200,'headers':{}},b'{"access_token":"fixture-token","expires_in":3600}'
+        return {'status':429,'headers':{'Retry-After':'7200'}},b''
+    client=BlizzardClient(transport)
+    assert client.fetch_item('eu',12363)[0]['status']==429
+    with pytest.raises(UpstreamFailure,match='cooldown'):
+        client.authenticate()
+    assert len(calls)==2

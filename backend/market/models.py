@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from sqlalchemy import BigInteger, Boolean, Date, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint
+from sqlalchemy import BigInteger, Boolean, Date, DateTime, ForeignKey, Index, Integer, String, Text, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column
 from .db import Base, now
 
@@ -144,3 +144,19 @@ class DailyObservation(Base):
     market_id: Mapped[int] = mapped_column(ForeignKey('markets.id'),primary_key=True)
     day: Mapped[date] = mapped_column(Date,primary_key=True)
     observation_id: Mapped[int] = mapped_column(ForeignKey('observations.id'),index=True)
+
+
+class ItemMetadata(Base):
+    __tablename__='item_metadata'
+    region: Mapped[str] = mapped_column(String(2),primary_key=True)
+    item_id: Mapped[int] = mapped_column(Integer,primary_key=True)
+    name: Mapped[str | None] = mapped_column(String(255))
+    status: Mapped[str] = mapped_column(String(16),default='unresolved')
+    namespace: Mapped[str] = mapped_column(String(80))
+    checked_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),default=now)
+    resolved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    retry_after: Mapped[datetime] = mapped_column(DateTime(timezone=True),default=now)
+    http_status: Mapped[int | None] = mapped_column(Integer)
+    payload_hash: Mapped[str | None] = mapped_column(String(64))
+    synthetic: Mapped[bool] = mapped_column(Boolean,default=False)
+    __table_args__=(Index('ix_item_metadata_region_name',region,func.lower(name)),)

@@ -1,5 +1,11 @@
 name: Backend
-on: [push, pull_request]
+on:
+  push:
+    branches: [main]
+  pull_request:
+concurrency:
+  group: backend-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:
