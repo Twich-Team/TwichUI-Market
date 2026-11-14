@@ -3,6 +3,7 @@ WORKDIR /app
 COPY web/package.json web/package-lock.json ./
 RUN npm ci --no-audit --no-fund
 COPY web/ ./
+COPY contracts /contracts
 RUN npm run build
 
 FROM caddy:2-alpine

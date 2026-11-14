@@ -1,6 +1,9 @@
 .git
 .env*
 .local
+.aws
+.codex
+.agents
 .cache
 artifacts
 backups
@@ -8,4 +11,5 @@ backups
 **/target
 **/__pycache__
 **/.pytest_cache
+**/*.egg-info
 web/dist

@@ -17,6 +17,7 @@ pub struct Status {
     pub downloading: bool,
     pub observed_at: Option<String>,
     pub has_completed_cache: bool,
+    pub synthetic: bool,
 }
 
 #[derive(Serialize)]
@@ -36,18 +37,30 @@ impl Cache {
     fn initialize(db: Connection) -> Result<Self> {
         db.busy_timeout(std::time::Duration::from_secs(5))?;
         let version: u32 = db.pragma_query_value(None, "user_version", |row| row.get(0))?;
-        if version > 1 {
+        if version > 2 {
             return Err(Error::Invalid("newer cache schema"));
         }
         db.execute_batch("PRAGMA journal_mode=WAL; PRAGMA synchronous=FULL; PRAGMA max_page_count=32768;
             CREATE TABLE IF NOT EXISTS state(server TEXT NOT NULL, market INTEGER NOT NULL, cursor TEXT,
-                downloading INTEGER NOT NULL DEFAULT 0, target TEXT, observed_at TEXT, completed INTEGER NOT NULL DEFAULT 0,
+                downloading INTEGER NOT NULL DEFAULT 0, target TEXT, observed_at TEXT, completed INTEGER NOT NULL DEFAULT 0, synthetic INTEGER NOT NULL DEFAULT 0,
                 PRIMARY KEY(server,market));
             CREATE TABLE IF NOT EXISTS active(server TEXT NOT NULL, market INTEGER NOT NULL, item INTEGER NOT NULL,
                 variant TEXT NOT NULL, value TEXT NOT NULL, PRIMARY KEY(server,market,item,variant));
             CREATE TABLE IF NOT EXISTS staging(server TEXT NOT NULL, market INTEGER NOT NULL, item INTEGER NOT NULL,
                 variant TEXT NOT NULL, value TEXT NOT NULL, PRIMARY KEY(server,market,item,variant));
-            PRAGMA user_version=1;")?;
+            ")?;
+        let has_synthetic = {
+            let mut statement = db.prepare("PRAGMA table_info(state)")?;
+            let names = statement.query_map([], |row| row.get::<_, String>(1))?;
+            names
+                .collect::<std::result::Result<Vec<_>, _>>()?
+                .iter()
+                .any(|name| name == "synthetic")
+        };
+        if !has_synthetic {
+            db.execute_batch("ALTER TABLE state ADD COLUMN synthetic INTEGER NOT NULL DEFAULT 0;")?;
+        }
+        db.pragma_update(None, "user_version", 2)?;
         Ok(Self { db })
     }
     pub fn cursor(&self, server: &str, market: u32) -> Result<Option<String>> {
@@ -133,8 +146,8 @@ impl Cache {
                 params![server, market],
             )?;
             tx.execute(
-                "UPDATE state SET observed_at=?3,completed=1 WHERE server=?1 AND market=?2",
-                params![server, market, page.observed_at],
+                "UPDATE state SET observed_at=?3,completed=1,synthetic=?4 WHERE server=?1 AND market=?2",
+                params![server, market, page.observed_at, page.synthetic],
             )?;
         }
         tx.execute(
@@ -151,15 +164,16 @@ impl Cache {
         Ok(())
     }
     pub fn status(&self, server: &str, market: u32) -> Result<Status> {
-        let state: Option<(bool, Option<String>, bool)> = self
+        let state: Option<(bool, Option<String>, bool, bool)> = self
             .db
             .query_row(
-                "SELECT downloading,observed_at,completed FROM state WHERE server=?1 AND market=?2",
+                "SELECT downloading,observed_at,completed,synthetic FROM state WHERE server=?1 AND market=?2",
                 params![server, market],
-                |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)),
+                |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?, row.get(3)?)),
             )
             .optional()?;
-        let (downloading, observed_at, completed) = state.unwrap_or((false, None, false));
+        let (downloading, observed_at, completed, synthetic) =
+            state.unwrap_or((false, None, false, false));
         let count: i64 = self.db.query_row(
             "SELECT count(*) FROM active WHERE server=?1 AND market=?2",
             params![server, market],
@@ -171,6 +185,7 @@ impl Cache {
             downloading,
             observed_at,
             has_completed_cache: completed,
+            synthetic,
         })
     }
     pub fn items(&self, server: &str, market: u32) -> Result<Vec<Item>> {
@@ -222,7 +237,7 @@ impl Cache {
             &mut temporary,
             &serde_json::json!({"format":"twichui-market-addon-data","contract_version":1,
             "algorithm":ALGORITHM,"server":server,"market_id":market,"observed_at":status.observed_at,
-            "generated_at":chrono::Utc::now().to_rfc3339(),"synthetic":items.iter().any(|item|item.value.synthetic),"items":items}),
+            "generated_at":chrono::Utc::now().to_rfc3339(),"synthetic":status.synthetic||items.iter().any(|item|item.value.synthetic),"items":items}),
         )?;
         temporary.flush()?;
         temporary.as_file().sync_all()?;

@@ -234,6 +234,96 @@ fn compacted_cursor_automatically_rebuilds_without_losing_completed_offline_data
     worker.join().unwrap();
 }
 
+#[test]
+fn shared_versioned_fixture_preserves_precision_and_required_nullable_fields() {
+    let fixture = include_str!("../../../contracts/fixtures/sync-page-v1.json");
+    let page: Page = serde_json::from_str(fixture).unwrap();
+    page.validate(1).unwrap();
+    assert_eq!(
+        page.changes[0]
+            .value
+            .as_ref()
+            .unwrap()
+            .recent_price
+            .as_deref(),
+        Some("9007199254740993")
+    );
+    let mut invalid: serde_json::Value = serde_json::from_str(fixture).unwrap();
+    invalid["changes"][0]["value"]
+        .as_object_mut()
+        .unwrap()
+        .remove("historical_value");
+    assert!(serde_json::from_value::<Page>(invalid).is_err());
+    let mut invalid = page.clone();
+    invalid.target_observation_id = "01".into();
+    assert!(invalid.validate(1).is_err());
+    invalid.target_observation_id = "0".into();
+    assert!(invalid.validate(1).is_err());
+    invalid.changes.clear();
+    invalid.observed_at = None;
+    assert!(invalid.validate(1).is_ok());
+    let export: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../contracts/fixtures/addon-export-v1.json"
+    ))
+    .unwrap();
+    assert_eq!(export["format"], "twichui-market-addon-data");
+    assert!(export["synthetic"].as_bool().unwrap());
+}
+
+#[test]
+fn empty_synthetic_generations_keep_provenance_in_exports() {
+    let directory = tempfile::tempdir().unwrap();
+    let mut cache = Cache::memory().unwrap();
+    cache
+        .apply(SERVER, 1, None, &page("a", "1", false, &[]))
+        .unwrap();
+    let path = cache.export(SERVER, 1, directory.path()).unwrap();
+    let exported: serde_json::Value =
+        serde_json::from_slice(&std::fs::read(path).unwrap()).unwrap();
+    assert_eq!(exported["synthetic"], true);
+    assert!(cache.status(SERVER, 1).unwrap().synthetic);
+}
+
+#[test]
+fn schema_one_cache_migrates_without_losing_cursor_or_offline_items() {
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("legacy.sqlite");
+    let db = rusqlite::Connection::open(&path).unwrap();
+    db.execute_batch("CREATE TABLE state(server TEXT NOT NULL,market INTEGER NOT NULL,cursor TEXT,downloading INTEGER NOT NULL DEFAULT 0,target TEXT,observed_at TEXT,completed INTEGER NOT NULL DEFAULT 0,PRIMARY KEY(server,market));
+        CREATE TABLE active(server TEXT NOT NULL,market INTEGER NOT NULL,item INTEGER NOT NULL,variant TEXT NOT NULL,value TEXT NOT NULL,PRIMARY KEY(server,market,item,variant));
+        CREATE TABLE staging(server TEXT NOT NULL,market INTEGER NOT NULL,item INTEGER NOT NULL,variant TEXT NOT NULL,value TEXT NOT NULL,PRIMARY KEY(server,market,item,variant));
+        PRAGMA user_version=1;").unwrap();
+    db.execute(
+        "INSERT INTO state(server,market,cursor,completed) VALUES(?1,1,'legacy-cursor',1)",
+        [SERVER],
+    )
+    .unwrap();
+    db.execute(
+        "INSERT INTO active(server,market,item,variant,value) VALUES(?1,1,1,?2,?3)",
+        rusqlite::params![
+            SERVER,
+            format!("{:064x}", 1),
+            serde_json::to_string(&value("100")).unwrap()
+        ],
+    )
+    .unwrap();
+    drop(db);
+    let cache = Cache::open(&path).unwrap();
+    assert_eq!(
+        cache.cursor(SERVER, 1).unwrap().as_deref(),
+        Some("legacy-cursor")
+    );
+    assert!(cache.status(SERVER, 1).unwrap().has_completed_cache);
+    assert_eq!(cache.items(SERVER, 1).unwrap().len(), 1);
+    drop(cache);
+    let db = rusqlite::Connection::open(path).unwrap();
+    assert_eq!(
+        db.pragma_query_value::<u32, _>(None, "user_version", |row| row.get(0))
+            .unwrap(),
+        2
+    );
+}
+
 #[cfg(windows)]
 #[test]
 fn native_windows_credential_round_trip() {

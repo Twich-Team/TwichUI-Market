@@ -5,12 +5,24 @@ use std::collections::HashSet;
 pub const ALGORITHM: &str = "asking-v1-provisional";
 pub const MAX_PAGE_BYTES: u64 = 2 * 1024 * 1024;
 
+fn required_nullable<'de, D, T>(deserializer: D) -> std::result::Result<Option<T>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+    T: Deserialize<'de>,
+{
+    Option::<T>::deserialize(deserializer)
+}
+
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub struct Valuation {
+    #[serde(deserialize_with = "required_nullable")]
     pub recent_price: Option<String>,
+    #[serde(deserialize_with = "required_nullable")]
     pub lowest_buyout: Option<String>,
+    #[serde(deserialize_with = "required_nullable")]
     pub market_value: Option<String>,
+    #[serde(deserialize_with = "required_nullable")]
     pub historical_value: Option<String>,
     pub supply: u64,
     pub priced_supply: u64,
@@ -69,6 +81,7 @@ pub struct Change {
     pub operation: Operation,
     pub item_id: u32,
     pub variant_key: String,
+    #[serde(deserialize_with = "required_nullable")]
     pub value: Option<Valuation>,
 }
 
@@ -82,6 +95,7 @@ pub struct Page {
     pub cursor: String,
     pub has_more: bool,
     pub target_observation_id: String,
+    #[serde(deserialize_with = "required_nullable")]
     pub observed_at: Option<String>,
     pub synthetic: bool,
 }
@@ -96,9 +110,22 @@ impl Page {
             || self.changes.len() > 100
             || self.cursor.is_empty()
             || self.cursor.len() > 2048
+            || self.target_observation_id.is_empty()
+            || !self
+                .target_observation_id
+                .bytes()
+                .all(|b| b.is_ascii_digit())
+            || (self.target_observation_id.len() > 1 && self.target_observation_id.starts_with('0'))
             || self.target_observation_id.parse::<u64>().is_err()
         {
             return Err(Error::Invalid("page identity, size or version"));
+        }
+        if self.target_observation_id == "0" {
+            if !self.changes.is_empty() || self.has_more || self.observed_at.is_some() {
+                return Err(Error::Invalid("empty watermark contains observations"));
+            }
+        } else if self.observed_at.is_none() {
+            return Err(Error::Invalid("observation timestamp required"));
         }
         if let Some(date) = &self.observed_at {
             chrono::DateTime::parse_from_rfc3339(date)

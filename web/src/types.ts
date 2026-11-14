@@ -1,3 +1,4 @@
+import type { PriceSummary } from "../../contracts/v1/types";
 export interface Market {
   id: number;
   label: string;
@@ -26,18 +27,8 @@ export interface History {
   recent_price: string | null;
   supply: number;
 }
-export interface Valuation {
-  recent_price: string | null;
-  lowest_buyout: string | null;
-  market_value: string | null;
-  historical_value: string | null;
-  supply: number;
-  priced_supply: number;
-  listing_count: number;
-  coverage_days: number;
-  market_coverage_days: number;
+export interface Valuation extends PriceSummary {
   observed_at: string | null;
-  synthetic: boolean;
   algorithm: string;
   history: History[];
 }
