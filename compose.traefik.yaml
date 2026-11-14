@@ -1,5 +1,8 @@
 # Apply after compose.yaml and compose.tls.yaml. Pinned owner-approved frontend/API.
 services:
+  migrate:
+    image: twichui-market-backend:production-approved
+    build: !reset null
   api:
     image: twichui-market-backend:production-approved
     environment:

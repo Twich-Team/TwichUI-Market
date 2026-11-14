@@ -1,4 +1,6 @@
-# Design review v1 — awaiting approval
+# Design review v1 — historical mockups
+
+The owner explicitly approved the current implemented website's Item Experience, usability refinements, Market Configuration, Historical Retention controls and User Preferences on 2026-11-14. [Production promotion/acceptance](production-promotion-acceptance.md) records the live release. The earlier mockups and approval-pending chronology below remain historical; visual approval does not authorize destructive retention.
 
 Three high-fidelity browser-renderable pages: `/design/#explorer`, `/design/#deals`, `/design/#admin` on the localhost development server at https://localhost:18443. All data and service states are explicitly illustrative. These are review mockups, not completed website features. No authenticated or live operational claims should be inferred.
 

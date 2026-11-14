@@ -1,6 +1,6 @@
-# Private React website — design review candidate
+# Private React website
 
-React/TypeScript/Vite application uses the authenticated versioned API; no illustrative market values are shipped in its application state. Separate /design mockups remain explicitly illustrative. The current website has a review banner and is not finalized because visual approval remains pending.
+The owner-approved React/TypeScript/Vite website is live at **https://market.twich.gg**, application release c8f03c2. [Current production acceptance, tests and rollback](production-promotion-acceptance.md). It uses the authenticated versioned API; no illustrative market values are shipped in application state. Separate /design mockups remain explicitly illustrative. The obsolete approval-pending banner has been removed. Earlier implementation records below are historical.
 
 Working flows: invite-only registration, sign in/out, CSRF recovery after reload, metadata-backed name/ID/variant research (including historical fallback), 7/14/60/365 day chart ranges, current supply/distribution/listings, market comparison, below-reference listings, supply/price-change signals, confidence/coverage/direction filters, users/roles, invitations/revocation, disabled mappings/schedules, collection checks, metadata failures, storage/backup monitoring, connected devices/revocation, security events and password changes that revoke credentials. Missing names retain item-ID fallback; live metadata verification remains a task.
 

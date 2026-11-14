@@ -1,6 +1,6 @@
 # Market usability, configuration and historical retention review
 
-Implementation is ready for owner review in the existing read-only preview at https://localhost:18444. The design remains unapproved. Production retains the previous frontend and existing ingress configuration. No live historical pruning or market switch was performed.
+The owner has approved these visual/usability controls and they are live at **https://market.twich.gg** with User Preferences. [Production acceptance and rollback](production-promotion-acceptance.md) supersede the earlier preview-only status. Preview containers are removed; no destructive historical pruning was activated. The separately approved house-114 switch remains the sole active collector. The detailed implementation/research records below are historical.
 
 ## Market identity
 

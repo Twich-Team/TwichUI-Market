@@ -1,5 +1,7 @@
 # Personal preferences preview acceptance
 
+Historical preview checkpoint: the owner subsequently approved the complete website/preferences design and it is now live at **https://market.twich.gg**. [Production acceptance and rollback](production-promotion-acceptance.md) supersede the preview URL/pending-promotion status below; the preview containers were removed after production verification. The original evidence is retained.
+
 Review at **https://localhost:18444**, then open **Account & devices → My Preferences**. Preferences save to the authenticated account and restore across sessions/devices. This candidate remains in preview; production frontend promotion still requires owner approval. The existing production frontend/API, collector and ingress remain in place.
 
 Final candidate **3fe6366e51f26bcabdd09328afdd2bdd3d61a8f9** passes [Backend 43616063349](https://github.com/Twich-Team/TwichUI-Market/actions/runs/43616063349), [Private website 43616063255](https://github.com/Twich-Team/TwichUI-Market/actions/runs/43616063255) and [Windows companion 43616063304](https://github.com/Twich-Team/TwichUI-Market/actions/runs/43616063304). Final live verification completed at 16:31 UTC; deployment/account cleanup and unchanged collection were checked again at 16:34 UTC.

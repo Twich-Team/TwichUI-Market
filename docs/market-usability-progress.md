@@ -1,5 +1,7 @@
 # Market usability milestone progress
 
+**Production promotion complete:** the owner explicitly approved the current visual/usability refinements, including configuration/retention controls and User Preferences. Release c8f03c2 is live at https://market.twich.gg following CI, backup restoration and complete public workflow/session/history checks. [Production acceptance and immediate rollback](production-promotion-acceptance.md). Preview containers are removed after verification. Only house 114 continues collecting; destructive historical pruning remains disabled and unauthorized. Prior review-state entries below are historical.
+
 ## Baseline — 2026-11-14
 
 Started at f84fea9 on clean dev/s1-s5-implementation. Read AGENTS.md, implementation/progress, item modernization and Traefik plans. Docker context rootless. Existing production and localhost18444 read-only preview are running; only current collector retained. Host has approximately 11 GiB available RAM and 20 GiB free filesystem space. No unrelated resources touched.

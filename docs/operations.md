@@ -90,7 +90,9 @@ Start the review-only candidate reproducibly with `docker --context rootless com
 
 The earlier no-host-port preview instructions above are historical. The owner now explicitly authorized https://localhost:18444 with a separate read-only API and isolated origin/cookie. Use [the current deployment and cleanup instructions](traefik-preview-operations.md) and [actual progress](traefik-preview-progress.md). The public hostname currently returns403 intentionally; do not infer public authentication from local tests.
 
-## Personal preferences preview
+## Personal preferences preview (historical)
+
+The owner has since approved and promoted the frontend/API to **https://market.twich.gg**. The preview containers are removed; the instructions below document the earlier checkpoint. [Current release, verification and immediate rollback](production-promotion-acceptance.md). Production uses the pinned production-approved backend for api/local-api/migrate and production-approved web image for proxy; migration builds are disabled. No schema change was needed for this promotion. Retention application remains separately gated and unauthorized.
 
 The active review candidate adds PostgreSQL migration 0012 and account-owned preferences, while keeping the production frontend/API and collector images unchanged. See [the complete acceptance audit](user-preferences-acceptance.md). The preview API permits only the exact authenticated preference PATCH/reset mutations in addition to login/logout; collection, users and device administration remain read-only. Personal settings never enable collection or alter its interval.
 

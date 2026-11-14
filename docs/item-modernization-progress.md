@@ -1,5 +1,7 @@
 # Item modernization progress
 
+**Owner-approved and promoted:** current Item Experience plus subsequent usability/configuration/retention controls and User Preferences are live at https://market.twich.gg, release c8f03c2. [Production acceptance and rollback](production-promotion-acceptance.md) supersede earlier pending-visual/promotion notes. History, accounts/preferences, desktop contracts and the sole house-114 collector are preserved. No destructive retention is authorized. Earlier entries below remain chronological evidence.
+
 2026-11-14: Inspected existing frontend/API/metadata/pricing and deployment guidance. Current Explorer downloads up to 50 item IDs, renders every returned variant as a card, has no actual next-page control, and metadata lookups run per returned variant. No catalogue prices are included. Item details repeatedly load observation history; charts use basic SVG. Metadata contains names only; icons are placeholders. Frontend has no established server-state/table/chart/primitives libraries. Collector and genuine historical records must remain intact.
 
 Plan and acceptance criteria are in item-modernization-plan.md. Next: record reproducible baselines and implement the additive batched catalogue API before replacing the frontend grid. Existing visual approval gates remain in force. Tool goal registration still refers to an unfinished earlier goal; the new requested milestone is maintained here without falsely marking the earlier S1–S5 goal complete.

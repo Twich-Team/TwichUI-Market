@@ -1,6 +1,8 @@
 # Production ingress and interactive preview
 
-## Current state (2026-11-14)
+**Current production:** https://market.twich.gg, owner-approved release c8f03c2. Trusted public/local HTTPS, browser/session/desktop compatibility, preferences and all pages are verified. The temporary preview containers were removed after successful production checks; their CA and images remain. The existing source filter/transport confirmation was present before this deployment and direct non-Traefik access is refused. No host firewall, DNS or Traefik changes were made. Use [current deployment/rollback acceptance](production-promotion-acceptance.md); the setup/blocker chronology below is retained as historical evidence.
+
+## Historical state before production promotion (2026-11-14)
 
 - Interactive review: **https://localhost:18444**, bound only to 127.0.0.1. Modernized assets remain unapproved and separate from production.
 - Existing production/local access: **https://localhost:18443**, unchanged served asset hashes (six files). Local authentication remains available.

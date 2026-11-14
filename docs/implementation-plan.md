@@ -1,8 +1,8 @@
 # Implementation plan
 
-Current owner-authorized task: [approve and promote the verified frontend/API to production](production-promotion-plan.md). Visual/usability approval is explicit for Item Experience, Market Configuration, Historical Retention controls and User Preferences. Destructive retention remains unauthorized; preserve history, accounts, sessions, preferences and the single house-114 collector.
+Owner-approved frontend/API promotion is complete at **https://market.twich.gg**, application release **c8f03c2**. [Plan](production-promotion-plan.md), [full production acceptance and rollback](production-promotion-acceptance.md). Visual/usability approval covers Item Experience, Market Configuration, Historical Retention controls and User Preferences. Preview containers were removed after verification. History, accounts, sessions, preferences and the single house-114 collector are preserved; destructive retention remains unauthorized.
 
-Persistent per-user preferences are complete in preview: [original plan](user-preferences-plan.md), [progress](user-preferences-progress.md), [full requirement acceptance](user-preferences-acceptance.md). Review at https://localhost:18444; frontend/API promotion remains pending owner approval. Collector and all live market history remain protected.
+Persistent per-user preferences are now live in production: [original plan](user-preferences-plan.md), [progress](user-preferences-progress.md), [historical preview acceptance](user-preferences-acceptance.md). Collector and all live market history remain protected.
 
 Current milestone: [Market usability, configuration and retention](market-usability-plan.md), [progress](market-usability-progress.md).
 

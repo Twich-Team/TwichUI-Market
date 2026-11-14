@@ -1,5 +1,7 @@
 # Personal preferences progress
 
+**Now live in production:** the owner approved the full website/preferences design and release c8f03c2 was promoted at 10:05:45 MST on 2026-11-14. [Production acceptance and rollback](production-promotion-acceptance.md). Existing sessions/settings survived, and public refresh/logout/login persistence passed on trusted HTTPS. Preview containers were removed only after successful production verification. The development/preview chronology below is retained unchanged.
+
 Started from clean 89554e6 on dev/s1-s5-implementation. Read AGENTS.md, implementation/progress, authentication/ownership/CSRF, current user models, API conventions, migrations and React/TanStack Query/cache code. [Plan and full scope](user-preferences-plan.md). Production stays on its approved frontend; only house 114 / market 2 remains collecting. Production market history and collector configuration remain unchanged by preferences work.
 
 ## Backend checkpoint — 2026-11-14
