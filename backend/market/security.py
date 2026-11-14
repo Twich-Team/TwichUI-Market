@@ -1,5 +1,6 @@
 import hashlib
 import secrets
+import re
 from datetime import timedelta, timezone
 from argon2 import PasswordHasher
 from argon2.exceptions import VerificationError, InvalidHashError
@@ -7,7 +8,7 @@ from fastapi import Depends, HTTPException, Request
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from .db import now, session
-from .models import Credential, SecurityEvent, User
+from .models import CompanionDevice, Credential, SecurityEvent, User
 from . import environment as settings
 
 hasher = PasswordHasher(time_cost=3, memory_cost=19456, parallelism=1)
@@ -51,14 +52,29 @@ def identity(request: Request, db: Session = Depends(session)):
         raise HTTPException(401, "Authentication required")
     credential = db.scalar(select(Credential).where(Credential.token_hash == digest(token)))
     if (not credential or credential.revoked or aware(credential.expires_at) <= now()
-            or credential.kind != ("device" if bearer else "session")):
+            or credential.kind not in (("device", "companion") if bearer else ("session",))):
         raise HTTPException(401, "Authentication required")
+    if (credential.kind == 'companion') != (credential.companion_device_id is not None):
+        raise HTTPException(401, 'Invalid desktop authorization')
     if not bearer and credential.audience != settings.SESSION_ORIGIN:
         if not (credential.audience is None and settings.ALLOW_LEGACY_SESSIONS):
             raise HTTPException(401,"Session belongs to another application origin")
     user = db.get(User, credential.user_id)
     if not user or not user.active:
         raise HTTPException(401, "Authentication required")
+    if credential.kind == 'companion':
+        device = db.get(CompanionDevice, credential.companion_device_id)
+        if (device is None or device.user_id != user.id or device.issuer_origin != settings.SESSION_ORIGIN or device.revoked
+                or aware(device.expires_at) <= now()):
+            raise HTTPException(401, 'Desktop authorization expired or revoked')
+        path = request.url.path
+        read = request.method == 'GET' and (path in ('/api/v1/auth/me', '/api/v1/markets', '/api/v1/companion/bootstrap')
+            or re.fullmatch(r'/api/v1/sync/markets/[0-9]+', path)
+            or re.fullmatch(r'/api/v1/companion/markets/[0-9]+/observations/[0-9]+', path))
+        write = request.method == 'POST' and path in ('/api/v1/companion/activity', '/api/v1/companion/devices/self/revoke')
+        if not (read or write):
+            raise HTTPException(403, 'This desktop connection only permits market synchronization')
+        request.state.companion_device = device
     if not bearer and request.method not in ("GET", "HEAD", "OPTIONS"):
         csrf = request.headers.get("x-csrf-token", "")
         if not secrets.compare_digest(digest(csrf), credential.csrf_hash or ""):

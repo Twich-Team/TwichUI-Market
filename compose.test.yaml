@@ -6,7 +6,12 @@ services:
     environment:
       POSTGRES_DB: market_test
     volumes: !override []
-    tmpfs: [/var/lib/postgresql/data:size=256m]
+    # Repeated schema/concurrency tests generate WAL, not market history. Keep a
+    # bounded test-only allowance and checkpoint before the disposable disk fills.
+    tmpfs: [/var/lib/postgresql/data:size=512m]
+    command: [postgres, -c, max_wal_size=64MB, -c, min_wal_size=32MB, -c, checkpoint_timeout=30s]
+    healthcheck:
+      test: [CMD, pg_isready, -U, market, -d, market_test]
   test:
     image: twichui-market-backend:dev
     environment:

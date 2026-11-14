@@ -1,0 +1,17 @@
+{
+  "recorded_at_utc": "2026-11-14T18:40:00Z",
+  "status": "backend_verified_native_and_web_integration_pending",
+  "environment": "isolated market_test PostgreSQL, bounded marketdev rootless containers",
+  "backend_tests_passed": 230,
+  "new_authorization_tests": 48,
+  "migration_revision": "0013",
+  "migration_rehearsal": ["upgrade populated legacy schema", "all original fields preserved", "alembic schema check", "populated downgrade rejected", "empty downgrade preserves legacy records", "base downgrade and head upgrade"],
+  "actual_previous_api_image": "twichui-market-backend:rollback-20261114",
+  "previous_api_against_new_schema": {"valid_legacy_token_http":200, "valid_native_scoped_token_http":401},
+  "proofs": ["concurrent one-use code", "concurrent exact-nonce retry", "different-nonce replay revokes family", "all older refresh generations recognized", "strict loopback and S256", "session and issuer binding", "least privilege including admin users", "owned rename/revoke", "saved market fallback without preference mutation", "server-confirmed final-page sync"],
+  "production_schema": "0012 unchanged",
+  "production_services_changed": false,
+  "additional_collectors_activated": false,
+  "historical_pruning_activated": false,
+  "remaining": ["native browser authorization and vault integration", "native worker/tray/window behavior", "web approval/setup/devices UI", "release signing and controlled distribution", "installed Windows acceptance and metrics/screenshots", "owner visual and release approval", "fresh backup restore before additive production migration"]
+}

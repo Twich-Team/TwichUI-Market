@@ -5,7 +5,7 @@ import hashlib
 import hmac
 import json
 import os
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from sqlalchemy import and_, or_, select, text
 from sqlalchemy.orm import Session
 from .db import session
@@ -65,7 +65,7 @@ def compact(db,observation,item_id,variant_key,watermark):
 
 
 @router.get('/markets/{market_id}')
-def synchronize(market_id: MarketId,cursor: str | None = Query(None,max_length=2048),
+def synchronize(market_id: MarketId,request: Request,cursor: str | None = Query(None,max_length=2048),
                 limit: int = Query(50,ge=1,le=100),user: User = Depends(identity),db: Session = Depends(session)):
     require_market(db,market_id)
     # No lower observation IDs may commit after selecting this download's watermark.
@@ -94,10 +94,13 @@ def synchronize(market_id: MarketId,cursor: str | None = Query(None,max_length=2
             raise HTTPException(409,'Detailed sync history compacted; start a full synchronization')
     if state['base']==state['target']:
         state['done']=True
-        return {'contract_version':1,'market_id':market_id,'algorithm':ALGORITHM,'changes':[],
+        result = {'contract_version':1,'market_id':market_id,'algorithm':ALGORITHM,'changes':[],
                 'cursor':encode_cursor(state),'has_more':False,'target_observation_id':str(state['target']),
                 'observed_at':aware(target.retrieved_at).isoformat() if target else None,
                 'synthetic':target.synthetic if target else False}
+        from .companion_devices import record_sync
+        record_sync(db,request,market_id,state['target'],True)
+        return result
     snapshots=[observation.snapshot_id for observation in (target,base) if observation]
     after_item,after_variant=state['after']
     keys=list(db.execute(select(SnapshotStatistic.item_id,SnapshotStatistic.variant_key).where(SnapshotStatistic.snapshot_id.in_(snapshots),
@@ -114,8 +117,11 @@ def synchronize(market_id: MarketId,cursor: str | None = Query(None,max_length=2
     state['done']=len(keys)<=limit
     if keys:
         state['after']=list(keys[min(len(keys),limit)-1])
-    return {'contract_version':1,'market_id':market_id,'algorithm':ALGORITHM,'changes':changes,
+    result = {'contract_version':1,'market_id':market_id,'algorithm':ALGORITHM,'changes':changes,
             'cursor':encode_cursor(state),'has_more':not state['done'],'target_observation_id':str(state['target']),
             'observed_at':aware(target.retrieved_at).isoformat() if target else None,
             'synthetic':bool((target and target.synthetic) or (base and base.synthetic)
                 or any(row['value'] and row['value']['synthetic'] for row in changes))}
+    from .companion_devices import record_sync
+    record_sync(db,request,market_id,state['target'],state['done'])
+    return result

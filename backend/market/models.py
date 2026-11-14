@@ -36,6 +36,7 @@ class Credential(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     revoked: Mapped[bool] = mapped_column(Boolean, default=False)
+    companion_device_id: Mapped[int | None] = mapped_column(ForeignKey('companion_devices.id'), index=True)
 
 
 class Invitation(Base):
@@ -266,3 +267,56 @@ class PlayerMarketMapping(Base):
     evidence: Mapped[str] = mapped_column(Text)
     evidence_hash: Mapped[str] = mapped_column(String(64))
     verified_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class CompanionDevice(Base):
+    __tablename__ = 'companion_devices'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'), index=True)
+    name: Mapped[str] = mapped_column(String(80))
+    platform: Mapped[str] = mapped_column(String(16))
+    app_version: Mapped[str] = mapped_column(String(48))
+    issuer_origin: Mapped[str] = mapped_column(String(255))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    refresh_expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    revoked: Mapped[bool] = mapped_column(Boolean, default=False)
+    refresh_hash: Mapped[str] = mapped_column(String(64), unique=True)
+    previous_refresh_hash: Mapped[str | None] = mapped_column(String(64), unique=True)
+    rotation_nonce_hash: Mapped[str | None] = mapped_column(String(64))
+    rotated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    generation: Mapped[int] = mapped_column(Integer, default=0)
+    access_credential_id: Mapped[int | None] = mapped_column(Integer)
+    last_connection_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    last_sync_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    selected_market_id: Mapped[int | None] = mapped_column(Integer)
+    last_observation_id: Mapped[int | None] = mapped_column(Integer)
+
+
+class CompanionAuthorization(Base):
+    __tablename__ = 'companion_authorizations'
+    id: Mapped[str] = mapped_column(String(43), primary_key=True)
+    user_id: Mapped[int | None] = mapped_column(ForeignKey('users.id'), index=True)
+    device_id: Mapped[int | None] = mapped_column(ForeignKey('companion_devices.id'))
+    approved_credential_id: Mapped[int | None] = mapped_column(ForeignKey('credentials.id'))
+    device_name: Mapped[str] = mapped_column(String(80))
+    platform: Mapped[str] = mapped_column(String(16))
+    app_version: Mapped[str] = mapped_column(String(48))
+    issuer_origin: Mapped[str] = mapped_column(String(255))
+    redirect_uri: Mapped[str] = mapped_column(String(128))
+    state_value: Mapped[str] = mapped_column(String(128))
+    state_hash: Mapped[str] = mapped_column(String(64), unique=True)
+    code_challenge: Mapped[str] = mapped_column(String(43))
+    code_hash: Mapped[str | None] = mapped_column(String(64), unique=True)
+    code_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
+    status: Mapped[str] = mapped_column(String(16), default='pending')
+    invalid_attempts: Mapped[int] = mapped_column(Integer, default=0)
+
+
+class CompanionRefreshHistory(Base):
+    __tablename__ = 'companion_refresh_history'
+    token_hash: Mapped[str] = mapped_column(String(64), primary_key=True)
+    device_id: Mapped[int] = mapped_column(ForeignKey('companion_devices.id'), index=True)
+    consumed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)

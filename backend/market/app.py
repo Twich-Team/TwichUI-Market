@@ -14,7 +14,7 @@ from sqlalchemy import select, text, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from .db import now, session
-from .models import Credential, Invitation, LoginAttempt, SecurityEvent, User
+from .models import CompanionDevice, Credential, Invitation, LoginAttempt, SecurityEvent, User
 from .security import DUMMY_HASH, admin, audit, aware, digest, hasher, identity, issue, verify
 
 app = FastAPI(title="TwichUI Market", version="0.1.0", docs_url=None, redoc_url=None)
@@ -36,6 +36,10 @@ from .current_listings import router as listings_router
 app.include_router(listings_router)
 from .preferences import router as preferences_router
 app.include_router(preferences_router)
+from .companion_auth import router as companion_auth_router
+app.include_router(companion_auth_router)
+from .companion_devices import DeviceId, Rename, router as companion_devices_router
+app.include_router(companion_devices_router)
 COOKIE_SECURE = os.environ.get("COOKIE_SECURE", "true").lower() == "true"
 ORIGIN = os.environ.get("APP_ORIGIN", "https://localhost")
 
@@ -66,24 +70,31 @@ async def security_headers(request, call_next):
             return Response(status_code=403)
         personal_preference = ((request.method=='PATCH' and request.url.path=='/api/v1/me/preferences')
             or (request.method=='POST' and request.url.path=='/api/v1/me/preferences/reset'))
-        if settings.READ_ONLY and request.url.path not in ('/api/v1/auth/login','/api/v1/auth/logout') and not personal_preference:
+        native_personal = request.url.path in ('/api/v1/companion/authorizations', '/api/v1/companion/token',
+            '/api/v1/companion/activity', '/api/v1/companion/devices/self/revoke') or bool(re.fullmatch(
+                r'/api/v1/companion/authorizations/[A-Za-z0-9_-]{43}/decision', request.url.path))
+        native_personal = native_personal or bool(request.method in ('PATCH','DELETE') and
+            re.fullmatch(r'/api/v1/companion/devices/[0-9]+', request.url.path))
+        if settings.READ_ONLY and request.url.path not in ('/api/v1/auth/login','/api/v1/auth/logout') and not personal_preference and not native_personal:
             return Response(status_code=403,content='{"detail":"Interactive preview is read-only; use production for changes."}',media_type='application/json')
         length = request.headers.get("content-length", "0")
         if not length.isdigit() or int(length) > 16384:
             return Response(status_code=413)
-        if personal_preference:
+        native_body = request.url.path.startswith('/api/v1/companion/')
+        if personal_preference or native_body:
             chunks=[]
             size=0
             async for chunk in request.stream():
                 size+=len(chunk)
-                if size>4096:
+                if size>(8192 if native_body else 4096):
                     return Response(status_code=413)
                 chunks.append(chunk)
             request._body=b''.join(chunks)
-            try:
-                json.loads(request._body,parse_float=finite_json_number,parse_constant=reject_json_constant)
-            except (ValueError,UnicodeDecodeError):
-                return Response(status_code=422,content='{"detail":"Preferences require valid JSON with finite numbers."}',media_type='application/json')
+            if request._body and request.url.path != '/api/v1/companion/token':
+                try:
+                    json.loads(request._body,parse_float=finite_json_number,parse_constant=reject_json_constant)
+                except (ValueError,UnicodeDecodeError):
+                    return Response(status_code=422,content='{"detail":"Use valid JSON with finite numbers."}',media_type='application/json')
     response = await call_next(request)
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
@@ -207,6 +218,7 @@ def change_password(body: PasswordChange,request: Request,user: User = Depends(i
     if not verify(user.password_hash,body.current_password):
         raise HTTPException(403,'Current password incorrect')
     user.password_hash=hasher.hash(body.new_password)
+    db.execute(update(CompanionDevice).where(CompanionDevice.user_id==user.id).values(revoked=True))
     db.execute(update(Credential).where(Credential.user_id==user.id).values(revoked=True))
     audit(db,user.id,'password.changed')
     db.commit()
@@ -242,8 +254,27 @@ def revoke_device(device_id: int, user: User = Depends(identity), db: Session = 
     if not row or row.kind != "device" or (row.user_id != user.id and user.role != "admin"):
         raise HTTPException(404, "Device not found")
     row.revoked = True
+    if row.companion_device_id is not None:
+        from .companion_auth import _revoke
+        device = db.get(CompanionDevice, row.companion_device_id)
+        if device is not None:
+                _revoke(db, device, 'account_revocation', actor_id=user.id)
     audit(db, user.id, "device.revoked", str(device_id))
     db.commit()
+
+
+@app.patch('/api/v1/devices/{device_id}')
+def rename_legacy_device(device_id: DeviceId, body: Rename, request: Request,
+                         user: User = Depends(identity), db: Session = Depends(session)):
+    if request.state.credential.kind != 'session':
+        raise HTTPException(403, 'Website session required')
+    row = db.get(Credential, device_id)
+    if row is None or row.kind != 'device' or row.user_id != user.id:
+        raise HTTPException(404, 'Device not found')
+    row.name = body.name
+    audit(db, user.id, 'device.renamed', str(row.id))
+    db.commit()
+    return {'id': row.id, 'name': row.name, 'revoked': row.revoked, 'expires_at': row.expires_at}
 
 
 @app.post("/api/v1/admin/invitations", status_code=201)
@@ -295,6 +326,7 @@ def update_user(user_id: int, body: UserUpdate, user: User = Depends(admin), db:
             raise HTTPException(409, "Keep at least one active administrator")
     target.role, target.active = body.role, body.active
     if not body.active:
+        db.execute(update(CompanionDevice).where(CompanionDevice.user_id == target.id).values(revoked=True))
         db.execute(update(Credential).where(Credential.user_id == target.id).values(revoked=True))
     audit(db, user.id, "user.updated", str(target.id))
     db.commit()
