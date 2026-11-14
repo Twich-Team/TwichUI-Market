@@ -89,7 +89,9 @@ export class PreferenceStore {
     }
     if(resource.schema_version!==1)throw new Error('Your preferences require a newer website.');
     if(!this.base||resource.revision>=this.base.revision)this.base=resource;
-    this.emit(this.dirty.size||this.resetQueued?'saving':'saved');
+    const pending=this.dirty.size||this.resetQueued;
+    const keepError=pending&&(this.snapshot.status==='offline'||this.snapshot.status==='error');
+    this.emit(pending?(keepError?this.snapshot.status:'saving'):'saved',keepError?this.snapshot.error:'');
   }
   private async request(path:string,method='GET',body?:unknown,signal?:AbortSignal) {
     const controller=new AbortController();

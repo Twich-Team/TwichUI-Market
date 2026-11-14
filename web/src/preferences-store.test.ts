@@ -60,6 +60,19 @@ it('times out a stalled save, keeps the latest choice and permits a later retry'
  expect(s.getSnapshot()).toMatchObject({status:'offline',values:{explorer_days:60}});
  await vi.advanceTimersByTimeAsync(3000);expect(s.getSnapshot().status).toBe('saved');
 });
+it('a background refresh keeps the retry control visible after a rejected save',async()=>{
+ const transport=vi.fn().mockRejectedValueOnce(new ApiError(403,'Rejected'))
+  .mockResolvedValueOnce(resource(2,{deal_mode:'price'}))
+  .mockResolvedValueOnce(resource(3,{deal_mode:'price',explorer_days:60}));
+ const s=store(transport);s.receive(resource());s.update({explorer_days:60});
+ expect(await s.flush()).toBe(false);
+ const message=s.getSnapshot().error;
+ await s.load();
+ expect(s.getSnapshot()).toMatchObject({status:'error',error:message,values:{explorer_days:60,deal_mode:'price'}});
+ expect(await s.flush()).toBe(true);
+ expect(transport.mock.calls[2][2]).toMatchObject({expected_revision:2,changes:{explorer_days:60}});
+ expect(s.getSnapshot().status).toBe('saved');
+});
 it('reset waits for an in-flight save, discards prior dirt, and keeps later edits',async()=>{
  const first=deferred<PreferenceResource>();
  const transport=vi.fn().mockReturnValueOnce(first.promise).mockResolvedValueOnce(resource(2))
