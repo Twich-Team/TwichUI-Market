@@ -50,6 +50,7 @@ Add-Type @'
 using System;
 using System.Runtime.InteropServices;
 public static class CompanionNativeInput {
+  [DllImport("user32.dll")] public static extern bool SetProcessDPIAware();
   [DllImport("user32.dll")] public static extern bool SetCursorPos(int x, int y);
   [DllImport("user32.dll")] public static extern void mouse_event(uint flags, uint dx, uint dy, uint data, UIntPtr extra);
   [DllImport("user32.dll")] public static extern bool ShowWindowAsync(IntPtr window, int command);
@@ -64,6 +65,7 @@ if ($Action -in @('Minimize','Close')) {
     @{ action=$Action; exact_installed_process=$true } | ConvertTo-Json -Compress
     exit
 }
+$null=[CompanionNativeInput]::SetProcessDPIAware()
 $root = [System.Windows.Automation.AutomationElement]::RootElement
 $scope = [System.Windows.Automation.TreeScope]::Descendants
 $trueCondition = [System.Windows.Automation.Condition]::TrueCondition
@@ -99,7 +101,7 @@ $condition=[System.Windows.Automation.PropertyCondition]::new([System.Windows.Au
 $items=@()
 for ($attempt=0;$attempt -lt 20;$attempt++) {
     $items=@(foreach ($menu in $root.FindAll([System.Windows.Automation.TreeScope]::Children,$trueCondition)) {
-        if ($menu.Current.ProcessId -eq $apps[0].Id -and ($menu.Current.ClassName -eq '#32768' -or $menu.Current.ControlType -eq [System.Windows.Automation.ControlType]::Menu)) {
+        if ($menu.Current.ClassName -eq '#32768' -or $menu.Current.ControlType -eq [System.Windows.Automation.ControlType]::Menu) {
             foreach ($item in $menu.FindAll($scope,$condition)) { $item }
         }
     })
@@ -107,19 +109,24 @@ for ($attempt=0;$attempt -lt 20;$attempt++) {
     Start-Sleep -Milliseconds 100
 }
 $names=@($items | ForEach-Object { $_.Current.Name })
-foreach ($expected in @('Open companion','Sync now','Quit')) {
-    if ($names -notcontains $expected) { throw "Actual tray menu missing $expected" }
-}
-if (@($names | Where-Object { $_ -like 'Settings*' }).Count -ne 1) { throw 'Actual tray menu missing Settings' }
-if ($Action -eq 'Capture') {
     $screen=[System.Windows.Forms.SystemInformation]::VirtualScreen
     $bitmap=[System.Drawing.Bitmap]::new($screen.Width,$screen.Height)
     $graphics=[System.Drawing.Graphics]::FromImage($bitmap)
     try {
         $graphics.CopyFromScreen($screen.Location,[System.Drawing.Point]::Empty,$screen.Size)
-        $file=Join-Path (Get-Location) 'artifacts/companion-v2/native-tray.png'
+        $file=Join-Path (Get-Location) 'artifacts/companion-v2/native-tray-attempt.png'
         $bitmap.Save($file,[System.Drawing.Imaging.ImageFormat]::Png)
     } finally { $graphics.Dispose();$bitmap.Dispose() }
+$windows=@(foreach ($window in $root.FindAll([System.Windows.Automation.TreeScope]::Children,$trueCondition)) {
+    @{name=$window.Current.Name;class=$window.Current.ClassName;process=$window.Current.ProcessId;type=$window.Current.ControlType.ProgrammaticName}
+})
+@{menus=$names;windows=$windows} | ConvertTo-Json -Depth 4 | Set-Content 'artifacts/companion-v2/tray-discovery.json'
+foreach ($expected in @('Open companion','Sync now','Quit')) {
+    if ($names -notcontains $expected) { throw "Actual tray menu missing $expected" }
+}
+if (@($names | Where-Object { $_ -like 'Settings*' }).Count -ne 1) { throw 'Actual tray menu missing Settings' }
+if ($Action -eq 'Capture') {
+    Copy-Item 'artifacts/companion-v2/native-tray-attempt.png' 'artifacts/companion-v2/native-tray.png'
     # Dismiss only this popup through Escape after capturing the actual Windows menu.
     [System.Windows.Forms.SendKeys]::SendWait('{ESC}')
 } else {
