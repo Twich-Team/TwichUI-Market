@@ -11,10 +11,12 @@ handle /api/* {
     reverse_proxy api:8000
 }
 handle_path /design/* {
+    encode zstd gzip
     root * /srv/design
     file_server
 }
 handle {
+    encode zstd gzip
     root * /srv
     try_files {path} /index.html
     file_server

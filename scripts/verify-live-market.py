@@ -1,8 +1,12 @@
 """Audited temporary member browser check; never resets owner or seeds market data."""
 import os
+import argparse
 from pathlib import Path
 import secrets
 import subprocess
+parser=argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--script',choices=['verify-live-browser.cjs','benchmark-browser.cjs'],default='verify-live-browser.cjs')
+args=parser.parse_args()
 ROOT=Path(__file__).resolve().parents[1]
 command=['docker','--context','rootless','compose','-f','compose.yaml','-f','compose.tls.yaml','run','--rm','-T','--no-deps','-e','MARKET_LIVE_CHECK_USERNAME','-e','MARKET_LIVE_CHECK_PASSWORD','worker','python','-']
 env=os.environ.copy()
@@ -40,8 +44,8 @@ try:
     created=True
     descriptor=os.open(path,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
     with os.fdopen(descriptor,'w') as stream:
-        for key in ('MARKET_LIVE_CHECK_USERNAME','MARKET_LIVE_CHECK_PASSWORD'):stream.write(key+'='+env[key]+'\n')
-    subprocess.run(['docker','--context','rootless','run','--rm','--name','twichui-market-live-browser','--memory','768m','--cpus','1','--network','twichui-market_default','--env-file',str(path),'-v',str(ROOT)+':/work','-w','/work','mcr.microsoft.com/playwright:v1.65.1-noble','node','scripts/verify-live-browser.cjs'],cwd=ROOT,check=True)
+        for key in ('MARKET_LIVE_CHECK_USERNAME','MARKET_LIVE_CHECK_PASSWORD','MARKET_LIVE_CHECK_PROXY'):stream.write(key+'='+env.get(key,'proxy')+'\n')
+    subprocess.run(['docker','--context','rootless','run','--rm','--name','twichui-market-live-browser','--memory','768m','--cpus','1','--network','twichui-market_default','--env-file',str(path),'-v',str(ROOT)+':/work','-w','/work','mcr.microsoft.com/playwright:v1.65.1-noble','node','scripts/'+args.script],cwd=ROOT,check=True)
 finally:
     path.unlink(missing_ok=True)
     if created:account('close')

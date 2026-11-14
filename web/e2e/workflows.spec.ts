@@ -36,6 +36,7 @@ test("private Explorer, history, comparison, Deal Finder and browser reload use 
       exact: true,
     }),
   ).toBeVisible();
+  await page.locator(".chart-viewport").first().scrollIntoViewIfNeeded();
   await expect(
     page.getByRole("img", { name: "Observed asking-price history" }),
   ).toBeVisible();
@@ -51,6 +52,7 @@ test("private Explorer, history, comparison, Deal Finder and browser reload use 
     ),
     page.getByRole("button", { name: "365D", exact: true }).click(),
   ]);
+  await page.locator(".chart-viewport").first().scrollIntoViewIfNeeded();
   await expect(
     page.getByRole("img", { name: "Observed asking-price history" }),
   ).toBeVisible();

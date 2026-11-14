@@ -1,39 +1,26 @@
-import { useEffect, useState, DependencyList } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useLayoutEffect, useState, DependencyList } from "react";
 import { api, money, when } from "./api";
-import { Detail, History, Item, Market, Valuation } from "./types";
+import { PriceHistory, SupplyDistribution } from "./charts";
+import { ItemCatalogue } from "./catalogue";
+import { ItemInfo } from "./item-components";
+import { Detail, Item, Market } from "./types";
 
 export function useLoad<T>(
-  load: () => Promise<T>,
+  key: string,
+  load: (signal?: AbortSignal) => Promise<T>,
   dependencies: DependencyList,
 ) {
-  const [data, setData] = useState<T>(),
-    [error, setError] = useState(""),
-    [loading, setLoading] = useState(false),
-    [revision, setRevision] = useState(0);
-  useEffect(() => {
-    let cancelled = false;
-    setData(undefined);
-    setLoading(true);
-    setError("");
-    load()
-      .then((result) => {
-        if (!cancelled) setData(result);
-      })
-      .catch((error) => {
-        if (!cancelled) setError(error.message);
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [...dependencies, revision]);
+  const query = useQuery({
+    queryKey: ["private", key, ...dependencies],
+    queryFn: ({ signal }) => load(signal),
+    refetchInterval: 60_000,
+  });
   return {
-    data,
-    error,
-    loading,
-    refresh: () => setRevision((previous) => previous + 1),
+    data: query.data,
+    error: query.error?.message || "",
+    loading: query.isPending,
+    refresh: () => query.refetch(),
   };
 }
 export function MarketSelect({
@@ -98,131 +85,6 @@ function Loading({ error, loading }: { error: string; loading: boolean }) {
   );
 }
 
-function HistoryChart({ rows }: { rows: History[] }) {
-  const priced = rows.filter((row) => row.recent_price !== null);
-  if (!priced.length)
-    return <p className="empty">No priced observations in this time range.</p>;
-  const lowest = priced.reduce((result, row) =>
-      BigInt(row.recent_price!) < BigInt(result.recent_price!) ? row : result,
-    ),
-    highest = priced.reduce((result, row) =>
-      BigInt(row.recent_price!) > BigInt(result.recent_price!) ? row : result,
-    );
-  const low = Number(lowest.recent_price),
-    high = Number(highest.recent_price),
-    span = Math.max(1, high - low);
-  const x = (index: number) =>
-    30 + (index / Math.max(1, rows.length - 1)) * 670;
-  const y = (price: string) => 170 - ((Number(price) - low) / span) * 135;
-  return (
-    <>
-      <svg
-        className="history-chart"
-        viewBox="0 0 740 210"
-        role="img"
-        aria-label="Observed asking-price history"
-      >
-        <path className="grid" d="M30 35H700 M30 100H700 M30 170H700" />
-        {rows.map((row, index) => {
-          const previous = rows[index - 1];
-          return (
-            <g key={row.date}>
-              {row.recent_price !== null && (
-                <>
-                  <circle
-                    cx={x(index)}
-                    cy={y(row.recent_price)}
-                    r="3"
-                    fill="#d0ac69"
-                  >
-                    <title>
-                      {row.date}: {money(row.recent_price)}
-                    </title>
-                  </circle>
-                  {previous?.recent_price != null && (
-                    <line
-                      x1={x(index - 1)}
-                      y1={y(previous.recent_price)}
-                      x2={x(index)}
-                      y2={y(row.recent_price)}
-                      stroke="#cba56b"
-                      strokeWidth="2"
-                    />
-                  )}
-                  <text x={x(index)} y="196" textAnchor="middle">
-                    {index % Math.max(1, Math.ceil(rows.length / 6)) === 0
-                      ? row.date.slice(5)
-                      : ""}
-                  </text>
-                </>
-              )}
-            </g>
-          );
-        })}
-      </svg>
-      <div className="chart-range">
-        <span>Low: {money(lowest.recent_price)}</span>
-        <span>High: {money(highest.recent_price)}</span>
-      </div>
-    </>
-  );
-}
-function Distribution({ detail }: { detail: Detail }) {
-  const priced = detail.listings
-    .filter((row) => row.buyout !== null || row.unit_price !== null)
-    .map((row) => ({
-      price:
-        row.unit_price !== null
-          ? BigInt(row.unit_price)
-          : BigInt(row.buyout!) / BigInt(row.quantity),
-      quantity: row.quantity,
-    }));
-  if (!priced.length)
-    return <p className="empty">No buyout distribution available.</p>;
-  const low = priced.reduce(
-      (value, row) => (row.price < value ? row.price : value),
-      priced[0].price,
-    ),
-    high = priced.reduce(
-      (value, row) => (row.price > value ? row.price : value),
-      priced[0].price,
-    ),
-    width = (high - low) / 4n + 1n;
-  const bands = Array.from({ length: 4 }, (_, index) => {
-    const start = low + width * BigInt(index),
-      end = start + width;
-    return {
-      start,
-      end,
-      quantity: priced
-        .filter((row) => row.price >= start && row.price < end)
-        .reduce((sum, row) => sum + row.quantity, 0),
-    };
-  });
-  const maximum = Math.max(1, ...bands.map((row) => row.quantity));
-  return (
-    <>
-      <p className="small muted">
-        Approximate per-unit asking-price bands
-        {detail.listings_truncated ? " · first 200 listings only" : ""}
-      </p>
-      <div className="distribution">
-        {bands.map((row, index) => (
-          <div key={index}>
-            <span>{money(row.start.toString())}</span>
-            <div>
-              <i style={{ width: `${(row.quantity / maximum) * 100}%` }} />
-            </div>
-            <b>{row.quantity.toLocaleString()}</b>
-          </div>
-        ))}
-      </div>
-      <p className="small muted">
-        Bid-only listings are excluded from price bands.
-      </p>
-    </>
-  );
-}
 export function Explorer({
   markets,
   market,
@@ -239,27 +101,24 @@ export function Explorer({
     [selected, setSelected] = useState<Item | null>(null),
     [range, setRange] = useState(14),
     [comparison, setComparison] = useState(0);
-  const result = useLoad(
-    () =>
-      market
-        ? api<{
-            items: Item[];
-            synthetic: boolean;
-            search_notice?: string;
-            next_after_id: number | null;
-          }>(`/markets/${market}/items?q=${encodeURIComponent(query)}`)
-        : Promise.resolve(null),
-    [market, query],
-  );
-  useEffect(() => {
-    const rows = result.data?.items || [];
+  const [catalogueSummary, setCatalogueSummary] = useState({
+    synthetic: false,
+    empty: false,
+  });
+  useLayoutEffect(() => {
     setSelected(
-      rows.find((row) => row.variant_key === focus?.variant_key) ||
-        rows[0] ||
-        null,
+      focus
+        ? {
+            ...focus,
+            name: `Item #${focus.item_id}`,
+            name_verified: false,
+            variant: null,
+          }
+        : null,
     );
-  }, [result.data]);
+  }, [market, focus?.item_id, focus?.variant_key]);
   const detail = useLoad(
+    "item-detail",
     () =>
       market && selected
         ? api<Detail>(
@@ -269,6 +128,7 @@ export function Explorer({
     [market, selected?.item_id, selected?.variant_key],
   );
   const compared = useLoad(
+    "comparison",
     () =>
       comparison && selected
         ? api<Detail>(
@@ -276,15 +136,6 @@ export function Explorer({
           )
         : Promise.resolve(null),
     [comparison, selected?.item_id, selected?.variant_key],
-  );
-  const longHistory = useLoad(
-    () =>
-      range > 60 && market && selected
-        ? api<{ points: History[]; synthetic: boolean }>(
-            `/markets/${market}/items/${selected.item_id}/${selected.variant_key}/history?days=${range}`,
-          )
-        : Promise.resolve(null),
-    [range, market, selected?.item_id, selected?.variant_key],
   );
   const current = markets.find((row) => row.id === market),
     value = detail.data?.valuation;
@@ -316,61 +167,37 @@ export function Explorer({
           />
         </label>
         <MarketSelect {...{ markets, market, setMarket }} />
-        <button className="primary" disabled={!market || result.loading}>
+        <button className="primary" disabled={!market}>
           Search
         </button>
       </form>
       {current && <Freshness market={current} />}
-      <Loading
-        error={result.error || detail.error}
-        loading={result.loading || detail.loading}
-      />
+      <Loading error={detail.error} loading={detail.loading} />
       {!market && (
         <div className="empty panel">
           No market mappings are configured. An administrator can add a mapping
           under Administration.
         </div>
       )}
-      {result.data?.search_notice && (
-        <p className="notice">{result.data.search_notice}</p>
-      )}
-      {result.data?.synthetic && (
+      {catalogueSummary.synthetic && (
         <p className="notice warning">
           Synthetic fixture data · not live Auction House observations.
         </p>
       )}
-      {result.data && result.data.items.length === 0 && (
-        <p className="empty panel">
-          No matching current listings. Collection may not be configured, or the
-          item may not be listed.
-        </p>
-      )}
-      {!!result.data?.items.length && (
-        <div className="item-results" aria-label="Item search results">
-          {result.data.items.map((row) => (
-            <button
-              key={`${row.item_id}:${row.variant_key}`}
-              className={
-                selected?.variant_key === row.variant_key ? "selected" : ""
-              }
-              onClick={() => setSelected(row)}
-            >
-              {row.name}
-              <small>Variant {row.variant_key.slice(0, 8)}</small>
-            </button>
-          ))}
-          {result.data.next_after_id && (
-            <p className="small muted">
-              Showing the first 50 item IDs. Search an exact ID to narrow the
-              results.
-            </p>
-          )}
-        </div>
+      {!!market && (
+        <ItemCatalogue
+          key={market}
+          market={market}
+          query={query}
+          focus={focus}
+          onSelect={setSelected}
+          onSummary={setCatalogueSummary}
+        />
       )}
       {detail.data && value && (
         <>
           <div className="item-heading">
-            <div className="item-icon">◇</div>
+            <ItemInfo market={market} item={detail.data} prices={value} />
             <div>
               <div className="eyebrow">ITEM #{detail.data.item_id}</div>
               <h2>{detail.data.name}</h2>
@@ -411,35 +238,24 @@ export function Explorer({
               <div className="panel-heading">
                 <h3>Price history</h3>
                 <div className="segmented">
-                  {[7, 14, 60, 365].map((days) => (
+                  {[7, 14, 60, 365, 3650].map((days) => (
                     <button
                       key={days}
                       className={range === days ? "selected" : ""}
                       onClick={() => setRange(days)}
                     >
-                      {days}D
+                      {days === 3650 ? "10Y" : `${days}D`}
                     </button>
                   ))}
                 </div>
               </div>
-              {longHistory.error && (
-                <p className="panel-note error" role="alert">
-                  {longHistory.error}
-                </p>
-              )}
-              {longHistory.loading ? (
-                <p className="empty" role="status">
-                  Loading long-term history…
-                </p>
-              ) : (
-                <HistoryChart
-                  rows={
-                    range > 60
-                      ? longHistory.data?.points || []
-                      : value.history.filter((row) => row.date >= cutoff)
-                  }
-                />
-              )}
+              <PriceHistory
+                key={`${market}:${selected!.item_id}:${selected!.variant_key}:${range}`}
+                market={market}
+                item={selected!.item_id}
+                variant={selected!.variant_key}
+                days={range}
+              />
               <p className="panel-note">
                 60-day historical value: {money(value.historical_value)} ·{" "}
                 {value.coverage_days} observed days
@@ -449,7 +265,11 @@ export function Explorer({
               <div className="panel-heading">
                 <h3>Supply by price</h3>
               </div>
-              <Distribution detail={detail.data} />
+              <SupplyDistribution
+                market={market}
+                item={selected!.item_id}
+                variant={selected!.variant_key}
+              />
             </section>
           </div>
           <section className="panel">
@@ -491,7 +311,7 @@ export function Explorer({
               </div>
             )}
           </section>
-          <section className="panel table-panel">
+          <section className="panel table-panel" tabIndex={0} role="region" aria-label="Scrollable current listings">
             <div className="panel-heading">
               <h3>Current listings</h3>
               <span className="muted">

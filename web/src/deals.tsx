@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ItemInfo } from "./item-components";
 import { api, money } from "./api";
 import { Freshness, MarketSelect, useLoad } from "./research";
 import { Deal, Market, Signal } from "./types";
@@ -46,15 +47,19 @@ export function Deals({
     direction: "any",
   });
   const [submitted, setSubmitted] = useState(filters);
-  const result = useLoad(() => {
-    if (!market) return Promise.resolve(null);
-    const shared = `minimum_coverage=${submitted.coverage}&minimum_confidence=${submitted.confidence}`;
-    const path =
-      mode === "listings"
-        ? `/deals?minimum_discount=${submitted.change}&maximum_spend=${Math.round(submitted.spend * 10000)}&${shared}`
-        : `/signals?kind=${mode}&minimum_change=${submitted.change}&direction=${submitted.direction}&${shared}`;
-    return api<Results>(`/markets/${market}${path}`);
-  }, [market, mode, submitted]);
+  const result = useLoad(
+    "opportunities",
+    () => {
+      if (!market) return Promise.resolve(null);
+      const shared = `minimum_coverage=${submitted.coverage}&minimum_confidence=${submitted.confidence}`;
+      const path =
+        mode === "listings"
+          ? `/deals?minimum_discount=${submitted.change}&maximum_spend=${Math.round(submitted.spend * 10000)}&${shared}`
+          : `/signals?kind=${mode}&minimum_change=${submitted.change}&direction=${submitted.direction}&${shared}`;
+      return api<Results>(`/markets/${market}${path}`);
+    },
+    [market, mode, submitted],
+  );
   const deals = result.data?.deals || [],
     signals = result.data?.signals || [];
   const count = mode === "listings" ? deals.length : signals.length;
@@ -247,8 +252,21 @@ export function Deals({
                   <span>{deal.confidence} evidence</span>
                 </div>
                 <div className="item-heading">
-                  <div className="item-icon">◇</div>
-                  <h2>{deal.name || `Item #${deal.item_id}`}</h2>
+                  <h2>
+                    <ItemInfo
+                      market={market}
+                      item={{
+                        item_id: deal.item_id,
+                        name: deal.name || `Item #${deal.item_id}`,
+                        variant_key: deal.variant_key,
+                      }}
+                      prices={{
+                        market_value: deal.market_value,
+                        supply: deal.quantity,
+                      }}
+                      label
+                    />
+                  </h2>
                   <strong className="discount">
                     −{deal.discount_percent}%
                   </strong>
@@ -293,8 +311,21 @@ export function Deals({
                   <span>{signal.confidence} evidence</span>
                 </div>
                 <div className="item-heading">
-                  <div className="item-icon">◇</div>
-                  <h2>{signal.name || `Item #${signal.item_id}`}</h2>
+                  <h2>
+                    <ItemInfo
+                      market={market}
+                      item={{
+                        item_id: signal.item_id,
+                        name: signal.name || `Item #${signal.item_id}`,
+                        variant_key: signal.variant_key,
+                      }}
+                      prices={{
+                        recent_price: signal.current_price,
+                        supply: signal.current_supply,
+                      }}
+                      label
+                    />
+                  </h2>
                   <strong className="discount">
                     {signal.change_percent > 0 ? "+" : ""}
                     {signal.change_percent}%

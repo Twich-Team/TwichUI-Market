@@ -24,9 +24,12 @@ export async function api<T>(
   path: string,
   method = "GET",
   body?: unknown,
+  signal?: AbortSignal,
 ): Promise<T> {
+  const requestCsrf = csrf;
   const response = await fetch(`/api/v1${path}`, {
     method,
+    signal,
     credentials: "same-origin",
     headers: {
       "Content-Type": "application/json",
@@ -35,6 +38,13 @@ export async function api<T>(
     body: body === undefined ? undefined : JSON.stringify(body),
   });
   if (!response.ok) {
+    if (
+      response.status === 401 &&
+      requestCsrf === csrf &&
+      path !== "/auth/login" &&
+      typeof window !== "undefined"
+    )
+      window.dispatchEvent(new Event("market-auth-expired"));
     let message = `Request failed (${response.status})`;
     try {
       const result = await response.json();

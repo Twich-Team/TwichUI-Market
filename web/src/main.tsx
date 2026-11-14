@@ -1,9 +1,18 @@
-import React, { useEffect, useState } from "react";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient, clearPrivateCache, setQueryIdentity } from "./query";
+import React, { lazy, Suspense, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { api, ApiError, BrowserSession, setCsrf, User } from "./api";
-import { Explorer } from "./research";
-import { Deals } from "./deals";
-import { Administration, Account } from "./settings";
+const Explorer = lazy(() =>
+  import("./research").then((m) => ({ default: m.Explorer })),
+);
+const Deals = lazy(() => import("./deals").then((m) => ({ default: m.Deals })));
+const Administration = lazy(() =>
+  import("./settings").then((m) => ({ default: m.Administration })),
+);
+const Account = lazy(() =>
+  import("./settings").then((m) => ({ default: m.Account })),
+);
 import { Market } from "./types";
 import "./style.css";
 
@@ -140,6 +149,18 @@ function App() {
     item_id: number;
     variant_key: string;
   } | null>(null);
+  useEffect(() => {
+    const expired = () => {
+      clearPrivateCache();
+      setCsrf("");
+      setUser(null);
+      setMarkets([]);
+      setMarket(0);
+      setFocus(null);
+    };
+    window.addEventListener("market-auth-expired", expired);
+    return () => window.removeEventListener("market-auth-expired", expired);
+  }, []);
   const loadMarkets = async () => {
     const result = await api<{ markets: Market[] }>("/markets");
     setMarkets(result.markets);
@@ -152,6 +173,7 @@ function App() {
   useEffect(() => {
     api<BrowserSession>("/auth/session")
       .then((session) => {
+        setQueryIdentity(`${session.user.id}:${session.user.role}`);
         setCsrf(session.csrf_token);
         setUser(session.user);
       })
@@ -165,6 +187,9 @@ function App() {
     if (user) loadMarkets().catch((error) => setError(error.message));
   }, [user?.id]);
   function session(result: BrowserSession) {
+    setPage("explorer");
+    setFocus(null);
+    setQueryIdentity(`${result.user.id}:${result.user.role}`);
     setCsrf(result.csrf_token);
     setUser(result.user);
     setError("");
@@ -172,6 +197,7 @@ function App() {
   async function logout() {
     try {
       await api("/auth/logout", "POST");
+      clearPrivateCache();
       setCsrf("");
       setUser(null);
       setMarkets([]);
@@ -289,6 +315,7 @@ function App() {
           {page === "account" && (
             <Account
               signedOut={() => {
+                clearPrivateCache();
                 setCsrf("");
                 setUser(null);
               }}
@@ -305,6 +332,16 @@ function App() {
 }
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <App />
+    <QueryClientProvider client={queryClient}>
+      <Suspense
+        fallback={
+          <p role="status" className="empty">
+            Loading market tools…
+          </p>
+        }
+      >
+        <App />
+      </Suspense>
+    </QueryClientProvider>
   </React.StrictMode>,
 );

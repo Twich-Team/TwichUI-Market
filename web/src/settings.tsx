@@ -1,8 +1,17 @@
 import { useState } from "react";
+import { DataTable } from "./data-table";
 import { api, User, when } from "./api";
 import { Market } from "./types";
 import { useLoad } from "./research";
 
+interface Enrichment {
+  rich_items: number;
+  community_items: number;
+  community_enabled: boolean;
+  icon_cache_budget_bytes: number;
+  icon_states: { status: string; count: number; bytes: number }[];
+  media_failures: MetadataFailure[];
+}
 interface Device {
   id: number;
   user_id?: number;
@@ -73,7 +82,11 @@ const bytes = (value: number | null | undefined) =>
       : `${(value / 1048576).toFixed(1)} MiB`;
 
 export function Account({ signedOut }: { signedOut: () => void }) {
-  const devices = useLoad(() => api<Device[]>("/devices"), []),
+  const devices = useLoad(
+      "account-devices",
+      () => api<Device[]>("/devices"),
+      [],
+    ),
     [message, setMessage] = useState(""),
     [error, setError] = useState(""),
     [token, setToken] = useState(""),
@@ -156,46 +169,49 @@ export function Account({ signedOut }: { signedOut: () => void }) {
             </button>
           </label>
         )}
-        <table>
-          <thead>
-            <tr>
-              <th>DEVICE</th>
-              <th>EXPIRES</th>
-              <th>ACCESS</th>
-              <th>ACTION</th>
-            </tr>
-          </thead>
-          <tbody>
-            {devices.data?.map((row) => (
-              <tr key={row.id}>
-                <td>{row.name}</td>
-                <td>{when(row.expires_at)}</td>
-                <td>
-                  {row.revoked
-                    ? "Revoked"
-                    : new Date(row.expires_at) < new Date()
-                      ? "Expired"
-                      : "Active"}
-                </td>
-                <td>
-                  <button
-                    className="secondary"
-                    disabled={row.revoked || busy}
-                    onClick={() =>
-                      action(async () => {
-                        await api(`/devices/${row.id}`, "DELETE");
-                        devices.refresh();
-                        setMessage("Device access revoked.");
-                      })
-                    }
-                  >
-                    Revoke
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <DataTable<Device>
+          label="devices"
+          data={devices.data || []}
+          columns={[
+            { accessorKey: "name", header: "Device", enableHiding: false },
+            {
+              accessorKey: "expires_at",
+              header: "Expires",
+              cell: ({ row }) => when(row.original.expires_at),
+            },
+            {
+              id: "access",
+              header: "Access",
+              accessorFn: (row) =>
+                row.revoked
+                  ? "Revoked"
+                  : new Date(row.expires_at) < new Date()
+                    ? "Expired"
+                    : "Active",
+            },
+            {
+              id: "action",
+              header: "Action",
+              enableSorting: false,
+              cell: ({ row }) => (
+                <button
+                  className="secondary"
+                  disabled={row.original.revoked || busy}
+                  onClick={() =>
+                    action(async () => {
+                      await api(`/devices/${row.original.id}`, "DELETE");
+                      devices.refresh();
+                      setMessage("Device access revoked.");
+                    })
+                  }
+                >
+                  Revoke
+                </button>
+              ),
+            },
+          ]}
+        />
+
         {devices.data?.length === 0 && (
           <p className="empty">No connected devices.</p>
         )}
@@ -265,9 +281,19 @@ export function Administration({
     [error, setError] = useState(""),
     [invitation, setInvitation] = useState(""),
     [busy, setBusy] = useState(false);
-  const data = useLoad(async () => {
-    const [users, invitations, devices, runs, storage, events, metadata] =
-      await Promise.all([
+  const data = useLoad(
+    "administration",
+    async () => {
+      const [
+        users,
+        invitations,
+        devices,
+        runs,
+        storage,
+        events,
+        metadata,
+        enrichment,
+      ] = await Promise.all([
         api<User[]>("/admin/users"),
         api<Invitation[]>("/admin/invitations"),
         api<Device[]>("/admin/devices"),
@@ -275,17 +301,21 @@ export function Administration({
         api<Storage>("/admin/storage"),
         api<Event[]>("/admin/security-events"),
         api<MetadataFailure[]>("/admin/metadata-failures"),
+        api<Enrichment>("/admin/item-enrichment"),
       ]);
-    return {
-      users,
-      invitations,
-      devices,
-      runs: runs.runs,
-      storage,
-      events,
-      metadata,
-    };
-  }, []);
+      return {
+        users,
+        invitations,
+        devices,
+        runs: runs.runs,
+        storage,
+        events,
+        metadata,
+        enrichment,
+      };
+    },
+    [],
+  );
   async function action(job: () => Promise<void>) {
     setBusy(true);
     setError("");
@@ -409,6 +439,49 @@ export function Administration({
                 </article>
               </div>
               <section className="panel padded">
+                <h3>Item enrichment</h3>
+                <p>
+                  {state.enrichment.rich_items.toLocaleString()} items with base
+                  attributes ·{" "}
+                  {state.enrichment.community_items.toLocaleString()} separately
+                  attributed community records.
+                </p>
+                <p>
+                  Community fallback{" "}
+                  {state.enrichment.community_enabled ? "enabled" : "disabled"}.
+                  Artwork cache limit{" "}
+                  {bytes(state.enrichment.icon_cache_budget_bytes)}.
+                </p>
+                <ul>
+                  {state.enrichment.icon_states.map((row) => (
+                    <li key={row.status}>
+                      {row.status}: {row.count.toLocaleString()} icons ·{" "}
+                      {bytes(row.bytes)}
+                    </li>
+                  ))}
+                </ul>
+                <details>
+                  <summary>Recent artwork failures</summary>
+                  <DataTable<MetadataFailure>
+                    label="artwork failures"
+                    data={state.enrichment.media_failures}
+                    columns={[
+                      {
+                        accessorKey: "item_id",
+                        header: "Item ID",
+                        enableHiding: false,
+                      },
+                      { accessorKey: "region", header: "Region" },
+                      { accessorKey: "status", header: "Status" },
+                      { accessorKey: "http_status", header: "HTTP" },
+                      {
+                        accessorKey: "retry_after",
+                        header: "Next attempt",
+                        cell: ({ row }) => when(row.original.retry_after),
+                      },
+                    ]}
+                  />
+                </details>
                 <h3>Collection readiness</h3>
                 {!markets.length ? (
                   <p>
@@ -731,32 +804,41 @@ export function Administration({
                   Refresh
                 </button>
               </div>
-              <table>
-                <thead>
-                  <tr>
-                    <th>MARKET</th>
-                    <th>CHECKED</th>
-                    <th>RESULT</th>
-                    <th>HTTP</th>
-                    <th>PAYLOAD</th>
-                    <th>DETAIL</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {state.runs.map((row) => (
-                    <tr key={row.id}>
-                      <td>#{row.market_id}</td>
-                      <td>{when(row.checked_at)}</td>
-                      <td>
-                        {row.status} · {row.duration_seconds}s
-                      </td>
-                      <td>{row.http_status || "—"}</td>
-                      <td>{bytes(row.payload_bytes)}</td>
-                      <td>{row.error || "No failure recorded"}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <DataTable<Run>
+                label="collection checks"
+                data={state.runs}
+                columns={[
+                  {
+                    accessorKey: "market_id",
+                    header: "Market",
+                    enableHiding: false,
+                    cell: ({ row }) => `#${row.original.market_id}`,
+                  },
+                  {
+                    accessorKey: "checked_at",
+                    header: "Checked",
+                    cell: ({ row }) => when(row.original.checked_at),
+                  },
+                  { accessorKey: "status", header: "Result" },
+                  {
+                    accessorKey: "http_status",
+                    header: "HTTP",
+                    cell: ({ row }) => row.original.http_status || "—",
+                  },
+                  {
+                    accessorKey: "payload_bytes",
+                    header: "Payload",
+                    cell: ({ row }) => bytes(row.original.payload_bytes),
+                  },
+                  {
+                    accessorKey: "error",
+                    header: "Detail",
+                    cell: ({ row }) =>
+                      row.original.error || "No failure recorded",
+                  },
+                ]}
+              />
+
               {!state.runs.length && (
                 <p className="empty">
                   No collection attempts recorded. Markets may still be
