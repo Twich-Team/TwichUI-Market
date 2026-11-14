@@ -1,3 +1,4 @@
+import { variantLabel } from "./variant-label";
 import { useQuery } from "@tanstack/react-query";
 import { useLayoutEffect, useState, DependencyList } from "react";
 import { api, money, when } from "./api";
@@ -202,6 +203,11 @@ export function Explorer({
               <div className="eyebrow">ITEM #{detail.data.item_id}</div>
               <h2>{detail.data.name}</h2>
               <small className="muted">
+                {variantLabel(selected?.variant)} · Variant{" "}
+                {detail.data.variant_key.slice(0, 8)}
+              </small>
+              <br />
+              <small className="muted">
                 {detail.data.name_verified
                   ? "Verified item metadata"
                   : "Item name is unverified · variant kept separate"}
@@ -311,7 +317,12 @@ export function Explorer({
               </div>
             )}
           </section>
-          <section className="panel table-panel" tabIndex={0} role="region" aria-label="Scrollable current listings">
+          <section
+            className="panel table-panel"
+            tabIndex={0}
+            role="region"
+            aria-label="Scrollable current listings"
+          >
             <div className="panel-heading">
               <h3>Current listings</h3>
               <span className="muted">

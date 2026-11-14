@@ -1,0 +1,138 @@
+{
+  "status": "owner_review_pending",
+  "production_frontend": "previous version retained",
+  "live_backend_revision": "0009",
+  "candidate_frontend_checkpoint": "fa1aa35 with subsequent verified identifier/accessibility refinements",
+  "evidence": [
+    {
+      "path": "artifacts/modernization-live/catalogue.png",
+      "sha256": "fa022d0158163be1ba620590dee66aeabca0bea51eea86dc9ea417c152669d1c",
+      "bytes": 1077991,
+      "synthetic": false
+    },
+    {
+      "path": "artifacts/modernization-live/tooltip.png",
+      "sha256": "d51f1464fa47bb5bd84b09707f7b7774d21fa6380cde2b2a80fcc88250f00ee7",
+      "bytes": 1103867,
+      "synthetic": false
+    },
+    {
+      "path": "artifacts/modernization-live/deals-limited-history.png",
+      "sha256": "d703050cf6265e3c33da262b61ea7d3eaf297a88239f0fa913e7ca8f9396524c",
+      "bytes": 12040656,
+      "synthetic": false
+    },
+    {
+      "path": "artifacts/modernization/account-axe.json",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2,
+      "synthetic": true,
+      "result": []
+    },
+    {
+      "path": "artifacts/modernization/touch-item-axe.json",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2,
+      "synthetic": true,
+      "result": []
+    },
+    {
+      "path": "artifacts/modernization/deals-axe.json",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2,
+      "synthetic": true,
+      "result": []
+    },
+    {
+      "path": "artifacts/modernization/explorer-axe.json",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2,
+      "synthetic": true,
+      "result": []
+    },
+    {
+      "path": "artifacts/modernization/row-window-measurements.json",
+      "sha256": "04576452fc8fbfb575b670cdbe625660ee7bccbe5c9f1fe1a7f46d9eb3acea27",
+      "bytes": 126,
+      "synthetic": true,
+      "result": {
+        "synthetic": true,
+        "catalogue_rows": 25,
+        "calendar_days": 3651,
+        "virtual_rows": 17,
+        "paginated_history_rows": 50
+      }
+    }
+  ],
+  "live_health": {
+    "checked_at": "2026-11-14T04:59:33.058563+00:00",
+    "database_bytes": 118372019,
+    "genuine_observations": 27,
+    "synthetic_observations": 0,
+    "snapshots": 3,
+    "markets": [
+      {
+        "id": 1,
+        "enabled": true,
+        "verified": true,
+        "failures": 0,
+        "last_error": null
+      }
+    ],
+    "collection_last_hour": [
+      {
+        "status": "collected",
+        "http_status": 200,
+        "count": 1
+      },
+      {
+        "status": "unchanged",
+        "http_status": 304,
+        "count": 11
+      }
+    ],
+    "metadata_states": [
+      {
+        "status": "missing",
+        "http_status": 404,
+        "count": 125
+      },
+      {
+        "status": "available",
+        "http_status": 200,
+        "count": 226
+      }
+    ],
+    "media_states": [
+      {
+        "status": "available",
+        "http_status": 200,
+        "count": 176,
+        "bytes": 406468
+      }
+    ]
+  },
+  "restore": {
+    "migration": "0009",
+    "users": 7,
+    "markets": 1,
+    "observations": 23,
+    "listings": 306260,
+    "synthetic_observations": 0,
+    "buyout_total": "184307499510",
+    "snapshot_statistics": 72673,
+    "daily_observations": 1,
+    "market_verifications": 1
+  },
+  "trusted_https": {
+    "health_http_status": 200,
+    "certificate_chain": "Explicit project-local CA; no host trust changes",
+    "api_cache_control": "no-store"
+  },
+  "ci_checkpoint_fa1aa35": {
+    "Backend": 43559048180,
+    "Private website": 43559048190,
+    "Windows companion": 43559048176,
+    "conclusion": "success"
+  }
+}

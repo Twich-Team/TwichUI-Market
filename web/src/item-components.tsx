@@ -42,22 +42,34 @@ export interface ItemProfile extends ItemIdentity {
 }
 export function ItemIcon({ item }: { item: ItemIdentity }) {
   const [failed, setFailed] = useState(false);
-  const [visibleSource,setVisibleSource]=useState<string|null>(null);
-  const container=useRef<HTMLSpanElement>(null);
-  useEffect(()=>{
+  const [visibleSource, setVisibleSource] = useState<string | null>(null);
+  const container = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
     setFailed(false);
-    if(!item.icon_url || !container.current)return;
-    if(typeof IntersectionObserver==='undefined'){setVisibleSource(item.icon_url);return;}
-    const source=item.icon_url;
-    const observer=new IntersectionObserver(entries=>{if(entries.some(entry=>entry.isIntersecting)){setVisibleSource(source);observer.disconnect();}},{rootMargin:'120px'});
-    observer.observe(container.current);return()=>observer.disconnect();
-  },[item.icon_url,item.item_id]);
+    if (!item.icon_url || !container.current) return;
+    if (typeof IntersectionObserver === "undefined") {
+      setVisibleSource(item.icon_url);
+      return;
+    }
+    const source = item.icon_url;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setVisibleSource(source);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "120px" },
+    );
+    observer.observe(container.current);
+    return () => observer.disconnect();
+  }, [item.icon_url, item.item_id]);
   return (
     <span
       ref={container}
       className={`wow-icon quality-${item.quality?.toLowerCase() || "unknown"}`}
     >
-      {item.icon_url && visibleSource===item.icon_url && !failed ? (
+      {item.icon_url && visibleSource === item.icon_url && !failed ? (
         <img
           src={item.icon_url}
           alt=""
@@ -280,14 +292,19 @@ export function ItemInfo({
             {prices && (
               <section className="tooltip-market" aria-label="Market estimates">
                 <strong>Market estimates · asking listings</strong>
-                <div>Recent: {money(prices.recent_price)}</div>
-                <div>14-day reference: {money(prices.market_value)}</div>
-                <div>
-                  Supply: {prices.supply?.toLocaleString() ?? "Unknown"}
-                </div>
+                {prices.recent_price !== undefined && (
+                  <div>Recent: {money(prices.recent_price)}</div>
+                )}
+                {prices.market_value !== undefined && (
+                  <div>14-day reference: {money(prices.market_value)}</div>
+                )}
+                {prices.supply !== undefined && (
+                  <div>Supply: {prices.supply.toLocaleString()}</div>
+                )}
                 <small>
-                  Variant-specific market data is separate from base item
-                  attributes.
+                  Variant{" "}
+                  {item.variant_key?.slice(0, 8) || "identity unavailable"} ·
+                  Market data is separate from base item attributes.
                 </small>
               </section>
             )}

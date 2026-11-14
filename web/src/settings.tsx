@@ -848,30 +848,31 @@ export function Administration({
               <div className="panel-heading">
                 <h3>Unresolved item names</h3>
               </div>
-              <table>
-                <thead>
-                  <tr>
-                    <th>REGION / ITEM</th>
-                    <th>STATUS</th>
-                    <th>HTTP</th>
-                    <th>LAST LOOKUP</th>
-                    <th>NEXT RETRY</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {state.metadata.map((row) => (
-                    <tr key={`${row.region}:${row.item_id}`}>
-                      <td>
-                        {row.region.toUpperCase()} / #{row.item_id}
-                      </td>
-                      <td>{row.status}</td>
-                      <td>{row.http_status || "—"}</td>
-                      <td>{when(row.checked_at)}</td>
-                      <td>{when(row.retry_after)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <DataTable<MetadataFailure>
+                label="unresolved items"
+                data={state.metadata}
+                columns={[
+                  {
+                    accessorKey: "item_id",
+                    header: "Item ID",
+                    enableHiding: false,
+                  },
+                  { accessorKey: "region", header: "Region" },
+                  { accessorKey: "status", header: "Status" },
+                  { accessorKey: "http_status", header: "HTTP" },
+                  {
+                    accessorKey: "checked_at",
+                    header: "Last lookup",
+                    cell: ({ row }) => when(row.original.checked_at),
+                  },
+                  {
+                    accessorKey: "retry_after",
+                    header: "Next retry",
+                    cell: ({ row }) => when(row.original.retry_after),
+                  },
+                ]}
+              />
+
               {!state.metadata.length && (
                 <p className="empty">No metadata lookup failures recorded.</p>
               )}
@@ -979,46 +980,59 @@ export function Administration({
           {tab === "devices" && (
             <section className="panel padded">
               <h3>Connected devices</h3>
-              <table>
-                <thead>
-                  <tr>
-                    <th>DEVICE</th>
-                    <th>MEMBER</th>
-                    <th>EXPIRES</th>
-                    <th>ACCESS</th>
-                    <th>ACTION</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {state.devices.map((row) => (
-                    <tr key={row.id}>
-                      <td>{row.name}</td>
-                      <td>
-                        {state.users.find((user) => user.id === row.user_id)
-                          ?.username || `#${row.user_id}`}
-                      </td>
-                      <td>{when(row.expires_at)}</td>
-                      <td>
-                        {row.revoked ? "Revoked" : "Active or awaiting expiry"}
-                      </td>
-                      <td>
-                        <button
-                          className="secondary"
-                          disabled={busy || row.revoked}
-                          onClick={() =>
-                            action(async () => {
-                              await api(`/devices/${row.id}`, "DELETE");
-                              setMessage("Device access revoked.");
-                            })
-                          }
-                        >
-                          Revoke
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <DataTable<Device>
+                label="connected devices"
+                data={state.devices}
+                columns={[
+                  {
+                    accessorKey: "name",
+                    header: "Device",
+                    enableHiding: false,
+                  },
+                  {
+                    id: "member",
+                    header: "Member",
+                    accessorFn: (row) =>
+                      state.users.find((user) => user.id === row.user_id)
+                        ?.username || `#${row.user_id}`,
+                  },
+                  {
+                    accessorKey: "expires_at",
+                    header: "Expires",
+                    cell: ({ row }) => when(row.original.expires_at),
+                  },
+                  {
+                    id: "access",
+                    header: "Access",
+                    accessorFn: (row) =>
+                      row.revoked
+                        ? "Revoked"
+                        : new Date(row.expires_at) < new Date()
+                          ? "Expired"
+                          : "Active",
+                  },
+                  {
+                    id: "action",
+                    header: "Action",
+                    enableSorting: false,
+                    cell: ({ row }) => (
+                      <button
+                        className="secondary"
+                        disabled={busy || row.original.revoked}
+                        onClick={() =>
+                          action(async () => {
+                            await api(`/devices/${row.original.id}`, "DELETE");
+                            setMessage("Device access revoked.");
+                          })
+                        }
+                      >
+                        Revoke
+                      </button>
+                    ),
+                  },
+                ]}
+              />
+
               {!state.devices.length && (
                 <p className="empty">No companion devices registered.</p>
               )}
@@ -1030,31 +1044,36 @@ export function Administration({
                 <h3>Security events</h3>
                 <span className="muted">Most recent 200 events</span>
               </div>
-              <table>
-                <thead>
-                  <tr>
-                    <th>TIME</th>
-                    <th>MEMBER</th>
-                    <th>EVENT</th>
-                    <th>REFERENCE</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {state.events.map((row) => (
-                    <tr key={row.id}>
-                      <td>{when(row.created_at)}</td>
-                      <td>
-                        {state.users.find((user) => user.id === row.actor_id)
-                          ?.username || "Unauthenticated / system"}
-                      </td>
-                      <td>
-                        {row.action.replaceAll(".", " ").replaceAll("_", " ")}
-                      </td>
-                      <td>{row.detail || "—"}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <DataTable<Event>
+                label="security events"
+                data={state.events}
+                columns={[
+                  {
+                    accessorKey: "created_at",
+                    header: "Time",
+                    enableHiding: false,
+                    cell: ({ row }) => when(row.original.created_at),
+                  },
+                  {
+                    id: "member",
+                    header: "Member",
+                    accessorFn: (row) =>
+                      state.users.find((user) => user.id === row.actor_id)
+                        ?.username || "Unauthenticated / system",
+                  },
+                  {
+                    id: "event",
+                    header: "Event",
+                    accessorFn: (row) =>
+                      row.action.replaceAll(".", " ").replaceAll("_", " "),
+                  },
+                  {
+                    accessorKey: "detail",
+                    header: "Reference",
+                    cell: ({ row }) => row.original.detail || "—",
+                  },
+                ]}
+              />
             </section>
           )}
         </>

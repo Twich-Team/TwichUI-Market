@@ -17,3 +17,20 @@ The design review candidates are `/design/#explorer`, `/design/#deals`, and `/de
 Credentials are configured privately, and the initial US house 110 auction feed is enabled. See [actual upstream evidence](api-feasibility.md). Do not broaden this initial rollout. Do not enable or mark mappings verified until recorded observations establish their semantics. Provide the Workshop formula/fixture source read-only; the main addon repository remains outside the modification scope. Record explicit design approval in progress.md before finalizing those designs.
 
 No AMP, firewall, SSH, system Docker daemon, existing reverse proxy, unrelated user resources or main addon files were modified. The Windows runner's temporary exact-app WebView2 test policy is isolated to disposable GitHub CI and removed by the test's finally block.
+
+## Item Experience and Frontend Modernization
+
+The active milestone is an integrated review candidate, **not visually finalized**. Detailed criteria and chronology are in [the milestone plan](item-modernization-plan.md) and [progress](item-modernization-progress.md).
+
+| Area | Verified evidence | Remaining gate |
+|---|---|---|
+| Item catalogue | Authenticated grouped server-side search/sort/25–100-row pagination; exact variant ranges/references, stable ordering and changed-snapshot rejection | Owner visual approval |
+| Metadata/tooltips | Additive migration 0009; bounded background official item/media enrichment, source/build/hash/time, independently missing names/icons, optional attributed Forever beta fallback disabled by default; keyboard/hover/touch Base UI popovers | Unknown upstream facts remain explicitly unavailable; no invented attributes |
+| Interactive research | ECharts daily price/14/60-day overlays, supply, all-listing distributions, gaps, exact copper labels, 7D–10Y ranges, zoom and responsive resize/disposal; accessible data alternatives | Owner visual approval |
+| Management/account | Shared Query isolation and table controls for devices, collection, unresolved metadata and audit records; enrichment monitoring; existing permissions/device flows retained | Owner visual approval |
+| Performance | Legacy metadata SQL 153→5; catalogue bounded queries; rollback-only 10,000 groups/30,000 variants/3,651 days/100,000-listing workload with EXPLAIN; compact history 61.5% smaller; first-view JS ~41% lower; cache return calls 2→0; virtual history renders 17 rows for 3,651 calendar days | Rich cold view remains slower than the simpler old site (median 1.439s versus .889s); no overall speedup claimed |
+| Regression/deployment | 115 PostgreSQL tests, 16 frontend tests, Chromium workflows, axe A/AA scans, real populated preview; successful local-CA validation, backup and isolated restoration; backend deployed, continuous genuine collection preserved | All six local workflows pass; final refinement CI being consolidated. Production frontend promotion waits for design approval |
+
+Evidence: [API/scale measurements](evidence/item-experience-scale.json), [browser measurements](evidence/item-browser-performance.json), [deployment/accessibility/restore record](evidence/item-modernization-verification.json), [metadata providers](item-metadata-providers.md). Screenshots remain ignored artifacts and are uploaded by website CI. Live Explorer/tooltip screenshots contain genuine market data; administration/account/large-history browser fixtures are explicitly synthetic and isolated.
+
+The candidate frontend runs in the project-only `twichui-market-modernization-preview` container without a host port. The production frontend at `https://localhost:18443` remains the previous version until explicit owner approval. The additive backend is deployed at 0009. No market was added or enabled, no real history was reset, and the main addon remains untouched.

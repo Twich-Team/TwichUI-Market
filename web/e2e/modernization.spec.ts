@@ -12,9 +12,16 @@ async function login(page: Page) {
     page.getByRole("heading", { name: "Market Explorer", exact: true }),
   ).toBeVisible();
 }
-async function accessible(page:Page,name:string){
- const result=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze();
- fs.mkdirSync('../artifacts/modernization',{recursive:true});fs.writeFileSync(`../artifacts/modernization/${name}-axe.json`,JSON.stringify(result.violations,null,2));expect(result.violations).toEqual([]);
+async function accessible(page: Page, name: string) {
+  const result = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+    .analyze();
+  fs.mkdirSync("../artifacts/modernization", { recursive: true });
+  fs.writeFileSync(
+    `../artifacts/modernization/${name}-axe.json`,
+    JSON.stringify(result.violations, null, 2),
+  );
+  expect(result.violations).toEqual([]);
 }
 test("catalogue variants, accessible item facts, chart controls and bounded history rendering", async ({
   page,
@@ -83,7 +90,23 @@ test("catalogue variants, accessible item facts, chart controls and bounded hist
     exact: true,
   });
   await expect(virtual).toBeVisible();
-  expect(await virtual.locator("tbody tr").count()).toBeLessThan(40);
+  const virtualRows = await virtual.locator("tbody tr").count();
+  expect(virtualRows).toBeLessThan(40);
+  fs.mkdirSync("../artifacts/modernization", { recursive: true });
+  fs.writeFileSync(
+    "../artifacts/modernization/row-window-measurements.json",
+    JSON.stringify(
+      {
+        synthetic: true,
+        catalogue_rows: 25,
+        calendar_days: 3651,
+        virtual_rows: virtualRows,
+        paginated_history_rows: 50,
+      },
+      null,
+      2,
+    ),
+  );
   await page.getByLabel("Virtual scrolling", { exact: false }).uncheck();
   await expect(
     page
@@ -147,7 +170,7 @@ test("shared deal tooltips and manageable account/admin tables", async ({
   );
   await page.keyboard.press("Escape");
   await page.evaluate(() => scrollTo(0, 0));
-  await accessible(page,"deals");
+  await accessible(page, "deals");
   await page.screenshot({
     path: "../artifacts/modernization/deals-desktop.png",
     fullPage: true,
@@ -176,7 +199,7 @@ test("shared deal tooltips and manageable account/admin tables", async ({
   await page.getByRole("button", { name: "Columns", exact: true }).click();
   await expect(page.getByRole("menu")).toBeVisible();
   await page.keyboard.press("Escape");
-  await accessible(page,"account");
+  await accessible(page, "account");
   await page.screenshot({
     path: "../artifacts/modernization/account-desktop.png",
     fullPage: true,
@@ -198,7 +221,43 @@ test("shared deal tooltips and manageable account/admin tables", async ({
   expect(axe.violations).toEqual([]);
 });
 
-test('touch item popovers stay readable and dismiss without hover',async({browser})=>{
- const context=await browser.newContext({baseURL:process.env.BASE_URL||'http://proxy',hasTouch:true,isMobile:true,viewport:{width:390,height:844}});
- try{const page=await context.newPage();await login(page);const trigger=page.getByRole('region',{name:'Item catalogue',exact:true}).getByRole('button',{name:'Item details for Synthetic Arcane Crystal',exact:true});await trigger.tap();await expect(page.getByRole('dialog')).toContainText('+10 Fixture Strength');await accessible(page,'touch-item');await page.screenshot({path:'../artifacts/modernization/touch-popover.png',fullPage:true});await page.getByRole('button',{name:'Close item details',exact:true}).tap();await expect(page.getByRole('dialog')).toHaveCount(0);await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);}finally{await context.close();}
+test("touch item popovers stay readable and dismiss without hover", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({
+    baseURL: process.env.BASE_URL || "http://proxy",
+    hasTouch: true,
+    isMobile: true,
+    viewport: { width: 390, height: 844 },
+  });
+  try {
+    const page = await context.newPage();
+    await login(page);
+    const trigger = page
+      .getByRole("region", { name: "Item catalogue", exact: true })
+      .getByRole("button", {
+        name: "Item details for Synthetic Arcane Crystal",
+        exact: true,
+      });
+    await trigger.tap();
+    await expect(page.getByRole("dialog")).toContainText(
+      "+10 Fixture Strength",
+    );
+    await accessible(page, "touch-item");
+    await page.screenshot({
+      path: "../artifacts/modernization/touch-popover.png",
+      fullPage: true,
+    });
+    await page
+      .getByRole("button", { name: "Close item details", exact: true })
+      .tap();
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+    await expect
+      .poll(() =>
+        page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
+      )
+      .toBe(true);
+  } finally {
+    await context.close();
+  }
 });

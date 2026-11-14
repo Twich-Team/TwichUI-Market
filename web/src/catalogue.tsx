@@ -1,3 +1,4 @@
+import { variantLabel } from "./variant-label";
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -435,7 +436,8 @@ function Variants({
                   item={{ ...variant, icon_url: item.icon_url }}
                   prices={variant}
                 />
-                <span> {variant.variant_key.slice(0, 8)}</span>
+                <span> {variantLabel(variant.variant)}</span>
+                <small>Variant {variant.variant_key.slice(0, 8)}</small>
               </td>
               <td>{money(variant.recent_price)}</td>
               <td>

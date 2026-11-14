@@ -43,3 +43,7 @@ Acceptance: PostgreSQL regressions/migrations, Vitest, real Chromium workflows, 
 - Prefer server pagination (25/50/100 items) to downloading the entire market. Virtualization is conditional on measured expanded-row size, not a blanket replacement for native tables.
 - Keep authenticated server-state memory-only and clear it on identity changes. No private API cache in service workers/localStorage.
 - Remote names/images never become executable HTML; icons are fetched only through bounded allowlisted server-side media handling.
+
+## Verified checkpoint status
+
+M0–M2 backend/research and M3–M4 integrated candidate implementation are verified in the progress/evidence records. M5 local tests, accessibility, measured query/browser behavior, genuine-data preview and actual backup restoration are verified. Final refinement CI and exact-image preview checks are being consolidated. Owner design approval and subsequent production frontend promotion remain required; a successful candidate build or screenshot is not approval.

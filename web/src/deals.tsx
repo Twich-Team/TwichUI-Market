@@ -262,7 +262,6 @@ export function Deals({
                       }}
                       prices={{
                         market_value: deal.market_value,
-                        supply: deal.quantity,
                       }}
                       label
                     />

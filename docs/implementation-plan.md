@@ -1,5 +1,7 @@
 # Implementation plan
 
+Active work: [Item Experience and Frontend Modernization](item-modernization-plan.md); acceptance and current next action are in [its progress record](item-modernization-progress.md). Earlier S1–S5 tasks below remain historical and retain their external evidence gates.
+
 Each task requires tests, diff review and a committed/pushed evidence checkpoint. Status lives in progress.md.
 
 | Task | Prerequisite | Acceptance |
