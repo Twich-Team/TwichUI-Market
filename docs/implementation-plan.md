@@ -25,3 +25,5 @@ Each task requires tests, diff review and a committed/pushed evidence checkpoint
 | S5.3 Windows releases | S5.2 | Windows CI builds/tests release artifact |
 
 S6 addon integration is excluded. Missing live credentials and design approval affect only dependent tasks. No milestone is complete without its evidence.
+
+Storage monitoring acceptance: independent bounded hourly sampler; cross-process idempotency; 90-day telemetry retention; signed measured growth with unknown initial rate; administrator-only history; actual browser display and migration checks.

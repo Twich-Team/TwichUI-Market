@@ -1,5 +1,7 @@
 # Isolated disposable database, never apply this overlay to the development stack.
 services:
+  monitor:
+    profiles: [disabled-in-tests]
   db:
     environment:
       POSTGRES_DB: market_test

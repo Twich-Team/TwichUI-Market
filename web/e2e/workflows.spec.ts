@@ -265,6 +265,9 @@ test("administrator roles, disabled mappings, schedules, storage and security ev
   await expect(
     page.getByText("Preserved indefinitely for private use", { exact: true }),
   ).toBeVisible();
+  await expect(page.getByText("+1.0 MiB over 1.0 days", {exact:true})).toBeVisible();
+  await page.getByText("Recent storage measurements", {exact:true}).click();
+  await expect(page.getByRole("cell", {name:"11.0 MiB",exact:true})).toBeVisible();
   await page.getByRole("tab", { name: "Security events", exact: true }).click();
   await expect(
     page

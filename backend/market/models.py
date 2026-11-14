@@ -161,3 +161,9 @@ class ItemMetadata(Base):
     payload_hash: Mapped[str | None] = mapped_column(String(64))
     synthetic: Mapped[bool] = mapped_column(Boolean,default=False)
     __table_args__=(Index('ix_item_metadata_region_name',region,func.lower(name)),)
+
+
+class StorageMeasurement(Base):
+    __tablename__='storage_measurements'
+    sampled_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),primary_key=True)
+    database_bytes: Mapped[int] = mapped_column(BigInteger)

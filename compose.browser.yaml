@@ -1,5 +1,7 @@
 # Browser integration project only; no host ports or persistent development data.
 services:
+  monitor:
+    profiles: [disabled-in-tests]
   db:
     environment:
       POSTGRES_DB: market_test

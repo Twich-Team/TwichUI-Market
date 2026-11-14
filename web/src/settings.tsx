@@ -41,6 +41,12 @@ interface Event {
   created_at: string;
 }
 interface Storage {
+  growth: {
+    samples: { sampled_at: string; database_bytes: number }[];
+    delta_bytes: number | null;
+    bytes_per_day: number | null;
+    elapsed_seconds: number;
+  };
   database_bytes: number | null;
   snapshots: number;
   observations: number;
@@ -796,6 +802,18 @@ export function Administration({
                 <dl>
                   <dt>Database size</dt>
                   <dd>{bytes(state.storage.database_bytes)}</dd>
+                  <dt>Measured change</dt>
+                  <dd>
+                    {state.storage.growth.delta_bytes === null
+                      ? "Waiting for two hourly measurements"
+                      : `${state.storage.growth.delta_bytes < 0 ? "−" : "+"}${bytes(Math.abs(state.storage.growth.delta_bytes))} over ${(state.storage.growth.elapsed_seconds / 86400).toFixed(1)} days`}
+                  </dd>
+                  <dt>Average daily change</dt>
+                  <dd>
+                    {state.storage.growth.bytes_per_day === null
+                      ? "Unavailable"
+                      : `${state.storage.growth.bytes_per_day < 0 ? "−" : "+"}${bytes(Math.abs(state.storage.growth.bytes_per_day))} per day`}
+                  </dd>
                   <dt>Distinct snapshots</dt>
                   <dd>{state.storage.snapshots.toLocaleString()}</dd>
                   <dt>Fetch observations</dt>
@@ -838,6 +856,33 @@ export function Administration({
                   <dt>Archive size</dt>
                   <dd>{bytes(state.storage.backup.bytes)}</dd>
                 </dl>
+                <p className="muted">
+                  Hourly database measurements are retained for 90 days. Changes
+                  include PostgreSQL allocation and maintenance, and do not
+                  predict future growth.
+                </p>
+                <details>
+                  <summary>Recent storage measurements</summary>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Measured at</th>
+                        <th>Database size</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {state.storage.growth.samples
+                        .slice(-24)
+                        .reverse()
+                        .map((sample) => (
+                          <tr key={sample.sampled_at}>
+                            <td>{when(sample.sampled_at)}</td>
+                            <td>{bytes(sample.database_bytes)}</td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </details>
                 {state.storage.backup.error && (
                   <p className="notice error">{state.storage.backup.error}</p>
                 )}

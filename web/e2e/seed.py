@@ -4,11 +4,12 @@ from datetime import timedelta
 from market.db import Session,engine,now
 from market.ingest import ingest
 from market.metadata import store_metadata
-from market.models import Market,User
+from market.models import Market,User,StorageMeasurement
 from market.security import hasher
 
 assert engine.url.database=='market_test','Refusing to seed a non-test database'
 with Session.begin() as db:
+    db.add_all([StorageMeasurement(sampled_at=now()-timedelta(days=1),database_bytes=10485760),StorageMeasurement(sampled_at=now(),database_bytes=11534336)])
     store_metadata(db,'eu',12363,b'{"id":12363,"name":"Synthetic Arcane Crystal"}',synthetic=True)
     db.add(User(username='owner',password_hash=hasher.hash('synthetic browser owner password'),role='admin'))
     db.add(User(username='member_fixture',password_hash=hasher.hash('synthetic browser member password'),role='member'))
