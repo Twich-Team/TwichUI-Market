@@ -17,7 +17,8 @@ with Session.begin() as db:
         db.add(market)
         db.flush()
         for days in [3,2,1,0]:
-            price=500 if days==0 and house==113 else 1000
-            body=json.dumps({'auctions':[{'id':9007199254740993,'item':{'id':12363},'quantity':10,'buyout':price,'time_left':'LONG'}]}).encode()
+            quantity=10 if days==0 and house==113 else 20
+            price=500 if days==0 and house==113 else 2000
+            body=json.dumps({'auctions':[{'id':9007199254740993,'item':{'id':12363},'quantity':quantity,'buyout':price,'time_left':'LONG'}]}).encode()
             ingest(db,market.id,body,request_key=f'browser-{house}-{days}',retrieved_at=now()-timedelta(days=days),synthetic=True)
 print('Synthetic browser fixtures seeded in isolated market_test')

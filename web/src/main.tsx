@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { api, ApiError, BrowserSession, setCsrf, User } from "./api";
-import { Explorer, Deals } from "./research";
+import { Explorer } from "./research";
+import { Deals } from "./deals";
 import { Administration, Account } from "./settings";
 import { Market } from "./types";
 import "./style.css";

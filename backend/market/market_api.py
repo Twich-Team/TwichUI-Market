@@ -2,22 +2,23 @@
 import json
 import os
 from pathlib import Path as FilePath
-from decimal import Decimal
+from datetime import timedelta
 from email.utils import parsedate_to_datetime
 from typing import Annotated, Literal
 from fastapi import APIRouter, Depends, HTTPException, Path, Query
 from pydantic import BaseModel, Field
-from sqlalchemy import func, select, text
+from sqlalchemy import func, literal, select, text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from .db import now, session
-from .models import CollectionRun, ItemMetadata, Listing, Market, Observation, Snapshot, User
+from .models import CollectionRun, ItemMetadata, Listing, Market, Observation, Snapshot, SnapshotStatistic, User
 from .pricing import daily_history, values
+from .opportunities import below_reference,change_signals,evidence
 from .security import admin, audit, aware, identity
 
 router = APIRouter(prefix='/api/v1')
 MarketId = Annotated[int,Path(ge=1,le=2**31-1)]
-MONEY_KEYS = {'recent_price','lowest_buyout','market_value','historical_value','buyout','unit_price','bid','total_buyout'}
+MONEY_KEYS = {'recent_price','lowest_buyout','market_value','historical_value','buyout','unit_price','bid','total_buyout','current_price','reference_price'}
 BACKUP_DIRECTORY = FilePath('/backup-status')
 
 
@@ -47,6 +48,7 @@ def market_view(market):
         modified = aware(parsedate_to_datetime(market.last_modified)) if market.last_modified else None
     except (TypeError, ValueError, OverflowError):
         modified = None
+    if modified and modified>now()+timedelta(minutes=5): modified=None
     source_age = max(0,int((now()-modified).total_seconds())) if modified else None
     return {'id':market.id,'region':market.region,'ruleset_id':market.ruleset_id,'house_id':market.house_id,
             'source_kind':market.source_kind,'label':market.label,'enabled':market.enabled,'verified':market.verified,
@@ -70,6 +72,10 @@ def latest_observation(db, market_id):
 
 def item_name(db,region,item_id):
     metadata=db.get(ItemMetadata,(region,item_id))
+    return metadata_name(metadata,item_id)
+
+
+def metadata_name(metadata,item_id):
     available=metadata is not None and metadata.name is not None
     return {'name':metadata.name if available else f'Item #{item_id}',
             'name_verified':bool(available and not metadata.synthetic and metadata.status=='available'),
@@ -102,11 +108,25 @@ def items(market_id: MarketId, q: str = Query('',max_length=64), after_id: int =
             query = query.where(Listing.item_id == int(q))
     # Paginate item IDs, keeping every variant of the last item together.
     ids = list(db.scalars(query.with_only_columns(Listing.item_id).distinct().order_by(Listing.item_id).limit(limit+1)))
+    historical=False
+    if not ids and q:
+        query=select(SnapshotStatistic.item_id,SnapshotStatistic.variant_key,literal(None).label('variant')).join(
+            Snapshot,Snapshot.id==SnapshotStatistic.snapshot_id).where(Snapshot.market_id==market_id,
+            Snapshot.statistics_retained.is_(True),SnapshotStatistic.item_id>after_id)
+        if q.isdigit(): query=query.where(SnapshotStatistic.item_id==int(q))
+        else:
+            query=query.join(ItemMetadata,(ItemMetadata.region==market.region)&(ItemMetadata.item_id==SnapshotStatistic.item_id))
+            query=query.where(func.lower(ItemMetadata.name).contains(q.lower(),autoescape=True))
+        ids=list(db.scalars(query.with_only_columns(SnapshotStatistic.item_id).distinct().order_by(SnapshotStatistic.item_id).limit(limit+1)))
+        historical=True
     page_ids = ids[:limit]
-    rows = db.execute(query.where(Listing.item_id.in_(page_ids)).distinct().order_by(Listing.item_id,Listing.variant_key)) if page_ids else []
+    source=SnapshotStatistic if historical else Listing
+    rows = db.execute(query.where(source.item_id.in_(page_ids)).distinct().order_by(source.item_id,source.variant_key)) if page_ids else []
     return {'items':[{'item_id':row.item_id,**item_name(db,market.region,row.item_id),
-                      'variant_key':row.variant_key,'variant':json.loads(row.variant)} for row in rows],
-            'market':market_view(market),'next_after_id':page_ids[-1] if len(ids)>limit else None,'synthetic':latest.synthetic,
+                      'variant_key':row.variant_key,'variant':json.loads(row.variant) if row.variant else None} for row in rows],
+            'market':market_view(market),'next_after_id':page_ids[-1] if len(ids)>limit else None,
+            'synthetic':latest.synthetic or (historical and bool(db.scalar(select(func.count()).select_from(Observation).where(Observation.market_id==market_id,Observation.synthetic.is_(True))))),
+            'historical_results':historical,
             'search_notice':'Some names may be unresolved; numeric item-ID search remains available.' if q and not q.isdigit() else None}
 
 
@@ -130,44 +150,61 @@ def item_detail(market_id: MarketId, item_id: Annotated[int,Path(ge=1,le=2**31-1
 @router.get('/markets/{market_id}/deals')
 def deals(market_id: MarketId, minimum_discount: int = Query(15,ge=1,le=99),
           maximum_spend: int = Query(5000000,ge=1,le=2**53-1), minimum_coverage: int = Query(3,ge=1,le=60),
+          minimum_confidence: Literal['limited','moderate','strong'] = 'limited',
           user: User = Depends(identity), db: Session = Depends(session)):
     market = require_market(db,market_id)
     latest = latest_observation(db,market_id)
+    view=market_view(market)
     if not latest:
-        return {'deals':[],'candidates_truncated':False,'synthetic':False,'market':market_view(market)}
-    rows = list(db.scalars(select(Listing).where(Listing.snapshot_id == latest.snapshot_id,
-        (Listing.buyout.is_not(None) | Listing.unit_price.is_not(None)))
-        .order_by(Listing.item_id,Listing.variant_key,Listing.auction_id).limit(1001)))
-    cache, result = {}, []
-    truncated = len(rows)>1000
-    for row in rows[:1000]:
-        key = row.item_id,row.variant_key
-        if key not in cache:
-            if len(cache)>=50:
-                truncated = True
-                continue
-            cache[key] = values(db,market_id,*key)
-        valuation = cache[key]
-        reference = valuation['market_value']
-        if not reference or valuation['market_coverage_days'] < minimum_coverage:
-            continue
-        total = row.buyout if row.buyout is not None else row.unit_price*row.quantity
-        price = Decimal(total)/row.quantity
-        discount = (1-price/Decimal(reference))*100
-        if total > maximum_spend or discount < minimum_discount:
-            continue
-        result.append({'auction_id':str(row.auction_id),'item_id':row.item_id,'variant_key':row.variant_key,
-            **item_name(db,market.region,row.item_id),
-            'quantity':row.quantity,'total_buyout':total,'market_value':reference,
-            'discount_percent':round(float(discount),2),'coverage_days':valuation['market_coverage_days'],
-            'confidence':'limited' if market_view(market)['freshness']!='current' else 'moderate',
-            'reason':f'{discount:.1f}% below provisional 14-day asking-price reference; {valuation["market_coverage_days"]} observed days.',
+        return {'deals':[],'candidates_truncated':False,'synthetic':False,'market':view}
+    rows,truncated=below_reference(db,market,latest,minimum_discount=minimum_discount,
+        maximum_spend=maximum_spend,minimum_coverage=minimum_coverage,minimum_confidence=minimum_confidence,
+        freshness=view['freshness'])
+    result=[]
+    for listing,reference,coverage,synthetic,metadata,discount,total in rows:
+        result.append({'auction_id':str(listing.auction_id),'item_id':listing.item_id,'variant_key':listing.variant_key,
+            **metadata_name(metadata,listing.item_id),'quantity':listing.quantity,'total_buyout':total,'market_value':int(reference),
+            'discount_percent':round(float(discount),2),'coverage_days':coverage,
+            'confidence':evidence(coverage,view['freshness'],market.verified,latest.synthetic or synthetic),
+            'reason':f'{discount:.1f}% below provisional 14-day asking-price reference; {coverage} observed days.',
             'cautions':['Asking prices do not establish completed sales or resale profit.',
                         'Workshop algorithm compatibility is not verified.']})
-    result.sort(key=lambda row:(-row['discount_percent'],int(row['auction_id'])))
-    return money_contract({'contract_version':1,'deals':result[:100],'candidates_truncated':truncated or len(result)>100,
-        'synthetic':latest.synthetic or any(value['synthetic'] for value in cache.values()),
-        'market':market_view(market),'algorithm':'asking-v1-provisional'})
+    return money_contract({'contract_version':1,'deals':result,'candidates_truncated':truncated,
+        'synthetic':latest.synthetic or any(bool(row[3]) for row in rows),
+        'market':view,'algorithm':'asking-v1-provisional'})
+
+
+@router.get('/markets/{market_id}/signals')
+def signals(market_id: MarketId,kind: Literal['supply','price'],minimum_change: int = Query(20,ge=1,le=1000),
+            minimum_coverage: int = Query(3,ge=1,le=60),minimum_confidence: Literal['limited','moderate','strong']='limited',
+            direction: Literal['any','increase','decrease']='any',user: User = Depends(identity),db: Session = Depends(session)):
+    market=require_market(db,market_id)
+    latest=latest_observation(db,market_id)
+    view=market_view(market)
+    if not latest:return {'signals':[],'candidates_truncated':False,'synthetic':False,'market':view}
+    rows,truncated=change_signals(db,market,latest,kind=kind,minimum_change=minimum_change,
+        minimum_coverage=minimum_coverage,minimum_confidence=minimum_confidence,direction=direction,freshness=view['freshness'])
+    result=[]
+    for record in rows:
+        row=record._mapping
+        coverage=row['price_days'] if kind=='price' else row['supply_days']
+        change=round(float(row['change']),2)
+        if kind=='price':
+            reason=f'Quantity-weighted asking price changed {change:+.1f}% against {coverage} priced UTC days before today (within 14 days).'
+        else:
+            reason=f'Listed supply changed {change:+.1f}% against an average {row["reference_supply"]:.2f} units across {row["market_days"]} prior market days; {coverage} days had this variant listed.'
+        result.append({'kind':kind,'item_id':row['item_id'],'variant_key':row['variant_key'],
+            **metadata_name(row['ItemMetadata'],row['item_id']),
+            'current_price':int(row['current_price']) if row['current_price'] is not None else None,
+            'reference_price':int(row['reference_price']) if row['reference_price'] is not None else None,
+            'current_supply':int(row['current_supply']),'reference_supply':round(float(row['reference_supply']),2),
+            'change_percent':change,'coverage_days':coverage,'observed_market_days':row['market_days'],
+            'confidence':evidence(coverage,view['freshness'],market.verified,latest.synthetic or row['synthetic']),
+            'reason':reason,'cautions':['Supply and price changes describe listings, not completed sales.',
+                'A shortage or price rise does not guarantee a profitable resale.']})
+    return money_contract({'contract_version':1,'signals':result,'candidates_truncated':truncated,
+        'synthetic':latest.synthetic or any(bool(row._mapping['synthetic']) for row in rows),
+        'market':view,'algorithm':'asking-v1-provisional'})
 
 
 @router.get('/markets/{market_id}/items/{item_id}/{variant_key}/history')

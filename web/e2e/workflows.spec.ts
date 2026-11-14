@@ -58,7 +58,7 @@ test("private Explorer, history, comparison, Deal Finder and browser reload use 
   await expect(page.locator(".comparison")).toContainText("Synthetic Horde");
   await page.getByRole("button", { name: "Deal Finder", exact: true }).click();
   await expect(
-    page.getByRole("heading", { name: "1 opportunities", exact: true }),
+    page.getByRole("heading", { name: "1 opportunity", exact: true }),
   ).toBeVisible();
   await page.getByLabel("Maximum spend (gold)").fill("0.01");
   await page
@@ -71,6 +71,32 @@ test("private Explorer, history, comparison, Deal Finder and browser reload use 
   await page
     .getByRole("button", { name: "Apply filters", exact: true })
     .click();
+  await page.getByRole("tab", { name: "Supply changes", exact: true }).click();
+  await expect(
+    page.getByText("Listed supply changed -50.0%", { exact: false }),
+  ).toBeVisible();
+  await page.getByRole("tab", { name: "Price changes", exact: true }).click();
+  await expect(
+    page.getByText("Quantity-weighted asking price changed -50.0%", {
+      exact: false,
+    }),
+  ).toBeVisible();
+  await page.getByRole("combobox", { name: "Evidence", exact: true }).selectOption("moderate");
+  await page
+    .getByRole("button", { name: "Apply filters", exact: true })
+    .click();
+  await expect(
+    page.getByText("No changes match these filters", { exact: false }),
+  ).toBeVisible();
+  await page.getByRole("combobox", { name: "Evidence", exact: true }).selectOption("limited");
+  await page
+    .getByRole("button", { name: "Apply filters", exact: true })
+    .click();
+  await expect(
+    page.getByText("Quantity-weighted asking price changed -50.0%", {
+      exact: false,
+    }),
+  ).toBeVisible();
   await page
     .getByRole("button", { name: "Inspect item ↗", exact: true })
     .click();

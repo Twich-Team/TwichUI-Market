@@ -73,3 +73,20 @@ export interface Deal {
   reason: string;
   cautions: string[];
 }
+
+export interface Signal {
+  kind: "supply" | "price";
+  item_id: number;
+  variant_key: string;
+  name: string;
+  current_price: string | null;
+  reference_price: string | null;
+  current_supply: number;
+  reference_supply: number;
+  change_percent: number;
+  coverage_days: number;
+  observed_market_days: number;
+  confidence: string;
+  reason: string;
+  cautions: string[];
+}

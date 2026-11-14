@@ -128,6 +128,7 @@ class CollectionRun(Base):
 
 class SnapshotStatistic(Base):
     __tablename__ = 'snapshot_statistics'
+    __table_args__=(Index('ix_snapshot_statistics_item_variant','item_id','variant_key'),)
     snapshot_id: Mapped[int] = mapped_column(ForeignKey('snapshots.id'),primary_key=True)
     item_id: Mapped[int] = mapped_column(Integer,primary_key=True)
     variant_key: Mapped[str] = mapped_column(String(64),primary_key=True)
