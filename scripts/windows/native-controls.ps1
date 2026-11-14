@@ -87,13 +87,13 @@ function Tray-Elements {
     }
 }
 $elements=@(Tray-Elements)
-$icon=$elements | Where-Object { $_.Current.Name -like 'TwichUI Market Companion*' -and -not $_.Current.IsOffscreen } | Select-Object -First 1
+$icon=$elements | Where-Object { $_.Current.Name.StartsWith('TwichUI Market Companion ') -and -not $_.Current.IsOffscreen } | Select-Object -First 1
 if ($null -eq $icon) {
     $chevron=$elements | Where-Object { $_.Current.Name -match 'Show hidden icons|Notification Chevron' -and -not $_.Current.IsOffscreen } | Select-Object -First 1
     if ($null -eq $chevron) { throw 'Companion icon and notification overflow control unavailable' }
     Click-Element $chevron
     Start-Sleep -Milliseconds 300
-    $icon=@(Tray-Elements) | Where-Object { $_.Current.Name -like 'TwichUI Market Companion*' -and -not $_.Current.IsOffscreen } | Select-Object -First 1
+    $icon=@(Tray-Elements) | Where-Object { $_.Current.Name.StartsWith('TwichUI Market Companion ') -and -not $_.Current.IsOffscreen } | Select-Object -First 1
 }
 if ($null -eq $icon) { throw 'Actual companion tray icon unavailable' }
 Click-Element $icon $true
