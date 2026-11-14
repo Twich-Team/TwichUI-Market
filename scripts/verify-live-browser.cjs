@@ -35,6 +35,7 @@ const server=net.createServer(s=>{const t=net.connect(443,process.env.MARKET_LIV
   await expect(page.getByRole('img',{name:'Observed asking-price history'})).toBeVisible();
   await expect(page.getByText(detail.valuation.supply.toLocaleString()+' units',{exact:true})).toBeVisible();
   await expect(page.getByRole('heading',{name:'Current listings',exact:true})).toBeVisible();
+  await page.getByLabel('Advanced auction diagnostics',{exact:true}).check();
   await expect(page.getByRole('cell',{name:detail.listings[0].auction_id,exact:true})).toBeVisible();
   await expect(page.getByText('Synthetic fixture data · not live Auction House observations.')).toHaveCount(0);
   const history=await (await page.request.get(`/api/v1/markets/1/items/${item.item_id}/${item.variant_key}/history?days=365`)).json();

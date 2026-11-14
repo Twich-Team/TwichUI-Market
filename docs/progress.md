@@ -1,5 +1,7 @@
 # Active milestone
 
+Current owner milestone: [Market usability, configuration and historical retention](market-usability-plan.md). Latest status, measurements and approval gates are in [its progress record](market-usability-progress.md). Earlier deployment records below remain historical.
+
 Current owner task: [Interactive preview and Traefik deployment](traefik-preview-plan.md), [progress](traefik-preview-progress.md), [operations/admin action](traefik-preview-operations.md). Modernization is accessible on localhost18444 and remains unpromoted. Public ingress is deliberately403 pending an external source-filter dependency.
 
 The owner requested Item Experience and Frontend Modernization. Follow [the milestone plan](item-modernization-plan.md) and [current progress](item-modernization-progress.md). Live collection/history remain protected; earlier evidence below is chronological. Modernization code checkpoint 1430b32 passes 115 PostgreSQL tests, 16 frontend tests, six Chromium workflows and backend/website/Windows CI. The exact Docker review image and real-data/TLS/backup restoration are verified. Explicit owner visual approval and subsequent frontend promotion remain pending; the previous production frontend is retained.

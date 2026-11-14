@@ -1,0 +1,1 @@
+{"endpoint": "catalogue", "market": 1, "runs": 5, "latency_ms": [110.683, 35.652, 32.03, 32.209, 31.583], "median_ms": 32.209, "sql_counts": [6, 6, 6, 6, 6], "response_bytes": [35209, 35209, 35209, 35209, 35209], "returned_rows": 50, "row_kind": "item_groups", "read_only": true}

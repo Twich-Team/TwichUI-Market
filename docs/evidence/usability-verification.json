@@ -1,0 +1,79 @@
+{
+  "synthetic": false,
+  "tls_errors_ignored": false,
+  "one_active_house": 110,
+  "preview_read_only": true,
+  "retention_unauthorized": true,
+  "axe_contexts": [
+    "explorer",
+    "markets",
+    "retention",
+    "mobile"
+  ],
+  "page_errors": [],
+  "coverage": {
+    "item_ids": 4981,
+    "primary_names": 1192,
+    "supplemental_names": 0,
+    "unresolved": 3789,
+    "percent": 23.93
+  },
+  "screenshots": [
+    "catalogue-desktop.png",
+    "current-auctions-desktop.png",
+    "explorer-mobile.png",
+    "item-details-desktop.png",
+    "item-tooltip-desktop.png",
+    "markets-configuration-desktop.png",
+    "retention-controls-desktop.png"
+  ],
+  "code_commit": "f7df30ed8e2b570fd6949279d528566ac85b7c80",
+  "frontend_image": "sha256:1fae01d96e4aada104f73da5457f89497abd226e7bf35da6b68b8b4cd914ed94",
+  "preview_api_image": "sha256:9fe1f98e78e86eae9821d2c5e02a6e0f48cc9899cb259c63a4a05416118413a0",
+  "unchanged_production_frontend_image": "sha256:0abc0d5ebf24b3f01dfaaaa52ffddb8c6ecc63973632289fb3f240ff9ec8da0f",
+  "backup_restore": {
+    "archive": "market-development-20261114T143748051831Z.dump",
+    "restored": {
+      "migration": "0011",
+      "users": 45,
+      "markets": 1,
+      "observations": 137,
+      "listings": 1324933,
+      "synthetic_observations": 0,
+      "buyout_total": "831666297226",
+      "snapshot_statistics": 320105,
+      "daily_observations": 1,
+      "market_verifications": 1
+    }
+  },
+  "public_local_preview_security": {
+    "public_tls": {
+      "issuer": "YR1",
+      "protocol": "TLS 1.3",
+      "subjectName": "*.twich.gg",
+      "validFrom": 1791687760,
+      "validTo": 1799463759
+    },
+    "public_http_status": 200,
+    "public_authentication_verified": true,
+    "blocker": null,
+    "local_secure_auth_csrf_logout_device_sync": true,
+    "preview_login_persistence_readonly_cookie_audience": true,
+    "preview_catalogue_icons_variants_tooltips_charts": true,
+    "axe_violations": 0,
+    "ignoreHTTPSErrors": false,
+    "source_synthetic": false,
+    "live_catalogue_item_groups": 4981,
+    "live_snapshot_id": "13"
+  },
+  "tests": {
+    "postgresql": 136,
+    "vitest": 23,
+    "chromium_workflows": 6,
+    "final_app_ci": {
+      "backend": 43605289573,
+      "website": 43605289498,
+      "windows": 43605289511
+    }
+  }
+}
