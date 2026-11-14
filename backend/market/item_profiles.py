@@ -72,6 +72,11 @@ def enrichment_status(user: User=Depends(admin),db: Session=Depends(session)):
     community=db.scalar(select(func.count()).select_from(ItemMetadata).where(ItemMetadata.fallback.is_not(None)))
     media=list(db.execute(select(ItemMedia.status,func.count(),func.coalesce(func.sum(ItemMedia.byte_count),0)).group_by(ItemMedia.status)))
     failures=db.execute(select(ItemMedia.region,ItemMedia.item_id,ItemMedia.status,ItemMedia.http_status,ItemMedia.checked_at,ItemMedia.retry_after).where(ItemMedia.status.in_(['error','missing','budget'])).order_by(ItemMedia.checked_at.desc()).limit(100))
-    return {'rich_items':facts,'community_items':community,'icon_states':[{'status':status,'count':count,'bytes':size} for status,count,size in media],
+    from .models import Market, Observation, SnapshotStatistic
+    ranked=select(Observation.market_id,Observation.snapshot_id,func.row_number().over(partition_by=Observation.market_id,order_by=(Observation.retrieved_at.desc(),Observation.id.desc())).label('position')).subquery()
+    ids=select(Market.region,SnapshotStatistic.item_id).join(ranked,ranked.c.market_id==Market.id).join(SnapshotStatistic,SnapshotStatistic.snapshot_id==ranked.c.snapshot_id).where(ranked.c.position==1).distinct().subquery()
+    coverage=db.execute(select(func.count(),func.count(ItemMetadata.name),func.count(ItemMetadata.fallback_name).filter(ItemMetadata.name.is_(None))).select_from(ids).outerjoin(ItemMetadata,(ItemMetadata.region==ids.c.region)&(ItemMetadata.item_id==ids.c.item_id))).one()
+    total,primary,supplemental=coverage
+    return {'name_coverage':{'item_ids':total,'primary_names':primary,'supplemental_names':supplemental,'unresolved':total-primary-supplemental,'percent':round(100*(primary+supplemental)/total,2) if total else None},'rich_items':facts,'community_items':community,'icon_states':[{'status':status,'count':count,'bytes':size} for status,count,size in media],
             'icon_cache_budget_bytes':32*1024*1024,'community_enabled':os.environ.get('ITEM_COMMUNITY_FALLBACK_ENABLED','false').lower()=='true',
             'media_failures':[{'region':r.region,'item_id':r.item_id,'status':r.status,'http_status':r.http_status,'checked_at':r.checked_at,'retry_after':r.retry_after} for r in failures]}

@@ -1,8 +1,9 @@
+import { Currency } from "./currency";
 import { useEffect, useState, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Popover } from "@base-ui/react/popover";
 import { requestItemMetadata } from "./metadata-priority";
-import { api, money, when } from "./api";
+import { api, when } from "./api";
 export interface ItemIdentity {
   item_id: number;
   name: string;
@@ -113,7 +114,7 @@ export function ItemFacts({ profile }: { profile: ItemProfile }) {
           )}
           {facts.vendor_sell !== undefined && (
             <div className="vendor-value">
-              Vendor sell: {money(facts.vendor_sell)}
+              Vendor sell: <Currency value={facts.vendor_sell} />
             </div>
           )}
         </>
@@ -177,10 +178,12 @@ export function ItemInfo({
   prices,
   label = false,
   ranges,
+  eager = false,
 }: {
   item: ItemIdentity;
   market: number;
   label?: boolean;
+  eager?: boolean;
   ranges?: {
     recent_price: { minimum: string | null; maximum: string | null };
     market_value: { minimum: string | null; maximum: string | null };
@@ -195,7 +198,7 @@ export function ItemInfo({
   const cache = useQueryClient();
   const profile = useQuery({
     queryKey: ["private", "item-profile", market, item.item_id],
-    enabled: open,
+    enabled: open || eager,
     queryFn: ({ signal }) =>
       api<ItemProfile>(
         `/markets/${market}/item-profiles/${item.item_id}`,
@@ -249,7 +252,10 @@ export function ItemInfo({
               {item.name} item details
             </Popover.Title>
             {profile.data ? (
-              <ItemFacts profile={profile.data} />
+              <>
+                <ItemIcon item={profile.data} />
+                <ItemFacts profile={profile.data} />
+              </>
             ) : (
               <p role="status">
                 {profile.error
@@ -276,12 +282,12 @@ export function ItemInfo({
               >
                 <strong>Asking-price ranges across variants</strong>
                 <div>
-                  Recent: {money(ranges.recent_price.minimum)} –{" "}
-                  {money(ranges.recent_price.maximum)}
+                  Recent: <Currency value={ranges.recent_price.minimum} /> –{" "}
+                  <Currency value={ranges.recent_price.maximum} />
                 </div>
                 <div>
-                  14-day: {money(ranges.market_value.minimum)} –{" "}
-                  {money(ranges.market_value.maximum)}
+                  14-day: <Currency value={ranges.market_value.minimum} /> –{" "}
+                  <Currency value={ranges.market_value.maximum} />
                 </div>
                 <small>
                   Expand variants for exact prices. These are not completed
@@ -293,18 +299,20 @@ export function ItemInfo({
               <section className="tooltip-market" aria-label="Market estimates">
                 <strong>Market estimates · asking listings</strong>
                 {prices.recent_price !== undefined && (
-                  <div>Recent: {money(prices.recent_price)}</div>
+                  <div>
+                    Recent: <Currency value={prices.recent_price} />
+                  </div>
                 )}
                 {prices.market_value !== undefined && (
-                  <div>14-day reference: {money(prices.market_value)}</div>
+                  <div>
+                    14-day reference: <Currency value={prices.market_value} />
+                  </div>
                 )}
                 {prices.supply !== undefined && (
                   <div>Supply: {prices.supply.toLocaleString()}</div>
                 )}
                 <small>
-                  Variant{" "}
-                  {item.variant_key?.slice(0, 8) || "identity unavailable"} ·
-                  Market data is separate from base item attributes.
+                  Variant market data is separate from base item attributes.
                 </small>
               </section>
             )}

@@ -10,7 +10,7 @@ async function login(page: Page, username = "owner", secret = password) {
   ).toBeVisible();
 }
 
-test("private Explorer, history, comparison, Deal Finder and browser reload use real APIs", async ({
+test("private Explorer, history, listings, Deal Finder and browser reload use real APIs", async ({
   page,
 }) => {
   const errors: string[] = [];
@@ -40,6 +40,9 @@ test("private Explorer, history, comparison, Deal Finder and browser reload use 
   await expect(
     page.getByRole("img", { name: "Observed asking-price history" }),
   ).toBeVisible();
+  await page
+    .getByLabel("Advanced auction diagnostics", { exact: true })
+    .check();
   await expect(
     page.getByRole("cell", { name: "9007199254740993", exact: true }),
   ).toBeVisible();
@@ -56,8 +59,7 @@ test("private Explorer, history, comparison, Deal Finder and browser reload use 
   await expect(
     page.getByRole("img", { name: "Observed asking-price history" }),
   ).toBeVisible();
-  await page.getByLabel("Comparison market").selectOption("2");
-  await expect(page.locator(".comparison")).toContainText("Synthetic Horde");
+  await expect(page.getByLabel("Comparison market")).toHaveCount(0);
   await page.getByRole("button", { name: "Deal Finder", exact: true }).click();
   await expect(
     page.getByRole("heading", { name: "1 opportunity", exact: true }),
@@ -83,14 +85,18 @@ test("private Explorer, history, comparison, Deal Finder and browser reload use 
       exact: false,
     }),
   ).toBeVisible();
-  await page.getByRole("combobox", { name: "Evidence", exact: true }).selectOption("moderate");
+  await page
+    .getByRole("combobox", { name: "Evidence", exact: true })
+    .selectOption("moderate");
   await page
     .getByRole("button", { name: "Apply filters", exact: true })
     .click();
   await expect(
     page.getByText("No changes match these filters", { exact: false }),
   ).toBeVisible();
-  await page.getByRole("combobox", { name: "Evidence", exact: true }).selectOption("limited");
+  await page
+    .getByRole("combobox", { name: "Evidence", exact: true })
+    .selectOption("limited");
   await page
     .getByRole("button", { name: "Apply filters", exact: true })
     .click();
@@ -233,31 +239,39 @@ test("administrator roles, disabled mappings, schedules, storage and security ev
   await page
     .getByRole("tab", { name: "Markets & schedules", exact: true })
     .click();
-  await page
-    .getByLabel("Label", { exact: true })
-    .fill("Synthetic additional mapping");
-  await page.getByLabel("Ruleset ID", { exact: true }).fill("15");
-  await page.getByLabel("Auction house ID", { exact: true }).fill("125");
-  await page
-    .getByRole("button", { name: "Add disabled mapping", exact: true })
-    .click();
+  await expect(page.getByLabel("Region", { exact: true })).toHaveValue("us");
+  await expect(page.getByLabel("Ruleset", { exact: true })).toHaveValue(
+    "Normal",
+  );
   await expect(
-    page.getByText(
-      "Disabled market mapping created. Live verification is still required.",
-      { exact: true },
-    ),
+    page.getByLabel("Faction / auction house", { exact: true }),
+  ).toHaveValue("Horde");
+  await expect(
+    page.getByRole("button", { name: "Add disabled market", exact: true }),
+  ).toBeDisabled();
+  await expect(
+    page.getByText("US — Normal — Horde: identity verification is pending.", {
+      exact: false,
+    }),
   ).toBeVisible();
   const schedule = page
-    .locator("form.schedule")
-    .filter({ hasText: "Synthetic additional mapping" });
+    .getByRole("table", { name: "market schedules", exact: true })
+    .getByRole("row")
+    .filter({ hasText: "Synthetic Alliance" })
+    .locator("form.schedule");
   await expect(schedule.getByRole("checkbox")).toBeDisabled();
   await schedule.getByLabel("Interval (minutes)", { exact: true }).fill("60");
-  await schedule
-    .getByRole("button", { name: "Save schedule", exact: true })
-    .click();
-  await expect(
-    page.getByText("Collection schedule updated.", { exact: true }),
-  ).toBeVisible();
+  await Promise.all([
+    page.waitForResponse(
+      (r) =>
+        r.url().includes("/schedule") &&
+        r.request().method() === "PATCH" &&
+        r.status() === 200,
+    ),
+    schedule
+      .getByRole("button", { name: "Save schedule", exact: true })
+      .click(),
+  ]);
   await page
     .getByRole("tab", { name: "Storage & backups", exact: true })
     .click();
@@ -265,11 +279,27 @@ test("administrator roles, disabled mappings, schedules, storage and security ev
     page.getByRole("heading", { name: "Backups & restoration", exact: true }),
   ).toBeVisible();
   await expect(
-    page.getByText("Preserved indefinitely for private use", { exact: true }),
+    page.getByRole("heading", {
+      name: "Historical retention policy",
+      exact: true,
+    }),
   ).toBeVisible();
-  await expect(page.getByText("+1.0 MiB over 1.0 days", {exact:true})).toBeVisible();
-  await page.getByText("Recent storage measurements", {exact:true}).click();
-  await expect(page.getByRole("cell", {name:"11.0 MiB",exact:true})).toBeVisible();
+  await expect(
+    page.getByText("+1.0 MiB over 1.0 days", { exact: true }),
+  ).toBeVisible();
+  await page.getByText("Recent storage measurements", { exact: true }).click();
+  await expect(
+    page.getByRole("cell", { name: "11.0 MiB", exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Preview retention impact", exact: true })
+    .click();
+  await expect(
+    page.getByRole("table", { name: "retention preview", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Apply confirmed batch", exact: true }),
+  ).toBeDisabled();
   await page.getByRole("tab", { name: "Security events", exact: true }).click();
   await expect(
     page

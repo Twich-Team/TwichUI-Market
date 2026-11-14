@@ -1,3 +1,5 @@
+import { MarketConfiguration } from "./market-configuration";
+import { RetentionControls } from "./retention-controls";
 import { useState } from "react";
 import { DataTable } from "./data-table";
 import { api, User, when } from "./api";
@@ -5,6 +7,13 @@ import { Market } from "./types";
 import { useLoad } from "./research";
 
 interface Enrichment {
+  name_coverage?: {
+    item_ids: number;
+    primary_names: number;
+    supplemental_names: number;
+    unresolved: number;
+    percent: number | null;
+  };
   rich_items: number;
   community_items: number;
   community_enabled: boolean;
@@ -81,7 +90,13 @@ const bytes = (value: number | null | undefined) =>
       ? `${(value / 1024).toFixed(1)} KiB`
       : `${(value / 1048576).toFixed(1)} MiB`;
 
-export function Account({ signedOut,readOnly=false }: { signedOut: () => void;readOnly?:boolean }) {
+export function Account({
+  signedOut,
+  readOnly = false,
+}: {
+  signedOut: () => void;
+  readOnly?: boolean;
+}) {
   const devices = useLoad(
       "account-devices",
       () => api<Device[]>("/devices"),
@@ -91,9 +106,9 @@ export function Account({ signedOut,readOnly=false }: { signedOut: () => void;re
     [error, setError] = useState(""),
     [token, setToken] = useState(""),
     [working, setBusy] = useState(false);
-  const busy=working||readOnly;
+  const busy = working || readOnly;
   async function action(job: () => Promise<void>) {
-    if(readOnly)return;
+    if (readOnly) return;
     setError("");
     setBusy(true);
     try {
@@ -273,12 +288,12 @@ export function Administration({
   user,
   markets,
   refreshMarkets,
-  readOnly=false,
+  readOnly = false,
 }: {
   user: User;
   markets: Market[];
   refreshMarkets: () => Promise<void>;
-  readOnly?:boolean;
+  readOnly?: boolean;
 }) {
   const [tab, setTab] = useState("overview"),
     [message, setMessage] = useState(""),
@@ -320,9 +335,9 @@ export function Administration({
     },
     [],
   );
-  const busy=working||readOnly;
+  const busy = working || readOnly;
   async function action(job: () => Promise<void>) {
-    if(readOnly)return;
+    if (readOnly) return;
     setBusy(true);
     setError("");
     setMessage("");
@@ -446,6 +461,23 @@ export function Administration({
               </div>
               <section className="panel padded">
                 <h3>Item enrichment</h3>
+                {state.enrichment.name_coverage && (
+                  <p>
+                    <strong>
+                      {state.enrichment.name_coverage.percent ?? 0}% names
+                      resolved
+                    </strong>{" "}
+                    across{" "}
+                    {state.enrichment.name_coverage.item_ids.toLocaleString()}{" "}
+                    current item IDs ·{" "}
+                    {state.enrichment.name_coverage.primary_names.toLocaleString()}{" "}
+                    Blizzard ·{" "}
+                    {state.enrichment.name_coverage.supplemental_names.toLocaleString()}{" "}
+                    attributed supplemental ·{" "}
+                    {state.enrichment.name_coverage.unresolved.toLocaleString()}{" "}
+                    unresolved.
+                  </p>
+                )}
                 <p>
                   {state.enrichment.rich_items.toLocaleString()} items with base
                   attributes ·{" "}
@@ -514,9 +546,9 @@ export function Administration({
                   </ul>
                 )}
                 <p className="notice">
-                  Historical observations are retained for private use. Original
-                  owner-provided Blizzard retention clarification remains
-                  pending attachment.
+                  Historical retention is configurable under Storage & backups.
+                  Proposed policies require explicit owner approval before
+                  destructive application.
                 </p>
               </section>
             </>
@@ -525,65 +557,80 @@ export function Administration({
             <>
               <section className="panel padded">
                 <h3>Members</h3>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>PLAYER</th>
-                      <th>ROLE</th>
-                      <th>STATUS</th>
-                      <th>ACCESS</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {state.users.map((row) => (
-                      <tr key={row.id}>
-                        <td>
-                          {row.username}
-                          {row.id === user.id ? " (you)" : ""}
-                        </td>
-                        <td>
-                          <select
-                            aria-label={`Role for ${row.username}`}
-                            value={row.role}
-                            disabled={busy || row.id === user.id}
-                            onChange={(event) =>
-                              action(async () => {
-                                await api(`/admin/users/${row.id}`, "PATCH", {
+                <DataTable<User>
+                  label="members"
+                  data={state.users}
+                  getRowId={(row) => String(row.id)}
+                  columns={[
+                    {
+                      accessorKey: "username",
+                      header: "Player",
+                      enableHiding: false,
+                      cell: ({ row }) =>
+                        `${row.original.username}${row.original.id === user.id ? " (you)" : ""}`,
+                    },
+                    {
+                      accessorKey: "role",
+                      header: "Role",
+                      cell: ({ row }) => (
+                        <select
+                          aria-label={`Role for ${row.original.username}`}
+                          value={row.original.role}
+                          disabled={busy || row.original.id === user.id}
+                          onChange={(event) =>
+                            action(async () => {
+                              await api(
+                                `/admin/users/${row.original.id}`,
+                                "PATCH",
+                                {
                                   role: event.target.value,
-                                  active: row.active,
-                                });
-                                setMessage("Member role updated.");
-                              })
-                            }
-                          >
-                            <option value="member">Member</option>
-                            <option value="admin">Administrator</option>
-                          </select>
-                        </td>
-                        <td>{row.active ? "Active" : "Disabled"}</td>
-                        <td>
-                          <button
-                            className="secondary"
-                            disabled={busy || row.id === user.id}
-                            onClick={() =>
-                              action(async () => {
-                                await api(`/admin/users/${row.id}`, "PATCH", {
-                                  role: row.role,
-                                  active: !row.active,
-                                });
-                                setMessage(
-                                  "Member access updated. Disabling also revokes their credentials.",
-                                );
-                              })
-                            }
-                          >
-                            {row.active ? "Disable" : "Enable"}
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                                  active: row.original.active,
+                                },
+                              );
+                              setMessage("Member role updated.");
+                            })
+                          }
+                        >
+                          <option value="member">Member</option>
+                          <option value="admin">Administrator</option>
+                        </select>
+                      ),
+                    },
+                    {
+                      id: "status",
+                      header: "Status",
+                      accessorFn: (row) => (row.active ? "Active" : "Disabled"),
+                    },
+                    {
+                      id: "action",
+                      header: "Access",
+                      enableSorting: false,
+                      cell: ({ row }) => (
+                        <button
+                          className="secondary"
+                          disabled={busy || row.original.id === user.id}
+                          onClick={() =>
+                            action(async () => {
+                              await api(
+                                `/admin/users/${row.original.id}`,
+                                "PATCH",
+                                {
+                                  role: row.original.role,
+                                  active: !row.original.active,
+                                },
+                              );
+                              setMessage(
+                                "Member access updated. Disabling also revokes their credentials.",
+                              );
+                            })
+                          }
+                        >
+                          {row.original.active ? "Disable" : "Enable"}
+                        </button>
+                      ),
+                    },
+                  ]}
+                />
               </section>
               <section className="panel padded">
                 <h3>Invitations</h3>
@@ -604,203 +651,60 @@ export function Administration({
                     </button>
                   </label>
                 )}
-                <table>
-                  <thead>
-                    <tr>
-                      <th>INVITATION</th>
-                      <th>EXPIRES</th>
-                      <th>STATUS</th>
-                      <th>ACTION</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {state.invitations.map((row) => (
-                      <tr key={row.id}>
-                        <td>#{row.id}</td>
-                        <td>{when(row.expires_at)}</td>
-                        <td>
-                          {row.used
-                            ? "Used or revoked"
-                            : new Date(row.expires_at) < new Date()
-                              ? "Expired"
-                              : "Available"}
-                        </td>
-                        <td>
-                          <button
-                            className="secondary"
-                            disabled={row.used || busy}
-                            onClick={() =>
-                              action(async () => {
-                                await api(
-                                  `/admin/invitations/${row.id}`,
-                                  "DELETE",
-                                );
-                                setMessage("Invitation revoked.");
-                              })
-                            }
-                          >
-                            Revoke
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                {!state.invitations.length && (
-                  <p className="empty">No invitations created.</p>
-                )}
+                <DataTable<Invitation>
+                  label="invitations"
+                  data={state.invitations}
+                  columns={[
+                    { accessorKey: "id", header: "Invitation" },
+                    {
+                      accessorKey: "expires_at",
+                      header: "Expires",
+                      cell: ({ row }) => when(row.original.expires_at),
+                    },
+                    {
+                      id: "status",
+                      header: "Status",
+                      accessorFn: (row) =>
+                        row.used
+                          ? "Used or revoked"
+                          : new Date(row.expires_at) < new Date()
+                            ? "Expired"
+                            : "Available",
+                    },
+                    {
+                      id: "action",
+                      header: "Action",
+                      enableSorting: false,
+                      cell: ({ row }) => (
+                        <button
+                          className="secondary"
+                          disabled={row.original.used || busy}
+                          onClick={() =>
+                            action(async () => {
+                              await api(
+                                `/admin/invitations/${row.original.id}`,
+                                "DELETE",
+                              );
+                              setMessage("Invitation revoked.");
+                            })
+                          }
+                        >
+                          Revoke
+                        </button>
+                      ),
+                    },
+                  ]}
+                />
               </section>
             </>
           )}
           {tab === "markets" && (
-            <>
-              <section className="panel padded">
-                <h3>Add a market mapping</h3>
-                <p>
-                  Mappings start disabled. Live endpoint and identity
-                  verification is required before collection can be enabled.
-                </p>
-                <form
-                  className="form-grid"
-                  onSubmit={(event) => {
-                    event.preventDefault();
-                    const form = new FormData(event.currentTarget);
-                    action(async () => {
-                      await api("/admin/markets", "POST", {
-                        region: String(form.get("region")),
-                        ruleset_id: Number(form.get("ruleset")),
-                        house_id: Number(form.get("house")),
-                        source_kind: String(form.get("kind")),
-                        label: String(form.get("label")),
-                        interval_seconds: Number(form.get("minutes")) * 60,
-                      });
-                      await refreshMarkets();
-                      setMessage(
-                        "Disabled market mapping created. Live verification is still required.",
-                      );
-                    });
-                  }}
-                >
-                  <label>
-                    Label
-                    <input name="label" maxLength={100} required />
-                  </label>
-                  <label>
-                    Region
-                    <select name="region">
-                      {["eu", "us", "kr", "tw"].map((region) => (
-                        <option key={region}>{region}</option>
-                      ))}
-                    </select>
-                  </label>
-                  <label>
-                    Ruleset ID
-                    <input
-                      name="ruleset"
-                      type="number"
-                      min="1"
-                      max="2147483647"
-                      required
-                    />
-                  </label>
-                  <label>
-                    Auction house ID
-                    <input
-                      name="house"
-                      type="number"
-                      min="1"
-                      max="2147483647"
-                      required
-                    />
-                  </label>
-                  <label>
-                    Source kind
-                    <select name="kind">
-                      <option value="auctions">Auction listings</option>
-                      <option value="commodities">Commodities</option>
-                    </select>
-                  </label>
-                  <label>
-                    Check interval (minutes)
-                    <input
-                      name="minutes"
-                      type="number"
-                      min="5"
-                      max="1440"
-                      defaultValue="30"
-                      required
-                    />
-                  </label>
-                  <button className="primary" disabled={busy}>
-                    Add disabled mapping
-                  </button>
-                </form>
-              </section>
-              <section className="panel padded">
-                <h3>Collection schedules</h3>
-                {markets.map((row) => (
-                  <form
-                    className="schedule"
-                    key={`${row.id}:${row.interval_seconds}:${row.enabled}`}
-                    onSubmit={(event) => {
-                      event.preventDefault();
-                      const form = new FormData(event.currentTarget);
-                      action(async () => {
-                        await api(
-                          `/admin/markets/${row.id}/schedule`,
-                          "PATCH",
-                          {
-                            enabled: form.get("enabled") === "on",
-                            interval_seconds: Number(form.get("minutes")) * 60,
-                          },
-                        );
-                        await refreshMarkets();
-                        setMessage("Collection schedule updated.");
-                      });
-                    }}
-                  >
-                    <div>
-                      <strong>
-                        {row.label} · #{row.id}
-                      </strong>
-                      <small>
-                        {row.region.toUpperCase()} / ruleset {row.ruleset_id} /
-                        house {row.house_id} / {row.source_kind}
-                      </small>
-                    </div>
-                    <label>
-                      Interval (minutes)
-                      <input
-                        name="minutes"
-                        type="number"
-                        min="5"
-                        max="1440"
-                        defaultValue={row.interval_seconds / 60}
-                        required
-                      />
-                    </label>
-                    <label className="checkbox">
-                      <input
-                        name="enabled"
-                        type="checkbox"
-                        defaultChecked={row.enabled}
-                        disabled={!row.verified || readOnly}
-                      />
-                      Enabled
-                      {!row.verified && (
-                        <small>Live verification pending</small>
-                      )}
-                    </label>
-                    <button className="secondary" disabled={busy}>
-                      Save schedule
-                    </button>
-                  </form>
-                ))}
-                {!markets.length && (
-                  <p className="empty">No collection schedules.</p>
-                )}
-              </section>
-            </>
+            <MarketConfiguration
+              markets={markets}
+              readOnly={busy}
+              refreshMarkets={refreshMarkets}
+              action={action}
+            />
           )}
           {tab === "collection" && (
             <section className="panel table-panel">
@@ -886,6 +790,7 @@ export function Administration({
           )}
           {tab === "storage" && (
             <>
+              <RetentionControls readOnly={readOnly} />
               <section className="panel padded">
                 <h3>Database & historical retention</h3>
                 <dl>
@@ -908,7 +813,10 @@ export function Administration({
                   <dt>Fetch observations</dt>
                   <dd>{state.storage.observations.toLocaleString()}</dd>
                   <dt>Historical retention</dt>
-                  <dd>Preserved indefinitely for private use</dd>
+                  <dd>
+                    Policy proposals are shown above; live historical pruning
+                    remains disabled until authorized.
+                  </dd>
                   <dt>Raw listing details</dt>
                   <dd>
                     {state.storage.retention.compaction_enabled
@@ -918,8 +826,8 @@ export function Administration({
                   <dt>Detailed price samples</dt>
                   <dd>
                     {state.storage.retention.compaction_enabled
-                      ? `${state.storage.retention.detailed_statistics_days} days; daily references remain indefinitely`
-                      : "Compaction disabled pending formula verification"}
+                      ? `${state.storage.retention.detailed_statistics_days} days; daily policy protects valuation support`
+                      : "Historical compaction is disabled"}
                   </dd>
                 </dl>
                 <p>
@@ -927,8 +835,8 @@ export function Administration({
                   Historical listings are never treated as completed sales.
                 </p>
                 <p className="notice">
-                  Owner-provided Blizzard retention guidance is recorded; the
-                  original clarification is pending attachment.
+                  Database size measures PostgreSQL allocation. Logical row
+                  removal permits reuse; filesystem space recovery is unknown.
                 </p>
               </section>
               <section className="panel padded">
@@ -952,25 +860,24 @@ export function Administration({
                 </p>
                 <details>
                   <summary>Recent storage measurements</summary>
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Measured at</th>
-                        <th>Database size</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {state.storage.growth.samples
-                        .slice(-24)
-                        .reverse()
-                        .map((sample) => (
-                          <tr key={sample.sampled_at}>
-                            <td>{when(sample.sampled_at)}</td>
-                            <td>{bytes(sample.database_bytes)}</td>
-                          </tr>
-                        ))}
-                    </tbody>
-                  </table>
+                  <DataTable<{ sampled_at: string; database_bytes: number }>
+                    label="storage measurements"
+                    data={state.storage.growth.samples}
+                    initialSorting={[{ id: "sampled_at", desc: true }]}
+                    columns={[
+                      {
+                        accessorKey: "sampled_at",
+                        header: "Measured at",
+                        cell: ({ row }) => when(row.original.sampled_at),
+                      },
+                      {
+                        accessorKey: "database_bytes",
+                        header: "Database allocation",
+                        meta: { numeric: true },
+                        cell: ({ row }) => bytes(row.original.database_bytes),
+                      },
+                    ]}
+                  />
                 </details>
                 {state.storage.backup.error && (
                   <p className="notice error">{state.storage.backup.error}</p>

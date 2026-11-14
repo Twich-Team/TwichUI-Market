@@ -1,6 +1,7 @@
+import { Currency } from "./currency";
 import { useState } from "react";
 import { ItemInfo } from "./item-components";
-import { api, money } from "./api";
+import { api } from "./api";
 import { Freshness, MarketSelect, useLoad } from "./research";
 import { Deal, Market, Signal } from "./types";
 
@@ -273,11 +274,15 @@ export function Deals({
                 <div className="deal-prices">
                   <div>
                     <label>TOTAL BUYOUT</label>
-                    <strong>{money(deal.total_buyout)}</strong>
+                    <strong>
+                      <Currency value={deal.total_buyout} />
+                    </strong>
                   </div>
                   <div>
                     <label>REFERENCE / UNIT</label>
-                    <strong>{money(deal.market_value)}</strong>
+                    <strong>
+                      <Currency value={deal.market_value} />
+                    </strong>
                   </div>
                   <div>
                     <label>QUANTITY</label>
@@ -335,11 +340,15 @@ export function Deals({
                     <>
                       <div>
                         <label>CURRENT / UNIT</label>
-                        <strong>{money(signal.current_price)}</strong>
+                        <strong>
+                          <Currency value={signal.current_price} />
+                        </strong>
                       </div>
                       <div>
                         <label>PRIOR REFERENCE / UNIT</label>
-                        <strong>{money(signal.reference_price)}</strong>
+                        <strong>
+                          <Currency value={signal.reference_price} />
+                        </strong>
                       </div>
                     </>
                   ) : (

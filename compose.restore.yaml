@@ -6,9 +6,9 @@ services:
       POSTGRES_DB: market_restore
       POSTGRES_USER: market
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
-    tmpfs: [/var/lib/postgresql/data:size=512m]
-    mem_limit: 512m
-    cpus: 0.5
+    tmpfs: [/var/lib/postgresql/data:size=2g]
+    mem_limit: 3g
+    cpus: 1
     security_opt: [no-new-privileges:true]
     logging:
       driver: json-file

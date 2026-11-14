@@ -36,10 +36,12 @@ test("catalogue variants, accessible item facts, chart controls and bounded hist
   });
   await expect(catalogue.getByRole("status")).toHaveText("Page 1 of 2");
   await expect(catalogue.locator("tbody > tr")).toHaveCount(25);
+  const selectedName = await page.locator(".item-heading h2").textContent();
   await catalogue
     .getByRole("button", { name: "Next items", exact: true })
     .click();
   await expect(catalogue.getByRole("status")).toHaveText("Page 2 of 2");
+  await expect(page.locator(".item-heading h2")).toHaveText(selectedName!);
   await catalogue
     .getByRole("button", { name: "Previous items", exact: true })
     .click();
@@ -51,6 +53,15 @@ test("catalogue variants, accessible item facts, chart controls and bounded hist
   const blade = catalogue
     .getByRole("row")
     .filter({ hasText: "Synthetic Enchanted Blade" });
+  await blade
+    .getByRole("button", {
+      name: "Select Synthetic Enchanted Blade",
+      exact: true,
+    })
+    .click();
+  await expect(page.locator(".item-heading h2")).toHaveText(
+    "Synthetic Enchanted Blade",
+  );
   await blade.getByRole("button", { name: /2 variants/ }).click();
   const variants = page.getByRole("table", {
     name: "Variants of Synthetic Enchanted Blade",
@@ -71,6 +82,15 @@ test("catalogue variants, accessible item facts, chart controls and bounded hist
   );
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toHaveCount(0);
+  await catalogue
+    .getByRole("button", {
+      name: "Select Synthetic Arcane Crystal",
+      exact: true,
+    })
+    .click();
+  await expect(page.locator(".item-heading h2")).toHaveText(
+    "Synthetic Arcane Crystal",
+  );
   await page.getByRole("button", { name: "10Y", exact: true }).click();
   await page.locator(".chart-viewport").first().scrollIntoViewIfNeeded();
   await expect(
@@ -79,6 +99,7 @@ test("catalogue variants, accessible item facts, chart controls and bounded hist
       exact: true,
     }),
   ).toBeVisible();
+  await page.getByText("Advanced chart controls", { exact: true }).click();
   await page.getByLabel("60-day reference", { exact: true }).check();
   await page.getByLabel("Zoom start (%)").fill("20");
   await page.getByRole("button", { name: "Reset zoom", exact: true }).click();

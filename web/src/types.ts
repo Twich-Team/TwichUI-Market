@@ -8,6 +8,7 @@ export interface Market {
   source_kind: string;
   enabled: boolean;
   verified: boolean;
+  player_identity_verified?: boolean;
   interval_seconds: number;
   last_success: string | null;
   last_modified: string | null;
@@ -16,6 +17,9 @@ export interface Market {
   failures: number;
 }
 export interface Item {
+  icon_url?: string | null;
+  quality?: string | null;
+  metadata_attribution?: { text: string; url: string } | null;
   item_id: number;
   name: string;
   name_verified: boolean;

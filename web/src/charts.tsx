@@ -1,3 +1,4 @@
+import { Currency } from "./currency";
 import {
   lazy,
   Suspense,
@@ -80,7 +81,7 @@ export function PriceHistory({
   const [overlays, setOverlays] = useState({
     market: true,
     historical: false,
-    supply: true,
+    supply: false,
   });
   const [zoom, setZoom] = useState<[number, number]>([0, 100]);
   const option = useMemo(() => {
@@ -117,7 +118,8 @@ export function PriceHistory({
         description:
           "Observed asking prices and listed supply. Missing days are gaps; exact copper values are available in the data table.",
       },
-      grid: { left: 75, right: overlays.supply ? 60 : 20, top: 25, bottom: 80 },
+      legend: { top: 0, textStyle: { color: palette.text, fontSize: 13 } },
+      grid: { left: 75, right: overlays.supply ? 60 : 20, top: 55, bottom: 80 },
       textStyle: { color: palette.text, fontFamily: "inherit" },
       tooltip: {
         trigger: "axis",
@@ -201,30 +203,71 @@ export function PriceHistory({
       </p>
     );
   if (!rows.length)
-    return <p className="empty">No observed history for this range.</p>;
+    return (
+      <p className="empty">
+        No observations were collected for this range. Try a longer range or
+        allow collection to build history.
+      </p>
+    );
   return (
     <>
-      <div className="chart-controls" aria-label="Chart overlays">
-        {(
-          [
-            ["market", "14-day reference"],
-            ["historical", "60-day reference"],
-            ["supply", "Listed supply"],
-          ] as const
-        ).map(([key, label]) => (
-          <label key={key}>
+      <p className="small muted">
+        Recent price is quantity-weighted asking price. The dashed 14-day
+        reference averages observed daily prices; the 60-day reference uses the
+        longer observed window.
+      </p>
+      {(history.data?.points.length || 0) < 3 && (
+        <p className="notice">
+          Only {history.data?.points.length} observed day(s). Points are actual
+          observations; a trend needs more history.
+        </p>
+      )}
+      <details>
+        <summary>Advanced chart controls</summary>
+        <div className="chart-controls" aria-label="Chart overlays">
+          {(
+            [
+              ["market", "14-day reference"],
+              ["historical", "60-day reference"],
+              ["supply", "Listed supply"],
+            ] as const
+          ).map(([key, label]) => (
+            <label key={key}>
+              <input
+                type="checkbox"
+                checked={overlays[key]}
+                onChange={(event) =>
+                  setOverlays((p) => ({ ...p, [key]: event.target.checked }))
+                }
+              />
+              {label}
+            </label>
+          ))}
+          <button onClick={() => setZoom([0, 100])}>Reset zoom</button>
+        </div>
+        <div className="chart-controls" aria-label="Keyboard chart zoom">
+          <label>
+            Zoom start (%)
             <input
-              type="checkbox"
-              checked={overlays[key]}
-              onChange={(event) =>
-                setOverlays((p) => ({ ...p, [key]: event.target.checked }))
-              }
+              type="range"
+              min={0}
+              max={Math.max(0, zoom[1] - 1)}
+              value={zoom[0]}
+              onChange={(e) => setZoom([Number(e.target.value), zoom[1]])}
             />
-            {label}
           </label>
-        ))}
-        <button onClick={() => setZoom([0, 100])}>Reset zoom</button>
-      </div>
+          <label>
+            Zoom end (%)
+            <input
+              type="range"
+              min={Math.min(100, zoom[0] + 1)}
+              max={100}
+              value={zoom[1]}
+              onChange={(e) => setZoom([zoom[0], Number(e.target.value)])}
+            />
+          </label>
+        </div>
+      </details>
       {history.data?.synthetic && (
         <p className="notice warning">
           This chart includes synthetic fixture observations or references.
@@ -235,28 +278,6 @@ export function PriceHistory({
         label="Observed asking-price history"
         onZoom={(a, b) => setZoom([a, b])}
       />
-      <div className="chart-controls" aria-label="Keyboard chart zoom">
-        <label>
-          Zoom start (%)
-          <input
-            type="range"
-            min={0}
-            max={Math.max(0, zoom[1] - 1)}
-            value={zoom[0]}
-            onChange={(e) => setZoom([Number(e.target.value), zoom[1]])}
-          />
-        </label>
-        <label>
-          Zoom end (%)
-          <input
-            type="range"
-            min={Math.min(100, zoom[0] + 1)}
-            max={100}
-            value={zoom[1]}
-            onChange={(e) => setZoom([zoom[0], Number(e.target.value)])}
-          />
-        </label>
-      </div>
       <p className="small muted">
         {history.data?.points.length} observed UTC days · gaps remain
         unobserved. Chart scales are approximate; tooltips and data retain exact
@@ -342,9 +363,15 @@ function HistoryRow({ row, index }: { row: HistoryPoint; index?: number }) {
   return (
     <tr aria-rowindex={index === undefined ? undefined : index + 2}>
       <th scope="row">{row.date}</th>
-      <td>{money(row.recent_price)}</td>
-      <td>{money(row.market_value)}</td>
-      <td>{money(row.historical_value)}</td>
+      <td>
+        <Currency value={row.recent_price} />
+      </td>
+      <td>
+        <Currency value={row.market_value} />
+      </td>
+      <td>
+        <Currency value={row.historical_value} />
+      </td>
       <td>{row.supply?.toLocaleString() ?? "Unobserved"}</td>
     </tr>
   );
@@ -448,7 +475,7 @@ export function SupplyDistribution({
       xAxis: {
         type: "category",
         data: result.data?.bands.map((b) => money(b.minimum)),
-        axisLabel: { color: palette.text, rotate: 25, fontSize: 10 },
+        axisLabel: { color: palette.text, rotate: 25, fontSize: 13 },
       },
       yAxis: {
         type: "value",
@@ -464,7 +491,7 @@ export function SupplyDistribution({
           const record = (params as { dataIndex: number }[])[0];
           const band = result.data?.bands[record?.dataIndex];
           return band
-            ? `${money(band.minimum)} – ${money(band.maximum)}\n${band.supply.toLocaleString()} units · ${band.listing_count} priced listings`
+            ? `$<Currency value={band.minimum} /> – $<Currency value={band.maximum} />\n${band.supply.toLocaleString()} units · ${band.listing_count} priced listings`
             : "";
         },
       },
@@ -482,7 +509,12 @@ export function SupplyDistribution({
     return <p role="status">Loading complete distribution…</p>;
   if (result.error) return <p role="alert">{result.error.message}</p>;
   if (!result.data?.bands.length)
-    return <p className="empty">No buyout prices are observed.</p>;
+    return (
+      <p className="empty">
+        No buyout prices are observed. Bid-only listings cannot establish a
+        buyout distribution.
+      </p>
+    );
   return (
     <>
       <DeferredChart option={option} label="Current listed supply by price" />
@@ -504,7 +536,8 @@ export function SupplyDistribution({
             {result.data.bands.map((b, i) => (
               <tr key={i}>
                 <td>
-                  {money(b.minimum)} – {money(b.maximum)}
+                  <Currency value={b.minimum} /> –{" "}
+                  <Currency value={b.maximum} />
                 </td>
                 <td>{b.supply.toLocaleString()}</td>
               </tr>

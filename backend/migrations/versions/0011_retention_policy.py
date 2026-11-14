@@ -38,7 +38,7 @@ def upgrade():
 
 def downgrade():
     connection=op.get_bind()
-    if connection.scalar(sa.text('SELECT count(*) FROM retention_batches')) or connection.scalar(sa.text('SELECT count(*) FROM retention_policy')):
+    if any(connection.scalar(sa.text(f'SELECT count(*) FROM {table}')) for table in ('retention_batches','retention_policy','retention_policy_changes','player_market_mappings')):
         raise RuntimeError('Export retention policy/receipts and use documented recovery before downgrade')
     op.drop_index('ix_security_events_created_at',table_name='security_events')
     op.drop_index('ix_collection_runs_checked_at',table_name='collection_runs')

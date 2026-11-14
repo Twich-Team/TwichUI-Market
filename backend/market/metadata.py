@@ -43,7 +43,7 @@ def resolve_once(factory=Session,client=None,*,at=None):
     client=client or BlizzardClient()
     if getattr(client,'blocked_until',0)>time.monotonic(): return False
     with factory.begin() as db:
-        if db.bind.dialect.name=='postgresql' and not db.scalar(text('SELECT pg_try_advisory_xact_lock(7140232)')):
+        if db.bind.dialect.name=='postgresql' and not db.scalar(text('SELECT pg_try_advisory_xact_lock(7140238)')):
             return False
         candidate=None
         for market in db.scalars(select(Market).where(Market.enabled.is_(True),Market.verified.is_(True)).order_by(Market.id)):

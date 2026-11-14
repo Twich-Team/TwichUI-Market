@@ -72,3 +72,13 @@ def test_malformed_metadata_cannot_be_saved(database,body):
         with pytest.raises(ValueError): store_metadata(db,'eu',12363,body,synthetic=True)
         db.rollback()
         assert db.scalar(select(ItemMetadata)) is None
+
+
+def test_metadata_does_not_take_the_collection_lock(database):
+    setup(database)
+    from sqlalchemy import text
+    if database.kw['bind'].dialect.name!='postgresql':return
+    # Simulate the collector holding its transaction lock. Metadata still resolves.
+    with database.begin() as collector:
+        collector.execute(text('SELECT pg_advisory_xact_lock(7140232)'))
+        assert resolve_once(database,Client(),at=now())

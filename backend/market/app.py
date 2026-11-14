@@ -30,6 +30,8 @@ from .retention import router as retention_router
 app.include_router(retention_router)
 from .market_configuration import router as configuration_router
 app.include_router(configuration_router)
+from .current_listings import router as listings_router
+app.include_router(listings_router)
 COOKIE_SECURE = os.environ.get("COOKIE_SECURE", "true").lower() == "true"
 ORIGIN = os.environ.get("APP_ORIGIN", "https://localhost")
 

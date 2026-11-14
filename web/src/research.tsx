@@ -1,10 +1,12 @@
+import { Currency } from "./currency";
+import { CurrentListings } from "./listings";
 import { variantLabel } from "./variant-label";
 import { useQuery } from "@tanstack/react-query";
 import { useLayoutEffect, useState, DependencyList } from "react";
-import { api, money, when } from "./api";
+import { api, when } from "./api";
 import { PriceHistory, SupplyDistribution } from "./charts";
 import { ItemCatalogue } from "./catalogue";
-import { ItemInfo } from "./item-components";
+import { ItemInfo, ItemAttribution } from "./item-components";
 import { Detail, Item, Market } from "./types";
 
 export function useLoad<T>(
@@ -44,7 +46,7 @@ export function MarketSelect({
         {!markets.length && <option value={0}>No markets configured</option>}
         {markets.map((row) => (
           <option key={row.id} value={row.id}>
-            {row.label} · #{row.id}
+            {row.label}
           </option>
         ))}
       </select>
@@ -100,8 +102,7 @@ export function Explorer({
   const [query, setQuery] = useState(focus?.item_id.toString() || ""),
     [search, setSearch] = useState(focus?.item_id.toString() || ""),
     [selected, setSelected] = useState<Item | null>(null),
-    [range, setRange] = useState(14),
-    [comparison, setComparison] = useState(0);
+    [range, setRange] = useState(14);
   const [catalogueSummary, setCatalogueSummary] = useState({
     synthetic: false,
     empty: false,
@@ -127,16 +128,6 @@ export function Explorer({
           )
         : Promise.resolve(null),
     [market, selected?.item_id, selected?.variant_key],
-  );
-  const compared = useLoad(
-    "comparison",
-    () =>
-      comparison && selected
-        ? api<Detail>(
-            `/markets/${comparison}/items/${selected.item_id}/${selected.variant_key}`,
-          )
-        : Promise.resolve(null),
-    [comparison, selected?.item_id, selected?.variant_key],
   );
   const current = markets.find((row) => row.id === market),
     value = detail.data?.valuation;
@@ -198,14 +189,30 @@ export function Explorer({
       {detail.data && value && (
         <>
           <div className="item-heading">
-            <ItemInfo market={market} item={detail.data} prices={value} />
+            <ItemInfo
+              eager
+              market={market}
+              item={{
+                ...detail.data,
+                icon_url: selected?.icon_url,
+                quality: selected?.quality,
+              }}
+              prices={value}
+            />
             <div>
               <div className="eyebrow">ITEM #{detail.data.item_id}</div>
-              <h2>{detail.data.name}</h2>
-              <small className="muted">
-                {variantLabel(selected?.variant)} · Variant{" "}
-                {detail.data.variant_key.slice(0, 8)}
-              </small>
+              <h2
+                className={`quality-text-${selected?.quality?.toLowerCase() || "unknown"}`}
+              >
+                {detail.data.name}
+              </h2>
+              <ItemAttribution
+                item={{
+                  ...detail.data,
+                  metadata_attribution: selected?.metadata_attribution,
+                }}
+              />
+              <small className="muted">{variantLabel(selected?.variant)}</small>
               <br />
               <small className="muted">
                 {detail.data.name_verified
@@ -217,17 +224,23 @@ export function Explorer({
           <div className="stats">
             <article>
               <label>LOWEST BUYOUT / UNIT</label>
-              <strong>{money(value.lowest_buyout)}</strong>
+              <strong>
+                <Currency value={value.lowest_buyout} />
+              </strong>
               <small>Current asking price</small>
             </article>
             <article>
               <label>RECENT PRICE</label>
-              <strong>{money(value.recent_price)}</strong>
+              <strong>
+                <Currency value={value.recent_price} />
+              </strong>
               <small>Quantity-weighted listings</small>
             </article>
             <article>
               <label>14-DAY MARKET VALUE</label>
-              <strong>{money(value.market_value)}</strong>
+              <strong>
+                <Currency value={value.market_value} />
+              </strong>
               <small>{value.market_coverage_days} observed UTC days</small>
             </article>
             <article>
@@ -263,7 +276,8 @@ export function Explorer({
                 days={range}
               />
               <p className="panel-note">
-                60-day historical value: {money(value.historical_value)} ·{" "}
+                60-day historical value:{" "}
+                <Currency value={value.historical_value} /> ·{" "}
                 {value.coverage_days} observed days
               </p>
             </section>
@@ -278,93 +292,12 @@ export function Explorer({
               />
             </section>
           </div>
-          <section className="panel">
-            <div className="panel-heading">
-              <h3>Compare markets</h3>
-              <select
-                aria-label="Comparison market"
-                value={comparison}
-                onChange={(event) => setComparison(Number(event.target.value))}
-              >
-                <option value={0}>Choose a second market</option>
-                {markets
-                  .filter((row) => row.id !== market)
-                  .map((row) => (
-                    <option key={row.id} value={row.id}>
-                      {row.label}
-                    </option>
-                  ))}
-              </select>
-            </div>
-            {compared.loading && (
-              <p className="panel-note">Loading comparison…</p>
-            )}
-            {compared.error && (
-              <p className="panel-note error" role="alert">
-                {compared.error}
-              </p>
-            )}
-            {compared.data && (
-              <div className="comparison">
-                <span>
-                  {current?.label}: <b>{money(value.recent_price)}</b>
-                </span>
-                <span>
-                  {compared.data.market.label}:{" "}
-                  <b>{money(compared.data.valuation.recent_price)}</b>
-                </span>
-                <span>Same item variant · source types remain separate</span>
-              </div>
-            )}
-          </section>
-          <section
-            className="panel table-panel"
-            tabIndex={0}
-            role="region"
-            aria-label="Scrollable current listings"
-          >
-            <div className="panel-heading">
-              <h3>Current listings</h3>
-              <span className="muted">
-                {detail.data.listings_truncated
-                  ? "First 200 listings · partial view"
-                  : "All observed listings"}
-              </span>
-            </div>
-            <table>
-              <thead>
-                <tr>
-                  <th>AUCTION</th>
-                  <th>QUANTITY</th>
-                  <th>STACK BUYOUT</th>
-                  <th>UNIT PRICE</th>
-                  <th>TIME LEFT</th>
-                </tr>
-              </thead>
-              <tbody>
-                {detail.data.listings.map((row) => (
-                  <tr key={row.auction_id}>
-                    <td>{row.auction_id}</td>
-                    <td>{row.quantity}</td>
-                    <td>
-                      {row.buyout === null
-                        ? "Bid only / commodity"
-                        : money(row.buyout)}
-                    </td>
-                    <td>
-                      {row.unit_price === null
-                        ? "Stack total shown"
-                        : money(row.unit_price)}
-                    </td>
-                    <td>{row.time_left || "Unknown"}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            {!detail.data.listings.length && (
-              <p className="empty">No current listings for this variant.</p>
-            )}
-          </section>
+          <CurrentListings
+            key={`${market}:${selected!.item_id}:${selected!.variant_key}`}
+            market={market}
+            item={selected!.item_id}
+            variant={selected!.variant_key}
+          />
           <p className="notice">
             Reference algorithm: {value.algorithm}. Workshop compatibility
             remains unverified. Missing days are not filled in, and disappearing

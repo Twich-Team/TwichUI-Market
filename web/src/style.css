@@ -65,27 +65,27 @@ input {
   width: 100%;
 }
 select {
-  font-size: 12px;
+  font-size: 14px;
 }
 label {
   display: grid;
   gap: 6px;
-  font-size: 11px;
+  font-size: 14px;
   color: #bca88a;
 }
 small,
 .small {
-  font-size: 10px;
+  font-size: 13px;
 }
 .muted {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 14px;
 }
 .primary,
 .secondary {
   padding: 10px 15px;
   border-radius: 3px;
-  font-size: 11px;
+  font-size: 14px;
   white-space: normal;
 }
 .primary {
@@ -104,7 +104,7 @@ small,
   border: 0;
   color: var(--gold);
   padding: 8px 0;
-  font-size: 11px;
+  font-size: 14px;
   text-align: left;
 }
 aside {
@@ -146,7 +146,7 @@ aside {
   box-shadow: inset 0 0 0 4px #201813;
 }
 .eyebrow {
-  font-size: 9px;
+  font-size: 13px;
   font-weight: 600;
   letter-spacing: 2px;
   color: var(--gold);
@@ -167,7 +167,7 @@ nav button {
   border: 1px solid transparent;
   padding: 13px 12px;
   border-radius: 3px;
-  font-size: 12px;
+  font-size: 14px;
 }
 nav button.active {
   color: var(--gold);
@@ -181,7 +181,7 @@ nav button.active {
   padding: 20px 10px;
   display: grid;
   gap: 5px;
-  font-size: 12px;
+  font-size: 14px;
 }
 .account-info small {
   color: var(--muted);
@@ -196,7 +196,7 @@ header {
   align-items: center;
   justify-content: space-between;
   padding: 0 38px;
-  font-size: 10px;
+  font-size: 13px;
   letter-spacing: 1px;
   color: var(--muted);
 }
@@ -205,7 +205,7 @@ header i {
   padding: 0 14px;
 }
 .badge {
-  font-size: 8px;
+  font-size: 13px;
   letter-spacing: 1px;
   color: var(--gold);
   border: 1px solid #715334;
@@ -242,13 +242,13 @@ h3 {
     serif;
 }
 h4 {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   margin: 18px 0 7px;
 }
 .intro {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 14px;
   margin-bottom: 24px;
 }
 .title-row {
@@ -279,7 +279,7 @@ h4 {
 .notice {
   display: flex;
   gap: 12px;
-  font-size: 11px;
+  font-size: 14px;
   color: var(--muted);
   line-height: 1.7;
   margin: 18px 0;
@@ -290,7 +290,7 @@ h4 {
   overflow-wrap: anywhere;
 }
 .review {
-  font-size: 10px;
+  font-size: 13px;
   margin: 0 0 24px;
   color: #ba9a61;
   padding: 9px 13px;
@@ -310,7 +310,7 @@ h4 {
   align-items: center;
   gap: 12px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 13px;
   flex-wrap: wrap;
   margin-bottom: 20px;
 }
@@ -343,7 +343,7 @@ h4 {
   border-radius: 4px;
 }
 .stats label {
-  font-size: 9px;
+  font-size: 13px;
   letter-spacing: 0.8px;
   color: var(--muted);
   margin-bottom: 12px;
@@ -356,7 +356,7 @@ h4 {
 }
 .stats small {
   display: block;
-  font-size: 10px;
+  font-size: 13px;
   color: var(--muted);
   margin-top: 10px;
 }
@@ -380,11 +380,11 @@ h4 {
 }
 .padded > p {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 14px;
   margin-top: 12px;
 }
 .panel-note {
-  font-size: 10px;
+  font-size: 13px;
   color: var(--muted);
   padding: 12px 20px;
   border-top: 1px solid #4f3b28;
@@ -411,7 +411,7 @@ h4 {
   color: var(--muted);
   border: 0;
   padding: 5px 10px;
-  font-size: 10px;
+  font-size: 13px;
 }
 .segmented .selected {
   background: #5f462a77;
@@ -426,7 +426,7 @@ h4 {
 }
 .history-chart text {
   fill: var(--muted);
-  font-size: 10px;
+  font-size: 13px;
 }
 .grid {
   stroke: #54402d;
@@ -437,7 +437,7 @@ h4 {
 .chart-range {
   display: flex;
   justify-content: space-between;
-  font-size: 9px;
+  font-size: 13px;
   color: var(--muted);
   padding: 0 20px 14px;
 }
@@ -450,10 +450,10 @@ h4 {
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 10px;
+  font-size: 13px;
 }
 .distribution span {
-  font-size: 9px;
+  font-size: 13px;
   width: 115px;
   color: var(--muted);
 }
@@ -481,10 +481,10 @@ table {
   border-collapse: collapse;
   width: 100%;
   text-align: left;
-  font-size: 11px;
+  font-size: 14px;
 }
 th {
-  font-size: 8px;
+  font-size: 13px;
   letter-spacing: 0.7px;
   font-weight: 500;
   color: var(--muted);
@@ -502,7 +502,7 @@ tr:last-child td {
   border-bottom: 0;
 }
 td button {
-  font-size: 10px;
+  font-size: 13px;
 }
 td select {
   max-width: 150px;
@@ -511,7 +511,7 @@ td select {
   text-align: center;
   padding: 35px 25px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 14px;
 }
 .item-results {
   display: flex;
@@ -526,7 +526,7 @@ td select {
   padding: 10px 14px;
   border-radius: 3px;
   text-align: left;
-  font-size: 12px;
+  font-size: 14px;
 }
 .item-results button.selected {
   border-color: #b18a4e;
@@ -535,7 +535,7 @@ td select {
 }
 .item-results small {
   display: block;
-  font-size: 9px;
+  font-size: 13px;
   margin-top: 5px;
 }
 .item-heading {
@@ -565,7 +565,7 @@ td select {
   flex-wrap: wrap;
   padding: 0 20px 20px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 14px;
 }
 .comparison b {
   color: #dcc69e;
@@ -583,7 +583,7 @@ td select {
   display: flex;
   justify-content: space-between;
   gap: 15px;
-  font-size: 9px;
+  font-size: 13px;
   color: var(--muted);
 }
 .discount {
@@ -601,7 +601,7 @@ td select {
   border-radius: 3px;
 }
 .deal-prices label {
-  font-size: 8px;
+  font-size: 13px;
   letter-spacing: 0.5px;
   color: var(--muted);
   margin-bottom: 7px;
@@ -612,7 +612,7 @@ td select {
 }
 .deal p,
 .cautions {
-  font-size: 11px;
+  font-size: 14px;
   color: var(--muted);
   line-height: 1.8;
 }
@@ -628,7 +628,7 @@ td select {
 }
 .admin-tabs button {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 14px;
   white-space: nowrap;
   background: none;
   border: 0;
@@ -671,7 +671,7 @@ td select {
 .schedule small {
   display: block;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 13px;
   margin-top: 6px;
 }
 .schedule > label {
@@ -696,7 +696,7 @@ td select {
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
-  font-size: 11px;
+  font-size: 14px;
 }
 .market-summary small {
   color: var(--muted);
@@ -707,7 +707,7 @@ dl {
   grid-template-columns: 1fr 1fr;
   gap: 15px;
   margin: 20px 0;
-  font-size: 12px;
+  font-size: 14px;
 }
 dt {
   color: var(--muted);
@@ -720,7 +720,7 @@ footer {
   padding: 20px 38px;
   display: flex;
   gap: 18px;
-  font-size: 8px;
+  font-size: 13px;
   letter-spacing: 1px;
   color: #a08b70;
   max-width: 1640px;
@@ -745,7 +745,7 @@ footer span:last-child {
 }
 .login p {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 14px;
   margin: 10px 0 20px;
 }
 .login form {
@@ -758,7 +758,7 @@ footer span:last-child {
 }
 .login > .small {
   text-align: center;
-  font-size: 10px;
+  font-size: 13px;
 }
 @media (max-width: 1100px) {
   aside {
@@ -826,7 +826,7 @@ footer span:last-child {
   }
   nav button {
     padding: 8px;
-    font-size: 11px;
+    font-size: 14px;
     white-space: nowrap;
   }
   .account-info {
@@ -844,7 +844,7 @@ footer span:last-child {
   }
   header {
     height: 48px;
-    font-size: 8px;
+    font-size: 13px;
   }
   main {
     padding: 24px 16px;
@@ -860,7 +860,7 @@ footer span:last-child {
   }
   .intro {
     max-width: 420px;
-    font-size: 11px;
+    font-size: 14px;
   }
   .stats {
     grid-template-columns: 1fr 1fr;
@@ -895,7 +895,7 @@ footer span:last-child {
     padding: 18px;
   }
   .notice {
-    font-size: 10px;
+    font-size: 13px;
   }
   .form-grid {
     grid-template-columns: 1fr;
@@ -960,7 +960,7 @@ footer span:last-child {
 .catalogue-table td small,
 .variant-panel td small {
   display: block;
-  font-size: 0.73rem;
+  font-size: 1rem;
   color: #ab9a80;
   margin-top: 0.3rem;
 }
@@ -1015,7 +1015,7 @@ footer span:last-child {
 }
 .table-pagination {
   border-top: 1px solid #493825;
-  font-size: 0.82rem;
+  font-size: 1rem;
 }
 .table-pagination label {
   display: flex;
@@ -1121,7 +1121,7 @@ footer span:last-child {
   padding: 1rem;
   box-shadow: 0 10px 36px #0009;
   color: #e9e4d8;
-  font-size: 0.82rem;
+  font-size: 1rem;
   line-height: 1.55;
 }
 .wow-name {
@@ -1206,7 +1206,7 @@ footer span:last-child {
   align-items: center;
   flex-wrap: wrap;
   gap: 0.8rem;
-  font-size: 0.76rem;
+  font-size: 1rem;
   padding: 0.6rem 0;
 }
 .chart-controls label {
@@ -1224,7 +1224,7 @@ footer span:last-child {
   accent-color: #c4a368;
 }
 .chart-controls button {
-  font-size: 0.74rem;
+  font-size: 1rem;
   padding: 0.35rem 0.6rem;
 }
 .history-virtual {
@@ -1235,7 +1235,7 @@ footer span:last-child {
 .history-virtual table {
   margin: 0;
   width: 100%;
-  font-size: 0.76rem;
+  font-size: 1rem;
   table-layout: fixed;
 }
 .history-virtual thead {
@@ -1258,11 +1258,11 @@ footer span:last-child {
 details > summary {
   cursor: pointer;
   color: #cfb889;
-  font-size: 0.8rem;
+  font-size: 1rem;
   padding: 0.6rem 0;
 }
 details table {
-  font-size: 0.78rem;
+  font-size: 1rem;
 }
 details .table-scroll {
   max-height: 420px;
@@ -1341,7 +1341,7 @@ details .table-scroll {
   border: 1px solid #695036;
   border-radius: 3px;
   padding: 0.5rem 0.85rem;
-  font-size: 0.8rem;
+  font-size: 1rem;
 }
 .table-pagination button:hover:not(:disabled),
 .variant-panel td > button:hover,
@@ -1395,4 +1395,140 @@ details .table-scroll {
   .chart-viewport {
     min-height: 280px;
   }
+}
+
+/* Shared exact currency and item identity, original coin artwork. */
+.currency {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+.currency > span[aria-hidden] {
+  display: inline-flex;
+  gap: 0.45em;
+}
+.currency-part {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.18em;
+}
+.coin {
+  flex: none;
+  vertical-align: middle;
+}
+.coin-gold {
+  color: #e2bd65;
+}
+.coin-silver {
+  color: #c7cbd1;
+}
+.coin-copper {
+  color: #d29872;
+}
+.coin-rim {
+  color: #403024;
+}
+.item-trigger-label,
+.wow-name,
+.item-heading h2 {
+  font-weight: 750;
+}
+.item-trigger-label {
+  font-size: 1.07rem;
+  line-height: 1.5;
+}
+.small,
+small,
+.table-pagination,
+.item-source,
+.panel-note {
+  font-size: 0.93rem;
+}
+.item-selected {
+  background: #b0925118;
+  box-shadow: inset 3px 0 #bca36d;
+}
+.catalogue-table tbody > tr:not(.variant-container) {
+  cursor: pointer;
+}
+.select-item {
+  display: block;
+  padding: 0.2rem 0;
+  border: 0;
+  background: transparent;
+  color: #d1bd94;
+  text-align: left;
+  font-size: 0.93rem;
+}
+.item-name-button {
+  min-height: 32px;
+}
+.managed-table td.numeric,
+.managed-table th.numeric {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 800px) {
+  .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .stats strong {
+    overflow-wrap: anywhere;
+  }
+  .segmented {
+    flex-wrap: wrap;
+  }
+  .panel-heading {
+    flex-wrap: wrap;
+    gap: 0.7rem;
+  }
+  header {
+    height: auto;
+    min-height: 48px;
+    flex-wrap: wrap;
+  }
+  .managed-table-controls {
+    flex-wrap: wrap;
+  }
+  .managed-table-controls label {
+    min-width: 0;
+  }
+}
+.diagnostic-json {
+  max-width: 100%;
+  max-height: 280px;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 0.93rem;
+}
+.sr-only {
+  clip-path: inset(50%);
+}
+.catalogue-identity > div {
+  display: grid;
+  grid-template-columns: 36px minmax(150px, 1fr);
+  align-items: center;
+  gap: 0.2rem 0.7rem;
+}
+.catalogue-identity .item-info-trigger {
+  grid-column: 1;
+  grid-row: 1 / span 3;
+}
+.catalogue-identity .select-item {
+  grid-column: 2;
+  font-size: 1.07rem;
+  font-weight: 750;
+  line-height: 1.5;
+}
+.catalogue-identity .item-credit,
+.catalogue-identity .item-name-button {
+  grid-column: 2;
+}
+
+/* Contain positioned accessible captions and price text within their scroll region. */
+.catalogue-panel,
+.table-scroll,
+.currency {
+  position: relative;
 }

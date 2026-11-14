@@ -191,7 +191,7 @@ def main():
                 maintain(apply=True)
                 next_maintenance = time.monotonic()+86400
             worked = collect_once(client=client)
-            if time.monotonic() >= next_metadata:
+            if os.environ.get("ITEM_ENRICHMENT_IN_COLLECTOR","true").lower()=="true" and time.monotonic() >= next_metadata:
                 from .metadata import resolve_once
                 resolve_once(client=client)
                 from .item_media import resolve_media_once

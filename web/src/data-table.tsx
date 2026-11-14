@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
 import {
   ColumnDef,
+  OnChangeFn,
+  PaginationState,
   SortingState,
   VisibilityState,
   flexRender,
@@ -15,21 +17,43 @@ export function DataTable<T>({
   data,
   columns,
   label,
+  initialSorting = [],
+  getRowId,
+  server,
 }: {
   data: T[];
   columns: ColumnDef<T>[];
   label: string;
+  initialSorting?: SortingState;
+  getRowId?: (row: T) => string;
+  server?: {
+    rowCount: number;
+    pagination: PaginationState;
+    sorting: SortingState;
+    onPaginationChange: OnChangeFn<PaginationState>;
+    onSortingChange: OnChangeFn<SortingState>;
+  };
 }) {
   const [filter, setFilter] = useState(""),
-    [sorting, setSorting] = useState<SortingState>([]),
+    [sorting, setSorting] = useState<SortingState>(initialSorting),
     [visibility, setVisibility] = useState<VisibilityState>({});
   const rows = useMemo(() => data, [data]);
   const table = useReactTable({
     data: rows,
+    getRowId,
     columns,
-    state: { globalFilter: filter, sorting, columnVisibility: visibility },
+    state: {
+      globalFilter: filter,
+      sorting: server?.sorting ?? sorting,
+      columnVisibility: visibility,
+      ...(server ? { pagination: server.pagination } : {}),
+    },
     onGlobalFilterChange: setFilter,
-    onSortingChange: setSorting,
+    onSortingChange: server?.onSortingChange ?? setSorting,
+    onPaginationChange: server?.onPaginationChange,
+    manualPagination: !!server,
+    manualSorting: !!server,
+    rowCount: server?.rowCount,
     onColumnVisibilityChange: setVisibility,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -40,14 +64,16 @@ export function DataTable<T>({
   return (
     <div className="managed-table">
       <div className="managed-table-controls">
-        <label>
-          Search {label}
-          <input
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            maxLength={100}
-          />
-        </label>
+        {!server && (
+          <label>
+            Search {label}
+            <input
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              maxLength={100}
+            />
+          </label>
+        )}
         <Menu.Root>
           <Menu.Trigger>Columns</Menu.Trigger>
           <Menu.Portal>
@@ -92,6 +118,12 @@ export function DataTable<T>({
                   <th
                     key={header.id}
                     scope="col"
+                    className={
+                      (header.column.columnDef.meta as { numeric?: boolean })
+                        ?.numeric
+                        ? "numeric"
+                        : undefined
+                    }
                     aria-sort={
                       header.column.getIsSorted() === "asc"
                         ? "ascending"
@@ -130,7 +162,15 @@ export function DataTable<T>({
             {table.getRowModel().rows.map((row) => (
               <tr key={row.id}>
                 {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id}>
+                  <td
+                    key={cell.id}
+                    className={
+                      (cell.column.columnDef.meta as { numeric?: boolean })
+                        ?.numeric
+                        ? "numeric"
+                        : undefined
+                    }
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}
@@ -144,8 +184,8 @@ export function DataTable<T>({
       )}
       <div className="table-pagination">
         <span>
-          {table.getFilteredRowModel().rows.length} records · Page{" "}
-          {table.getState().pagination.pageIndex + 1} of{" "}
+          {server?.rowCount ?? table.getFilteredRowModel().rows.length} records
+          · Page {table.getState().pagination.pageIndex + 1} of{" "}
           {Math.max(1, table.getPageCount())}
         </span>
         <button
