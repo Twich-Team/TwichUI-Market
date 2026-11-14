@@ -21,6 +21,7 @@ export interface ItemProfile extends ItemIdentity {
   attributes: {
     scope: string;
     quality: string | null;
+    class?: string; subclass?: string; slot?: string; binding?: string;
     level?: number;
     required_level?: number;
     vendor_sell?: string;
@@ -96,6 +97,7 @@ export function ItemFacts({ profile }: { profile: ItemProfile }) {
       >
         {profile.name}
       </div>
+      {!profile.metadata_provider && <p className="small muted">Name unavailable · Item #{profile.item_id}</p>}
       {!facts ? (
         <p className="muted">
           Verified item attributes are unavailable. Missing facts are not
@@ -103,6 +105,7 @@ export function ItemFacts({ profile }: { profile: ItemProfile }) {
         </p>
       ) : (
         <>
+          {[facts.class, facts.subclass, facts.slot, facts.binding].filter(Boolean).map((value,index)=><div key={index}>{value}</div>)}
           {facts.level !== undefined && (
             <div className="item-level">Item Level {facts.level}</div>
           )}

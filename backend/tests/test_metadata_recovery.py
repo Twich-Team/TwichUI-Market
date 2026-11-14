@@ -273,3 +273,36 @@ def test_enrichment_without_oauth_does_not_create_automatic_blizzard_jobs(databa
     monkeypatch.delenv('BLIZZARD_CLIENT_ID',raising=False);monkeypatch.delenv('BLIZZARD_CLIENT_SECRET',raising=False)
     tick(database)
     with database() as db:assert db.scalar(select(func.count()).select_from(MetadataJob))==0
+
+
+def test_artwork_and_name_work_share_budget_without_starvation(database,monkeypatch):
+    import market.metadata_recovery as recovery
+    import market.item_media as media
+    from market.enrichment import tick as enrich
+    from test_item_profiles import PNG
+    setup(database,provider='blizzard');at=now()+timedelta(seconds=1)
+    monkeypatch.setenv('BLIZZARD_CLIENT_ID','fixture');monkeypatch.setenv('BLIZZARD_CLIENT_SECRET','fixture')
+    monkeypatch.setattr(recovery,'now',lambda:at);monkeypatch.setattr(media,'now',lambda:at)
+    original=media.resolve_media_once
+    monkeypatch.setattr(media,'resolve_media_once',lambda *a,**kw:original(*a,**kw,image_fetch=lambda _: (PNG,'image/png')))
+    class Client:
+        def fetch_item(self,region,item):return response(body=json.dumps({'id':item,'name':'Synthetic primary name'}).encode())
+        def fetch_item_media(self,region,item):return response(body=json.dumps({'id':item,'assets':[{'key':'icon','value':'https://render.worldofwarcraft.com/us/icons/56/a.png'}]}).encode())
+    result=enrich(database,Client());assert result['recovery'] and not result['media']
+    at+=timedelta(seconds=16)
+    result=enrich(database,Client());assert result['media']
+    with database() as db:assert db.get(MetadataProvider,'blizzard').hour_used==2
+
+
+def test_cooling_automatic_provider_does_not_block_another(database):
+    market=setup(database);at=now()
+    with database.begin() as db:
+        db.get(MetadataProvider,'blizzard').automatic=False
+        first=db.get(MetadataProvider,'everloot');first.automatic=True;first.hourly_budget=1
+        first.hour_start=at;first.hour_used=1
+        other=db.get(MetadataProvider,'thewowdb');other.enabled=other.automatic=True
+    calls=[]
+    # First provider gets a durable budget-waiting job, then the next provider gets a turn.
+    tick(database,at=at,fetcher=lambda p,*a,**kw:(calls.append(p),response(403))[1])
+    tick(database,at=at+timedelta(seconds=1),fetcher=lambda p,*a,**kw:(calls.append(p),response(403))[1])
+    assert calls==['thewowdb']

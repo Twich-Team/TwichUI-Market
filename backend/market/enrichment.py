@@ -23,8 +23,18 @@ def tick(factory=Session,client=None):
         return reserve_budget(row,at) is None
     def failed(db,status,headers,at):
         if status in (401,402,403,429):cooldown(db.get(MetadataProvider,'blizzard'),status,headers,at)
-    return {'recovery':recover(factory,provider_client=client),
-            'media':resolve_media_once(factory,client,budget_guard=budget,failure_guard=failed)}
+    with factory() as db:
+        settings=db.get(MetadataProvider,'blizzard')
+        prefer_media=bool(settings and settings.hour_used%2)
+    # Alternate first opportunity under the shared budget; a long name queue
+    # must not consume every eligible request slot before artwork gets a turn.
+    if prefer_media:
+        media=resolve_media_once(factory,client,budget_guard=budget,failure_guard=failed)
+        recovery=recover(factory,provider_client=client)
+    else:
+        recovery=recover(factory,provider_client=client)
+        media=resolve_media_once(factory,client,budget_guard=budget,failure_guard=failed)
+    return {'recovery':recovery,'media':media}
 
 
 def main():

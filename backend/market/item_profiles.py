@@ -29,7 +29,8 @@ def profile(market_id: MarketId,item_id: MarketId,user: User=Depends(identity),d
     catalog=json.loads(row.catalog_json) if row and row.catalog_json else None
     if catalog:
         fields=catalog['fields']
-        attributes={'scope':'base_item','quality':fields.get('quality'),'lines':[],**{k:v for k,v in fields.items() if k!='name'}}
+        facts={k:v for k,v in fields.items() if k!='name'}
+        attributes={'scope':'base_item','quality':fields.get('quality'),'lines':[],**facts} if facts else None
         origin=catalog['provenance'].get('name') or next(iter(catalog['provenance'].values()),None)
         if origin and origin['provider']!='blizzard':source={**origin,'observed_at':origin.get('retrieved_at')}
     return {'catalog':catalog,'catalog_revision':row.catalog_revision if row else 0,'contract_version':1,'item_id':item_id,'region':market.region,**metadata_name(row,item_id),
