@@ -306,3 +306,13 @@ def test_cooling_automatic_provider_does_not_block_another(database):
     tick(database,at=at,fetcher=lambda p,*a,**kw:(calls.append(p),response(403))[1])
     tick(database,at=at+timedelta(seconds=1),fetcher=lambda p,*a,**kw:(calls.append(p),response(403))[1])
     assert calls==['thewowdb']
+
+
+def test_bulk_ignored_offset_cannot_claim_a_successful_import(database):
+    market=setup(database);at=now()
+    with database.begin() as db:job,_=enqueue(db,market,'bulk',['everloot'],budget=2,at=at);ident=job.id
+    tick(database,at=at,fetcher=lambda *a,**kw:response(body=page(next_page='https://everloot.app/api/items?offset=2')),automatic=False)
+    tick(database,at=at+timedelta(minutes=4),fetcher=lambda *a,**kw:response(body=page()),automatic=False)
+    with database() as db:
+        task=db.scalar(select(MetadataTask).where(MetadataTask.job_id==ident).order_by(MetadataTask.id.desc()).limit(1))
+        assert task.state=='failed' and json.loads(task.result_json)['recovered_fields']==[]

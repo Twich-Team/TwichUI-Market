@@ -313,6 +313,7 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_cl
                 if category is None and status == 200:
                     with db.begin_nested():
                         if mode == 'bulk':
+                            if decode(raw).get('offset')!=item_id-1:raise ValueError('Bulk response offset mismatch')
                             count, next_offset = import_everloot_page(db, region, raw, at=at)
                             result.update(imported_items=count, recovered_fields=['client_attributes'])
                             if next_offset is not None and job.total < job.request_budget and job.state != 'cancelled':
@@ -335,7 +336,10 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_cl
                     provider.last_success, provider.last_error = at, None
                 else:
                     if category is None: category = 'invalid_not_modified'
-            except Exception: category = 'transport_or_schema'
+            except Exception:
+                category = 'transport_or_schema'
+                result['recovered_fields']=[]
+                result.pop('imported_items',None)
             if category:
                 src.status = category
                 delay = 604800 if status == 404 else 900

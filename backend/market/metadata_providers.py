@@ -123,7 +123,7 @@ def parse_everloot_page(body, *, at=None):
             fields['quality'] = quality
         records.append((ident, fields, source('everloot', body, build=build, confidence='game_file_unconfirmed', attribution=credit, at=at)))
     offset, limit, total = (value.get(k) for k in ('offset', 'limit', 'total'))
-    if any(type(n) is not int or n < 0 for n in (offset, limit, total)) or not 1 <= limit <= 500 or len(rows) > limit:
+    if any(type(n) is not int or n < 0 for n in (offset, limit, total)) or not 1 <= limit <= 500 or len(rows) > limit or offset+len(rows)>total:
         raise ValueError('Invalid pagination')
     next_offset = None
     if value.get('next') is not None:
