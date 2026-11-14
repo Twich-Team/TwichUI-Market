@@ -4,7 +4,8 @@ Reservations commit before I/O. Leases recover after crashes, budgets are charge
 before sending, and controls remain available while the network is slow.
 """
 from contextlib import contextmanager
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
+from email.utils import parsedate_to_datetime
 import hashlib
 import json
 import os
@@ -127,13 +128,20 @@ def error_category(status):
         429: 'rate_limited'}.get(status, 'upstream_error')
 
 
+def retry_delay(value, at):
+    if value is None:return 0
+    try:
+        seconds=int(value) if str(value).isdigit() else int((aware(parsedate_to_datetime(value))-at).total_seconds())
+    except (TypeError,ValueError,OverflowError):return 0
+    return max(0,min(seconds,int((datetime.max.replace(tzinfo=timezone.utc)-at).total_seconds())-1))
+
+
 def cooldown(row, status, headers, at):
-    from .worker import retry_seconds
     category = error_category(status)
     row.last_error = category
     if status in (401, 402, 403, 429):
         # Respect Retry-After, including dates, with a conservative minimum.
-        delay = max(3600 if status != 429 else 60, retry_seconds(headers.get('Retry-After'), at))
+        delay = max(3600 if status != 429 else 60, retry_delay(headers.get('Retry-After'), at))
         row.cooldown_until = at + timedelta(seconds=delay)
     return category
 
@@ -207,17 +215,22 @@ def worker_lock(factory):
                 connection.execute(text('SELECT pg_advisory_unlock(7140240)')); connection.commit()
 
 
-def schedule_automatic(db, at):
-    # One bounded automatic job at a time; requests remain independently limited.
-    if db.scalar(select(MetadataJob.id).where(MetadataJob.actor_id.is_(None), MetadataJob.state.in_(ACTIVE)).limit(1)): return
+def schedule_automatic(db, at, *, allow_mock=False):
+    # At most one automatic job per provider; a blocked provider cannot stall others.
     for market in db.scalars(select(Market).where(Market.enabled.is_(True), Market.verified.is_(True)).order_by(Market.id)):
         for provider in db.scalars(select(MetadataProvider).where(MetadataProvider.enabled.is_(True), MetadataProvider.automatic.is_(True)).order_by(MetadataProvider.provider)):
+            if db.scalar(select(MetadataTask.id).join(MetadataJob).where(MetadataJob.actor_id.is_(None),MetadataJob.state.in_(ACTIVE),MetadataTask.provider==provider.provider,MetadataTask.state.in_(('queued','running'))).limit(1)):continue
+            if provider.provider=='blizzard' and not allow_mock and not (os.environ.get('BLIZZARD_CLIENT_ID') and os.environ.get('BLIZZARD_CLIENT_SECRET')):continue
+            if provider.provider=='foreverdb' and not provider.credential:continue
+            if provider.expires_at and aware(provider.expires_at)<=at:continue
             if provider.cooldown_until and aware(provider.cooldown_until)>at:continue
             if provider.next_request_at and aware(provider.next_request_at)>at:continue
-            for current in (True, False):
+            for current,phase in ((True,'missing'),(True,'priority'),(False,'missing'),(True,'stale'),(False,'stale')):
                 ids = observed_query(market.id,current=current).subquery()
                 query = select(ids.c.item_id).outerjoin(ItemMetadata, (ItemMetadata.region == ids.c.region) & (ItemMetadata.item_id == ids.c.item_id)).outerjoin(MetadataSource,
                     (MetadataSource.region == ids.c.region) & (MetadataSource.item_id == ids.c.item_id) & (MetadataSource.provider == provider.provider) & (MetadataSource.locale == 'en_US'))
+                if phase=='missing':query=query.where(func.coalesce(ItemMetadata.name,ItemMetadata.fallback_name).is_(None))
+                if phase=='priority':query=query.where(ItemMetadata.requested_at>=at-timedelta(days=7))
                 query = query.where(or_(MetadataSource.item_id.is_(None), MetadataSource.retry_at <= at)).order_by(
                     func.coalesce(ItemMetadata.name, ItemMetadata.fallback_name).is_not(None), ItemMetadata.requested_at.desc().nulls_last(), ids.c.item_id)
                 ident = db.scalar(query.limit(1))
@@ -227,7 +240,7 @@ def schedule_automatic(db, at):
 
 
 
-def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True):
+def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_client=None):
     at = at or now()
     with worker_lock(factory) as locked:
         if not locked: return False
@@ -245,7 +258,7 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True):
                 task.lease_token = task.lease_until = None
                 task.result_json = json.dumps({'status': 'lease_expired', 'provider': task.provider})
                 finalize(db, job, at)
-            if automatic: schedule_automatic(db, at)
+            if automatic: schedule_automatic(db, at, allow_mock=fetcher is not fetch)
             # Limit local skips per tick as well as outbound work.
             tasks = list(db.scalars(select(MetadataTask).join(MetadataJob).where(MetadataJob.state.in_(('queued','running')),
                 MetadataTask.state == 'queued', MetadataTask.available_at <= at).order_by(MetadataJob.actor_id.is_(None), MetadataTask.id).limit(30)))
@@ -282,7 +295,9 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True):
         task_id, token, ident, region, item_id, mode, key, etag = chosen
         parsed, raw, status, headers, category = None, None, None, {}, None
         try:
-            meta, raw = fetcher(ident, item_id, credential=key, etag=etag, offset=item_id-1 if mode == 'bulk' else None, region=region)
+            kwargs={'credential':key,'etag':etag,'offset':item_id-1 if mode=='bulk' else None,'region':region}
+            if ident=='blizzard' and fetcher is fetch:kwargs['client']=provider_client
+            meta, raw = fetcher(ident, item_id, **kwargs)
             status, headers = meta['status'], meta.get('headers', {})
             if status == 200 and ident != 'blizzard' and mode != 'bulk': parsed = PARSERS[ident](raw, item_id, at=at)
             if status not in (200, 304): category = error_category(status)

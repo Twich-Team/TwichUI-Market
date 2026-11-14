@@ -8,7 +8,7 @@ version = "0.1.0"
 requires-python = ">=3.12"
 dependencies = [
   "fastapi==0.162.7", "starlette==1.10.0", "uvicorn==0.38.0", "SQLAlchemy==2.0.44",
-  "alembic==1.17.1", "psycopg[binary]==3.2.12", "argon2-cffi==25.1.0", "cryptography==46.0.3",
+  "alembic==1.17.1", "psycopg[binary]==3.2.12", "argon2-cffi==25.1.0", "cryptography==50.0.0",
 ]
 
 [project.optional-dependencies]

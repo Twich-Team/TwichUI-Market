@@ -40,3 +40,4 @@ jobs:
       - run: alembic upgrade head
       - run: pytest -q
       - run: python ../scripts/verify-companion-migration.py
+      - run: python ../scripts/verify-metadata-migration.py

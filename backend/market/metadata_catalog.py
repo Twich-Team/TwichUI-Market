@@ -133,7 +133,7 @@ def backfill_legacy(db, *, limit=25):
         else:
             src=get_source(db,row.region,row.item_id,'blizzard')
             src.status,src.http_status=row.status,row.http_status
-            src.checked_at,src.retry_at=row.checked_at,row.retry_after
+            src.checked_at,src.retry_at=row.checked_at,row.retry_after if row.http_status is not None else None
         if row.fallback and not row.catalog_json:
             old=json.loads(row.fallback)
             if old.get('source',{}).get('provider')=='thewowdb':

@@ -153,8 +153,11 @@ def parse_thewowdb(body, item_id, *, at=None):
     attrs = value['attributes']
     fields = {k: v for k, v in attrs.items() if k != 'scope' and v is not None and v != []}
     fields['name'] = value['name']
-    return fields, source('thewowdb', body, build=value['source']['build'], confidence='community_beta',
+    origin=source('thewowdb', body, build=value['source']['build'], confidence='community_beta',
         attribution=value['source']['attribution'], at=at, url=value['source']['url'])
+    from .item_media import icon_url
+    if icon_url(value.get('icon_url'),community=True):origin['icon_url']=value['icon_url']
+    return fields,origin
 
 
 def fetch(provider, item_id, *, credential=None, etag=None, offset=None, validate=False, transport=request, client=None, region='us'):

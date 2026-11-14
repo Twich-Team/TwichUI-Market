@@ -15,6 +15,7 @@ services:
       DATABASE_URL: postgresql+psycopg://market:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@db:5432/market_test
       APP_ORIGIN: http://proxy
       COOKIE_SECURE: "false"
+      METADATA_KEYRING_FILE: /tmp/metadata-browser-keyring.json
       SYNC_CURSOR_SECRET: synthetic-browser-signing-key-not-for-deployment
     volumes: !override []
   proxy:

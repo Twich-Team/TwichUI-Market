@@ -258,3 +258,18 @@ def test_bulk_job_imports_incrementally_and_stops_at_page_budget(database):
         assert job.state=='completed' and job.requests_used==1 and job.total==1
         assert db.get(ItemMetadata,('us',720)).fallback_name is None
         assert json.loads(db.get(ItemMetadata,('us',720)).catalog_json)['fields']['quality']=='RARE'
+
+
+def test_retry_after_dates_can_exceed_one_day():
+    from email.utils import format_datetime
+    from market.metadata_recovery import cooldown
+    at=now();row=MetadataProvider(provider='everloot')
+    cooldown(row,429,{'Retry-After':format_datetime(at+timedelta(days=3))},at)
+    assert aware(row.cooldown_until)>=at+timedelta(days=3,seconds=-1)
+
+
+def test_enrichment_without_oauth_does_not_create_automatic_blizzard_jobs(database,monkeypatch):
+    setup(database)
+    monkeypatch.delenv('BLIZZARD_CLIENT_ID',raising=False);monkeypatch.delenv('BLIZZARD_CLIENT_SECRET',raising=False)
+    tick(database)
+    with database() as db:assert db.scalar(select(func.count()).select_from(MetadataJob))==0
