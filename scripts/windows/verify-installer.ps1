@@ -1,5 +1,8 @@
 # Runs only on the disposable Windows CI runner; no server or addon files involved.
 $ErrorActionPreference = 'Stop'
+if ($env:GITHUB_ACTIONS -ne 'true' -or $env:RUNNER_OS -ne 'Windows') {
+    throw 'This script is restricted to disposable GitHub Windows runners'
+}
 $installer = @(Get-ChildItem 'desktop/src-tauri/target/release/bundle/nsis/*-setup.exe')
 if ($installer.Count -ne 1) { throw 'Expected exactly one NSIS installer' }
 $installPath = Join-Path $env:RUNNER_TEMP 'TwichMarket-Install'
@@ -14,6 +17,15 @@ $env:MARKET_TEST_CDP_PORT = $probe.LocalEndpoint.Port.ToString()
 $probe.Stop()
 $env:WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS = "--remote-debugging-port=$env:MARKET_TEST_CDP_PORT --remote-debugging-address=127.0.0.1"
 $env:WEBVIEW2_USER_DATA_FOLDER = Join-Path $env:RUNNER_TEMP 'TwichMarket-WebView'
+# Elevated GitHub runner processes ignore WEBVIEW2_* overrides. An exact-app
+# machine policy is honored by WebView2; remove this test-only value in finally.
+$policy = 'HKLM:\SOFTWARE\Policies\Microsoft\Edge\WebView2\AdditionalBrowserArguments'
+$policyName = 'twichui-market-companion.exe'
+$null = New-Item -Path $policy -Force
+if ($null -ne (Get-ItemProperty -Path $policy -Name $policyName -ErrorAction SilentlyContinue)) {
+    throw 'Refusing to replace an existing WebView2 application policy'
+}
+$null = New-ItemProperty -Path $policy -Name $policyName -PropertyType String -Value $env:WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS
 $app = $null
 try {
     $app = Start-Process -FilePath $executable -PassThru
@@ -32,6 +44,7 @@ try {
     python scripts/verify-companion-http.py --ui
     if ($LASTEXITCODE -ne 0) { throw 'Native WebView2 workflow failed' }
 } finally {
+    Remove-ItemProperty -Path $policy -Name $policyName -ErrorAction SilentlyContinue
     if ($null -ne $app -and -not $app.HasExited) {
         $null = $app.CloseMainWindow()
         if (-not $app.WaitForExit(10000)) { $app.Kill(); $app.WaitForExit() }
