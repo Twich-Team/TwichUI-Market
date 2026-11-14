@@ -82,3 +82,21 @@ def test_stable_pointer_never_accepts_a_preview_or_oversized_document(client,tmp
     for pointer in [{'schema_version':True,'version':'2.0.0'},{'schema_version':1,'version':'2.0.0-beta.1'},{'schema_version':1,'version':'../../outside'}]:
         (root/'current.json').write_text(json.dumps(pointer));assert not client.get('/api/v1/companion/releases/current').json()['ready']
     (root/'current.json').write_bytes(b'x'*16385);assert not client.get('/api/v1/companion/releases/current').json()['ready']
+
+
+def test_updater_metadata_requires_complete_release_and_never_forces_a_downgrade(client,tmp_path,monkeypatch):
+    root,_,_,receipt,_=fixture_release(tmp_path,monkeypatch)
+    endpoint='/api/v1/companion/releases/update/windows-x86_64/'
+    for installed in ['0.1.0','2.0.0-beta.1']:
+        response=client.get(endpoint+installed);assert response.status_code==200
+        metadata=response.json()
+        assert metadata['version']=='2.0.0' and metadata['signature']==receipt['updater_signature']
+        assert metadata['sha256']==receipt['sha256'] and metadata['bytes']==receipt['bytes']
+        assert metadata['url']=='https://market.twich.gg/api/v1/companion/releases/2.0.0/windows-x64'
+        assert str(tmp_path) not in json.dumps(metadata)
+    for installed in ['2.0.0','2.0.1','3.0.0']:
+        assert client.get(endpoint+installed).status_code==204
+    for installed in ['invalid','2.0.0%3Fredirect=other','2.00.0']:
+        assert client.get(endpoint+installed).status_code==404
+    (root/'current.json').unlink()
+    assert client.get(endpoint+'0.1.0').status_code==204

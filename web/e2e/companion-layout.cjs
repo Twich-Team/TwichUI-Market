@@ -15,6 +15,9 @@ const state={version:'2.0.0-beta.1',settings,mode:'disconnected',connected:false
    window.__layoutEmit=(name,payload)=>callbacks[name]?.({payload});
    window.__TAURI__={core:{invoke:async(command,args)=>{window.__layoutCalls.push({command,args});
      if(command==='app_state')return window.__layoutState;
+     if(command==='update_state')return {status:'idle',message:'Check for verified companion updates.',restart_required:false};
+     if(command==='check_update')return {status:'available',version:'2.0.0',notes:'Synthetic rendering fixture only',message:'Companion 2.0.0 is available.',restart_required:false};
+     if(command==='install_update')return {status:'installing',message:'Synthetic intent only; no installation',restart_required:false};
      if(command==='save_settings'){window.__layoutState={...window.__layoutState,settings:args.settings};return null;}
      return null;
    }},event:{listen:async(name,callback)=>{callbacks[name]=callback;return()=>{};}}};
@@ -41,6 +44,12 @@ const state={version:'2.0.0-beta.1',settings,mode:'disconnected',connected:false
  await expect(page.locator('#market-name')).toHaveText('US — Normal — Horde');await expect(page.locator('#cache-count')).toContainText('12,345');
  await page.screenshot({path:path.join(folder,'layout-dashboard.png')});await page.locator('#settings-open').click();await page.screenshot({path:path.join(folder,'layout-settings.png'),fullPage:true});
  await page.setViewportSize({width:440,height:560});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
+ await page.locator('#update-check').click();await expect(page.locator('#update-install')).toBeVisible();
+ await page.locator('#update-install').click();await expect(page.locator('#update-confirm')).toBeVisible();
+ expect(await page.evaluate(()=>window.__layoutCalls.filter(call=>call.command==='install_update').length)).toBe(0);
+ await page.locator('#update-confirm-cancel').click();await expect(page.locator('#update-confirm')).toBeHidden();
+ await page.locator('#update-install').click();await page.locator('#update-confirm-install').click();
+ expect(await page.evaluate(()=>window.__layoutCalls.find(call=>call.command==='install_update').args.version)).toBe('2.0.0');
  audit=await new AxeBuilder({page}).analyze();expect(audit.violations.filter(v=>['critical','serious'].includes(v.impact))).toEqual([]);
  await page.keyboard.press('Escape');await expect(page.locator('#settings-panel')).toBeHidden();await expect(page.locator('#settings-open')).toBeFocused();
  expect(errors).toEqual([]);console.log('Rendering only: compact layout, keyboard focus, settings draft preservation, safe intent and accessibility passed. Native evidence is separate.');

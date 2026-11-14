@@ -59,6 +59,7 @@ const fs=require('node:fs');const path=require('node:path');const {execFile,spaw
     await website.screenshot({path:path.join(shots,'website-devices.png'),fullPage:true});
     const profile=(await api.get('/api/v1/companion/devices')).json();const device=(await profile).devices[0];expect(device.last_sync_at).toBeTruthy();expect(device.selected_market_id).toBe(1);
     await page.locator('#settings-open').click();await page.screenshot({path:path.join(shots,'native-settings.png'),fullPage:true});
+    if(!process.env.TWICHUI_UPDATER_PUBLIC_KEY){await page.locator('#update-check').click();await expect(page.locator('#update-message')).toContainText('after release signing');}
     const startupBefore=await startup();expect(startupBefore.user??null).toBe(null);
     await page.locator('#launch-login').check();await page.locator('#settings-save').click();
     expect((await startup()).user).toBe(`"${process.env.MARKET_TEST_INSTALLED_EXE}" --background`);

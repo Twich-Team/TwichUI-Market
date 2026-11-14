@@ -15,7 +15,7 @@ from pathlib import Path
 import re
 from datetime import datetime
 from fastapi import APIRouter, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel, ConfigDict, Field
 from typing import Annotated, Literal
 
@@ -89,9 +89,7 @@ def load(version):
 @router.get('/current')
 def current():
     try:
-        pointer=bounded_json(root()/'current.json')
-        if set(pointer)!={'schema_version','version'} or type(pointer['schema_version']) is not int or pointer['schema_version']!=1 or not isinstance(pointer['version'],str):raise ValueError('Invalid release pointer')
-        manifest,_=load(pointer['version'])
+        manifest=latest()
         return {'contract_version':1,'ready':True,'version':manifest.version,'platform':'windows-x64',
             'download_url':f'/api/v1/companion/releases/{manifest.version}/windows-x64','bytes':manifest.bytes,
             'sha256':manifest.sha256,'published_at':manifest.published_at,'message':'Verified Windows release',
@@ -100,6 +98,28 @@ def current():
         return {'contract_version':1,'ready':False,'version':None,'platform':'windows-x64','download_url':None,
             'bytes':None,'sha256':None,'published_at':None,
             'message':'The Windows download will appear after release verification and signing are complete. Existing connections keep working.'}
+
+
+def latest():
+    pointer=bounded_json(root()/'current.json')
+    if set(pointer)!={'schema_version','version'} or type(pointer['schema_version']) is not int or pointer['schema_version']!=1 or not isinstance(pointer['version'],str):raise ValueError('Invalid release pointer')
+    manifest,_=load(pointer['version'])
+    return manifest
+
+
+@router.get('/update/windows-x86_64/{installed}')
+def update_metadata(installed:str):
+    # Tauri also compares SemVer and cryptographically verifies the signed version.
+    match=re.fullmatch(r'(0|[1-9][0-9]{0,3})\.(0|[1-9][0-9]{0,3})\.(0|[1-9][0-9]{0,3})(-[a-zA-Z0-9.-]{1,32})?',installed)
+    if not match:raise HTTPException(404,'Verified update not available')
+    try:manifest=latest()
+    except (OSError,ValueError,KeyError,TypeError):return Response(status_code=204,headers={'Cache-Control':'no-store'})
+    current=tuple(int(match[index]) for index in (1,2,3))
+    release=tuple(map(int,manifest.version.split('.')))
+    if current>release or (current==release and not match[4]):return Response(status_code=204,headers={'Cache-Control':'no-store'})
+    return {'version':manifest.version,'pub_date':manifest.published_at,'notes':manifest.notes,
+        'url':f'https://market.twich.gg/api/v1/companion/releases/{manifest.version}/windows-x64',
+        'signature':manifest.updater_signature,'bytes':manifest.bytes,'sha256':manifest.sha256,'source_commit':manifest.source_commit}
 
 
 @router.get('/{version}/windows-x64')

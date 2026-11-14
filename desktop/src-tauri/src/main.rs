@@ -2,12 +2,41 @@
 mod runtime;
 mod shell;
 mod startup;
+mod updates;
 use runtime::{Runtime, View};
 use std::sync::Arc;
 use tauri::{AppHandle, Manager};
 use twichui_market_core::settings::Settings;
 fn runtime(app: &AppHandle) -> Arc<Runtime> {
     app.state::<Arc<Runtime>>().inner().clone()
+}
+#[tauri::command]
+fn update_state(app: AppHandle) -> Result<updates::View, String> {
+    updates::state(&app)
+}
+#[tauri::command]
+async fn check_update(app: AppHandle) -> Result<updates::View, String> {
+    tauri::async_runtime::spawn_blocking(move || updates::check(app))
+        .await
+        .map_err(|_| "Update check was interrupted".to_string())?
+}
+#[tauri::command]
+async fn install_update(app: AppHandle, version: String) -> Result<updates::View, String> {
+    tauri::async_runtime::spawn_blocking(move || updates::install(app, version))
+        .await
+        .map_err(|_| "Update was interrupted".to_string())?
+}
+#[tauri::command]
+async fn restart_companion(app: AppHandle) -> Result<(), String> {
+    if !updates::state(&app)?.restart_required {
+        return Err("A restart is not required by an update.".into());
+    }
+    tauri::async_runtime::spawn_blocking(move || -> Result<(), String> {
+        runtime(&app).prepare_update()?;
+        app.restart()
+    })
+    .await
+    .map_err(|_| "Restart was interrupted".to_string())?
 }
 #[tauri::command]
 fn app_state(app: AppHandle) -> Result<View, String> {
@@ -113,11 +142,13 @@ fn main() {
         )
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_notification::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .setup(|app| {
             let path = app.path().app_data_dir()?;
             let runtime =
                 Runtime::create(app.handle().clone(), path).map_err(std::io::Error::other)?;
             app.manage(runtime.clone());
+            app.manage(Arc::new(updates::Updates::default()));
             shell::create_tray(app.handle())?;
             if let Some(window) = app.get_webview_window("main") {
                 if runtime.should_hide_on_start() {
@@ -152,6 +183,10 @@ fn main() {
             }
         })
         .invoke_handler(tauri::generate_handler![
+            update_state,
+            check_update,
+            install_update,
+            restart_companion,
             app_state,
             sign_in,
             cancel_approval,

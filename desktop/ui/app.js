@@ -112,3 +112,25 @@ document.addEventListener('keydown',event=>{if(event.key==='Escape'&&editing)clo
   if(listen){await listen('companion-state',event=>render(event.payload));await listen('open-settings',openSettings);await listen('companion-error',event=>message(event.payload,true));}
   render(await invoke('app_state'));
 })().catch(error=>message(String(error),true));
+
+let updateView=null;
+function renderUpdate(value){
+  if(!value)return;updateView=value;
+  text('update-message',value.message);text('update-notes',value.notes||'');$('update-notes').hidden=!value.notes;
+  const busy=['checking','installing'].includes(value.status);
+  $('update-check').disabled=busy||value.restart_required;
+  $('update-install').hidden=value.status!=='available';$('update-install').disabled=busy;
+  $('update-restart').hidden=!value.restart_required;
+  if(value.status!=='available')$('update-confirm').hidden=true;
+}
+async function updateAction(command,args={}){
+  try{if(!invoke)throw new Error('Use the installed companion to check for updates.');renderUpdate(await invoke(command,args));}
+  catch(error){text('update-message',String(error?.message||error));}
+}
+$('update-check').onclick=()=>updateAction('check_update');
+$('update-install').onclick=()=>{$('update-confirm').hidden=false;$('update-confirm-install').focus();};
+$('update-confirm-cancel').onclick=()=>{$('update-confirm').hidden=true;$('update-install').focus();};
+$('update-confirm-install').onclick=()=>{if(updateView?.status==='available')updateAction('install_update',{version:updateView.version});};
+$('update-restart').onclick=()=>updateAction('restart_companion');
+if(listen)listen('companion-update',event=>renderUpdate(event.payload));
+if(invoke)invoke('update_state').then(renderUpdate).catch(()=>{});

@@ -7,6 +7,7 @@ pub mod protocol;
 pub mod scheduler;
 pub mod settings;
 pub mod synchronizer;
+pub mod update;
 pub mod vault;
 pub mod worker;
 

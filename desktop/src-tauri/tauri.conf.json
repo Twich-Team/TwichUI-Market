@@ -41,5 +41,15 @@
         "installerHooks": "./windows/hooks.nsh"
       }
     }
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "",
+      "requireSignedVersion": true,
+      "allowDowngrades": false,
+      "windows": {
+        "installMode": "basicUi"
+      }
+    }
   }
 }

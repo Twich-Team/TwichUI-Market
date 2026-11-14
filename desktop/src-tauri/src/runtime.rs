@@ -422,6 +422,9 @@ impl Runtime {
             .map_err(friendly)
     }
     pub fn sign_in(self: &Arc<Self>, device_name: String) -> Result<()> {
+        if self.quitting() {
+            return Err("The companion is closing. Please wait.".into());
+        }
         let (server, cancel) = {
             let mut local = self
                 .data
@@ -555,6 +558,9 @@ impl Runtime {
             .map_err(|_| "Could not open your browser".into())
     }
     pub fn refresh_connection(self: &Arc<Self>) -> Result<()> {
+        if self.quitting() {
+            return Err("The companion is closing. Please wait.".into());
+        }
         let server = {
             let mut local = self
                 .data
@@ -633,6 +639,9 @@ impl Runtime {
         Ok(())
     }
     pub fn save_settings(&self, mut settings: Settings, reset_invalid: bool) -> Result<()> {
+        if self.quitting() {
+            return Err("The companion is closing. Please wait.".into());
+        }
         settings.server = server_url(&settings.server).map_err(friendly)?.to_string();
         settings.validate().map_err(friendly)?;
         let (old, valid, approving) = {
@@ -794,6 +803,9 @@ impl Runtime {
             .map_err(|_| "Could not open your browser".into())
     }
     pub fn disconnect(self: &Arc<Self>) -> Result<()> {
+        if self.quitting() {
+            return Err("The companion is closing. Please wait.".into());
+        }
         self.cancel_approval()?;
         let (settings, _) = self.effective()?;
         self.worker.configure(settings, false).map_err(friendly)?;
@@ -834,6 +846,41 @@ impl Runtime {
     }
     pub fn quitting(&self) -> bool {
         self.data.quitting.load(Ordering::Acquire)
+    }
+    /// Called only after the updater has verified package bytes and signed version.
+    pub fn prepare_update(&self) -> Result<()> {
+        if self.data.quitting.swap(true, Ordering::AcqRel) {
+            return Err("The companion is already closing.".into());
+        }
+        let result = (|| -> Result<()> {
+            self.cancel_approval()?;
+            self.worker.shutdown().map_err(friendly)?;
+            if let Some(task) = self
+                .auth_thread
+                .lock()
+                .map_err(|_| "Connection operation interrupted")?
+                .take()
+            {
+                task.join()
+                    .map_err(|_| "Connection operation interrupted")?;
+            }
+            let _gate = self
+                .data
+                .gate
+                .lock()
+                .map_err(|_| "Connection operation interrupted")?;
+            Ok(())
+        })();
+        if result.is_err() {
+            self.update_failed();
+        }
+        result
+    }
+    pub fn update_failed(&self) {
+        self.data.quitting.store(false, Ordering::Release);
+        self.data.set_error(
+            "Restart the companion to resume synchronization after the interrupted update.".into(),
+        );
     }
     pub fn request_quit(self: &Arc<Self>) {
         if self.data.quitting.swap(true, Ordering::AcqRel) {

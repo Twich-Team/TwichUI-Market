@@ -27,6 +27,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: cargo test --manifest-path desktop/Cargo.toml --workspace --locked
+      - run: cargo test --manifest-path desktop/src-tauri/Cargo.toml --locked
       - run: cargo build --manifest-path desktop/Cargo.toml --example http_smoke --locked
       - run: cargo build --manifest-path desktop/Cargo.toml --example authorization_smoke --locked
       - run: pip install -r backend/requirements.lock
