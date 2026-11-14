@@ -27,3 +27,5 @@ Each task requires tests, diff review and a committed/pushed evidence checkpoint
 S6 addon integration is excluded. Missing live credentials and design approval affect only dependent tasks. No milestone is complete without its evidence.
 
 Storage monitoring acceptance: independent bounded hourly sampler; cross-process idempotency; 90-day telemetry retention; signed measured growth with unknown initial rate; administrator-only history; actual browser display and migration checks.
+
+Initial US live rollout acceptance: direct OAuth/index/house/commodity evidence; ruleset-alias and house-ID overlap checks; fresh auditable verification receipt; only one enabled feed; actual collector ingestion/conditional checks; real browser price/supply/history/listings; explicit insufficient Deal Finder history; bounded resource/error/storage monitoring; migrations/regression/backup checks. Exact player-facing routing and long-run refresh cadence must not be inferred from initial samples.

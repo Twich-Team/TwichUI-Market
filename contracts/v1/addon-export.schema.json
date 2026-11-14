@@ -14,7 +14,7 @@
     "observed_at": {"type": ["string", "null"], "format": "date-time"},
     "generated_at": {"type": "string", "format": "date-time"},
     "synthetic": {"type": "boolean"},
-    "items": {"type": "array", "maxItems": 100000, "items": {
+    "items": {"type": "array", "maxItems": 150000, "items": {
       "type": "object", "additionalProperties": false, "required": ["item_id", "variant_key", "value"],
       "properties": {
         "item_id": {"type": "integer", "minimum": 1, "maximum": 2147483647},

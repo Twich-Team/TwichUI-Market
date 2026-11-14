@@ -124,6 +124,12 @@ def restore_check(path):
             statistics=run(command+['exec','-T','db','psql','-U','market','-d','market_restore','-Atc',
                 "SELECT json_build_object('snapshot_statistics',(SELECT count(*) FROM snapshot_statistics),'daily_observations',(SELECT count(*) FROM daily_observations))"],stdout=subprocess.PIPE)
             evidence.update(json.loads(statistics.stdout))
+        verification_table=run(command+['exec','-T','db','psql','-U','market','-d','market_restore','-Atc',
+            "SELECT to_regclass('market_verifications') IS NOT NULL"],stdout=subprocess.PIPE).stdout.strip()==b't'
+        if verification_table:
+            receipt_count=run(command+['exec','-T','db','psql','-U','market','-d','market_restore','-Atc',
+                'SELECT count(*) FROM market_verifications'],stdout=subprocess.PIPE)
+            evidence['market_verifications']=int(receipt_count.stdout.strip())
         if not evidence['migration']:
             raise ValueError('Restored database has no migration revision')
         # PostgreSQL also restores and validates foreign-key/unique constraints through pg_restore.

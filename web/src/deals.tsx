@@ -13,6 +13,12 @@ interface Filters {
   direction: string;
 }
 interface Results {
+  history_coverage: {
+    observed_days: number;
+    required_days: number;
+    status: string;
+    basis: string;
+  };
   deals?: Deal[];
   signals?: Signal[];
   synthetic: boolean;
@@ -200,6 +206,19 @@ export function Deals({
       {result.data && (
         <>
           <Freshness market={result.data.market} />
+          {result.data.history_coverage?.status === "insufficient" && (
+            <p className="notice" role="status">
+              Still building market history:{" "}
+              {result.data.history_coverage.observed_days} observed{" "}
+              {result.data.history_coverage.basis === "prior_utc_days"
+                ? "prior UTC days"
+                : "UTC days"}
+              ; these filters require{" "}
+              {result.data.history_coverage.required_days}. Opportunities need
+              more history. Collection will continue; missing days are never
+              filled with invented prices.
+            </p>
+          )}
           {result.data.synthetic && (
             <p className="notice warning">
               Synthetic opportunities for testing · no live Blizzard data.

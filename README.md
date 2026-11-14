@@ -2,7 +2,7 @@
 
 Private, self-hosted World of Warcraft: Forever market research for a small group. FastAPI, PostgreSQL, a scheduled Python collector, React/TypeScript, Caddy and a Windows Tauri companion.
 
-Development is active. Live Blizzard verification and Workshop pricing compatibility remain unverified; major page designs await owner approval. The website is an explicitly labeled review candidate. Synthetic test fixtures are never represented as live data. No main addon repository changes or live SavedVariables writes are included.
+Development is active. One US Forever auction feed is live-verified and collecting genuine data. Exact player-facing house routing, long-run refresh cadence and Workshop pricing compatibility remain unverified; major page designs await owner approval. The website is an explicitly labeled review candidate. Synthetic test fixtures are never represented as live data. No main addon repository changes or live SavedVariables writes are included.
 
 ## Local deployment
 

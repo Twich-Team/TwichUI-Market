@@ -26,7 +26,7 @@ def normalize(payload, kind):
     if not isinstance(payload, dict) or not isinstance(payload.get('auctions'), list):
         # Missing auctions must be confirmed as empty by a live mapping; fail closed for now.
         raise ValueError('Expected explicit auctions array')
-    if len(payload['auctions']) > 100000:
+    if len(payload['auctions']) > 150000:
         raise ValueError('Too many listings')
     rows, seen = [], set()
     for auction in payload['auctions']:

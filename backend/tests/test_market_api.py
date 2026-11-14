@@ -97,3 +97,16 @@ def test_extended_history_is_authenticated_and_retains_provenance(owner,database
     assert result['points'][0]['namespace']=='dynamic-forever-eu'
     assert result['synthetic']
     assert owner.get(f'/api/v1/markets/{market}/items/12363/{variant}/history?days=99999').status_code==422
+
+
+def test_new_market_reports_insufficient_history_without_invented_opportunities(owner,database):
+    with database.begin() as db:
+        market=Market(region='us',ruleset_id=2,house_id=110,source_kind='auctions',label='New fixture market')
+        db.add(market);db.flush();ident=market.id
+        ingest(db,ident,b'{"auctions":[{"id":1,"item":{"id":12363},"quantity":1,"buyout":100}]}',request_key='one-day',synthetic=True)
+    deals=owner.get(f'/api/v1/markets/{ident}/deals').json()
+    assert deals['deals']==[] and deals['history_coverage']=={'observed_days':1,'required_days':3,'status':'insufficient','basis':'utc_days_within_14_days'}
+    for kind in ['supply','price']:
+        result=owner.get(f'/api/v1/markets/{ident}/signals?kind={kind}').json()
+        assert result['signals']==[] and result['history_coverage']['observed_days']==0
+        assert result['history_coverage']['status']=='insufficient'

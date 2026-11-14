@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 from .db import now, session
 from .models import CollectionRun, ItemMetadata, Listing, Market, Observation, Snapshot, SnapshotStatistic, User
 from .pricing import daily_history, values
-from .opportunities import below_reference,change_signals,evidence
+from .opportunities import below_reference,change_signals,evidence,daily_window
 from .security import admin, audit, aware, identity
 
 router = APIRouter(prefix='/api/v1')
@@ -147,6 +147,13 @@ def item_detail(market_id: MarketId, item_id: Annotated[int,Path(ge=1,le=2**31-1
         'listings_truncated':len(listings)>200,'provenance':'asking_listings_only'})
 
 
+def coverage_status(db,market_id,required,*,prior=False):
+    window=daily_window(market_id,now(),prior=prior)
+    days=db.scalar(select(func.count()).select_from(window))
+    return {'observed_days':days,'required_days':required,'status':'insufficient' if days<required else 'available',
+            'basis':'prior_utc_days' if prior else 'utc_days_within_14_days'}
+
+
 @router.get('/markets/{market_id}/deals')
 def deals(market_id: MarketId, minimum_discount: int = Query(15,ge=1,le=99),
           maximum_spend: int = Query(5000000,ge=1,le=2**53-1), minimum_coverage: int = Query(3,ge=1,le=60),
@@ -155,8 +162,9 @@ def deals(market_id: MarketId, minimum_discount: int = Query(15,ge=1,le=99),
     market = require_market(db,market_id)
     latest = latest_observation(db,market_id)
     view=market_view(market)
+    history_coverage=coverage_status(db,market_id,minimum_coverage)
     if not latest:
-        return {'deals':[],'candidates_truncated':False,'synthetic':False,'market':view}
+        return {'history_coverage':history_coverage,'deals':[],'candidates_truncated':False,'synthetic':False,'market':view}
     rows,truncated=below_reference(db,market,latest,minimum_discount=minimum_discount,
         maximum_spend=maximum_spend,minimum_coverage=minimum_coverage,minimum_confidence=minimum_confidence,
         freshness=view['freshness'])
@@ -169,7 +177,7 @@ def deals(market_id: MarketId, minimum_discount: int = Query(15,ge=1,le=99),
             'reason':f'{discount:.1f}% below provisional 14-day asking-price reference; {coverage} observed days.',
             'cautions':['Asking prices do not establish completed sales or resale profit.',
                         'Workshop algorithm compatibility is not verified.']})
-    return money_contract({'contract_version':1,'deals':result,'candidates_truncated':truncated,
+    return money_contract({'contract_version':1,'history_coverage':history_coverage,'deals':result,'candidates_truncated':truncated,
         'synthetic':latest.synthetic or any(bool(row[3]) for row in rows),
         'market':view,'algorithm':'asking-v1-provisional'})
 
@@ -181,7 +189,8 @@ def signals(market_id: MarketId,kind: Literal['supply','price'],minimum_change: 
     market=require_market(db,market_id)
     latest=latest_observation(db,market_id)
     view=market_view(market)
-    if not latest:return {'signals':[],'candidates_truncated':False,'synthetic':False,'market':view}
+    history_coverage=coverage_status(db,market_id,minimum_coverage,prior=True)
+    if not latest:return {'history_coverage':history_coverage,'signals':[],'candidates_truncated':False,'synthetic':False,'market':view}
     rows,truncated=change_signals(db,market,latest,kind=kind,minimum_change=minimum_change,
         minimum_coverage=minimum_coverage,minimum_confidence=minimum_confidence,direction=direction,freshness=view['freshness'])
     result=[]
@@ -202,7 +211,7 @@ def signals(market_id: MarketId,kind: Literal['supply','price'],minimum_change: 
             'confidence':evidence(coverage,view['freshness'],market.verified,latest.synthetic or row['synthetic']),
             'reason':reason,'cautions':['Supply and price changes describe listings, not completed sales.',
                 'A shortage or price rise does not guarantee a profitable resale.']})
-    return money_contract({'contract_version':1,'signals':result,'candidates_truncated':truncated,
+    return money_contract({'contract_version':1,'history_coverage':history_coverage,'signals':result,'candidates_truncated':truncated,
         'synthetic':latest.synthetic or any(bool(row._mapping['synthetic']) for row in rows),
         'market':view,'algorithm':'asking-v1-provisional'})
 
@@ -287,3 +296,13 @@ def metadata_failures(user: User = Depends(admin),db: Session = Depends(session)
         .order_by(ItemMetadata.checked_at.desc()).limit(200))
     return [{'region':row.region,'item_id':row.item_id,'status':row.status,'http_status':row.http_status,
              'checked_at':row.checked_at,'retry_after':row.retry_after} for row in rows]
+
+
+@router.get('/admin/markets/{market_id}/verifications')
+def verifications(market_id: MarketId,user: User = Depends(admin),db: Session = Depends(session)):
+    from .models import MarketVerification
+    require_market(db,market_id)
+    rows=db.scalars(select(MarketVerification).where(MarketVerification.market_id==market_id)
+        .order_by(MarketVerification.id.desc()).limit(20))
+    return [{'id':row.id,'actor_id':row.actor_id,'created_at':row.created_at,'notes':row.notes,
+             'evidence_hash':row.evidence_hash,'evidence':json.loads(row.evidence)} for row in rows]

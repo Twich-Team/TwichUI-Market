@@ -167,3 +167,14 @@ class StorageMeasurement(Base):
     __tablename__='storage_measurements'
     sampled_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),primary_key=True)
     database_bytes: Mapped[int] = mapped_column(BigInteger)
+
+
+class MarketVerification(Base):
+    __tablename__='market_verifications'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    market_id: Mapped[int] = mapped_column(ForeignKey('markets.id'),index=True)
+    actor_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),default=now)
+    evidence: Mapped[str] = mapped_column(Text)
+    evidence_hash: Mapped[str] = mapped_column(String(64))
+    notes: Mapped[str] = mapped_column(Text)
