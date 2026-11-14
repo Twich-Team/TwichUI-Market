@@ -57,7 +57,7 @@ services:
       dockerfile: deploy/web.Dockerfile
     image: twichui-market-web:dev
     ports: ["127.0.0.1:${MARKET_PORT:-18780}:80"]
-    volumes: [./deploy/Caddyfile:/etc/caddy/Caddyfile:ro]
+    volumes: [./deploy/Caddyfile:/etc/caddy/Caddyfile:ro, ./deploy/routes.caddy:/etc/caddy/routes.caddy:ro]
     depends_on: {api: {condition: service_healthy}}
     mem_limit: 128m
     cpus: 0.25

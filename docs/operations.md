@@ -10,6 +10,16 @@ Copy .env.example to .env (mode 600), choose a random URL-safe POSTGRES_PASSWORD
 
 Set SYNC_CURSOR_SECRET to a separate random secret of at least 32 characters before using desktop synchronization. Retain it across restarts; rotation requires clients to rebuild their cache. Never expose it to clients or place it in Git. Server sync returns 503 if this configuration is absent.
 
+### Verified local HTTPS
+
+Run `python3 scripts/init-env.py` to generate missing private secrets while preserving configured values. Start with `docker --context rootless compose -f compose.yaml -f compose.tls.yaml up -d --build` after checking port 18443. This exposes only 127.0.0.1:18443, sets secure cookies and exact HTTPS origin, and uses a persistent project-local Caddy CA with host trust installation explicitly disabled. The previous HTTP binding is removed while this overlay is active. Keep using both Compose files when restarting/updating the HTTPS stack.
+
+`python3 scripts/bootstrap-owner.py` creates the first owner only if no users exist. Generated credentials stay in ignored .local/bootstrap.env with private directory/file permissions and are passed through environment only. Read them privately, change the password through Account & devices, then remove the bootstrap credential file. A second bootstrap invocation safely skips existing users.
+
+`python3 scripts/verify-https.py` extracts only the public local CA certificate and explicitly trusts it for verification. It checks the real certificate chain, application CSP, secure/HttpOnly/SameSite cookies, initial owner authentication, session CSRF recovery, administrator access and logout. It does not bypass TLS validation or modify the host trust store. This passes locally. The verifier uses the initial bootstrap credentials unless administrator credentials are supplied through environment.
+
+External access remains separate: an administrator must arrange a domain, externally trusted certificate/routing or an owner-controlled tunnel/client trust setup. This run does not modify existing reverse proxies, public ports or firewall rules. The private web designs remain unapproved review candidates.
+
 Bootstrap the first administrator using `docker --context rootless compose run --rm -e MARKET_ADMIN_USERNAME -e MARKET_ADMIN_PASSWORD api python -m market.bootstrap` with credentials already exported in the shell. Never pass secret values in arguments. Bootstrap refuses if any users exist. Browser login returns a CSRF token required as X-CSRF-Token on mutations; session cookies are HttpOnly/SameSite Strict. Invitations are single-use, expire in seven days and create members only. Administrator browser sessions can change roles/disable users; the final active administrator is protected. Device tokens expire in 90 days, are stored hashed server-side, cannot mint more devices and cannot perform administrator actions.
 
 ## Tests

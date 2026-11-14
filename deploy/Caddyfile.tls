@@ -1,0 +1,8 @@
+{
+    auto_https disable_redirects
+    skip_install_trust
+}
+https://localhost {
+    tls internal
+    import /etc/caddy/routes.caddy
+}
