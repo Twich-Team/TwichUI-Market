@@ -1556,3 +1556,17 @@ small,
 .column-controls input[type="checkbox"] {
   width: auto;
 }
+.preferences-fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.preferences-fields label,
+.preferences-fields select {
+  min-width: 0;
+  width: 100%;
+}
+@media (max-width: 700px) {
+  .preferences-fields {
+    grid-template-columns: 1fr;
+  }
+}

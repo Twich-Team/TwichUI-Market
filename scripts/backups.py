@@ -130,6 +130,12 @@ def restore_check(path):
             receipt_count=run(command+['exec','-T','db','psql','-U','market','-d','market_restore','-Atc',
                 'SELECT count(*) FROM market_verifications'],stdout=subprocess.PIPE)
             evidence['market_verifications']=int(receipt_count.stdout.strip())
+        preferences_table=run(command+['exec','-T','db','psql','-U','market','-d','market_restore','-Atc',
+            "SELECT to_regclass('user_preferences') IS NOT NULL"],stdout=subprocess.PIPE).stdout.strip()==b't'
+        if preferences_table:
+            preference_count=run(command+['exec','-T','db','psql','-U','market','-d','market_restore','-Atc',
+                'SELECT count(*) FROM user_preferences'],stdout=subprocess.PIPE)
+            evidence['user_preferences']=int(preference_count.stdout.strip())
         if not evidence['migration']:
             raise ValueError('Restored database has no migration revision')
         # PostgreSQL also restores and validates foreign-key/unique constraints through pg_restore.

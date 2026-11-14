@@ -90,6 +90,9 @@ test('same-browser account switching and reset keep preferences private',async({
  expect((await read(secondPage)).values.market_id).toBeNull();await second.close();
  await page.setViewportSize({width:390,height:844});
  await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ const preferredBox=await preferences.getByLabel('Preferred market').boundingBox();
+ const rangeBox=await preferences.getByLabel('Explorer chart range').boundingBox();
+ expect(preferredBox!.y+preferredBox!.height).toBeLessThanOrEqual(rangeBox!.y);
  await page.screenshot({path:'../artifacts/modernization/my-preferences-mobile.png',fullPage:true});
 });
 
@@ -143,7 +146,10 @@ test('a session changed in another tab cannot inject that account’s preference
  const owner=(await read(page)).user_id;
  const other=await context.newPage();await other.goto('/');
  await expect(other.getByRole('heading',{name:'Market Explorer',exact:true})).toBeVisible();
- await signOut(other);await login(other,'prefs_isolation_b');
+ // Change cookies directly to also cover clients that do not emit the tab signal.
+ const session=await(await other.request.get('/api/v1/auth/session')).json();
+ expect((await other.request.post('/api/v1/auth/logout',{headers:{'X-CSRF-Token':session.csrf_token}})).status()).toBe(204);
+ expect((await other.request.post('/api/v1/auth/login',{data:{username:'prefs_isolation_b',password:secret}})).status()).toBe(200);
  expect((await read(other)).user_id).not.toBe(owner);
  const recheck=page.waitForResponse(r=>r.url().endsWith('/me/preferences')&&r.request().method()==='GET'&&r.status()===200);
  await page.bringToFront();
@@ -152,6 +158,21 @@ test('a session changed in another tab cannot inject that account’s preference
  await recheck;
  await expect(page.getByRole('button',{name:'Sign in',exact:true})).toBeVisible();
  await expect(page.getByRole('heading',{name:'My Preferences',exact:true})).toHaveCount(0);
+ await other.close();
+});
+
+test('signing out in another tab immediately removes private controls without refocusing',async({page,context})=>{
+ await login(page,'prefs_isolation_a');
+ const preferences=await account(page);
+ await preferences.getByLabel('Explorer chart range').selectOption('365');
+ await saved(page,{explorer_days:365});
+ const other=await context.newPage();await other.goto('/');
+ await expect(other.getByRole('heading',{name:'Market Explorer',exact:true})).toBeVisible();
+ await signOut(other);
+ await expect(page.getByRole('button',{name:'Sign in',exact:true})).toBeVisible();
+ await expect(page.getByRole('region',{name:'My Preferences',exact:true})).toHaveCount(0);
+ await login(other,'prefs_isolation_b');
+ await expect(page.getByRole('button',{name:'Sign in',exact:true})).toBeVisible();
  await other.close();
 });
 

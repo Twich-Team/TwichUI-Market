@@ -1,5 +1,6 @@
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient, clearPrivateCache, setQueryIdentity } from "./query";
+import { announceSessionChange, onSessionChange } from "./auth-channel";
 import React, { lazy, Suspense, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { api, ApiError, BrowserSession, setCsrf, User } from "./api";
@@ -145,24 +146,26 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   useEffect(() => {
-    const expired = () => { clearPrivateCache(); setCsrf(""); setUser(null); };
+    let current = true;
+    const expired = () => { current = false; clearPrivateCache(); setCsrf(""); setUser(null); setLoading(false); };
+    const stop = onSessionChange(expired);
     window.addEventListener("market-auth-expired", expired);
-    api<BrowserSession>("/auth/session").then(restore)
-      .catch(error => { if (!(error instanceof ApiError && error.status === 401)) setError(error.message); })
-      .finally(() => setLoading(false));
-    return () => window.removeEventListener("market-auth-expired", expired);
+    api<BrowserSession>("/auth/session").then(result => { if (current) restore(result); })
+      .catch(error => { if (current && !(error instanceof ApiError && error.status === 401)) setError(error.message); })
+      .finally(() => { if (current) setLoading(false); });
+    return () => { current = false; stop(); window.removeEventListener("market-auth-expired", expired); };
   }, []);
   function restore(result: BrowserSession) {
     setQueryIdentity(`${result.user.id}:${result.user.role}`);
     setCsrf(result.csrf_token); setUser(result.user); setError("");
   }
-  function signedOut() { clearPrivateCache(); setCsrf(""); setUser(null); }
+  function signedOut() { clearPrivateCache(); setCsrf(""); setUser(null); announceSessionChange(); }
   async function logout() {
     try { await api("/auth/logout", "POST"); signedOut(); }
     catch(error) { setError((error as Error).message); }
   }
   if (loading) return <main className="login" role="status">Opening your ledger…</main>;
-  if (!user) return <><Login onSession={restore} />{error && <p className="notice error" role="alert">{error}</p>}</>;
+  if (!user) return <><Login onSession={result => { restore(result); announceSessionChange(); }} />{error && <p className="notice error" role="alert">{error}</p>}</>;
   return <PreferencesProvider key={`${user.id}:${user.role}`} userId={user.id}>
     <Workspace user={user} logout={logout} signedOut={signedOut} authError={error} />
   </PreferencesProvider>;

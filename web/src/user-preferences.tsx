@@ -12,10 +12,10 @@ export function MyPreferences() {
   return <section className="panel padded" aria-label="My Preferences">
     <h2>My Preferences</h2>
     <p>Your choices save automatically to your account and follow you across devices.</p>
-    <div className="toolbar">
+    <div className="toolbar preferences-fields">
       <label>Preferred market
         <select value={values.market_id??''} onChange={event=>update({market_id:event.target.value?Number(event.target.value):null})} disabled={!markets.data}>
-          <option value="">Use an available collecting market</option>
+          <option value="">Choose automatically</option>
           {missing&&<option value={values.market_id!}>Preferred market currently unavailable</option>}
           {markets.data?.markets.map(market=><option key={market.id} value={market.id}>{market.label}</option>)}
         </select>
