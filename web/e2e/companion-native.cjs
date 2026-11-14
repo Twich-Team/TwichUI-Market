@@ -27,7 +27,9 @@ const fs=require('node:fs');const path=require('node:path');const {execFile}=req
     const consent=await details.json();expect(consent.device_name).toBe('Installed Windows fixture');
     const decision=await api.post(`/api/v1/companion/authorizations/${approval.request_id}/decision`,{headers,data:{decision:'approve',consent_token:consent.consent_token}});expect(decision.ok()).toBe(true);
     const callback=new URL((await decision.json()).redirect_uri);expect(callback.hostname).toBe('127.0.0.1');expect(callback.pathname).toBe('/companion/callback');
-    expect((await api.get(callback.toString())).ok()).toBe(true);
+    // A top-level browser navigation carries neither the API Origin override nor
+    // API cookies. Keep the strict native callback policy intact.
+    const returned=await fetch(callback.toString(),{redirect:'error'});expect(returned.ok).toBe(true);expect(returned.headers.get('cache-control')).toBe('no-store');
     await expect(page.locator('#connected-panel')).toBeVisible({timeout:20000});
     await expect(page.locator('#sync-progress')).toBeVisible({timeout:15000});await page.screenshot({path:path.join(shots,'native-sync-progress.png')});
     await expect(page.locator('#cache-count')).toContainText('2 item variants',{timeout:30000});

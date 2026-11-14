@@ -3,7 +3,7 @@ use chrono::Utc;
 use serde::Serialize;
 use std::{
     io::Write,
-    path::{Path, PathBuf},
+    path::PathBuf,
     sync::{
         atomic::{AtomicBool, Ordering},
         Arc, Mutex,
@@ -19,7 +19,7 @@ use twichui_market_core::{
     client::{server_url, MarketClient},
     connection::Bootstrap,
     profile::{Mode, Profile, RememberedMarket},
-    scheduler::{Phase, Run, SystemClock},
+    scheduler::{Run, SystemClock},
     settings::Settings,
     synchronizer,
     vault::{self, NativeCredentialStore},
