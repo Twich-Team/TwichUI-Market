@@ -65,9 +65,9 @@ def file_digest(path,device,inode,size,modified):
     return digest.hexdigest()
 
 
-def load(version):
+def load(version, store=None):
     if not re.fullmatch(VERSION,version):raise ValueError('Invalid release version')
-    directory=root()/version
+    directory=(Path(store).resolve(strict=True) if store is not None else root())/version
     if directory.is_symlink():raise ValueError('Invalid release directory')
     manifest=Manifest.model_validate(bounded_json(directory/'manifest.json'))
     if manifest.version!=version or manifest.filename!=f'TwichUI-Market-Companion-{version}-windows-x64.exe':raise ValueError('Invalid release identity')

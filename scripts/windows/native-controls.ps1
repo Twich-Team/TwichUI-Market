@@ -32,7 +32,7 @@ if ($Action -eq 'Metrics') {
     $after=@(Owned-Processes)
     $elapsed=$clock.Elapsed.TotalMilliseconds
     $cpuAfter=($after | ForEach-Object { $_.TotalProcessorTime.TotalMilliseconds } | Measure-Object -Sum).Sum
-    $cpu=[math]::Max(0,100*($cpuAfter-$cpuBefore)/$elapsed)
+    $cpu=[math]::Max([double]0,[double](100.0*($cpuAfter-$cpuBefore)/$elapsed))
     $connections=@(Get-NetTCPConnection -ErrorAction SilentlyContinue | Where-Object { $_.OwningProcess -in $after.Id -and $_.State -eq 'Established' })
     @{
         scope='installed native process and owned WebView2 children; browser and test driver excluded'
