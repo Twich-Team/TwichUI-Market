@@ -39,6 +39,7 @@ const fs=require('node:fs');const path=require('node:path');const {execFile,spaw
     const exportPath=await invoke('export_market');const exported=JSON.parse(fs.readFileSync(exportPath,'utf8'));
     expect(exported.items).toHaveLength(2);expect(exported.items[0].value.recent_price).toBe('100');
     const source=(await promisify(execFile)('git',['rev-parse','HEAD'])).stdout.trim();
+    fs.mkdirSync(path.resolve('artifacts/companion-v2'),{recursive:true});
     fs.writeFileSync(path.resolve('artifacts/companion-v2/legacy-upgrade.json'),JSON.stringify({fixture:true,source_commit:source,from_version:'0.1.0',to_version:state.version,
       actual_old_installer:true,actual_new_installer:true,legacy_credentials_preserved:true,cache_preserved:true,connection_settings_preserved:true,
       legacy_metadata_migrated:true,new_native_sync:true,export_contract_preserved:true,uninstall_data_preservation_verified_by_parent:false},null,2));
