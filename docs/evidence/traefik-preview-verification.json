@@ -61,5 +61,16 @@
   "ca_fingerprints_sha256": {
     "local": "BB:AC:9C:EB:D9:22:C3:CE:49:27:0E:E8:9A:F8:FE:E5:83:EF:75:12:1E:C6:8D:66:7A:0C:D1:94:89:C4:89:78",
     "preview": "94:4F:F2:20:92:83:1F:17:E3:CE:2D:ED:3A:34:1B:58:7B:48:9B:FE:F1:4E:43:0A:C5:C7:5A:61:35:B2:F2:2A"
-  }
+  },
+  "live_catalogue_item_groups": 4994,
+  "live_snapshot_id": "11",
+  "ci_checkpoint": "ece9100",
+  "ci": {
+    "Backend": 43598576332,
+    "Private website": 43598576334,
+    "Windows companion": 43598576327,
+    "conclusion": "success"
+  },
+  "collector_started_at": "2026-11-14T04:42:58.809855977Z",
+  "activation_negative_precheck": "Refused without configuration changes: direct non-Traefik request still reaches HTTP403"
 }

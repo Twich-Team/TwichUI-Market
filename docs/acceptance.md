@@ -1,5 +1,7 @@
 # Acceptance evidence and external dependencies
 
+Current ingress task: **https://localhost:18444** is the verified interactive, authenticated read-only modernization preview. Existing production assets remain unchanged at localhost18443. **https://market.twich.gg** has trusted TLS and the correct Traefik route but intentionally returns403 because rootless forwarding obscures the peer address. Public authentication is not verified until administrator source restriction/guarded activation completes. See [exact administrator commands and review setup](traefik-preview-operations.md), [progress](traefik-preview-progress.md), and [actual evidence](evidence/traefik-preview-verification.json). Source checkpoint ece9100 passes120 backend tests,17 frontend tests, six Chromium regressions and backend/website/Windows CI. Live schema is0010; collector/history are intact. No modernized frontend promotion is approved.
+
 This is an implementation review candidate. S1–S5 is not complete while required external evidence remains missing. Detailed chronological checks and workflow IDs are in [progress.md](progress.md).
 
 | Area | Verified implementation evidence | Acceptance still required |

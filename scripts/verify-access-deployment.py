@@ -5,6 +5,7 @@ parser=argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--public-enabled",action="store_true",help="Require the public route and full public authentication after source filtering is installed")
 args=parser.parse_args()
 ROOT=Path(__file__).resolve().parents[1]
+(ROOT/'.local').mkdir(exist_ok=True,mode=0o700);(ROOT/'.local').chmod(0o700)
 env=os.environ.copy();env['MARKET_ACCESS_PUBLIC_ENABLED']='true' if args.public_enabled else 'false';env['MARKET_ACCESS_NONCE']=secrets.token_hex(5)
 for role in ('ADMIN','MEMBER'):env['MARKET_ACCESS_'+role+'_PASSWORD']=secrets.token_urlsafe(36)
 command=['docker','--context','rootless','compose','-f','compose.yaml','-f','compose.tls.yaml','-f','compose.traefik.yaml','run','--rm','-T','--no-deps']

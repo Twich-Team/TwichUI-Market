@@ -7,6 +7,7 @@ ROOT=Path(__file__).resolve().parents[1]
 command=['docker','--context','rootless']
 if subprocess.run(command+['image','inspect','twichui-market-web:production-approved'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL).returncode==0:
  print('Existing production image retained.');raise SystemExit(0)
+(ROOT/'.local').mkdir(exist_ok=True,mode=0o700);(ROOT/'.local').chmod(0o700)
 folder=ROOT/'.local'/'production-web';folder.mkdir(parents=True,exist_ok=True,mode=0o700)
 with (folder/'srv.tar').open('wb') as stream:subprocess.run(command+['exec','twichui-market-proxy-1','tar','-C','/','-cf','-','srv'],stdout=stream,check=True)
 with tarfile.open(folder/'srv.tar') as archive:archive.extractall(folder,filter='data')
