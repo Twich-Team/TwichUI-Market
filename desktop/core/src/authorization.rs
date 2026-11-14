@@ -520,12 +520,40 @@ impl AuthorizationClient {
     }
     /// A single native worker owns renewal. An error NEVER removes the stored session/cache.
     pub fn session(&self, store: &impl CredentialStore, now: DateTime<Utc>) -> Result<Session> {
+        self.saved_session(store, now, false)
+    }
+    /// Recover from server rejection even when the local wall clock says access is valid.
+    /// The same durable rotation nonce protects a lost response, including forced renewal.
+    pub fn renew(&self, store: &impl CredentialStore, now: DateTime<Utc>) -> Result<Session> {
+        self.saved_session(store, now, true)
+    }
+    /// Retry one resumable operation after an unexpected access rejection. An invalid
+    /// renewal or a second rejection returns to sign-in without a network retry loop.
+    pub fn authenticated<T>(
+        &self,
+        store: &impl CredentialStore,
+        now: DateTime<Utc>,
+        mut operation: impl FnMut(&Session) -> Result<T>,
+    ) -> Result<T> {
+        let session = self.session(store, now)?;
+        match operation(&session) {
+            Err(Error::Authentication) => operation(&self.renew(store, now)?),
+            result => result,
+        }
+    }
+    fn saved_session(
+        &self,
+        store: &impl CredentialStore,
+        now: DateTime<Utc>,
+        force: bool,
+    ) -> Result<Session> {
         let mut session = store.load(self.server.as_str())?;
         session.validate(self.server.as_str())?;
         if session.authorization_expires_at <= now || session.refresh_expires_at <= now {
             return Err(Error::Authentication);
         }
-        if session.pending_rotation_nonce.is_none()
+        if !force
+            && session.pending_rotation_nonce.is_none()
             && session.access_expires_at > now + TimeDelta::seconds(120)
         {
             return Ok(session);

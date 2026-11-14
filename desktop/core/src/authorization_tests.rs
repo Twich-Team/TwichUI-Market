@@ -392,6 +392,66 @@ fn failed_vault_write_never_sends_a_rotation_and_invalid_grants_preserve_cache_a
         .is_some());
     api.join().unwrap();
 }
+
+#[test]
+fn unexpected_access_rejection_renews_once_despite_locally_valid_expiry() {
+    let (origin, api) = server(1, |request, origin| {
+        assert_eq!(request.path, "/api/v1/companion/token");
+        let fields: HashMap<String, String> = url::form_urlencoded::parse(&request.body)
+            .into_owned()
+            .collect();
+        assert_eq!(fields["grant_type"], "refresh_token");
+        assert_eq!(fields["refresh_token"], "P".repeat(43));
+        assert!(opaque(&fields["rotation_nonce"]));
+        (200, tokens(origin))
+    });
+    let vault = MemoryVault::default();
+    vault.save(&origin, &saved(&origin, 3600)).unwrap();
+    let mut calls = 0;
+    let result = AuthorizationClient::new(&origin)
+        .unwrap()
+        .authenticated(&vault, Utc::now(), |session| {
+            calls += 1;
+            if calls == 1 {
+                assert_eq!(session.access_token, "O".repeat(43));
+                Err(Error::Authentication)
+            } else {
+                assert_eq!(session.access_token, "A".repeat(43));
+                Ok(session.device_id())
+            }
+        })
+        .unwrap();
+    assert_eq!(result, 7);
+    assert_eq!(calls, 2);
+    assert!(vault
+        .load(&origin)
+        .unwrap()
+        .pending_rotation_nonce
+        .is_none());
+    api.join().unwrap();
+}
+
+#[test]
+fn second_access_rejection_stops_and_transient_failures_do_not_rotate() {
+    let (origin, api) = server(1, |_, origin| (200, tokens(origin)));
+    let vault = MemoryVault::default();
+    vault.save(&origin, &saved(&origin, 3600)).unwrap();
+    let auth = AuthorizationClient::new(&origin).unwrap();
+    let mut calls = 0;
+    assert!(matches!(
+        auth.authenticated(&vault, Utc::now(), |_| {
+            calls += 1;
+            Err::<(), _>(Error::Authentication)
+        }),
+        Err(Error::Authentication)
+    ));
+    assert_eq!(calls, 2);
+    api.join().unwrap();
+    assert!(matches!(
+        auth.authenticated(&vault, Utc::now(), |_| Err::<(), _>(Error::Network)),
+        Err(Error::Network)
+    ));
+}
 #[test]
 fn hostile_approval_urls_and_oversize_responses_never_reach_the_browser() {
     for hostile in [

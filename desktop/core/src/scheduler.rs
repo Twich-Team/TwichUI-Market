@@ -413,7 +413,9 @@ impl<C: Clock> Scheduler<C> {
                 let exponent = self.snapshot.retry_attempts.saturating_sub(1).min(5);
                 let backoff = (30_000i64 * (1 << exponent)).min(900_000);
                 let requested = match outcome {
-                    Outcome::ServerUnavailable { retry_after_ms } => retry_after_ms.unwrap_or(0),
+                    Outcome::ServerUnavailable { retry_after_ms } => {
+                        retry_after_ms.unwrap_or(0).clamp(0, 3_600_000)
+                    }
                     _ => 0,
                 };
                 let delay = if self.snapshot.retry_attempts > 6 {
@@ -424,7 +426,7 @@ impl<C: Clock> Scheduler<C> {
                 self.snapshot.next_sync_ms = self
                     .settings
                     .automatic_sync
-                    .then_some(now.saturating_add(delay.max(requested).clamp(30_000, 3_600_000)));
+                    .then_some(now.saturating_add(delay.max(requested).max(30_000)));
                 self.snapshot.phase = match outcome {
                     Outcome::Offline => Phase::Offline,
                     Outcome::ServerUnavailable { .. } => Phase::ServerUnavailable,

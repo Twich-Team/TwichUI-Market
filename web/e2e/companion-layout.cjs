@@ -24,6 +24,8 @@ const state={version:'2.0.0-beta.1',settings,mode:'disconnected',connected:false
  await expect(page.locator('#token')).toHaveCount(0);await expect(page.locator('input[type=number]')).toHaveCount(0);
  const folder=path.resolve('artifacts/companion-v2');fs.mkdirSync(folder,{recursive:true});await page.screenshot({path:path.join(folder,'layout-welcome.png')});
  let audit=await new AxeBuilder({page}).analyze();expect(audit.violations.filter(v=>['critical','serious'].includes(v.impact))).toEqual([]);
+ await page.evaluate(()=>{const next=structuredClone(window.__layoutState);next.connected=true;next.sync.sync.phase='offline';window.__layoutState=next;window.__layoutEmit('companion-state',next);});
+ await expect(page.locator('#status-title')).toHaveText('No offline prices downloaded yet.');
  await page.locator('#settings-open').click();await expect(page.locator('#settings-panel')).toBeVisible();
  await page.locator('#sync-interval').selectOption('60');
  await page.evaluate(()=>{const next=structuredClone(window.__layoutState);next.sync.revision=1;next.sync.sync.phase='synchronizing';next.sync.sync.pages_completed=1;next.sync.sync.running=true;

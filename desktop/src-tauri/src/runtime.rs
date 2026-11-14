@@ -121,35 +121,42 @@ impl Executor for NativeTask {
         if profile.server != server_url(server)?.as_str() {
             return Err(Error::Cancelled);
         }
-        let client = match profile.mode {
-            Mode::Companion => {
-                let session = AuthorizationClient::new(server)?
-                    .session(&NativeCredentialStore, Utc::now())?;
-                if !profile.matches_session(&session) {
-                    return Err(Error::Authentication);
-                }
-                session.client()?
-            }
-            Mode::Legacy => MarketClient::new(server, vault::load(server)?)?,
-            Mode::Disconnected => return Err(Error::Authentication),
+        let synchronize = |client: &MarketClient| {
+            synchronizer::synchronize(
+                client,
+                server,
+                &self.0.path.join("market-v1.sqlite"),
+                run,
+                local_override,
+                &SystemClock,
+                progress,
+                |bootstrap| {
+                    if run.cancelled() {
+                        return;
+                    }
+                    if let Err(error) = self.0.save_bootstrap(server, bootstrap) {
+                        self.0.set_error(error);
+                    }
+                },
+            )
         };
-        synchronizer::synchronize(
-            &client,
-            server,
-            &self.0.path.join("market-v1.sqlite"),
-            run,
-            local_override,
-            &SystemClock,
-            progress,
-            |bootstrap| {
-                if run.cancelled() {
-                    return;
-                }
-                if let Err(error) = self.0.save_bootstrap(server, bootstrap) {
-                    self.0.set_error(error);
-                }
-            },
-        )
+        match profile.mode {
+            Mode::Companion => AuthorizationClient::new(server)?.authenticated(
+                &NativeCredentialStore,
+                Utc::now(),
+                |session| {
+                    if run.cancelled() || self.0.quitting.load(Ordering::Acquire) {
+                        return Err(Error::Cancelled);
+                    }
+                    if !profile.matches_session(session) {
+                        return Err(Error::Authentication);
+                    }
+                    synchronize(&session.client()?)
+                },
+            ),
+            Mode::Legacy => synchronize(&MarketClient::new(server, vault::load(server)?)?),
+            Mode::Disconnected => Err(Error::Authentication),
+        }
     }
 }
 impl Data {
@@ -795,7 +802,7 @@ impl Runtime {
             let result=(||->Result<()> {
                 let _gate=owned.data.gate.lock().map_err(|_|"Connection operation interrupted")?;let profile=owned.data.local.lock().map_err(|_|"Connection settings are unavailable")?.profile.clone();let mut warning=None;
                 if profile.mode==Mode::Companion {
-                    match AuthorizationClient::new(&profile.server).and_then(|auth|{let session=auth.session(&NativeCredentialStore,Utc::now())?;auth.revoke(&session)}){
+                    match AuthorizationClient::new(&profile.server).and_then(|auth|{let session=auth.renew(&NativeCredentialStore,Utc::now())?;auth.revoke(&session)}){
                         Ok(())|Err(Error::Authentication)|Err(Error::CredentialMissing)=>{},
                         Err(_)=>warning=Some("Signed out here. When online, revoke this desktop in Account & Devices on the website.".to_string()),
                     }

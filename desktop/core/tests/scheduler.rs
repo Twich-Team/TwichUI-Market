@@ -137,6 +137,35 @@ fn server_retry_after_cannot_create_a_tight_loop_or_unbounded_delay() {
 }
 
 #[test]
+fn extended_failures_preserve_two_and_four_hour_user_intervals() {
+    for interval in [120, 240] {
+        let clock = ManualClock::new();
+        let mut settings = connected();
+        settings.interval_minutes = interval;
+        let mut scheduler = Scheduler::new(clock.clone(), settings, true).unwrap();
+        for attempt in 1..=8 {
+            let run = scheduler.poll().unwrap();
+            scheduler.finish(
+                run.id,
+                Outcome::ServerUnavailable {
+                    retry_after_ms: Some(i64::MAX),
+                },
+            );
+            let delay = scheduler.wait_ms().unwrap();
+            assert_eq!(
+                delay,
+                if attempt > 6 {
+                    interval as u64 * 60_000
+                } else {
+                    3_600_000
+                }
+            );
+            clock.advance(delay as i64);
+        }
+    }
+}
+
+#[test]
 fn auth_failures_require_reauthorization_not_silent_retry() {
     let clock = ManualClock::new();
     let mut scheduler = Scheduler::new(clock.clone(), connected(), true).unwrap();
