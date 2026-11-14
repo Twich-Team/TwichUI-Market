@@ -12,7 +12,7 @@ const fs=require('node:fs');const path=require('node:path');const {execFile,spaw
   try{
     let page=browser.contexts()[0].pages()[0];
     const powershell=async script=>JSON.parse((await promisify(execFile)('powershell.exe',['-NoProfile','-NonInteractive','-Command',script],{timeout:20000})).stdout.trim());
-    const startup=()=>powershell('@{user=(Get-ItemPropertyValue -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run" -Name "TwichUI Market Companion" -ErrorAction SilentlyContinue);machine=(Get-ItemPropertyValue -Path "HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run" -Name "TwichUI Market Companion" -ErrorAction SilentlyContinue)} | ConvertTo-Json -Compress');
+    const startup=()=>powershell('@{user=[Microsoft.Win32.Registry]::GetValue("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run","TwichUI Market Companion",$null);machine=[Microsoft.Win32.Registry]::GetValue("HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Run","TwichUI Market Companion",$null)} | ConvertTo-Json -Compress');
     const nativeControl=async action=>JSON.parse((await promisify(execFile)('powershell.exe',['-NoProfile','-NonInteractive','-File',path.resolve('scripts/windows/native-controls.ps1'),'-Action',action],{timeout:45000})).stdout.trim());
     const invoke=(command,args={})=>page.evaluate(({command,args})=>window.__TAURI__.core.invoke(command,args),{command,args});
     await expect(page.locator('#welcome')).toBeVisible();

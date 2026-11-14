@@ -69,6 +69,6 @@ if (-not (Test-Path $uninstaller)) { throw 'Uninstaller is missing' }
 $remove = Start-Process -FilePath $uninstaller -ArgumentList @('/S', "_?=$installPath") -Wait -PassThru
 if ($remove.ExitCode -ne 0) { throw "Uninstaller failed: $($remove.ExitCode)" }
 if (Test-Path $executable) { throw 'Uninstall left the application executable behind' }
-$startup = Get-ItemPropertyValue -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run' -Name 'TwichUI Market Companion' -ErrorAction SilentlyContinue
+$startup = [Microsoft.Win32.Registry]::GetValue('HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run','TwichUI Market Companion',$null)
 if ($startup -eq "`"$executable`" --background") { throw 'Uninstall left its current-user startup entry behind' }
 Write-Output 'NSIS per-user install, native-window launch and uninstall verified.'
