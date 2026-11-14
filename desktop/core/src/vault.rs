@@ -54,6 +54,7 @@ pub fn remove(server: &str) -> Result<()> {
 #[cfg(windows)]
 mod native {
     use super::*;
+    use windows_sys::Win32::Foundation::{GetLastError, ERROR_NOT_FOUND};
     use windows_sys::Win32::Security::Credentials::*;
     fn wide(value: &str) -> Vec<u16> {
         value.encode_utf16().chain(std::iter::once(0)).collect()
@@ -91,7 +92,11 @@ mod native {
         let target = wide(target_name);
         let mut credential: *mut CREDENTIALW = std::ptr::null_mut();
         if unsafe { CredReadW(target.as_ptr(), CRED_TYPE_GENERIC, 0, &mut credential) } == 0 {
-            return Err(Error::Vault);
+            return Err(if unsafe { GetLastError() } == ERROR_NOT_FOUND {
+                Error::CredentialMissing
+            } else {
+                Error::Vault
+            });
         }
         // CredReadW owns this allocation. Wipe both the native blob and any bounded copy on failure.
         unsafe {
@@ -111,7 +116,9 @@ mod native {
     pub fn remove_blob(target_name: &str) -> Result<()> {
         let target = wide(target_name);
         if unsafe { CredDeleteW(target.as_ptr(), CRED_TYPE_GENERIC, 0) } == 0 {
-            return Err(Error::Vault);
+            if unsafe { GetLastError() } != ERROR_NOT_FOUND {
+                return Err(Error::Vault);
+            }
         }
         Ok(())
     }

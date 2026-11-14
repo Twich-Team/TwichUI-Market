@@ -1,169 +1,185 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-use serde::{Deserialize, Serialize};
-use std::{io::Write, path::PathBuf, sync::Mutex};
+mod runtime;
+mod shell;
+mod startup;
+use runtime::{Runtime, View};
+use std::sync::Arc;
 use tauri::{AppHandle, Manager};
-use twichui_market_core::{
-    cache::{Cache, Status},
-    client::{server_url, MarketClient},
-    vault,
-};
-
-struct OperationLock(Mutex<()>);
-#[derive(Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
-struct Config {
-    server: String,
-}
-
-fn directory(app: &AppHandle) -> Result<PathBuf, String> {
-    let path = app
-        .path()
-        .app_data_dir()
-        .map_err(|_| "Application data directory unavailable")?;
-    std::fs::create_dir_all(&path).map_err(|_| "Could not create application data directory")?;
-    Ok(path)
-}
-fn config(path: &std::path::Path) -> Result<Config, String> {
-    let bytes =
-        std::fs::read(path.join("connection.json")).map_err(|_| "Connect a server first")?;
-    serde_json::from_slice(&bytes)
-        .map_err(|_| "Connection settings are invalid; connect again".into())
-}
-fn cache(path: &std::path::Path) -> Result<Cache, String> {
-    Cache::open(&path.join("market-v1.sqlite")).map_err(|error| error.to_string())
-}
-async fn operation<T: Send + 'static>(
-    app: AppHandle,
-    job: impl FnOnce(PathBuf) -> Result<T, String> + Send + 'static,
-) -> Result<T, String> {
-    tauri::async_runtime::spawn_blocking(move || {
-        let state = app.state::<OperationLock>();
-        let _guard = state
-            .0
-            .lock()
-            .map_err(|_| "An operation failed; restart the companion")?;
-        job(directory(&app)?)
-    })
-    .await
-    .map_err(|_| "Companion operation failed".to_string())?
-}
-
-#[tauri::command]
-async fn connection(app: AppHandle) -> Result<Option<String>, String> {
-    operation(app, |path| {
-        if !path.join("connection.json").exists() {
-            return Ok(None);
-        }
-        Ok(Some(config(&path)?.server))
-    })
-    .await
+use twichui_market_core::settings::Settings;
+fn runtime(app: &AppHandle) -> Arc<Runtime> {
+    app.state::<Arc<Runtime>>().inner().clone()
 }
 #[tauri::command]
-async fn connect(app: AppHandle, server: String, token: String) -> Result<String, String> {
-    operation(app, move |path| {
-        let server = server_url(&server).map_err(|e| e.to_string())?.to_string();
-        let client = MarketClient::new(&server, token.clone()).map_err(|e| e.to_string())?;
-        client.authenticate().map_err(|e| e.to_string())?;
-        vault::save(&server, &token).map_err(|e| e.to_string())?;
-        let mut temporary = tempfile::NamedTempFile::new_in(&path)
-            .map_err(|_| "Could not save connection settings")?;
-        serde_json::to_writer(
-            &mut temporary,
-            &Config {
-                server: server.clone(),
-            },
-        )
-        .map_err(|_| "Could not save connection settings")?;
-        temporary
-            .flush()
-            .map_err(|_| "Could not save connection settings")?;
-        temporary
-            .as_file()
-            .sync_all()
-            .map_err(|_| "Could not save connection settings")?;
-        temporary
-            .persist(path.join("connection.json"))
-            .map_err(|_| "Could not save connection settings")?;
-        Ok(server)
-    })
-    .await
+fn app_state(app: AppHandle) -> Result<View, String> {
+    runtime(&app).view()
 }
 #[tauri::command]
-async fn status(app: AppHandle, market: u32) -> Result<Status, String> {
-    operation(app, move |path| {
-        cache(&path)?
-            .status(&config(&path)?.server, market)
-            .map_err(|e| e.to_string())
-    })
-    .await
-}
-#[derive(Serialize)]
-struct SyncResult {
-    has_more: bool,
-    status: Status,
+fn sign_in(app: AppHandle, device_name: String) -> Result<(), String> {
+    runtime(&app).sign_in(device_name)
 }
 #[tauri::command]
-async fn sync_page(app: AppHandle, market: u32) -> Result<SyncResult, String> {
-    operation(app, move |path| {
-        let server = config(&path)?.server;
-        let token = vault::load(&server).map_err(|e| e.to_string())?;
-        let client = MarketClient::new(&server, token).map_err(|e| e.to_string())?;
-        let mut cache = cache(&path)?;
-        let has_more = client
-            .synchronize_page(&mut cache, market)
-            .map_err(|e| e.to_string())?;
-        Ok(SyncResult {
-            has_more,
-            status: cache.status(&server, market).map_err(|e| e.to_string())?,
-        })
-    })
-    .await
+fn cancel_approval(app: AppHandle) -> Result<(), String> {
+    runtime(&app).cancel_approval()
 }
 #[tauri::command]
-async fn reset_market(app: AppHandle, market: u32) -> Result<(), String> {
-    operation(app, move |path| {
-        cache(&path)?
-            .reset(&config(&path)?.server, market)
-            .map_err(|e| e.to_string())
-    })
-    .await
+fn open_approval(app: AppHandle) -> Result<(), String> {
+    runtime(&app).reopen_approval()
 }
 #[tauri::command]
-async fn export_market(app: AppHandle, market: u32) -> Result<String, String> {
-    operation(app, move |path| {
-        let exports = path.join("exports");
-        std::fs::create_dir_all(&exports).map_err(|_| "Could not create export directory")?;
-        let output = cache(&path)?
-            .export(&config(&path)?.server, market, &exports)
-            .map_err(|e| e.to_string())?;
-        Ok(output.to_string_lossy().into_owned())
-    })
-    .await
+fn save_settings(app: AppHandle, settings: Settings, reset_invalid: bool) -> Result<(), String> {
+    runtime(&app).save_settings(settings, reset_invalid)
 }
 #[tauri::command]
-async fn disconnect(app: AppHandle) -> Result<(), String> {
-    operation(app, |path| {
-        let server = config(&path)?.server;
-        vault::remove(&server).map_err(|e| e.to_string())?;
-        std::fs::remove_file(path.join("connection.json"))
-            .map_err(|_| "Could not remove connection settings")?;
-        Ok(())
-    })
-    .await
+fn sync_now(app: AppHandle) -> Result<bool, String> {
+    let runtime = runtime(&app);
+    let view = runtime.view()?;
+    if view.approving || view.refreshing || !view.connected {
+        return Err("Finish connecting before synchronizing".into());
+    }
+    runtime.worker.sync_now().map_err(|e| e.to_string())
 }
-
+#[tauri::command]
+fn pause_sync(app: AppHandle) -> Result<(), String> {
+    runtime(&app).pause()
+}
+#[tauri::command]
+fn resume_sync(app: AppHandle) -> Result<(), String> {
+    runtime(&app).resume()
+}
+#[tauri::command]
+fn cancel_sync(app: AppHandle) -> Result<(), String> {
+    runtime(&app).worker.cancel().map_err(|e| e.to_string())
+}
+#[tauri::command]
+fn refresh_connection(app: AppHandle) -> Result<(), String> {
+    runtime(&app).refresh_connection()
+}
+#[tauri::command]
+fn disconnect(app: AppHandle) -> Result<(), String> {
+    runtime(&app).disconnect()
+}
+#[tauri::command]
+async fn export_market(app: AppHandle) -> Result<String, String> {
+    let owned = runtime(&app);
+    tauri::async_runtime::spawn_blocking(move || owned.export())
+        .await
+        .map_err(|_| "Export interrupted")?
+}
+#[tauri::command]
+fn open_exports(app: AppHandle) -> Result<(), String> {
+    runtime(&app).open_exports()
+}
+#[tauri::command]
+fn open_website(app: AppHandle, page: String) -> Result<(), String> {
+    runtime(&app).open_website(&page)
+}
+#[tauri::command]
+fn save_diagnostics(app: AppHandle) -> Result<String, String> {
+    runtime(&app).diagnostics()
+}
+#[tauri::command]
+fn quit(app: AppHandle) {
+    runtime(&app).request_quit();
+}
+#[tauri::command]
+fn hide_to_tray(app: AppHandle) -> Result<(), String> {
+    if !runtime(&app).view()?.settings.onboarding_completed {
+        return Err("Finish your first sync before hiding to the tray".into());
+    }
+    app.get_webview_window("main")
+        .ok_or("Window unavailable")?
+        .hide()
+        .map_err(|_| "Could not hide the window".into())
+}
+#[tauri::command]
+fn show_companion(app: AppHandle) {
+    shell::restore(&app);
+}
 fn main() {
-    tauri::Builder::default()
-        .manage(OperationLock(Mutex::new(())))
+    let flags = tauri_plugin_window_state::StateFlags::POSITION
+        | tauri_plugin_window_state::StateFlags::SIZE
+        | tauri_plugin_window_state::StateFlags::MAXIMIZED;
+    let app = tauri::Builder::default()
+        // Must be the first plugin. A normal second launch restores the existing process.
+        .plugin(tauri_plugin_single_instance::init(|app, args, _| {
+            if !args.iter().any(|arg| arg == "--background") {
+                shell::restore(app);
+            }
+        }))
+        .plugin(
+            tauri_plugin_window_state::Builder::default()
+                .with_state_flags(flags)
+                .build(),
+        )
+        .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_notification::init())
+        .setup(|app| {
+            let path = app.path().app_data_dir()?;
+            let runtime =
+                Runtime::create(app.handle().clone(), path).map_err(std::io::Error::other)?;
+            app.manage(runtime.clone());
+            shell::create_tray(app.handle())?;
+            if let Some(window) = app.get_webview_window("main") {
+                if runtime.should_hide_on_start() {
+                    window.hide()?;
+                } else {
+                    window.show()?;
+                }
+            }
+            runtime.initialize();
+            Ok(())
+        })
+        .on_window_event(|window, event| {
+            let app = window.app_handle();
+            let Some(runtime) = app.try_state::<Arc<Runtime>>() else {
+                return;
+            };
+            match event {
+                tauri::WindowEvent::CloseRequested { api, .. } if !runtime.quitting() => {
+                    api.prevent_close();
+                    if runtime.hide_on_close() {
+                        let _ = window.hide();
+                    } else {
+                        runtime.request_quit();
+                    }
+                }
+                tauri::WindowEvent::Resized(_) if runtime.hide_on_minimize() => {
+                    if window.is_minimized().unwrap_or(false) {
+                        let _ = window.hide();
+                    }
+                }
+                _ => {}
+            }
+        })
         .invoke_handler(tauri::generate_handler![
-            connection,
-            connect,
-            status,
-            sync_page,
-            reset_market,
+            app_state,
+            sign_in,
+            cancel_approval,
+            open_approval,
+            save_settings,
+            sync_now,
+            pause_sync,
+            resume_sync,
+            cancel_sync,
+            refresh_connection,
+            disconnect,
             export_market,
-            disconnect
+            open_exports,
+            open_website,
+            save_diagnostics,
+            quit,
+            hide_to_tray,
+            show_companion
         ])
-        .run(tauri::generate_context!())
+        .build(tauri::generate_context!())
         .expect("TwichUI Market Companion could not start");
+    app.run(|app, event| {
+        if let tauri::RunEvent::ExitRequested { api, .. } = event {
+            let runtime = runtime(app);
+            if !runtime.quitting() {
+                api.prevent_exit();
+                runtime.request_quit();
+            }
+        }
+    });
 }

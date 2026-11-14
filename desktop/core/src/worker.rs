@@ -123,6 +123,30 @@ impl<C: Clock + 'static> Worker<C> {
             Ok(())
         })
     }
+    pub fn configure_receipt(
+        &self,
+        settings: Settings,
+        connected: bool,
+        receipt: Option<&Completion>,
+    ) -> Result<()> {
+        self.change(|control| {
+            if let Some(receipt) = receipt {
+                if control.scheduler.snapshot().running
+                    || settings.selected_market != Some(receipt.source.market_id)
+                    || receipt.schema_version != 1
+                {
+                    return Err(Error::Invalid("completion receipt identity"));
+                }
+                receipt.source.validate(receipt.source.market_id)?;
+            }
+            control.scheduler.configure(settings.clone(), connected)?;
+            if let Some(receipt) = receipt {
+                control.scheduler.restore_completion(receipt)?;
+            }
+            control.settings = settings;
+            Ok(())
+        })
+    }
     pub fn authorized(&self) -> Result<()> {
         self.change(|control| {
             control.scheduler.authorized();
@@ -314,7 +338,7 @@ fn worker_loop<C: Clock + 'static>(shared: Arc<Shared<C>>, executor: Arc<dyn Exe
                     control.error = Some(error.to_string());
                 }
                 match error {
-                    Error::Authentication => Outcome::SignInRequired,
+                    Error::Authentication | Error::CredentialMissing => Outcome::SignInRequired,
                     Error::Network => Outcome::Offline,
                     Error::ServiceUnavailable => Outcome::ServerUnavailable {
                         retry_after_ms: None,

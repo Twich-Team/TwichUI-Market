@@ -71,7 +71,9 @@ impl Cache {
         if !has_synthetic {
             db.execute_batch("ALTER TABLE state ADD COLUMN synthetic INTEGER NOT NULL DEFAULT 0;")?;
         }
-        db.pragma_update(None, "user_version", 2)?;
+        if version != 2 {
+            db.pragma_update(None, "user_version", 2)?;
+        }
         Ok(Self { db })
     }
     pub fn cursor(&self, server: &str, market: u32) -> Result<Option<String>> {

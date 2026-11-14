@@ -74,7 +74,7 @@ impl MarketClient {
             .redirect(reqwest::redirect::Policy::none())
             .no_proxy()
             .connect_timeout(Duration::from_secs(10))
-            .timeout(Duration::from_secs(60))
+            .timeout(Duration::from_secs(30))
             .build()
             .map_err(|_| Error::Network)?;
         Ok(Self {

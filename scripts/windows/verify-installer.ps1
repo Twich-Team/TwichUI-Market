@@ -10,6 +10,8 @@ if (Test-Path $installPath) { throw 'Installer test directory must start empty' 
 $process = Start-Process -FilePath $installer[0].FullName -ArgumentList @('/S', "/D=$installPath") -Wait -PassThru
 if ($process.ExitCode -ne 0) { throw "Installer failed with code $($process.ExitCode)" }
 $executable = Join-Path $installPath 'twichui-market-companion.exe'
+$env:MARKET_TEST_INSTALLED_EXE = $executable
+$env:MARKET_TEST_APP_DATA = Join-Path $env:APPDATA 'team.twich.market'
 if (-not (Test-Path $executable)) { throw 'Installed executable is missing' }
 $probe = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Loopback, 0)
 $probe.Start()
@@ -29,6 +31,7 @@ $null = New-ItemProperty -Path $policy -Name $policyName -PropertyType String -V
 $app = $null
 try {
     $app = Start-Process -FilePath $executable -PassThru
+    $env:MARKET_TEST_PRIMARY_PID = $app.Id.ToString()
     $ready = $false
     for ($attempt = 0; $attempt -lt 30; $attempt++) {
         Start-Sleep -Seconds 1
@@ -41,7 +44,7 @@ try {
     }
     if (-not $ready) { throw 'Installed application did not create its expected native window' }
     Write-Output 'Installed release executable created the expected native window.'
-    python scripts/verify-companion-http.py --ui
+    python scripts/verify-companion-authorization.py --ui
     if ($LASTEXITCODE -ne 0) { throw 'Native WebView2 workflow failed' }
 } finally {
     Remove-ItemProperty -Path $policy -Name $policyName -ErrorAction SilentlyContinue

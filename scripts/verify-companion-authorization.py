@@ -39,9 +39,19 @@ with Session.begin() as db:
 SERVER = '''
 import uvicorn
 from market import companion_auth
+from market.app import app
+import os, asyncio
 # Short-lived access is fixture-only; force the real native renewal path immediately.
 companion_auth.ACCESS_SECONDS=60
-uvicorn.run('market.app:app',host='127.0.0.1',port=int(__import__('os').environ['MARKET_TEST_PORT']),access_log=False)
+if os.environ.get('MARKET_NATIVE_UI_TEST')=='true':
+    @app.middleware('http')
+    async def observable_fixture_pages(request,call_next):
+        if request.url.path.startswith('/api/v1/sync/markets/'):
+            await asyncio.sleep(.5)
+            query=request.scope.get('query_string',b'')
+            request.scope['query_string']=query+(b'&' if query else b'')+b'limit=1'
+        return await call_next(request)
+uvicorn.run(app,host='127.0.0.1',port=int(os.environ['MARKET_TEST_PORT']),access_log=False)
 '''
 
 
@@ -55,6 +65,7 @@ def main():
             probe.bind(('127.0.0.1',0));port=probe.getsockname()[1]
         origin=f'http://127.0.0.1:{port}'
         env.update(APP_ORIGIN=origin, MARKET_TEST_SERVER=origin, MARKET_TEST_PORT=str(port), ALLOW_LEGACY_SESSIONS='false')
+        if '--ui' in sys.argv:env['MARKET_NATIVE_UI_TEST']='true'
         subprocess.run([sys.executable,'-c',SEED],cwd=ROOT,env=env,check=True)
         jar=http.cookiejar.CookieJar();browser=urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
         csrf=None
@@ -73,6 +84,10 @@ def main():
                         request('/api/v1/health');break
                     except OSError:time.sleep(.1)
                 else:raise RuntimeError('Isolated authorization API did not become healthy')
+                if '--ui' in sys.argv:
+                    subprocess.run(['node',str(ROOT/'web'/'e2e'/'companion-native.cjs')],cwd=ROOT,env=env,check=True)
+                    print('Installed v2 native UI/API authorization and background synchronization smoke passed.')
+                    return
                 native=subprocess.Popen([str(binary.resolve())],cwd=ROOT,env=env,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
                 def stage():
                     line=native.stdout.readline()

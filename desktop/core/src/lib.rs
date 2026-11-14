@@ -2,6 +2,7 @@ pub mod authorization;
 pub mod cache;
 pub mod client;
 pub mod connection;
+pub mod profile;
 pub mod protocol;
 pub mod scheduler;
 pub mod settings;
@@ -37,6 +38,8 @@ pub enum Error {
     ResetRequired,
     #[error("Windows Credential Manager is unavailable")]
     Vault,
+    #[error("No saved desktop connection; sign in in your browser")]
+    CredentialMissing,
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
