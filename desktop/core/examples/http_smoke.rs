@@ -25,7 +25,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     assert!(page.changes.is_empty() && !page.has_more);
     cache.apply(&server, 1, cursor.as_deref(), &page)?;
     let exported = cache.export(&server, 1, directory.path())?;
-    assert!(std::fs::metadata(exported)?.len() > 100);
+    assert!(std::fs::metadata(&exported)?.len() > 100);
+    if let Ok(record) = std::env::var("MARKET_TEST_EXPORT_RECORD") {
+        std::fs::copy(&exported, record)?;
+    }
     // Credential rejection must not destroy the completed offline generation.
     let invalid = MarketClient::new(&server, "synthetic-invalid-device-token".into())?;
     assert!(invalid.page(1, None).is_err());

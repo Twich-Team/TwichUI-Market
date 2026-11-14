@@ -31,6 +31,7 @@ jobs:
       - run: python scripts/verify-companion-http.py
       - run: npm ci --prefix desktop
       - run: npm --prefix desktop run tauri build -- --ci
+      - run: npm ci --prefix web
       - name: Verify installed Windows release
         shell: pwsh
         timeout-minutes: 5

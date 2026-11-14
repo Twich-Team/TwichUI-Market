@@ -8,6 +8,12 @@ $process = Start-Process -FilePath $installer[0].FullName -ArgumentList @('/S', 
 if ($process.ExitCode -ne 0) { throw "Installer failed with code $($process.ExitCode)" }
 $executable = Join-Path $installPath 'twichui-market-companion.exe'
 if (-not (Test-Path $executable)) { throw 'Installed executable is missing' }
+$probe = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Loopback, 0)
+$probe.Start()
+$env:MARKET_TEST_CDP_PORT = $probe.LocalEndpoint.Port.ToString()
+$probe.Stop()
+$env:WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS = "--remote-debugging-port=$env:MARKET_TEST_CDP_PORT --remote-debugging-address=127.0.0.1"
+$env:WEBVIEW2_USER_DATA_FOLDER = Join-Path $env:RUNNER_TEMP 'TwichMarket-WebView'
 $app = $null
 try {
     $app = Start-Process -FilePath $executable -PassThru
@@ -23,6 +29,8 @@ try {
     }
     if (-not $ready) { throw 'Installed application did not create its expected native window' }
     Write-Output 'Installed release executable created the expected native window.'
+    python scripts/verify-companion-http.py --ui
+    if ($LASTEXITCODE -ne 0) { throw 'Native WebView2 workflow failed' }
 } finally {
     if ($null -ne $app -and -not $app.HasExited) {
         $null = $app.CloseMainWindow()

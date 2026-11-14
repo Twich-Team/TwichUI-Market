@@ -1,6 +1,6 @@
 # Design review v1 — awaiting approval
 
-Three high-fidelity browser-renderable pages: `/design/#explorer`, `/design/#deals`, `/design/#admin` on the localhost development server (port 18780). All data and service states are explicitly illustrative. These are review mockups, not completed website features. No authenticated or live operational claims should be inferred.
+Three high-fidelity browser-renderable pages: `/design/#explorer`, `/design/#deals`, `/design/#admin` on the localhost development server at https://localhost:18443. All data and service states are explicitly illustrative. These are review mockups, not completed website features. No authenticated or live operational claims should be inferred.
 
 Palette: espresso background, walnut navigation, chestnut panels, aged bronze frames, antique gold actions, warm ivory text. Serif headings, restrained density, readable explanations of freshness, asking prices, uncertainty and reference values.
 

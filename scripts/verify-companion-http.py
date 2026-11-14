@@ -40,6 +40,7 @@ def main():
         env['COOKIE_SECURE']='false'
         env['SYNC_CURSOR_SECRET']='synthetic-integration-signing-secret-32-characters'
         env['MARKET_TEST_TOKEN']=TOKEN
+        env['MARKET_TEST_EXPORT_RECORD']=str(Path(temporary)/'export.json')
         with socket.socket() as probe:
             probe.bind(('127.0.0.1',0))
             port=probe.getsockname()[1]
@@ -56,7 +57,18 @@ def main():
                         time.sleep(.1)
                 else:
                     raise RuntimeError('Fixture API did not become healthy')
-                subprocess.run([str(binary.resolve())],cwd=ROOT,env=env,check=True)
+                command=['node',str(ROOT/'web'/'e2e'/'companion-native.cjs')] if '--ui' in sys.argv else [str(binary.resolve())]
+                subprocess.run(command,cwd=ROOT,env=env,check=True)
+                import json
+                from jsonschema import Draft202012Validator,FormatChecker
+                from referencing import Registry,Resource
+                schemas=[json.loads(path.read_text()) for path in (ROOT/'contracts'/'v1').glob('*.schema.json')]
+                registry=Registry().with_resources((s['$id'],Resource.from_contents(s)) for s in schemas)
+                checker=FormatChecker()
+                checker.checks('copper-i64')(lambda value:value is None or (isinstance(value,str) and value.isascii() and value.isdigit() and int(value)<=2**63-1))
+                schema=next(s for s in schemas if s['$id']=='urn:twichui-market:addon-export:v1')
+                Draft202012Validator(schema,registry=registry,format_checker=checker).validate(json.loads(Path(env['MARKET_TEST_EXPORT_RECORD']).read_text()))
+                print('Actual native export validates against shared data-only schema v1.')
             finally:
                 server.terminate()
                 try: server.wait(timeout=10)
