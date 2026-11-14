@@ -2,24 +2,24 @@
   "status": "owner_review_pending",
   "production_frontend": "previous version retained",
   "live_backend_revision": "0009",
-  "candidate_frontend_checkpoint": "fa1aa35 with subsequent verified identifier/accessibility refinements",
+  "candidate_frontend_checkpoint": "1430b32",
   "evidence": [
     {
       "path": "artifacts/modernization-live/catalogue.png",
-      "sha256": "fa022d0158163be1ba620590dee66aeabca0bea51eea86dc9ea417c152669d1c",
-      "bytes": 1077991,
+      "sha256": "1915d17614b1ec7e4ea920e27c8171b48b4090a1564ccaa4eea0981b579f3b66",
+      "bytes": 1095283,
       "synthetic": false
     },
     {
       "path": "artifacts/modernization-live/tooltip.png",
-      "sha256": "d51f1464fa47bb5bd84b09707f7b7774d21fa6380cde2b2a80fcc88250f00ee7",
-      "bytes": 1103867,
+      "sha256": "e613b7728f057bdaf8112d17b18bad8134fbf9fc231f1f48209886d711375db1",
+      "bytes": 1122353,
       "synthetic": false
     },
     {
       "path": "artifacts/modernization-live/deals-limited-history.png",
-      "sha256": "d703050cf6265e3c33da262b61ea7d3eaf297a88239f0fa913e7ca8f9396524c",
-      "bytes": 12040656,
+      "sha256": "642e16fe4e44959cdc1a2ddeab820e2b32acdab42c6b6a8a2fe2eaeff161f193",
+      "bytes": 12040313,
       "synthetic": false
     },
     {
@@ -62,6 +62,18 @@
         "virtual_rows": 17,
         "paginated_history_rows": 50
       }
+    },
+    {
+      "path": "artifacts/live-browser/explorer.png",
+      "sha256": "723022dba62b82f9552bca964c1314f781736679cb351cd55b27b454d025fdf3",
+      "bytes": 979627,
+      "synthetic": false
+    },
+    {
+      "path": "artifacts/modernization/touch-popover.png",
+      "sha256": "174d7c8fc58b4fc1ccab397990743a202ed79e3dd7777751cd57be6dab1d915b",
+      "bytes": 599522,
+      "synthetic": true
     }
   ],
   "live_health": {
@@ -134,5 +146,37 @@
     "Private website": 43559048190,
     "Windows companion": 43559048176,
     "conclusion": "success"
+  },
+  "candidate_image": "sha256:d9a929b335c974d293c920b29940a88946702057a2bb92489bccea2421ca21b7",
+  "candidate_deployment": {
+    "compose": "compose.item-preview.yaml",
+    "read_only": true,
+    "host_ports": {},
+    "memory_bytes": 134217728,
+    "nano_cpus": 250000000,
+    "trusted_tls": {
+      "trusted_candidate_tls": true,
+      "status": 200,
+      "health": {
+        "status": "ok",
+        "contract_version": 1
+      },
+      "cache_control": "no-store",
+      "csp_verified": true
+    }
+  },
+  "ci_checkpoint_1430b32": {
+    "Backend": 43559592979,
+    "Private website": 43559592978,
+    "Windows companion": 43559592963,
+    "conclusion": "success"
+  },
+  "final_local_checks": {
+    "postgresql_tests": 115,
+    "frontend_tests": 16,
+    "chromium_workflows": 6,
+    "chromium_seconds": 35.3,
+    "production_dependency_audit_findings": 0,
+    "axe_violations": 0
   }
 }

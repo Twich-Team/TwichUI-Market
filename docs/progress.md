@@ -1,6 +1,6 @@
 # Active milestone
 
-The owner requested Item Experience and Frontend Modernization. Follow [the milestone plan](item-modernization-plan.md) and [current progress](item-modernization-progress.md). Live collection/history remain protected; earlier evidence below is chronological.
+The owner requested Item Experience and Frontend Modernization. Follow [the milestone plan](item-modernization-plan.md) and [current progress](item-modernization-progress.md). Live collection/history remain protected; earlier evidence below is chronological. Modernization code checkpoint 1430b32 passes 115 PostgreSQL tests, 16 frontend tests, six Chromium workflows and backend/website/Windows CI. The exact Docker review image and real-data/TLS/backup restoration are verified. Explicit owner visual approval and subsequent frontend promotion remain pending; the previous production frontend is retained.
 
 # Progress
 

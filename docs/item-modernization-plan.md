@@ -46,4 +46,4 @@ Acceptance: PostgreSQL regressions/migrations, Vitest, real Chromium workflows, 
 
 ## Verified checkpoint status
 
-M0–M2 backend/research and M3–M4 integrated candidate implementation are verified in the progress/evidence records. M5 local tests, accessibility, measured query/browser behavior, genuine-data preview and actual backup restoration are verified. Final refinement CI and exact-image preview checks are being consolidated. Owner design approval and subsequent production frontend promotion remain required; a successful candidate build or screenshot is not approval.
+M0–M2 backend/research and M3–M4 integrated candidate implementation are verified in the progress/evidence records. M5 local tests, accessibility, measured query/browser behavior, genuine-data preview and actual backup restoration are verified. Final code checkpoint 1430b32 passes backend/website/Windows CI, and its exact-image preview passes genuine-data and trusted-TLS checks. Owner design approval and subsequent production frontend promotion remain required; a successful candidate build or screenshot is not approval.

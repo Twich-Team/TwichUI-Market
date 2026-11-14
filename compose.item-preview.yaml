@@ -1,0 +1,26 @@
+# Review candidate only: shares this project's API, no host ports or credentials.
+name: twichui-market-item-preview
+services:
+  preview:
+    image: twichui-market-web:dev
+    build:
+      context: .
+      dockerfile: deploy/web.Dockerfile
+    container_name: twichui-market-modernization-preview
+    networks: [market]
+    volumes:
+      - ./deploy/Caddyfile.tls:/etc/caddy/Caddyfile:ro
+      - ./deploy/routes.caddy:/etc/caddy/routes.caddy:ro
+    read_only: true
+    tmpfs: [/tmp:size=16m, /data:size=16m, /config:size=4m]
+    mem_limit: 128m
+    cpus: 0.25
+    pids_limit: 100
+    security_opt: [no-new-privileges:true]
+    logging:
+      driver: json-file
+      options: {max-size: 2m, max-file: "2"}
+networks:
+  market:
+    external: true
+    name: twichui-market_default
