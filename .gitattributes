@@ -1,0 +1,4 @@
+# Signature fixtures must retain their exact signed bytes on Windows checkouts.
+desktop/src-tauri/tests/fixtures/synthetic-update.txt -text
+desktop/src-tauri/tests/fixtures/synthetic-update.txt.sig -text
+desktop/src-tauri/tests/fixtures/synthetic-public.key -text

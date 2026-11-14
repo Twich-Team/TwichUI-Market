@@ -234,9 +234,12 @@ mod tests {
     #[test]
     fn supported_updater_verifies_bytes_and_binds_the_signed_version() {
         let mut context = mock_context(noop_assets());
-        context.config_mut().plugins.0.insert("updater".into(), json!({
-            "pubkey":KEY.trim(),"requireSignedVersion":true,"allowDowngrades":false
-        }));
+        context.config_mut().plugins.0.insert(
+            "updater".into(),
+            json!({
+                "pubkey":KEY.trim(),"requireSignedVersion":true,"allowDowngrades":false
+            }),
+        );
         let app = mock_builder()
             .plugin(
                 tauri_plugin_updater::Builder::new()

@@ -4743,6 +4743,7 @@ dependencies = [
  "base64 0.22.1",
  "chrono",
  "getrandom 0.2.17",
+ "minisign-verify",
  "reqwest 0.12.28",
  "rusqlite",
  "serde",

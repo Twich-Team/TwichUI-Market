@@ -1,6 +1,7 @@
 //! Controlled HTTPS release metadata and bounded downloads. Tauri independently
 //! verifies the pinned updater signature AND its signed version before installation.
 use crate::{Error, Result};
+use base64::{engine::general_purpose::STANDARD, Engine};
 use reqwest::blocking::Client;
 use serde::Deserialize;
 use sha2::{Digest, Sha256};
@@ -9,6 +10,39 @@ use url::Url;
 pub const ORIGIN: &str = "https://market.twich.gg";
 pub const MAX_INSTALLER: u64 = 64 * 1024 * 1024;
 const MAX_METADATA: u64 = 16384;
+/// Owner-controlled Linux publisher verification, using the same maintained
+/// Minisign verifier as Tauri. Native installation still verifies with its SDK.
+pub fn verify_signature(bytes: &[u8], key: &str, signature: &str, version: &str) -> Result<()> {
+    if key.len() > 4096 || signature.len() > 4096 || !stable_version(version) {
+        return Err(Error::Invalid("release signature metadata"));
+    }
+    let decode = |value: &str| -> Result<String> {
+        String::from_utf8(
+            STANDARD
+                .decode(value.trim())
+                .map_err(|_| Error::Invalid("release signature encoding"))?,
+        )
+        .map_err(|_| Error::Invalid("release signature encoding"))
+    };
+    let public = minisign_verify::PublicKey::decode(&decode(key)?)
+        .map_err(|_| Error::Invalid("release public key"))?;
+    let proof = minisign_verify::Signature::decode(&decode(signature)?)
+        .map_err(|_| Error::Invalid("release signature"))?;
+    public
+        .verify(bytes, &proof, false)
+        .map_err(|_| Error::Invalid("release signature verification"))?;
+    // The global signature above authenticates this trusted comment. Never use
+    // unauthenticated version text to bind a payload to a release.
+    let versions: Vec<_> = proof
+        .trusted_comment()
+        .split('\t')
+        .filter_map(|field| field.strip_prefix("version:"))
+        .collect();
+    if versions != [version] {
+        return Err(Error::Invalid("signed release version mismatch"));
+    }
+    Ok(())
+}
 #[derive(Clone, Deserialize)]
 pub struct Package {
     pub version: String,
@@ -169,5 +203,20 @@ mod tests {
         let mut bad = value.clone();
         bad.sha256 = "Z".repeat(64);
         assert!(bad.validate().is_err());
+    }
+
+    #[test]
+    fn publisher_verifier_authenticates_the_real_signature_and_version_binding() {
+        let bytes = include_bytes!("../../src-tauri/tests/fixtures/synthetic-update.txt");
+        let key = include_str!("../../src-tauri/tests/fixtures/synthetic-public.key");
+        let signature = include_str!("../../src-tauri/tests/fixtures/synthetic-update.txt.sig");
+        verify_signature(bytes, key, signature, "2.0.0").unwrap();
+        assert!(verify_signature(bytes, key, signature, "2.0.1").is_err());
+        let mut changed = bytes.to_vec();
+        changed[0] ^= 1;
+        assert!(verify_signature(&changed, key, signature, "2.0.0").is_err());
+        let text = String::from_utf8(STANDARD.decode(signature.trim()).unwrap()).unwrap();
+        let forged = STANDARD.encode(text.replace("version:2.0.0", "version:2.0.1"));
+        assert!(verify_signature(bytes, key, &forged, "2.0.1").is_err());
     }
 }
