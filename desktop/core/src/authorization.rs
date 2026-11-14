@@ -146,6 +146,9 @@ fn read_callback(
     until: Instant,
     cancel: &AtomicBool,
 ) -> Result<String> {
+    // Explicit on Windows: accepted sockets may inherit the nonblocking listener.
+    // Bounded blocking reads avoid spinning while an incomplete request arrives.
+    stream.set_nonblocking(false)?;
     stream.set_read_timeout(Some(Duration::from_millis(100)))?;
     stream.set_write_timeout(Some(Duration::from_millis(250)))?;
     let deadline = until.min(Instant::now() + Duration::from_secs(2));

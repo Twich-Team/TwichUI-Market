@@ -32,6 +32,9 @@ struct HttpRequest {
     body: Vec<u8>,
 }
 fn http_request(stream: &mut TcpStream) -> HttpRequest {
+    // Windows accepted sockets can inherit the listener's nonblocking mode.
+    // This fixture deliberately uses bounded blocking reads, not readiness I/O.
+    stream.set_nonblocking(false).unwrap();
     stream
         .set_read_timeout(Some(Duration::from_secs(3)))
         .unwrap();
