@@ -74,8 +74,8 @@ def load(version, store=None):
     stamp=datetime.fromisoformat(manifest.published_at)
     if stamp.tzinfo is None:raise ValueError('Release time needs timezone')
     if set(manifest.acceptance)!=REQUIRED_TESTS or not all(manifest.acceptance.values()):raise ValueError('Incomplete acceptance')
-    publisher=os.environ.get('COMPANION_PUBLISHER_THUMBPRINT','').upper()
-    key=os.environ.get('COMPANION_UPDATER_PUBLIC_KEY','')
+    publisher=os.environ.get('COMPANION_PUBLISHER_THUMBPRINT','').strip().upper()
+    key=os.environ.get('COMPANION_UPDATER_PUBLIC_KEY','').strip()
     if (not publisher or manifest.publisher_thumbprint!=publisher or not key
             or hashlib.sha256(key.encode()).hexdigest()!=manifest.updater_public_key_sha256):raise ValueError('Release trust is not configured')
     base64.b64decode(manifest.updater_signature,validate=True)

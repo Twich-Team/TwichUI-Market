@@ -1,5 +1,6 @@
 """Synthetic receipts test atomic store mechanics, not real Windows signing/CI."""
 import json
+import hashlib
 from pathlib import Path
 import pytest
 from market import release_publisher as publisher
@@ -85,3 +86,26 @@ def test_unrelated_directory_and_symlink_store_are_never_initialized(tmp_path,mo
     assert (store/'unrelated.txt').read_text()=='Must remain'
     alias=tmp_path/'alias';alias.symlink_to(store)
     with pytest.raises(ValueError,match='symlink'):publisher.publish(alias,bundle,'synthetic-owner')
+
+
+def test_publication_proof_is_bounded_immutable_and_preserved_in_audit(tmp_path,monkeypatch):
+    store,_,bundle,_,_,_=fixture(tmp_path,monkeypatch)
+    proof=bundle/'publication-proof.json';proof.write_text('{"fixture":"Synthetic owner provenance, not acceptance"}')
+    original=proof.read_bytes();publisher.publish(store,bundle,'synthetic-owner')
+    assert (store/bundle.name/proof.name).read_bytes()==original
+    audit=json.loads((store/'audit/00000001.json').read_text())
+    assert audit['publication_proof_sha256']==hashlib.sha256(original).hexdigest()
+    proof.write_text('{"fixture":"Changed provenance"}')
+    with pytest.raises(ValueError,match='immutable'):publisher.publish(store,bundle,'synthetic-owner')
+    assert (store/bundle.name/proof.name).read_bytes()==original
+
+
+@pytest.mark.parametrize('kind',['oversized','symlink'])
+def test_invalid_publication_proof_cannot_create_an_active_release(tmp_path,monkeypatch,kind):
+    store,_,bundle,_,_,_=fixture(tmp_path,monkeypatch)
+    proof=bundle/'publication-proof.json'
+    if kind=='oversized':proof.write_bytes(b'x'*16385)
+    else:
+        outside=tmp_path/'external-proof.json';outside.write_text('{}');proof.symlink_to(outside)
+    with pytest.raises(ValueError):publisher.publish(store,bundle,'synthetic-owner')
+    assert not (store/'current.json').exists()

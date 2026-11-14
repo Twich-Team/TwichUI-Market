@@ -1,6 +1,6 @@
 // Real verified 0.1 installer -> current installer; legacy UI/token exists only in this test.
 const {chromium,request,expect}=require('@playwright/test');
-const fs=require('node:fs');const path=require('node:path');const {execFile,spawn}=require('node:child_process');const {promisify}=require('node:util');
+const fs=require('node:fs');const path=require('node:path');const {execFile,spawn}=require('node:child_process');const {promisify}=require('node:util');const {createHash}=require('node:crypto');
 (async()=>{
   if(process.env.GITHUB_ACTIONS!=='true'||process.platform!=='win32')throw new Error('Disposable Windows runner only');
   const endpoint=`http://127.0.0.1:${process.env.MARKET_TEST_CDP_PORT}`;
@@ -25,7 +25,14 @@ const fs=require('node:fs');const path=require('node:path');const {execFile,spaw
       '$app=Get-Process -Name "twichui-market-companion" | Where-Object {$_.Path -eq $env:MARKET_TEST_INSTALLED_EXE};if(@($app).Count -ne 1){throw "Expected one old installed process"};$null=$app.CloseMainWindow();if(-not $app.WaitForExit(10000)){throw "Old installed app did not close"}'],{timeout:15000});
     await expect.poll(available).toBe(false);await browser.close().catch(()=>{});
     // Run the new current-user installer over the actual old installation.
-    await promisify(execFile)(process.env.MARKET_TEST_NEW_INSTALLER,['/S',`/D=${process.env.MARKET_TEST_INSTALL_DIRECTORY}`],{timeout:90000});
+    const sdkInstall=process.env.MARKET_TEST_UPDATER_SDK==='true';
+    if(sdkInstall){
+      const expected=createHash('sha256').update(fs.readFileSync('desktop/src-tauri/target/release/twichui-market-companion.exe')).digest('hex');
+      await promisify(execFile)('cargo',['test','--manifest-path','desktop/src-tauri/Cargo.toml','--locked','updates::tests::launch_owner_signed_installer_on_disposable_runner','--','--ignored','--exact','--nocapture'],{timeout:180000,maxBuffer:2*1024*1024});
+      await expect.poll(()=>{try{return createHash('sha256').update(fs.readFileSync(process.env.MARKET_TEST_INSTALLED_EXE)).digest('hex')}catch{return null}},{timeout:90000}).toBe(expected);
+    }else{
+      await promisify(execFile)(process.env.MARKET_TEST_NEW_INSTALLER,['/S',`/D=${process.env.MARKET_TEST_INSTALL_DIRECTORY}`],{timeout:90000});
+    }
     const upgraded=spawn(process.env.MARKET_TEST_INSTALLED_EXE,[],{detached:true,stdio:'ignore'});upgraded.unref();
     await expect.poll(available,{timeout:30000}).toBe(true);browser=await chromium.connectOverCDP(endpoint);page=browser.contexts()[0].pages()[0];
     await expect(page.locator('#legacy-warning')).toBeVisible({timeout:20000});
@@ -42,7 +49,7 @@ const fs=require('node:fs');const path=require('node:path');const {execFile,spaw
     fs.mkdirSync(path.resolve('artifacts/companion-v2'),{recursive:true});
     fs.writeFileSync(path.resolve('artifacts/companion-v2/legacy-upgrade.json'),JSON.stringify({fixture:true,source_commit:source,from_version:'0.1.0',to_version:state.version,
       actual_old_installer:true,actual_new_installer:true,legacy_credentials_preserved:true,cache_preserved:true,connection_settings_preserved:true,
-      legacy_metadata_migrated:true,new_native_sync:true,export_contract_preserved:true,uninstall_data_preservation_verified_by_parent:false},null,2));
+      legacy_metadata_migrated:true,new_native_sync:true,export_contract_preserved:true,signed_updater_sdk_install:sdkInstall,uninstall_data_preservation_verified_by_parent:false},null,2));
     await invoke('quit').catch(()=>{});await expect.poll(available).toBe(false);
     console.log('Actual 0.1 -> v2 installed upgrade preserves legacy credential, connection, cache, sync and export.');
   }finally{await api.dispose();await browser.close().catch(()=>{});}

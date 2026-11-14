@@ -8,6 +8,7 @@ const fs=require('node:fs');const path=require('node:path');const {execFile,spaw
   let browser=await chromium.connectOverCDP(endpoint);
   const api=await request.newContext({baseURL:process.env.MARKET_TEST_SERVER,extraHTTPHeaders:{Origin:process.env.MARKET_TEST_SERVER}});
   const shots=path.resolve('artifacts/companion-v2');fs.mkdirSync(shots,{recursive:true});
+  const sourceCommit=(await promisify(execFile)('git',['rev-parse','HEAD'])).stdout.trim();
   let websiteBrowser;
   try{
     let page=browser.contexts()[0].pages()[0];
@@ -45,12 +46,12 @@ const fs=require('node:fs');const path=require('node:path');const {execFile,spaw
     await expect.poll(()=>new URL(website.url()).pathname).toBe('/companion/callback');
     expect(new URL(website.url()).hostname).toBe('127.0.0.1');
     await expect(page.locator('#connected-panel')).toBeVisible({timeout:20000});
-    await expect(page.locator('#sync-progress')).toBeVisible({timeout:15000});await page.screenshot({path:path.join(shots,'native-sync-progress.png')});
+    await expect(page.locator('#sync-progress')).toBeVisible({timeout:15000});await page.evaluate(()=>window.scrollTo(0,0));await page.screenshot({path:path.join(shots,'native-sync-progress.png'),fullPage:true});
     await expect(page.locator('#cache-count')).toContainText('2 item variants',{timeout:30000});
     await expect.poll(async()=>(await invoke('app_state')).sync.sync.last_sync_ms,{timeout:15000}).toBeTruthy();
     await expect(page.locator('#market-name')).toHaveText('US — Normal — Horde');await expect(page.locator('#synthetic-warning')).toBeVisible();
     const initialSyncMs=performance.now()-firstSyncStart;
-    await page.screenshot({path:path.join(shots,'native-dashboard.png')});
+    await page.evaluate(()=>window.scrollTo(0,0));await page.screenshot({path:path.join(shots,'native-dashboard.png'),fullPage:true});
     await website.goto(process.env.MARKET_TEST_SERVER+'/companion');
     await expect(website.getByText('Installed Windows fixture is connected.',{exact:true})).toBeVisible();
     await website.screenshot({path:path.join(shots,'website-wizard.png'),fullPage:true});
@@ -85,7 +86,7 @@ const fs=require('node:fs');const path=require('node:path');const {execFile,spaw
     await promisify(execFile)(process.env.MARKET_TEST_INSTALLED_EXE,[],{timeout:15000});
     await expect.poll(async()=>(await invoke('app_state')).window_visible).toBe(true);
     const restoreMs=performance.now()-restoreStart;
-    fs.writeFileSync(path.join(shots,'performance.json'),JSON.stringify({fixture:true,initial_sync_ms:initialSyncMs,incremental_noop_sync_ms:incrementalSyncMs,sync_fixture:{variants:2,page_limit:1,injected_delay_ms_per_page:500},second_launch_restore_ms:restoreMs,idle_market_api_requests:{before:networkBefore,after:networkAfter},resources,desktop_frontend_bytes:fs.readdirSync('desktop/ui').reduce((total,file)=>total+fs.statSync(path.join('desktop/ui',file)).size,0)},null,2));
+    fs.writeFileSync(path.join(shots,'performance.json'),JSON.stringify({fixture:true,source_commit:sourceCommit,initial_sync_ms:initialSyncMs,incremental_noop_sync_ms:incrementalSyncMs,sync_fixture:{variants:2,page_limit:1,injected_delay_ms_per_page:500},second_launch_restore_ms:restoreMs,idle_market_api_requests:{before:networkBefore,after:networkAfter},resources,desktop_frontend_bytes:fs.readdirSync('desktop/ui').reduce((total,file)=>total+fs.statSync(path.join('desktop/ui',file)).size,0)},null,2));
     // A normal second launch restores the original process and retains its cache/settings.
     expect((await invoke('app_state')).cache.item_count).toBe(2);expect((await invoke('app_state')).settings.interval_minutes).toBe(60);
     // Tray assertions remain strict when explicitly invoked. The owner's focused
@@ -137,7 +138,6 @@ const fs=require('node:fs');const path=require('node:path');const {execFile,spaw
     await page.locator('#disconnect').click();await expect.poll(async()=>(await invoke('app_state')).mode,{timeout:20000}).toBe('disconnected');
     expect((await invoke('app_state')).cache.item_count).toBe(2);
     const revoked=(await(await api.get('/api/v1/companion/devices')).json()).devices.find(row=>row.id===device.id);expect(revoked.revoked).toBe(true);
-    const sourceCommit=(await promisify(execFile)('git',['rev-parse','HEAD'])).stdout.trim();
     fs.writeFileSync(path.join(shots,'installed-smoke.json'),JSON.stringify({fixture:true,source_commit:sourceCommit,acceptance_scope:'Installed non-tray workflows; tray actions are a separate explicit gate',version:(await invoke('app_state')).version,native_browser_approval_api:true,native_browser_approval_ui:true,
       native_thread_hidden_sync:true,single_instance_restore:true,preferences_saved:true,credential_and_cache_restart:true,hidden_startup:true,current_user_autostart_enable_disable:true,actual_tray_menu:trayVerified,tray_settings_sync_pause_open_quit:trayVerified,native_minimize_close_to_tray:true,export_valid:true,server_revocation:true,offline_cache_preserved:true,
       website_approval_ui_verified:true,tray_rendering_evidence:{run_id:43647891422,real_menu_rendering_verified:true,actions_verified:false},tray_acceptance:trayVerified?'verified':'unverified',

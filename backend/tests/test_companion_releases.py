@@ -65,6 +65,13 @@ def test_missing_windows_acceptance_or_public_trust_configuration_fails_closed(c
     monkeypatch.delenv('COMPANION_UPDATER_PUBLIC_KEY');assert not client.get('/api/v1/companion/releases/current').json()['ready']
 
 
+def test_public_trust_pins_ignore_surrounding_configuration_whitespace(client,tmp_path,monkeypatch):
+    fixture_release(tmp_path,monkeypatch)
+    monkeypatch.setenv('COMPANION_UPDATER_PUBLIC_KEY','  synthetic-only-updater-public-key\n')
+    monkeypatch.setenv('COMPANION_PUBLISHER_THUMBPRINT','  '+'a'*40+'\n')
+    assert client.get('/api/v1/companion/releases/current').json()['ready']
+
+
 def test_corrupted_installer_and_symlinks_are_rejected_without_exposing_files(client,tmp_path,monkeypatch):
     root,directory,asset,receipt,payload=fixture_release(tmp_path,monkeypatch)
     assert client.get('/api/v1/companion/releases/current').json()['ready']

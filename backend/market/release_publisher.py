@@ -90,6 +90,14 @@ def pointer(store):
     return value['version']
 
 
+def publication_proof(directory):
+    path=directory/'publication-proof.json'
+    if path.is_symlink():raise ValueError('Invalid release publication proof')
+    if not path.exists():return None
+    bounded_json(path)
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
 def transition(store,version,actor,operation):
     if not re.fullmatch(r'[A-Za-z0-9_@.-]{1,64}',actor):raise ValueError('An explicit bounded operator identity is required')
     manifest,asset=load(version,store)
@@ -113,7 +121,8 @@ def transition(store,version,actor,operation):
         'at':datetime.now(timezone.utc).isoformat(),'previous_version':previous,'version':version,
         'source_commit':manifest.source_commit,'workflow_run_id':manifest.workflow_run_id,
         'visual_approval_commit':manifest.visual_approval_commit,'installer_sha256':manifest.sha256,
-        'manifest_sha256':hashlib.sha256((asset.parent/'manifest.json').read_bytes()).hexdigest()})
+        'manifest_sha256':hashlib.sha256((asset.parent/'manifest.json').read_bytes()).hexdigest(),
+        'publication_proof_sha256':publication_proof(asset.parent)})
     atomic_json(store/'current.json',{'schema_version':1,'version':version})
     # A completion record is additional evidence, not a prerequisite for deciding
     # the active pointer after interruption. Prepared records are never rewritten.
@@ -129,18 +138,23 @@ def publish(store,bundle,actor):
     bundle=bundle.resolve(strict=True)
     manifest,asset=load(bundle.name,bundle.parent)
     verify_installer(bundle/'manifest.json',asset)
+    proof=publication_proof(bundle)
     with locked(store) as store:
         destination=store/manifest.version
         if destination.exists():
             existing,old_asset=load(manifest.version,store)
             if (existing!=manifest or (destination/'manifest.json').read_bytes()!=(bundle/'manifest.json').read_bytes()
-                    or old_asset.stat().st_size!=manifest.bytes):
+                    or old_asset.stat().st_size!=manifest.bytes or publication_proof(destination)!=proof):
                 raise ValueError('Published versions are immutable')
         else:
             if usage(store)+manifest.bytes+65536>MAX_STORE_BYTES:raise ValueError('Release store budget reached; no versions were removed')
             staging=Path(tempfile.mkdtemp(prefix='.staging-',dir=store))
             try:
-                for source in (bundle/'manifest.json',asset):
+                sources=[bundle/'manifest.json',asset]
+                provenance=bundle/'publication-proof.json'
+                if proof is not None:
+                    sources.append(provenance)
+                for source in sources:
                     target=staging/source.name
                     with source.open('rb') as incoming,target.open('xb') as outgoing:
                         shutil.copyfileobj(incoming,outgoing,64*1024);outgoing.flush();os.fsync(outgoing.fileno())

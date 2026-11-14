@@ -231,6 +231,73 @@ mod tests {
     const BYTES: &[u8] = include_bytes!("../tests/fixtures/synthetic-update.txt");
     const KEY: &str = include_str!("../tests/fixtures/synthetic-public.key");
     const SIGNATURE: &str = include_str!("../tests/fixtures/synthetic-update.txt.sig");
+    /// Owner-signing workflow only. The SDK exits this child after launching NSIS;
+    /// its parent must verify the installed binary, reconnect and retain data.
+    #[cfg(windows)]
+    #[test]
+    #[ignore = "Requires the owner's actual signed installer on a disposable runner"]
+    fn launch_owner_signed_installer_on_disposable_runner() {
+        use std::{env, fs, path::PathBuf};
+        assert_eq!(env::var("GITHUB_ACTIONS").as_deref(), Ok("true"));
+        assert_eq!(env::var("RUNNER_OS").as_deref(), Ok("Windows"));
+        assert_eq!(env::var("MARKET_TEST_UPDATER_SDK").as_deref(), Ok("true"));
+        let directory = PathBuf::from(env::var("MARKET_TEST_INSTALL_DIRECTORY").unwrap());
+        let temporary = PathBuf::from(env::var("RUNNER_TEMP").unwrap());
+        assert!(directory.starts_with(&temporary));
+        assert_eq!(directory.file_name().unwrap(), "TwichMarket-Upgrade");
+        let installer = PathBuf::from(env::var("MARKET_TEST_NEW_INSTALLER").unwrap());
+        assert!(fs::metadata(&installer).unwrap().len() <= 64 * 1024 * 1024);
+        let bytes = fs::read(&installer).unwrap();
+        let signature = fs::read_to_string(format!("{}.sig", installer.display())).unwrap();
+        let key = env::var("TWICHUI_UPDATER_PUBLIC_KEY").unwrap();
+        let version = env::var("RELEASE_VERSION").unwrap();
+        let mut context = mock_context(noop_assets());
+        context.package_info_mut().version = "0.1.0".parse().unwrap();
+        context.config_mut().plugins.0.insert(
+            "updater".into(),
+            json!({
+                "pubkey":key.trim(),"requireSignedVersion":true,"allowDowngrades":false,
+                "windows":{"installMode":"quiet"}
+            }),
+        );
+        let app = mock_builder()
+            .plugin(
+                tauri_plugin_updater::Builder::new()
+                    .pubkey(key.trim())
+                    .build(),
+            )
+            .build(context)
+            .unwrap();
+        let updater = app
+            .updater_builder()
+            .pubkey(key.trim())
+            .endpoints(vec![format!(
+                "{}/unused-owner-test-endpoint",
+                update::ORIGIN
+            )
+            .parse()
+            .unwrap()])
+            .unwrap()
+            .executable_path(directory.join("twichui-market-companion.exe"))
+            .installer_args(["/S".to_string(), format!("/D={}", directory.display())])
+            .build()
+            .unwrap();
+        let payload = json!({"version":version,"url":format!("{}/api/v1/companion/releases/{}/windows-x64",update::ORIGIN,version),"signature":signature.trim()});
+        let candidate = updater
+            .restore_update(payload)
+            .unwrap()
+            .unwrap()
+            .restart_after_install(false);
+        let mut corrupt = bytes.clone();
+        corrupt[0] ^= 1;
+        assert!(candidate.verify(&corrupt).is_err());
+        candidate.verify(&bytes).unwrap();
+        candidate
+            .install(bytes)
+            .expect("The supported updater must launch the verified installer");
+        panic!("A successful Windows SDK install launch exits this child process");
+    }
+
     #[test]
     fn supported_updater_verifies_bytes_and_binds_the_signed_version() {
         let mut context = mock_context(noop_assets());
