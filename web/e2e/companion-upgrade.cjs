@@ -16,7 +16,7 @@ const fs=require('node:fs');const path=require('node:path');const {execFile,spaw
     const issued=await api.post('/api/v1/devices',{headers:{'x-csrf-token':csrf},data:{name:'Synthetic upgrade legacy PC'}});expect(issued.ok()).toBe(true);
     const credential=await issued.json();
     await page.locator('#server').fill(process.env.MARKET_TEST_SERVER);await page.locator('#token').fill(credential.token);await page.locator('#market').fill('1');
-    await page.locator('#connect button').click();await expect(page.locator('#connected')).toContainText('Connected to');await expect(page.locator('#token')).toHaveValue('');
+    await page.getByRole('button',{name:'Connect securely',exact:true}).click();await expect(page.locator('#connected')).toContainText('Connected to');await expect(page.locator('#token')).toHaveValue('');
     await page.locator('#sync').click();await expect(page.locator('#count')).toContainText('2 item variants',{timeout:30000});
     const old=await invoke('status',{market:1});expect(old.item_count).toBe(2);expect(old.has_completed_cache).toBe(true);
     const connectionFile=path.join(process.env.MARKET_TEST_APP_DATA,'connection.json');const connectionBefore=fs.readFileSync(connectionFile,'utf8');

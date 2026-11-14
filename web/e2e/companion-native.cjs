@@ -122,6 +122,7 @@ const fs=require('node:fs');const path=require('node:path');const {execFile,spaw
     const restarted=spawn(process.env.MARKET_TEST_INSTALLED_EXE,[],{detached:true,stdio:'ignore'});restarted.unref();
     await expect.poll(async()=>{try{return(await fetch(`${endpoint}/json/version`)).ok}catch{return false}},{timeout:30000}).toBe(true);
     browser=await chromium.connectOverCDP(endpoint);page=browser.contexts()[0].pages()[0];
+    await expect(page.locator('#version')).toHaveText(/^v2\./,{timeout:20000}); // Wait for the restarted WebView's real document and native state.
     await expect.poll(async()=>(await invoke('app_state')).connected,{timeout:20000}).toBe(true);
     expect((await invoke('app_state')).window_visible).toBe(false);
     expect((await invoke('app_state')).cache.item_count).toBe(2);
