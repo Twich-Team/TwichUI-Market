@@ -19,7 +19,7 @@ The application binds only to `https://localhost:18443`. Caddy uses a project-lo
 
 Initial owner credentials are in ignored `.local/bootstrap.env` (mode 600). Read privately and change the password after first sign-in; remove that bootstrap file afterward. Provisioning refuses to overwrite existing users. Private configuration lives in ignored `.env`.
 
-Daily local backups are opt-in: `docker --context rootless compose --profile operations up -d --build backup`. Collection stays off until credentials and market mappings are live-verified. Encrypted off-host backup copies and external HTTPS routing remain owner deployment tasks.
+Daily local backups are opt-in: `docker --context rootless compose -f compose.yaml -f compose.tls.yaml --profile operations up -d --build backup`. Collection stays off until credentials and market mappings are live-verified. Encrypted off-host backup copies and external HTTPS routing remain owner deployment tasks.
 
 ## Evidence and work remaining
 

@@ -24,17 +24,17 @@ Bootstrap the first administrator using `docker --context rootless compose run -
 
 ## Tests
 
-`docker --context rootless build -t twichui-market-backend:dev backend`
+`docker --context rootless build -f backend/Dockerfile -t twichui-market-backend:dev .`
 
 `docker --context rootless compose -p twichui-market-test -f compose.yaml -f compose.test.yaml run --rm test`
 
 The test overlay uses an isolated tmpfs database; tests refuse non-test PostgreSQL database names. Clean up only its resources with the same compose arguments followed by `down`. Never use the overlay with the development project name. PostgreSQL tests recreate schema; migration verification must run separately against a disposable database before tests. SQLite provides quick tests but does not establish PostgreSQL concurrency correctness.
 
-Windows release instructions will be added alongside the companion implementation. No production deployment exists yet.
+Windows release and CI verification instructions are in [desktop.md](desktop.md). The localhost development deployment is verified; externally accessible production deployment is not configured.
 
 ## Collector
 
-The collector is opt-in: `docker --context rootless compose --profile collector up -d worker`. It does not run for disabled or unverified markets. Do not mark markets verified until S1 live evidence establishes their mapping and payload semantics. Set BLIZZARD_CLIENT_ID/BLIZZARD_CLIENT_SECRET in ignored .env; they are passed only to the worker. OAuth tokens remain in worker memory. Never print Compose's rendered configuration because it contains credentials.
+The collector is opt-in: `docker --context rootless compose -f compose.yaml -f compose.tls.yaml --profile collector up -d worker`. It does not run for disabled or unverified markets. Do not mark markets verified until S1 live evidence establishes their mapping and payload semantics. Set BLIZZARD_CLIENT_ID/BLIZZARD_CLIENT_SECRET in ignored .env; they are passed only to the worker. OAuth tokens remain in worker memory. Never print Compose's rendered configuration because it contains credentials.
 
 Collection is sequential across processes using a PostgreSQL advisory lock. Failed payload ingestion rolls back while the failure run is retained. HTTP errors trigger bounded exponential backoff, honoring Retry-After up to 24 hours. Polling is at least five minutes. Source modification timestamps stay separate from successful HTTP check time. A 304 reuses existing contents without inventing an upstream modification. Missing auctions arrays fail closed until empty-house behavior is verified. The default MAX_DATABASE_BYTES is 5 GiB; reaching it suspends new ingestion rather than deleting long-term history. This is a collection guard, not a filesystem quota: leave disk headroom for WAL, backups and other VM uses. No raw response bodies are retained.
 
