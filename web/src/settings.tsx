@@ -1,3 +1,4 @@
+import { MyPreferences } from "./user-preferences";
 import { MarketConfiguration } from "./market-configuration";
 import { RetentionControls } from "./retention-controls";
 import { useState } from "react";
@@ -136,6 +137,7 @@ export function Account({
           {message}
         </p>
       )}
+      <MyPreferences />
       <section className="panel padded">
         <h2>Connect a desktop companion</h2>
         <p>

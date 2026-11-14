@@ -1,4 +1,6 @@
 import ipaddress
+import json
+import math
 import secrets
 from . import environment as settings
 import os
@@ -38,6 +40,17 @@ COOKIE_SECURE = os.environ.get("COOKIE_SECURE", "true").lower() == "true"
 ORIGIN = os.environ.get("APP_ORIGIN", "https://localhost")
 
 
+def finite_json_number(value):
+    number=float(value)
+    if not math.isfinite(number):
+        raise ValueError('Nonfinite JSON number')
+    return number
+
+
+def reject_json_constant(value):
+    raise ValueError('Invalid JSON constant')
+
+
 @app.middleware("http")
 async def security_headers(request, call_next):
     if settings.INGRESS_TOKEN and request.url.path!='/api/v1/health':
@@ -67,6 +80,10 @@ async def security_headers(request, call_next):
                     return Response(status_code=413)
                 chunks.append(chunk)
             request._body=b''.join(chunks)
+            try:
+                json.loads(request._body,parse_float=finite_json_number,parse_constant=reject_json_constant)
+            except (ValueError,UnicodeDecodeError):
+                return Response(status_code=422,content='{"detail":"Preferences require valid JSON with finite numbers."}',media_type='application/json')
     response = await call_next(request)
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"

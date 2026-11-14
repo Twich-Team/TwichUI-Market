@@ -85,20 +85,20 @@ def read_values(row):
     return Preferences.model_validate(json.loads(row.values_json)).model_dump()
 
 
-def resource(db, row):
+def resource(db, row, user_id):
     values = read_values(row)
     # Disabled historical markets remain legitimate personal research choices.
     ids = list(db.scalars(select(Market.id).order_by(Market.enabled.desc(), Market.id)))
     chosen = values['market_id']
     effective = chosen if chosen in ids else next(iter(ids), None)
-    return {'schema_version':1, 'revision':row.revision if row else 0, 'values':values,
+    return {'schema_version':1, 'user_id':user_id, 'revision':row.revision if row else 0, 'values':values,
         'effective_market_id':effective, 'market_fallback':chosen is not None and chosen not in ids,
         'updated_at':row.updated_at if row else None}
 
 
 @router.get('')
 def get_preferences(user: User = Depends(browser_member), db: Session = Depends(session)):
-    return resource(db, db.get(UserPreference, user.id))
+    return resource(db, db.get(UserPreference, user.id), user.id)
 
 
 def write_preferences(db, user, body, *, reset=False):
@@ -132,7 +132,7 @@ def write_preferences(db, user, body, *, reset=False):
     if reset:
         audit(db, user.id, 'preferences.reset', f'revision={row.revision}')
     db.commit()
-    return resource(db, row)
+    return resource(db, row, user.id)
 
 
 @router.patch('')

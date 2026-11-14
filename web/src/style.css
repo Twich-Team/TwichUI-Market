@@ -1536,3 +1536,23 @@ small,
   overflow-wrap: anywhere;
   max-width: 100%;
 }
+
+.column-controls {
+  padding: 0.2rem 1.2rem 0.6rem;
+}
+.column-controls fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem 1.3rem;
+  border: 0;
+  padding: 0.4rem 0;
+  margin: 0;
+}
+.column-controls label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.column-controls input[type="checkbox"] {
+  width: auto;
+}

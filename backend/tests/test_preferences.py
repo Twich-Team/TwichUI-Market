@@ -17,6 +17,7 @@ def patch(client, changes, revision=0):
 
 def test_defaults_persistence_and_personal_only(owner, database):
     default=owner.get('/api/v1/me/preferences').json()
+    assert default['user_id']==1
     assert default['revision']==0 and default['values']['explorer_days']==14
     assert default['values']['market_id'] is None and default['effective_market_id'] is None
     with database.begin() as db:
@@ -48,7 +49,8 @@ def test_account_isolation_csrf_and_no_device_mutations(owner,database):
     with TestClient(app) as member:
         assert member.get('/api/v1/me/preferences').status_code==401
         session=member.post('/api/v1/auth/login',json={'username':'member','password':'member secure password'}).json()
-        assert member.get('/api/v1/me/preferences').json()['values']['explorer_days']==14
+        own=member.get('/api/v1/me/preferences').json()
+        assert own['user_id']!=1 and own['values']['explorer_days']==14
         assert patch(member,{'explorer_days':7}).status_code==403
         member.headers['x-csrf-token']=session['csrf_token']
         assert patch(member,{'explorer_days':7}).status_code==200
@@ -82,6 +84,12 @@ def test_version_size_and_bounded_chunked_body(owner):
     assert owner.patch('/api/v1/me/preferences',json={'schema_version':1,'expected_revision':0,'changes':{},'user_id':2}).status_code==422
     assert owner.patch('/api/v1/me/preferences',content=b'x'*4097).status_code==413
     assert owner.patch('/api/v1/me/preferences',content=iter([b'x'*2048,b'x'*2049])).status_code==413
+
+
+@pytest.mark.parametrize('value',['NaN','Infinity','-Infinity','1e999'])
+def test_nonfinite_json_is_rejected_without_a_server_error(owner,value):
+    content='{"schema_version":1,"expected_revision":0,"changes":{"deal_spend_gold":'+value+'}}'
+    assert owner.patch('/api/v1/me/preferences',content=content).status_code==422
 
 
 def test_revision_conflicts_merge_and_reset_do_not_resurrect(owner):

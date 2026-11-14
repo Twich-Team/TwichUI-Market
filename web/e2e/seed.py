@@ -14,6 +14,8 @@ with Session.begin() as db:
     store_metadata(db,'eu',20000,b'{"id":20000,"name":"Synthetic Enchanted Blade","quality":{"type":"RARE"},"level":40}',synthetic=True)
     db.add(User(username='owner',password_hash=hasher.hash('synthetic browser owner password'),role='admin'))
     db.add(User(username='member_fixture',password_hash=hasher.hash('synthetic browser member password'),role='member'))
+    for name in ['prefs_persistence','prefs_isolation_a','prefs_isolation_b','prefs_resilience']:
+        db.add(User(username=name,password_hash=hasher.hash('synthetic preferences password'),role='member'))
     for house,label in [(113,'Synthetic Alliance'),(114,'Synthetic Horde')]:
         market=Market(region='eu',ruleset_id=2,house_id=house,source_kind='auctions',label=label)
         db.add(market)

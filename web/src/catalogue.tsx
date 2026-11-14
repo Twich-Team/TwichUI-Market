@@ -1,9 +1,12 @@
+import { usePreferences } from "./preferences";
+import type { ItemSort } from "./preferences-store";
 import { Currency } from "./currency";
 import { variantLabel } from "./variant-label";
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   ColumnDef,
+  PaginationState,
   SortingState,
   flexRender,
   getCoreRowModel,
@@ -76,10 +79,16 @@ export function ItemCatalogue({
   onSelect: (item: Item) => void;
   onSummary: (summary: { synthetic: boolean; empty: boolean }) => void;
 }) {
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 25 });
-  const [sorting, setSorting] = useState<SortingState>([
-    { id: "item_id", desc: false },
-  ]);
+  const preferences = usePreferences();
+  const [pageIndex, setPageIndex] = useState(0);
+  const pagination: PaginationState = {pageIndex, pageSize:preferences.values.item_page_size};
+  const sorting: SortingState = [preferences.values.item_sort];
+  function setPagination(updater: typeof pagination | ((previous:typeof pagination)=>typeof pagination)) {
+    const next=typeof updater==='function'?updater(pagination):updater;
+    setPageIndex(next.pageIndex);
+    if(next.pageSize!==pagination.pageSize)preferences.update({item_page_size:next.pageSize as 25|50|100});
+  }
+  useEffect(()=>setPageIndex(0),[preferences.values.item_page_size,preferences.values.item_sort.id,preferences.values.item_sort.desc]);
   const [expanded, setExpanded] = useState<Record<number, boolean>>({});
   const selectRef = useRef(onSelect),
     summaryRef = useRef(onSummary);
@@ -180,6 +189,7 @@ export function ItemCatalogue({
     () => [
       {
         id: "name",
+        enableHiding: false,
         accessorKey: "name",
         header: "Item",
         cell: ({ row }) => (
@@ -267,10 +277,16 @@ export function ItemCatalogue({
     sortDescFirst: false,
     manualPagination: true,
     enableSortingRemoval: false,
+    enableMultiSort: false,
     rowCount: response.data?.total_items || 0,
-    state: { sorting, pagination },
+    state: { sorting, pagination, columnVisibility:preferences.values.item_columns },
+    onColumnVisibilityChange:updater=>{
+      const next=typeof updater==='function'?updater(preferences.values.item_columns):updater;
+      preferences.update({item_columns:next});
+    },
     onSortingChange: (updater) => {
-      setSorting(updater);
+      const next=typeof updater==='function'?updater(sorting):updater;
+      preferences.update({item_sort:next[0] as ItemSort});
       setPagination((p) => ({ ...p, pageIndex: 0 }));
     },
     onPaginationChange: setPagination,
@@ -304,6 +320,15 @@ export function ItemCatalogue({
           {response.error.message}
         </p>
       )}
+      <details className="column-controls">
+        <summary>Item columns</summary>
+        <fieldset aria-label="Item table columns">
+          {table.getAllLeafColumns().filter(column=>column.getCanHide()).map(column=><label key={column.id}>
+            <input type="checkbox" checked={column.getIsVisible()} onChange={column.getToggleVisibilityHandler()} />
+            {String(column.columnDef.header)}
+          </label>)}
+        </fieldset>
+      </details>
       <div
         className="table-scroll"
         tabIndex={0}
@@ -377,7 +402,7 @@ export function ItemCatalogue({
                 </tr>
                 {expanded[row.original.item_id] && (
                   <tr className="variant-container">
-                    <td colSpan={columns.length}>
+                    <td colSpan={table.getVisibleLeafColumns().length}>
                       <Variants
                         market={market}
                         item={row.original}

@@ -14,6 +14,8 @@ const Account = lazy(() =>
   import("./settings").then((m) => ({ default: m.Account })),
 );
 import { Market } from "./types";
+import { PreferencesProvider, PreferenceStatus, usePreferences } from "./preferences";
+import { preferredMarket } from "./preferences-store";
 import "./style.css";
 
 function Login({
@@ -139,90 +141,53 @@ function Login({
 }
 
 function App() {
-  const [user, setUser] = useState<User | null>(null),
-    [loading, setLoading] = useState(true),
-    [page, setPage] = useState("explorer"),
-    [markets, setMarkets] = useState<Market[]>([]),
-    [market, setMarket] = useState(0),
-    [error, setError] = useState("");
-  const [readOnly,setReadOnly]=useState(true);
-  const [focus, setFocus] = useState<{
-    item_id: number;
-    variant_key: string;
-  } | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   useEffect(() => {
-    const expired = () => {
-      clearPrivateCache();
-      setCsrf("");
-      setUser(null);
-      setMarkets([]);
-      setMarket(0);
-      setFocus(null);
-    };
+    const expired = () => { clearPrivateCache(); setCsrf(""); setUser(null); };
     window.addEventListener("market-auth-expired", expired);
+    api<BrowserSession>("/auth/session").then(restore)
+      .catch(error => { if (!(error instanceof ApiError && error.status === 401)) setError(error.message); })
+      .finally(() => setLoading(false));
     return () => window.removeEventListener("market-auth-expired", expired);
   }, []);
-  const loadMarkets = async () => {
-    const result = await api<{ markets: Market[] }>("/markets");
-    setMarkets(result.markets);
-    setMarket((previous) =>
-      result.markets.some((row) => row.id === previous)
-        ? previous
-        : result.markets[0]?.id || 0,
-    );
-  };
-  useEffect(() => {
-    api<BrowserSession>("/auth/session")
-      .then((session) => {
-        setQueryIdentity(`${session.user.id}:${session.user.role}`);
-        setCsrf(session.csrf_token);
-        setUser(session.user);
-      })
-      .catch((error) => {
-        if (!(error instanceof ApiError && error.status === 401))
-          setError(error.message);
-      })
-      .finally(() => setLoading(false));
-  }, []);
-  useEffect(() => {
-    if (user) {loadMarkets().catch((error) => setError(error.message));api<{read_only:boolean}>("/environment").then(result=>{queryClient.setQueryData(["private","environment"],result);setReadOnly(result.read_only);}).catch(error=>setError(error.message));}
-  }, [user?.id]);
-  function session(result: BrowserSession) {
-    setPage("explorer");
-    setFocus(null);
+  function restore(result: BrowserSession) {
     setQueryIdentity(`${result.user.id}:${result.user.role}`);
-    setCsrf(result.csrf_token);
-    setUser(result.user);
-    setError("");
+    setCsrf(result.csrf_token); setUser(result.user); setError("");
   }
+  function signedOut() { clearPrivateCache(); setCsrf(""); setUser(null); }
   async function logout() {
-    try {
-      await api("/auth/logout", "POST");
-      clearPrivateCache();
-      setCsrf("");
-      setUser(null);
-      setMarkets([]);
-    } catch (error) {
-      setError((error as Error).message);
-    }
+    try { await api("/auth/logout", "POST"); signedOut(); }
+    catch(error) { setError((error as Error).message); }
   }
-  if (loading)
-    return (
-      <main className="login" role="status">
-        Opening your ledger…
-      </main>
-    );
-  if (!user)
-    return (
-      <>
-        <Login onSession={session} />
-        {error && (
-          <div className="notice error" role="alert">
-            {error}
-          </div>
-        )}
-      </>
-    );
+  if (loading) return <main className="login" role="status">Opening your ledger…</main>;
+  if (!user) return <><Login onSession={restore} />{error && <p className="notice error" role="alert">{error}</p>}</>;
+  return <PreferencesProvider key={`${user.id}:${user.role}`} userId={user.id}>
+    <Workspace user={user} logout={logout} signedOut={signedOut} authError={error} />
+  </PreferencesProvider>;
+}
+
+function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:()=>Promise<void>;signedOut:()=>void;authError:string}) {
+  const [page,setPage]=useState("explorer");
+  const [markets,setMarkets]=useState<Market[]>([]);
+  const [error,setError]=useState("");
+  const [readOnly,setReadOnly]=useState(true);
+  const [focus,setFocus]=useState<{item_id:number;variant_key:string}|null>(null);
+  const preferences=usePreferences();
+  const market=preferredMarket(markets,preferences.values.market_id);
+  const setMarket=(id:number)=>preferences.update({market_id:id});
+  const loadMarkets=async()=>{
+    const result=await api<{markets:Market[]}>("/markets");
+    setMarkets(result.markets);
+  };
+  useEffect(()=>{
+    loadMarkets().catch(error=>setError(error.message));
+    api<{read_only:boolean}>("/environment").then(result=>{
+      queryClient.setQueryData(["private","environment"],result);setReadOnly(result.read_only);
+    }).catch(error=>setError(error.message));
+  },[]);
+  async function logout() { await preferences.flush(); await signOut(); }
   const names: Record<string, string> = {
     explorer: "Market Explorer",
     deals: "Deal Finder",
@@ -275,14 +240,16 @@ function App() {
           <span className="badge">PRIVATE</span>
         </header>
         <main>
-          {readOnly && <p className="notice" role="status">Interactive preview · Genuine shared market data. Operational and account changes are disabled.</p>}
+          {readOnly && <p className="notice" role="status">Interactive preview · Your preferences save automatically. Collection and account administration are read-only.</p>}
           <div className="notice review">
             Design review in progress · The three major page designs await owner
             approval.
           </div>
-          {error && (
+          <PreferenceStatus />
+          {preferences.values.market_id !== null && !markets.some(m => m.id === preferences.values.market_id) && markets.length > 0 && <p className="notice">Your preferred market is unavailable. Showing an available market; your saved choice is retained.</p>}
+          {(error || authError) && (
             <div className="notice error" role="alert">
-              {error}
+              {error || authError}
             </div>
           )}
           {page === "explorer" && (
@@ -317,11 +284,7 @@ function App() {
           )}{" "}
           {page === "account" && (
             <Account readOnly={readOnly}
-              signedOut={() => {
-                clearPrivateCache();
-                setCsrf("");
-                setUser(null);
-              }}
+              signedOut={signedOut}
             />
           )}
         </main>

@@ -1,3 +1,4 @@
+import { usePreferences } from "./preferences";
 import { Currency } from "./currency";
 import { CurrentListings } from "./listings";
 import { variantLabel } from "./variant-label";
@@ -99,10 +100,11 @@ export function Explorer({
   setMarket: (id: number) => void;
   focus?: { item_id: number; variant_key: string } | null;
 }) {
+  const preferences = usePreferences();
+  const range = preferences.values.explorer_days;
   const [query, setQuery] = useState(focus?.item_id.toString() || ""),
     [search, setSearch] = useState(focus?.item_id.toString() || ""),
-    [selected, setSelected] = useState<Item | null>(null),
-    [range, setRange] = useState(14);
+    [selected, setSelected] = useState<Item | null>(null);
   const [catalogueSummary, setCatalogueSummary] = useState({
     synthetic: false,
     empty: false,
@@ -257,11 +259,11 @@ export function Explorer({
               <div className="panel-heading">
                 <h3>Price history</h3>
                 <div className="segmented">
-                  {[7, 14, 60, 365, 3650].map((days) => (
+                  {([7, 14, 60, 365, 3650] as const).map((days) => (
                     <button
                       key={days}
                       className={range === days ? "selected" : ""}
-                      onClick={() => setRange(days)}
+                      onClick={() => preferences.update({explorer_days:days})}
                     >
                       {days === 3650 ? "10Y" : `${days}D`}
                     </button>

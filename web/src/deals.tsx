@@ -1,10 +1,12 @@
 import { Currency } from "./currency";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ItemInfo } from "./item-components";
 import { api } from "./api";
 import { Freshness, MarketSelect, useLoad } from "./research";
 import { Deal, Market, Signal } from "./types";
 
+import { usePreferences } from "./preferences";
+import type { PreferenceChanges, Preferences } from "./preferences-store";
 type Mode = "listings" | "supply" | "price";
 type Target = { item_id: number; variant_key: string };
 interface Filters {
@@ -39,14 +41,23 @@ export function Deals({
   setMarket: (id: number) => void;
   inspect: (target: Target) => void;
 }) {
-  const [mode, setMode] = useState<Mode>("listings");
-  const [filters, setFilters] = useState<Filters>({
-    change: 15,
-    spend: 500,
-    coverage: 3,
-    confidence: "limited",
-    direction: "any",
-  });
+  const preferences=usePreferences();
+  const saved=preferences.values;
+  const mode=saved.deal_mode;
+  const restored=()=>({change:Math.min(saved.deal_change,mode==='listings'?99:1000),spend:saved.deal_spend_gold,
+    coverage:Math.min(saved.deal_coverage,mode==='listings'?15:14),confidence:saved.deal_confidence,direction:saved.deal_direction});
+  const [filters,setFilters]=useState<Filters>(restored);
+  useEffect(()=>{setFilters(restored());},[saved.deal_mode,saved.deal_change,saved.deal_spend_gold,saved.deal_coverage,saved.deal_confidence,saved.deal_direction]);
+  function changeFilters(changes:Partial<Filters>) {
+    setFilters(previous=>({...previous,...changes}));
+    const update:PreferenceChanges={};
+    if(changes.change!==undefined&&Number.isInteger(changes.change)&&changes.change>=1&&changes.change<=1000)update.deal_change=changes.change;
+    if(changes.spend!==undefined&&Number.isFinite(changes.spend)&&changes.spend>=0.01&&changes.spend<=100000000)update.deal_spend_gold=changes.spend;
+    if(changes.coverage!==undefined&&Number.isInteger(changes.coverage)&&changes.coverage>=1&&changes.coverage<=15)update.deal_coverage=changes.coverage;
+    if(changes.confidence!==undefined)update.deal_confidence=changes.confidence as Preferences['deal_confidence'];
+    if(changes.direction!==undefined)update.deal_direction=changes.direction as Preferences['deal_direction'];
+    if(Object.keys(update).length)preferences.update(update);
+  }
   const [submitted, setSubmitted] = useState(filters);
   const result = useLoad(
     "opportunities",
@@ -67,16 +78,16 @@ export function Deals({
   function chooseMode(next: Mode) {
     const maximum = next === "listings" ? 99 : 1000;
     const days = next === "listings" ? 15 : 14;
-    setMode(next);
+    preferences.update({deal_mode:next,deal_change:Math.max(1,Math.min(filters.change,maximum)),deal_coverage:Math.max(1,Math.min(filters.coverage,days))});
     setFilters((previous) => ({
       ...previous,
-      change: Math.min(previous.change, maximum),
-      coverage: Math.min(previous.coverage, days),
+      change: Math.max(1,Math.min(previous.change, maximum)),
+      coverage: Math.max(1,Math.min(previous.coverage, days)),
     }));
     setSubmitted((previous) => ({
       ...previous,
-      change: Math.min(previous.change, maximum),
-      coverage: Math.min(previous.coverage, days),
+      change: Math.max(1,Math.min(previous.change, maximum)),
+      coverage: Math.max(1,Math.min(previous.coverage, days)),
     }));
   }
   return (
@@ -128,7 +139,7 @@ export function Deals({
             max={mode === "listings" ? 99 : 1000}
             value={filters.change}
             onChange={(event) =>
-              setFilters({ ...filters, change: Number(event.target.value) })
+              changeFilters({ change: Number(event.target.value) })
             }
             required
           />
@@ -143,7 +154,7 @@ export function Deals({
               step="0.01"
               value={filters.spend}
               onChange={(event) =>
-                setFilters({ ...filters, spend: Number(event.target.value) })
+                changeFilters({ spend: Number(event.target.value) })
               }
               required
             />
@@ -154,7 +165,7 @@ export function Deals({
             <select
               value={filters.direction}
               onChange={(event) =>
-                setFilters({ ...filters, direction: event.target.value })
+                changeFilters({ direction: event.target.value })
               }
             >
               <option value="any">Both directions</option>
@@ -171,7 +182,7 @@ export function Deals({
             max={mode === "listings" ? 15 : 14}
             value={filters.coverage}
             onChange={(event) =>
-              setFilters({ ...filters, coverage: Number(event.target.value) })
+              changeFilters({ coverage: Number(event.target.value) })
             }
             required
           />
@@ -181,7 +192,7 @@ export function Deals({
           <select
             value={filters.confidence}
             onChange={(event) =>
-              setFilters({ ...filters, confidence: event.target.value })
+              changeFilters({ confidence: event.target.value })
             }
           >
             <option value="limited">All evidence levels</option>

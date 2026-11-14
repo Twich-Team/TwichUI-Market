@@ -11,6 +11,14 @@ async function login(page: Page) {
   await expect(
     page.getByRole("heading", { name: "Market Explorer", exact: true }),
   ).toBeVisible();
+  const saved = await (await page.request.get("/api/v1/me/preferences")).json();
+  if (saved.revision > 0) {
+    const session = await (await page.request.get("/api/v1/auth/session")).json();
+    const reset = await page.request.post("/api/v1/me/preferences/reset", {headers:{"X-CSRF-Token":session.csrf_token},data:{schema_version:1,expected_revision:saved.revision}});
+    expect(reset.status()).toBe(200);
+    await page.reload();
+    await expect(page.getByRole("heading",{name:"Market Explorer",exact:true})).toBeVisible();
+  }
 }
 async function accessible(page: Page, name: string) {
   const result = await new AxeBuilder({ page })

@@ -27,3 +27,25 @@ Extended history: GET `/markets/{id}/items/{item_id}/{variant_key}/history?days=
 Formal JSON Schema 2020-12 definitions live in `v1/`; shared TypeScript types live in `v1/types.ts`. Resolve schema references by their URN identifiers. Validators must implement the `copper-i64` format (nonnegative signed-64-bit copper) and timezone-aware `date-time` checks. Required nullable fields must be present; unknown fields and contract versions are rejected. `fixtures/` contains explicitly synthetic precision/regression examples, including copper above JavaScript's exact integer range. Python verifies actual authenticated responses against these schemas; Rust consumes the same wire fixture and enforces field, version, identifier and monetary bounds. TypeScript treats money as strings.
 
 Opportunity responses include `history_coverage`: `observed_days`, `required_days`, `status` (`insufficient`/`available`), and `basis` (`utc_days_within_14_days`/`prior_utc_days`). This is overall market coverage; individual item coverage can be lower and remains a per-result field. It never fills missing history. The data-only export bound is 150,000 item variants, matching the bounded listing ingestion ceiling. Live US payloads exceeded the former 100,000-listing ceiling; the 32 MiB response and desktop cache byte budgets remain enforced.
+
+## Personal website preferences (schema 1)
+
+Additive browser-session endpoints: `GET /api/v1/me/preferences`, `PATCH /api/v1/me/preferences`, and `POST /api/v1/me/preferences/reset`. No user ID is accepted as input. Standard session, origin and CSRF checks apply; device credentials cannot access these website settings. Responses include the authenticated `user_id` so a stale tab can reject a changed session principal before caching values. Legacy REST and desktop/export contracts are unchanged.
+
+A preference resource contains `schema_version`, `user_id`, `revision`, validated `values`, `effective_market_id`, `market_fallback` and `updated_at`. An untouched account reads revision 0 with defaults without inserting a row. PATCH accepts `{schema_version:1, expected_revision:N, changes:{...}}`; reset accepts only the version and expected revision. A successful mutation advances the per-user revision. Concurrent/stale writes return HTTP 409; clients refetch and merge only pending fields before retrying. Reset is ordered after any in-flight save and supersedes previous local dirty settings.
+
+| Values | Bounds/defaults |
+|---|---|
+| `market_id` | Existing positive market ID or null (automatic fallback); default null |
+| `explorer_days` | 7, 14, 60, 365, 3650; default 14 |
+| `item_page_size` | 25, 50, 100; default 25 |
+| `item_columns` | Boolean visibility for recent_price, market_value, supply, listing_count, item_id; default all visible; item/name always visible |
+| `item_sort` | One `{id,desc}`; id is name or one of the five columns; default item_id ascending |
+| `deal_mode` | listings, supply, price; default listings |
+| `deal_change` | Integer 1–1000; default 15; effective listings limit 99 |
+| `deal_spend_gold` | Finite number 0.01–100000000; default 500 |
+| `deal_coverage` | Integer 1–15; default 3; effective change-signal limit 14 |
+| `deal_confidence` | limited, moderate, strong; default limited |
+| `deal_direction` | any, increase, decrease; default any |
+
+Only known fields/values are accepted; requests and stored JSON are bounded to 4 KiB. Column PATCHes merge individually. Preference selection never enables a collector. All configured markets, including disabled historical feeds, are available for research. If a previously saved market disappears, GET resolves to the collecting feed, then another available feed, without rewriting the saved ID; an absent market cannot be newly selected. Compatible fields receive defaults through the schema; incompatible evolution requires a new version/migration. A populated preference table cannot be silently downgraded away.

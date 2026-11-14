@@ -15,13 +15,20 @@ export const queryClient = new QueryClient({
   },
 });
 let account: string | null = null;
+const clearListeners = new Set<() => void>();
+export function onPrivateCacheClear(listener: () => void) {
+  clearListeners.add(listener);
+  return () => { clearListeners.delete(listener); };
+}
 export function setQueryIdentity(identity: string | null) {
   if (account !== identity) {
+    clearListeners.forEach((listener) => listener());
     queryClient.clear();
     account = identity;
   }
 }
 export function clearPrivateCache() {
+  clearListeners.forEach((listener) => listener());
   queryClient.clear();
   account = null;
 }
