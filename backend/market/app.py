@@ -48,14 +48,14 @@ from .companion_devices import DeviceId, Rename, router as companion_devices_rou
 from .companion_releases import router as companion_releases_router
 app.include_router(companion_devices_router)
 app.include_router(companion_releases_router)
+COOKIE_SECURE = os.environ.get("COOKIE_SECURE", "true").lower() == "true"
+ORIGIN = os.environ.get("APP_ORIGIN", "https://localhost")
+
 @app.exception_handler(RequestValidationError)
 async def safe_validation_error(request, error):
     if request.url.path.startswith('/api/v1/admin/metadata-providers'):
         return Response(status_code=422, content='{"detail":"Invalid provider settings or credential input"}', media_type='application/json')
     return await request_validation_exception_handler(request, error)
-
-COOKIE_SECURE = os.environ.get("COOKIE_SECURE", "true").lower() == "true"
-ORIGIN = os.environ.get("APP_ORIGIN", "https://localhost")
 
 
 def finite_json_number(value):
