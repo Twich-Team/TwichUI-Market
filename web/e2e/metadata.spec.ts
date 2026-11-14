@@ -20,11 +20,13 @@ test("administrator recovery, persistent jobs and data-source forms use local AP
   await page.getByRole("tab", { name: "Item Metadata", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Item Metadata", exact: true })).toBeVisible();
   await expect(page.getByText("Observed item IDs", { exact: true })).toBeVisible();
+  await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: `${directory}/01-overview.png`, fullPage: true });
   expect((await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze()).violations).toEqual([]);
   await page.getByLabel("Numeric item ID").fill("20002");
   await page.getByRole("button", { name: "Preview recovery", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Recovery preview" })).toBeVisible();
+  await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: `${directory}/02-single-item.png`, fullPage: true });
   await page.getByRole("button", { name: "Start recovery", exact: true }).click();
   await expect(page.getByText(/Recovery job #\d+ queued/)).toBeVisible();
@@ -39,19 +41,23 @@ test("administrator recovery, persistent jobs and data-source forms use local AP
   const complete = page.locator(".metadata-job-row").filter({ hasText: "completed" }).last();
   await complete.getByRole("button", { name: /Job #/ }).click();
   await expect(page.getByText("Metadata stored locally", { exact: true })).toBeVisible();
+  await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: `${directory}/04-progress-results.png`, fullPage: true });
   await page.getByLabel("Recovery action").selectOption("missing");
   await page.getByRole("button", { name: "Preview recovery", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Recovery preview" })).toBeVisible();
+  await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: `${directory}/03-batch-preview.png`, fullPage: true });
   await page.getByRole("tab", { name: "Data Sources", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Data Sources", exact: true })).toBeVisible();
   await expect(page.getByText("Access forbidden", { exact: true })).toBeVisible();
+  await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: `${directory}/05-data-sources.png`, fullPage: true });
   const everloot = page.getByRole("region", { name: "Everloot connection", exact: true });
   await everloot.getByRole("button", { name: "Add API Key", exact: true }).click();
   await expect(page.getByLabel("New API key", { exact: true })).toBeVisible();
   // Capture an empty secret form only. No screenshots/traces contain credential values.
+  await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: `${directory}/06-key-replacement.png`, fullPage: true });
   expect((await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze()).violations).toEqual([]);
   await page.getByLabel("New API key", { exact: true }).fill("evl_fake_browser_test_only");
@@ -63,6 +69,7 @@ test("administrator recovery, persistent jobs and data-source forms use local AP
   const state = await (await page.request.get("/api/v1/admin/metadata-providers")).text();
   expect(state).not.toContain("evl_fake_browser_test_only");
   await page.setViewportSize({ width: 390, height: 844 });
+  await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: `${directory}/09-mobile-sources.png`, fullPage: true });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   expect((await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze()).violations).toEqual([]);
@@ -71,9 +78,11 @@ test("administrator recovery, persistent jobs and data-source forms use local AP
   await page.getByLabel("Search items", { exact: true }).fill("Recovered Gloves");
   await page.getByRole("button", { name: "Search", exact: true }).click();
   await expect(page.getByText("Synthetic Recovered Gloves", { exact: true }).first()).toBeVisible();
+  await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: `${directory}/07-explorer.png`, fullPage: true });
   await page.getByRole("button", { name: /Synthetic Recovered Gloves/ }).first().click();
   await expect(page.getByText("Field provenance", { exact: true }).first()).toBeVisible();
+  await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: `${directory}/08-tooltip-provenance.png`, fullPage: true });
   expect(external).toEqual([]); expect(errors).toEqual([]);
   // Keep the normal account-bound CSRF contract exercised without exposing its value.

@@ -1,37 +1,37 @@
 {
   "synthetic_only": true,
-  "at": "2026-11-14T23:35:49.335431+00:00",
+  "at": "2026-11-14T23:51:31.312789+00:00",
   "observed_item_ids": 5000,
   "note": "Rollback-only fixtures; no provider calls or production coverage inference.",
   "imported_records": 500,
-  "import_seconds": 3.9691,
-  "import_records_per_second": 125.97,
-  "import_cpu_seconds": 2.5128,
+  "import_seconds": 3.4171,
+  "import_records_per_second": 146.32,
+  "import_cpu_seconds": 2.0369,
   "coverage": {
-    "median_ms": 28.251,
-    "max_ms": 49.842,
+    "median_ms": 33.06,
+    "max_ms": 47.931,
     "runs": 5
   },
   "name_search": {
-    "median_ms": 9.325,
-    "max_ms": 36.665,
+    "median_ms": 16.348,
+    "max_ms": 23.053,
     "runs": 5
   },
   "market_explorer_catalogue": {
-    "median_ms": 18.429,
-    "max_ms": 24.392,
+    "median_ms": 28.289,
+    "max_ms": 35.214,
     "runs": 5
   },
   "search_explain": [
-    "Seq Scan on item_metadata  (cost=0.00..233.88 rows=71 width=4) (actual time=0.645..0.815 rows=100 loops=1)",
+    "Seq Scan on item_metadata  (cost=0.00..232.54 rows=71 width=4) (actual time=0.825..1.115 rows=100 loops=1)",
     "  Filter: (lower((COALESCE(name, fallback_name))::text) ~~ '%item 034%'::text)",
-    "  Rows Removed by Filter: 3425",
-    "  Buffers: shared hit=181",
+    "  Rows Removed by Filter: 3403",
+    "  Buffers: shared hit=180",
     "Planning:",
     "  Buffers: shared hit=1",
-    "Planning Time: 0.052 ms",
-    "Execution Time: 0.861 ms"
+    "Planning Time: 0.066 ms",
+    "Execution Time: 1.128 ms"
   ],
-  "peak_process_rss_kib": 86452,
-  "catalogue_row_count": 3525
+  "peak_process_rss_kib": 86708,
+  "catalogue_row_count": 3503
 }
