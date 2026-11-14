@@ -85,7 +85,11 @@ def synchronize(market_id: MarketId,cursor: str | None = Query(None,max_length=2
             .order_by(Observation.retrieved_at.desc(),Observation.id.desc()).limit(1)) if watermark else None
     # Late historical imports may have a newer ID but must not replace current supply.
     target,base=head(state['target']),head(state['base'])
+    from .retention import history_floor
+    floor=history_floor(db)
     for observation in (target,base):
+        if observation and floor and aware(observation.retrieved_at)<aware(floor):
+            raise HTTPException(409,'Historical reference support compacted; start a full synchronization')
         if observation and not db.get(Snapshot,observation.snapshot_id).statistics_retained:
             raise HTTPException(409,'Detailed sync history compacted; start a full synchronization')
     if state['base']==state['target']:

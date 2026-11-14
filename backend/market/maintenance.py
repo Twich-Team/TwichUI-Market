@@ -5,7 +5,7 @@ import os
 from datetime import timedelta
 from sqlalchemy import delete, func, select, text
 from .db import Session, now
-from .models import CollectionRun, Credential, DailyObservation, Invitation, Listing, LoginAttempt, Observation, SecurityEvent, Snapshot, SnapshotStatistic
+from .models import RetentionPolicy, CollectionRun, Credential, DailyObservation, Invitation, Listing, LoginAttempt, Observation, SecurityEvent, Snapshot, SnapshotStatistic
 
 
 def maintain(factory=Session, *, apply=False, at=None, compact=None):
@@ -13,8 +13,8 @@ def maintain(factory=Session, *, apply=False, at=None, compact=None):
     compact=compact if compact is not None else os.environ.get('HISTORY_COMPACTION_ENABLED','false').lower()=='true'
     collection_days=int(os.environ.get('COLLECTION_LOG_DAYS','90'))
     security_days=int(os.environ.get('SECURITY_EVENT_DAYS','365'))
-    raw_days=int(os.environ.get('RAW_LISTING_DAYS','2'))
-    statistics_days=int(os.environ.get('DETAILED_STATISTICS_DAYS','64'))
+    raw_days=int(os.environ.get('RAW_LISTING_DAYS','7'))
+    statistics_days=int(os.environ.get('DETAILED_STATISTICS_DAYS','90'))
     if (not 7<=collection_days<=3650 or not 30<=security_days<=3650
             or not 1<=raw_days<=60 or not 64<=statistics_days<=3650):
         raise ValueError('Retention outside safe operational bounds')
@@ -28,13 +28,21 @@ def maintain(factory=Session, *, apply=False, at=None, compact=None):
             return {'status':'busy'}
         if db.bind.dialect.name=='postgresql' and not db.scalar(text('SELECT pg_try_advisory_xact_lock(7140232)')):
             return {'status':'busy'}
+        policy=db.get(RetentionPolicy,1)
+        if policy:
+            # Proposals may extend preservation immediately; only explicit batches shorten it.
+            predicates[0]=(CollectionRun,CollectionRun.checked_at<at-timedelta(days=max(collection_days,policy.operational_days)))
+            predicates[1]=(SecurityEvent,(SecurityEvent.created_at<at-timedelta(days=max(security_days,policy.security_days))) & ~SecurityEvent.action.like('retention.%'))
         result={'status':'applied' if apply else 'dry_run','historical_observations':'preserved_indefinitely',
                 'compaction_enabled':compact,'deleted':{}}
         for model,predicate in predicates:
             count=db.scalar(select(func.count()).select_from(model).where(predicate))
             result['deleted'][model.__tablename__]=count
             if apply:
-                db.execute(delete(model).where(predicate))
+                keys=list(model.__table__.primary_key.columns)
+                from sqlalchemy import tuple_
+                ids=list(db.execute(select(*keys).where(predicate).order_by(*keys).limit(5000)))
+                if ids:db.execute(delete(model).where(tuple_(*keys).in_([tuple(row) for row in ids])))
         if not compact:
             return result
         # Keep every provenance observation and the last UTC-day reference forever.

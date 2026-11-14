@@ -4,7 +4,7 @@ import json
 from collections import defaultdict
 from types import SimpleNamespace
 from datetime import timedelta, timezone
-from sqlalchemy import insert, select, text
+from sqlalchemy import delete, insert, select, text
 from .db import now
 from .models import DailyObservation, Listing, Market, Observation, Snapshot, SnapshotStatistic
 from .security import aware
@@ -116,6 +116,7 @@ def ingest(db, market_id, payload_bytes, *, request_key, retrieved_at=None, modi
         # Newly inserted snapshots have no raw rows; existing retained snapshots already do.
         needs_raw = db.scalar(select(Listing.id).where(Listing.snapshot_id==snapshot.id).limit(1)) is None
     else:
+        db.execute(delete(Listing).where(Listing.snapshot_id==snapshot.id))
         needs_raw = True
     if needs_raw and rows:
         for offset in range(0,len(rows),1000):
@@ -123,6 +124,8 @@ def ingest(db, market_id, payload_bytes, *, request_key, retrieved_at=None, modi
     snapshot.raw_retained=True
     if not snapshot.statistics_retained or db.scalar(select(SnapshotStatistic.item_id).where(
             SnapshotStatistic.snapshot_id==snapshot.id).limit(1)) is None:
+        if not snapshot.statistics_retained:
+            db.execute(delete(SnapshotStatistic).where(SnapshotStatistic.snapshot_id==snapshot.id))
         from .pricing import ALGORITHM, summarize
         grouped=defaultdict(list)
         for row in rows:

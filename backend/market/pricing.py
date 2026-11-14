@@ -96,6 +96,8 @@ def daily_history(db,market_id,item_id,variant_key,days=365,*,at=None,compact=Fa
             if algorithm!=ALGORITHM:self.bad+=1
             return rounded(self.total/self.count) if self.count and not self.bad else None
     recent_reference=Rolling(14);historical_reference=Rolling(60)
+    from .retention import history_floor
+    floor=history_floor(db)
     points=[]
     for day,observation in observations:
         row=statistics.get(observation.snapshot_id)
@@ -103,7 +105,7 @@ def daily_history(db,market_id,item_id,variant_key,days=365,*,at=None,compact=Fa
         algorithm=row.algorithm if row else ALGORITHM
         mv=recent_reference.add(stamp,row.recent_price if row else None,algorithm,observation.synthetic)
         hv=historical_reference.add(stamp,row.recent_price if row else None,algorithm,observation.synthetic)
-        if day<(at-timedelta(days=days)).date():continue
+        if day<(at-timedelta(days=days)).date() or (floor and day<floor.date()):continue
         points.append({'date':day.isoformat(),**({key:getattr(row,key) for key in
             ('recent_price','lowest_buyout','supply','priced_supply','listing_count')} if row else summarize([])),
             'market_value':mv,'historical_value':hv,'reference_synthetic':bool(recent_reference.synthetic or historical_reference.synthetic),'reference_coverage_days':recent_reference.count,

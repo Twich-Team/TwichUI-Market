@@ -43,7 +43,7 @@ class SecurityEvent(Base):
     actor_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
     action: Mapped[str] = mapped_column(String(80))
     detail: Mapped[str] = mapped_column(String(200), default="")
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now, index=True)
 
 
 class LoginAttempt(Base):
@@ -119,7 +119,7 @@ class CollectionRun(Base):
     __tablename__ = "collection_runs"
     id: Mapped[int] = mapped_column(primary_key=True)
     market_id: Mapped[int] = mapped_column(ForeignKey("markets.id"), index=True)
-    checked_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+    checked_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now, index=True)
     status: Mapped[str] = mapped_column(String(24))
     http_status: Mapped[int | None] = mapped_column(Integer)
     duration_seconds: Mapped[int] = mapped_column(Integer, default=0)
@@ -205,3 +205,54 @@ class ItemMedia(Base):
     retry_after: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     http_status: Mapped[int | None] = mapped_column(Integer)
     resolved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class RetentionPolicy(Base):
+    __tablename__ = 'retention_policy'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    revision: Mapped[int] = mapped_column(Integer, default=1)
+    raw_days: Mapped[int] = mapped_column(Integer, default=7)
+    intraday_days: Mapped[int] = mapped_column(Integer, default=90)
+    daily_days: Mapped[int] = mapped_column(Integer, default=365)
+    operational_days: Mapped[int] = mapped_column(Integer, default=90)
+    security_days: Mapped[int] = mapped_column(Integer, default=365)
+    approved_hash: Mapped[str | None] = mapped_column(String(64))
+    approved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+
+
+class RetentionBatch(Base):
+    __tablename__ = 'retention_batches'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    actor_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
+    policy_hash: Mapped[str] = mapped_column(String(64))
+    stage: Mapped[str] = mapped_column(String(32))
+    rows_removed: Mapped[int] = mapped_column(Integer)
+    cutoff: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    history_floor: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now, index=True)
+
+
+class RetentionPolicyChange(Base):
+    __tablename__ = 'retention_policy_changes'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    actor_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
+    before: Mapped[str] = mapped_column(Text)
+    after: Mapped[str] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+
+
+class PlayerMarketMapping(Base):
+    __tablename__ = 'player_market_mappings'
+    __table_args__ = (UniqueConstraint('region','ruleset','faction','source_kind'),UniqueConstraint('region','house_id','source_kind'))
+    id: Mapped[int] = mapped_column(primary_key=True)
+    region: Mapped[str] = mapped_column(String(2))
+    ruleset: Mapped[str] = mapped_column(String(32))
+    faction: Mapped[str] = mapped_column(String(16))
+    house_id: Mapped[int] = mapped_column(Integer)
+    transport_ruleset_id: Mapped[int] = mapped_column(Integer)
+    source_kind: Mapped[str] = mapped_column(String(16))
+    confidence: Mapped[str] = mapped_column(String(32))
+    evidence: Mapped[str] = mapped_column(Text)
+    evidence_hash: Mapped[str] = mapped_column(String(64))
+    verified_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))

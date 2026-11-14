@@ -1,0 +1,141 @@
+{
+  "observed_at": "2026-11-14T14:09:18.633571+00:00",
+  "source": "direct Blizzard authenticated requests",
+  "collection_scope_changed": false,
+  "observations": [
+    {
+      "request": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T14:09:18.633571+00:00",
+        "duration_seconds": 0.171,
+        "bytes": 2359,
+        "sha256": "84226f6daaa9cca42890729a9fcf006943c9ada3bc7021de47c278f6d120c6ed",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 13:17:39 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 14:09:18 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "id": null,
+      "name": null,
+      "returned_ruleset": null,
+      "houses": [
+        {
+          "id": 110,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 111,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 112,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 113,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 114,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 115,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 116,
+          "name": "Blackwater Auction House"
+        },
+        {
+          "id": 117,
+          "name": "Blackwater Auction House"
+        },
+        {
+          "id": 118,
+          "name": "Blackwater Auction House"
+        },
+        {
+          "id": 119,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 120,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 121,
+          "name": "Blackwater Auction House"
+        },
+        {
+          "id": 123,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 124,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 125,
+          "name": "Blackwater Auction House"
+        }
+      ]
+    },
+    {
+      "request": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/113?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T14:09:20.102302+00:00",
+        "duration_seconds": 0.468,
+        "bytes": 9995780,
+        "sha256": "5c65e87b18e7b4e3feb549b5de14f36ab707040ce1de8ca1221d887ac7369dfb",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 13:17:45 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 14:09:19 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "id": 113,
+      "name": "Horde Auction House",
+      "returned_ruleset": {
+        "href": "https://us.api.blizzard.com/data/wow/ruleset/2?namespace=dynamic-forever-us"
+      },
+      "listing_count": 99451,
+      "listings_sha256": "8a43807a3437606e0badaf5fb9e3ab09fce5d5fb855ae0c8cac02f30960a0890"
+    },
+    {
+      "request": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/1/auctions/113?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T14:09:22.157596+00:00",
+        "duration_seconds": 0.457,
+        "bytes": 9995780,
+        "sha256": "43f0ac428aff85ad77044eea1f21a2cd434af96d7f9d52d1de27d98f24557a64",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 13:17:45 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 14:09:21 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "id": 113,
+      "name": "Horde Auction House",
+      "returned_ruleset": {
+        "href": "https://us.api.blizzard.com/data/wow/ruleset/1?namespace=dynamic-forever-us"
+      },
+      "listing_count": 99451,
+      "listings_sha256": "8a43807a3437606e0badaf5fb9e3ab09fce5d5fb855ae0c8cac02f30960a0890"
+    }
+  ],
+  "conclusion": "Horde feed identity and URL-alias equality verified; Normal/PvP identity unresolved without independent numeric mapping evidence."
+}

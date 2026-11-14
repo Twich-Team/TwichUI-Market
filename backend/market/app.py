@@ -26,6 +26,10 @@ from .distribution import router as distribution_router
 app.include_router(distribution_router)
 from .sync_api import router as sync_router
 app.include_router(sync_router)
+from .retention import router as retention_router
+app.include_router(retention_router)
+from .market_configuration import router as configuration_router
+app.include_router(configuration_router)
 COOKIE_SECURE = os.environ.get("COOKIE_SECURE", "true").lower() == "true"
 ORIGIN = os.environ.get("APP_ORIGIN", "https://localhost")
 

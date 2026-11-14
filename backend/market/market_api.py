@@ -42,7 +42,7 @@ def money_contract(value):
     return value
 
 
-def market_view(market):
+def market_view(market, *, player_identity=False):
     checked_age = max(0, int((now()-aware(market.last_success)).total_seconds())) if market.last_success else None
     try:
         modified = aware(parsedate_to_datetime(market.last_modified)) if market.last_modified else None
@@ -50,8 +50,26 @@ def market_view(market):
         modified = None
     if modified and modified>now()+timedelta(minutes=5): modified=None
     source_age = max(0,int((now()-modified).total_seconds())) if modified else None
+    from sqlalchemy.orm import object_session
+    from .market_configuration import mapping_for
+    db=object_session(market) if player_identity else None
+    mapping=mapping_for(db,market) if db else None
+    label=market.label
+    if mapping:
+        label=f'{market.region.upper()} — {mapping.ruleset} — {mapping.faction}'
+    elif db:
+        from .models import MarketVerification
+        receipt=db.scalar(select(MarketVerification).where(MarketVerification.market_id==market.id).order_by(MarketVerification.id.desc()).limit(1))
+        if receipt:
+            import hashlib
+            try:
+                house=json.loads(receipt.evidence).get('house_name') if hashlib.sha256(receipt.evidence.encode()).hexdigest()==receipt.evidence_hash else None
+                if house in ('Alliance Auction House','Horde Auction House','Blackwater Auction House'):
+                    label=f'{market.region.upper()} — {house.replace(" Auction House","")} — Ruleset unverified'
+            except (ValueError,TypeError):pass
     return {'id':market.id,'region':market.region,'ruleset_id':market.ruleset_id,'house_id':market.house_id,
-            'source_kind':market.source_kind,'label':market.label,'enabled':market.enabled,'verified':market.verified,
+            'source_kind':market.source_kind,'label':label,'enabled':market.enabled,'verified':market.verified,
+            'player_identity_verified':mapping is not None,
             'interval_seconds':market.interval_seconds,'last_success':market.last_success,'next_check':market.next_check,
             'last_modified':market.last_modified,'check_age_seconds':checked_age,'source_age_seconds':source_age,
             'freshness': 'unknown' if source_age is None else ('stale' if source_age > max(3600,market.interval_seconds*2) else 'current'),
@@ -90,7 +108,7 @@ def metadata_name(metadata,item_id):
 
 @router.get('/markets')
 def markets(user: User = Depends(identity), db: Session = Depends(session)):
-    return {'contract_version':1,'markets':[market_view(row) for row in db.scalars(select(Market).order_by(Market.id))]}
+    return {'contract_version':1,'markets':[market_view(row,player_identity=True) for row in db.scalars(select(Market).order_by(Market.id))]}
 
 
 @router.get('/markets/{market_id}/items')
@@ -247,6 +265,10 @@ class ScheduleUpdate(BaseModel):
 
 @router.post('/admin/markets',status_code=201)
 def create_market(body: MarketCreate,user: User = Depends(admin),db: Session = Depends(session)):
+    from .market_configuration import lock_configuration
+    lock_configuration(db)
+    if db.scalar(select(Market.id).where(Market.region==body.region,Market.house_id==body.house_id,Market.source_kind==body.source_kind).limit(1)):
+        raise HTTPException(409,'Feed already configured; ruleset aliases cannot create duplicate markets')
     row = Market(**body.model_dump(),enabled=False,verified=False)
     db.add(row)
     audit(db,user.id,'market.created')
@@ -260,11 +282,15 @@ def create_market(body: MarketCreate,user: User = Depends(admin),db: Session = D
 
 @router.patch('/admin/markets/{market_id}/schedule')
 def update_schedule(market_id: MarketId,body: ScheduleUpdate,user: User = Depends(admin),db: Session = Depends(session)):
+    from .market_configuration import lock_configuration,activation_guard
+    lock_configuration(db)
     row = db.scalar(select(Market).where(Market.id==market_id).with_for_update())
     if not row:
         raise HTTPException(404,'Market not found')
     if body.enabled and not row.verified:
         raise HTTPException(409,'Live mapping verification required before enabling collection')
+    if body.enabled and not row.enabled:
+        activation_guard(db,row)
     row.enabled,row.interval_seconds = body.enabled,body.interval_seconds
     row.next_check = now()
     audit(db,user.id,'market.schedule_updated',str(row.id))
@@ -288,8 +314,8 @@ def storage(user: User = Depends(admin),db: Session = Depends(session)):
     return {'growth':history(db),'database_bytes':size,'snapshots':db.scalar(select(func.count()).select_from(Snapshot)),
             'observations':db.scalar(select(func.count()).select_from(Observation)),
             'retention':{'historical_observations':'indefinite_private','guidance':'owner_provided_original_pending',
-                         'raw_listing_days':int(os.environ.get('RAW_LISTING_DAYS','2')),
-                         'detailed_statistics_days':int(os.environ.get('DETAILED_STATISTICS_DAYS','64')),
+                         'raw_listing_days':int(os.environ.get('RAW_LISTING_DAYS','7')),
+                         'detailed_statistics_days':int(os.environ.get('DETAILED_STATISTICS_DAYS','90')),
                          'daily_statistics':'indefinite_private',
                          'compaction_enabled':os.environ.get('HISTORY_COMPACTION_ENABLED','false').lower()=='true'},
             'backup':backup_state()}
