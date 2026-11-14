@@ -1,6 +1,6 @@
 # Companion v2 acceptance and remaining gates
 
-**Engineering candidate; goal remains active.** Production is still the approved c8f03c2 website/API with schema0012. No v2 frontend, migration, release store or stable installer is live. Significant new designs, tray actions and owner signing remain separate gates.
+**Engineering candidate; goal remains active.** Production is still the approved c8f03c2 website/API with schema0012. No v2 frontend, migration, release store or stable installer is live. The owner has approved the eight-screen new design packet; tray actions and owner signing remain separate gates.
 
 ## Verified Windows checkpoint
 
@@ -42,13 +42,13 @@ The isolated PostgreSQL100-variant/61-day benchmark identified a concrete backen
 | Request sections | Status / remaining proof |
 |---|---|
 | 1 Autonomous plan/checkpoints | Full request, plan, durable ledger, focused commits/pushes and evidence retained |
-| 2 Native utility UI | Implemented compact Tauri/Rust utility; real installed screenshots/accessibility reviewed; owner significant visual approval pending |
+| 2 Native utility UI | Implemented compact Tauri/Rust utility; real installed screenshots/accessibility reviewed; owner significant visual approval recorded |
 | 3 Tray | Real integration implemented, render verified; actions and owner PC restoration/double-click/menu Quit remain unverified |
 | 4 Persistent settings | Versioned atomic nonsecret settings, interval choices, migration, opt-in/reversible HKCU startup, window state; actual restart/upgrade/uninstall proof passes |
 | 5 Native scheduling | Rust-owned worker independent of WebView; deterministic clock/single-flight/pause/cancel/backoff/offline/wake tests and actual hidden initial/manual sync pass |
 | 6 Browser sign-in | Real strict PKCE loopback, system-browser approval, vault renewal/replay and ownership/CSRF/rate security tests; actual Windows approval/restart/revocation passes |
 | 7 Market preferences | Saved-choice bootstrap/fallback/local override tests pass; desktop cannot change collection settings |
-| 8 Website setup | Lazy guide, honest unavailable download, server-confirmed pairing/final delivery, resume/error/accessibility/mobile tests pass; significant visual/public promotion pending |
+| 8 Website setup | Lazy guide, honest unavailable download, server-confirmed pairing/final delivery, resume/error/accessibility/mobile tests pass; significant visual approval recorded; compatible public promotion pending |
 | 9 Installer/updater | Controlled public read side and audited immutable publisher prepared; SDK signatures/tamper/version tested; owner signing, actual signed SDK installer execution and approved permanent publication pending |
 | 10 Devices | Own metadata/rename/revoke, admin inspect/revoke and secret/ownership isolation tested; no cache-deletion claims |
 | 11 Failure states | Safe native/browser statuses, cancellation/expiry/denial/offline/revocation/recovery and redacted diagnostics implemented/tested |
@@ -56,8 +56,8 @@ The isolated PostgreSQL100-variant/61-day benchmark identified a concrete backen
 | 13 Production isolation | Original services/images/collector preserved, rootless resource limits retained, retention off; no AMP/host/ingress changes |
 | 14 Tests | Backend/Rust/browser/actual installed Windows suites pass at e55807c; tray/signing/public deployment gaps remain explicit |
 | 15 Performance | All named metrics sampled with scope/precision/synthetic limitations; demonstrated backend bottleneck optimized |
-| 16 Eight screenshots | All eight actual native/web/OS captures inspected and retained in the [review packet](companion-v2-visual-review.md); owner approval pending |
-| 17 Completion | Incomplete until manual tray, visual/signing, permanent release and compatible production verification gates close |
+| 16 Eight screenshots | All eight actual native/web/OS captures inspected and retained in the [review packet](companion-v2-visual-review.md); owner approval recorded |
+| 17 Completion | Visual approval complete; manual tray, distribution/signing decision, permanent release and compatible production verification remain |
 
 ## Production preservation and deployment gate
 
@@ -65,4 +65,4 @@ Read-only23:12UTC check: trusted public HTTPS200/schema0012; market2/house114 al
 
 Additive0013 populated migration/downgrade-preservation and retained old API fail-closed compatibility pass in isolation. The schema-aware audit projects original columns and preserves original history/account/credential/preferences at recorded cutoffs; a fresh production baseline and backup/checksum/isolated restoration are still mandatory immediately before deployment. Do not reuse stale restoration evidence. Preserve original image rollback, worker start/schedule, all backups/history/accounts/sessions/preferences and legacy contracts. No additional collector or destructive retention activation is authorized here.
 
-[Owner release procedure](companion-v2-release-operations.md) documents protected dispatch, separate Authenticode/updater keys, exact-source CI, immutable installed/manual acceptance receipts, bounded publication and audited pointer rollback. No private key is requested in chat. Signing/provider expense and significant visual approval are owner decisions. Compatible public/native pairing and permanent download verification follow approved deployment; current production must not be presented as already supporting v2.
+[Owner release procedure](companion-v2-release-operations.md) documents protected dispatch, separate Authenticode/updater keys, exact-source CI, immutable installed/manual acceptance receipts, bounded publication and audited pointer rollback. No private key is requested in chat. Significant visual approval is recorded. The owner has asked about a free three-person private beta; no paid signing expense is authorized. See [free/private and paid options](companion-v2-signing-options.md). Compatible public/native pairing and permanent download verification follow approved deployment; current production must not be presented as already supporting v2.

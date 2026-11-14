@@ -2,7 +2,7 @@
   "schema_version": 1,
   "fixture": true,
   "generated_mockups": false,
-  "owner_visual_approval": "pending",
+  "owner_visual_approval": "approved",
   "tray_actions_verified": false,
   "screenshots": [
     {
@@ -85,5 +85,6 @@
       "capture": "Actual OS desktop capture",
       "visually_inspected": true
     }
-  ]
+  ],
+  "approval_record": "../companion-v2-owner-visual-approval.json"
 }
