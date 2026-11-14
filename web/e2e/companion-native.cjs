@@ -13,7 +13,7 @@ const fs=require('node:fs');const path=require('node:path');const {execFile,spaw
     let page=browser.contexts()[0].pages()[0];
     const powershell=async script=>JSON.parse((await promisify(execFile)('powershell.exe',['-NoProfile','-NonInteractive','-Command',script],{timeout:20000})).stdout.trim());
     const startup=()=>powershell('@{user=(Get-ItemPropertyValue -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run" -Name "TwichUI Market Companion" -ErrorAction SilentlyContinue);machine=(Get-ItemPropertyValue -Path "HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run" -Name "TwichUI Market Companion" -ErrorAction SilentlyContinue)} | ConvertTo-Json -Compress');
-    const nativeControl=async action=>JSON.parse((await promisify(execFile)('powershell.exe',['-NoProfile','-NonInteractive','-File',path.resolve('scripts/windows/native-controls.ps1'),'-Action',action],{timeout:20000})).stdout.trim());
+    const nativeControl=async action=>JSON.parse((await promisify(execFile)('powershell.exe',['-NoProfile','-NonInteractive','-File',path.resolve('scripts/windows/native-controls.ps1'),'-Action',action],{timeout:45000})).stdout.trim());
     const invoke=(command,args={})=>page.evaluate(({command,args})=>window.__TAURI__.core.invoke(command,args),{command,args});
     await expect(page.locator('#welcome')).toBeVisible();
     await expect(page.locator('#sign-in')).toBeVisible();await expect(page.locator('#token')).toHaveCount(0);
@@ -40,6 +40,7 @@ const fs=require('node:fs');const path=require('node:path');const {execFile,spaw
     await expect(website.getByRole('heading',{name:'Installed Windows fixture',exact:true})).toBeVisible();
     await expect(website.getByRole('button',{name:'Approve this device',exact:true})).toBeVisible();
     await website.screenshot({path:path.join(shots,'website-approval.png'),fullPage:true});
+    const firstSyncStart=performance.now();
     await website.getByRole('button',{name:'Approve this device',exact:true}).click();
     await expect.poll(()=>new URL(website.url()).pathname).toBe('/companion/callback');
     expect(new URL(website.url()).hostname).toBe('127.0.0.1');
@@ -48,6 +49,7 @@ const fs=require('node:fs');const path=require('node:path');const {execFile,spaw
     await expect(page.locator('#cache-count')).toContainText('2 item variants',{timeout:30000});
     await expect.poll(async()=>(await invoke('app_state')).sync.sync.last_sync_ms,{timeout:15000}).toBeTruthy();
     await expect(page.locator('#market-name')).toHaveText('US — Normal — Horde');await expect(page.locator('#synthetic-warning')).toBeVisible();
+    const initialSyncMs=performance.now()-firstSyncStart;
     await page.screenshot({path:path.join(shots,'native-dashboard.png')});
     await website.goto(process.env.MARKET_TEST_SERVER+'/companion');
     await expect(website.getByText('Installed Windows fixture is connected.',{exact:true})).toBeVisible();
@@ -70,11 +72,19 @@ const fs=require('node:fs');const path=require('node:path');const {execFile,spaw
     expect((await invoke('app_state')).settings.interval_minutes).toBe(60);expect((await invoke('app_state')).sync.sync.automatic_sync).toBe(false);
     // The WebView remains hidden for this entire actual Rust-owned network/cache operation.
     await invoke('hide_to_tray');expect((await invoke('app_state')).window_visible).toBe(false);
-    const before=(await invoke('app_state')).sync.sync.last_sync_ms;expect(await invoke('sync_now')).toBe(true);
+    const before=(await invoke('app_state')).sync.sync.last_sync_ms;const incrementalStart=performance.now();expect(await invoke('sync_now')).toBe(true);
     await expect.poll(async()=>(await invoke('app_state')).sync.sync.last_sync_ms,{timeout:20000}).toBeGreaterThan(before);
+    const incrementalSyncMs=performance.now()-incrementalStart;
     expect((await invoke('app_state')).window_visible).toBe(false);
+    const networkBefore=await(await api.get('/__fixture__/native-network')).json();
+    const resources=await nativeControl('Metrics');
+    const networkAfter=await(await api.get('/__fixture__/native-network')).json();
+    expect(networkAfter).toEqual(networkBefore);
+    const restoreStart=performance.now();
     await promisify(execFile)(process.env.MARKET_TEST_INSTALLED_EXE,[],{timeout:15000});
     await expect.poll(async()=>(await invoke('app_state')).window_visible).toBe(true);
+    const restoreMs=performance.now()-restoreStart;
+    fs.writeFileSync(path.join(shots,'performance.json'),JSON.stringify({fixture:true,initial_sync_ms:initialSyncMs,incremental_noop_sync_ms:incrementalSyncMs,sync_fixture:{variants:2,page_limit:1,injected_delay_ms_per_page:500},second_launch_restore_ms:restoreMs,idle_market_api_requests:{before:networkBefore,after:networkAfter},resources,desktop_frontend_bytes:fs.readdirSync('desktop/ui').reduce((total,file)=>total+fs.statSync(path.join('desktop/ui',file)).size,0)},null,2));
     // A normal second launch restores the original process and retains its cache/settings.
     expect((await invoke('app_state')).cache.item_count).toBe(2);expect((await invoke('app_state')).settings.interval_minutes).toBe(60);
     const tray=await nativeControl('Capture');expect(tray.actual_tray).toBe(true);

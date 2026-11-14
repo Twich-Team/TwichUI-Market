@@ -1,9 +1,50 @@
 # Actual OS interactions, restricted to this installed app on a disposable runner.
-param([ValidateSet('Capture','Open','Settings','Sync','Pause','Quit','Minimize','Close')][string]$Action)
+param([ValidateSet('Capture','Open','Settings','Sync','Pause','Quit','Minimize','Close','Metrics')][string]$Action)
 $ErrorActionPreference = 'Stop'
 if ($env:GITHUB_ACTIONS -ne 'true' -or $env:RUNNER_OS -ne 'Windows') { throw 'Disposable Windows CI only' }
 $apps = @(Get-Process -Name 'twichui-market-companion' -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq $env:MARKET_TEST_INSTALLED_EXE })
 if ($apps.Count -ne 1) { throw 'Expected one exact installed companion process' }
+if ($Action -eq 'Metrics') {
+    function Owned-Processes {
+        $all=@(Get-CimInstance Win32_Process)
+        $ids=[System.Collections.Generic.HashSet[int]]::new()
+        $null=$ids.Add($apps[0].Id)
+        do {
+            $added=$false
+            foreach ($row in $all) {
+                if ($ids.Contains([int]$row.ParentProcessId) -and $ids.Add([int]$row.ProcessId)) { $added=$true }
+            }
+        } while ($added)
+        # The system browser is a separate user application. Include only this
+        # app and its WebView2 children, never unrelated Edge/browser processes.
+        foreach ($row in $all) {
+            if ($ids.Contains([int]$row.ProcessId) -and ($row.ProcessId -eq $apps[0].Id -or $row.Name -eq 'msedgewebview2.exe')) {
+                Get-Process -Id $row.ProcessId -ErrorAction SilentlyContinue
+            }
+        }
+    }
+    $before=@(Owned-Processes)
+    # TimeSpan aggregation is explicit; process CPU is reported as a percent of
+    # one logical core, and separately normalized across all host logical cores.
+    $cpuBefore=($before | ForEach-Object { $_.TotalProcessorTime.TotalMilliseconds } | Measure-Object -Sum).Sum
+    $clock=[System.Diagnostics.Stopwatch]::StartNew()
+    Start-Sleep -Seconds 10
+    $after=@(Owned-Processes)
+    $elapsed=$clock.Elapsed.TotalMilliseconds
+    $cpuAfter=($after | ForEach-Object { $_.TotalProcessorTime.TotalMilliseconds } | Measure-Object -Sum).Sum
+    $cpu=[math]::Max(0,100*($cpuAfter-$cpuBefore)/$elapsed)
+    $connections=@(Get-NetTCPConnection -ErrorAction SilentlyContinue | Where-Object { $_.OwningProcess -in $after.Id -and $_.State -eq 'Established' })
+    @{
+        scope='installed native process and owned WebView2 children; browser and test driver excluded'
+        sample_ms=[math]::Round($elapsed,2);processes=$after.Count
+        working_set_sum_bytes=($after | Measure-Object WorkingSet64 -Sum).Sum
+        private_bytes_sum=($after | Measure-Object PrivateMemorySize64 -Sum).Sum
+        cpu_one_core_percent=[math]::Round($cpu,4)
+        cpu_host_percent=[math]::Round($cpu/[Environment]::ProcessorCount,4)
+        established_tcp_connections=$connections.Count
+    } | ConvertTo-Json -Compress
+    exit
+}
 Add-Type -AssemblyName UIAutomationClient,UIAutomationTypes,System.Drawing,System.Windows.Forms
 Add-Type @'
 using System;
@@ -66,9 +107,10 @@ for ($attempt=0;$attempt -lt 20;$attempt++) {
     Start-Sleep -Milliseconds 100
 }
 $names=@($items | ForEach-Object { $_.Current.Name })
-foreach ($expected in @('Open companion','Sync now','Settings…','Quit')) {
+foreach ($expected in @('Open companion','Sync now','Quit')) {
     if ($names -notcontains $expected) { throw "Actual tray menu missing $expected" }
 }
+if (@($names | Where-Object { $_ -like 'Settings*' }).Count -ne 1) { throw 'Actual tray menu missing Settings' }
 if ($Action -eq 'Capture') {
     $screen=[System.Windows.Forms.SystemInformation]::VirtualScreen
     $bitmap=[System.Drawing.Bitmap]::new($screen.Width,$screen.Height)

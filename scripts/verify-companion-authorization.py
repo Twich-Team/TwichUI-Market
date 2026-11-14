@@ -56,9 +56,16 @@ if os.environ.get('MARKET_NATIVE_UI_TEST')=='true':
     @app.get('/account')
     def fixture_website():
         return FileResponse(website/'index.html')
+    native_network={'bearer_requests':0,'token_requests':0,'sync_requests':0}
+    @app.get('/__fixture__/native-network')
+    def fixture_network():
+        return native_network.copy()
     @app.middleware('http')
     async def observable_fixture_pages(request,call_next):
+        if request.headers.get('authorization','').startswith('Bearer '):native_network['bearer_requests']+=1
+        if request.url.path=='/api/v1/companion/token':native_network['token_requests']+=1
         if request.url.path.startswith('/api/v1/sync/markets/'):
+            native_network['sync_requests']+=1
             await asyncio.sleep(.5)
             query=request.scope.get('query_string',b'')
             request.scope['query_string']=query+(b'&' if query else b'')+b'limit=1'

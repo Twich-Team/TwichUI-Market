@@ -30,11 +30,12 @@ if ($null -ne (Get-ItemProperty -Path $policy -Name $policyName -ErrorAction Sil
 $null = New-ItemProperty -Path $policy -Name $policyName -PropertyType String -Value $env:WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS
 $app = $null
 try {
+    $cold=[System.Diagnostics.Stopwatch]::StartNew()
     $app = Start-Process -FilePath $executable -PassThru
     $env:MARKET_TEST_PRIMARY_PID = $app.Id.ToString()
     $ready = $false
-    for ($attempt = 0; $attempt -lt 30; $attempt++) {
-        Start-Sleep -Seconds 1
+    for ($attempt = 0; $attempt -lt 600; $attempt++) {
+        Start-Sleep -Milliseconds 50
         $app.Refresh()
         if ($app.HasExited) { throw "Installed application exited early: $($app.ExitCode)" }
         if ($app.MainWindowHandle -ne 0 -and $app.MainWindowTitle -eq 'TwichUI Market Companion') {
@@ -43,6 +44,10 @@ try {
         }
     }
     if (-not $ready) { throw 'Installed application did not create its expected native window' }
+    $cold.Stop()
+    $evidence=Join-Path (Get-Location) 'artifacts/companion-v2'
+    $null=New-Item -Path $evidence -ItemType Directory -Force
+    @{fixture=$true;cold_start_to_native_window_ms=$cold.Elapsed.TotalMilliseconds;poll_resolution_ms=50;installer_bytes=$installer[0].Length} | ConvertTo-Json | Set-Content (Join-Path $evidence 'launch-metrics.json')
     Write-Output 'Installed release executable created the expected native window.'
     python scripts/verify-companion-authorization.py --ui
     if ($LASTEXITCODE -ne 0) { throw 'Native WebView2 workflow failed' }

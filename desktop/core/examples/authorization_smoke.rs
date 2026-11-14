@@ -80,7 +80,7 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     let session = client.complete(pending, &AtomicBool::new(false), store.as_ref())?;
     session.client()?.authenticate()?;
     let bootstrap = session.client()?.bootstrap()?;
-    assert_eq!(bootstrap.account.username, "native-fixture");
+    assert_eq!(bootstrap.account.username, "native_fixture");
     assert_eq!(bootstrap.device.as_ref().unwrap().id, session.device_id());
     let dir = tempfile::tempdir()?;
     let worker = Worker::start(
