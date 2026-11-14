@@ -6,6 +6,7 @@ Never accepts the production or restoration database.
 """
 from datetime import datetime, timedelta, timezone
 import hashlib
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -48,17 +49,29 @@ with engine.begin() as connection:
         {'values': '{"explorer_days":60}', 'at': stamp})
 
 
+spec = importlib.util.spec_from_file_location('preservation_audit', Path(__file__).with_name('audit-production-preservation.py'))
+audit = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(audit)
+original_columns = {}
+
+
 def originals():
     with engine.connect() as connection:
-        return {table: connection.scalar(text(f'SELECT row_to_json(t) FROM {table} t'))
-                for table in ('users', 'credentials', 'user_preferences')}
+        result = {}
+        for table in ('users', 'credentials', 'user_preferences'):
+            columns = connection.scalars(text("SELECT column_name FROM information_schema.columns WHERE table_schema='public' AND table_name=:table ORDER BY ordinal_position"), {'table': table}).all()
+            projection, selected = audit.original_projection(columns, original_columns.get(table))
+            original_columns[table] = selected
+            result[table] = connection.scalar(text(f'SELECT row_to_json(t) FROM (SELECT {projection} FROM {table}) t'))
+        return result
 
 
 before = originals()
 alembic('upgrade', 'head')
 alembic('check')
 after = originals()
-assert after['credentials'].pop('companion_device_id') is None
+with engine.connect() as connection:
+    assert connection.scalar(text('SELECT companion_device_id FROM credentials WHERE id=1')) is None
 assert before == after
 
 sys.path.insert(0, str(backend))
