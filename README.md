@@ -23,6 +23,6 @@ Daily local backups are opt-in: `docker --context rootless compose -f compose.ya
 
 ## Evidence and work remaining
 
-See [progress](docs/progress.md), [implementation plan](docs/implementation-plan.md), [operations](docs/operations.md), [API feasibility](docs/api-feasibility.md), [website](docs/website.md), and [Windows companion](docs/desktop.md). [Draft PR #1](https://github.com/Twich-Team/TwichUI-Market/pull/1) tracks the implementation.
+See [acceptance evidence and blockers](docs/acceptance.md), [progress](docs/progress.md), [implementation plan](docs/implementation-plan.md), [operations](docs/operations.md), [API feasibility](docs/api-feasibility.md), [website](docs/website.md), and [Windows companion](docs/desktop.md). [Draft PR #1](https://github.com/Twich-Team/TwichUI-Market/pull/1) tracks the implementation.
 
 Reproducible checks cover PostgreSQL migrations/permissions/pricing/collection/sync, browser workflows, Docker persistence, backup restoration, Rust cache/HTTP integration and Windows credential/build CI. Completion is gated on live upstream evidence, approved designs and all remaining acceptance criteria.
