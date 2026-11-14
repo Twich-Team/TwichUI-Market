@@ -1,0 +1,16 @@
+{
+  "recorded_at_utc": "2026-11-14T19:09:03Z",
+  "status": "native_worker_core_verified_tauri_integration_pending",
+  "linux_rust_tests":53,
+  "actual_thread_tests":8,
+  "bootstrap_and_receipt_tests":5,
+  "postgres_targeted_tests":55,
+  "native_thread_real_api_integration":true,
+  "test_data":"disposable synthetic fixtures only",
+  "cache_schema":2,
+  "completion_storage":"optional additive nonsecret version-1 completion table",
+  "webview_timer_required_for_worker":false,
+  "installed_v2_shell_complete":false,
+  "production_changed":false,
+  "remaining":["Tauri wiring and actual tray/autostart/window behavior","installed v2 Windows tests","website wizard/approval/devices","release distribution and signing","performance and screenshots","owner visual and promotion approval"]
+}

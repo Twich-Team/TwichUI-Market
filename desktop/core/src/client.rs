@@ -6,6 +6,7 @@ use reqwest::blocking::Client;
 use std::io::Read;
 use std::time::Duration;
 use url::Url;
+use zeroize::Zeroize;
 
 pub fn server_url(value: &str) -> Result<Url> {
     let mut url = Url::parse(value).map_err(|_| Error::Invalid("server URL"))?;
@@ -37,6 +38,11 @@ pub struct MarketClient {
     server: Url,
     token: String,
     http: Client,
+}
+impl Drop for MarketClient {
+    fn drop(&mut self) {
+        self.token.zeroize();
+    }
 }
 
 impl MarketClient {
@@ -94,6 +100,18 @@ impl MarketClient {
         match response.status().as_u16() {
             401 | 403 => return Err(Error::Authentication),
             409 => return Err(Error::ResetRequired),
+            429 => {
+                return Err(Error::RateLimited(
+                    response
+                        .headers()
+                        .get("retry-after")
+                        .and_then(|v| v.to_str().ok())
+                        .and_then(|v| v.parse().ok())
+                        .unwrap_or(60)
+                        .clamp(1, 3600),
+                ))
+            }
+            404 | 502 | 503 => return Err(Error::ServiceUnavailable),
             200 => {}
             _ => return Err(Error::Network),
         }
@@ -122,5 +140,46 @@ impl MarketClient {
             serde_json::from_slice(&self.get(&format!("api/v1/sync/markets/{market}"), cursor)?)?;
         page.validate(market)?;
         Ok(page)
+    }
+    pub fn bootstrap(&self) -> Result<crate::connection::Bootstrap> {
+        let value: crate::connection::Bootstrap =
+            serde_json::from_slice(&self.get("api/v1/companion/bootstrap", None)?)?;
+        value.validate()?;
+        Ok(value)
+    }
+    pub fn provenance(
+        &self,
+        market: u32,
+        watermark: &str,
+    ) -> Result<crate::connection::Provenance> {
+        crate::connection::observation_id(watermark)?;
+        let value: crate::connection::Provenance = serde_json::from_slice(&self.get(
+            &format!("api/v1/companion/markets/{market}/observations/{watermark}"),
+            None,
+        )?)?;
+        value.validate(market)?;
+        if value.watermark_observation_id.as_deref() != Some(watermark) {
+            return Err(Error::Invalid("source receipt watermark"));
+        }
+        Ok(value)
+    }
+    pub fn activity(&self, market: Option<u32>, version: &str) -> Result<()> {
+        let response = self
+            .http
+            .post(
+                self.server
+                    .join("api/v1/companion/activity")
+                    .map_err(|_| Error::Invalid("endpoint"))?,
+            )
+            .bearer_auth(&self.token)
+            .json(&serde_json::json!({"market_id":market,"app_version":version}))
+            .send()
+            .map_err(|_| Error::Network)?;
+        match response.status().as_u16() {
+            204 => Ok(()),
+            401 | 403 => Err(Error::Authentication),
+            404 | 502 | 503 => Err(Error::ServiceUnavailable),
+            _ => Err(Error::Network),
+        }
     }
 }

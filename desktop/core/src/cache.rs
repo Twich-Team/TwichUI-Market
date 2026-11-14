@@ -3,7 +3,7 @@ use crate::{
     Error, Result,
 };
 use rusqlite::{params, Connection, OptionalExtension};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::{io::Write, path::Path};
 
 pub struct Cache {
@@ -27,6 +27,15 @@ pub struct Item {
     pub value: Valuation,
 }
 
+/// Nonsecret local completion receipt; optional additive table remains readable by v1.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct Completion {
+    pub schema_version: u32,
+    pub last_sync_ms: i64,
+    pub source: crate::connection::Provenance,
+}
+
 impl Cache {
     pub fn open(path: &Path) -> Result<Self> {
         Self::initialize(Connection::open(path)?)
@@ -48,6 +57,8 @@ impl Cache {
                 variant TEXT NOT NULL, value TEXT NOT NULL, PRIMARY KEY(server,market,item,variant));
             CREATE TABLE IF NOT EXISTS staging(server TEXT NOT NULL, market INTEGER NOT NULL, item INTEGER NOT NULL,
                 variant TEXT NOT NULL, value TEXT NOT NULL, PRIMARY KEY(server,market,item,variant));
+            CREATE TABLE IF NOT EXISTS completion(server TEXT NOT NULL, market INTEGER NOT NULL, value TEXT NOT NULL,
+                PRIMARY KEY(server,market));
             ")?;
         let has_synthetic = {
             let mut statement = db.prepare("PRAGMA table_info(state)")?;
@@ -73,6 +84,55 @@ impl Cache {
             )
             .optional()?
             .flatten())
+    }
+    pub fn completed_target(&self, server: &str, market: u32) -> Result<Option<String>> {
+        Ok(self.db.query_row("SELECT target FROM state WHERE server=?1 AND market=?2 AND completed=1 AND downloading=0",
+            params![server,market], |row|row.get(0)).optional()?.flatten())
+    }
+    pub fn record_completion(
+        &mut self,
+        server: &str,
+        market: u32,
+        receipt: &Completion,
+    ) -> Result<()> {
+        receipt.source.validate(market)?;
+        let target = self.completed_target(server, market)?;
+        let expected = receipt
+            .source
+            .watermark_observation_id
+            .as_deref()
+            .unwrap_or("0");
+        if receipt.schema_version != 1 || target.as_deref() != Some(expected) {
+            return Err(Error::Invalid(
+                "completion receipt does not match the committed cache",
+            ));
+        }
+        self.db.execute("INSERT INTO completion(server,market,value) VALUES(?1,?2,?3) ON CONFLICT(server,market) DO UPDATE SET value=excluded.value",
+            params![server,market,serde_json::to_string(receipt)?])?;
+        Ok(())
+    }
+    pub fn completion(&self, server: &str, market: u32) -> Result<Option<Completion>> {
+        let value: Option<String> = self
+            .db
+            .query_row(
+                "SELECT value FROM completion WHERE server=?1 AND market=?2",
+                params![server, market],
+                |row| row.get(0),
+            )
+            .optional()?;
+        value
+            .map(|value| {
+                if value.len() > 4096 {
+                    return Err(Error::Invalid("completion receipt size"));
+                }
+                let receipt: Completion = serde_json::from_str(&value)?;
+                receipt.source.validate(market)?;
+                if receipt.schema_version != 1 {
+                    return Err(Error::Invalid("completion receipt version"));
+                }
+                Ok(receipt)
+            })
+            .transpose()
     }
     pub fn reset(&mut self, server: &str, market: u32) -> Result<()> {
         let tx = self.db.transaction()?;

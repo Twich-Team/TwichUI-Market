@@ -20,7 +20,8 @@ ROOT = Path(__file__).resolve().parents[1]
 SEED = '''
 import json
 from market.db import Base,engine,Session
-from market.models import Market,User
+from market.models import Market,User,PlayerMarketMapping
+from market.db import now
 from market.ingest import ingest
 from market.security import hasher
 assert engine.url.database.endswith('native-authorization-fixture.db')
@@ -29,6 +30,10 @@ with Session.begin() as db:
     db.add(User(username='native-fixture',password_hash=hasher.hash('synthetic browser fixture password'),role='member'))
     market=Market(region='us',ruleset_id=2,house_id=114,source_kind='auctions',label='Synthetic only',verified=True,enabled=True)
     db.add(market);db.flush()
+    evidence=json.dumps({'region':'us','house_id':114,'ruleset':'Normal','faction':'Horde',
+        'upstream_receipt':{'synthetic':True},'independent_observation':{'synthetic_player_scan':True},'independent_source_url':'https://example.test/fixture'})
+    db.add(PlayerMarketMapping(region='us',ruleset='Normal',faction='Horde',house_id=114,transport_ruleset_id=2,source_kind='auctions',
+        confidence='verified',evidence=evidence,evidence_hash=__import__('hashlib').sha256(evidence.encode()).hexdigest(),verified_at=now()))
     ingest(db,market.id,json.dumps({'auctions':[{'id':i,'item':{'id':i},'quantity':10,'buyout':1000} for i in [12363,13463]]}).encode(),request_key='native-auth-fixture',synthetic=True)
 '''
 SERVER = '''

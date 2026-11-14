@@ -1,10 +1,13 @@
 pub mod authorization;
 pub mod cache;
 pub mod client;
+pub mod connection;
 pub mod protocol;
 pub mod scheduler;
 pub mod settings;
+pub mod synchronizer;
 pub mod vault;
+pub mod worker;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {

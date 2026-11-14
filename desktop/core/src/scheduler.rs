@@ -187,6 +187,32 @@ impl<C: Clock> Scheduler<C> {
     pub fn snapshot(&self) -> Snapshot {
         self.snapshot.clone()
     }
+    /// Restore the matching server/market's last local completion without inventing
+    /// a new sync or resetting the requested startup policy/deadline.
+    pub fn restore_completion(
+        &mut self,
+        completion: &crate::cache::Completion,
+    ) -> crate::Result<()> {
+        if self.active.is_some()
+            || self.snapshot.selected_market != Some(completion.source.market_id)
+            || completion.schema_version != 1
+        {
+            return Err(crate::Error::Invalid("completion receipt identity"));
+        }
+        completion.source.validate(completion.source.market_id)?;
+        self.snapshot.last_sync_ms = Some(completion.last_sync_ms);
+        self.snapshot.last_server_check_ms = completion
+            .source
+            .server_checked_at
+            .map(|stamp| stamp.timestamp_millis());
+        self.snapshot.upstream_update_ms = completion
+            .source
+            .upstream_updated_at
+            .map(|stamp| stamp.timestamp_millis());
+        self.snapshot.generation = completion.source.generation.clone();
+        self.snapshot.received_new_generation = false;
+        Ok(())
+    }
 
     pub fn configure(&mut self, settings: Settings, connected: bool) -> crate::Result<()> {
         settings.validate()?;

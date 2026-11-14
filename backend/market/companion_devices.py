@@ -30,7 +30,7 @@ def metadata(db, market, observation, *, watermark=None):
         watermark = db.scalar(select(Observation.id).where(Observation.market_id == market.id)
             .order_by(Observation.id.desc()).limit(1))
     valuation = signature(db, observation, watermark or 0)
-    return {'market_id': market.id, 'server_checked_at': market.last_success,
+    return {'market_id': market.id, 'server_checked_at': aware(market.last_success) if market.last_success else None,
             'upstream_updated_at': upstream,
             'observation_id': str(observation.id) if observation else None,
             'watermark_observation_id': str(watermark) if watermark else None,
@@ -43,10 +43,12 @@ def metadata(db, market, observation, *, watermark=None):
 
 def device_view(db, device):
     market = db.get(Market, device.selected_market_id) if device.selected_market_id else None
+    def stamp(value):
+        return aware(value) if value is not None else None
     return {'id': device.id, 'user_id': device.user_id, 'name': device.name,
             'platform': device.platform, 'app_version': device.app_version,
-            'authorized_at': device.created_at, 'expires_at': device.expires_at,
-            'last_connection_at': device.last_connection_at, 'last_sync_at': device.last_sync_at,
+            'authorized_at': stamp(device.created_at), 'expires_at': stamp(device.expires_at),
+            'last_connection_at': stamp(device.last_connection_at), 'last_sync_at': stamp(device.last_sync_at),
             'selected_market_id': device.selected_market_id,
             'selected_market_name': market.label if market else None, 'revoked': device.revoked}
 
@@ -64,6 +66,9 @@ def bootstrap(request: Request, user: User = Depends(identity), db: Session = De
     choices = []
     for market in db.scalars(select(Market).where(Market.verified.is_(True)).order_by(Market.id)):
         value = market_view(market, player_identity=True)
+        for key in ('last_success', 'next_check'):
+            if value[key] is not None:
+                value[key] = aware(value[key])
         value['available_for_sync'] = market.enabled and value['player_identity_verified']
         latest = db.scalar(select(Observation).where(Observation.market_id == market.id)
             .order_by(Observation.retrieved_at.desc(), Observation.id.desc()).limit(1))

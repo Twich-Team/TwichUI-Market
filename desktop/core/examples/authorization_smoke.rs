@@ -2,11 +2,17 @@
 use chrono::Utc;
 use std::{
     io::{self, Write},
-    sync::{atomic::AtomicBool, Mutex},
+    path::PathBuf,
+    sync::{atomic::AtomicBool, Arc, Mutex},
+    time::Duration,
 };
 use twichui_market_core::{
     authorization::{AuthorizationClient, CredentialStore, Session},
     cache::Cache,
+    scheduler::{Run, SystemClock},
+    settings::Settings,
+    synchronizer,
+    worker::{Execution, Executor, Worker},
     Error, Result,
 };
 
@@ -33,6 +39,30 @@ fn report(value: serde_json::Value) {
     println!("{value}");
     io::stdout().flush().unwrap();
 }
+struct ApiTask<S: CredentialStore + Send + Sync + 'static> {
+    store: Arc<S>,
+    path: PathBuf,
+}
+impl<S: CredentialStore + Send + Sync + 'static> Executor for ApiTask<S> {
+    fn execute(
+        &self,
+        server: &str,
+        run: &Run,
+        progress: &(dyn Fn(u32) + Send + Sync),
+    ) -> Result<Execution> {
+        let session = AuthorizationClient::new(server)?.session(self.store.as_ref(), Utc::now())?;
+        synchronizer::synchronize(
+            &session.client()?,
+            server,
+            &self.path,
+            run,
+            None,
+            &SystemClock,
+            progress,
+            |_| {},
+        )
+    }
+}
 fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     let server = std::env::var("MARKET_TEST_SERVER")?;
     assert!(
@@ -44,15 +74,55 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     let store = twichui_market_core::vault::NativeCredentialStore;
     #[cfg(not(windows))]
     let store = MemoryStore::default();
+    let store = Arc::new(store);
     let pending = client.begin("Synthetic native authorization fixture", "2.0.0-beta.1")?;
     report(serde_json::json!({"stage":"approval","info":pending.info()}));
-    let session = client.complete(pending, &AtomicBool::new(false), &store)?;
+    let session = client.complete(pending, &AtomicBool::new(false), store.as_ref())?;
     session.client()?.authenticate()?;
+    let bootstrap = session.client()?.bootstrap()?;
+    assert_eq!(bootstrap.account.username, "native-fixture");
+    assert_eq!(bootstrap.device.as_ref().unwrap().id, session.device_id());
     let dir = tempfile::tempdir()?;
+    let worker = Worker::start(
+        SystemClock,
+        Settings {
+            server: format!("{server}/"),
+            selected_market: Some(1),
+            automatic_sync: false,
+            sync_on_startup: false,
+            ..Settings::default()
+        },
+        true,
+        None,
+        Arc::new(ApiTask {
+            store: store.clone(),
+            path: dir.path().join("cache.sqlite"),
+        }),
+        |_| {},
+    )?;
+    assert!(worker.sync_now()?);
+    assert!(worker.wait_idle(Duration::from_secs(30))?);
+    assert!(worker.snapshot()?.error.is_none());
+    assert!(worker.snapshot()?.sync.last_sync_ms.is_some());
+    worker.shutdown()?;
     let mut cache = Cache::open(&dir.path().join("cache.sqlite"))?;
-    while session.client()?.synchronize_page(&mut cache, 1)? {}
     assert_eq!(cache.status(&format!("{server}/"), 1)?.item_count, 2);
-    let renewed = client.session(&store, Utc::now())?;
+    let target = cache.completed_target(&format!("{server}/"), 1)?.unwrap();
+    let current = client.session(store.as_ref(), Utc::now())?;
+    let source = current.client()?.provenance(1, &target)?;
+    assert_eq!(source.market_id, 1);
+    cache.record_completion(
+        &format!("{server}/"),
+        1,
+        &twichui_market_core::cache::Completion {
+            schema_version: 1,
+            last_sync_ms: Utc::now().timestamp_millis(),
+            source,
+        },
+    )?;
+    assert!(cache.completion(&format!("{server}/"), 1)?.is_some());
+    current.client()?.activity(Some(1), "2.0.0-beta.1")?;
+    let renewed = client.session(store.as_ref(), Utc::now())?;
     renewed.client()?.authenticate()?;
     assert!(
         matches!(session.client()?.authenticate(), Err(Error::Authentication)),
