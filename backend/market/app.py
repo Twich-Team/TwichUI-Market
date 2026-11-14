@@ -32,6 +32,8 @@ from .market_configuration import router as configuration_router
 app.include_router(configuration_router)
 from .current_listings import router as listings_router
 app.include_router(listings_router)
+from .preferences import router as preferences_router
+app.include_router(preferences_router)
 COOKIE_SECURE = os.environ.get("COOKIE_SECURE", "true").lower() == "true"
 ORIGIN = os.environ.get("APP_ORIGIN", "https://localhost")
 
@@ -49,11 +51,22 @@ async def security_headers(request, call_next):
         origin = request.headers.get("origin")
         if origin and origin != ORIGIN:
             return Response(status_code=403)
-        if settings.READ_ONLY and request.url.path not in ('/api/v1/auth/login','/api/v1/auth/logout'):
+        personal_preference = ((request.method=='PATCH' and request.url.path=='/api/v1/me/preferences')
+            or (request.method=='POST' and request.url.path=='/api/v1/me/preferences/reset'))
+        if settings.READ_ONLY and request.url.path not in ('/api/v1/auth/login','/api/v1/auth/logout') and not personal_preference:
             return Response(status_code=403,content='{"detail":"Interactive preview is read-only; use production for changes."}',media_type='application/json')
         length = request.headers.get("content-length", "0")
         if not length.isdigit() or int(length) > 16384:
             return Response(status_code=413)
+        if personal_preference:
+            chunks=[]
+            size=0
+            async for chunk in request.stream():
+                size+=len(chunk)
+                if size>4096:
+                    return Response(status_code=413)
+                chunks.append(chunk)
+            request._body=b''.join(chunks)
     response = await call_next(request)
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"

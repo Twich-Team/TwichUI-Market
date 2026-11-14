@@ -1,5 +1,7 @@
 # Implementation plan
 
+Current owner objective: [persistent per-user preferences](user-preferences-plan.md); [current implementation/testing status](user-preferences-progress.md). New frontend remains in preview pending owner approval; collector and all live market history remain protected.
+
 Current milestone: [Market usability, configuration and retention](market-usability-plan.md), [progress](market-usability-progress.md).
 
 Current deployment task: [focused preview/Traefik plan](traefik-preview-plan.md).

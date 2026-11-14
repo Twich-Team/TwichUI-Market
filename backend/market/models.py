@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from sqlalchemy import BigInteger, Boolean, Date, DateTime, ForeignKey, Index, Integer, LargeBinary, String, Text, UniqueConstraint, func
+from sqlalchemy import BigInteger, Boolean, CheckConstraint, Date, DateTime, ForeignKey, Index, Integer, LargeBinary, String, Text, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column
 from .db import Base, now
 
@@ -12,6 +12,16 @@ class User(Base):
     role: Mapped[str] = mapped_column(String(16), default="member")
     active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+
+
+class UserPreference(Base):
+    __tablename__ = 'user_preferences'
+    __table_args__ = (CheckConstraint('length(values_json) <= 4096', name='ck_user_preferences_size'),)
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'), primary_key=True)
+    schema_version: Mapped[int] = mapped_column(Integer, default=1)
+    revision: Mapped[int] = mapped_column(BigInteger, default=1)
+    values_json: Mapped[str] = mapped_column(Text)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
 
 
 class Credential(Base):

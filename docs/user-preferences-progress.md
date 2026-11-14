@@ -1,0 +1,11 @@
+# Personal preferences progress
+
+Started from clean 89554e6 on dev/s1-s5-implementation. Read AGENTS.md, implementation/progress, authentication/ownership/CSRF, current user models, API conventions, migrations and React/TanStack Query/cache code. [Plan and full scope](user-preferences-plan.md). Production stays on its approved frontend; only house 114 / market 2 remains collecting. No production data or collector changes have been made for preferences.
+
+## Backend checkpoint — 2026-11-14
+
+Added migration 0012 and a per-user PostgreSQL table, schema 1 defaults, 4 KiB request/storage bounds, strict allowlisted values and browser-session-only self-service GET/PATCH/reset endpoints. User identity always comes from the authenticated session; no user-ID input exists. Optimistic revisions plus a per-user row lock serialize concurrent first writes. Reset advances the revision. Partial column updates merge without erasing another column. Unknown/unavailable newly submitted market IDs are rejected; a previously valid missing market resolves to an available fallback without rewriting the saved choice. Disabled historical markets remain research choices. Only exact preference mutations are permitted through the otherwise read-only preview; administration/device mutations remain blocked.
+
+Verification: 178 PostgreSQL tests pass, including 30 preferences cases for strict values/unknown fields, authentication/CSRF/device restrictions, isolation, persistence in independent sessions, conflict/reset behavior, absent/returning-market fallback, preview boundaries and concurrent first/existing writes. A subsequent strict schema-version boolean rejection refinement passes all 30 preferences tests again. Migration upgrade/parity/downgrade-to-base/re-upgrade passes against the isolated market_test database. No live migration, preference write or frontend deployment has occurred yet.
+
+Frontend work in progress: per-account optimistic save queue, conflict merging, retry, stale-response rejection and reset ordering; all 32 frontend tests and TypeScript/Vite build pass. Existing and new real-browser tests are running in the separate synthetic market_test browser project. Live preview and final acceptance remain outstanding; this checkpoint is not goal completion.

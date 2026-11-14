@@ -1,5 +1,7 @@
 # Active milestone
 
+Current owner objective: [persistent per-user preferences](user-preferences-plan.md); [current implementation/testing status](user-preferences-progress.md). New frontend remains in preview pending owner approval; collector and all live market history remain protected.
+
 Latest mapping investigation: [US Normal Horde findings](market-identity-findings.md) now reconcile house 114 with high corroborated confidence. The owner-approved atomic switch executed at 15:15:50 UTC after CI/backup checks: market 2 / house 114 is the sole collector at 300 seconds, and market 1 / house 110 is disabled with history intact. See [switch acceptance](market-switch-acceptance.md). No additional feed was activated.
 
 Current owner milestone: [Market usability, configuration and historical retention](market-usability-plan.md). Latest status, measurements and approval gates are in [its progress record](market-usability-progress.md). Earlier deployment records below remain historical.
