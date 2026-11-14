@@ -72,3 +72,26 @@ def test_admin_management_preserves_owner(owner):
     assert owner.patch(f"/api/v1/admin/users/{friend['id']}", json={'role': 'admin', 'active': True}).status_code == 200
     assert owner.patch('/api/v1/admin/users/1', json={'role': 'member', 'active': True}).status_code == 200
     assert owner.get('/api/v1/admin/users').status_code == 403
+
+
+def test_browser_reload_recovers_csrf_and_password_revokes_all_credentials(owner):
+    device=owner.post('/api/v1/devices',json={'name':'test'}).json()
+    owner.headers.pop('x-csrf-token')
+    session=owner.get('/api/v1/auth/session').json()
+    owner.headers['x-csrf-token']=session['csrf_token']
+    assert owner.post('/api/v1/admin/invitations').status_code==201
+    assert owner.post('/api/v1/auth/password',json={'current_password':'wrong old password','new_password':'new correct password'}).status_code==403
+    assert owner.post('/api/v1/auth/password',json={'current_password':'correct horse battery','new_password':'new correct password'}).status_code==204
+    assert owner.get('/api/v1/auth/me').status_code==401
+    assert owner.get('/api/v1/auth/me',headers={'authorization':f"Bearer {device['token']}"}).status_code==401
+    assert owner.post('/api/v1/auth/login',json={'username':'owner','password':'new correct password'}).status_code==200
+
+
+def test_invitation_revocation_and_admin_device_listing(owner):
+    invitation=owner.post('/api/v1/admin/invitations').json()
+    rows=owner.get('/api/v1/admin/invitations').json()
+    assert 'token_hash' not in rows[0]
+    assert owner.delete(f"/api/v1/admin/invitations/{rows[0]['id']}").status_code==204
+    assert owner.post('/api/v1/auth/register',json={'username':'friend','password':'friend password long','invitation':invitation['token']}).status_code==400
+    owner.post('/api/v1/devices',json={'name':'fixture'})
+    assert owner.get('/api/v1/admin/devices').json()[0]['name']=='fixture'

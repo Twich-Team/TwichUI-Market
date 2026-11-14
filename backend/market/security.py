@@ -33,7 +33,8 @@ def audit(db, actor, action, detail=""):
 
 
 def issue(db, user, kind, name="browser"):
-    token, csrf = secrets.token_urlsafe(32), secrets.token_urlsafe(32)
+    token = secrets.token_urlsafe(32)
+    csrf = digest('csrf:'+token)
     row = Credential(user_id=user.id, token_hash=digest(token), kind=kind, name=name,
                      csrf_hash=digest(csrf) if kind == "session" else None,
                      expires_at=now() + timedelta(days=1 if kind == "session" else 90))

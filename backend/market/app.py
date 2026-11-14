@@ -128,6 +128,30 @@ def me(user: User = Depends(identity)):
     return user_view(user)
 
 
+@app.get('/api/v1/auth/session')
+def browser_session(request: Request,user: User = Depends(identity)):
+    if request.state.credential.kind!='session':
+        raise HTTPException(403,'Browser session required')
+    return {'user':user_view(user),'csrf_token':digest('csrf:'+request.cookies['market_session'])}
+
+
+class PasswordChange(BaseModel):
+    current_password: str = Field(min_length=12,max_length=128)
+    new_password: str = Field(min_length=12,max_length=128)
+
+
+@app.post('/api/v1/auth/password',status_code=204)
+def change_password(body: PasswordChange,request: Request,user: User = Depends(identity),db: Session = Depends(session)):
+    if request.state.credential.kind!='session':
+        raise HTTPException(403,'Browser session required')
+    if not verify(user.password_hash,body.current_password):
+        raise HTTPException(403,'Current password incorrect')
+    user.password_hash=hasher.hash(body.new_password)
+    db.execute(update(Credential).where(Credential.user_id==user.id).values(revoked=True))
+    audit(db,user.id,'password.changed')
+    db.commit()
+
+
 @app.post("/api/v1/auth/logout", status_code=204)
 def logout(request: Request, response: Response, user: User = Depends(identity), db: Session = Depends(session)):
     request.state.credential.revoked = True
@@ -175,6 +199,28 @@ def invite(user: User = Depends(admin), db: Session = Depends(session)):
 @app.get("/api/v1/admin/users")
 def users(user: User = Depends(admin), db: Session = Depends(session)):
     return [user_view(row) for row in db.scalars(select(User).order_by(User.id))]
+
+
+@app.get('/api/v1/admin/invitations')
+def invitations(user: User = Depends(admin),db: Session = Depends(session)):
+    rows=db.scalars(select(Invitation).order_by(Invitation.id.desc()).limit(200))
+    return [{'id':row.id,'expires_at':row.expires_at,'used':row.used} for row in rows]
+
+
+@app.delete('/api/v1/admin/invitations/{invitation_id}',status_code=204)
+def revoke_invitation(invitation_id: int,user: User = Depends(admin),db: Session = Depends(session)):
+    row=db.get(Invitation,invitation_id)
+    if not row:
+        raise HTTPException(404,'Invitation not found')
+    row.used=True
+    audit(db,user.id,'invitation.revoked',str(row.id))
+    db.commit()
+
+
+@app.get('/api/v1/admin/devices')
+def all_devices(user: User = Depends(admin),db: Session = Depends(session)):
+    rows=db.scalars(select(Credential).where(Credential.kind=='device').order_by(Credential.id.desc()).limit(200))
+    return [{'id':row.id,'user_id':row.user_id,'name':row.name,'revoked':row.revoked,'expires_at':row.expires_at} for row in rows]
 
 
 @app.patch("/api/v1/admin/users/{user_id}")

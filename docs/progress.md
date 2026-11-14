@@ -34,4 +34,8 @@ S5.2 core passes six Rust regressions: persisted resumability, immutable complet
 
 Companion Chromium UI verification passes connection/token-input clearing, two-page sync, completed-cache display, export status and disconnect using explicitly mocked native IPC. Actual Rust-to-FastAPI HTTP integration is separately verified. Generated Windows icons derive from repository-native SVG; no external artwork used.
 
-Next: commit/push Windows CI checkpoint, inspect native CI results and continue unblocked website infrastructure. Credentials and explicit design approval remain pending.
+Draft PR: https://github.com/Twich-Team/TwichUI-Market/pull/1. Backend PR workflow 43530807224 passed auditing, migrations and tests. Windows workflow 43530807214 passed core tests including native Credential Manager, actual Rust/FastAPI HTTP integration, Tauri NSIS build and artifact upload. Installer execution/UI on a Windows desktop remains a separate validation limit.
+
+Browser authentication support now includes reload-safe CSRF recovery, password changes revoking all credentials, invitation listing/revocation and admin device listings; 43 PostgreSQL regressions pass. React/Vite application infrastructure is in progress as an explicitly unapproved review candidate. No visual approval is inferred.
+
+Next: end-to-end browser verification of real React/private API workflows and Docker web packaging. Credentials and explicit design approval remain pending.
