@@ -31,6 +31,10 @@ jobs:
       - run: python scripts/verify-companion-http.py
       - run: npm ci --prefix desktop
       - run: npm --prefix desktop run tauri build -- --ci
+      - name: Verify installed Windows release
+        shell: pwsh
+        timeout-minutes: 5
+        run: ./scripts/windows/verify-installer.ps1
       - uses: actions/upload-artifact@v4
         with:
           name: twichui-market-companion-windows
