@@ -1,5 +1,7 @@
 # Implementation plan
 
+Active owner goal: [Companion v2 full request](companion-v2-request.md), [detailed milestone plan](companion-v2-plan.md), [durable progress and next action](companion-v2-progress.md). Prioritize native Rust scheduling and secure browser authentication foundations, then complete native utility/tray/settings, setup/device website, verified release distribution, full Windows/browser testing and approved deployment. Preserve the current approved production website, sole house-114 collector and all data; new significant designs require their own approval.
+
 Owner-approved frontend/API promotion is complete at **https://market.twich.gg**, application release **c8f03c2**. [Plan](production-promotion-plan.md), [full production acceptance and rollback](production-promotion-acceptance.md). Visual/usability approval covers Item Experience, Market Configuration, Historical Retention controls and User Preferences. Preview containers were removed after verification. History, accounts, sessions, preferences and the single house-114 collector are preserved; destructive retention remains unauthorized.
 
 Persistent per-user preferences are now live in production: [original plan](user-preferences-plan.md), [progress](user-preferences-progress.md), [historical preview acceptance](user-preferences-acceptance.md). Collector and all live market history remain protected.

@@ -1,6 +1,8 @@
 pub mod cache;
 pub mod client;
 pub mod protocol;
+pub mod scheduler;
+pub mod settings;
 pub mod vault;
 
 #[derive(Debug, thiserror::Error)]
