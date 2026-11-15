@@ -16,6 +16,14 @@ from market.security import issue
 def key(item):return hashlib.sha256(json.dumps(item,sort_keys=True,separators=(',',':')).encode()).hexdigest()
 
 
+@pytest.fixture(autouse=True)
+def contract_bundle(monkeypatch):
+    monkeypatch.setenv('BRIDGE_CONTRACT_ROOT',str(Path(__file__).resolve().parents[2]/'contracts/bridge/v1'))
+    contract.cache_clear()
+    yield
+    contract.cache_clear()
+
+
 @pytest.fixture
 def bridge(client,database,monkeypatch):
     monkeypatch.setenv('SYNC_CURSOR_SECRET','bridge-test-secret-'+'a'*32)
