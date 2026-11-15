@@ -99,3 +99,30 @@ def test_failed_collection_without_detail_is_still_in_failure_history(owner,data
     with database.begin() as db:db.add(CollectionRun(market_id=market,status='failed',http_status=None,error=None))
     value=owner.get('/api/v1/admin/records/collection?status=failures').json()
     assert value['total']==1 and value['rows'][0]['status']=='failed'
+
+
+def test_temporary_provider_retry_after_blocks_other_items(database):
+    from market.metadata_recovery import tick
+    from market.security import aware
+    market=setup(database);at=now()
+    with database.begin() as db:enqueue(db,market,'single',['everloot'],item_id=720,budget=2)
+    tick(database,at=at,fetcher=lambda *a,**k:response(status=503,body=b'{}',headers={'Retry-After':'7200'}),automatic=False)
+    with database.begin() as db:
+        provider=db.get(MetadataProvider,'everloot')
+        assert aware(provider.cooldown_until)>=at+timedelta(hours=2)
+        enqueue(db,market,'single',['everloot'],item_id=721,budget=1)
+    sent=[]
+    tick(database,at=at+timedelta(minutes=16),fetcher=lambda *a,**k:sent.append(a),automatic=False)
+    assert not sent
+
+
+def test_connection_validation_respects_long_temporary_retry_after(database):
+    from market.metadata_recovery import validate_credential_once
+    market=setup(database);at=now()
+    with database.begin() as db:db.get(MetadataProvider,'everloot').validation_requested=True
+    validate_credential_once(database,at=at,fetcher=lambda *a,**k:response(status=503,body=b'{}',headers={'Retry-After':'7200'}))
+    with database() as db:
+        provider=db.get(MetadataProvider,'everloot')
+        from market.security import aware
+        assert aware(provider.cooldown_until)>=at+timedelta(hours=2)
+        assert provider.validation_requested

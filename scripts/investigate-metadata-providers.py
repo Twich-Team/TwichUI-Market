@@ -96,7 +96,7 @@ def probe(provider,item_id,deadline,kind='item',store_validated=False,etag=None,
             if status==200:
                 if kind in ('corpus','corpus_page'):
                     value=json.loads(raw)
-                    if value.get('ok') is not True or not isinstance(value.get('records'),list):raise ValueError('Unexpected public corpus shape')
+                    if value.get('unreachable') or value.get('ok') is not True or not isinstance(value.get('records'),list):raise ValueError('Unexpected public corpus shape')
                     if corpus_sink:corpus_sink(value)
                     category='observations_only'
                     fixture={key:value[key] for key in ('ok','uploads','dataAsOf','kinds','offset','limit','total','next','attribution') if key in value}

@@ -196,7 +196,7 @@ def validate_credential_once(factory, *, at, fetcher):
         if row.validation_revision != revision: return True
         if status in (429, 503) or status is None:
             row.validation_error = category
-            row.cooldown_until = at + timedelta(seconds=900)
+            row.cooldown_until = at + timedelta(seconds=max(900,retry_delay(headers.get('Retry-After'),at)))
             if status == 429: cooldown(row, status, headers, at)
             return True  # Retry the still-encrypted candidate after cooldown.
         row.validation_requested = False
@@ -376,8 +376,10 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_cl
             if category:
                 src.status = category
                 delay = 604800 if status == 404 else 900
-                src.retry_at = at + timedelta(seconds=delay)
+                src.retry_at = at + timedelta(seconds=max(delay,retry_delay(headers.get('Retry-After'),at)))
                 provider.last_error = category
+                if status is not None and status >= 500 and headers.get('Retry-After'):
+                    provider.cooldown_until = max(aware(provider.cooldown_until) if provider.cooldown_until else at,src.retry_at)
                 if ident == 'blizzard':
                     primary=db.get(ItemMetadata,(region,item_id))
                     if primary is None:
