@@ -16,6 +16,7 @@ if os.environ.get('METADATA_KEYRING_FILE'):
     assert str(path)=='/tmp/metadata-browser-keyring.json'
     path.write_text(json.dumps({'active':'browser','keys':{'browser':base64.b64encode(secrets.token_bytes(32)).decode()}}))
     path.chmod(0o600)
+if os.environ.get("METADATA_TEST_KEYRING_ONLY")=="true":raise SystemExit(0)
 with Session.begin() as db:
     db.add(CompanionAuthorization(id='E'*43,device_name='Expired browser fixture',platform='Windows',app_version='2.0.0-beta.1',issuer_origin=os.environ.get('APP_ORIGIN','http://proxy'),
         redirect_uri='http://127.0.0.1:43123/companion/callback',state_value='S'*43,state_hash=__import__('hashlib').sha256(('S'*43).encode()).hexdigest(),code_challenge='C'*43,
