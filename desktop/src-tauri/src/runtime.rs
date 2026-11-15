@@ -789,6 +789,14 @@ impl Runtime {
             Mode::Disconnected=>return Err("Sign in before exporting".into()),
         }
         if self.data.quitting.load(Ordering::Acquire){return Err("Export cancelled".into())}
+        // Settings can change while the native connection gate is held. Never publish
+        // an export for a connection/market that is no longer selected.
+        let current=self.view()?;
+        let current_account=self.data.local.lock().map_err(|_| "Connection settings unavailable")?.profile.bootstrap.as_ref().map(|b|b.account.id);
+        if !current.connected || server_url(&current.settings.server).map_err(friendly)?.as_str()!=scope.server
+            || current_account!=Some(account) || current.settings.selected_market.or(current.sync.sync.selected_market)!=Some(market) {
+            return Err("Connection or market changed. Completed data is preserved; export again for the selected market.".into())
+        }
         let root=twichui_market_core::bridge::staging_directory(&self.data.path,&scope).map_err(friendly)?;
         let output=twichui_market_core::bridge::export_staging(&cache,&scope,&root).map_err(friendly)?;
         Ok(output.to_string_lossy().into_owned())
