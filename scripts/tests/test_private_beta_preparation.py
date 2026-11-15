@@ -54,6 +54,14 @@ class PrivateBetaPreparation(unittest.TestCase):
             with patch.object(private.urllib.request,'urlopen',return_value=io.BytesIO(json.dumps({**base,**change}).encode())):
                 with self.assertRaises(ValueError):private.workflow('123',base['path'],'b'*40)
 
+    def test_authorized_beta_notice_keeps_other_visual_changes_gated(self):
+        config=json.dumps({'version':'2.0.0-beta.1','app':{'windows':[{'devtools':False}]}}).encode()
+        for changed in ['web/src/companion.tsx\nweb/src/companion-downloads.ts\n','desktop/ui/styles.css\n','web/src/styles.css\n']:
+            with patch.object(private.subprocess,'check_output',side_effect=lambda args,**kwargs:changed if '--name-only' in args else config):
+                if 'companion.tsx' in changed:self.assertEqual(private.source_config('b'*40,'c'*40)['version'],'2.0.0-beta.1')
+                else:
+                    with self.assertRaisesRegex(ValueError,'approval'):private.source_config('b'*40,'c'*40)
+
     def fixture(self):
         # This shared policy fixture is synthetic; a positive gate test does not
         # attest actual Windows, GitHub or human action.

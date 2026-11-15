@@ -27,12 +27,19 @@ jobs:
       - run: npm --prefix web audit --omit=dev
       - run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml up -d --build
       - run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml run --rm -T --no-deps api python - < web/e2e/seed.py
+      - run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml exec -T api python - < web/e2e/seed-private-beta.py
       - run: docker run --rm --network twichui-market-browser_default -v "$PWD:/work" -w /work/web mcr.microsoft.com/playwright:v1.65.1-noble npm run test:e2e
       - if: always()
         uses: actions/upload-artifact@v4
         with:
           name: item-modernization-browser-evidence
           path: artifacts/modernization
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: companion-private-beta-browser-evidence
+          path: artifacts/companion-v2/private-beta-wizard*.png
+          if-no-files-found: ignore
       - if: failure()
         uses: actions/upload-artifact@v4
         with:

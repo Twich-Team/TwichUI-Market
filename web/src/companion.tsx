@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { api, User, when } from "./api";
+import { api, ApiError, User, when } from "./api";
+import { companionDownloadUrl } from "./companion-downloads";
 import { usePreferences } from "./preferences";
 import { CompanionDevices, useCompanionDevices } from "./companion-devices";
 interface Release {
@@ -37,21 +38,11 @@ function restore(key: string): SetupProgress {
   } catch {}
   return { schema_version: 1, step: 0, since: 0 };
 }
-function downloadUrl(release: Release) {
-  if (!release.ready || !release.download_url || !release.version) return null;
-  const uri = new URL(release.download_url, location.origin);
-  if (
-    uri.origin !== location.origin ||
-    uri.username ||
-    uri.password ||
-    uri.hash ||
-    uri.search ||
-    !/^\/api\/v1\/companion\/releases\/[0-9]+\.[0-9]+\.[0-9]+(?:-[a-zA-Z0-9.-]+)?\/windows-x64$/.test(
-      uri.pathname,
-    )
-  )
-    return null;
-  return uri.pathname;
+interface PrivateBeta extends Release {
+  channel: "private-beta";
+  signed: false;
+  updates: "manual";
+  tray_actions_verified: false;
 }
 export function CompanionSetup({ user }: { user: User }) {
   const key = `market-companion-setup-v1:${user.id}`;
@@ -65,6 +56,16 @@ export function CompanionSetup({ user }: { user: User }) {
     queryKey: ["companion", "release"],
     queryFn: ({ signal }) =>
       api<Release>("/companion/releases/current", "GET", undefined, signal),
+    staleTime: 60_000,
+  });
+  const privateBeta = useQuery({
+    queryKey: ["private", "companion", "private-beta", user.id],
+    enabled: release.isSuccess && !release.data.ready,
+    queryFn: async ({ signal }) => {
+      try { return await api<PrivateBeta>("/companion/private-beta/current", "GET", undefined, signal); }
+      catch (error) { if (error instanceof ApiError && error.status === 404) return null; throw error; }
+    },
+    retry: false,
     staleTime: 60_000,
   });
   const bootstrap = useQuery({
@@ -102,7 +103,10 @@ export function CompanionSetup({ user }: { user: User }) {
   const selected = bootstrap.data?.markets.find(
     (market) => market.id === bootstrap.data?.suggested_market_id,
   );
-  const url = release.data && downloadUrl(release.data);
+  const url = companionDownloadUrl(release.data);
+  const beta = privateBeta.data;
+  const betaUrl = beta?.channel === "private-beta" && beta.signed === false && beta.updates === "manual" && beta.tray_actions_verified === false
+    ? companionDownloadUrl(beta, "private-beta") : null;
   function step(value: number, since = progress.since) {
     const next: SetupProgress = { schema_version: 1, step: value, since };
     setProgress(next);
@@ -158,7 +162,7 @@ export function CompanionSetup({ user }: { user: User }) {
               <span className="eyebrow">01 / DOWNLOAD</span>
               <h2>Keep it close. Keep it simple.</h2>
               <p>
-                Get the verified Windows installer directly from TwichUI Market.
+                Get the Windows installer directly from TwichUI Market.
                 No GitHub account is needed.
               </p>
               {release.isPending ? (
@@ -197,6 +201,26 @@ export function CompanionSetup({ user }: { user: User }) {
                     <code className="release-hash">{release.data?.sha256}</code>
                   </details>
                 </>
+              ) : betaUrl ? (
+                <div className="notice" role="status">
+                  <strong>Private Windows beta</strong>
+                  <p>This test version is shared with your account. The installer is unsigned, so Windows may show a warning or block it.</p>
+                  <p>Updates are manual. Tray actions still need checking on your PC.</p>
+                  <a className="primary companion-download" href={betaUrl} download onClick={() => step(1)}>
+                    Download private beta <span aria-hidden="true">↓</span>
+                  </a>
+                  <p className="small muted">Version {beta?.version} · Windows 10/11, 64-bit · {((beta?.bytes || 0) / 1048576).toFixed(1)} MiB</p>
+                  <details>
+                    <summary>Download integrity details</summary>
+                    <p className="small">SHA-256</p>
+                    <code className="release-hash">{beta?.sha256}</code>
+                  </details>
+                </div>
+              ) : privateBeta.error ? (
+                <div className="notice error" role="alert">
+                  <p>Private download information is unavailable. Please try again.</p>
+                  <button className="secondary" onClick={() => privateBeta.refetch()}>Check private download again</button>
+                </div>
               ) : (
                 <div className="notice" role="status">
                   <strong>Release verification is in progress.</strong>

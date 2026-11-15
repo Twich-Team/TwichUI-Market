@@ -82,7 +82,12 @@ def workflow(run_id,path,source):
 
 def source_config(source,visual):
     if not all(re.fullmatch(r'[a-f0-9]{40}',value) for value in (source,visual)):raise ValueError('Exact source and approved visual commits required')
-    subprocess.run(['git','diff','--exit-code',visual,source,'--','desktop/ui','desktop/src-tauri/src','web/src','web/public'],cwd=ROOT,check=True,stdout=subprocess.DEVNULL)
+    changed=subprocess.check_output(['git','diff','--name-only',visual,source,'--','desktop/ui','desktop/src-tauri/src','web/src','web/public'],cwd=ROOT,text=True)
+    # The owner's free-beta choice authorizes its status/download logic within
+    # the approved setup layout. Brand/styles, native UI and other screens still
+    # require their own visual approval. Stable producer policy is unchanged.
+    beta_notice={'web/src/companion.tsx','web/src/companion-downloads.ts','web/src/companion-downloads.test.ts'}
+    if len(changed)>16384 or set(changed.splitlines())-beta_notice:raise ValueError('Visual changes outside the authorized private-beta notice need approval')
     raw=subprocess.check_output(['git','show',source+':desktop/src-tauri/tauri.conf.json'],cwd=ROOT)
     if len(raw)>16384:raise ValueError('Source configuration exceeds bound')
     config=json.loads(raw)

@@ -8,6 +8,11 @@ RUN cargo build --manifest-path desktop/Cargo.toml --release --example verify_re
 # Supply the exact verified backend dependency image. This image is an operator
 # tool only; it has no listener, collector, credentials or database dependency.
 FROM ${BACKEND_IMAGE}
+USER 0
+# Source provenance is checked inside this bounded rootless operator image.
+# No host packages, credentials, SSH keys or database access are needed.
+RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*
+USER market
 COPY --from=verifier /source/desktop/target/release/examples/verify_release /usr/local/bin/twichui-verify-release
 COPY backend/market/companion_releases.py backend/market/release_publisher.py backend/market/companion_private_beta.py backend/market/private_beta_publisher.py /app/market/
 ENTRYPOINT ["python", "-m", "market.release_publisher"]

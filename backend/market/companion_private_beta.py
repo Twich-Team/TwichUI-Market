@@ -159,9 +159,9 @@ def latest():
 def current(user:User=Depends(reader)):
     try:manifest=latest()
     except (OSError,ValueError,KeyError,TypeError):
-        return {'contract_version':1,'ready':False,'channel':'private-beta','version':None,'download_url':None,
+        return {'contract_version':1,'ready':False,'platform':'windows-x64','channel':'private-beta','version':None,'download_url':None,
             'message':'The private Windows beta is not available yet.'}
-    return {'contract_version':1,'ready':True,'channel':'private-beta','version':manifest.version,
+    return {'contract_version':1,'ready':True,'platform':'windows-x64','channel':'private-beta','version':manifest.version,
         'download_url':f'/api/v1/companion/private-beta/{manifest.version}/windows-x64','bytes':manifest.bytes,'sha256':manifest.sha256,
         'source_commit':manifest.source_commit,'published_at':manifest.published_at,'updates':'manual','signed':False,
         'tray_actions_verified':False,'notes':manifest.notes,
