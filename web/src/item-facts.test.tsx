@@ -9,3 +9,8 @@ it('keeps verified facts and all unique credits visible while provenance is opti
  expect(html.match(/Data from Everloot/g)).toHaveLength(1);expect(html).toContain('Game data © Blizzard Entertainment');expect(html).toContain('<details class="item-technical"><summary>Technical details</summary>');
  expect(html.indexOf('Field provenance')).toBeGreaterThan(html.indexOf('<details'));expect(html.slice(0,html.indexOf('<details'))).not.toContain('1.60.1');
 });
+it('retains TheWoWDB and ForeverDB credits and visible uncertainty without inventing missing stats',()=>{
+ const profile={item_id:1,name:'Unknown attributes',quality:null,attributes:null,source:{provider:'thewowdb',confidence:'community_beta'},catalog:{provenance:{name:{provider:'thewowdb',confidence:'community_beta',attribution:{text:'TheWoWDB community data',url:'https://thewowdb.com'}},level:{provider:'foreverdb',confidence:'client_record_unverified',attribution:{text:'ForeverDB data',url:'https://foreverdb.net'}}},conflicts:[]}} as unknown as ItemProfile;
+ const html=renderToStaticMarkup(<ItemFacts profile={profile}/>),visible=html.slice(0,html.indexOf('<details'));
+ expect(visible).toContain('Community / beta attributes may differ');expect(visible).toContain('Unconfirmed client-file attributes may differ');expect(visible).toContain('TheWoWDB community data');expect(visible).toContain('ForeverDB data');expect(visible).toContain('Missing facts are not');expect(visible).not.toContain('Item Level');
+});

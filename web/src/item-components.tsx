@@ -126,6 +126,8 @@ export function ItemFacts({ profile }: { profile: ItemProfile }) {
           )}
         </>
       )}
+      {profile.source?.confidence === "synthetic" && <p className="small muted">Synthetic fixture metadata</p>}
+      {Object.values(profile.catalog?.provenance || {}).some(origin=>["game_file_unconfirmed","client_record_unverified"].includes(origin.confidence)) && <p className="small muted">Unconfirmed client-file attributes may differ.</p>}
       {profile.source?.confidence === "community_beta" && <p className="small muted">Community / beta attributes may differ.</p>}
       {profile.source?.status && profile.source.status !== "available" && <p className="small muted">Previously observed metadata · latest check unavailable.</p>}
       <ProfileCredits profile={profile}/>

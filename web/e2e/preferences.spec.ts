@@ -32,7 +32,7 @@ test('preferences auto-save every supported choice and restore across independen
  const catalogue=page.getByRole('region',{name:'Item catalogue',exact:true});
  await expect(catalogue.locator('tbody tr').first()).toBeVisible();
  await catalogue.getByLabel('Items per page').selectOption('50');
- await catalogue.getByText('Item columns',{exact:true}).click();
+ await catalogue.getByText('Columns',{exact:true}).click();
  await catalogue.getByLabel('Listings',{exact:true}).uncheck();
  await catalogue.getByRole('columnheader',{name:/Supply/}).getByRole('button').click();
  await catalogue.getByRole('columnheader',{name:/Supply/}).getByRole('button').click();
