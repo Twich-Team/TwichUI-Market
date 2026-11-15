@@ -14,7 +14,8 @@ from market.sync_generation import signature
 def fixture(db):
     market=Market(region='us',ruleset_id=2,house_id=114,source_kind='auctions',label='Synthetic batch equivalence')
     db.add(market);db.flush()
-    at=(now()-timedelta(days=1)).replace(hour=12,minute=0,second=0,microsecond=0)
+    # A completed UTC day keeps fixture samples valid even just after midnight.
+    at=now().replace(hour=12,minute=0,second=0,microsecond=0)-timedelta(days=1)
     observations=[]
     for index,days in enumerate([61,60,14,2,0]):
         rows=[{'id':1,'item':{'id':1},'quantity':3,'buyout':100+index},

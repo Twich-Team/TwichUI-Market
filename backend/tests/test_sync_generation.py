@@ -29,7 +29,7 @@ def fail_compact(*args, **kwargs):
 
 def test_same_day_unchanged_payload_skips_variant_work_and_advances_cursor(owner,database,monkeypatch):
     monkeypatch.setenv('SYNC_CURSOR_SECRET','synthetic-generation-key-over-32-characters')
-    stamp=(now()-timedelta(days=1)).replace(hour=10,minute=0,second=0,microsecond=0)
+    stamp=now().replace(hour=10,minute=0,second=0,microsecond=0)-timedelta(days=1)
     market=seed(database,stamp);path=f'/api/v1/sync/markets/{market}'
     initial=owner.get(path).json()
     with database.begin() as db:add(db,market,'conditional-check',stamp+timedelta(minutes=5))
@@ -52,7 +52,7 @@ def test_unchanged_payload_across_utc_day_updates_coverage(owner,database,monkey
 
 def test_precise_fourteen_day_boundary_changes_reference_with_same_snapshot(owner,database,monkeypatch):
     monkeypatch.setenv('SYNC_CURSOR_SECRET','synthetic-generation-key-over-32-characters')
-    stamp=(now()-timedelta(days=1)).replace(hour=10,minute=0,second=0,microsecond=0)
+    stamp=now().replace(hour=10,minute=0,second=0,microsecond=0)-timedelta(days=1)
     market=seed(database,stamp-timedelta(days=14)+timedelta(seconds=1),price=300)
     with database.begin() as db:add(db,market,'head',stamp)
     path=f'/api/v1/sync/markets/{market}';initial=owner.get(path).json();assert initial['changes'][0]['value']['market_value']=='200'
@@ -64,7 +64,7 @@ def test_precise_fourteen_day_boundary_changes_reference_with_same_snapshot(owne
 
 def test_sixty_day_boundary_expires_history_without_upstream_change(owner,database,monkeypatch):
     monkeypatch.setenv('SYNC_CURSOR_SECRET','synthetic-generation-key-over-32-characters')
-    stamp=(now()-timedelta(days=1)).replace(hour=10,minute=0,second=0,microsecond=0)
+    stamp=now().replace(hour=10,minute=0,second=0,microsecond=0)-timedelta(days=1)
     market=seed(database,stamp-timedelta(days=60)+timedelta(seconds=1),price=300)
     with database.begin() as db:add(db,market,'head',stamp)
     path=f'/api/v1/sync/markets/{market}';initial=owner.get(path).json();assert initial['changes'][0]['value']['historical_value']=='200'
@@ -75,7 +75,7 @@ def test_sixty_day_boundary_expires_history_without_upstream_change(owner,databa
 
 def test_non_winning_synthetic_observation_changes_warning_and_noop_preserves_it(owner,database,monkeypatch):
     monkeypatch.setenv('SYNC_CURSOR_SECRET','synthetic-generation-key-over-32-characters')
-    stamp=(now()-timedelta(days=1)).replace(hour=10,minute=0,second=0,microsecond=0)
+    stamp=now().replace(hour=10,minute=0,second=0,microsecond=0)-timedelta(days=1)
     market=seed(database,stamp);path=f'/api/v1/sync/markets/{market}';initial=owner.get(path).json();assert not initial['synthetic']
     with database.begin() as db:add(db,market,'late-synthetic-earlier-same-day',stamp-timedelta(minutes=5),synthetic=True)
     page=owner.get(path,params={'cursor':initial['cursor']}).json()
@@ -90,7 +90,7 @@ def test_non_winning_synthetic_observation_changes_warning_and_noop_preserves_it
 
 def test_irrelevant_late_history_keeps_generation_and_historical_metadata_is_watermark_bound(owner,database,monkeypatch):
     monkeypatch.setenv('SYNC_CURSOR_SECRET','synthetic-generation-key-over-32-characters')
-    stamp=(now()-timedelta(days=1)).replace(hour=10,minute=0,second=0,microsecond=0)
+    stamp=now().replace(hour=10,minute=0,second=0,microsecond=0)-timedelta(days=1)
     market=seed(database,stamp);path=f'/api/v1/sync/markets/{market}';initial=owner.get(path).json()
     old=owner.get(f'/api/v1/companion/markets/{market}/observations/'+initial['target_observation_id']).json()
     with database.begin() as db:add(db,market,'outside-window',stamp-timedelta(days=61),price=999,synthetic=True)
