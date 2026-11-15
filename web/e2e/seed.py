@@ -41,7 +41,7 @@ with Session.begin() as db:
                 rows.extend([{'id':2000+index,'item':{'id':20001+index},'quantity':1,'buyout':10000} for index in range(40)])
             body=json.dumps({'auctions':rows}).encode()
             ingest(db,market.id,body,request_key=f'browser-{house}-{days}',retrieved_at=now()-timedelta(days=days),synthetic=True)
-        db.add(CollectionRun(market_id=market.id,checked_at=now(),status='success',http_status=200,duration_seconds=2,payload_bytes=len(body),error=None))
+        db.add(CollectionRun(market_id=market.id,checked_at=now(),status='collected',http_status=200,duration_seconds=2,payload_bytes=len(body),error=None))
 print('Synthetic browser fixtures seeded in isolated market_test')
 
 # Synthetic local catalog recovery evidence; no external provider is contacted.

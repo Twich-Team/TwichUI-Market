@@ -18,10 +18,10 @@ Provider = Literal['blizzard', 'everloot', 'foreverdb', 'thewowdb']
 # Historical results did not distinguish returned data from actual gains.
 OUTCOMES = ('name_recovered', 'attributes_recovered', 'already_known', 'metadata_returned', 'no_usable_data',
     'missing', 'wrong_identity', 'invalid_response', 'credentials_invalid', 'access_blocked', 'rate_limited',
-    'unavailable', 'pending', 'skipped')
+    'unavailable', 'pending', 'skipped', 'attributes_returned', 'observations_returned', 'name_returned')
 RESULTS = cast(MetadataTask.result_json, JSON)
 STATUS = RESULTS['status'].as_string()
-OUTCOME = func.coalesce(RESULTS['outcome'].as_string(), case(
+RECORDED_OUTCOME = func.coalesce(RESULTS['outcome'].as_string(), case(
     (MetadataTask.state.in_(('queued', 'running')), 'pending'),
     (STATUS == 'not_modified', 'already_known'),
     (STATUS == 'metadata_unavailable', 'missing'),
@@ -33,6 +33,7 @@ OUTCOME = func.coalesce(RESULTS['outcome'].as_string(), case(
     ((STATUS == 'available') & (cast(RESULTS['recovered_fields'], String) == '[]'), 'no_usable_data'),
     (STATUS == 'available', 'metadata_returned'),
     (MetadataTask.state.in_(('skipped', 'cancelled')), 'skipped'), else_='unavailable'))
+OUTCOME = case((STATUS == 'attributes_only', 'attributes_returned'), (STATUS == 'observations_only', 'observations_returned'), ((STATUS == 'named_record') & (RECORDED_OUTCOME == 'metadata_returned'), 'name_returned'), else_=RECORDED_OUTCOME)
 
 
 def page(db, query, order, offset, limit):
@@ -70,13 +71,14 @@ def retry_permission(db, task, provider, src, active_identities=None):
 def safe_attempt(db, task, metadata, provider, src, outcome, job, active_identities=None):
     value = json.loads(task.result_json) if task.result_json else {}
     origin = value.get('source') or {}
+    scope = 'catalog' if job.mode=='bulk' or value.get('kind') in ('attributes','corpus','corpus_page') else 'item'
     permitted, reason, eligible = retry_permission(db, task, provider, src, active_identities)
     if job and job.mode in ('bulk','diagnostic'): permitted,reason=False,'Preview a bounded recovery job'
     # Explicit allowlist. No payload, URLs, headers, exception text or credentials.
     return {'id':task.id,'job_id':task.job_id,'item_id':task.item_id,'region':task.region,'provider':task.provider,
-        'item_name':(metadata.name or metadata.fallback_name) if metadata else None,'quality':metadata_name(metadata,task.item_id)['quality'],'state':task.state,
+        'record_scope':scope,'item_name':(metadata.name or metadata.fallback_name) if metadata and scope=='item' else None,'quality':metadata_name(metadata,task.item_id)['quality'] if scope=='item' else None,'state':task.state,
         'at':task.updated_at,'attempts':task.attempts,'http_status':value.get('http_status'),
-        'outcome':outcome,'fields_returned':[f for f in value.get('recovered_fields',[]) if f in FIELDS or f in ('base_attributes','client_attributes')],
+        'outcome':outcome,'fields_returned':[f for f in value.get('fields_returned',value.get('recovered_fields',[])) if f in FIELDS or f in ('base_attributes','client_attributes')],
         'fields_recovered':[f for f in value.get('new_fields',[]) if f in FIELDS],
         'error_category':value.get('status') if value.get('status') in ('authorization','forbidden','rate_limited','metadata_unavailable','transport_or_schema','wrong_identity','upstream_error','invalid_not_modified') else None,
         'source':{'edition':'forever','build':origin.get('build'),'confidence':origin.get('confidence')},
@@ -168,7 +170,7 @@ def collection(market_id: int | None = Query(None,ge=1),status: str = Query('',m
                user: User = Depends(admin),db: Session = Depends(session)):
     query=select(CollectionRun)
     if market_id: query=query.where(CollectionRun.market_id==market_id)
-    if status=='failures': query=query.where(CollectionRun.error.is_not(None))
+    if status=='failures': query=query.where(or_(CollectionRun.status=='failed',CollectionRun.error.is_not(None)))
     elif status: query=query.where(CollectionRun.status==status)
     column=getattr(CollectionRun,sort)
     count,rows=page(db,query,((column.desc() if desc else column.asc()),CollectionRun.id.desc()),offset,limit)

@@ -78,3 +78,24 @@ def test_recovery_measures_real_field_gains(database):
         task=db.scalar(select(MetadataTask))
         result=json.loads(task.result_json)
         assert result['outcome']=='name_recovered' and result['new_fields']==['name']
+
+
+def test_catalog_diagnostics_are_not_failed_item_recoveries(owner,database):
+    market=setup(database)
+    with database.begin() as db:
+        job,_=enqueue(db,market,'single',['everloot'],item_id=720,budget=1)
+        job.mode='diagnostic';job.state='completed'
+        task=db.scalar(select(MetadataTask).where(MetadataTask.job_id==job.id));task.state='completed'
+        task.result_json=json.dumps({'kind':'corpus_page','status':'observations_only','outcome':'no_usable_data','http_status':200})
+    result=owner.get('/api/v1/admin/records/metadata-attempts').json()
+    assert result['rows'][0]['record_scope']=='catalog'
+    assert result['rows'][0]['outcome']=='observations_returned'
+    assert result['summary']=={'observations_returned':1}
+
+
+def test_failed_collection_without_detail_is_still_in_failure_history(owner,database):
+    from market.models import CollectionRun
+    market=setup(database)
+    with database.begin() as db:db.add(CollectionRun(market_id=market,status='failed',http_status=None,error=None))
+    value=owner.get('/api/v1/admin/records/collection?status=failures').json()
+    assert value['total']==1 and value['rows'][0]['status']=='failed'
