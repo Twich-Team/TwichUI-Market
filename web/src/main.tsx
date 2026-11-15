@@ -1,3 +1,4 @@
+import {parseRoute,useLocation,navigate,restoration} from "./navigation";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient, clearPrivateCache, setQueryIdentity } from "./query";
 import { announceSessionChange, onSessionChange } from "./auth-channel";
@@ -16,7 +17,7 @@ const Account = lazy(() =>
 );
 const Companion = lazy(() => import("./companion").then(m=>({default:m.CompanionSetup})));
 const CompanionApproval = lazy(() => import("./companion-approval").then(m=>({default:m.CompanionApproval})));
-function routedPage(){const path=location.pathname;return path==='/companion'?'companion':path==='/account'?'account':path==='/deals'?'deals':path==='/administration'?'admin':'explorer';}
+const ItemDetails=lazy(()=>import('./item-details').then(m=>({default:m.ItemDetails})));
 import { Market } from "./types";
 import { PreferencesProvider, PreferenceStatus, usePreferences } from "./preferences";
 import { preferredMarket } from "./preferences-store";
@@ -178,22 +179,27 @@ function App() {
 }
 
 function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:()=>Promise<void>;signedOut:()=>void;authError:string}) {
-  const [page,changePage]=useState(routedPage);
-  const setPage=(page:string)=>{changePage(page);history.pushState(null,'',({explorer:'/',deals:'/deals',admin:'/administration',account:'/account',companion:'/companion'} as Record<string,string>)[page]||'/');};
-  useEffect(()=>{const update=()=>changePage(routedPage());window.addEventListener('popstate',update);return()=>window.removeEventListener('popstate',update);},[]);
+  const url=useLocation();const route=parseRoute(location.pathname,location.search);const page=route.kind;
+  const setPage=(page:string)=>navigate(({explorer:'/',deals:'/deals',admin:'/administration',account:'/account',companion:'/companion'} as Record<string,string>)[page]||'/');
+  useEffect(()=>{
+    if(restoration()?.focus)return;
+    const focus=()=>{const h=document.querySelector<HTMLElement>('main h1');if(!h)return false;h.tabIndex=-1;h.focus({preventScroll:true});return true;};
+    if(focus())return;
+    const observer=new MutationObserver(()=>{if(focus())observer.disconnect();});observer.observe(document.body,{childList:true,subtree:true});return()=>observer.disconnect();
+  },[location.pathname]);
   const [markets,setMarkets]=useState<Market[]>([]);
   const [error,setError]=useState("");
   const [readOnly,setReadOnly]=useState(true);
-  const [focus,setFocus]=useState<{item_id:number;variant_key:string}|null>(null);
+  const [marketsReady,setMarketsReady]=useState(false);
   const preferences=usePreferences();
   const market=preferredMarket(markets,preferences.values.market_id);
   const setMarket=(id:number)=>preferences.update({market_id:id});
   const loadMarkets=async()=>{
     const result=await api<{markets:Market[]}>("/markets");
-    setMarkets(result.markets);
+    setMarkets(result.markets);setMarketsReady(true);
   };
   useEffect(()=>{
-    loadMarkets().catch(error=>setError(error.message));
+    loadMarkets().catch(error=>{setError(error.message);setMarketsReady(true);});
     api<{read_only:boolean}>("/environment").then(result=>{
       queryClient.setQueryData(["private","environment"],result);setReadOnly(result.read_only);
     }).catch(error=>setError(error.message));
@@ -205,6 +211,7 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
     admin: "Administration",
     account: "Account & devices",
     companion: "Get Desktop Companion",
+    item:"Item Details",missing:"Page not found",
   };
   return (
     <>
@@ -230,7 +237,7 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
           ].map((key) => (
             <button
               key={key}
-              className={page === key ? "active" : ""}
+              className={page === key || (page === "item" && key === "explorer") ? "active" : ""}
               onClick={() => setPage(key)}
             >
               {names[key]}
@@ -255,7 +262,7 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
         <main>
           {readOnly && <p className="notice" role="status">Interactive preview · Your preferences save automatically. Collection and account administration are read-only.</p>}
           <PreferenceStatus />
-          {preferences.values.market_id !== null && !markets.some(m => m.id === preferences.values.market_id) && markets.length > 0 && <p className="notice">Your preferred market is unavailable. Showing an available market; your saved choice is retained.</p>}
+          {page!=="item" && preferences.values.market_id !== null && !markets.some(m => m.id === preferences.values.market_id) && markets.length > 0 && <p className="notice">Your preferred market is unavailable. Your saved choice is retained.</p>}
           {(error || authError) && (
             <div className="notice error" role="alert">
               {error || authError}
@@ -263,10 +270,11 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
           )}
           {page === "explorer" && (
             <Explorer
+              marketsReady={marketsReady}
               markets={markets}
               market={market}
               setMarket={setMarket}
-              focus={focus}
+              searchParams={new URL(url,location.origin).search}
             />
           )}{" "}
           {page === "deals" && (
@@ -274,13 +282,7 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
               markets={markets}
               market={market}
               setMarket={setMarket}
-              inspect={(deal) => {
-                setFocus({
-                  item_id: deal.item_id,
-                  variant_key: deal.variant_key,
-                });
-                setPage("explorer");
-              }}
+              searchParams={new URL(url,location.origin).search}
             />
           )}{" "}
           {page === "admin" && user.role === "admin" && (
@@ -297,6 +299,8 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
             />
           )}
           {page === 'companion' && <Companion user={user}/>}
+          {route.kind==='item'&&<ItemDetails route={route} markets={markets} marketsReady={marketsReady}/>}
+          {(page==='missing'||(page==='admin'&&user.role!=='admin'))&&<section className="empty panel"><h1>{page==='admin'?'Administrator access required':'Page not found'}</h1><p>{route.kind==='missing'?route.error:'This account does not have administration access.'}</p><a href="/" onClick={e=>{e.preventDefault();navigate('/');}}>Back to Explorer</a></section>}
         </main>
         <footer>
           TWICHUI MARKET <span>Private knowledge. Better decisions.</span>

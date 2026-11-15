@@ -1,0 +1,101 @@
+{
+  "source_commit": "b3e48bd8408cfb7ba09115abfc3ccc12a721d480",
+  "captures": [
+    {
+      "file": "screenshots/explorer-normal.png",
+      "title": "Market Explorer \u2014 normal results",
+      "bytes": 362269,
+      "sha256": "7cfbef805d092e972e441df56335e185b207a9e0f13bddde2af0c558cba6abd5",
+      "provenance": "Actual Chromium screenshot; isolated synthetic market_test data; no production observations.",
+      "browser_timezone": "America/Denver"
+    },
+    {
+      "file": "screenshots/explorer-search-filters.png",
+      "title": "Market Explorer \u2014 applied search, supply sort and page size",
+      "bytes": 354579,
+      "sha256": "c99cdeeb501f499e8f448ea7418fc0303606aacc68230e45186aa6d332b962d3",
+      "provenance": "Actual Chromium screenshot; isolated synthetic market_test data; no production observations.",
+      "browser_timezone": "America/Denver"
+    },
+    {
+      "file": "screenshots/details-common.png",
+      "title": "Item Details \u2014 common item, exact variant",
+      "bytes": 1307492,
+      "sha256": "eb827a4201e497c1c57cc390603e1bfc9bb9a03f3dd722442a66b0046444db96",
+      "provenance": "Actual Chromium screenshot; isolated synthetic market_test data; no production observations.",
+      "browser_timezone": "America/Denver"
+    },
+    {
+      "file": "screenshots/details-epic.png",
+      "title": "Item Details \u2014 epic item, exact variant",
+      "bytes": 1305569,
+      "sha256": "ca6336b113ffe414222f5eb7c1a7044715bed32796ebd56b4016ed291127ea29",
+      "provenance": "Actual Chromium screenshot; isolated synthetic market_test data; no production observations.",
+      "browser_timezone": "America/Denver"
+    },
+    {
+      "file": "screenshots/details-multiple-variants.png",
+      "title": "Item Details \u2014 parent overview with separate variant ranges",
+      "bytes": 729610,
+      "sha256": "79d43ac34b64b2e68a669815127eb9089b05746952bbc7f8327271c06f6bd784",
+      "provenance": "Actual Chromium screenshot; isolated synthetic market_test data; no production observations.",
+      "browser_timezone": "America/Denver"
+    },
+    {
+      "file": "screenshots/details-price-supply-charts.png",
+      "title": "Item Details \u2014 price history and listed supply",
+      "bytes": 412289,
+      "sha256": "cc47594aca74b530b91db5f5890caaa6edc5baa0edcde3a778203639cc1ee28d",
+      "provenance": "Actual Chromium screenshot; isolated synthetic market_test data; no production observations.",
+      "browser_timezone": "America/Denver"
+    },
+    {
+      "file": "screenshots/details-current-auctions.png",
+      "title": "Item Details \u2014 paginated current asking auctions",
+      "bytes": 229985,
+      "sha256": "f5eac35d989fecb21fe27d54c27973a173fac49bf9548cc9a29c48b50bde0007",
+      "provenance": "Actual Chromium screenshot; isolated synthetic market_test data; no production observations.",
+      "browser_timezone": "America/Denver"
+    },
+    {
+      "file": "screenshots/details-missing-metadata-history.png",
+      "title": "Item Details \u2014 missing metadata and history",
+      "bytes": 1309545,
+      "sha256": "d911dab82130a54e609c9fb811b07a9d6327947706b80e419d0cdc84daeba15d",
+      "provenance": "Actual Chromium screenshot; isolated synthetic market_test data; no production observations.",
+      "browser_timezone": "America/Denver"
+    },
+    {
+      "file": "screenshots/deal-finder-to-details.png",
+      "title": "Deal Finder \u2192 exact Item Details",
+      "bytes": 1396855,
+      "sha256": "6b4c5b0bbd12aa6f5eee0ab3d32942e490aec46edc25109674ce10025c6fac97",
+      "provenance": "Actual Chromium screenshot; isolated synthetic market_test data; no production observations.",
+      "browser_timezone": "America/Denver"
+    },
+    {
+      "file": "screenshots/details-mobile.png",
+      "title": "Narrow Item Details \u2014 390 px",
+      "bytes": 760196,
+      "sha256": "9704bbc9e4653d71c7d3867b3258634dca87bd4f3c3c12de5b2480bcc7d7c7a9",
+      "provenance": "Actual Chromium screenshot; isolated synthetic market_test data; no production observations.",
+      "browser_timezone": "America/Denver"
+    },
+    {
+      "file": "screenshots/deal-finder-origin.png",
+      "title": "Deal Finder \u2014 originating filtered results",
+      "bytes": 467170,
+      "sha256": "9893fbb1f2418d5db9e42008d817955c865380357526d5409ecdbdd979ea0c42",
+      "provenance": "Actual Chromium screenshot; isolated synthetic market_test data; no production observations.",
+      "browser_timezone": "America/Denver"
+    },
+    {
+      "file": "screenshots/details-rare-exact.png",
+      "title": "Rare exact variant \u2014 current sibling selection",
+      "bytes": 1293401,
+      "sha256": "0c68967b7e59faf1b579ec219a12f8cb73e4bc7ae058148420ad4d9bc8b3bd25",
+      "provenance": "Actual Chromium screenshot; isolated synthetic market_test data; no production observations.",
+      "browser_timezone": "Etc/UTC"
+    }
+  ]
+}

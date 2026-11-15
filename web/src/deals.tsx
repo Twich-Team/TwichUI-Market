@@ -1,3 +1,4 @@
+import {dealState,dealUrl,navigate,itemUrl,followItem,restoration,saveRestoration,useRestoreView} from "./navigation";
 import { Currency } from "./currency";
 import { useEffect, useState } from "react";
 import { ItemInfo } from "./item-components";
@@ -8,7 +9,6 @@ import { Deal, Market, Signal } from "./types";
 import { usePreferences } from "./preferences";
 import type { PreferenceChanges, Preferences } from "./preferences-store";
 type Mode = "listings" | "supply" | "price";
-type Target = { item_id: number; variant_key: string };
 interface Filters {
   change: number;
   spend: number;
@@ -34,20 +34,21 @@ export function Deals({
   markets,
   market,
   setMarket,
-  inspect,
+  searchParams,
 }: {
   markets: Market[];
   market: number;
   setMarket: (id: number) => void;
-  inspect: (target: Target) => void;
+  searchParams:string;
 }) {
   const preferences=usePreferences();
   const saved=preferences.values;
-  const mode=saved.deal_mode;
-  const restored=()=>({change:Math.min(saved.deal_change,mode==='listings'?99:1000),spend:saved.deal_spend_gold,
-    coverage:Math.min(saved.deal_coverage,mode==='listings'?15:14),confidence:saved.deal_confidence,direction:saved.deal_direction});
+  const browsing=dealState(searchParams,{market,mode:saved.deal_mode,filters:{change:saved.deal_change,spend:saved.deal_spend_gold,coverage:saved.deal_coverage,confidence:saved.deal_confidence,direction:saved.deal_direction}});
+  market=browsing.market;const mode=browsing.mode;
+  const restored=()=>restoration()?.dealDraft??browsing.filters;
   const [filters,setFilters]=useState<Filters>(restored);
-  useEffect(()=>{setFilters(restored());},[saved.deal_mode,saved.deal_change,saved.deal_spend_gold,saved.deal_coverage,saved.deal_confidence,saved.deal_direction]);
+  useEffect(()=>{setFilters(restored());},[searchParams]);
+  function apply(next=filters,nextMode=mode,nextMarket=market,draft=next){saveRestoration({dealDraft:draft});navigate(dealUrl({market:nextMarket,mode:nextMode,filters:next}),true);}
   function changeFilters(changes:Partial<Filters>) {
     setFilters(previous=>({...previous,...changes}));
     const update:PreferenceChanges={};
@@ -58,20 +59,23 @@ export function Deals({
     if(changes.direction!==undefined)update.deal_direction=changes.direction as Preferences['deal_direction'];
     if(Object.keys(update).length)preferences.update(update);
   }
-  const [submitted, setSubmitted] = useState(filters);
+  const submitted=browsing.filters;
+
   const result = useLoad(
     "opportunities",
-    () => {
+    (signal) => {
       if (!market) return Promise.resolve(null);
       const shared = `minimum_coverage=${submitted.coverage}&minimum_confidence=${submitted.confidence}`;
       const path =
         mode === "listings"
           ? `/deals?minimum_discount=${submitted.change}&maximum_spend=${Math.round(submitted.spend * 10000)}&${shared}`
           : `/signals?kind=${mode}&minimum_change=${submitted.change}&direction=${submitted.direction}&${shared}`;
-      return api<Results>(`/markets/${market}${path}`);
+      return api<Results>(`/markets/${market}${path}`,"GET",undefined,signal);
     },
     [market, mode, submitted],
   );
+  useRestoreView(!result.loading,searchParams);
+  useEffect(()=>{if(markets.length&&location.pathname==='/deals'&&!searchParams)apply(browsing.filters);},[markets.length]);
   const deals = result.data?.deals || [],
     signals = result.data?.signals || [];
   const count = mode === "listings" ? deals.length : signals.length;
@@ -84,11 +88,8 @@ export function Deals({
       change: Math.max(1,Math.min(previous.change, maximum)),
       coverage: Math.max(1,Math.min(previous.coverage, days)),
     }));
-    setSubmitted((previous) => ({
-      ...previous,
-      change: Math.max(1,Math.min(previous.change, maximum)),
-      coverage: Math.max(1,Math.min(previous.coverage, days)),
-    }));
+    apply({...browsing.filters,change:Math.max(1,Math.min(browsing.filters.change,maximum)),coverage:Math.max(1,Math.min(browsing.filters.coverage,days))},next,market,{...filters,change:Math.max(1,Math.min(filters.change,maximum)),coverage:Math.max(1,Math.min(filters.coverage,days))});
+
   }
   return (
     <>
@@ -121,16 +122,10 @@ export function Deals({
         className="toolbar"
         onSubmit={(event) => {
           event.preventDefault();
-          setSubmitted({
-            ...filters,
-            change:
-              mode === "listings"
-                ? Math.min(99, filters.change)
-                : filters.change,
-          });
+          saveRestoration({dealDraft:filters});apply({...filters,change:mode==='listings'?Math.min(99,filters.change):filters.change});
         }}
       >
-        <MarketSelect {...{ markets, market, setMarket }} />
+        <MarketSelect markets={markets} market={market} setMarket={id=>{setMarket(id);apply(browsing.filters,mode,id,filters);}} />
         <label>
           {mode === "listings" ? "Minimum discount (%)" : "Minimum change (%)"}
           <input
@@ -308,9 +303,9 @@ export function Deals({
                     <li key={caution}>{caution}</li>
                   ))}
                 </ul>
-                <button className="secondary" onClick={() => inspect(deal)}>
+                <a id={`deal-${deal.auction_id}`} className="secondary" href={itemUrl(market,deal.item_id,deal.variant_key)} onClick={event=>{saveRestoration({dealDraft:filters});followItem(event);}}>
                   Inspect item ↗
-                </button>
+                </a>
               </article>
             ))}
             {signals.map((signal) => (
@@ -388,9 +383,9 @@ export function Deals({
                     <li key={caution}>{caution}</li>
                   ))}
                 </ul>
-                <button className="secondary" onClick={() => inspect(signal)}>
+                <a id={`signal-${signal.item_id}-${signal.variant_key}`} className="secondary" href={itemUrl(market,signal.item_id,signal.variant_key)} onClick={event=>{saveRestoration({dealDraft:filters});followItem(event);}}>
                   Inspect item ↗
-                </button>
+                </a>
               </article>
             ))}
           </div>

@@ -13,7 +13,7 @@ async function login(page: Page, username = "owner", secret = password) {
     const session = await (await page.request.get("/api/v1/auth/session")).json();
     const reset = await page.request.post("/api/v1/me/preferences/reset", {headers:{"X-CSRF-Token":session.csrf_token},data:{schema_version:1,expected_revision:saved.revision}});
     expect(reset.status()).toBe(200);
-    await page.reload();
+    await page.goto("/");
     await expect(page.getByRole("heading",{name:"Market Explorer",exact:true})).toBeVisible();
   }
 }
@@ -30,20 +30,11 @@ test("private Explorer, history, listings, Deal Finder and browser reload use re
       "Synthetic fixture data · not live Auction House observations.",
     ),
   ).toBeVisible();
-  await expect(
-    page.getByRole("heading", {
-      name: "Synthetic Arcane Crystal",
-      exact: true,
-    }),
-  ).toBeVisible();
-  await page.getByLabel("Search items", { exact: true }).fill("arcane");
-  await page.getByRole("button", { name: "Search", exact: true }).click();
-  await expect(
-    page.getByRole("heading", {
-      name: "Synthetic Arcane Crystal",
-      exact: true,
-    }),
-  ).toBeVisible();
+  await page.getByLabel("Search items",{exact:true}).fill("arcane");
+  await page.getByRole("button",{name:"Search",exact:true}).click();
+  await page.getByRole("link",{name:"Research Synthetic Arcane Crystal",exact:true}).click();
+  await page.getByRole("link",{name:/Inspect Synthetic Arcane Crystal:/}).click();
+  await expect(page.getByRole("heading",{name:"Synthetic Arcane Crystal",exact:true})).toBeVisible();
   await page.locator(".chart-viewport").first().scrollIntoViewIfNeeded();
   await expect(
     page.getByRole("img", { name: "Observed asking-price history" }),
@@ -114,7 +105,7 @@ test("private Explorer, history, listings, Deal Finder and browser reload use re
     }),
   ).toBeVisible();
   await page
-    .getByRole("button", { name: "Inspect item ↗", exact: true })
+    .getByRole("link", { name: "Inspect item ↗", exact: true })
     .click();
   await expect(
     page.getByRole("heading", {
@@ -123,9 +114,7 @@ test("private Explorer, history, listings, Deal Finder and browser reload use re
     }),
   ).toBeVisible();
   await page.reload();
-  await expect(
-    page.getByRole("heading", { name: "Market Explorer", exact: true }),
-  ).toBeVisible();
+  await expect(page.getByRole("heading",{name:"Synthetic Arcane Crystal",exact:true})).toBeVisible();
   await page
     .getByRole("button", { name: "Administration", exact: true })
     .click();

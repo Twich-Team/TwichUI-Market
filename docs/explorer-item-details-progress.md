@@ -1,0 +1,27 @@
+**Owner-review boundary reached:** Explorer / Item Details is fully implemented and verified at `b3e48bd` on `feature/explorer-item-details`, with [draft PR #4](https://github.com/Twich-Team/TwichUI-Market/pull/4), [complete review report](explorer-item-details-review.md) and [actual screenshot gallery](evidence/explorer-details/review.html). Backend, website and Windows CI are green (380 PostgreSQL, 109 frontend, 34 browser workflows, operational/security/migration checks). Production remains approved administration release `e9c4d29`; Phase 2 is not deployed. Stop at this boundary pending explicit final owner visual approval. Earlier instructions to begin/continue this implementation are superseded by this completion record.
+
+# Explorer / Item Details implementation ledger
+
+Owner authorization: implement fully, push a separate feature branch and open a draft PR; stop before production promotion pending final visual approval. Phase 1 is deployed at `e9c4d29`, with integration acceptance through `9ce465a`. Feature branch: `feature/explorer-item-details`; target: `integration/companion-v2-metadata-recovery`.
+
+## Navigation foundation
+
+Added strict supported-integer and exact lowercase 64-character variant route parsing, canonical item URLs, bounded Explorer query serialization, safe internal browsing origins and account-cleared bounded transient restoration. Added focused unit cases for valid/invalid identities, missing routes, browsing round trips, limits and unsafe redirects. This checkpoint does not yet change the existing UI. Existing deep-link inventory finds no prior persistent item route: Deals used an in-memory Explorer selection. Existing invitation, Companion authorization/download and API paths remain separate contracts.
+
+Next: wire controlled catalogue/Explorer state and dedicated independently loaded Item Details; switch Deal Finder anchors; complete restoration, responsive/error/accessibility checks, update browser workflows for the new navigation, and produce the final ten-scene visual gallery with exact-source CI. Production image pins and collector remain untouched by Phase 2.
+
+## Dedicated experience candidate
+
+Explorer now uses controlled TanStack catalogue state from the URL and contains no research or automatic first-item variant/detail request. Item names and variant actions are real canonical anchors. The dedicated route independently loads metadata/provenance and current overview; exact variants reuse price history, supply distribution and current auctions. Parent overview ranges never select a variant. Missing routes/markets/variants and independent section failures have explicit states and retries. Single-variant exact pages avoid redundant selection tables. Shared item colors, tooltip/icon behavior, copper formatting, algorithms and all API/schema contracts remain unchanged.
+
+Applied Explorer and Deal Finder controls are URL-backed; preference defaults cannot overwrite restored links. Bounded, account-cleared transient history entries retain draft input, expanded parents, scroll and focus, without storing API responses or browser-storage payloads. Exact variant switches replace the item URL; safe returns point to their own browsing origin. The catalogue page clamps when live counts shrink and explains the adjustment. Cells retain stable identities so restoring expansion does not replace a focused link.
+
+Verification: navigation/default/identity/cache-isolation unit cases added; TypeScript and the 109-test frontend suite pass. Targeted restored-focus/scroll/paging and 3,651-day chart workflow pass. A fresh full **32-workflow browser run passed** against the isolated `market_test` stack. All seven new research/navigation/performance workflows passed again after the final tooltip, title and range-state refinements. Final source CI and the reviewed visual/performance packet are still pending. No production image, market data, provider settings, collector or infrastructure changes are part of this feature branch.
+
+The final candidate also tests direct supplemental attribution/neutral quality and an explicitly simulated disappeared-variant response that retains real fixture history without mutating any database. The full CI browser inventory is now 34 workflows; final CI remains pending.
+
+## Final review acceptance
+
+All three canonical PR workflows pass on frozen application `b3e48bd`; PR preview `b18cf9b` has an identical application tree. The 34-workflow CI browser suite includes all nine new research cases. The pinned image matches all 13 build assets, and its ten required screenshot scenes were captured and inspected; desktop/narrow exact and parent-variant axe scans report zero violations. Local medians are 1,302 ms through fixture login/catalogue, 1,082 ms parent/exact navigation and 207 ms Back with zero catalogue requests; these are synthetic local measurements, not production p95. Complete evidence and exact future promotion prerequisites are in the linked review report.
+
+A final read-only check confirms every production container identity/image is unchanged since Phase 1, public HTTPS is healthy, schema remains `meta_20261114`, house 114/market 2 alone collects at 300 seconds with failures=0, and retention batches remain zero. No Phase 2 promotion occurred. Subsequent review-documentation commits preserve the application tree. The goal is complete at the requested owner-review boundary; any production promotion requires explicit final visual approval and exact integrated-commit revalidation.

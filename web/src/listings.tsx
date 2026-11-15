@@ -91,7 +91,7 @@ export function CurrentListings({
         />
         Advanced auction diagnostics
       </label>
-      {response.error && <p role="alert">{response.error.message}</p>}
+      {response.error && <p role="alert">{response.error.message} <button onClick={()=>response.refetch()}>Retry current auctions</button></p>}
       {response.isFetching && <p role="status">Loading current listings…</p>}
       <DataTable<Auction>
         label="current listings"
