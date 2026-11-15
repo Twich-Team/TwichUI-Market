@@ -230,3 +230,60 @@ mod update_authority_tests {
         trusted.update_authority().unwrap(); // No HTTP request or production credential.
     }
 }
+
+impl MarketClient {
+    /// Reuses the same origin, no-redirect HTTP client and native credential. No scheduler calls this.
+    pub fn download_bridge(&self, cache: &mut crate::bridge::BridgeCache, scope: &crate::bridge::Scope,
+        cancelled: impl Fn()->bool) -> Result<()> {
+        if self.server.as_str()!=scope.server {return Err(Error::Invalid("bridge origin scope"))}
+        let(_,bootstrap_bytes)=self.bridge_request("/api/v1/companion/bootstrap",&[],262144)?;
+        let bootstrap_value=crate::bridge::parse(&bootstrap_bytes,262144)?;
+        let bootstrap:crate::connection::Bootstrap=serde_json::from_value(bootstrap_value.clone())?;
+        bootstrap.validate()?;
+        let expected=bootstrap_value["markets"].as_array().and_then(|a|a.iter().find(|m|m["id"]==scope.market_id)).ok_or(Error::Invalid("bridge selected market"))?;
+        let identity_matches=|h:&serde_json::Value| h["market"]["region"]==expected["region"] && h["market"]["house_id"]==expected["house_id"] && h["market"]["transport_ruleset_id"]==expected["ruleset_id"] && h["market"]["source_kind"]==expected["source_kind"] && h["market"]["mapping_verified"]==expected["player_identity_verified"];
+        if bootstrap.account.id!=scope.account_id || bootstrap.resolve_market(Some(scope.market_id)).map(|m|m.id)!=Some(scope.market_id) {
+            return Err(Error::Authentication);
+        }
+        let mut resets=0;
+        for _ in 0..10_000 {
+            if cancelled(){return Err(Error::Cancelled)}
+            if cache.pending(scope)?.is_none() {
+                let mut ready=false;
+                for _ in 0..17 {
+                    if cancelled(){return Err(Error::Cancelled)}
+                    let(status,bytes)=self.bridge_request(&format!("/api/v1/bridge/markets/{}/manifest",scope.market_id),&[("algorithm",&scope.algorithm)],70*1024)?;
+                    if status==202 {
+                        let value=crate::bridge::parse(&bytes,4096)?;
+                        if value!=serde_json::json!({"state":"preparing","retry_after_seconds":1}) {return Err(Error::Invalid("bridge preparation response"))}
+                        std::thread::sleep(Duration::from_secs(1));continue;
+                    }
+                    let manifest=crate::bridge::parse(&bytes,70*1024)?;
+                    if !identity_matches(&manifest["manifest"]){return Err(Error::Invalid("bridge identity differs from selected authenticated market"))}
+                    cache.start(scope,&bytes)?;ready=true;break;
+                }
+                if !ready{return Err(Error::ServiceUnavailable)}
+            }
+            let(header,cursor)=cache.pending(scope)?.ok_or(Error::Invalid("bridge staging"))?;
+            if !identity_matches(&header){return Err(Error::Invalid("pending bridge identity no longer matches selected market"))}
+            let generation=header["generation_id"].as_str().ok_or(Error::Invalid("bridge generation"))?;
+            let response=self.bridge_request(&format!("/api/v1/bridge/markets/{}/records",scope.market_id),&[("cursor",&cursor),("generation",generation)],1024*1024);
+            let(_,bytes)=match response {
+                Err(Error::ResetRequired) if resets<1=>{cache.abandon_pending(scope)?;resets+=1;continue},
+                value=>value?,
+            };
+            if cancelled(){return Err(Error::Cancelled)}
+            if !cache.apply(scope,&cursor,&bytes,chrono::Utc::now())? {return Ok(())}
+        }
+        Err(Error::Invalid("bridge page limit"))
+    }
+    fn bridge_request(&self,path:&str,query:&[(&str,&str)],maximum:usize)->Result<(u16,Vec<u8>)> {
+        let url=self.server.join(path).map_err(|_|Error::Invalid("bridge endpoint"))?;
+        let response=self.http.get(url).query(query).bearer_auth(&self.token).send().map_err(|_|Error::Network)?;
+        let status=response.status().as_u16();
+        match status {200|202=>{},401|403=>return Err(Error::Authentication),409=>return Err(Error::ResetRequired),
+            429=>return Err(Error::RateLimited(60)),404|502|503=>return Err(Error::ServiceUnavailable),_=>return Err(Error::Network)}
+        let mut bytes=Vec::new();response.take(maximum as u64+1).read_to_end(&mut bytes).map_err(|_|Error::Network)?;
+        if bytes.len()>maximum{return Err(Error::Invalid("bridge response size"))}Ok((status,bytes))
+    }
+}

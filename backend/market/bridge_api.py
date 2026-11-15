@@ -33,14 +33,19 @@ from .sync_api import secret
 router=APIRouter(prefix='/api/v1/bridge')
 REVISION=1
 MAX_PAGE_BYTES=1024*1024
+MAX_PAGE_RECORDS=100
 MAX_RECORDS=150_000
 MAX_COLD_SNAPSHOTS=4
 CACHE_HOURS=1
 MAX_GENERATIONS=8
 
 
+def utc(value):
+    return aware(value).astimezone(timezone.utc)
+
+
 def stamp(value):
-    return aware(value).astimezone(timezone.utc).isoformat(timespec='microseconds').replace('+00:00','Z')
+    return utc(value).isoformat(timespec='microseconds').replace('+00:00','Z')
 
 
 def lock(db):
@@ -66,7 +71,7 @@ def observation_view(o,snapshot,at):
             if parsed<=at:upstream=stamp(parsed)
         except (ValueError,TypeError,OverflowError):pass
     return {'observation_id':str(o.id),'snapshot_id':str(o.snapshot_id),
-            'utc_day':aware(o.retrieved_at).date().isoformat(),'observed_at':stamp(o.retrieved_at),
+            'utc_day':utc(o.retrieved_at).date().isoformat(),'observed_at':stamp(o.retrieved_at),
             'upstream_updated_at':upstream,'upstream_modified_raw':o.upstream_modified,
             'namespace':o.namespace,'payload_sha256':o.payload_hash,'snapshot_content_sha256':snapshot.content_hash,
             'synthetic':o.synthetic,'scope_complete':True}
@@ -186,7 +191,7 @@ def assemble_record(key,values,current,daily,refs,algorithm,at,days):
     priced=[];recent=[];points=[]
     for o in daily:
         value=values.get((o.snapshot_id,*key));s=value['summary'] if value else None
-        p=s['recent_copper'] if s else None;age=(at.date()-aware(o.retrieved_at).date()).days
+        p=s['recent_copper'] if s else None;age=(at.date()-utc(o.retrieved_at).date()).days
         if p is not None:
             priced.append((int(p),1))
             if age<14:recent.append((int(p),4 if age<=2 else 2 if age<=6 else 1))
@@ -237,9 +242,10 @@ def assemble_record(key,values,current,daily,refs,algorithm,at,days):
 
 
 def build_generation(db,market,algorithm,at,history_days=60):
+    at=utc(at)
     watermark,current,daily,observations=selected_observations(db,market,at,algorithm)
     history_from=at.date()-timedelta(days=history_days-1)
-    delivered=[o for o in daily if aware(o.retrieved_at).date()>=history_from]
+    delivered=[o for o in daily if utc(o.retrieved_at).date()>=history_from]
     snapshots={r.id:r for r in db.scalars(select(Snapshot).where(Snapshot.id.in_({o.snapshot_id for o in observations})))}
     if len(snapshots)!=len({o.snapshot_id for o in observations}) or any(not s.statistics_retained for s in snapshots.values()):
         raise HTTPException(409,'Retained source support unavailable')
@@ -281,7 +287,7 @@ def build_generation(db,market,algorithm,at,history_days=60):
             records.append(r)
     g={'format':'twichui-market-bridge','contract_version':1,'schema_version':2,'transport_version':1,
        'issuer_id':str(uuid.uuid5(uuid.NAMESPACE_URL,environment.SESSION_ORIGIN)),
-       'producer':{'server_build':os.environ.get('APP_COMMIT','development-bridge-m1b')[:80],'desktop_build':'not-applicable-server-export'},
+       'producer':{'server_build':(os.environ.get('APP_COMMIT') or 'development-bridge-m1b')[:80],'desktop_build':'not-applicable-server-export'},
        'required_features':['exact_copper','current_summaries','daily_history'],'market':identity_value,
        'pricing_algorithm':algorithm,'history_basis':cp.HISTORY_BASIS if algorithm==cp.ALGORITHM else 'market_rolling_daily_means',
        'quality_policy':1,'watermark_observation_id':str(watermark),'current_observation_ref':refs[current.id],
@@ -390,7 +396,7 @@ def records(market_id:MarketId,request:Request,cursor_value:str=Query(alias='cur
     header=json.loads(row.manifest_json);count=header['record_count'];offset=p['after']
     if offset>count:raise HTTPException(409,'Impossible bridge cursor offset')
     rows=list(db.scalars(select(BridgeRecord).where(BridgeRecord.generation_id==generation,BridgeRecord.position>=offset)
-        .order_by(BridgeRecord.position).limit(limit)))
+        .order_by(BridgeRecord.position).limit(min(limit,MAX_PAGE_RECORDS))))
     out=[];size=4096
     for r in rows:
         if r.position!=offset+len(out):raise HTTPException(409,'Bridge materialization incomplete; restart download')

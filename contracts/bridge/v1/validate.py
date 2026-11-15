@@ -135,6 +135,10 @@ def validate(g):
                 close=max((o for o in observations if o['utc_day']==day and o['scope_complete']),key=lambda o:(timestamp(o['observed_at']),int(o['observation_id'])))
                 if source is not close: raise ValueError('Canonical daily close selection')
             values(d,[d['minimum_copper'],d['recent_copper']],source)
+        if coverage['history_complete']:
+            eligible={o['utc_day'] for o in observations if coverage['history_from_day']<=o['utc_day']<=coverage['history_through_day']
+                      and (algorithm!='twichui-pricing-v1' or o['scope_complete'])}
+            if seen_days!=eligible: raise ValueError('Claimed complete daily history omits an eligible date')
         dist=r['distribution']
         if (dist is not None)!=(r['distribution_status']=='available'): raise ValueError('Distribution availability')
         if coverage['distribution_complete'] and c['priced_supply'] and dist is None: raise ValueError('Distribution coverage')

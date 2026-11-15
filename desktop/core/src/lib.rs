@@ -1,3 +1,4 @@
+pub mod bridge;
 pub mod authorization;
 pub mod cache;
 pub mod client;

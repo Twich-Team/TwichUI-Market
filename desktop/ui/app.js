@@ -50,6 +50,7 @@ function render(next) {
   text('source-note',s.last_sync_ms ? (s.received_new_generation?'New upstream market data received.':'Desktop check complete. Upstream data may update less often.') : 'Collection checks and new upstream data are separate events.');
   $('synthetic-warning').hidden=!view.cache?.synthetic;$('legacy-warning').hidden=view.mode!=='legacy';
   $('export').disabled=!view.cache?.has_completed_cache;
+  $('workshop-export').disabled=!view.connected||view.refreshing||s.running;
   $('disconnect').disabled=view.approving||view.refreshing;
   if(view.error||view.sync.error) {message(view.error||view.sync.error,true);nativeErrorShown=true;}
   else if(nativeErrorShown) {message('');nativeErrorShown=false;}
@@ -134,3 +135,5 @@ $('update-confirm-install').onclick=()=>{if(updateView?.status==='available')upd
 $('update-restart').onclick=()=>updateAction('restart_companion');
 if(listen)listen('companion-update',event=>renderUpdate(event.payload));
 if(invoke)invoke('update_state').then(renderUpdate).catch(()=>{});
+
+$('workshop-export').onclick=async()=>{const button=$('workshop-export');button.disabled=true;await action('export_workshop',{algorithm:$('workshop-pricing').value},'Workshop test addon saved in the companion staging folder.');button.disabled=!view?.connected;};
