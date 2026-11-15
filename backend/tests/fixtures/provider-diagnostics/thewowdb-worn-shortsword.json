@@ -1,0 +1,27 @@
+{
+  "attribution": {
+    "required": true,
+    "terms": "https://thewowdb.com/developers/#terms",
+    "text": "Data from TheWoWDB (thewowdb.com)",
+    "url": "https://thewowdb.com/wow-forever/item/worn-shortsword-25/"
+  },
+  "binding": null,
+  "build": "wow_classic_beta-1.60.1.70532",
+  "flavor": null,
+  "id": 25,
+  "item_level": 2,
+  "item_subtype": "One-Handed Sword",
+  "kind": "item",
+  "links": {
+    "api": "https://thewowdb.com/api/v1/forever/item/25",
+    "html": "https://thewowdb.com/wow-forever/item/worn-shortsword-25/",
+    "tooltip": "https://thewowdb.com/api/v1/tooltip/forever/item/25"
+  },
+  "name": "Worn Shortsword",
+  "quality": "common",
+  "required_level": null,
+  "slot": "Main Hand",
+  "stats": [],
+  "vendor_sell": 7,
+  "version": "forever"
+}

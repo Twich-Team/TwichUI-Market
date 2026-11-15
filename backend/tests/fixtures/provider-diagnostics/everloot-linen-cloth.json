@@ -1,0 +1,19 @@
+{
+  "attribution": {
+    "credit": "Data from Everloot (https://everloot.app), CC BY-SA 4.0.",
+    "licence": "CC BY-SA 4.0",
+    "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "source": "https://everloot.app/database/items/2589",
+    "terms": "https://everloot.app/terms#licences"
+  },
+  "gameData": {
+    "build": "1.60.1.70938",
+    "credit": "Icons, tooltip text and interface art are \u00a9 Blizzard Entertainment, Inc. Everloot is a fan project and is not affiliated with or endorsed by Blizzard.",
+    "label": "found in game files, unconfirmed"
+  },
+  "id": 2589,
+  "ok": true,
+  "title": "Linen Cloth",
+  "type": "item",
+  "url": "https://everloot.app/database/items/2589"
+}

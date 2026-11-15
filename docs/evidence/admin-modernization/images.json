@@ -1,0 +1,20 @@
+{
+  "source_commit": "a81a4e395f8367571c6188c23dff143611fb1f1c",
+  "production_deployed": false,
+  "images": [
+    {
+      "id": "sha256:cc2e6b69b3f9777b106cd7a287537b2fc738387d8a848a7388859ad89af94f5d",
+      "tags": [
+        "twichui-market-backend:admin-review-a81a4e3"
+      ],
+      "revision": "a81a4e395f8367571c6188c23dff143611fb1f1c"
+    },
+    {
+      "id": "sha256:51c8290c085ccd724643a2dbf87e2ef788be7d603fb2f128a95a8697333da205",
+      "tags": [
+        "twichui-market-web:admin-review-a81a4e3"
+      ],
+      "revision": "a81a4e395f8367571c6188c23dff143611fb1f1c"
+    }
+  ]
+}

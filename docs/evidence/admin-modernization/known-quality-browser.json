@@ -1,0 +1,35 @@
+{
+  "application_source": "a81a4e395f8367571c6188c23dff143611fb1f1c",
+  "metadata_source": "Read-only production primary Forever metadata; no prices or observations exported",
+  "environment": "Isolated browser with read-only production name/quality fixture; market prices absent, no production UI deployment or provider requests",
+  "checks": [
+    {
+      "item_id": 25,
+      "name": "Worn Shortsword",
+      "quality": "COMMON",
+      "color": "rgb(255, 255, 255)",
+      "hover_color_verified": true
+    },
+    {
+      "item_id": 864,
+      "name": "Knightly Longsword",
+      "quality": "UNCOMMON",
+      "color": "rgb(30, 255, 0)",
+      "hover_color_verified": true
+    },
+    {
+      "item_id": 935,
+      "name": "Night Watch Shortsword",
+      "quality": "RARE",
+      "color": "rgb(0, 112, 221)",
+      "hover_color_verified": true
+    },
+    {
+      "item_id": 810,
+      "name": "Hammer of the Northern Wind",
+      "quality": "EPIC",
+      "color": "rgb(163, 53, 238)",
+      "hover_color_verified": true
+    }
+  ]
+}

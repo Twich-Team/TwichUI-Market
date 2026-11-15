@@ -1,0 +1,65 @@
+{
+  "source": "Read-only production primary Forever metadata; no prices or observations exported",
+  "items": [
+    {
+      "item_id": 25,
+      "name": "Worn Shortsword",
+      "quality": "COMMON",
+      "metadata_provider": "blizzard",
+      "metadata_attribution": null,
+      "metadata_attributions": [],
+      "name_verified": true,
+      "metadata_synthetic": false,
+      "metadata_observed_at": "2026-11-14 04:13:20.566184+00:00",
+      "metadata_status": "available",
+      "resolved_namespace": "static-1.60.1_70399-forever-us",
+      "payload_hash": "9e20debd0878455520344b2b21c52a62ae897c477d306c9b95e2c9248f61fe4f",
+      "resolved_at": "2026-11-14T04:13:20.566184+00:00"
+    },
+    {
+      "item_id": 864,
+      "name": "Knightly Longsword",
+      "quality": "UNCOMMON",
+      "metadata_provider": "blizzard",
+      "metadata_attribution": null,
+      "metadata_attributions": [],
+      "name_verified": true,
+      "metadata_synthetic": false,
+      "metadata_observed_at": "2026-11-14 04:28:12.991902+00:00",
+      "metadata_status": "available",
+      "resolved_namespace": "static-1.60.1_70399-forever-us",
+      "payload_hash": "764a5d2386483e754cf2b59dcc37c499951030bd9a8c5db2efa27f5d3bbf6b23",
+      "resolved_at": "2026-11-14T04:28:12.991902+00:00"
+    },
+    {
+      "item_id": 935,
+      "name": "Night Watch Shortsword",
+      "quality": "RARE",
+      "metadata_provider": "blizzard",
+      "metadata_attribution": null,
+      "metadata_attributions": [],
+      "name_verified": true,
+      "metadata_synthetic": false,
+      "metadata_observed_at": "2026-11-14 04:29:15.607113+00:00",
+      "metadata_status": "available",
+      "resolved_namespace": "static-1.60.1_70399-forever-us",
+      "payload_hash": "3ba5b753b5786bbe9cacd33ae88c3f0263239127ad0ee5fa34014a4744b39b02",
+      "resolved_at": "2026-11-14T04:29:15.607113+00:00"
+    },
+    {
+      "item_id": 810,
+      "name": "Hammer of the Northern Wind",
+      "quality": "EPIC",
+      "metadata_provider": "blizzard",
+      "metadata_attribution": null,
+      "metadata_attributions": [],
+      "name_verified": true,
+      "metadata_synthetic": false,
+      "metadata_observed_at": "2026-11-14 04:24:31.597467+00:00",
+      "metadata_status": "available",
+      "resolved_namespace": "static-1.60.1_70399-forever-us",
+      "payload_hash": "e9d4b43fc436d266b9f704b73c09be2b8a42101bde8c168fb4bd61e00e15426d",
+      "resolved_at": "2026-11-14T04:24:31.597467+00:00"
+    }
+  ]
+}

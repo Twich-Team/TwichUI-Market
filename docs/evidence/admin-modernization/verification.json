@@ -1,0 +1,20 @@
+{
+  "source_commit": "a81a4e395f8367571c6188c23dff143611fb1f1c",
+  "frontend_unit_cases": 79,
+  "operational_cases": 34,
+  "browser_workflows": 25,
+  "all_administration_axe_sections": 9,
+  "focused_browser_checks": 3,
+  "all_nine_section_workflow_seconds": 25.3,
+  "backend_targeted_cases": 53,
+  "backend_full_final": {
+    "passed": 380,
+    "seconds": 127.99
+  },
+  "production_deployed": false,
+  "visual_approval": false,
+  "provider_requests": 93,
+  "provider_recovered_names": 12,
+  "local_full_suite_source_commit": "53fb829c27ac2d616daa3c189ac940800cc3eb5b",
+  "final_source_difference": "Provider capability wording and CI artifact upload only; final source has green backend, website and Windows CI."
+}

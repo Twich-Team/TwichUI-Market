@@ -14,7 +14,7 @@ from sqlalchemy import JSON, and_, cast, func, or_, select, text
 from .db import Session, now
 from .models import ItemMetadata, Market, MetadataJob, MetadataProvider, MetadataSource, MetadataTask, Observation, SnapshotStatistic
 from .metadata_catalog import get_source, import_everloot_page, store_source
-from .metadata_providers import PARSERS, PROVIDERS, decode, fetch
+from .metadata_providers import IdentityMismatch, PARSERS, PROVIDERS, decode, fetch
 from .provider_secrets import SecretUnavailable, decrypt
 from .security import audit, aware
 
@@ -196,7 +196,7 @@ def validate_credential_once(factory, *, at, fetcher):
         if row.validation_revision != revision: return True
         if status in (429, 503) or status is None:
             row.validation_error = category
-            row.cooldown_until = at + timedelta(seconds=900)
+            row.cooldown_until = at + timedelta(seconds=max(900,retry_delay(headers.get('Retry-After'),at)))
             if status == 429: cooldown(row, status, headers, at)
             return True  # Retry the still-encrypted candidate after cooldown.
         row.validation_requested = False
@@ -320,6 +320,7 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_cl
             status, headers = meta['status'], meta.get('headers', {})
             if status == 200 and ident != 'blizzard' and mode != 'bulk': parsed = PARSERS[ident](raw, item_id, at=at)
             if status not in (200, 304): category = error_category(status)
+        except IdentityMismatch: category = 'wrong_identity'
         except Exception: category = 'transport_or_schema'
         with factory.begin() as db:
             task = db.get(MetadataTask, task_id, with_for_update=True)
@@ -328,12 +329,17 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_cl
             src = get_source(db, region, item_id, ident)
             src.checked_at, src.http_status = at, status
             result = {'provider':ident, 'item_id':item_id, 'http_status':status, 'status':category or 'available', 'recovered_fields':[]}
+            before_row = db.get(ItemMetadata, (region, item_id))
+            before_fields = json.loads(before_row.catalog_json).get('fields', {}) if before_row and before_row.catalog_json else {}
+            if before_row and before_row.name: before_fields['name'] = before_row.name
+            elif before_row and before_row.fallback_name: before_fields['name'] = before_row.fallback_name
             try:
                 if category is None and status == 200:
                     with db.begin_nested():
                         if mode == 'bulk':
                             if decode(raw).get('offset')!=item_id-1:raise ValueError('Bulk response offset mismatch')
-                            count, next_offset = import_everloot_page(db, region, raw, at=at)
+                            changes = {}
+                            count, next_offset = import_everloot_page(db, region, raw, at=at, changes=changes)
                             result.update(imported_items=count, recovered_fields=['client_attributes'])
                             if next_offset is not None and job.total < job.request_budget and job.state != 'cancelled':
                                 db.add(MetadataTask(job_id=job.id, provider=ident, region=region, item_id=next_offset+1, available_at=at))
@@ -346,12 +352,18 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_cl
                             fields, origin = parsed
                             store_source(db, region, item_id, ident, fields, origin, at=at, etag=headers.get('ETag'))
                             result.update(recovered_fields=list(fields), source=origin)
+                        after_row = db.get(ItemMetadata, (region, item_id))
+                        after_fields = json.loads(after_row.catalog_json).get('fields', {}) if after_row and after_row.catalog_json else {}
+                        result['new_fields'] = list(changes) if mode == 'bulk' else [field for field, value in after_fields.items() if value is not None and value != [] and before_fields.get(field) in (None, [])]
+                        result['outcome'] = ('name_recovered' if 'name' in result['new_fields'] else 'attributes_recovered' if result['new_fields']
+                            else 'already_known' if result['recovered_fields'] else 'no_usable_data')
                         provider.last_success, provider.last_error = at, None
                         task.state = 'completed'
                         audit(db, job.actor_id, 'metadata.item.recovered', f'job={job.id}; provider={ident}; item={item_id}')
                 elif category is None and status == 304 and src.fields_json:
                     src.status = 'available'; src.retry_at = src.refresh_at = at + timedelta(seconds=PROVIDERS[ident].refresh_seconds)
                     task.state = 'completed'; result['status'] = 'not_modified'
+                    result['outcome'] = 'already_known'
                     provider.last_success, provider.last_error = at, None
                 else:
                     if category is None: category = 'invalid_not_modified'
@@ -359,11 +371,15 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_cl
                 category = 'transport_or_schema'
                 result['recovered_fields']=[]
                 result.pop('imported_items',None)
+                result.pop('new_fields',None)
+                result.pop('outcome',None)
             if category:
                 src.status = category
                 delay = 604800 if status == 404 else 900
-                src.retry_at = at + timedelta(seconds=delay)
+                src.retry_at = at + timedelta(seconds=max(delay,retry_delay(headers.get('Retry-After'),at)))
                 provider.last_error = category
+                if status is not None and status >= 500 and headers.get('Retry-After'):
+                    provider.cooldown_until = max(aware(provider.cooldown_until) if provider.cooldown_until else at,src.retry_at)
                 if ident == 'blizzard':
                     primary=db.get(ItemMetadata,(region,item_id))
                     if primary is None:
@@ -375,6 +391,7 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_cl
                     cooldown(provider, status, headers, at)
                     src.retry_at = max(aware(src.retry_at), aware(provider.cooldown_until))
                 result['status'] = category
+                result['outcome'] = {'wrong_identity':'wrong_identity','transport_or_schema':'invalid_response','metadata_unavailable':'missing','forbidden':'access_blocked','authorization':'credentials_invalid','rate_limited':'rate_limited'}.get(category,'unavailable')
                 # Missing is a completed provider result, never a nonexistent item.
                 if status == 404: task.state = 'completed'
                 elif status == 429 or (status is None or status >= 500) and task.attempts < 3:

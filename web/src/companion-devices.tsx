@@ -1,3 +1,5 @@
+import { DataTable } from "./data-table";
+import { LocalTime, Status } from "./admin-table";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api, when } from "./api";
@@ -265,7 +267,7 @@ export function CompanionDevices({
   readOnly?: boolean;
   owners?: Record<number, string>;
 }) {
-  const devices = useCompanionDevices(userId, admin),
+  const devices = useCompanionDevices(userId, admin, admin),
     [shown, setShown] = useState(10);
   return (
     <section
@@ -305,17 +307,18 @@ export function CompanionDevices({
           PC.
         </p>
       )}
-      {devices.data?.devices.slice(0, shown).map((device) => (
-        <DeviceCard
-          key={device.id}
-          device={device}
-          userId={userId}
-          admin={admin}
-          readOnly={admin && readOnly}
-          owner={owners?.[device.user_id]}
-        />
+      {admin ? <DataTable<CompanionDevice> label="desktop companions" filters={[{id:"status",label:"Filter desktop connection",options:[{value:"Authorized",label:"Authorized"},{value:"Expired",label:"Expired"},{value:"Revoked",label:"Revoked"}]}]} data={devices.data?.devices || []} getRowId={row=>String(row.id)} loading={devices.isPending} error={devices.error?.message} columns={[
+        {accessorKey:"name",header:"Device",enableHiding:false},
+        {id:"owner",header:"Account",accessorFn:row=>owners?.[row.user_id]||`#${row.user_id}`},
+        {accessorKey:"app_version",header:"Version / platform",cell:({row})=>`${row.original.app_version} · ${row.original.platform}`},
+        {accessorKey:"selected_market_name",header:"Selected market",cell:({row})=>row.original.selected_market_name||"Not selected"},
+        {accessorKey:"last_connection_at",header:"Last seen",cell:({row})=><LocalTime value={row.original.last_connection_at}/>},
+        {accessorKey:"last_sync_at",header:"Last successful sync",cell:({row})=><LocalTime value={row.original.last_sync_at}/>},
+        {id:"status",header:"Connection",accessorFn:row=>row.revoked?"Revoked":new Date(row.expires_at).getTime()<=Date.now()||Boolean(row.renewal_expires_at&&new Date(row.renewal_expires_at).getTime()<=Date.now())?"Expired":"Authorized",cell:({getValue})=><Status>{String(getValue())}</Status>},
+      ]} renderDetails={device=><DeviceCard device={device} userId={userId} admin readOnly={readOnly} owner={owners?.[device.user_id]}/>}/> : devices.data?.devices.slice(0, shown).map((device) => (
+        <DeviceCard key={device.id} device={device} userId={userId} admin={false} readOnly={readOnly} />
       ))}
-      {(devices.data?.devices.length || 0) > shown && (
+      {!admin && (devices.data?.devices.length || 0) > shown && (
         <button
           className="secondary"
           onClick={() => setShown((value) => value + 10)}

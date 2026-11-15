@@ -1,3 +1,4 @@
+import { ItemName } from "./item-name";
 import { Currency } from "./currency";
 import { useEffect, useState, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -93,9 +94,9 @@ export function ItemFacts({ profile }: { profile: ItemProfile }) {
   return (
     <>
       <div
-        className={`wow-name quality-text-${profile.quality?.toLowerCase() || "unknown"}`}
+        className="wow-name"
       >
-        {profile.name}
+        <ItemName name={profile.name} quality={profile.quality}/>
       </div>
       {!profile.metadata_provider && <p className="small muted">Name unavailable · Item #{profile.item_id}</p>}
       {!facts ? (
@@ -238,9 +239,9 @@ export function ItemInfo({
         <ItemIcon item={displayItem} />
         {label && (
           <span
-            className={`item-trigger-label quality-text-${displayItem.quality?.toLowerCase() || "unknown"}`}
+            className="item-trigger-label"
           >
-            {displayItem.name}
+            <ItemName name={displayItem.name} quality={displayItem.quality}/>
           </span>
         )}
       </Popover.Trigger>

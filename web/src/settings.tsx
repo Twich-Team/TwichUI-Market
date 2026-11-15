@@ -1,3 +1,5 @@
+import { CollectionHistory, SecurityHistory } from "./admin-histories";
+import { LocalTime } from "./admin-table";
 import { DataSources, ItemMetadataAdmin } from "./metadata-admin";
 import { MyPreferences } from "./user-preferences";
 import { MarketConfiguration } from "./market-configuration";
@@ -198,12 +200,13 @@ export function Account({
         <DataTable<Device>
           label="devices"
           data={devices.data || []}
+          getRowId={row=>String(row.id)}
           columns={[
             { accessorKey: "name", header: "Device", enableHiding: false },
             {
               accessorKey: "expires_at",
               header: "Expires",
-              cell: ({ row }) => when(row.original.expires_at),
+              cell: ({ row }) => <LocalTime value={row.original.expires_at}/>,
             },
             {
               id: "access",
@@ -317,29 +320,20 @@ export function Administration({
         users,
         invitations,
         devices,
-        runs,
         storage,
-        events,
-        metadata,
         enrichment,
       ] = await Promise.all([
         api<User[]>("/admin/users"),
         api<Invitation[]>("/admin/invitations"),
         api<Device[]>("/admin/devices"),
-        api<{ runs: Run[] }>("/admin/collection-runs"),
         api<Storage>("/admin/storage"),
-        api<Event[]>("/admin/security-events"),
-        api<MetadataFailure[]>("/admin/metadata-failures"),
         api<Enrichment>("/admin/item-enrichment"),
       ]);
       return {
         users,
         invitations,
         devices,
-        runs: runs.runs,
         storage,
-        events,
-        metadata,
         enrichment,
       };
     },
@@ -504,19 +498,16 @@ export function Administration({
                   Artwork cache limit{" "}
                   {bytes(state.enrichment.icon_cache_budget_bytes)}.
                 </p>
-                <ul>
-                  {state.enrichment.icon_states.map((row) => (
-                    <li key={row.status}>
-                      {row.status}: {row.count.toLocaleString()} icons ·{" "}
-                      {bytes(row.bytes)}
-                    </li>
-                  ))}
-                </ul>
+                <DataTable label="icon cache states" data={state.enrichment.icon_states} getRowId={row=>row.status} columns={[
+                  {accessorKey:"status",header:"Cache status"},{accessorKey:"count",header:"Icons",meta:{numeric:true},cell:({row})=>row.original.count.toLocaleString()},
+                  {accessorKey:"bytes",header:"Allocation",meta:{numeric:true},cell:({row})=>bytes(row.original.bytes)},
+                ]}/>
                 <details>
                   <summary>Recent artwork failures</summary>
                   <DataTable<MetadataFailure>
                     label="artwork failures"
                     data={state.enrichment.media_failures}
+                    getRowId={row=>`${row.region}-${row.item_id}`}
                     columns={[
                       {
                         accessorKey: "item_id",
@@ -529,7 +520,7 @@ export function Administration({
                       {
                         accessorKey: "retry_after",
                         header: "Next attempt",
-                        cell: ({ row }) => when(row.original.retry_after),
+                        cell: ({ row }) => <LocalTime value={row.original.retry_after}/>,
                       },
                     ]}
                   />
@@ -541,23 +532,13 @@ export function Administration({
                     schedules.
                   </p>
                 ) : (
-                  <ul className="market-summary">
-                    {markets.map((row) => (
-                      <li key={row.id}>
-                        <strong>{row.label}</strong>
-                        <span>
-                          {row.verified
-                            ? "Mapping verified"
-                            : "Live verification pending"}{" "}
-                          · {row.enabled ? "Scheduled" : "Disabled"}
-                        </span>
-                        <small>
-                          {row.last_error ||
-                            `Last successful check: ${when(row.last_success)}`}
-                        </small>
-                      </li>
-                    ))}
-                  </ul>
+                  <DataTable<Market> label="collection readiness" data={markets} getRowId={row=>String(row.id)} columns={[
+                    {accessorKey:"label",header:"Market",enableHiding:false},
+                    {id:"mapping",header:"Mapping",accessorFn:row=>row.verified?"Verified":"Verification pending"},
+                    {id:"schedule",header:"Collection",accessorFn:row=>row.enabled?"Scheduled":"Disabled"},
+                    {accessorKey:"last_success",header:"Last successful check",cell:({row})=><LocalTime value={row.original.last_success}/>},
+                    {accessorKey:"last_error",header:"Recent failure",cell:({row})=>row.original.last_error||"None"},
+                  ]}/>
                 )}
                 <p className="notice">
                   Historical retention is configurable under Storage & backups.
@@ -573,6 +554,7 @@ export function Administration({
                 <h3>Members</h3>
                 <DataTable<User>
                   label="members"
+                  filters={[{id:"role",label:"Filter member role",options:[{value:"admin",label:"Administrator"},{value:"member",label:"Member"}]},{id:"status",label:"Filter member status",options:[{value:"Active",label:"Active"},{value:"Disabled",label:"Disabled"}]}]}
                   data={state.users}
                   getRowId={(row) => String(row.id)}
                   columns={[
@@ -667,13 +649,15 @@ export function Administration({
                 )}
                 <DataTable<Invitation>
                   label="invitations"
+                  filters={[{id:"status",label:"Filter invitation status",options:[{value:"Available",label:"Available"},{value:"Used or revoked",label:"Used or revoked"},{value:"Expired",label:"Expired"}]}]}
                   data={state.invitations}
+                  getRowId={row=>String(row.id)}
                   columns={[
                     { accessorKey: "id", header: "Invitation" },
                     {
                       accessorKey: "expires_at",
                       header: "Expires",
-                      cell: ({ row }) => when(row.original.expires_at),
+                      cell: ({ row }) => <LocalTime value={row.original.expires_at}/>,
                     },
                     {
                       id: "status",
@@ -720,88 +704,7 @@ export function Administration({
               action={action}
             />
           )}
-          {tab === "collection" && (
-            <section className="panel table-panel">
-              <div className="panel-heading">
-                <h3>Collection checks</h3>
-                <button className="secondary" onClick={data.refresh}>
-                  Refresh
-                </button>
-              </div>
-              <DataTable<Run>
-                label="collection checks"
-                data={state.runs}
-                columns={[
-                  {
-                    accessorKey: "market_id",
-                    header: "Market",
-                    enableHiding: false,
-                    cell: ({ row }) => `#${row.original.market_id}`,
-                  },
-                  {
-                    accessorKey: "checked_at",
-                    header: "Checked",
-                    cell: ({ row }) => when(row.original.checked_at),
-                  },
-                  { accessorKey: "status", header: "Result" },
-                  {
-                    accessorKey: "http_status",
-                    header: "HTTP",
-                    cell: ({ row }) => row.original.http_status || "—",
-                  },
-                  {
-                    accessorKey: "payload_bytes",
-                    header: "Payload",
-                    cell: ({ row }) => bytes(row.original.payload_bytes),
-                  },
-                  {
-                    accessorKey: "error",
-                    header: "Detail",
-                    cell: ({ row }) =>
-                      row.original.error || "No failure recorded",
-                  },
-                ]}
-              />
-
-              {!state.runs.length && (
-                <p className="empty">
-                  No collection attempts recorded. Markets may still be
-                  disabled.
-                </p>
-              )}
-              <div className="panel-heading">
-                <h3>Unresolved item names</h3>
-              </div>
-              <DataTable<MetadataFailure>
-                label="unresolved items"
-                data={state.metadata}
-                columns={[
-                  {
-                    accessorKey: "item_id",
-                    header: "Item ID",
-                    enableHiding: false,
-                  },
-                  { accessorKey: "region", header: "Region" },
-                  { accessorKey: "status", header: "Status" },
-                  { accessorKey: "http_status", header: "HTTP" },
-                  {
-                    accessorKey: "checked_at",
-                    header: "Last lookup",
-                    cell: ({ row }) => when(row.original.checked_at),
-                  },
-                  {
-                    accessorKey: "retry_after",
-                    header: "Next retry",
-                    cell: ({ row }) => when(row.original.retry_after),
-                  },
-                ]}
-              />
-
-              {!state.metadata.length && (
-                <p className="empty">No metadata lookup failures recorded.</p>
-              )}
-            </section>
-          )}
+          {tab === "collection" && <CollectionHistory markets={markets}/>}
           {tab === "storage" && (
             <>
               <RetentionControls readOnly={readOnly} />
@@ -877,12 +780,13 @@ export function Administration({
                   <DataTable<{ sampled_at: string; database_bytes: number }>
                     label="storage measurements"
                     data={state.storage.growth.samples}
+                    getRowId={row=>row.sampled_at}
                     initialSorting={[{ id: "sampled_at", desc: true }]}
                     columns={[
                       {
                         accessorKey: "sampled_at",
                         header: "Measured at",
-                        cell: ({ row }) => when(row.original.sampled_at),
+                        cell: ({ row }) => <LocalTime value={row.original.sampled_at}/>,
                       },
                       {
                         accessorKey: "database_bytes",
@@ -910,7 +814,9 @@ export function Administration({
               <h3>Connected devices</h3>
               <DataTable<Device>
                 label="connected devices"
+                filters={[{id:"access",label:"Filter legacy device access",options:[{value:"Active",label:"Active"},{value:"Revoked",label:"Revoked"},{value:"Expired",label:"Expired"}]}]}
                 data={state.devices}
+                getRowId={row=>String(row.id)}
                 columns={[
                   {
                     accessorKey: "name",
@@ -927,7 +833,7 @@ export function Administration({
                   {
                     accessorKey: "expires_at",
                     header: "Expires",
-                    cell: ({ row }) => when(row.original.expires_at),
+                    cell: ({ row }) => <LocalTime value={row.original.expires_at}/>,
                   },
                   {
                     id: "access",
@@ -966,44 +872,7 @@ export function Administration({
               )}
             </section>
           )}
-          {tab === "security" && (
-            <section className="panel table-panel">
-              <div className="panel-heading">
-                <h3>Security events</h3>
-                <span className="muted">Most recent 200 events</span>
-              </div>
-              <DataTable<Event>
-                label="security events"
-                data={state.events}
-                columns={[
-                  {
-                    accessorKey: "created_at",
-                    header: "Time",
-                    enableHiding: false,
-                    cell: ({ row }) => when(row.original.created_at),
-                  },
-                  {
-                    id: "member",
-                    header: "Member",
-                    accessorFn: (row) =>
-                      state.users.find((user) => user.id === row.actor_id)
-                        ?.username || "Unauthenticated / system",
-                  },
-                  {
-                    id: "event",
-                    header: "Event",
-                    accessorFn: (row) =>
-                      row.action.replaceAll(".", " ").replaceAll("_", " "),
-                  },
-                  {
-                    accessorKey: "detail",
-                    header: "Reference",
-                    cell: ({ row }) => row.original.detail || "—",
-                  },
-                ]}
-              />
-            </section>
-          )}
+          {tab === "security" && <SecurityHistory/>}
         </>
       )}
     </>

@@ -176,6 +176,7 @@ export function RetentionControls({ readOnly }: { readOnly: boolean }) {
           <DataTable<Stage>
             label="retention preview"
             data={preview.stages}
+            getRowId={row=>row.stage}
             columns={[
               {
                 accessorKey: "stage",

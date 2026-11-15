@@ -144,8 +144,11 @@ def start(body: RecoveryInput, user: User = Depends(admin), db: Session = Depend
 
 
 def job_view(db, job):
+    outcome=cast(MetadataTask.result_json, JSON)['outcome'].as_string()
+    status=cast(MetadataTask.result_json, JSON)['status'].as_string()
+    recovered,failed=db.execute(select(func.count().filter(outcome.in_(('name_recovered','attributes_recovered'))),func.count().filter(or_(MetadataTask.state=='failed',outcome.in_(('no_usable_data','missing','wrong_identity','invalid_response','credentials_invalid','access_blocked','rate_limited','unavailable')),status.in_(('metadata_unavailable','forbidden','authorization','transport_or_schema','wrong_identity','rate_limited'))))).where(MetadataTask.job_id==job.id)).one()
     return {'id':job.id, 'market_id':job.market_id, 'mode':job.mode, 'state':job.state, 'providers':json.loads(job.providers_json),
-        'total':job.total, 'counts':job_counts(db, job.id), 'requests_used':job.requests_used, 'request_budget':job.request_budget,
+        'total':job.total, 'counts':job_counts(db, job.id), 'recovered':recovered, 'failed':failed, 'requests_used':job.requests_used, 'request_budget':job.request_budget,
         'created_at':job.created_at, 'updated_at':job.updated_at}
 
 

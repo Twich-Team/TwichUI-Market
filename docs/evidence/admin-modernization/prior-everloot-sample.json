@@ -1,0 +1,265 @@
+[
+  {
+    "id": 1,
+    "item_id": 647,
+    "at": "2026-11-15 03:05:52.633625+00:00",
+    "attempts": 1,
+    "result": {
+      "provider": "everloot",
+      "item_id": 647,
+      "http_status": 404,
+      "status": "metadata_unavailable",
+      "recovered_fields": []
+    }
+  },
+  {
+    "id": 2,
+    "item_id": 720,
+    "at": "2026-11-15 03:06:10.554649+00:00",
+    "attempts": 1,
+    "result": {
+      "provider": "everloot",
+      "item_id": 720,
+      "http_status": 404,
+      "status": "metadata_unavailable",
+      "recovered_fields": []
+    }
+  },
+  {
+    "id": 3,
+    "item_id": 727,
+    "at": "2026-11-15 03:06:30.390796+00:00",
+    "attempts": 1,
+    "result": {
+      "provider": "everloot",
+      "item_id": 727,
+      "http_status": 404,
+      "status": "metadata_unavailable",
+      "recovered_fields": []
+    }
+  },
+  {
+    "id": 4,
+    "item_id": 754,
+    "at": "2026-11-15 03:06:49.060073+00:00",
+    "attempts": 1,
+    "result": {
+      "provider": "everloot",
+      "item_id": 754,
+      "http_status": 404,
+      "status": "metadata_unavailable",
+      "recovered_fields": []
+    }
+  },
+  {
+    "id": 5,
+    "item_id": 776,
+    "at": "2026-11-15 03:07:08.774913+00:00",
+    "attempts": 1,
+    "result": {
+      "provider": "everloot",
+      "item_id": 776,
+      "http_status": 404,
+      "status": "metadata_unavailable",
+      "recovered_fields": []
+    }
+  },
+  {
+    "id": 6,
+    "item_id": 789,
+    "at": "2026-11-15 03:07:28.552775+00:00",
+    "attempts": 1,
+    "result": {
+      "provider": "everloot",
+      "item_id": 789,
+      "http_status": 200,
+      "status": "available",
+      "recovered_fields": [],
+      "source": {
+        "provider": "everloot",
+        "edition": "forever",
+        "build": null,
+        "locale": "en_US",
+        "confidence": "player_consensus",
+        "attribution": {
+          "text": "Data from Everloot (https://everloot.app), CC BY-SA 4.0.",
+          "url": "https://everloot.app/database/items/789",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0/"
+        },
+        "url": "https://everloot.app/database/items/789",
+        "retrieved_at": "2026-11-15T03:07:28.552775+00:00",
+        "payload_hash": "da843c1144dfcb85b1ce3f64b1826e0c9d1b9abedd0231edfa2bd9a77f03b235"
+      }
+    }
+  },
+  {
+    "id": 7,
+    "item_id": 790,
+    "at": "2026-11-15 03:07:46.732583+00:00",
+    "attempts": 1,
+    "result": {
+      "provider": "everloot",
+      "item_id": 790,
+      "http_status": 404,
+      "status": "metadata_unavailable",
+      "recovered_fields": []
+    }
+  },
+  {
+    "id": 8,
+    "item_id": 791,
+    "at": "2026-11-15 03:08:04.447466+00:00",
+    "attempts": 1,
+    "result": {
+      "provider": "everloot",
+      "item_id": 791,
+      "http_status": 404,
+      "status": "metadata_unavailable",
+      "recovered_fields": []
+    }
+  },
+  {
+    "id": 9,
+    "item_id": 809,
+    "at": "2026-11-15 03:08:23.666794+00:00",
+    "attempts": 1,
+    "result": {
+      "provider": "everloot",
+      "item_id": 809,
+      "http_status": 404,
+      "status": "metadata_unavailable",
+      "recovered_fields": []
+    }
+  },
+  {
+    "id": 10,
+    "item_id": 811,
+    "at": "2026-11-15 03:08:43.457231+00:00",
+    "attempts": 1,
+    "result": {
+      "provider": "everloot",
+      "item_id": 811,
+      "http_status": 404,
+      "status": "metadata_unavailable",
+      "recovered_fields": []
+    }
+  },
+  {
+    "id": 11,
+    "item_id": 812,
+    "at": "2026-11-15 03:09:01.669291+00:00",
+    "attempts": 1,
+    "result": {
+      "provider": "everloot",
+      "item_id": 812,
+      "http_status": 404,
+      "status": "metadata_unavailable",
+      "recovered_fields": []
+    }
+  },
+  {
+    "id": 12,
+    "item_id": 833,
+    "at": "2026-11-15 03:09:19.525102+00:00",
+    "attempts": 1,
+    "result": {
+      "provider": "everloot",
+      "item_id": 833,
+      "http_status": 404,
+      "status": "metadata_unavailable",
+      "recovered_fields": []
+    }
+  },
+  {
+    "id": 13,
+    "item_id": 863,
+    "at": "2026-11-15 03:09:39.328616+00:00",
+    "attempts": 1,
+    "result": {
+      "provider": "everloot",
+      "item_id": 863,
+      "http_status": 404,
+      "status": "metadata_unavailable",
+      "recovered_fields": []
+    }
+  },
+  {
+    "id": 14,
+    "item_id": 865,
+    "at": "2026-11-15 03:09:59.247265+00:00",
+    "attempts": 1,
+    "result": {
+      "provider": "everloot",
+      "item_id": 865,
+      "http_status": 404,
+      "status": "metadata_unavailable",
+      "recovered_fields": []
+    }
+  },
+  {
+    "id": 15,
+    "item_id": 866,
+    "at": "2026-11-15 03:10:17.490164+00:00",
+    "attempts": 1,
+    "result": {
+      "provider": "everloot",
+      "item_id": 866,
+      "http_status": 404,
+      "status": "metadata_unavailable",
+      "recovered_fields": []
+    }
+  },
+  {
+    "id": 16,
+    "item_id": 867,
+    "at": "2026-11-15 03:10:36.612791+00:00",
+    "attempts": 1,
+    "result": {
+      "provider": "everloot",
+      "item_id": 867,
+      "http_status": 404,
+      "status": "metadata_unavailable",
+      "recovered_fields": []
+    }
+  },
+  {
+    "id": 17,
+    "item_id": 868,
+    "at": "2026-11-15 03:10:56.969400+00:00",
+    "attempts": 1,
+    "result": {
+      "provider": "everloot",
+      "item_id": 868,
+      "http_status": 404,
+      "status": "metadata_unavailable",
+      "recovered_fields": []
+    }
+  },
+  {
+    "id": 18,
+    "item_id": 869,
+    "at": "2026-11-15 03:11:16.654492+00:00",
+    "attempts": 1,
+    "result": {
+      "provider": "everloot",
+      "item_id": 869,
+      "http_status": 404,
+      "status": "metadata_unavailable",
+      "recovered_fields": []
+    }
+  },
+  {
+    "id": 19,
+    "item_id": 870,
+    "at": "2026-11-15 03:11:35.758643+00:00",
+    "attempts": 1,
+    "result": {
+      "provider": "everloot",
+      "item_id": 870,
+      "http_status": 404,
+      "status": "metadata_unavailable",
+      "recovered_fields": []
+    }
+  }
+]

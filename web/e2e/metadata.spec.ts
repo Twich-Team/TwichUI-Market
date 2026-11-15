@@ -32,15 +32,15 @@ test("administrator recovery, persistent jobs and data-source forms use local AP
   await expect(page.getByText(/Recovery job #\d+ queued/)).toBeVisible();
   const queuedText=await page.getByText(/Recovery job #\d+ queued/).textContent();
   const queuedId=queuedText!.match(/#(\d+)/)![1];
-  const active=page.locator(".metadata-job-row").filter({has:page.getByRole("button",{name:`Job #${queuedId} · single`,exact:true})});
+  const active=page.getByRole("table",{name:"recovery jobs",exact:true}).getByRole("row").filter({has:page.getByRole("button",{name:`Job #${queuedId} · single`,exact:true})});
   await active.getByRole("button", { name: "Pause", exact: true }).click();
   await expect(active.getByRole("button", { name: "Resume", exact: true })).toBeVisible();
   await active.getByRole("button", { name: "Resume", exact: true }).click();
   await active.getByRole("button", { name: "Cancel", exact: true }).click();
   await expect(page.getByLabel("Recovery progress")).toBeVisible();
-  const complete = page.locator(".metadata-job-row").filter({ hasText: "completed" }).last();
+  const complete = page.getByRole("table",{name:"recovery jobs",exact:true}).getByRole("row").filter({ hasText: "completed" }).last();
   await complete.getByRole("button", { name: /Job #/ }).click();
-  await expect(page.getByText("Metadata stored locally", { exact: true })).toBeVisible();
+  await expect(page.getByRole("table", { name: "job results", exact: true })).toBeVisible();
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: `${directory}/04-progress-results.png`, fullPage: true });
   await page.getByLabel("Recovery action").selectOption("missing");

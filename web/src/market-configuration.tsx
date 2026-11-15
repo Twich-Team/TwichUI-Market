@@ -176,6 +176,7 @@ export function MarketConfiguration({
         </p>
         <DataTable<Market>
           label="market schedules"
+          filters={[{id:"status",label:"Filter market collection",options:[{value:"Actively collecting",label:"Actively collecting"},{value:"Disabled",label:"Disabled · history retained"}]}]}
           data={markets}
           getRowId={(m) => String(m.id)}
           columns={[

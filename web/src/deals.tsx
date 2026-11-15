@@ -270,6 +270,7 @@ export function Deals({
                       item={{
                         item_id: deal.item_id,
                         name: deal.name || `Item #${deal.item_id}`,
+                        quality: deal.quality,
                         variant_key: deal.variant_key,
                       }}
                       prices={{
@@ -332,6 +333,7 @@ export function Deals({
                       item={{
                         item_id: signal.item_id,
                         name: signal.name || `Item #${signal.item_id}`,
+                        quality: signal.quality,
                         variant_key: signal.variant_key,
                       }}
                       prices={{

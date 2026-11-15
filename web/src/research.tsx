@@ -1,3 +1,4 @@
+import { ItemName } from "./item-name";
 import { usePreferences } from "./preferences";
 import { Currency } from "./currency";
 import { CurrentListings } from "./listings";
@@ -197,17 +198,13 @@ export function Explorer({
               item={{
                 ...detail.data,
                 icon_url: selected?.icon_url,
-                quality: selected?.quality,
+                quality: detail.data.quality ?? selected?.quality,
               }}
               prices={value}
             />
             <div>
               <div className="eyebrow">ITEM #{detail.data.item_id}</div>
-              <h2
-                className={`quality-text-${selected?.quality?.toLowerCase() || "unknown"}`}
-              >
-                {detail.data.name}
-              </h2>
+              <h2><ItemName name={detail.data.name} quality={detail.data.quality ?? selected?.quality}/></h2>
               <ItemAttribution
                 item={{
                   ...detail.data,

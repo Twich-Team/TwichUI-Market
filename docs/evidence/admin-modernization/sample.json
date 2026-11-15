@@ -1,0 +1,897 @@
+{
+  "method": "Deterministic SHA-256 ordering, round-robin across primary-404/icon/prior-attempt/attribute-only/quality/ID-range strata. Seed admin-investigation-v1. Current snapshot activity held constant. Unknown identity/build stays unknown. First 24 shared between providers; remaining 24 Everloot only.",
+  "baseline_snapshot": 27,
+  "baseline_id_hash": "bbbacaf1ed0d9d35f997a16f83d92b6f0f009bd126284d3868d7115f8b076fc1",
+  "everloot": [
+    287033,
+    283545,
+    1482,
+    216483,
+    263937,
+    287070,
+    277074,
+    7438,
+    215374,
+    263935,
+    287008,
+    286993,
+    15620,
+    215373,
+    263015,
+    287063,
+    283460,
+    9917,
+    215376,
+    277059,
+    287009,
+    282014,
+    14184,
+    215375,
+    277057,
+    287025,
+    283462,
+    14230,
+    263936,
+    287026,
+    284105,
+    9938,
+    251932,
+    287068,
+    287003,
+    15168,
+    263017,
+    287012,
+    283480,
+    8249,
+    277060,
+    287035,
+    286751,
+    15560,
+    274517,
+    287022,
+    283259,
+    7482
+  ],
+  "thewowdb": [
+    287033,
+    283545,
+    1482,
+    216483,
+    263937,
+    287070,
+    277074,
+    7438,
+    215374,
+    263935,
+    287008,
+    286993,
+    15620,
+    215373,
+    263015,
+    287063,
+    283460,
+    9917,
+    215376,
+    277059,
+    287009,
+    282014,
+    14184,
+    215375
+  ],
+  "records": [
+    {
+      "currently_active": true,
+      "icon": false,
+      "item_id": 287033,
+      "name": null,
+      "primary_http": null,
+      "quality": null,
+      "sources": [],
+      "stratum": "(False, False, False, False, 'unknown', 5)"
+    },
+    {
+      "currently_active": true,
+      "icon": false,
+      "item_id": 283545,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-22 02:13:50.699483+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, False, True, False, 'unknown', 5)"
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 1482,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-21 03:33:23.485454+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, True, True, False, 'unknown', 0)"
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 216483,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-21 23:45:04.921160+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, True, True, False, 'unknown', 4)"
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 263937,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-22 00:48:57.508729+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, True, True, False, 'unknown', 5)"
+    },
+    {
+      "currently_active": true,
+      "icon": false,
+      "item_id": 287070,
+      "name": null,
+      "primary_http": null,
+      "quality": null,
+      "sources": [],
+      "stratum": "(False, False, False, False, 'unknown', 5)"
+    },
+    {
+      "currently_active": true,
+      "icon": false,
+      "item_id": 277074,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-22 02:01:41.111338+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, False, True, False, 'unknown', 5)"
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 7438,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-21 11:16:17.724682+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, True, True, False, 'unknown', 0)"
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 215374,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-21 23:44:17.964277+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, True, True, False, 'unknown', 4)"
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 263935,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-22 00:48:26.402022+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, True, True, False, 'unknown', 5)"
+    },
+    {
+      "currently_active": true,
+      "icon": false,
+      "item_id": 287008,
+      "name": null,
+      "primary_http": null,
+      "quality": null,
+      "sources": [],
+      "stratum": "(False, False, False, False, 'unknown', 5)"
+    },
+    {
+      "currently_active": true,
+      "icon": false,
+      "item_id": 286993,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-22 02:40:40.272932+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, False, True, False, 'unknown', 5)"
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 15620,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-21 22:07:14.869433+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, True, True, False, 'unknown', 0)"
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 215373,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-21 23:44:02.327677+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, True, True, False, 'unknown', 4)"
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 263015,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-22 00:47:08.621111+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, True, True, False, 'unknown', 5)"
+    },
+    {
+      "currently_active": true,
+      "icon": false,
+      "item_id": 287063,
+      "name": null,
+      "primary_http": null,
+      "quality": null,
+      "sources": [],
+      "stratum": "(False, False, False, False, 'unknown', 5)"
+    },
+    {
+      "currently_active": true,
+      "icon": false,
+      "item_id": 283460,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-22 02:12:33.116805+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, False, True, False, 'unknown', 5)"
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 9917,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-21 13:55:06.241150+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, True, True, False, 'unknown', 0)"
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 215376,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-21 23:44:49.113267+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, True, True, False, 'unknown', 4)"
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 277059,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-22 03:42:55.783595+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, True, True, False, 'unknown', 5)"
+    },
+    {
+      "currently_active": true,
+      "icon": false,
+      "item_id": 287009,
+      "name": null,
+      "primary_http": null,
+      "quality": null,
+      "sources": [],
+      "stratum": "(False, False, False, False, 'unknown', 5)"
+    },
+    {
+      "currently_active": true,
+      "icon": false,
+      "item_id": 282014,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-22 02:07:38.471743+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, False, True, False, 'unknown', 5)"
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 14184,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-21 18:04:11.226687+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, True, True, False, 'unknown', 0)"
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 215375,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-21 23:44:33.608524+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, True, True, False, 'unknown', 4)"
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 277057,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-22 02:00:54.483099+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, True, True, False, 'unknown', 5)"
+    },
+    {
+      "currently_active": true,
+      "icon": false,
+      "item_id": 287025,
+      "name": null,
+      "primary_http": null,
+      "quality": null,
+      "sources": [],
+      "stratum": "(False, False, False, False, 'unknown', 5)"
+    },
+    {
+      "currently_active": true,
+      "icon": false,
+      "item_id": 283462,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-22 02:12:48.637733+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, False, True, False, 'unknown', 5)"
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 14230,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-21 18:15:50.997190+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, True, True, False, 'unknown', 0)"
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 263936,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-22 00:48:41.957173+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, True, True, False, 'unknown', 5)"
+    },
+    {
+      "currently_active": true,
+      "icon": false,
+      "item_id": 287026,
+      "name": null,
+      "primary_http": null,
+      "quality": null,
+      "sources": [],
+      "stratum": "(False, False, False, False, 'unknown', 5)"
+    },
+    {
+      "currently_active": true,
+      "icon": false,
+      "item_id": 284105,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-22 02:15:08.655305+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, False, True, False, 'unknown', 5)"
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 9938,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-21 14:00:36.022877+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, True, True, False, 'unknown', 0)"
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 251932,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-21 23:57:05.329731+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, True, True, False, 'unknown', 5)"
+    },
+    {
+      "currently_active": true,
+      "icon": false,
+      "item_id": 287068,
+      "name": null,
+      "primary_http": null,
+      "quality": null,
+      "sources": [],
+      "stratum": "(False, False, False, False, 'unknown', 5)"
+    },
+    {
+      "currently_active": true,
+      "icon": false,
+      "item_id": 287003,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-22 03:47:32.266652+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, False, True, False, 'unknown', 5)"
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 15168,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-21 20:38:13.323880+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, True, True, False, 'unknown', 0)"
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 263017,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-22 00:47:39.793838+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, True, True, False, 'unknown', 5)"
+    },
+    {
+      "currently_active": true,
+      "icon": false,
+      "item_id": 287012,
+      "name": null,
+      "primary_http": null,
+      "quality": null,
+      "sources": [],
+      "stratum": "(False, False, False, False, 'unknown', 5)"
+    },
+    {
+      "currently_active": true,
+      "icon": false,
+      "item_id": 283480,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-22 02:13:35.185486+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, False, True, False, 'unknown', 5)"
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 8249,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-21 12:25:13.136610+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, True, True, False, 'unknown', 0)"
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 277060,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-22 03:43:26.527026+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, True, True, False, 'unknown', 5)"
+    },
+    {
+      "currently_active": true,
+      "icon": false,
+      "item_id": 287035,
+      "name": null,
+      "primary_http": null,
+      "quality": null,
+      "sources": [],
+      "stratum": "(False, False, False, False, 'unknown', 5)"
+    },
+    {
+      "currently_active": true,
+      "icon": false,
+      "item_id": 286751,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-22 02:35:27.155716+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, False, True, False, 'unknown', 5)"
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 15560,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-21 21:53:10.125344+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, True, True, False, 'unknown', 0)"
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 274517,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-22 01:49:30.255298+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, True, True, False, 'unknown', 5)"
+    },
+    {
+      "currently_active": true,
+      "icon": false,
+      "item_id": 287022,
+      "name": null,
+      "primary_http": null,
+      "quality": null,
+      "sources": [],
+      "stratum": "(False, False, False, False, 'unknown', 5)"
+    },
+    {
+      "currently_active": true,
+      "icon": false,
+      "item_id": 283259,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-22 02:11:46.372386+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, False, True, False, 'unknown', 5)"
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 7482,
+      "name": null,
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-21 11:27:58.637368+00:00",
+          "status": "missing"
+        }
+      ],
+      "stratum": "(True, True, True, False, 'unknown', 0)"
+    }
+  ],
+  "deadline": "2026-11-15T04:30:00+00:00"
+}

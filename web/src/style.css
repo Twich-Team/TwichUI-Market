@@ -1088,24 +1088,6 @@ footer span:last-child {
 .quality-poor {
   border-color: #777;
 }
-.quality-text-common {
-  color: #f1eadb;
-}
-.quality-text-uncommon {
-  color: #79c953;
-}
-.quality-text-rare {
-  color: #79b5ed;
-}
-.quality-text-epic {
-  color: #bd8de8;
-}
-.quality-text-legendary {
-  color: #e9a45a;
-}
-.quality-text-poor {
-  color: #aaa;
-}
 .item-popover-positioner {
   z-index: 70;
   max-width: calc(100vw - 24px);
@@ -1608,3 +1590,38 @@ small,
 .metadata-admin input[type="checkbox"] { width: 17px; height: 17px; min-height: 0; accent-color: var(--gold); }
 .metadata-admin button:not(.primary):not(.text-button) { background: #31241b; color: #d4bd94; border: 1px solid #695036; border-radius: 3px; padding: 8px 12px; }
 .metadata-stats > .panel { margin: 0; }
+
+/* Shared administration records keep the established espresso/bronze palette. */
+.managed-table-controls { flex-wrap: wrap; }
+.managed-table td { padding-block: .55rem; }
+.managed-table .table-row-details { white-space: normal; background: #211b15; }
+.record-details { display: grid; grid-template-columns: minmax(110px, 180px) minmax(0, 1fr); gap: .4rem 1rem; margin: .5rem; }
+.record-details dt { color: var(--muted); }
+.record-details dd { margin: 0; overflow-wrap: anywhere; }
+.record-status { display: inline-flex; align-items: baseline; gap: .3rem; }
+.record-status > span { font-size: 1.1rem; font-weight: 700; }
+.record-status.success { color: #acd3a1; }
+.record-status.warning { color: #e8c17e; }
+.record-status.error { color: #efa89b; }
+.record-status.neutral { color: #b9ad9c; }
+.provider-emblem { display: inline-flex; align-items: center; gap: .45rem; white-space: nowrap; margin-right: .5rem; }
+.source-symbol { display: inline-grid; place-items: center; width: 1.65rem; height: 1.65rem; border: 1px solid #816744; border-radius: .3rem; background: #30271e; color: #e7c58e; font-size: 1rem; }
+.source-blizzard { color: #b1ced7; }
+.source-everloot { color: #d8c387; }
+.source-foreverdb { color: #b9cba6; }
+.source-thewowdb { color: #c7b6d0; }
+.attempt-summary { display: flex; flex-wrap: wrap; gap: .6rem 1.2rem; margin-block: 1rem; }
+.attempt-summary > span { padding: .45rem .7rem; background: #30271e; border: 1px solid var(--edge); border-radius: .3rem; }
+.record-filters { flex-wrap: wrap; align-items: end; }
+.record-filters label { flex: 1 1 140px; }
+@media (max-width: 600px) { .record-details { grid-template-columns: 1fr; } .record-details dd { margin-bottom: .6rem; } }
+.record-filters { display: flex; flex-wrap: wrap; gap: .7rem; }
+.record-filters label { min-width: 0; }
+.record-filters input, .record-filters select { min-width: 0; width: 100%; }
+.record-filters input[type="datetime-local"] { max-width: 100%; }
+.metadata-admin .managed-table table { min-width: 960px; }
+.metadata-admin .managed-table td { max-width: 280px; }
+
+/* Exact game colors need large bold type for the darker blue/purple names.
+   19px bold meets the large-text threshold while preserving heading sizes. */
+.item-name { font-size: max(1em, 19px); font-weight: 700; line-height: 1.35; }
