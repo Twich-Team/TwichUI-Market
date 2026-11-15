@@ -31,6 +31,7 @@ test("private pilot receives an honest unsigned beta download and loses it after
   await page.screenshot({path:"../artifacts/companion-v2/private-beta-wizard.png",fullPage:true});
   await page.reload();await expect(page.getByRole("link",{name:"Download private beta"})).toBeVisible();
   await page.getByRole("button",{name:"Sign out",exact:true}).click();
+  await expect(page.getByLabel("Username",{exact:true})).toBeVisible();
   expect((await page.request.get(metadata.download_url)).status()).toBe(401);
   await page.getByLabel("Username",{exact:true}).fill("member_fixture");
   await page.getByLabel("Password",{exact:true}).fill("synthetic browser member password");

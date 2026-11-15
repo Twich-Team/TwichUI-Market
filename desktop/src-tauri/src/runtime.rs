@@ -844,6 +844,55 @@ impl Runtime {
             local.settings.onboarding_completed && local.settings.minimize_to_tray
         })
     }
+    pub fn updates_eligible(&self) -> bool {
+        !self.quitting()
+            && self.data.local.lock().is_ok_and(|local| {
+                local.settings_valid
+                    && local.credential_available
+                    && matches!(local.profile.mode, Mode::Companion | Mode::Legacy)
+                    && local.profile.server == format!("{}/", twichui_market_core::update::ORIGIN)
+                    && local.settings.server == local.profile.server
+            })
+    }
+    /// Tokens remain inside the core client and native gate; no IPC can receive them.
+    pub fn with_update_client<T>(
+        &self,
+        mut operation: impl FnMut(&MarketClient) -> twichui_market_core::Result<T>,
+    ) -> twichui_market_core::Result<T> {
+        if !self.updates_eligible() {
+            return Err(Error::Authentication);
+        }
+        let _gate = self
+            .data
+            .gate
+            .try_lock()
+            .map_err(|_| Error::ServiceUnavailable)?;
+        if self.quitting() {
+            return Err(Error::Cancelled);
+        }
+        let profile = self
+            .data
+            .local
+            .lock()
+            .map_err(|_| Error::Invalid("connection settings"))?
+            .profile
+            .clone();
+        if profile.server != format!("{}/", twichui_market_core::update::ORIGIN) {
+            return Err(Error::Authentication);
+        }
+        match profile.mode {
+            Mode::Companion => AuthorizationClient::new(&profile.server)?.authenticated(
+                &NativeCredentialStore,
+                Utc::now(),
+                |session| operation(&session.client()?),
+            ),
+            Mode::Legacy => operation(&MarketClient::new(
+                &profile.server,
+                vault::load(&profile.server)?,
+            )?),
+            Mode::Disconnected => Err(Error::Authentication),
+        }
+    }
     pub fn quitting(&self) -> bool {
         self.data.quitting.load(Ordering::Acquire)
     }
@@ -852,6 +901,7 @@ impl Runtime {
         if self.data.quitting.swap(true, Ordering::AcqRel) {
             return Err("The companion is already closing.".into());
         }
+        crate::updates::stop_background(&self.data.app);
         let result = (|| -> Result<()> {
             self.cancel_approval()?;
             self.worker.shutdown().map_err(friendly)?;
@@ -886,6 +936,7 @@ impl Runtime {
         if self.data.quitting.swap(true, Ordering::AcqRel) {
             return;
         }
+        crate::updates::stop_background(&self.data.app);
         let _ = self.cancel_approval();
         let owned = self.clone();
         self.data.emit();

@@ -13,7 +13,7 @@ const MAX_METADATA: u64 = 16384;
 /// Owner-controlled Linux publisher verification, using the same maintained
 /// Minisign verifier as Tauri. Native installation still verifies with its SDK.
 pub fn verify_signature(bytes: &[u8], key: &str, signature: &str, version: &str) -> Result<()> {
-    if key.len() > 4096 || signature.len() > 4096 || !stable_version(version) {
+    if key.len() > 4096 || signature.len() > 4096 || !release_version(version) {
         return Err(Error::Invalid("release signature metadata"));
     }
     let decode = |value: &str| -> Result<String> {
@@ -53,16 +53,33 @@ pub struct Package {
     pub source_commit: String,
     pub notes: String,
 }
-fn stable_version(version: &str) -> bool {
-    let parts: Vec<_> = version.split('.').collect();
+pub fn release_version(version: &str) -> bool {
+    let (base, beta) = match version.split_once("-beta.") {
+        Some((base, beta)) => (base, Some(beta)),
+        None => (version, None),
+    };
+    let number = |part: &str| {
+        !part.is_empty()
+            && part.len() <= 4
+            && part.bytes().all(|b| b.is_ascii_digit())
+            && (part.len() == 1 || !part.starts_with('0'))
+    };
+    let parts: Vec<_> = base.split('.').collect();
     parts.len() == 3
         && parts[0] == "2"
-        && parts.iter().all(|part| {
-            !part.is_empty()
-                && part.len() <= 4
-                && part.bytes().all(|b| b.is_ascii_digit())
-                && (part.len() == 1 || !part.starts_with('0'))
-        })
+        && parts.iter().all(|part| number(part))
+        && beta.is_none_or(|part| number(part) && part != "0")
+}
+pub fn download_path(version: &str) -> Result<String> {
+    if !release_version(version) {
+        return Err(Error::Invalid("update release version"));
+    }
+    let channel = if version.contains("-beta.") {
+        "private-beta"
+    } else {
+        "releases"
+    };
+    Ok(format!("/api/v1/companion/{channel}/{version}/windows-x64"))
 }
 fn lowercase_hex(value: &str, size: usize) -> bool {
     value.len() == size
@@ -72,16 +89,12 @@ fn lowercase_hex(value: &str, size: usize) -> bool {
 }
 impl Package {
     pub fn validate(&self) -> Result<()> {
-        if !stable_version(&self.version)
+        if !release_version(&self.version)
             || !(1024..=MAX_INSTALLER).contains(&self.bytes)
             || !lowercase_hex(&self.sha256, 64)
             || !lowercase_hex(&self.source_commit, 40)
             || self.notes.len() > 4000
-            || self.download_url
-                != format!(
-                    "{ORIGIN}/api/v1/companion/releases/{}/windows-x64",
-                    self.version
-                )
+            || self.download_url != format!("{ORIGIN}{}", download_path(&self.version)?)
         {
             return Err(Error::Invalid("verified Windows release metadata"));
         }
@@ -97,6 +110,26 @@ impl Package {
             return Err(Error::Invalid("update package integrity"));
         }
         Ok(bytes)
+    }
+    pub(crate) fn download_authenticated(&self, http: &Client, token: &str) -> Result<Vec<u8>> {
+        self.validate()?;
+        let response = http
+            .get(&self.download_url)
+            .bearer_auth(token)
+            .timeout(Duration::from_secs(120))
+            .send()
+            .map_err(|_| Error::Network)?;
+        if response.status().as_u16() == 401 {
+            return Err(Error::Authentication);
+        }
+        if response.status().as_u16() != 200
+            || response
+                .content_length()
+                .is_some_and(|size| size != self.bytes)
+        {
+            return Err(Error::Invalid("update download response"));
+        }
+        self.read_verified(response)
     }
     pub fn download(&self) -> Result<Vec<u8>> {
         self.validate()?;
@@ -125,6 +158,20 @@ fn client() -> Result<Client> {
         .map_err(|_| Error::Network)
 }
 pub fn metadata(installed_version: &str) -> Result<Option<(Package, serde_json::Value)>> {
+    metadata_with(&client()?, installed_version, None)
+}
+pub(crate) fn private_metadata(
+    client: &Client,
+    token: &str,
+    installed_version: &str,
+) -> Result<Option<(Package, serde_json::Value)>> {
+    metadata_with(client, installed_version, Some(token))
+}
+fn metadata_with(
+    client: &Client,
+    installed_version: &str,
+    token: Option<&str>,
+) -> Result<Option<(Package, serde_json::Value)>> {
     if installed_version.len() > 64
         || !installed_version
             .bytes()
@@ -132,11 +179,28 @@ pub fn metadata(installed_version: &str) -> Result<Option<(Package, serde_json::
     {
         return Err(Error::Invalid("installed version"));
     }
+    let channel = if token.is_some() {
+        "private-beta"
+    } else {
+        "releases"
+    };
     let url = Url::parse(&format!(
-        "{ORIGIN}/api/v1/companion/releases/update/windows-x86_64/{installed_version}"
+        "{ORIGIN}/api/v1/companion/{channel}/update/windows-x86_64/{installed_version}"
     ))
     .map_err(|_| Error::Invalid("update endpoint"))?;
-    let response = client()?.get(url).send().map_err(|_| Error::Network)?;
+    let request = client.get(url).timeout(Duration::from_secs(15));
+    let request = if let Some(token) = token {
+        request.bearer_auth(token)
+    } else {
+        request
+    };
+    let response = request.send().map_err(|_| Error::Network)?;
+    if response.status().as_u16() == 401 {
+        return Err(Error::Authentication);
+    }
+    if response.status().as_u16() == 429 {
+        return Err(Error::RateLimited(3600));
+    }
     if response.status().as_u16() == 204 {
         return Ok(None);
     }
@@ -152,6 +216,45 @@ pub fn metadata(installed_version: &str) -> Result<Option<(Package, serde_json::
     let package: Package = serde_json::from_value(raw.clone())?;
     package.validate()?;
     Ok(Some((package, raw)))
+}
+/// Native update-check policy. Market synchronization preferences do not own it.
+#[derive(Default)]
+pub struct CheckSchedule {
+    next_ms: Option<u64>,
+    last_clock_ms: Option<u64>,
+}
+impl CheckSchedule {
+    pub fn claim(&mut self, now_ms: u64, eligible: bool) -> bool {
+        if self.last_clock_ms.is_some_and(|previous| now_ms < previous) {
+            self.next_ms = Some(now_ms); // Reconcile one backward-clock event.
+        }
+        self.last_clock_ms = Some(now_ms);
+        if eligible && self.next_ms.is_none_or(|next| now_ms >= next) {
+            self.next_ms = Some(now_ms.saturating_add(86_400_000));
+            true
+        } else {
+            false
+        }
+    }
+    pub fn completed(&mut self, now_ms: u64, success: bool) {
+        self.last_clock_ms = Some(now_ms);
+        self.next_ms = Some(now_ms.saturating_add(if success { 86_400_000 } else { 3_600_000 }));
+    }
+    pub fn connection_ready(&mut self, now_ms: u64) {
+        self.next_ms = Some(now_ms);
+    }
+    pub fn wait_ms(&self, now_ms: u64, eligible: bool) -> u64 {
+        if !eligible {
+            return 900_000;
+        }
+        self.next_ms
+            .unwrap_or(now_ms)
+            .saturating_sub(now_ms)
+            .clamp(1000, 900_000)
+    }
+}
+pub fn public_key_fingerprint(key: &str) -> String {
+    format!("{:x}", Sha256::digest(key.trim().as_bytes()))
 }
 #[cfg(test)]
 mod tests {
@@ -183,10 +286,37 @@ mod tests {
             changed.download_url = url;
             assert!(changed.validate().is_err());
         }
-        for version in ["1.0.0", "2.0.0-beta.1", "2.00.0", "2.0.0/../"] {
+        for version in [
+            "1.0.0",
+            "2.0.0-beta.0",
+            "2.0.0-beta.01",
+            "2.00.0",
+            "2.0.0/../",
+        ] {
             let mut changed = original.clone();
             changed.version = version.into();
             assert!(changed.validate().is_err());
+        }
+    }
+    #[test]
+    fn private_beta_signature_identity_uses_a_distinct_exact_versioned_route() {
+        for version in ["2.0.0-beta.1", "2.4.8-beta.10"] {
+            assert!(release_version(version));
+            let mut value = package(&vec![b'M'; 1024]);
+            value.version = version.into();
+            value.download_url = format!("{ORIGIN}{}", download_path(version).unwrap());
+            value.validate().unwrap();
+            value.download_url = value.download_url.replace("private-beta", "releases");
+            assert!(value.validate().is_err());
+        }
+        for version in [
+            "2.0.0-beta.0",
+            "2.0.0-beta.01",
+            "2.0.0-beta.1+other",
+            "2.0.0-beta.1/other",
+            "2.0.0-alpha.1",
+        ] {
+            assert!(!release_version(version));
         }
     }
     #[test]
@@ -205,6 +335,40 @@ mod tests {
         assert!(bad.validate().is_err());
     }
 
+    #[test]
+    fn automatic_update_checks_are_daily_single_flight_and_ignore_paused_market_sync() {
+        let mut policy = CheckSchedule::default();
+        assert!(!policy.claim(1000, false));
+        assert!(policy.claim(1000, true));
+        assert!(!policy.claim(1001, true));
+        policy.completed(2000, true);
+        assert!(!policy.claim(86_401_999, true));
+        assert!(policy.claim(86_402_000, true));
+        assert!(!policy.claim(86_402_000, true));
+    }
+    #[test]
+    fn failed_checks_retry_hourly_and_reconnection_does_not_require_webview_activity() {
+        let mut policy = CheckSchedule::default();
+        assert!(policy.claim(1000, true));
+        policy.completed(2000, false);
+        assert!(!policy.claim(3_601_999, true));
+        assert!(policy.claim(3_602_000, true));
+        policy.completed(3_603_000, true);
+        policy.connection_ready(3_604_000);
+        assert!(policy.claim(3_604_000, true));
+        assert_eq!(policy.wait_ms(3_604_000, false), 900_000);
+    }
+    #[test]
+    fn sleep_and_clock_reconciliation_never_create_catchup_requests() {
+        let mut policy = CheckSchedule::default();
+        assert!(policy.claim(100_000_000, true));
+        policy.completed(100_000_000, true);
+        assert!(policy.claim(900_000_000, true));
+        assert!(!policy.claim(900_000_000, true));
+        policy.completed(900_000_000, true);
+        assert!(policy.claim(100_000_000, true));
+        assert!(!policy.claim(100_000_000, true));
+    }
     #[test]
     fn publisher_verifier_authenticates_the_real_signature_and_version_binding() {
         let bytes = include_bytes!("../../src-tauri/tests/fixtures/synthetic-update.txt");

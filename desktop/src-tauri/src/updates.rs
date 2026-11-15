@@ -5,13 +5,17 @@ use serde::Serialize;
 use std::{
     sync::{
         atomic::{AtomicBool, Ordering},
-        Arc, Mutex,
+        Arc, Condvar, Mutex,
     },
     time::{Duration, Instant},
 };
-use tauri::{AppHandle, Emitter, Manager};
+use tauri::{AppHandle, Emitter, Listener, Manager};
 use tauri_plugin_updater::{Update, UpdaterExt};
-use twichui_market_core::update::{self, Package};
+use twichui_market_core::{
+    scheduler::{Clock, SystemClock},
+    update::{self, Package},
+};
+pub const PUBLIC_KEY: &str = include_str!("../updater-public-key.txt");
 type Result<T> = std::result::Result<T, String>;
 #[derive(Clone, Serialize)]
 pub struct View {
@@ -20,6 +24,7 @@ pub struct View {
     pub message: String,
     pub notes: Option<String>,
     pub restart_required: bool,
+    pub verification_key_sha256: String,
 }
 impl View {
     fn new(status: &'static str, message: &str) -> Self {
@@ -29,6 +34,7 @@ impl View {
             message: message.into(),
             notes: None,
             restart_required: false,
+            verification_key_sha256: update::public_key_fingerprint(PUBLIC_KEY),
         }
     }
 }
@@ -41,13 +47,24 @@ pub struct Updates {
     busy: AtomicBool,
     pending: Mutex<Option<Pending>>,
     view: Mutex<View>,
+    background: Arc<(Mutex<Background>, Condvar)>,
+}
+#[derive(Default)]
+struct Background {
+    schedule: update::CheckSchedule,
+    stopped: bool,
+    connected: bool,
 }
 impl Default for Updates {
     fn default() -> Self {
         Self {
             busy: AtomicBool::new(false),
             pending: Mutex::new(None),
-            view: Mutex::new(View::new("idle", "Check for verified companion updates.")),
+            view: Mutex::new(View::new(
+                "idle",
+                "Updates are checked automatically. Installing always needs your confirmation.",
+            )),
+            background: Arc::new((Mutex::new(Background::default()), Condvar::new())),
         }
     }
 }
@@ -73,6 +90,72 @@ impl Updates {
         Ok(view)
     }
 }
+pub fn stop_background(app: &AppHandle) {
+    if let Some(updates) = app.try_state::<Arc<Updates>>() {
+        if let Ok(mut state) = updates.background.0.lock() {
+            state.stopped = true;
+        }
+        updates.background.1.notify_all();
+    }
+}
+pub fn start_background(app: AppHandle) -> Result<()> {
+    let updates = app.state::<Arc<Updates>>().inner().clone();
+    if let Ok(mut state) = updates.background.0.lock() {
+        state.connected = app.state::<Arc<Runtime>>().updates_eligible();
+    }
+    let observer = updates.clone();
+    app.listen("companion-state", move |event| {
+        let Ok(value) = serde_json::from_str::<serde_json::Value>(event.payload()) else {
+            return;
+        };
+        let Some(connected) = value.get("connected").and_then(|value| value.as_bool()) else {
+            return;
+        };
+        if let Ok(mut background) = observer.background.0.lock() {
+            if !background.stopped && background.connected != connected {
+                background.connected = connected;
+                if connected {
+                    background.schedule.connection_ready(SystemClock.now_ms());
+                }
+                observer.background.1.notify_one();
+            }
+        }
+    });
+    std::thread::Builder::new()
+        .name("market-update-checks".into())
+        .spawn(move || {
+            let runtime = app.state::<Arc<Runtime>>().inner().clone();
+            loop {
+                if runtime.quitting() {
+                    break;
+                }
+                let eligible = runtime.updates_eligible();
+                let now = SystemClock.now_ms();
+                let Ok(mut background) = updates.background.0.lock() else {
+                    break;
+                };
+                if background.stopped {
+                    break;
+                }
+                if background.schedule.claim(now, eligible) {
+                    drop(background);
+                    let _ = check(app.clone());
+                } else {
+                    let wait = background.schedule.wait_ms(now, eligible);
+                    let Ok((guard, _)) = updates
+                        .background
+                        .1
+                        .wait_timeout(background, Duration::from_millis(wait))
+                    else {
+                        break;
+                    };
+                    drop(guard);
+                }
+            }
+        })
+        .map_err(|_| "Automatic update checks could not start".to_string())?;
+    Ok(())
+}
 pub fn state(app: &AppHandle) -> Result<View> {
     app.state::<Arc<Updates>>()
         .view
@@ -87,29 +170,30 @@ pub fn check(app: AppHandle) -> Result<View> {
         .pending
         .lock()
         .map_err(|_| "Update status is unavailable")? = None;
-    let Some(key) = option_env!("TWICHUI_UPDATER_PUBLIC_KEY")
-        .filter(|key| !key.trim().is_empty() && key.len() <= 4096)
-    else {
+    let key = PUBLIC_KEY.trim();
+    let runtime = app.state::<Arc<Runtime>>().inner().clone();
+    if !runtime.updates_eligible() {
         return updates.set(
             &app,
             View::new(
-                "disabled",
-                "Updates will be available after release signing and verification are complete.",
+                "unavailable",
+                "Connect to TwichUI Market to check for verified updates.",
             ),
         );
-    };
+    }
     updates.set(
         &app,
         View::new("checking", "Checking for a verified update…"),
     )?;
     let result = (|| -> Result<Option<Pending>> {
-        let Some((package, raw)) = update::metadata(env!("CARGO_PKG_VERSION"))
+        let Some((package, raw)) = runtime
+            .with_update_client(|client| client.update_metadata(env!("CARGO_PKG_VERSION")))
             .map_err(|_| "Could not check updates. Your current companion keeps working.")?
         else {
             return Ok(None);
         };
         let endpoint = format!(
-            "{}/api/v1/companion/releases/update/windows-x86_64/{}",
+            "{}/api/v1/companion/private-beta/update/windows-x86_64/{}",
             update::ORIGIN,
             env!("CARGO_PKG_VERSION")
         );
@@ -142,6 +226,11 @@ pub fn check(app: AppHandle) -> Result<View> {
             checked: Instant::now(),
         }))
     })();
+    if let Ok(mut background) = updates.background.0.lock() {
+        background
+            .schedule
+            .completed(SystemClock.now_ms(), result.is_ok());
+    }
     match result {
         Ok(Some(pending)) => {
             let view = View {
@@ -150,6 +239,7 @@ pub fn check(app: AppHandle) -> Result<View> {
                 message: format!("Companion {} is available.", pending.package.version),
                 notes: Some(pending.package.notes.clone()),
                 restart_required: false,
+                verification_key_sha256: update::public_key_fingerprint(PUBLIC_KEY),
             };
             *updates
                 .pending
@@ -188,9 +278,12 @@ pub fn install(app: AppHandle, version: String) -> Result<View> {
         ),
     )?;
     let verified = (|| -> Result<Vec<u8>> {
-        let bytes = pending.package.download().map_err(|_| {
-            "The update could not be downloaded intact. Your current companion keeps working."
-        })?;
+        let runtime = app.state::<Arc<Runtime>>().inner().clone();
+        let bytes = runtime
+            .with_update_client(|client| client.download_update(&pending.package))
+            .map_err(|_| {
+                "The update could not be downloaded intact. Your current companion keeps working."
+            })?;
         pending.update.verify(&bytes).map_err(|_|"The update signature or signed version did not match. Your current companion keeps working.")?;
         Ok(bytes)
     })();
@@ -249,7 +342,7 @@ mod tests {
         assert!(fs::metadata(&installer).unwrap().len() <= 64 * 1024 * 1024);
         let bytes = fs::read(&installer).unwrap();
         let signature = fs::read_to_string(format!("{}.sig", installer.display())).unwrap();
-        let key = env::var("TWICHUI_UPDATER_PUBLIC_KEY").unwrap();
+        let key = PUBLIC_KEY;
         let version = env::var("RELEASE_VERSION").unwrap();
         let mut context = mock_context(noop_assets());
         context.package_info_mut().version = "0.1.0".parse().unwrap();

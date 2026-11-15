@@ -125,6 +125,25 @@ impl MarketClient {
         }
         Ok(bytes)
     }
+    fn update_authority(&self) -> Result<()> {
+        if self.server.as_str() != format!("{}/", crate::update::ORIGIN) {
+            return Err(Error::Invalid(
+                "updates require the trusted Market connection",
+            ));
+        }
+        Ok(())
+    }
+    pub fn update_metadata(
+        &self,
+        installed: &str,
+    ) -> Result<Option<(crate::update::Package, serde_json::Value)>> {
+        self.update_authority()?;
+        crate::update::private_metadata(&self.http, &self.token, installed)
+    }
+    pub fn download_update(&self, package: &crate::update::Package) -> Result<Vec<u8>> {
+        self.update_authority()?;
+        package.download_authenticated(&self.http, &self.token)
+    }
     pub fn authenticate(&self) -> Result<()> {
         let response: serde_json::Value =
             serde_json::from_slice(&self.get("api/v1/auth/me", None)?)?;
@@ -181,5 +200,33 @@ impl MarketClient {
             404 | 502 | 503 => Err(Error::ServiceUnavailable),
             _ => Err(Error::Network),
         }
+    }
+}
+
+#[cfg(test)]
+mod update_authority_tests {
+    use super::*;
+    #[test]
+    fn private_update_tokens_cannot_follow_a_custom_account_server() {
+        for server in [
+            "http://127.0.0.1:43123",
+            "https://other.example",
+            "https://market.twich.gg:8443",
+        ] {
+            let client =
+                MarketClient::new(server, "synthetic-update-token-not-a-secret".into()).unwrap();
+            assert!(matches!(
+                client.update_metadata("2.0.0-beta.1"),
+                Err(Error::Invalid(
+                    "updates require the trusted Market connection"
+                ))
+            ));
+        }
+        let trusted = MarketClient::new(
+            "https://MARKET.TWICH.GG:443",
+            "synthetic-update-token-not-a-secret".into(),
+        )
+        .unwrap();
+        trusted.update_authority().unwrap(); // No HTTP request or production credential.
     }
 }

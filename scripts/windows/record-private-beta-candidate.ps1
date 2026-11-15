@@ -7,9 +7,13 @@ $signature=Get-AuthenticodeSignature -FilePath $installer[0].FullName
 if ($signature.Status -ne 'NotSigned') { throw 'This engineering candidate must be observed unsigned, not assumed unsigned' }
 $evidence=Join-Path (Get-Location) 'artifacts/companion-v2'
 $accepted=Get-Content (Join-Path $evidence 'installed-smoke.json') -Raw | ConvertFrom-Json
-if ($accepted.updater_disabled -ne $true) { throw 'Private manual-update candidate must prove its native updater is disabled' }
+if ($accepted.update_checks_blocked_for_custom_server -ne $true) { throw 'Custom test-server credentials must not reach the production updater' }
+$key=(Get-Content 'desktop/src-tauri/updater-public-key.txt' -Raw).Trim()
+$hasher=[Security.Cryptography.SHA256]::Create()
+try { $keyHash=[Convert]::ToHexString($hasher.ComputeHash([Text.Encoding]::UTF8.GetBytes($key))).ToLowerInvariant() } finally { $hasher.Dispose() }
+if ($accepted.updater_public_key_sha256 -ne $keyHash) { throw 'Installed public verification key differs from source' }
 $source=(git rev-parse HEAD).Trim()
 if ($LASTEXITCODE -ne 0 -or $accepted.source_commit -ne $source) { throw 'Installed candidate source differs' }
-@{schema_version=1;source_commit=$source;status='NotSigned';sha256=(Get-FileHash $installer[0].FullName -Algorithm SHA256).Hash.ToLowerInvariant();bytes=$installer[0].Length} |
+@{schema_version=1;source_commit=$source;status='NotSigned';sha256=(Get-FileHash $installer[0].FullName -Algorithm SHA256).Hash.ToLowerInvariant();bytes=$installer[0].Length;updater_public_key_sha256=$keyHash;executable_sha256=(Get-FileHash 'desktop/src-tauri/target/release/twichui-market-companion.exe' -Algorithm SHA256).Hash.ToLowerInvariant()} |
     ConvertTo-Json | Set-Content (Join-Path $evidence 'windows-signature.json')
-Write-Output 'Observed unsigned Windows installer and disabled updater recorded; private publication still requires owner authorization.'
+Write-Output 'Observed unsigned Windows installer and compiled public updater key recorded; final owner publication approval is still required.'

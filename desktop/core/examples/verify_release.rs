@@ -45,9 +45,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
     let package = Package {
         download_url: format!(
-            "{}/api/v1/companion/releases/{}/windows-x64",
+            "{}{}",
             update::ORIGIN,
-            package.version
+            update::download_path(&package.version)?
         ),
         ..package
     };

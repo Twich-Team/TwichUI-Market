@@ -1,4 +1,4 @@
 fn main() {
-    println!("cargo:rerun-if-env-changed=TWICHUI_UPDATER_PUBLIC_KEY");
+    println!("cargo:rerun-if-changed=updater-public-key.txt");
     tauri_build::build()
 }

@@ -1,6 +1,6 @@
 // Real installed Windows WebView2 + Rust IPC + disposable API. No IPC is mocked.
 const {chromium,request,expect}=require('@playwright/test');
-const fs=require('node:fs');const path=require('node:path');const {execFile,spawn}=require('node:child_process');const {promisify}=require('node:util');
+const {createHash}=require('node:crypto');const fs=require('node:fs');const path=require('node:path');const {execFile,spawn}=require('node:child_process');const {promisify}=require('node:util');
 (async()=>{
   if(process.env.GITHUB_ACTIONS!=='true'||process.platform!=='win32')throw new Error('Installed acceptance requires the disposable Windows runner');
   const endpoint=`http://127.0.0.1:${process.env.MARKET_TEST_CDP_PORT}`;
@@ -60,8 +60,9 @@ const fs=require('node:fs');const path=require('node:path');const {execFile,spaw
     await website.screenshot({path:path.join(shots,'website-devices.png'),fullPage:true});
     const profile=(await api.get('/api/v1/companion/devices')).json();const device=(await profile).devices[0];expect(device.last_sync_at).toBeTruthy();expect(device.selected_market_id).toBe(1);
     await page.locator('#settings-open').click();await page.screenshot({path:path.join(shots,'native-settings.png'),fullPage:true});
-    let updaterDisabled=false;
-    if(!process.env.TWICHUI_UPDATER_PUBLIC_KEY){await page.locator('#update-check').click();await expect(page.locator('#update-message')).toContainText('after release signing');updaterDisabled=(await invoke('update_state')).status==='disabled';expect(updaterDisabled).toBe(true);}
+    const updaterKeyHash=createHash('sha256').update(fs.readFileSync('desktop/src-tauri/updater-public-key.txt','utf8').trim()).digest('hex');
+    await page.locator('#update-check').click();await expect(page.locator('#update-message')).toContainText('Connect to TwichUI Market');
+    const updateState=await invoke('update_state');expect(updateState.status).toBe('unavailable');expect(updateState.verification_key_sha256).toBe(updaterKeyHash);
     const startupBefore=await startup();expect(startupBefore.user??null).toBe(null);
     await page.locator('#launch-login').check();await page.locator('#settings-save').click();
     expect((await startup()).user).toBe(`"${process.env.MARKET_TEST_INSTALLED_EXE}" --background`);
@@ -140,7 +141,7 @@ const fs=require('node:fs');const path=require('node:path');const {execFile,spaw
     expect((await invoke('app_state')).cache.item_count).toBe(2);
     const revoked=(await(await api.get('/api/v1/companion/devices')).json()).devices.find(row=>row.id===device.id);expect(revoked.revoked).toBe(true);
     fs.writeFileSync(path.join(shots,'installed-smoke.json'),JSON.stringify({fixture:true,source_commit:sourceCommit,acceptance_scope:'Installed non-tray workflows; tray actions are a separate explicit gate',version:(await invoke('app_state')).version,native_browser_approval_api:true,native_browser_approval_ui:true,
-      native_thread_hidden_sync:true,single_instance_restore:true,preferences_saved:true,credential_and_cache_restart:true,hidden_startup:true,current_user_autostart_enable_disable:true,actual_tray_menu:trayVerified,tray_settings_sync_pause_open_quit:trayVerified,native_minimize_close_to_tray:true,export_valid:true,server_revocation:true,offline_cache_preserved:true,updater_disabled:updaterDisabled,
+      native_thread_hidden_sync:true,single_instance_restore:true,preferences_saved:true,credential_and_cache_restart:true,hidden_startup:true,current_user_autostart_enable_disable:true,actual_tray_menu:trayVerified,tray_settings_sync_pause_open_quit:trayVerified,native_minimize_close_to_tray:true,export_valid:true,server_revocation:true,offline_cache_preserved:true,updater_disabled:false,updater_public_key_sha256:updaterKeyHash,update_checks_blocked_for_custom_server:true,
       website_approval_ui_verified:true,tray_rendering_evidence:{run_id:43647891422,real_menu_rendering_verified:true,actions_verified:false},tray_acceptance:trayVerified?'verified':'unverified',
       tray_limitation:trayVerified?null:'Focused runner attempt opened the real notification menu; UIA exposed no menu items. Owner manual acceptance required.',
       full_tray_autostart_upgrade_acceptance_complete:false},null,2));

@@ -142,7 +142,11 @@ fn main() {
         )
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_notification::init())
-        .plugin(tauri_plugin_updater::Builder::new().build())
+        .plugin(
+            tauri_plugin_updater::Builder::new()
+                .pubkey(updates::PUBLIC_KEY.trim())
+                .build(),
+        )
         .setup(|app| {
             let path = app.path().app_data_dir()?;
             let runtime =
@@ -158,6 +162,7 @@ fn main() {
                 }
             }
             runtime.initialize();
+            updates::start_background(app.handle().clone()).map_err(std::io::Error::other)?;
             Ok(())
         })
         .on_window_event(|window, event| {
