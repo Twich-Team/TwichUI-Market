@@ -16,6 +16,7 @@ test('compact toolbar and dedicated chevrons keep uniform parent rows and exact 
  const box=await catalogue.boundingBox();expect(box!.y).toBeLessThan(410);await shot(page,'explorer');
  const origin=page.url();await catalogue.getByRole('button',{name:'Item details for Synthetic Arcane Crystal',exact:true}).click();const popover=page.getByRole('dialog');await popover.getByText('Technical details',{exact:true}).click();await expect(popover.getByText('Field provenance',{exact:true})).toBeVisible();await expect(page).toHaveURL(origin);await page.keyboard.press('Escape');
  await button.focus();await page.keyboard.press('Enter');await expect(catalogue.getByRole('button',{name:'Collapse 2 variants of Synthetic Enchanted Blade',exact:true})).toHaveAttribute('aria-expanded','true');await expect(page.getByRole('table',{name:'Variants of Synthetic Enchanted Blade'})).toBeVisible();await expect(page).toHaveURL(/\/\?market=1/);await shot(page,'expanded-variants');
+ await catalogue.getByRole('button',{name:'Columns',exact:true}).click();await expect(page.getByRole('menu')).toBeVisible();await page.keyboard.press('Escape');await expect(page.getByRole('menu')).toHaveCount(0);
  await expect(catalogue.getByRole('link',{name:'Research Synthetic Arcane Crystal'})).toHaveAttribute('href',/variant=[a-f0-9]{64}$/);await axe(page);
  await page.setViewportSize({width:390,height:844});await shot(page,'explorer-mobile');expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await axe(page);
 });

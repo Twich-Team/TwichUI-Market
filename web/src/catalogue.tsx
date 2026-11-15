@@ -1,3 +1,4 @@
+import { ColumnMenu } from "./data-table";
 import { ItemName } from "./item-name";
 import { usePreferences } from "./preferences";
 import type { ItemSort } from "./preferences-store";
@@ -231,12 +232,7 @@ export function ItemCatalogue({market,query,state,onChange,onSummary}: {
       <div className="catalogue-heading catalogue-toolbar">
         <strong>{(data?.total_items || 0).toLocaleString()} items</strong>
         <span className="small muted catalogue-updated" title={when(data?.observed_at)}>{data?.observed_at ? `Updated ${new Date(data.observed_at!).toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"})}` : ""}</span>
-        <details className="column-controls">
-          <summary>Columns</summary>
-          <fieldset aria-label="Item table columns">{table.getAllLeafColumns().filter(column=>column.getCanHide()).map(column=><label key={column.id}>
-            <input type="checkbox" checked={column.getIsVisible()} onChange={column.getToggleVisibilityHandler()}/>{String(column.columnDef.header)}
-          </label>)}</fieldset>
-        </details>
+        <ColumnMenu table={table} closeAfterChange/>
         <button className="icon-button" aria-label="Refresh catalogue" title="Refresh catalogue" disabled={response.isFetching} onClick={()=>response.refetch()}><span aria-hidden="true">↻</span></button>
       </div>
       <p role="status" aria-live="polite" className="sr-only">{response.isFetching ? "Loading item catalogue…" : response.error ? "Catalogue update failed." : `Catalogue page ${data?.page != null ? data!.page+1 : 1} loaded.`}</p>

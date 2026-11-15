@@ -33,7 +33,8 @@ test('preferences auto-save every supported choice and restore across independen
  await expect(catalogue.locator('tbody tr').first()).toBeVisible();
  await catalogue.getByLabel('Items per page').selectOption('50');
  await catalogue.getByText('Columns',{exact:true}).click();
- await catalogue.getByLabel('Listings',{exact:true}).uncheck();
+ await page.getByRole('menuitemcheckbox',{name:'Listings',exact:true}).click();
+ await expect(page.getByRole('menu')).toHaveCount(0);
  await catalogue.getByRole('columnheader',{name:/Supply/}).getByRole('button').click();
  await catalogue.getByRole('columnheader',{name:/Supply/}).getByRole('button').click();
  await page.getByRole('link',{name:'Research Synthetic Arcane Crystal',exact:true}).click();await page.getByRole('button',{name:'60D',exact:true}).click();

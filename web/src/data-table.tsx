@@ -1,6 +1,7 @@
 import { Fragment, ReactNode, useEffect, useId, useMemo, useState } from "react";
 import {
   ColumnDef,
+  type Table,
   OnChangeFn,
   PaginationState,
   SortingState,
@@ -14,6 +15,36 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { Menu } from "@base-ui/react/menu";
+export function ColumnMenu<T>({table,closeAfterChange=false}:{table:Table<T>;closeAfterChange?:boolean}) {
+  const [open,setOpen]=useState(false);
+  return <Menu.Root open={open} onOpenChange={setOpen}>
+          <Menu.Trigger className="column-menu-trigger">Columns</Menu.Trigger>
+          <Menu.Portal>
+            <Menu.Positioner sideOffset={6}>
+              <Menu.Popup className="table-menu">
+                {table
+                  .getAllLeafColumns()
+                  .filter((c) => c.getCanHide())
+                  .map((column) => (
+                    <Menu.CheckboxItem
+                      key={column.id}
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) => {column.toggleVisibility(value);if(closeAfterChange)setOpen(false);}}
+                    >
+                      {typeof column.columnDef.header === "string"
+                        ? column.columnDef.header
+                        : column.id}
+                      <Menu.CheckboxItemIndicator>
+                        {" "}
+                        ✓
+                      </Menu.CheckboxItemIndicator>
+                    </Menu.CheckboxItem>
+                  ))}
+              </Menu.Popup>
+            </Menu.Positioner>
+          </Menu.Portal>
+        </Menu.Root>;
+}
 export function DataTable<T>({
   data,
   columns,
@@ -107,35 +138,7 @@ export function DataTable<T>({
             <option value="">All</option>{options.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
           </select>
         </label>)}
-        <Menu.Root>
-          <Menu.Trigger>Columns</Menu.Trigger>
-          <Menu.Portal>
-            <Menu.Positioner sideOffset={6}>
-              <Menu.Popup className="table-menu">
-                {table
-                  .getAllLeafColumns()
-                  .filter((c) => c.getCanHide())
-                  .map((column) => (
-                    <Menu.CheckboxItem
-                      key={column.id}
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(value)
-                      }
-                    >
-                      {typeof column.columnDef.header === "string"
-                        ? column.columnDef.header
-                        : column.id}
-                      <Menu.CheckboxItemIndicator>
-                        {" "}
-                        ✓
-                      </Menu.CheckboxItemIndicator>
-                    </Menu.CheckboxItem>
-                  ))}
-              </Menu.Popup>
-            </Menu.Positioner>
-          </Menu.Portal>
-        </Menu.Root>
+        <ColumnMenu table={table}/>
       </div>
       <div
         className="table-scroll"
