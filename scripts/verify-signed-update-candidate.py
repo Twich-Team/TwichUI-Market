@@ -58,6 +58,18 @@ def stage(path,incoming):
     # Earlier independent tests preserve their disposable profiles. Move them
     # aside intact before the separate exact-signed-byte SDK test reuses its name.
     temporary=Path(os.environ['RUNNER_TEMP'])
+    data=Path(os.environ['APPDATA'])/'team.twich.market'
+    if data.exists():
+        # The independent installed test deliberately leaves its uninstalled
+        # fixture data intact. Retain that exact profile separately, never erase
+        # it or accept an unknown profile as a disposable test account.
+        installed=prepare.read(ROOT/'artifacts/companion-v2/installed-smoke.json')
+        harness=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
+        if installed.get('source_commit')!=harness or installed.get('uninstall_settings_and_cache_preserved') is not True:
+            raise ValueError('Existing profile is not a proven retained runner fixture')
+        retained_data=temporary/'Harness-Native-RetainedData'
+        if retained_data.exists():raise ValueError('Refusing to overwrite prior native fixture data')
+        shutil.move(data,retained_data)
     for name in ('TwichMarket-Upgrade','TwichMarket-Upgrade-RetainedData'):
         previous=temporary/name;retained_profile=temporary/('Harness-'+name)
         if previous.exists():
