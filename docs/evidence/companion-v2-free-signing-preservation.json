@@ -1,0 +1,90 @@
+{
+  "checked_at": "2026-11-15T01:13:38.399924+00:00",
+  "schema_revision": "0012",
+  "cutoffs": {
+    "snapshot": 24,
+    "observation": 264,
+    "user": 65,
+    "credential": 124
+  },
+  "fingerprints": {
+    "observations": {
+      "rows": 264,
+      "bytes_hashed": 50086,
+      "sha256": "78dcfec777ee90c0355ceb8d688d65ca4bf55f9266de8b07b41af0cf55076dbd"
+    },
+    "snapshots": {
+      "rows": 24,
+      "bytes_hashed": 2644,
+      "sha256": "35462569df4d32068b3d6292b2dc547b962abd91d81982713d30b010b9edee3d"
+    },
+    "listings": {
+      "rows": 2529900,
+      "bytes_hashed": 344109833,
+      "sha256": "138d59e2a0ccca5870951e2020f2e51cbc7fdf98c8b226d756cdae915e76ca40"
+    },
+    "snapshot_statistics": {
+      "rows": 573209,
+      "bytes_hashed": 64082180,
+      "sha256": "483a117a26008fbac8729cd3a12a5ddca1a859bf74871c4038dcf95a11b4c9a4"
+    },
+    "users": {
+      "rows": 65,
+      "bytes_hashed": 10960,
+      "sha256": "dfc01d1a0d285c524b4df545fb95c8a0162d15d8c8921cd87d953f4dfa421c33"
+    },
+    "credentials": {
+      "rows": 124,
+      "bytes_hashed": 27740,
+      "sha256": "97941df3f3e3b21ea5a9c7ee1c75708dcfd77aa472496beace3347063a40c663"
+    },
+    "user_preferences": {
+      "rows": 7,
+      "bytes_hashed": 2625,
+      "sha256": "22b3fc1b1df50acf14e39b3b1b172ec1591bdb1eb1dfa26b8ae56437204bf177"
+    },
+    "market_verifications": {
+      "rows": 2,
+      "bytes_hashed": 5028,
+      "sha256": "e7d6d471274fb9da263bf766a53941675224876ef60df832c1194ae61fa03d17"
+    },
+    "player_market_mappings": {
+      "rows": 1,
+      "bytes_hashed": 15546,
+      "sha256": "dde78a44cad988f6801006e0263f2bc09ae209428459ef17d26f9571c3c50cdd"
+    },
+    "retention_policy": {
+      "rows": 0,
+      "bytes_hashed": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "collection_configuration": [
+    {
+      "id": 1,
+      "region": "us",
+      "ruleset_id": 2,
+      "house_id": 110,
+      "source_kind": "auctions",
+      "enabled": false,
+      "verified": true,
+      "interval_seconds": 300
+    },
+    {
+      "id": 2,
+      "region": "us",
+      "ruleset_id": 2,
+      "house_id": 114,
+      "source_kind": "auctions",
+      "enabled": true,
+      "verified": true,
+      "interval_seconds": 300
+    }
+  ],
+  "all_preexisting_rows_identical": true,
+  "historical_retention_authorized": false,
+  "historical_retention_batches": 0,
+  "database_bytes": 865736371,
+  "schema_version": 1,
+  "scope": "Read-only comparison at fixed original cutoffs during signing/release preparation; production migration not performed"
+}

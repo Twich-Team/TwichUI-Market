@@ -1,0 +1,40 @@
+# Explicit private pilot only. Inactive until scoped deployment/backup gates pass.
+services:
+  api:
+    environment: &private-beta-environment
+      COMPANION_PRIVATE_BETA_DIRECTORY: /private-beta
+      COMPANION_PRIVATE_BETA_USER_IDS: ${COMPANION_PRIVATE_BETA_USER_IDS:-}
+      COMPANION_UPDATER_PUBLIC_KEY: ${COMPANION_UPDATER_PUBLIC_KEY:-}
+    volumes:
+      - companion-private-beta:/private-beta:ro
+  local-api:
+    environment: *private-beta-environment
+    volumes:
+      - companion-private-beta:/private-beta:ro
+  private-beta-publisher:
+    profiles: [private-beta-tools]
+    image: twichui-market-release-tools:companion-v2-private-beta
+    entrypoint: [python, -m, market.private_beta_publisher]
+    environment: *private-beta-environment
+    # UID0 exists only inside the approved rootless mapping; no host privileges.
+    user: "0:0"
+    network_mode: none
+    read_only: true
+    tmpfs: [/tmp:size=80m]
+    mem_limit: 256m
+    cpus: 1
+    restart: "no"
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    logging:
+      driver: json-file
+      options: {max-size: "5m", max-file: "2"}
+    volumes:
+      - companion-private-beta:/private-beta
+      - type: bind
+        source: ${COMPANION_PRIVATE_BETA_INPUT:-./artifacts/companion-private-beta-incoming}
+        target: /incoming
+        read_only: true
+        bind: {create_host_path: false}
+volumes:
+  companion-private-beta:

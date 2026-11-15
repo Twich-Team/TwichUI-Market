@@ -1,0 +1,101 @@
+{
+  "schema_revision": "0012",
+  "markets": [
+    {
+      "id": 1,
+      "house_id": 110,
+      "enabled": false,
+      "verified": true,
+      "interval_seconds": 300,
+      "last_success": "2026-11-14T15:14:21.190053+00:00",
+      "failures": 0
+    },
+    {
+      "id": 2,
+      "house_id": 114,
+      "enabled": true,
+      "verified": true,
+      "interval_seconds": 300,
+      "last_success": "2026-11-15T02:12:44.818326+00:00",
+      "failures": 0
+    }
+  ],
+  "database_bytes": 908711603,
+  "house110_observations": 145,
+  "total_observations": 276,
+  "retention_batches": 0,
+  "retention_approved": 0,
+  "containers": [
+    {
+      "name": "twichui-market-worker-1",
+      "image": "sha256:d1ae733744b7328199f7926121c34d313027331301bcc60851451275f50a1294",
+      "started_at": "2026-11-14T14:24:43.267611827Z",
+      "restarts": 0,
+      "oom_killed": false,
+      "memory_limit": 402653184,
+      "nano_cpus": 500000000
+    },
+    {
+      "name": "twichui-market-api-1",
+      "image": "sha256:17d2c17591bd0ddea617fcf9018d0235a9100bd00813ea0faa025f3b83e679f2",
+      "started_at": "2026-11-14T17:05:27.563045664Z",
+      "restarts": 0,
+      "oom_killed": false,
+      "memory_limit": 402653184,
+      "nano_cpus": 500000000
+    },
+    {
+      "name": "twichui-market-local-api-1",
+      "image": "sha256:17d2c17591bd0ddea617fcf9018d0235a9100bd00813ea0faa025f3b83e679f2",
+      "started_at": "2026-11-14T17:05:27.39298023Z",
+      "restarts": 0,
+      "oom_killed": false,
+      "memory_limit": 268435456,
+      "nano_cpus": 250000000
+    },
+    {
+      "name": "twichui-market-proxy-1",
+      "image": "sha256:fb5f20db59d6a5ed92c1ea4d490e1d6af86772065b9d5be88f1096cf00cc6d0c",
+      "started_at": "2026-11-14T17:05:44.286927292Z",
+      "restarts": 0,
+      "oom_killed": false,
+      "memory_limit": 134217728,
+      "nano_cpus": 250000000
+    }
+  ],
+  "public_https_status": 200,
+  "public_health": {
+    "status": "ok",
+    "contract_version": 1
+  },
+  "resource_sample": [
+    {
+      "BlockIO": "0B / 0B",
+      "CPUPerc": "0.00%",
+      "Container": "twichui-market-worker-1",
+      "ID": "dc270e9490b7",
+      "MemPerc": "26.33%",
+      "MemUsage": "101.1MiB / 384MiB",
+      "Name": "twichui-market-worker-1",
+      "NetIO": "181MB / 423MB",
+      "PIDs": "1"
+    },
+    {
+      "BlockIO": "0B / 0B",
+      "CPUPerc": "2.94%",
+      "Container": "twichui-market-db-1",
+      "ID": "1a138045d430",
+      "MemPerc": "86.06%",
+      "MemUsage": "660.9MiB / 768MiB",
+      "Name": "twichui-market-db-1",
+      "NetIO": "925MB / 1.39GB",
+      "PIDs": "19"
+    }
+  ],
+  "schema_version": 1,
+  "checked_at_utc": "2026-11-15T02:14:17.020048+00:00",
+  "scope": "Final read-only owner-review health check; no production changes",
+  "production_changed": false,
+  "full_history_fingerprints": "companion-v2-free-signing-preservation.json",
+  "backup_restore": "companion-v2-free-release-preflight.json"
+}

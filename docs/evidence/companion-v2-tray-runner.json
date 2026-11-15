@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "source_commit": "2d660267a0727c22c348fec0380a5133611ae3b0",
+  "run_id": 43647891422,
+  "artifact_id": 14134754188,
+  "artifact_sha256": "59415e78e3cf366d53b199dc38f67deda4baf15f1bf72f6c099a6f689f75cfb8",
+  "fixture": true,
+  "inspected_actual_desktop_capture": true,
+  "notification_control": {
+    "automation_id": "NotifyItemIcon",
+    "class": "SystemTray.NormalButton",
+    "container": "TopLevelWindowForOverflowXamlIsland"
+  },
+  "native_popup": {
+    "class": "#32768",
+    "uia_control_type": "ControlType.Pane",
+    "uia_menu_item_count": 0
+  },
+  "real_menu_rendering_verified": true,
+  "tray_actions_verified": false,
+  "full_tray_acceptance": "unverified",
+  "application_defect_established": false,
+  "limitation": "Actual menu visibly opens, but this runner exposes no selectable UIA MenuItem descendants. Owner manual acceptance required.",
+  "manual_checklist": "docs/companion-v2-windows-manual-acceptance.md"
+}

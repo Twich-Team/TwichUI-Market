@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:twichui-market:addon-export:v1",
+  "title": "Data-only addon research export v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "contract_version", "algorithm", "server", "market_id", "observed_at", "generated_at", "synthetic", "items"],
+  "properties": {
+    "format": {"const": "twichui-market-addon-data"},
+    "contract_version": {"const": 1},
+    "algorithm": {"const": "asking-v1-provisional"},
+    "server": {"type": "string", "pattern": "^https?://", "maxLength": 2048},
+    "market_id": {"type": "integer", "minimum": 1, "maximum": 2147483647},
+    "observed_at": {"type": ["string", "null"], "format": "date-time"},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "synthetic": {"type": "boolean"},
+    "items": {"type": "array", "maxItems": 150000, "items": {
+      "type": "object", "additionalProperties": false, "required": ["item_id", "variant_key", "value"],
+      "properties": {
+        "item_id": {"type": "integer", "minimum": 1, "maximum": 2147483647},
+        "variant_key": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "value": {"$ref": "urn:twichui-market:valuation:v1"}
+      }
+    }}
+  }
+}

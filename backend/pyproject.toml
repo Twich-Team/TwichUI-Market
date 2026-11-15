@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=75,<81"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "twichui-market"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi==0.162.7", "starlette==1.10.0", "uvicorn==0.38.0", "SQLAlchemy==2.0.44",
+  "alembic==1.17.1", "psycopg[binary]==3.2.12", "argon2-cffi==25.1.0",
+]
+
+[project.optional-dependencies]
+test = ["pytest==9.2.0", "httpx2==2.16.0", "jsonschema==4.26.0"]
+
+[tool.setuptools.packages.find]
+include = ["market*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

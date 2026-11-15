@@ -1,0 +1,77 @@
+name: Windows companion
+on:
+  push:
+    branches: [main]
+  pull_request:
+concurrency:
+  group: desktop-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+  actions: read
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.100.0
+      - uses: Swatinem/rust-cache@v2
+        with:
+          cache-on-failure: true
+          workspaces: |
+            desktop -> target
+            desktop/src-tauri -> target
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: cargo test --manifest-path desktop/Cargo.toml --workspace --locked
+      - run: cargo test --manifest-path desktop/src-tauri/Cargo.toml --locked
+      - run: cargo build --manifest-path desktop/Cargo.toml --example http_smoke --locked
+      - run: cargo build --manifest-path desktop/Cargo.toml --example authorization_smoke --locked
+      - run: pip install -r backend/requirements.lock
+      - run: python scripts/verify-companion-http.py
+      - run: python scripts/verify-companion-authorization.py
+      - run: npm ci --prefix desktop
+      - run: npm --prefix desktop run tauri build -- --ci
+        id: bundle
+      - run: npm ci --prefix web
+      - run: npm --prefix web run build
+      - name: Verify actual legacy installer upgrade
+        shell: pwsh
+        timeout-minutes: 5
+        run: ./scripts/windows/verify-upgrade.ps1
+      - name: Verify installed Windows release
+        if: ${{ !cancelled() && steps.bundle.outcome == 'success' }}
+        shell: pwsh
+        timeout-minutes: 5
+        run: ./scripts/windows/verify-installer.ps1
+      - name: Record Windows publisher status and embedded updater key
+        shell: pwsh
+        run: ./scripts/windows/record-private-beta-candidate.ps1
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: companion-v2-acceptance
+          path: artifacts/companion-v2/
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() && steps.bundle.outcome == 'success' }}
+        with:
+          name: twichui-market-companion-windows-candidate
+          path: desktop/src-tauri/target/release/bundle/nsis/*.exe
+          if-no-files-found: error
+
+
+  signed-update:
+    uses: ./.github/workflows/companion-release.yml
+    with:
+      harness_commit: ${{ github.event.pull_request.head.sha || github.sha }}
+      proof_path: docs/evidence/companion-v2-signed-candidate.json
+      pending_only: true

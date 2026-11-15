@@ -1,0 +1,3386 @@
+{
+  "observed_at_utc": "2026-11-14",
+  "provenance": "Authenticated direct Blizzard API observations; no OAuth response/token retained.",
+  "initial_probe": [
+    {
+      "url": "https://us.api.blizzard.com/data/wow/ruleset/index?namespace=dynamic-forever-us&locale=en_US",
+      "status": 200,
+      "retrieved_at": "2026-11-14T02:35:38.066286+00:00",
+      "duration_seconds": 0.202,
+      "bytes": 528,
+      "sha256": "eb9bba087c4981474ff58e965f44503e979ec363427aed50666bb9b69e73a8fb",
+      "headers": {
+        "Last-Modified": "Sat, 14 Nov 2026 02:35:36 GMT",
+        "ETag": null,
+        "Date": "Sat, 14 Nov 2026 02:35:38 GMT",
+        "Cache-Control": "public, max-age=30",
+        "Retry-After": null,
+        "Battlenet-Namespace": "dynamic-forever-us"
+      },
+      "structure": {
+        "keys": [
+          "_links",
+          "rulesets"
+        ],
+        "rulesets_count": 4
+      }
+    },
+    {
+      "url": "https://us.api.blizzard.com/data/wow/ruleset/2?namespace=dynamic-forever-us&locale=en_US",
+      "status": 200,
+      "retrieved_at": "2026-11-14T02:35:39.261795+00:00",
+      "duration_seconds": 0.195,
+      "bytes": 272,
+      "sha256": "d94cadc631c8b6eeefb4390d1fb4360054115e091380cf00c1a8c76b286986b9",
+      "headers": {
+        "Last-Modified": "Sat, 14 Nov 2026 02:35:36 GMT",
+        "ETag": null,
+        "Date": "Sat, 14 Nov 2026 02:35:39 GMT",
+        "Cache-Control": "public, max-age=30",
+        "Retry-After": null,
+        "Battlenet-Namespace": "dynamic-forever-us"
+      },
+      "structure": {
+        "keys": [
+          "_links",
+          "auctions",
+          "id",
+          "name",
+          "status"
+        ]
+      }
+    },
+    {
+      "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/?namespace=dynamic-forever-us&locale=en_US",
+      "status": 200,
+      "retrieved_at": "2026-11-14T02:35:40.439818+00:00",
+      "duration_seconds": 0.178,
+      "bytes": 2359,
+      "sha256": "84226f6daaa9cca42890729a9fcf006943c9ada3bc7021de47c278f6d120c6ed",
+      "headers": {
+        "Last-Modified": "Sat, 14 Nov 2026 02:17:39 GMT",
+        "ETag": null,
+        "Date": "Sat, 14 Nov 2026 02:35:40 GMT",
+        "Cache-Control": "public, max-age=86400",
+        "Retry-After": null,
+        "Battlenet-Namespace": "dynamic-forever-us"
+      },
+      "structure": {
+        "keys": [
+          "_links",
+          "auctions"
+        ],
+        "auctions_count": 15,
+        "auction_fields": [
+          "id",
+          "key",
+          "name"
+        ]
+      }
+    },
+    {
+      "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/113?namespace=dynamic-forever-us&locale=en_US",
+      "status": 200,
+      "retrieved_at": "2026-11-14T02:35:41.926561+00:00",
+      "duration_seconds": 0.486,
+      "bytes": 11190219,
+      "sha256": "4dc90bb380be24794691ca45e484c2bec33654a5f405cea59c23a1472a4bf6f8",
+      "headers": {
+        "Last-Modified": "Sat, 14 Nov 2026 02:17:51 GMT",
+        "ETag": null,
+        "Date": "Sat, 14 Nov 2026 02:35:41 GMT",
+        "Cache-Control": "public, max-age=86400",
+        "Retry-After": null,
+        "Battlenet-Namespace": "dynamic-forever-us"
+      },
+      "structure": {
+        "keys": [
+          "_links",
+          "auctions",
+          "commodities",
+          "id",
+          "name",
+          "ruleset"
+        ],
+        "auctions_count": 113803,
+        "auction_fields": [
+          "buyout",
+          "id",
+          "item",
+          "quantity",
+          "time_left"
+        ]
+      }
+    },
+    {
+      "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/113/commodities?namespace=dynamic-forever-us&locale=en_US",
+      "status": 200,
+      "retrieved_at": "2026-11-14T02:35:43.783786+00:00",
+      "duration_seconds": 0.428,
+      "bytes": 8366563,
+      "sha256": "459b0431a42d2671eb891cca5e1256911f49b586891a69674392298571d7c3fb",
+      "headers": {
+        "Last-Modified": "Sat, 14 Nov 2026 02:17:51 GMT",
+        "ETag": null,
+        "Date": "Sat, 14 Nov 2026 02:35:43 GMT",
+        "Cache-Control": "public, max-age=86400",
+        "Retry-After": null,
+        "Battlenet-Namespace": "dynamic-forever-us"
+      },
+      "structure": {
+        "keys": [
+          "_links",
+          "auctions"
+        ],
+        "auctions_count": 97516,
+        "auction_fields": [
+          "id",
+          "item",
+          "quantity",
+          "time_left",
+          "unit_price"
+        ]
+      }
+    }
+  ],
+  "discovery": [
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/index?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:36:09.919293+00:00",
+        "duration_seconds": 0.153,
+        "bytes": 528,
+        "sha256": "eb9bba087c4981474ff58e965f44503e979ec363427aed50666bb9b69e73a8fb",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:36:06 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:36:09 GMT",
+          "Cache-Control": "public, max-age=30",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "rulesets": [
+        {
+          "id": 1
+        },
+        {
+          "id": 15
+        },
+        {
+          "id": 3
+        },
+        {
+          "id": 2
+        }
+      ]
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/1?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:36:11.077559+00:00",
+        "duration_seconds": 0.158,
+        "bytes": 269,
+        "sha256": "b7a01ea09b37ab81646672e405107cabb9f13888ca577dbdac988da89e55e91e",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:36:06 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:36:11 GMT",
+          "Cache-Control": "public, max-age=30",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "ruleset": {
+        "id": 1,
+        "name": "PvP",
+        "status": {
+          "type": "UP",
+          "name": "Up"
+        }
+      }
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/1/auctions/?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:36:12.252583+00:00",
+        "duration_seconds": 0.175,
+        "bytes": 2359,
+        "sha256": "e014ffe4e37fa5c4c780e7b078dbe473979edb877527b974ae771f7bb39b1476",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:39 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:36:12 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "houses": [
+        {
+          "id": 110,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 111,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 112,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 113,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 114,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 115,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 116,
+          "name": "Blackwater Auction House"
+        },
+        {
+          "id": 117,
+          "name": "Blackwater Auction House"
+        },
+        {
+          "id": 118,
+          "name": "Blackwater Auction House"
+        },
+        {
+          "id": 119,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 120,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 121,
+          "name": "Blackwater Auction House"
+        },
+        {
+          "id": 123,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 124,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 125,
+          "name": "Blackwater Auction House"
+        }
+      ]
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/15?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:36:13.446158+00:00",
+        "duration_seconds": 0.193,
+        "bytes": 281,
+        "sha256": "e04b8f19a08f4ba7e0841a2b7703ae93da421be5b971d7a2076cbabd48d56f45",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:36:06 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:36:13 GMT",
+          "Cache-Control": "public, max-age=30",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "ruleset": {
+        "id": 15,
+        "name": "Roleplay PvP",
+        "status": {
+          "type": "UP",
+          "name": "Up"
+        }
+      }
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/15/auctions/?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:36:14.614507+00:00",
+        "duration_seconds": 0.168,
+        "bytes": 2375,
+        "sha256": "727ce26ea1c7088d75dfb88cefebc4bcc39a92d048cb93e9c29dca45f67ea04c",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:39 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:36:14 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "houses": [
+        {
+          "id": 110,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 111,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 112,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 113,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 114,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 115,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 116,
+          "name": "Blackwater Auction House"
+        },
+        {
+          "id": 117,
+          "name": "Blackwater Auction House"
+        },
+        {
+          "id": 118,
+          "name": "Blackwater Auction House"
+        },
+        {
+          "id": 119,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 120,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 121,
+          "name": "Blackwater Auction House"
+        },
+        {
+          "id": 123,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 124,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 125,
+          "name": "Blackwater Auction House"
+        }
+      ]
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/3?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:36:15.791449+00:00",
+        "duration_seconds": 0.177,
+        "bytes": 274,
+        "sha256": "55d6f8dd9bc78c78df1420c312d81c0fb3c704ab88bc559aea081225d805090b",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:36:06 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:36:15 GMT",
+          "Cache-Control": "public, max-age=30",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "ruleset": {
+        "id": 3,
+        "name": "Roleplay",
+        "status": {
+          "type": "UP",
+          "name": "Up"
+        }
+      }
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/3/auctions/?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:36:16.964109+00:00",
+        "duration_seconds": 0.172,
+        "bytes": 2359,
+        "sha256": "6f3914d9bb7be6a87e612b05f178d14895e34b2ba3cc387003fc00d54a808bb3",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:39 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:36:16 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "houses": [
+        {
+          "id": 110,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 111,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 112,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 113,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 114,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 115,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 116,
+          "name": "Blackwater Auction House"
+        },
+        {
+          "id": 117,
+          "name": "Blackwater Auction House"
+        },
+        {
+          "id": 118,
+          "name": "Blackwater Auction House"
+        },
+        {
+          "id": 119,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 120,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 121,
+          "name": "Blackwater Auction House"
+        },
+        {
+          "id": 123,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 124,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 125,
+          "name": "Blackwater Auction House"
+        }
+      ]
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:36:18.139761+00:00",
+        "duration_seconds": 0.175,
+        "bytes": 272,
+        "sha256": "d94cadc631c8b6eeefb4390d1fb4360054115e091380cf00c1a8c76b286986b9",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:36:06 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:36:18 GMT",
+          "Cache-Control": "public, max-age=30",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "ruleset": {
+        "id": 2,
+        "name": "Normal",
+        "status": {
+          "type": "UP",
+          "name": "Up"
+        }
+      }
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:36:19.313575+00:00",
+        "duration_seconds": 0.173,
+        "bytes": 2359,
+        "sha256": "84226f6daaa9cca42890729a9fcf006943c9ada3bc7021de47c278f6d120c6ed",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:39 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:36:19 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "houses": [
+        {
+          "id": 110,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 111,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 112,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 113,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 114,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 115,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 116,
+          "name": "Blackwater Auction House"
+        },
+        {
+          "id": 117,
+          "name": "Blackwater Auction House"
+        },
+        {
+          "id": 118,
+          "name": "Blackwater Auction House"
+        },
+        {
+          "id": 119,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 120,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 121,
+          "name": "Blackwater Auction House"
+        },
+        {
+          "id": 123,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 124,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 125,
+          "name": "Blackwater Auction House"
+        }
+      ]
+    }
+  ],
+  "house_comparison": [
+    {
+      "mapping": {
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 110,
+        "source_kind": "auctions"
+      },
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/110?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:39:18.324757+00:00",
+        "duration_seconds": 0.405,
+        "bytes": 9454413,
+        "sha256": "cd71f4c077359ae2b7d58d33d24fb46a0e30c85016ede2765073bb3badd7fcd5",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:50 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:39:18 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "structure": {
+        "keys": [
+          "_links",
+          "auctions",
+          "commodities",
+          "id",
+          "name",
+          "ruleset"
+        ],
+        "auctions_count": 96924,
+        "auction_fields": [
+          "buyout",
+          "id",
+          "item",
+          "quantity",
+          "time_left"
+        ]
+      },
+      "identity": {
+        "id": 110,
+        "name": "Alliance Auction House",
+        "ruleset": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/2?namespace=dynamic-forever-us"
+        },
+        "commodities": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/110/commodities?namespace=dynamic-forever-us"
+        }
+      },
+      "listings_sha256": "ee969c2922f6dc08fb8534ce91bb1fa51b3d42d1b84dadbd3fbb9705f24fc8c7",
+      "sample": [
+        {
+          "id": 61436806,
+          "item": {
+            "id": 6537,
+            "bonus_lists": [
+              12718
+            ]
+          },
+          "buyout": 4099,
+          "quantity": 1,
+          "time_left": "LONG"
+        },
+        {
+          "id": 64702326,
+          "item": {
+            "id": 14917,
+            "bonus_lists": [
+              12725
+            ]
+          },
+          "buyout": 32500,
+          "quantity": 1,
+          "time_left": "SHORT"
+        }
+      ]
+    },
+    {
+      "mapping": {
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 111,
+        "source_kind": "auctions"
+      },
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/111?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:39:20.776000+00:00",
+        "duration_seconds": 0.404,
+        "bytes": 10242095,
+        "sha256": "75cfad12b5d738fbd32cc43ad06f0f4211ed8c919e16019b844c5ee3bd7a68a1",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:50 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:39:20 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "structure": {
+        "keys": [
+          "_links",
+          "auctions",
+          "commodities",
+          "id",
+          "name",
+          "ruleset"
+        ],
+        "auctions_count": 107564,
+        "auction_fields": [
+          "buyout",
+          "id",
+          "item",
+          "quantity",
+          "time_left"
+        ]
+      },
+      "identity": {
+        "id": 111,
+        "name": "Alliance Auction House",
+        "ruleset": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/2?namespace=dynamic-forever-us"
+        },
+        "commodities": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/111/commodities?namespace=dynamic-forever-us"
+        }
+      },
+      "listings_sha256": "7508f2081569998743686b785e5bba2860e759b843f962dde066cbf2591011cb",
+      "sample": [
+        {
+          "id": 64617624,
+          "item": {
+            "id": 4249
+          },
+          "buyout": 704,
+          "quantity": 1,
+          "time_left": "SHORT"
+        },
+        {
+          "id": 63704951,
+          "item": {
+            "id": 4561,
+            "bonus_lists": [
+              12920
+            ]
+          },
+          "buyout": 309,
+          "quantity": 1,
+          "time_left": "VERY_LONG"
+        }
+      ]
+    },
+    {
+      "mapping": {
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 112,
+        "source_kind": "auctions"
+      },
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/112?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:39:22.852148+00:00",
+        "duration_seconds": 0.165,
+        "bytes": 383,
+        "sha256": "c5b91328326fd359c102b6e98ec8bd2f72d4a4c321a7f9133dec014eb8f20cb2",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:39 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:39:22 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "structure": {
+        "keys": [
+          "_links",
+          "commodities",
+          "id",
+          "name",
+          "ruleset"
+        ]
+      },
+      "identity": {
+        "id": 112,
+        "name": "Alliance Auction House",
+        "ruleset": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/2?namespace=dynamic-forever-us"
+        },
+        "commodities": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/112/commodities?namespace=dynamic-forever-us"
+        }
+      },
+      "listings_sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "sample": []
+    },
+    {
+      "mapping": {
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 113,
+        "source_kind": "auctions"
+      },
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/113?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:39:24.380332+00:00",
+        "duration_seconds": 0.506,
+        "bytes": 11190219,
+        "sha256": "4dc90bb380be24794691ca45e484c2bec33654a5f405cea59c23a1472a4bf6f8",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:51 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:39:24 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "structure": {
+        "keys": [
+          "_links",
+          "auctions",
+          "commodities",
+          "id",
+          "name",
+          "ruleset"
+        ],
+        "auctions_count": 113803,
+        "auction_fields": [
+          "buyout",
+          "id",
+          "item",
+          "quantity",
+          "time_left"
+        ]
+      },
+      "identity": {
+        "id": 113,
+        "name": "Horde Auction House",
+        "ruleset": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/2?namespace=dynamic-forever-us"
+        },
+        "commodities": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/113/commodities?namespace=dynamic-forever-us"
+        }
+      },
+      "listings_sha256": "58de5fd2855d13925849499d3e8b96ef864512710d97074b64c369a89d1443c0",
+      "sample": [
+        {
+          "id": 62863328,
+          "item": {
+            "id": 15641,
+            "bonus_lists": [
+              12735
+            ]
+          },
+          "buyout": 24900,
+          "quantity": 1,
+          "time_left": "LONG"
+        },
+        {
+          "id": 63308961,
+          "item": {
+            "id": 4417
+          },
+          "buyout": 3900,
+          "quantity": 1,
+          "time_left": "VERY_LONG"
+        }
+      ]
+    },
+    {
+      "mapping": {
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 114,
+        "source_kind": "auctions"
+      },
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/114?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:39:26.933081+00:00",
+        "duration_seconds": 0.456,
+        "bytes": 10542245,
+        "sha256": "8805fa490310250e11ec0ba3455a1a6df69033a7e88dc531ec857fec71783cf3",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:51 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:39:26 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "structure": {
+        "keys": [
+          "_links",
+          "auctions",
+          "commodities",
+          "id",
+          "name",
+          "ruleset"
+        ],
+        "auctions_count": 109986,
+        "auction_fields": [
+          "buyout",
+          "id",
+          "item",
+          "quantity",
+          "time_left"
+        ]
+      },
+      "identity": {
+        "id": 114,
+        "name": "Horde Auction House",
+        "ruleset": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/2?namespace=dynamic-forever-us"
+        },
+        "commodities": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/114/commodities?namespace=dynamic-forever-us"
+        }
+      },
+      "listings_sha256": "a2b148e3495f140ec3ff86971941bbab0542b5772a228995c9b99dd0066968c6",
+      "sample": [
+        {
+          "id": 64669925,
+          "item": {
+            "id": 8201
+          },
+          "buyout": 11000,
+          "quantity": 1,
+          "time_left": "SHORT"
+        },
+        {
+          "id": 62656576,
+          "item": {
+            "id": 4713
+          },
+          "buyout": 1300,
+          "quantity": 1,
+          "time_left": "LONG"
+        }
+      ]
+    },
+    {
+      "mapping": {
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 115,
+        "source_kind": "auctions"
+      },
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/115?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:39:28.984747+00:00",
+        "duration_seconds": 0.188,
+        "bytes": 380,
+        "sha256": "08cf04ab6b20b9f73920e9a3a291a6eea40125550ea762d812df49b916b7d369",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:39 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:39:28 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "structure": {
+        "keys": [
+          "_links",
+          "commodities",
+          "id",
+          "name",
+          "ruleset"
+        ]
+      },
+      "identity": {
+        "id": 115,
+        "name": "Horde Auction House",
+        "ruleset": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/2?namespace=dynamic-forever-us"
+        },
+        "commodities": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/115/commodities?namespace=dynamic-forever-us"
+        }
+      },
+      "listings_sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "sample": []
+    },
+    {
+      "mapping": {
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 116,
+        "source_kind": "auctions"
+      },
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/116?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:39:30.285140+00:00",
+        "duration_seconds": 0.277,
+        "bytes": 713230,
+        "sha256": "96e3163b5011a3ad8c75d67acbb7cbc9e39461a364e072cf2578252760692297",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:41 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:39:30 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "structure": {
+        "keys": [
+          "_links",
+          "auctions",
+          "commodities",
+          "id",
+          "name",
+          "ruleset"
+        ],
+        "auctions_count": 7477,
+        "auction_fields": [
+          "buyout",
+          "id",
+          "item",
+          "quantity",
+          "time_left"
+        ]
+      },
+      "identity": {
+        "id": 116,
+        "name": "Blackwater Auction House",
+        "ruleset": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/2?namespace=dynamic-forever-us"
+        },
+        "commodities": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/116/commodities?namespace=dynamic-forever-us"
+        }
+      },
+      "listings_sha256": "3bf286cc8ddc320fcc85cd40269cca40f57073ba98b3a1d046ac8c9a960d96cb",
+      "sample": [
+        {
+          "id": 58779548,
+          "item": {
+            "id": 9293
+          },
+          "buyout": 20000,
+          "quantity": 1,
+          "time_left": "SHORT"
+        },
+        {
+          "id": 58899190,
+          "item": {
+            "id": 11981,
+            "bonus_lists": [
+              12731
+            ]
+          },
+          "buyout": 50800,
+          "quantity": 1,
+          "time_left": "SHORT"
+        }
+      ]
+    },
+    {
+      "mapping": {
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 117,
+        "source_kind": "auctions"
+      },
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/117?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:39:31.561347+00:00",
+        "duration_seconds": 0.251,
+        "bytes": 788947,
+        "sha256": "c5fc116ab815c5d1d2c2771a191fe147b62c6f666290bd440d697def3f15bb94",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:41 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:39:31 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "structure": {
+        "keys": [
+          "_links",
+          "auctions",
+          "commodities",
+          "id",
+          "name",
+          "ruleset"
+        ],
+        "auctions_count": 8339,
+        "auction_fields": [
+          "buyout",
+          "id",
+          "item",
+          "quantity",
+          "time_left"
+        ]
+      },
+      "identity": {
+        "id": 117,
+        "name": "Blackwater Auction House",
+        "ruleset": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/2?namespace=dynamic-forever-us"
+        },
+        "commodities": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/117/commodities?namespace=dynamic-forever-us"
+        }
+      },
+      "listings_sha256": "e1fed68bf64e9120a9fc1d81879ee823621274a2767017894f1b39b2d059a3fe",
+      "sample": [
+        {
+          "id": 64561233,
+          "item": {
+            "id": 15485,
+            "bonus_lists": [
+              12720
+            ]
+          },
+          "buyout": 2444,
+          "quantity": 1,
+          "time_left": "VERY_LONG"
+        },
+        {
+          "id": 64691087,
+          "item": {
+            "id": 8489,
+            "context": 14
+          },
+          "buyout": 44500,
+          "quantity": 1,
+          "time_left": "VERY_LONG"
+        }
+      ]
+    },
+    {
+      "mapping": {
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 118,
+        "source_kind": "auctions"
+      },
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/118?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:39:32.768827+00:00",
+        "duration_seconds": 0.177,
+        "bytes": 385,
+        "sha256": "f7180ea97df88a859e49ad8919efd829ddb99cd31e517427ae130a5c14579b1d",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:39 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:39:32 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "structure": {
+        "keys": [
+          "_links",
+          "commodities",
+          "id",
+          "name",
+          "ruleset"
+        ]
+      },
+      "identity": {
+        "id": 118,
+        "name": "Blackwater Auction House",
+        "ruleset": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/2?namespace=dynamic-forever-us"
+        },
+        "commodities": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/118/commodities?namespace=dynamic-forever-us"
+        }
+      },
+      "listings_sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "sample": []
+    },
+    {
+      "mapping": {
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 119,
+        "source_kind": "auctions"
+      },
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/119?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:39:34.112382+00:00",
+        "duration_seconds": 0.342,
+        "bytes": 2241423,
+        "sha256": "1060c2e5ee267b41611032854fe8cec0f3b7fdf21cd2771aac60fadf283bef95",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:42 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:39:33 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "structure": {
+        "keys": [
+          "_links",
+          "auctions",
+          "commodities",
+          "id",
+          "name",
+          "ruleset"
+        ],
+        "auctions_count": 23736,
+        "auction_fields": [
+          "buyout",
+          "id",
+          "item",
+          "quantity",
+          "time_left"
+        ]
+      },
+      "identity": {
+        "id": 119,
+        "name": "Alliance Auction House",
+        "ruleset": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/2?namespace=dynamic-forever-us"
+        },
+        "commodities": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/119/commodities?namespace=dynamic-forever-us"
+        }
+      },
+      "listings_sha256": "ed660e266a4e9f470d969eff51170e3198daf695f454bf039d2efded3544e653",
+      "sample": [
+        {
+          "id": 62538667,
+          "item": {
+            "id": 3313
+          },
+          "buyout": 2400,
+          "quantity": 1,
+          "time_left": "LONG"
+        },
+        {
+          "id": 61092303,
+          "item": {
+            "id": 247789
+          },
+          "buyout": 100,
+          "quantity": 1,
+          "time_left": "LONG"
+        }
+      ]
+    },
+    {
+      "mapping": {
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 120,
+        "source_kind": "auctions"
+      },
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/120?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:39:35.534607+00:00",
+        "duration_seconds": 0.323,
+        "bytes": 1671718,
+        "sha256": "32cc724408e1d1ecae4f809271344b27c510e93d14d9d5515b9dc70db0adf252",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:42 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:39:35 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "structure": {
+        "keys": [
+          "_links",
+          "auctions",
+          "commodities",
+          "id",
+          "name",
+          "ruleset"
+        ],
+        "auctions_count": 17532,
+        "auction_fields": [
+          "buyout",
+          "id",
+          "item",
+          "quantity",
+          "time_left"
+        ]
+      },
+      "identity": {
+        "id": 120,
+        "name": "Horde Auction House",
+        "ruleset": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/2?namespace=dynamic-forever-us"
+        },
+        "commodities": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/120/commodities?namespace=dynamic-forever-us"
+        }
+      },
+      "listings_sha256": "9ff40a8b1fcba25412ab224754493b80c9855d55916b5fcaed6702cd7fbe9d92",
+      "sample": [
+        {
+          "id": 63751441,
+          "item": {
+            "id": 3053
+          },
+          "buyout": 10000,
+          "quantity": 1,
+          "time_left": "VERY_LONG"
+        },
+        {
+          "id": 59016294,
+          "item": {
+            "id": 9749,
+            "bonus_lists": [
+              12730
+            ]
+          },
+          "buyout": 799,
+          "quantity": 1,
+          "time_left": "MEDIUM"
+        }
+      ]
+    },
+    {
+      "mapping": {
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 121,
+        "source_kind": "auctions"
+      },
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/121?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:39:36.785540+00:00",
+        "duration_seconds": 0.187,
+        "bytes": 40051,
+        "sha256": "dfb779b1b7d7b9d8e1ed8632456edcf0834473564fff801303ed1909e4ae41da",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:39 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:39:36 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "structure": {
+        "keys": [
+          "_links",
+          "auctions",
+          "commodities",
+          "id",
+          "name",
+          "ruleset"
+        ],
+        "auctions_count": 412,
+        "auction_fields": [
+          "buyout",
+          "id",
+          "item",
+          "quantity",
+          "time_left"
+        ]
+      },
+      "identity": {
+        "id": 121,
+        "name": "Blackwater Auction House",
+        "ruleset": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/2?namespace=dynamic-forever-us"
+        },
+        "commodities": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/121/commodities?namespace=dynamic-forever-us"
+        }
+      },
+      "listings_sha256": "5848c5e85716652844e0f656ce4cb9f3afed45b9930bebac48e8f23f0852ca9d",
+      "sample": [
+        {
+          "id": 60722898,
+          "item": {
+            "id": 9893,
+            "bonus_lists": [
+              12751
+            ]
+          },
+          "buyout": 10100,
+          "quantity": 1,
+          "time_left": "LONG"
+        },
+        {
+          "id": 62754645,
+          "item": {
+            "id": 1813
+          },
+          "buyout": 800,
+          "quantity": 1,
+          "time_left": "LONG"
+        }
+      ]
+    },
+    {
+      "mapping": {
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 123,
+        "source_kind": "auctions"
+      },
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/123?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:39:38.129487+00:00",
+        "duration_seconds": 0.339,
+        "bytes": 2152927,
+        "sha256": "5a09a99619241f4469c5b3aaecff8a61adc9782828e977b101e6e40ff433948c",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:42 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:39:37 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "structure": {
+        "keys": [
+          "_links",
+          "auctions",
+          "commodities",
+          "id",
+          "name",
+          "ruleset"
+        ],
+        "auctions_count": 22620,
+        "auction_fields": [
+          "buyout",
+          "id",
+          "item",
+          "quantity",
+          "time_left"
+        ]
+      },
+      "identity": {
+        "id": 123,
+        "name": "Alliance Auction House",
+        "ruleset": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/2?namespace=dynamic-forever-us"
+        },
+        "commodities": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/123/commodities?namespace=dynamic-forever-us"
+        }
+      },
+      "listings_sha256": "4a2d7d7eee6e428569c5531d3d2d1a3515227704f573f8244c9c2f17075134f7",
+      "sample": [
+        {
+          "id": 58685408,
+          "item": {
+            "id": 211785
+          },
+          "buyout": 100,
+          "quantity": 1,
+          "time_left": "SHORT"
+        },
+        {
+          "id": 64771782,
+          "item": {
+            "id": 6217
+          },
+          "buyout": 100,
+          "quantity": 1,
+          "time_left": "MEDIUM"
+        }
+      ]
+    },
+    {
+      "mapping": {
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 124,
+        "source_kind": "auctions"
+      },
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/124?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:39:39.496622+00:00",
+        "duration_seconds": 0.287,
+        "bytes": 2249508,
+        "sha256": "f85caa161c42ae4a6bc03582f89f6c53eaa5a61227019fca55d66e241381f96e",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:43 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:39:39 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "structure": {
+        "keys": [
+          "_links",
+          "auctions",
+          "commodities",
+          "id",
+          "name",
+          "ruleset"
+        ],
+        "auctions_count": 23156,
+        "auction_fields": [
+          "buyout",
+          "id",
+          "item",
+          "quantity",
+          "time_left"
+        ]
+      },
+      "identity": {
+        "id": 124,
+        "name": "Horde Auction House",
+        "ruleset": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/2?namespace=dynamic-forever-us"
+        },
+        "commodities": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/124/commodities?namespace=dynamic-forever-us"
+        }
+      },
+      "listings_sha256": "5cac058124b20ccde87a5dab0813b081a1c6e87164f43ab755c9abe29af7b2f6",
+      "sample": [
+        {
+          "id": 61793136,
+          "item": {
+            "id": 4309
+          },
+          "buyout": 300,
+          "quantity": 1,
+          "time_left": "LONG"
+        },
+        {
+          "id": 64066346,
+          "item": {
+            "id": 1769,
+            "context": 1,
+            "modifiers": [
+              {
+                "type": 28,
+                "value": 5256
+              }
+            ]
+          },
+          "buyout": 400,
+          "quantity": 1,
+          "time_left": "VERY_LONG"
+        }
+      ]
+    },
+    {
+      "mapping": {
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 125,
+        "source_kind": "auctions"
+      },
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/125?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:39:40.798310+00:00",
+        "duration_seconds": 0.188,
+        "bytes": 50951,
+        "sha256": "c41077bf54a211291195db4e9c388c55bca4e6ff8e98effaa51ca28eaaf6f728",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:39 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:39:40 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "structure": {
+        "keys": [
+          "_links",
+          "auctions",
+          "commodities",
+          "id",
+          "name",
+          "ruleset"
+        ],
+        "auctions_count": 526,
+        "auction_fields": [
+          "buyout",
+          "id",
+          "item",
+          "quantity",
+          "time_left"
+        ]
+      },
+      "identity": {
+        "id": 125,
+        "name": "Blackwater Auction House",
+        "ruleset": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/2?namespace=dynamic-forever-us"
+        },
+        "commodities": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/125/commodities?namespace=dynamic-forever-us"
+        }
+      },
+      "listings_sha256": "386ef795f0a689839685e3fb815c0944b7d7a86d17596412caad54567767fd90",
+      "sample": [
+        {
+          "id": 59795679,
+          "item": {
+            "id": 13117
+          },
+          "buyout": 85800,
+          "quantity": 1,
+          "time_left": "MEDIUM"
+        },
+        {
+          "id": 64620851,
+          "item": {
+            "id": 15017,
+            "context": 1,
+            "bonus_lists": [
+              12741
+            ],
+            "modifiers": [
+              {
+                "type": 28,
+                "value": 5254
+              }
+            ]
+          },
+          "buyout": 1000,
+          "quantity": 1,
+          "time_left": "SHORT"
+        }
+      ]
+    },
+    {
+      "mapping": {
+        "region": "us",
+        "ruleset_id": 1,
+        "house_id": 113,
+        "source_kind": "auctions"
+      },
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/1/auctions/113?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:39:42.311055+00:00",
+        "duration_seconds": 0.506,
+        "bytes": 11190219,
+        "sha256": "203db7800613126a6af34f67fe600cbe3634448bedd8eeefa8c58dad97bc117a",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:51 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:39:42 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "structure": {
+        "keys": [
+          "_links",
+          "auctions",
+          "commodities",
+          "id",
+          "name",
+          "ruleset"
+        ],
+        "auctions_count": 113803,
+        "auction_fields": [
+          "buyout",
+          "id",
+          "item",
+          "quantity",
+          "time_left"
+        ]
+      },
+      "identity": {
+        "id": 113,
+        "name": "Horde Auction House",
+        "ruleset": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/1?namespace=dynamic-forever-us"
+        },
+        "commodities": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/1/auctions/113/commodities?namespace=dynamic-forever-us"
+        }
+      },
+      "listings_sha256": "58de5fd2855d13925849499d3e8b96ef864512710d97074b64c369a89d1443c0",
+      "sample": [
+        {
+          "id": 62863328,
+          "item": {
+            "id": 15641,
+            "bonus_lists": [
+              12735
+            ]
+          },
+          "buyout": 24900,
+          "quantity": 1,
+          "time_left": "LONG"
+        },
+        {
+          "id": 63308961,
+          "item": {
+            "id": 4417
+          },
+          "buyout": 3900,
+          "quantity": 1,
+          "time_left": "VERY_LONG"
+        }
+      ]
+    },
+    {
+      "mapping": {
+        "region": "us",
+        "ruleset_id": 3,
+        "house_id": 113,
+        "source_kind": "auctions"
+      },
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/3/auctions/113?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:39:44.789947+00:00",
+        "duration_seconds": 0.498,
+        "bytes": 11190219,
+        "sha256": "6986885f581b44e56f5ad414fb8a8d5d0979f004becd97b2f63856c0e8fe3723",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:51 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:39:44 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "structure": {
+        "keys": [
+          "_links",
+          "auctions",
+          "commodities",
+          "id",
+          "name",
+          "ruleset"
+        ],
+        "auctions_count": 113803,
+        "auction_fields": [
+          "buyout",
+          "id",
+          "item",
+          "quantity",
+          "time_left"
+        ]
+      },
+      "identity": {
+        "id": 113,
+        "name": "Horde Auction House",
+        "ruleset": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/3?namespace=dynamic-forever-us"
+        },
+        "commodities": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/3/auctions/113/commodities?namespace=dynamic-forever-us"
+        }
+      },
+      "listings_sha256": "58de5fd2855d13925849499d3e8b96ef864512710d97074b64c369a89d1443c0",
+      "sample": [
+        {
+          "id": 62863328,
+          "item": {
+            "id": 15641,
+            "bonus_lists": [
+              12735
+            ]
+          },
+          "buyout": 24900,
+          "quantity": 1,
+          "time_left": "LONG"
+        },
+        {
+          "id": 63308961,
+          "item": {
+            "id": 4417
+          },
+          "buyout": 3900,
+          "quantity": 1,
+          "time_left": "VERY_LONG"
+        }
+      ]
+    },
+    {
+      "mapping": {
+        "region": "us",
+        "ruleset_id": 15,
+        "house_id": 113,
+        "source_kind": "auctions"
+      },
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/15/auctions/113?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:39:47.291917+00:00",
+        "duration_seconds": 0.503,
+        "bytes": 11190222,
+        "sha256": "a05bf4005aaab251b6fd2524566fe641b11bffb66307974bece2ccc5bf901c77",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:51 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:39:47 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "structure": {
+        "keys": [
+          "_links",
+          "auctions",
+          "commodities",
+          "id",
+          "name",
+          "ruleset"
+        ],
+        "auctions_count": 113803,
+        "auction_fields": [
+          "buyout",
+          "id",
+          "item",
+          "quantity",
+          "time_left"
+        ]
+      },
+      "identity": {
+        "id": 113,
+        "name": "Horde Auction House",
+        "ruleset": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/15?namespace=dynamic-forever-us"
+        },
+        "commodities": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/15/auctions/113/commodities?namespace=dynamic-forever-us"
+        }
+      },
+      "listings_sha256": "58de5fd2855d13925849499d3e8b96ef864512710d97074b64c369a89d1443c0",
+      "sample": [
+        {
+          "id": 62863328,
+          "item": {
+            "id": 15641,
+            "bonus_lists": [
+              12735
+            ]
+          },
+          "buyout": 24900,
+          "quantity": 1,
+          "time_left": "LONG"
+        },
+        {
+          "id": 63308961,
+          "item": {
+            "id": 4417
+          },
+          "buyout": 3900,
+          "quantity": 1,
+          "time_left": "VERY_LONG"
+        }
+      ]
+    },
+    {
+      "mapping": {
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 110,
+        "source_kind": "commodities"
+      },
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/110/commodities?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:39:49.636925+00:00",
+        "duration_seconds": 0.358,
+        "bytes": 6993193,
+        "sha256": "5aa48bf7260d022f917bffd6a9e600e2cc5f296f07a6792dacd0024590e3a6f9",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:50 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:39:49 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "structure": {
+        "keys": [
+          "_links",
+          "auctions"
+        ],
+        "auctions_count": 81471,
+        "auction_fields": [
+          "id",
+          "item",
+          "quantity",
+          "time_left",
+          "unit_price"
+        ]
+      },
+      "identity": {},
+      "listings_sha256": "3850f4a14ba1c39862f545a35d4899443cb423294b96130a4964b410691ab5ec",
+      "sample": [
+        {
+          "id": 63507784,
+          "item": {
+            "id": 252437
+          },
+          "quantity": 10,
+          "unit_price": 948,
+          "time_left": "VERY_LONG"
+        },
+        {
+          "id": 64585172,
+          "item": {
+            "id": 1081
+          },
+          "quantity": 18,
+          "unit_price": 50,
+          "time_left": "VERY_LONG"
+        }
+      ]
+    },
+    {
+      "mapping": {
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 113,
+        "source_kind": "commodities"
+      },
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/113/commodities?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:39:51.492282+00:00",
+        "duration_seconds": 0.374,
+        "bytes": 8366563,
+        "sha256": "459b0431a42d2671eb891cca5e1256911f49b586891a69674392298571d7c3fb",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:51 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:39:51 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "structure": {
+        "keys": [
+          "_links",
+          "auctions"
+        ],
+        "auctions_count": 97516,
+        "auction_fields": [
+          "id",
+          "item",
+          "quantity",
+          "time_left",
+          "unit_price"
+        ]
+      },
+      "identity": {},
+      "listings_sha256": "6ad387293a8c1e0696494d9ee301af3a516e33e41095d0833bc0cc07df3b2485",
+      "sample": [
+        {
+          "id": 64777913,
+          "item": {
+            "id": 4337
+          },
+          "quantity": 2,
+          "unit_price": 750,
+          "time_left": "MEDIUM"
+        },
+        {
+          "id": 64604547,
+          "item": {
+            "id": 6149
+          },
+          "quantity": 5,
+          "unit_price": 1599,
+          "time_left": "SHORT"
+        }
+      ]
+    },
+    {
+      "mapping": {
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 116,
+        "source_kind": "commodities"
+      },
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/116/commodities?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:39:53.420152+00:00",
+        "duration_seconds": 0.318,
+        "bytes": 1332978,
+        "sha256": "8ed05094c30345f659a7df5712a6afc649b08aaf9b1d1ccb9209065d2b2268f4",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:41 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:39:53 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "structure": {
+        "keys": [
+          "_links",
+          "auctions"
+        ],
+        "auctions_count": 15539,
+        "auction_fields": [
+          "id",
+          "item",
+          "quantity",
+          "time_left",
+          "unit_price"
+        ]
+      },
+      "identity": {},
+      "listings_sha256": "f5116531011bfcd11538b34714731e5f04eb587a2a347335fe940467108b5521",
+      "sample": [
+        {
+          "id": 64266752,
+          "item": {
+            "id": 8165
+          },
+          "quantity": 1,
+          "unit_price": 3900,
+          "time_left": "VERY_LONG"
+        },
+        {
+          "id": 63747963,
+          "item": {
+            "id": 5469
+          },
+          "quantity": 1,
+          "unit_price": 1900,
+          "time_left": "VERY_LONG"
+        }
+      ]
+    },
+    {
+      "mapping": {
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 119,
+        "source_kind": "commodities"
+      },
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/119/commodities?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:39:54.833647+00:00",
+        "duration_seconds": 0.344,
+        "bytes": 2163197,
+        "sha256": "8519f77f15fa417e641362b4ccd430ad2f4642823e1fe858130818c85e6aad7a",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:42 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:39:54 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "structure": {
+        "keys": [
+          "_links",
+          "auctions"
+        ],
+        "auctions_count": 25124,
+        "auction_fields": [
+          "id",
+          "item",
+          "quantity",
+          "time_left",
+          "unit_price"
+        ]
+      },
+      "identity": {},
+      "listings_sha256": "645f006e78ba50efa70f22bb2e1e1cbd7fd7f2908ce57c5ca1a3f2f84afdeb02",
+      "sample": [
+        {
+          "id": 64421643,
+          "item": {
+            "id": 3357
+          },
+          "quantity": 3,
+          "unit_price": 365,
+          "time_left": "VERY_LONG"
+        },
+        {
+          "id": 58906588,
+          "item": {
+            "id": 248685
+          },
+          "quantity": 1,
+          "unit_price": 1200,
+          "time_left": "SHORT"
+        }
+      ]
+    },
+    {
+      "mapping": {
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 123,
+        "source_kind": "commodities"
+      },
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/123/commodities?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:39:56.172479+00:00",
+        "duration_seconds": 0.267,
+        "bytes": 2103869,
+        "sha256": "0f89cc1cffde70790747a7f3e48a534d29515f7a203b5395640f9a2f449175c8",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:42 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:39:56 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "structure": {
+        "keys": [
+          "_links",
+          "auctions"
+        ],
+        "auctions_count": 24446,
+        "auction_fields": [
+          "id",
+          "item",
+          "quantity",
+          "time_left",
+          "unit_price"
+        ]
+      },
+      "identity": {},
+      "listings_sha256": "7c14d21cd2f1492bc6e73584c2f177d188153a8cbd9102e360e502c7a8ac4d70",
+      "sample": [
+        {
+          "id": 60864022,
+          "item": {
+            "id": 729
+          },
+          "quantity": 1,
+          "unit_price": 248,
+          "time_left": "LONG"
+        },
+        {
+          "id": 59199247,
+          "item": {
+            "id": 3385
+          },
+          "quantity": 5,
+          "unit_price": 110,
+          "time_left": "MEDIUM"
+        }
+      ]
+    }
+  ],
+  "selected_cross_ruleset_and_conditional": [
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/index?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:41:11.875380+00:00",
+        "duration_seconds": 0.19,
+        "bytes": 528,
+        "sha256": "eb9bba087c4981474ff58e965f44503e979ec363427aed50666bb9b69e73a8fb",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:41:06 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:41:11 GMT",
+          "Cache-Control": "public, max-age=30",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "rulesets": [
+        {
+          "id": 1
+        },
+        {
+          "id": 15
+        },
+        {
+          "id": 3
+        },
+        {
+          "id": 2
+        }
+      ]
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/1?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:41:13.058523+00:00",
+        "duration_seconds": 0.183,
+        "bytes": 269,
+        "sha256": "b7a01ea09b37ab81646672e405107cabb9f13888ca577dbdac988da89e55e91e",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:41:06 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:41:13 GMT",
+          "Cache-Control": "public, max-age=30",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "identity": {
+        "id": 1,
+        "name": "PvP",
+        "status": {
+          "type": "UP",
+          "name": "Up"
+        }
+      }
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/1/auctions/?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:41:14.226309+00:00",
+        "duration_seconds": 0.167,
+        "bytes": 2359,
+        "sha256": "e014ffe4e37fa5c4c780e7b078dbe473979edb877527b974ae771f7bb39b1476",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:39 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:41:14 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "houses": [
+        {
+          "id": 110,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 111,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 112,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 113,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 114,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 115,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 116,
+          "name": "Blackwater Auction House"
+        },
+        {
+          "id": 117,
+          "name": "Blackwater Auction House"
+        },
+        {
+          "id": 118,
+          "name": "Blackwater Auction House"
+        },
+        {
+          "id": 119,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 120,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 121,
+          "name": "Blackwater Auction House"
+        },
+        {
+          "id": 123,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 124,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 125,
+          "name": "Blackwater Auction House"
+        }
+      ]
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/1/auctions/110?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:41:15.710982+00:00",
+        "duration_seconds": 0.484,
+        "bytes": 9454413,
+        "sha256": "dc907a27a3604cc710b567826735a6a72642d463af2826c1816d08714f0fb9e6",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:50 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:41:15 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "mapping": {
+        "region": "us",
+        "ruleset_id": 1,
+        "house_id": 110,
+        "source_kind": "auctions"
+      },
+      "keys": [
+        "_links",
+        "auctions",
+        "commodities",
+        "id",
+        "name",
+        "ruleset"
+      ],
+      "listing_count": 96924,
+      "listing_fields": [
+        "buyout",
+        "id",
+        "item",
+        "quantity",
+        "time_left"
+      ],
+      "listings_sha256": "ee969c2922f6dc08fb8534ce91bb1fa51b3d42d1b84dadbd3fbb9705f24fc8c7",
+      "identical_ruleset_payloads": [],
+      "sample": [
+        {
+          "id": 61436806,
+          "item": {
+            "id": 6537,
+            "bonus_lists": [
+              12718
+            ]
+          },
+          "buyout": 4099,
+          "quantity": 1,
+          "time_left": "LONG"
+        },
+        {
+          "id": 64702326,
+          "item": {
+            "id": 14917,
+            "bonus_lists": [
+              12725
+            ]
+          },
+          "buyout": 32500,
+          "quantity": 1,
+          "time_left": "SHORT"
+        }
+      ]
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/1/auctions/110/commodities?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:41:17.605752+00:00",
+        "duration_seconds": 0.434,
+        "bytes": 6993193,
+        "sha256": "3cf41266007de8a8eaf53afc9ac8bcaf5a9150862d3f08ca0a2ac6d1e75fdb95",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:50 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:41:17 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "mapping": {
+        "region": "us",
+        "ruleset_id": 1,
+        "house_id": 110,
+        "source_kind": "commodities"
+      },
+      "keys": [
+        "_links",
+        "auctions"
+      ],
+      "listing_count": 81471,
+      "listing_fields": [
+        "id",
+        "item",
+        "quantity",
+        "time_left",
+        "unit_price"
+      ],
+      "listings_sha256": "3850f4a14ba1c39862f545a35d4899443cb423294b96130a4964b410691ab5ec",
+      "identical_ruleset_payloads": [],
+      "sample": [
+        {
+          "id": 63507784,
+          "item": {
+            "id": 252437
+          },
+          "quantity": 10,
+          "unit_price": 948,
+          "time_left": "VERY_LONG"
+        },
+        {
+          "id": 64585172,
+          "item": {
+            "id": 1081
+          },
+          "quantity": 18,
+          "unit_price": 50,
+          "time_left": "VERY_LONG"
+        }
+      ]
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/15?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:41:19.129003+00:00",
+        "duration_seconds": 0.163,
+        "bytes": 281,
+        "sha256": "e04b8f19a08f4ba7e0841a2b7703ae93da421be5b971d7a2076cbabd48d56f45",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:41:06 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:41:19 GMT",
+          "Cache-Control": "public, max-age=30",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "identity": {
+        "id": 15,
+        "name": "Roleplay PvP",
+        "status": {
+          "type": "UP",
+          "name": "Up"
+        }
+      }
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/15/auctions/?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:41:20.312052+00:00",
+        "duration_seconds": 0.183,
+        "bytes": 2375,
+        "sha256": "727ce26ea1c7088d75dfb88cefebc4bcc39a92d048cb93e9c29dca45f67ea04c",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:39 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:41:20 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "houses": [
+        {
+          "id": 110,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 111,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 112,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 113,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 114,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 115,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 116,
+          "name": "Blackwater Auction House"
+        },
+        {
+          "id": 117,
+          "name": "Blackwater Auction House"
+        },
+        {
+          "id": 118,
+          "name": "Blackwater Auction House"
+        },
+        {
+          "id": 119,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 120,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 121,
+          "name": "Blackwater Auction House"
+        },
+        {
+          "id": 123,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 124,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 125,
+          "name": "Blackwater Auction House"
+        }
+      ]
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/15/auctions/110?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:41:21.816515+00:00",
+        "duration_seconds": 0.504,
+        "bytes": 9454416,
+        "sha256": "dff20f77c0cb910a58483a07cf38a9bdb847256c42904bb433041270f90baf54",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:50 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:41:21 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "mapping": {
+        "region": "us",
+        "ruleset_id": 15,
+        "house_id": 110,
+        "source_kind": "auctions"
+      },
+      "keys": [
+        "_links",
+        "auctions",
+        "commodities",
+        "id",
+        "name",
+        "ruleset"
+      ],
+      "listing_count": 96924,
+      "listing_fields": [
+        "buyout",
+        "id",
+        "item",
+        "quantity",
+        "time_left"
+      ],
+      "listings_sha256": "ee969c2922f6dc08fb8534ce91bb1fa51b3d42d1b84dadbd3fbb9705f24fc8c7",
+      "identical_ruleset_payloads": [
+        1
+      ],
+      "sample": [
+        {
+          "id": 61436806,
+          "item": {
+            "id": 6537,
+            "bonus_lists": [
+              12718
+            ]
+          },
+          "buyout": 4099,
+          "quantity": 1,
+          "time_left": "LONG"
+        },
+        {
+          "id": 64702326,
+          "item": {
+            "id": 14917,
+            "bonus_lists": [
+              12725
+            ]
+          },
+          "buyout": 32500,
+          "quantity": 1,
+          "time_left": "SHORT"
+        }
+      ]
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/15/auctions/110/commodities?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:41:23.727225+00:00",
+        "duration_seconds": 0.422,
+        "bytes": 6993194,
+        "sha256": "9bdd0374545ce618a1baa7c27f51d3ef5a04749ae392943d1d9b4bfda847f843",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:50 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:41:23 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "mapping": {
+        "region": "us",
+        "ruleset_id": 15,
+        "house_id": 110,
+        "source_kind": "commodities"
+      },
+      "keys": [
+        "_links",
+        "auctions"
+      ],
+      "listing_count": 81471,
+      "listing_fields": [
+        "id",
+        "item",
+        "quantity",
+        "time_left",
+        "unit_price"
+      ],
+      "listings_sha256": "2deb9fdd57bc23142c900204d5dea24a0927ca1fb09180144d75d30051b27beb",
+      "identical_ruleset_payloads": [],
+      "sample": [
+        {
+          "id": 63507784,
+          "item": {
+            "id": 252437
+          },
+          "quantity": 10,
+          "unit_price": 948,
+          "time_left": "VERY_LONG"
+        },
+        {
+          "id": 64585172,
+          "item": {
+            "id": 1081
+          },
+          "quantity": 18,
+          "unit_price": 50,
+          "time_left": "VERY_LONG"
+        }
+      ]
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/3?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:41:25.233778+00:00",
+        "duration_seconds": 0.165,
+        "bytes": 274,
+        "sha256": "55d6f8dd9bc78c78df1420c312d81c0fb3c704ab88bc559aea081225d805090b",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:41:06 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:41:25 GMT",
+          "Cache-Control": "public, max-age=30",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "identity": {
+        "id": 3,
+        "name": "Roleplay",
+        "status": {
+          "type": "UP",
+          "name": "Up"
+        }
+      }
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/3/auctions/?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:41:26.410652+00:00",
+        "duration_seconds": 0.176,
+        "bytes": 2359,
+        "sha256": "6f3914d9bb7be6a87e612b05f178d14895e34b2ba3cc387003fc00d54a808bb3",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:39 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:41:26 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "houses": [
+        {
+          "id": 110,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 111,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 112,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 113,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 114,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 115,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 116,
+          "name": "Blackwater Auction House"
+        },
+        {
+          "id": 117,
+          "name": "Blackwater Auction House"
+        },
+        {
+          "id": 118,
+          "name": "Blackwater Auction House"
+        },
+        {
+          "id": 119,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 120,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 121,
+          "name": "Blackwater Auction House"
+        },
+        {
+          "id": 123,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 124,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 125,
+          "name": "Blackwater Auction House"
+        }
+      ]
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/3/auctions/110?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:41:27.887968+00:00",
+        "duration_seconds": 0.477,
+        "bytes": 9454413,
+        "sha256": "fcfc429153ff468dcc11ca07dc38cf54729ae5484d9e290c645b78c195268b21",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:50 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:41:27 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "mapping": {
+        "region": "us",
+        "ruleset_id": 3,
+        "house_id": 110,
+        "source_kind": "auctions"
+      },
+      "keys": [
+        "_links",
+        "auctions",
+        "commodities",
+        "id",
+        "name",
+        "ruleset"
+      ],
+      "listing_count": 96924,
+      "listing_fields": [
+        "buyout",
+        "id",
+        "item",
+        "quantity",
+        "time_left"
+      ],
+      "listings_sha256": "ee969c2922f6dc08fb8534ce91bb1fa51b3d42d1b84dadbd3fbb9705f24fc8c7",
+      "identical_ruleset_payloads": [
+        1,
+        15
+      ],
+      "sample": [
+        {
+          "id": 61436806,
+          "item": {
+            "id": 6537,
+            "bonus_lists": [
+              12718
+            ]
+          },
+          "buyout": 4099,
+          "quantity": 1,
+          "time_left": "LONG"
+        },
+        {
+          "id": 64702326,
+          "item": {
+            "id": 14917,
+            "bonus_lists": [
+              12725
+            ]
+          },
+          "buyout": 32500,
+          "quantity": 1,
+          "time_left": "SHORT"
+        }
+      ]
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/3/auctions/110/commodities?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:41:29.882548+00:00",
+        "duration_seconds": 0.497,
+        "bytes": 6993193,
+        "sha256": "cb36e5f4ebbd34456768141f8ab5e1a22bbb1e20e8d73401272910e30ed3d8a9",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:50 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:41:29 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "mapping": {
+        "region": "us",
+        "ruleset_id": 3,
+        "house_id": 110,
+        "source_kind": "commodities"
+      },
+      "keys": [
+        "_links",
+        "auctions"
+      ],
+      "listing_count": 81471,
+      "listing_fields": [
+        "id",
+        "item",
+        "quantity",
+        "time_left",
+        "unit_price"
+      ],
+      "listings_sha256": "3850f4a14ba1c39862f545a35d4899443cb423294b96130a4964b410691ab5ec",
+      "identical_ruleset_payloads": [
+        1
+      ],
+      "sample": [
+        {
+          "id": 63507784,
+          "item": {
+            "id": 252437
+          },
+          "quantity": 10,
+          "unit_price": 948,
+          "time_left": "VERY_LONG"
+        },
+        {
+          "id": 64585172,
+          "item": {
+            "id": 1081
+          },
+          "quantity": 18,
+          "unit_price": 50,
+          "time_left": "VERY_LONG"
+        }
+      ]
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:41:31.382145+00:00",
+        "duration_seconds": 0.183,
+        "bytes": 272,
+        "sha256": "d94cadc631c8b6eeefb4390d1fb4360054115e091380cf00c1a8c76b286986b9",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:41:06 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:41:31 GMT",
+          "Cache-Control": "public, max-age=30",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "identity": {
+        "id": 2,
+        "name": "Normal",
+        "status": {
+          "type": "UP",
+          "name": "Up"
+        }
+      }
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:41:32.562794+00:00",
+        "duration_seconds": 0.18,
+        "bytes": 2359,
+        "sha256": "84226f6daaa9cca42890729a9fcf006943c9ada3bc7021de47c278f6d120c6ed",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:39 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:41:32 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "houses": [
+        {
+          "id": 110,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 111,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 112,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 113,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 114,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 115,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 116,
+          "name": "Blackwater Auction House"
+        },
+        {
+          "id": 117,
+          "name": "Blackwater Auction House"
+        },
+        {
+          "id": 118,
+          "name": "Blackwater Auction House"
+        },
+        {
+          "id": 119,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 120,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 121,
+          "name": "Blackwater Auction House"
+        },
+        {
+          "id": 123,
+          "name": "Alliance Auction House"
+        },
+        {
+          "id": 124,
+          "name": "Horde Auction House"
+        },
+        {
+          "id": 125,
+          "name": "Blackwater Auction House"
+        }
+      ]
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/110?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:41:33.941999+00:00",
+        "duration_seconds": 0.379,
+        "bytes": 9454413,
+        "sha256": "cd71f4c077359ae2b7d58d33d24fb46a0e30c85016ede2765073bb3badd7fcd5",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:50 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:41:33 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "mapping": {
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 110,
+        "source_kind": "auctions"
+      },
+      "keys": [
+        "_links",
+        "auctions",
+        "commodities",
+        "id",
+        "name",
+        "ruleset"
+      ],
+      "listing_count": 96924,
+      "listing_fields": [
+        "buyout",
+        "id",
+        "item",
+        "quantity",
+        "time_left"
+      ],
+      "listings_sha256": "ee969c2922f6dc08fb8534ce91bb1fa51b3d42d1b84dadbd3fbb9705f24fc8c7",
+      "identical_ruleset_payloads": [
+        1,
+        15,
+        3
+      ],
+      "sample": [
+        {
+          "id": 61436806,
+          "item": {
+            "id": 6537,
+            "bonus_lists": [
+              12718
+            ]
+          },
+          "buyout": 4099,
+          "quantity": 1,
+          "time_left": "LONG"
+        },
+        {
+          "id": 64702326,
+          "item": {
+            "id": 14917,
+            "bonus_lists": [
+              12725
+            ]
+          },
+          "buyout": 32500,
+          "quantity": 1,
+          "time_left": "SHORT"
+        }
+      ]
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/110/commodities?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:41:35.765647+00:00",
+        "duration_seconds": 0.359,
+        "bytes": 6993193,
+        "sha256": "5aa48bf7260d022f917bffd6a9e600e2cc5f296f07a6792dacd0024590e3a6f9",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:50 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:41:35 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "mapping": {
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 110,
+        "source_kind": "commodities"
+      },
+      "keys": [
+        "_links",
+        "auctions"
+      ],
+      "listing_count": 81471,
+      "listing_fields": [
+        "id",
+        "item",
+        "quantity",
+        "time_left",
+        "unit_price"
+      ],
+      "listings_sha256": "3850f4a14ba1c39862f545a35d4899443cb423294b96130a4964b410691ab5ec",
+      "identical_ruleset_payloads": [
+        1,
+        3
+      ],
+      "sample": [
+        {
+          "id": 63507784,
+          "item": {
+            "id": 252437
+          },
+          "quantity": 10,
+          "unit_price": 948,
+          "time_left": "VERY_LONG"
+        },
+        {
+          "id": 64585172,
+          "item": {
+            "id": 1081
+          },
+          "quantity": 18,
+          "unit_price": 50,
+          "time_left": "VERY_LONG"
+        }
+      ]
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/1/auctions/110?namespace=dynamic-forever-us&locale=en_US",
+        "status": 304,
+        "retrieved_at": "2026-11-14T02:41:37.298848+00:00",
+        "duration_seconds": 0.201,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:50 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:41:37 GMT",
+          "Cache-Control": null,
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "conditional_request": {
+        "If-Modified-Since": "Sat, 14 Nov 2026 02:17:50 GMT"
+      },
+      "previous_listings_sha256": "ee969c2922f6dc08fb8534ce91bb1fa51b3d42d1b84dadbd3fbb9705f24fc8c7",
+      "same_listings": null
+    }
+  ],
+  "capacity": {
+    "listing_count": 113803,
+    "normalized_sha256": "9c4f8d94e441d70157e27742a406a992b1fe1bb43e894eaef79074d20465a0ec",
+    "peak_rss_kib": 290920,
+    "memory_limit_mib": 384,
+    "cpu_limit": 0.5,
+    "requests": [
+      {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/index?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:41:45.972188+00:00",
+        "duration_seconds": 0.16,
+        "bytes": 528,
+        "sha256": "eb9bba087c4981474ff58e965f44503e979ec363427aed50666bb9b69e73a8fb",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:41:36 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:41:45 GMT",
+          "Cache-Control": "public, max-age=30",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        },
+        "structure": {
+          "keys": [
+            "_links",
+            "rulesets"
+          ],
+          "rulesets_count": 4
+        }
+      },
+      {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:41:47.163902+00:00",
+        "duration_seconds": 0.191,
+        "bytes": 2359,
+        "sha256": "84226f6daaa9cca42890729a9fcf006943c9ada3bc7021de47c278f6d120c6ed",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:39 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:41:47 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        },
+        "structure": {
+          "keys": [
+            "_links",
+            "auctions"
+          ],
+          "auctions_count": 15,
+          "auction_fields": [
+            "id",
+            "key",
+            "name"
+          ]
+        }
+      },
+      {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/113?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:41:48.581993+00:00",
+        "duration_seconds": 0.418,
+        "bytes": 11190219,
+        "sha256": "4dc90bb380be24794691ca45e484c2bec33654a5f405cea59c23a1472a4bf6f8",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:51 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:41:48 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        },
+        "structure": {
+          "keys": [
+            "_links",
+            "auctions",
+            "commodities",
+            "id",
+            "name",
+            "ruleset"
+          ],
+          "auctions_count": 113803,
+          "auction_fields": [
+            "buyout",
+            "id",
+            "item",
+            "quantity",
+            "time_left"
+          ]
+        }
+      }
+    ]
+  },
+  "initial_verification": {
+    "market_id": 1,
+    "verification_id": 1,
+    "evidence_hash": "220318b87bb816b83b7818fa5dbbbc00226eb540efb40aeada5d69aa5a85cc0e",
+    "report": {
+      "version": 1,
+      "verified_at": "2026-11-14T02:44:26.394137+00:00",
+      "mapping": {
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 110,
+        "source_kind": "auctions"
+      },
+      "house_name": "Alliance Auction House",
+      "scope": "Verified upstream house feed; ruleset URL alone does not establish an independent in-game economy.",
+      "listing_count": 96924,
+      "normalized_sha256": "8f9d0b8ef97ba0f264e6e2154ca366454728c6dedc96917358c0911805f6a615",
+      "requests": [
+        {
+          "url": "https://us.api.blizzard.com/data/wow/ruleset/index?namespace=dynamic-forever-us&locale=en_US",
+          "status": 200,
+          "retrieved_at": "2026-11-14T02:44:20.859489+00:00",
+          "duration_seconds": 0.176,
+          "bytes": 528,
+          "sha256": "eb9bba087c4981474ff58e965f44503e979ec363427aed50666bb9b69e73a8fb",
+          "headers": {
+            "Last-Modified": "Sat, 14 Nov 2026 02:44:06 GMT",
+            "ETag": null,
+            "Date": "Sat, 14 Nov 2026 02:44:20 GMT",
+            "Cache-Control": "public, max-age=30",
+            "Retry-After": null,
+            "Battlenet-Namespace": "dynamic-forever-us"
+          },
+          "structure": {
+            "keys": [
+              "_links",
+              "rulesets"
+            ],
+            "rulesets_count": 4
+          }
+        },
+        {
+          "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/?namespace=dynamic-forever-us&locale=en_US",
+          "status": 200,
+          "retrieved_at": "2026-11-14T02:44:22.035121+00:00",
+          "duration_seconds": 0.175,
+          "bytes": 2359,
+          "sha256": "84226f6daaa9cca42890729a9fcf006943c9ada3bc7021de47c278f6d120c6ed",
+          "headers": {
+            "Last-Modified": "Sat, 14 Nov 2026 02:17:39 GMT",
+            "ETag": null,
+            "Date": "Sat, 14 Nov 2026 02:44:22 GMT",
+            "Cache-Control": "public, max-age=86400",
+            "Retry-After": null,
+            "Battlenet-Namespace": "dynamic-forever-us"
+          },
+          "structure": {
+            "keys": [
+              "_links",
+              "auctions"
+            ],
+            "auctions_count": 15,
+            "auction_fields": [
+              "id",
+              "key",
+              "name"
+            ]
+          }
+        },
+        {
+          "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/110?namespace=dynamic-forever-us&locale=en_US",
+          "status": 200,
+          "retrieved_at": "2026-11-14T02:44:23.423976+00:00",
+          "duration_seconds": 0.389,
+          "bytes": 9454413,
+          "sha256": "cd71f4c077359ae2b7d58d33d24fb46a0e30c85016ede2765073bb3badd7fcd5",
+          "headers": {
+            "Last-Modified": "Sat, 14 Nov 2026 02:17:50 GMT",
+            "ETag": null,
+            "Date": "Sat, 14 Nov 2026 02:44:23 GMT",
+            "Cache-Control": "public, max-age=86400",
+            "Retry-After": null,
+            "Battlenet-Namespace": "dynamic-forever-us"
+          },
+          "structure": {
+            "keys": [
+              "_links",
+              "auctions",
+              "commodities",
+              "id",
+              "name",
+              "ruleset"
+            ],
+            "auctions_count": 96924,
+            "auction_fields": [
+              "buyout",
+              "id",
+              "item",
+              "quantity",
+              "time_left"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "checked_at_utc": "2026-11-15T01:54:13.950315+00:00",
+  "payload_source_commit": "c7bad2f5e84213e1c69e3eb66e8daa6540f05bc9",
+  "version": "2.0.0-beta.2",
+  "installer_sha256": "0fbc53603c218ffa85c8ee7b4e54f25e53c52a6fc3b2330ae914337714d41869",
+  "installer_bytes": 4426483,
+  "executable_sha256": "fc11b4428f712779e8ac0f954847c8089f869a30567e71c67a422b1ce057d46f",
+  "executable_reference": "actual-installed-windows-executable",
+  "updater_public_key_sha256": "5794736c840c7c09a49396e60cd569ff6b5f24f872eb0318ed95d55c16616ecf",
+  "supported_tauri_cli": "2.12.4",
+  "actual_owner_key_signature_verified": true,
+  "changed_payload_with_updated_digest_rejected": true,
+  "wrong_authenticated_version_rejected": true,
+  "private_key_on_owner_host_only": true,
+  "supported_windows_sdk_install_verified": true,
+  "publication_approved": false,
+  "deployment_approved": false,
+  "supported_windows_sdk_receipt": "companion-v2-signed-update-acceptance.json",
+  "supported_windows_sdk_run_id": 43665403770,
+  "sdk_checked_at_utc": "2026-11-15T02:06:50+00:00"
+}

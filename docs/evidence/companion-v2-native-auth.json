@@ -1,0 +1,17 @@
+{
+  "recorded_at_utc": "2026-11-14T18:48:43Z",
+  "status": "native_core_and_real_api_integration_verified_shell_pending",
+  "linux_rust_tests": 38,
+  "new_authorization_cases": 12,
+  "postgres_authorization_tests_after_utc_normalization": 48,
+  "actual_native_http_integration": ["existing browser account session consent", "PKCE S256", "strict ephemeral loopback", "code exchange", "native authenticated sync", "renewal", "superseded access rejected", "owner revocation", "offline cache retained"],
+  "test_data": "disposable synthetic SQLite and market_test PostgreSQL only",
+  "linux_test_credential_storage": "memory only",
+  "windows_ci_credential_storage": "Windows Credential Manager; separate v2 target, legacy preserved",
+  "native_runtime_integration_complete": false,
+  "installed_windows_v2_acceptance_complete": false,
+  "production_database_or_services_changed": false,
+  "additional_collectors_activated": false,
+  "historical_pruning_activated": false,
+  "remaining": ["native worker/tray/window integration", "website setup/approval/devices UI", "actual installed Windows acceptance", "release distribution/signing", "performance/screenshots", "owner visual and promotion gates"]
+}

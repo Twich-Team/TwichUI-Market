@@ -1,0 +1,20 @@
+{
+    auto_https disable_redirects
+    skip_install_trust
+    servers :80 {
+        trusted_proxies static 10.0.4.3 {$MARKET_TRANSPORT_PEER:10.0.4.3}
+        trusted_proxies_strict
+        client_ip_headers X-Forwarded-For
+    }
+}
+http://market.twich.gg:80 {
+    route {
+        @untrusted not remote_ip {$MARKET_TRANSPORT_PEER:10.0.4.3}
+        respond @untrusted 403
+        import /etc/caddy/routes.production.caddy
+    }
+}
+https://localhost {
+    tls internal
+    import /etc/caddy/routes.local.caddy
+}

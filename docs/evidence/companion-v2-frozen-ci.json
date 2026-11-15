@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "commit_sha": "d9d5ae354931bfe9276c30fde6f83da8d661e457",
+  "checked_at_utc": "2026-11-15T02:15:17.971512+00:00",
+  "source": "Canonical GitHub workflow API, read-only; no rerun",
+  "workflow_runs": [
+    {
+      "id": 43665403724,
+      "name": "Backend",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 43665403722,
+      "name": "Private website",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 43665403770,
+      "name": "Windows companion",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ]
+}

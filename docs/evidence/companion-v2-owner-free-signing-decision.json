@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "authorization_source": "Explicit human owner decision in active Companion v2 task",
+  "recorded_at_utc": "2026-11-15T00:28:44.896690+00:00",
+  "owner_decision": "Zero-cost NSIS distribution with secure Tauri cryptographic automatic updates; no commercial Windows Authenticode certificate/service or Microsoft Store requirement",
+  "private_audience_retained": true,
+  "commercial_authenticode_required": false,
+  "generate_dedicated_updater_key_authorized": true,
+  "updater_signature_required": true,
+  "signed_version_and_rollback_checks_required": true,
+  "explicit_installation_consent_required": true,
+  "windows_acceptance_required": true,
+  "tray_actions_verified": false,
+  "final_owner_publication_approval": false,
+  "final_owner_production_deployment_approval": false,
+  "paid_signing_service_authorized": false,
+  "supersedes": "Earlier private-beta manual-update strategy and commercial-signing acceptance prerequisite"
+}

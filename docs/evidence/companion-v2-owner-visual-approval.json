@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-11-14 23:24:46 UTC",
+  "authorization_source": "Explicit human owner response in active Companion v2 task",
+  "owner_statement": "Approve these designs",
+  "approved_source_commit": "e55807c58c4cf68560729471019b88cc518fb5b0",
+  "scope": [
+    "Desktop welcome/dashboard/progress/settings",
+    "Website companion setup/download guide",
+    "Browser account authorization approval",
+    "Connected-device management",
+    "Actual tray-menu visual appearance"
+  ],
+  "screenshot_files": {
+    "native-welcome.png": "bd94d0458e8b3c9bb7ee55dfac0d782cde6c53c7abe9583c87f5fac1187f000d",
+    "native-dashboard.png": "fb67a1d0f3717c2a3649e986010ae11081fd447e0334154aa7ec4bdc3cf0dbd1",
+    "native-sync-progress.png": "9767a9a3efb3cf43de5f4999063660e52a4e338107282e1656263259b0d68e1c",
+    "native-settings.png": "3e6ce5a2bb8dc7dcf1af34247e96d9300c87be03388a5dc305cca663304c6869",
+    "website-wizard.png": "35772e1520ff2bd97bd672f5acc878420a1b0caa1d11dfb70a1205295a2823a4",
+    "website-approval.png": "1d8852bcc8a7d7d8e616cffb8e4c04994f7bda9e8d7c88b59fe1cbec9c1d6681",
+    "website-devices.png": "6581fedce772cb8fbb8d20b5b1de6e945411962f74f6d2966ce85a488fe7d5cb",
+    "native-tray-attempt.png": "1c7c84513941471b3549fd677f9ef31940b179668975190dcb2e037fb8391ca7"
+  },
+  "tray_actions_verified": false,
+  "signed_installer_accepted": false,
+  "paid_signing_service_authorized": false,
+  "signing_followup": "Owner requests signing options and costs; no provider selected"
+}

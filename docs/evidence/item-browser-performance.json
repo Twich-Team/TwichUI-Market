@@ -1,0 +1,94 @@
+{
+  "environment": "Chromium, three fresh contexts, 1440\u00d71100, rootless browser 768 MiB / 1 CPU, Caddy 128 MiB / .25 CPU, genuine market 1. First-view time includes authentication and 500 ms network-idle settle; below-viewport chart interaction time excluded. Not production p95. Different feature sets: candidate includes rich icon table/reference columns and lazy interactive charts; existing site lacks these.",
+  "synthetic": false,
+  "runs": {
+    "existing_site": [
+      {
+        "ready_ms": 895,
+        "dom_nodes": 457,
+        "initial_api_call_count": 5,
+        "return_api_call_count": 2,
+        "javascript_transfer_bytes": 265636,
+        "all_resource_transfer_bytes": 332517,
+        "chart_engine_initially_loaded": false
+      },
+      {
+        "ready_ms": 889,
+        "dom_nodes": 457,
+        "initial_api_call_count": 5,
+        "return_api_call_count": 2,
+        "javascript_transfer_bytes": 265636,
+        "all_resource_transfer_bytes": 332517,
+        "chart_engine_initially_loaded": false
+      },
+      {
+        "ready_ms": 820,
+        "dom_nodes": 457,
+        "initial_api_call_count": 5,
+        "return_api_call_count": 2,
+        "javascript_transfer_bytes": 265636,
+        "all_resource_transfer_bytes": 332517,
+        "chart_engine_initially_loaded": false
+      }
+    ],
+    "eager_chart_candidate": [
+      {
+        "ready_ms": 1639,
+        "dom_nodes": 653,
+        "initial_api_call_count": 34,
+        "return_api_call_count": 1,
+        "javascript_transfer_bytes": 357785,
+        "all_resource_transfer_bytes": 454411,
+        "chart_engine_initially_loaded": true
+      },
+      {
+        "ready_ms": 1752,
+        "dom_nodes": 653,
+        "initial_api_call_count": 34,
+        "return_api_call_count": 1,
+        "javascript_transfer_bytes": 357785,
+        "all_resource_transfer_bytes": 454411,
+        "chart_engine_initially_loaded": true
+      },
+      {
+        "ready_ms": 1697,
+        "dom_nodes": 653,
+        "initial_api_call_count": 34,
+        "return_api_call_count": 1,
+        "javascript_transfer_bytes": 357785,
+        "all_resource_transfer_bytes": 454411,
+        "chart_engine_initially_loaded": true
+      }
+    ],
+    "deferred_chart_visible_icons_candidate": [
+      {
+        "ready_ms": 1439,
+        "dom_nodes": 649,
+        "initial_api_call_count": 17,
+        "return_api_call_count": 0,
+        "javascript_transfer_bytes": 157269,
+        "all_resource_transfer_bytes": 208157,
+        "chart_engine_initially_loaded": false
+      },
+      {
+        "ready_ms": 1598,
+        "dom_nodes": 649,
+        "initial_api_call_count": 17,
+        "return_api_call_count": 0,
+        "javascript_transfer_bytes": 157269,
+        "all_resource_transfer_bytes": 208157,
+        "chart_engine_initially_loaded": false
+      },
+      {
+        "ready_ms": 1416,
+        "dom_nodes": 649,
+        "initial_api_call_count": 17,
+        "return_api_call_count": 0,
+        "javascript_transfer_bytes": 157269,
+        "all_resource_transfer_bytes": 208157,
+        "chart_engine_initially_loaded": false
+      }
+    ]
+  },
+  "interpretation": "Candidate cold first view is slower than the simpler existing interface; no overall speedup is claimed. Deferring ECharts removes it from initial resources; clipped-row icons lower candidate initial calls from 34 to 17. Same-account return makes zero API calls versus two existing calls. Exact table pages and virtual history bound DOM independently of total catalogue/history size. The eager candidate measured after icon support, before viewport deferral/priority deduplication, and included a chart-ready assertion; it is diagnostic, not a strict identical-workload A/B."
+}

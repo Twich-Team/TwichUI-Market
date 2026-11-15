@@ -1,0 +1,17 @@
+{
+  "actual_owner_key": true,
+  "non_executable_probe": true,
+  "independent_signature_verifier_passed": true,
+  "tampered_bytes_rejected": true,
+  "wrong_signed_version_rejected": true,
+  "public_key_sha256": "5794736c840c7c09a49396e60cd569ff6b5f24f872eb0318ed95d55c16616ecf",
+  "not_installer_or_release_acceptance": true,
+  "recovery_from_encrypted_key_archive_verified": true,
+  "passphrase_excluded_from_key_archive": true,
+  "original_key_unchanged": true,
+  "recorded_at_utc": "2026-11-15T00:28:44.896863+00:00",
+  "commercial_authenticode_required": false,
+  "private_key_committed": false,
+  "private_key_in_database_or_bundle": false,
+  "wrong_private_key_password_rejected": true
+}

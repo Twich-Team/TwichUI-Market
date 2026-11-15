@@ -1,0 +1,504 @@
+{
+  "version": 1,
+  "observed_at": "2026-11-14T14:55:42.086947+00:00",
+  "region": "us",
+  "ruleset": "Normal",
+  "faction": "Horde",
+  "house_id": 114,
+  "source_kind": "auctions",
+  "transport_ruleset_id": 2,
+  "confidence": "high",
+  "decision": "Sufficient corroborated public evidence for registry verification; collection requires separate owner confirmation.",
+  "sources": [
+    {
+      "url": "https://saddlebagexchange.com/wow-forever/upload-timers",
+      "method": "Research browser; public numeric labels and NA upload counts",
+      "numeric_labels": {
+        "110": "PvP Alliance",
+        "111": "Normal Alliance",
+        "113": "PvP Horde",
+        "114": "Normal Horde",
+        "116": "PvP Neutral"
+      },
+      "limits": "Paginated numeric labels visible for EU; NA overview counts match direct US feeds. No first-hand player scan receipt supplied by Saddlebag."
+    },
+    {
+      "url": "https://forevermastery.com/en/prices/us-normal-horde",
+      "method": "Research browser; publisher describes Normal identification from an in-game scan",
+      "limits": "Current displayed prices are API-derived; original anonymized scan is not public. Editorial independence from other publishers not established."
+    },
+    {
+      "url": "https://forevermastery.com/en/prices/us-pvp-horde",
+      "method": "Research browser; publisher describes PvP inference from KR/TW ruleset availability",
+      "limits": "Market page was stale at 13:17 UTC; do not compare it as same-generation evidence. Use per-item tables at 14:17 UTC instead."
+    },
+    {
+      "url": "https://daybreakforever.com/discoveries/systems",
+      "method": "Publisher-extracted client data, reported build 1.60.1.70888; search-index excerpts expose evidence rows omitted from rendered page",
+      "client_picker_rows": [
+        {
+          "id": 2,
+          "name": "PvP",
+          "SuperDistrictID": 1
+        },
+        {
+          "id": 3,
+          "name": "Normal",
+          "SuperDistrictID": 2
+        }
+      ],
+      "redirect_rows": [
+        {
+          "id": 1,
+          "source": 2,
+          "selector": 2,
+          "target": 110
+        },
+        {
+          "id": 2,
+          "source": 2,
+          "selector": 3,
+          "target": 111
+        },
+        {
+          "id": 5,
+          "source": 6,
+          "selector": 2,
+          "target": 0
+        },
+        {
+          "id": 6,
+          "source": 6,
+          "selector": 3,
+          "target": 0
+        }
+      ],
+      "limits": "Selector matches AvailableSuperDistrict row IDs, not API IDs or SuperDistrictID. This is a supported interpretation, not a proven foreign key. Horde samples have target 0; unnamed fourth column may affect resolution. No direct client extraction or live server routing measured."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/wowdev/WoWDBDefs/master/definitions/AuctionHouseRedirect.dbd",
+      "method": "Direct public schema retrieval",
+      "limits": "Layout FA23AD86 has four unnamed integer fields, not merely three. Does not establish runtime routing or regional mapping."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/wowdev/WoWDBDefs/master/definitions/AvailableSuperDistrict.dbd",
+      "method": "Direct public schema retrieval",
+      "limits": "ID and SuperDistrictID are separate fields; do not interchange."
+    }
+  ],
+  "independent_observation": {
+    "kind": "Independent publisher market labeling reconciled with direct API fingerprints; original in-game scan publisher-reported only",
+    "published_at": "2026-11-14T14:17:00+00:00",
+    "samples": [
+      {
+        "item_id": 2589,
+        "name": "Linen Cloth",
+        "region": "us",
+        "faction": "Horde",
+        "ruleset": "PvP",
+        "house_id": 113,
+        "source_url": "https://forevermastery.com/en/items/2589-linen-cloth",
+        "published_at": "2026-11-14T14:17:00+00:00",
+        "quantity": 8736,
+        "minimum_unit_copper": 21,
+        "api_quantity": 8736,
+        "api_minimum_unit_copper": 21,
+        "matched": true
+      },
+      {
+        "item_id": 2589,
+        "name": "Linen Cloth",
+        "region": "us",
+        "faction": "Horde",
+        "ruleset": "Normal",
+        "house_id": 114,
+        "source_url": "https://forevermastery.com/en/items/2589-linen-cloth",
+        "published_at": "2026-11-14T14:17:00+00:00",
+        "quantity": 20848,
+        "minimum_unit_copper": 21,
+        "api_quantity": 20848,
+        "api_minimum_unit_copper": 21,
+        "matched": true
+      },
+      {
+        "item_id": 2592,
+        "name": "Wool Cloth",
+        "region": "us",
+        "faction": "Horde",
+        "ruleset": "PvP",
+        "house_id": 113,
+        "source_url": "https://forevermastery.com/en/items/2592-wool-cloth",
+        "published_at": "2026-11-14T14:17:00+00:00",
+        "quantity": 6940,
+        "minimum_unit_copper": 129,
+        "api_quantity": 6940,
+        "api_minimum_unit_copper": 129,
+        "matched": true
+      },
+      {
+        "item_id": 2592,
+        "name": "Wool Cloth",
+        "region": "us",
+        "faction": "Horde",
+        "ruleset": "Normal",
+        "house_id": 114,
+        "source_url": "https://forevermastery.com/en/items/2592-wool-cloth",
+        "published_at": "2026-11-14T14:17:00+00:00",
+        "quantity": 6553,
+        "minimum_unit_copper": 145,
+        "api_quantity": 6553,
+        "api_minimum_unit_copper": 145,
+        "matched": true
+      },
+      {
+        "item_id": 2318,
+        "name": "Light Leather",
+        "region": "us",
+        "faction": "Horde",
+        "ruleset": "PvP",
+        "house_id": 113,
+        "source_url": "https://forevermastery.com/en/items/2318-light-leather",
+        "published_at": "2026-11-14T14:17:00+00:00",
+        "quantity": 9963,
+        "minimum_unit_copper": 48,
+        "api_quantity": 9963,
+        "api_minimum_unit_copper": 48,
+        "matched": true
+      },
+      {
+        "item_id": 2318,
+        "name": "Light Leather",
+        "region": "us",
+        "faction": "Horde",
+        "ruleset": "Normal",
+        "house_id": 114,
+        "source_url": "https://forevermastery.com/en/items/2318-light-leather",
+        "published_at": "2026-11-14T14:17:00+00:00",
+        "quantity": 13989,
+        "minimum_unit_copper": 28,
+        "api_quantity": 13989,
+        "api_minimum_unit_copper": 28,
+        "matched": true
+      },
+      {
+        "item_id": 2770,
+        "name": "Copper Ore",
+        "region": "us",
+        "faction": "Horde",
+        "ruleset": "PvP",
+        "house_id": 113,
+        "source_url": "https://forevermastery.com/en/items/2770-copper-ore",
+        "published_at": "2026-11-14T14:17:00+00:00",
+        "quantity": 1738,
+        "minimum_unit_copper": 194,
+        "api_quantity": 1738,
+        "api_minimum_unit_copper": 194,
+        "matched": true
+      },
+      {
+        "item_id": 2770,
+        "name": "Copper Ore",
+        "region": "us",
+        "faction": "Horde",
+        "ruleset": "Normal",
+        "house_id": 114,
+        "source_url": "https://forevermastery.com/en/items/2770-copper-ore",
+        "published_at": "2026-11-14T14:17:00+00:00",
+        "quantity": 6077,
+        "minimum_unit_copper": 117,
+        "api_quantity": 6077,
+        "api_minimum_unit_copper": 117,
+        "matched": true
+      }
+    ]
+  },
+  "uncertainty": [
+    "No first-hand in-game listing/character receipt acquired; wizard remains available for stronger verification.",
+    "Current independent prices share Blizzard as underlying source; agreement corroborates labeling, not independent live price discovery.",
+    "Client evidence is a beta snapshot with unknown fields and incomplete Horde redirects; not used alone as proof.",
+    "Only US Normal Horde auction listings may be registered. Commodity probes are evidence only; no commodity collection will be configured.",
+    "Other numeric labels remain research findings, not registered markets."
+  ],
+  "upstream_probes": {
+    "observed_at": "2026-11-14T14:52:38.283036+00:00",
+    "scope": "Authenticated read-only US Forever probes; no ingestion or configuration writes",
+    "house113_114_shared_auction_ids": 0,
+    "aliases_equal": {
+      "113": true,
+      "114": true
+    },
+    "responses": [
+      {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/113?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T14:52:39.023972+00:00",
+        "duration_seconds": 0.526,
+        "bytes": 9576265,
+        "sha256": "e19aba864a34719eecd4e836486537191a23dac205dcec6a61c53f0b136e4e4b",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 14:17:45 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 14:52:38 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        },
+        "mapping": {
+          "region": "us",
+          "transport_ruleset_id": 2,
+          "house_id": 113,
+          "source_kind": "auctions"
+        },
+        "structure": {
+          "keys": [
+            "_links",
+            "auctions",
+            "commodities",
+            "id",
+            "name",
+            "ruleset"
+          ],
+          "auctions_count": 95545,
+          "auction_fields": [
+            "buyout",
+            "id",
+            "item",
+            "quantity",
+            "time_left"
+          ]
+        },
+        "id": 113,
+        "name": "Horde Auction House",
+        "echoed_ruleset": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/2?namespace=dynamic-forever-us"
+        },
+        "listing_array_sha256": "fb2e9c92fcd2d4af50137961b9058911724c9d75caca6a74e69a1b47d25aa749",
+        "buyout_item_count": 4852
+      },
+      {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/114?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T14:52:41.499185+00:00",
+        "duration_seconds": 0.385,
+        "bytes": 8668422,
+        "sha256": "d4ec5467e859991a1002876c5fc15a5ed72399e3b0e13039cc9b0daf63202ee3",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 14:17:45 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 14:52:41 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        },
+        "mapping": {
+          "region": "us",
+          "transport_ruleset_id": 2,
+          "house_id": 114,
+          "source_kind": "auctions"
+        },
+        "structure": {
+          "keys": [
+            "_links",
+            "auctions",
+            "commodities",
+            "id",
+            "name",
+            "ruleset"
+          ],
+          "auctions_count": 89533,
+          "auction_fields": [
+            "buyout",
+            "id",
+            "item",
+            "quantity",
+            "time_left"
+          ]
+        },
+        "id": 114,
+        "name": "Horde Auction House",
+        "echoed_ruleset": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/2?namespace=dynamic-forever-us"
+        },
+        "listing_array_sha256": "7452c6d389b9e782be5e2bf85043a925b11c3085d7ab3000d549bd36ead0994f",
+        "buyout_item_count": 4659
+      },
+      {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/1/auctions/113?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T14:52:43.717569+00:00",
+        "duration_seconds": 0.408,
+        "bytes": 9576265,
+        "sha256": "804a124afeea4d894318bf5480d16bd12063494c8e3f04746d62745c855f6076",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 14:17:45 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 14:52:43 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        },
+        "mapping": {
+          "region": "us",
+          "transport_ruleset_id": 1,
+          "house_id": 113,
+          "source_kind": "auctions"
+        },
+        "structure": {
+          "keys": [
+            "_links",
+            "auctions",
+            "commodities",
+            "id",
+            "name",
+            "ruleset"
+          ],
+          "auctions_count": 95545,
+          "auction_fields": [
+            "buyout",
+            "id",
+            "item",
+            "quantity",
+            "time_left"
+          ]
+        },
+        "id": 113,
+        "name": "Horde Auction House",
+        "echoed_ruleset": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/1?namespace=dynamic-forever-us"
+        },
+        "listing_array_sha256": "fb2e9c92fcd2d4af50137961b9058911724c9d75caca6a74e69a1b47d25aa749",
+        "buyout_item_count": 4852
+      },
+      {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/1/auctions/114?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T14:52:46.233415+00:00",
+        "duration_seconds": 0.458,
+        "bytes": 8668422,
+        "sha256": "f53740faf92b374aa9df566fc497ed81159d5b86806f78b671064505841f3174",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 14:17:45 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 14:52:45 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        },
+        "mapping": {
+          "region": "us",
+          "transport_ruleset_id": 1,
+          "house_id": 114,
+          "source_kind": "auctions"
+        },
+        "structure": {
+          "keys": [
+            "_links",
+            "auctions",
+            "commodities",
+            "id",
+            "name",
+            "ruleset"
+          ],
+          "auctions_count": 89533,
+          "auction_fields": [
+            "buyout",
+            "id",
+            "item",
+            "quantity",
+            "time_left"
+          ]
+        },
+        "id": 114,
+        "name": "Horde Auction House",
+        "echoed_ruleset": {
+          "href": "https://us.api.blizzard.com/data/wow/ruleset/1?namespace=dynamic-forever-us"
+        },
+        "listing_array_sha256": "7452c6d389b9e782be5e2bf85043a925b11c3085d7ab3000d549bd36ead0994f",
+        "buyout_item_count": 4659
+      },
+      {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/113/commodities?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T14:52:48.515584+00:00",
+        "duration_seconds": 0.336,
+        "bytes": 6319615,
+        "sha256": "8fe3ac28d2a1cb4bca710767212673bf0ac53e61c87c8e73f2fdedacf745d4e7",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 14:17:45 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 14:52:48 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        },
+        "mapping": {
+          "region": "us",
+          "transport_ruleset_id": 2,
+          "house_id": 113,
+          "source_kind": "commodities"
+        },
+        "structure": {
+          "keys": [
+            "_links",
+            "auctions"
+          ],
+          "auctions_count": 73420,
+          "auction_fields": [
+            "id",
+            "item",
+            "quantity",
+            "time_left",
+            "unit_price"
+          ]
+        },
+        "id": null,
+        "name": null,
+        "echoed_ruleset": null,
+        "listing_array_sha256": "a46c0a5ccbee81cdfe377377f75300691f69bd7a70b1bc492e2a3aec3a5ecb86",
+        "buyout_item_count": 1225
+      },
+      {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/114/commodities?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T14:52:50.403906+00:00",
+        "duration_seconds": 0.325,
+        "bytes": 5511072,
+        "sha256": "b5f63e5b393c49ccf093d298e4797be39d24b4cfdaeeb368a16c9d955c923719",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 14:17:45 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 14:52:50 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        },
+        "mapping": {
+          "region": "us",
+          "transport_ruleset_id": 2,
+          "house_id": 114,
+          "source_kind": "commodities"
+        },
+        "structure": {
+          "keys": [
+            "_links",
+            "auctions"
+          ],
+          "auctions_count": 64041,
+          "auction_fields": [
+            "id",
+            "item",
+            "quantity",
+            "time_left",
+            "unit_price"
+          ]
+        },
+        "id": null,
+        "name": null,
+        "echoed_ruleset": null,
+        "listing_array_sha256": "7b06c86a3bad81a6a59b12c7dd82580aaa9ecf0358ee35cf623f86d97560e5ff",
+        "buyout_item_count": 1184
+      }
+    ]
+  },
+  "independent_source_url": "https://forevermastery.com/en/prices/us-normal-horde"
+}

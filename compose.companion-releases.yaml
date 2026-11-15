@@ -1,0 +1,40 @@
+# Opt-in only after signed release / owner approval / migration preflight gates.
+# This overlay is not part of the current production deployment.
+services:
+  api:
+    environment: &release-environment
+      COMPANION_RELEASE_DIRECTORY: /releases
+      COMPANION_UPDATER_PUBLIC_KEY: ${COMPANION_UPDATER_PUBLIC_KEY:-}
+    volumes:
+      - companion-releases:/releases:ro
+  local-api:
+    environment: *release-environment
+    volumes:
+      - companion-releases:/releases:ro
+  release-publisher:
+    profiles: [release-tools]
+    image: twichui-market-release-tools:companion-v2
+    environment: *release-environment
+    # UID 0 is confined to the approved rootless Docker mapping (marketdev).
+    # It initializes only this dedicated volume; the application mounts it read-only.
+    user: "0:0"
+    network_mode: none
+    read_only: true
+    tmpfs: [/tmp:size=80m]
+    mem_limit: 256m
+    cpus: 1
+    restart: "no"
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    logging:
+      driver: json-file
+      options: {max-size: "5m", max-file: "2"}
+    volumes:
+      - companion-releases:/releases
+      - type: bind
+        source: ${COMPANION_RELEASE_INPUT:-./artifacts/companion-release-incoming}
+        target: /incoming
+        read_only: true
+        bind: {create_host_path: false}
+volumes:
+  companion-releases:

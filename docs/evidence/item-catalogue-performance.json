@@ -1,0 +1,93 @@
+{
+  "measurement": "Read-only Python handler and PostgreSQL latency; excludes HTTP/browser/network download time. Five sequential runs in the approved 384 MiB / 0.5 CPU worker environment; collector remains active. Warm-cache measurements; no claim of production p95.",
+  "legacy_before": {
+    "endpoint": "legacy_items",
+    "market": 1,
+    "runs": 5,
+    "latency_ms": [
+      110.967,
+      103.047,
+      102.688,
+      105.198,
+      102.209
+    ],
+    "median_ms": 103.047,
+    "sql_counts": [
+      153,
+      153,
+      153,
+      153,
+      153
+    ],
+    "response_bytes": [
+      46058,
+      46058,
+      46058,
+      46058,
+      46058
+    ],
+    "read_only": true,
+    "returned_rows": 149,
+    "row_kind": "variants"
+  },
+  "legacy_after": {
+    "endpoint": "legacy",
+    "market": 1,
+    "runs": 5,
+    "latency_ms": [
+      24.185,
+      9.418,
+      8.672,
+      8.419,
+      9.949
+    ],
+    "median_ms": 9.418,
+    "sql_counts": [
+      5,
+      5,
+      5,
+      5,
+      5
+    ],
+    "response_bytes": [
+      46060,
+      46060,
+      46060,
+      46060,
+      46060
+    ],
+    "read_only": true,
+    "returned_rows": 149,
+    "row_kind": "variants"
+  },
+  "new_grouped_catalogue": {
+    "endpoint": "catalogue",
+    "market": 1,
+    "runs": 5,
+    "latency_ms": [
+      145.076,
+      107.233,
+      78.539,
+      79.172,
+      78.951
+    ],
+    "median_ms": 79.172,
+    "sql_counts": [
+      6,
+      6,
+      6,
+      6,
+      6
+    ],
+    "response_bytes": [
+      24428,
+      24428,
+      24428,
+      24428,
+      24428
+    ],
+    "read_only": true,
+    "returned_rows": 50,
+    "row_kind": "item_groups"
+  }
+}

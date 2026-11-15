@@ -1,0 +1,97 @@
+name: Verify owner-signed updater candidate
+on:
+  workflow_call:
+    inputs:
+      harness_commit:
+        type: string
+        required: true
+      proof_path:
+        type: string
+        default: docs/evidence/companion-v2-signed-candidate.json
+      pending_only:
+        type: boolean
+        default: true
+  workflow_dispatch:
+    inputs:
+      harness_commit:
+        description: Full verified harness commit (verification only; never deploys)
+        required: true
+      proof_path:
+        description: Committed public detached-signature proof path
+        default: docs/evidence/companion-v2-signed-candidate.json
+        required: true
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: companion-owner-update-verification
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      CANDIDATE_PROOF: ${{ inputs.proof_path }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.harness_commit }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Select only a new or explicitly requested exact candidate
+        id: selection
+        run: python scripts/verify-signed-update-candidate.py selection --proof "$env:CANDIDATE_PROOF" ${{ inputs.pending_only && '--pending-only' || '' }}
+      - name: Validate canonical CI and public candidate identity
+        if: steps.selection.outputs.pending == 'true'
+        id: candidate
+        run: python scripts/verify-signed-update-candidate.py preflight --proof "$env:CANDIDATE_PROOF"
+      - uses: actions/download-artifact@v4
+        if: steps.selection.outputs.pending == 'true'
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ steps.candidate.outputs.windows_run_id }}
+          artifact-ids: ${{ steps.candidate.outputs.installer_artifact_id }}
+          path: artifacts/original-signed-update-payload
+          merge-multiple: true
+      - uses: dtolnay/rust-toolchain@stable
+        if: steps.selection.outputs.pending == 'true'
+        with:
+          toolchain: 1.100.0
+      - uses: Swatinem/rust-cache@v2
+        if: steps.selection.outputs.pending == 'true'
+        with:
+          workspaces: |
+            desktop -> target
+            desktop/src-tauri -> target
+      - uses: actions/setup-node@v4
+        if: steps.selection.outputs.pending == 'true'
+        with:
+          node-version: '22'
+      - run: pip install -r backend/requirements.lock
+        if: steps.selection.outputs.pending == 'true'
+      - run: npm ci --prefix web
+        if: steps.selection.outputs.pending == 'true'
+      - run: npm --prefix web run build
+        if: steps.selection.outputs.pending == 'true'
+      - run: cargo build --manifest-path desktop/Cargo.toml --release --example verify_release --locked
+        if: steps.selection.outputs.pending == 'true'
+      - name: Stage exact signed bytes and independently verify signature/version
+        if: steps.selection.outputs.pending == 'true'
+        run: python scripts/verify-signed-update-candidate.py stage --proof "$env:CANDIDATE_PROOF" --incoming artifacts/original-signed-update-payload
+      - name: Actual SDK upgrade, reconnect, export and uninstall retention
+        if: steps.selection.outputs.pending == 'true'
+        timeout-minutes: 10
+        run: ./scripts/windows/verify-upgrade.ps1
+      - name: Record source-bound actual signed updater acceptance
+        if: steps.selection.outputs.pending == 'true'
+        run: python scripts/verify-signed-update-candidate.py record --proof "$env:CANDIDATE_PROOF"
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.selection.outputs.pending == 'true'
+        with:
+          name: companion-signed-update-acceptance
+          path: artifacts/companion-signed-update-test/
+          if-no-files-found: warn
+# Public key/signature only. Signing remains on the owner's host. No publication,
+# secret provisioning, certificate purchase or production deployment in this job.

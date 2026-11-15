@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "owner": "REPLACE_WITH_CONFIGURED_GITHUB_OWNER",
+  "source_commit": "REPLACE_WITH_EXACT_SIGNED_CANDIDATE_SOURCE_COMMIT",
+  "version": "REPLACE_WITH_EXACT_VERSION",
+  "installer_sha256": "REPLACE_WITH_EXACT_SIGNED_INSTALLER_SHA256",
+  "windows_version": "",
+  "display_scaling": "",
+  "tray_screenshot_sha256": "",
+  "observations": "TEMPLATE ONLY. Not acceptance evidence. Record actual owner PC observations here.",
+  "tray_actions_verified": false,
+  "checks": {
+    "notification_menu": false,
+    "open": false,
+    "settings": false,
+    "sync": false,
+    "pause_resume": false,
+    "close_restore": false,
+    "minimize_restore": false,
+    "hidden_sync": false,
+    "startup": false,
+    "single_instance": false,
+    "quit": false
+  }
+}
