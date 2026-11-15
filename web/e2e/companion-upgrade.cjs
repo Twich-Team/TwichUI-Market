@@ -29,8 +29,17 @@ const fs=require('node:fs');const path=require('node:path');const {execFile,spaw
     if(sdkInstall){
       const expected=process.env.MARKET_TEST_EXPECTED_EXE_SHA256||createHash('sha256').update(fs.readFileSync('desktop/src-tauri/target/release/twichui-market-companion.exe')).digest('hex');
       expect(expected).toMatch(/^[a-f0-9]{64}$/);
-      await promisify(execFile)('cargo',['test','--manifest-path','desktop/src-tauri/Cargo.toml','--locked','updates::tests::launch_owner_signed_installer_on_disposable_runner','--','--ignored','--exact','--nocapture'],{timeout:180000,maxBuffer:2*1024*1024});
-      await expect.poll(()=>{try{return createHash('sha256').update(fs.readFileSync(process.env.MARKET_TEST_INSTALLED_EXE)).digest('hex')}catch{return null}},{timeout:90000}).toBe(expected);
+      const evidence=path.resolve('artifacts/companion-signed-update-test');fs.mkdirSync(evidence,{recursive:true});
+      const child=await promisify(execFile)('cargo',['test','--manifest-path','desktop/src-tauri/Cargo.toml','--locked','updates::tests::launch_owner_signed_installer_on_disposable_runner','--','--ignored','--exact','--nocapture'],{timeout:180000,maxBuffer:2*1024*1024});
+      fs.writeFileSync(path.join(evidence,'sdk-child-stdout.txt'),child.stdout);fs.writeFileSync(path.join(evidence,'sdk-child-stderr.txt'),child.stderr);
+      expect(child.stdout).toContain('running 1 test');
+      const sdk=JSON.parse(fs.readFileSync(path.join(evidence,'sdk-crypto.json'),'utf8'));expect(sdk.sdk_test_executed).toBe(true);
+      try{
+        await expect.poll(()=>{try{return createHash('sha256').update(fs.readFileSync(process.env.MARKET_TEST_INSTALLED_EXE)).digest('hex')}catch{return null}},{timeout:90000}).toBe(expected);
+      }catch(error){
+        await promisify(execFile)('powershell.exe',['-NoProfile','-NonInteractive','-File','scripts/windows/capture-update-diagnostics.ps1'],{timeout:15000}).catch(()=>{});
+        throw error;
+      }
     }else{
       await promisify(execFile)(process.env.MARKET_TEST_NEW_INSTALLER,['/S',`/D=${process.env.MARKET_TEST_INSTALL_DIRECTORY}`],{timeout:90000});
     }
