@@ -163,7 +163,6 @@ def parse_thewowdb(body, item_id, *, at=None):
 def fetch(provider, item_id, *, credential=None, etag=None, offset=None, validate=False, transport=request, client=None, region='us'):
     if provider not in PROVIDERS or type(item_id) is not int or not 1 <= item_id <= 2**31-1: raise ValueError('Invalid provider identity')
     if provider == 'blizzard':
-        if validate: raise ValueError('Blizzard uses existing OAuth controls')
         from .worker import BlizzardClient
         return (client or BlizzardClient()).fetch_item(region, item_id)
     if provider == 'everloot':

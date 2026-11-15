@@ -316,3 +316,32 @@ def test_bulk_ignored_offset_cannot_claim_a_successful_import(database):
     with database() as db:
         task=db.scalar(select(MetadataTask).where(MetadataTask.job_id==ident).order_by(MetadataTask.id.desc()).limit(1))
         assert task.state=='failed' and json.loads(task.result_json)['recovered_fields']==[]
+
+
+@pytest.mark.parametrize('provider',['blizzard','thewowdb'])
+def test_every_provider_connection_test_is_queued_and_validated(owner,database,provider):
+    setup(database,provider=provider)
+    assert owner.post(f'/api/v1/admin/metadata-providers/{provider}/test').status_code==202
+    if provider=='blizzard':body=b'{"id":25,"name":"Fixture Sword"}'
+    else:
+        from test_community_metadata import payload
+        value=payload();value['id']=25;body=json.dumps(value).encode()
+    tick(database,fetcher=lambda *a,**kw:response(body=body),automatic=False)
+    with database() as db:
+        row=db.get(MetadataProvider,provider)
+        assert row.validated_at is not None and not row.validation_requested and row.validation_error is None
+
+
+def test_validated_keys_allow_bounded_higher_budgets_but_keyless_does_not(owner,database,keyfile):
+    from market.metadata_recovery import reserve_budget
+    from market.provider_secrets import encrypt
+    setup(database);body={'enabled':True,'automatic':False,'hourly_budget':240,'daily_budget':2000}
+    assert owner.patch('/api/v1/admin/metadata-providers/everloot',json=body).status_code==422
+    with database.begin() as db:
+        row=db.get(MetadataProvider,'everloot');row.credential_key_id,row.credential=encrypt('everloot','evl_fake_validated');row.validated_at=now()
+    assert owner.patch('/api/v1/admin/metadata-providers/everloot',json=body).status_code==200
+    with database.begin() as db:
+        row=db.get(MetadataProvider,'everloot');at=now()
+        assert reserve_budget(row,at) is None and aware(row.next_request_at)==at+timedelta(seconds=15)
+        row.credential=None;row.next_request_at=None;row.hour_used=20
+        assert reserve_budget(row,at)==aware(row.hour_start)+timedelta(hours=1)

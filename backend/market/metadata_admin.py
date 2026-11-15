@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 from .db import now, session
 from .models import ItemMedia, ItemMetadata, MetadataJob, MetadataProvider, MetadataSource, MetadataTask, User
 from .metadata_providers import PROVIDERS
-from .metadata_recovery import ACTIVE, candidates, enqueue, ensure_providers, job_counts, observed_query
+from .metadata_recovery import ACTIVE, candidates, enqueue, ensure_providers, job_counts, observed_query, provider_limits
 from .provider_secrets import SecretUnavailable, encrypt, keyring, rotate
 from .security import admin, audit, aware
 
@@ -74,9 +74,9 @@ def providers(user: User = Depends(admin), db: Session = Depends(session)):
 @router.patch('/metadata-providers/{ident}')
 def configure(ident: str, body: ProviderUpdate, user: User = Depends(admin), db: Session = Depends(session)):
     row = provider_row(db, ident)
-    spec = PROVIDERS[ident]
-    if body.hourly_budget > spec.hourly_limit or body.daily_budget > spec.daily_limit:
-        raise HTTPException(422, 'Request budget exceeds the conservative provider ceiling')
+    hourly_ceiling,daily_ceiling,_=provider_limits(row)
+    if body.hourly_budget > hourly_ceiling or body.daily_budget > daily_ceiling:
+        raise HTTPException(422, f'Current provider ceiling is {hourly_ceiling} requests/hour and {daily_ceiling}/day')
     for field in ('enabled', 'automatic', 'hourly_budget', 'daily_budget'): setattr(row, field, getattr(body, field))
     audit(db, user.id, 'metadata.provider.configured', f'provider={ident}; enabled={body.enabled}; automatic={body.automatic}')
     db.commit()
@@ -105,7 +105,6 @@ def replace_key(ident: str, body: KeyReplacement, user: User = Depends(admin), d
 @router.post('/metadata-providers/{ident}/test', status_code=202)
 def test_connection(ident: str, user: User = Depends(admin), db: Session = Depends(session)):
     row = provider_row(db, ident)
-    if ident not in ('everloot', 'foreverdb'): raise HTTPException(422, 'Use a bounded recovery to test this provider')
     if ident == 'foreverdb' and not (row.credential or row.pending_credential): raise HTTPException(409, 'Provider key is not configured')
     row.validation_requested = True; row.validation_revision += 1; row.validation_error = None
     audit(db, user.id, 'metadata.connection.test_queued', f'provider={ident}')

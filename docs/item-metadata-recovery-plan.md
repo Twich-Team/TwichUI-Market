@@ -13,16 +13,23 @@ This goal supersedes Companion priority for this checkout only. Never access the
 
 ## Acceptance checklist
 
-- [ ] Versioned local catalog, per-field provenance, conflict visibility and Blizzard precedence.
-- [ ] Everloot documented adapter (real keyless validation where available); ForeverDB gated by documented contract/access; optional TheWoWDB errors honest.
-- [ ] No client provider requests; local names/search/attributes/artwork and desktop additive read contract.
-- [ ] Manual single/missing/stale recovery; persistent resumable bounded deduplicated jobs and audited controls.
-- [ ] Conservative independently scheduled automatic recovery with persistent provider limits.
-- [ ] Encrypted provider secrets outside backup key boundary; staged validation and safe rotation; admin + CSRF; expiry warnings.
-- [ ] Actual DB statistics, provider health, recent results and request estimates in accessible admin UI.
-- [ ] Focused and full relevant tests, migration preservation, screenshots and performance evidence.
-- [ ] Latest Companion committed schema checked without modifying its branch/session; v1 export preserved.
-- [ ] Coverage source/age/sample limits explicit; 90% is a target, never fabricated.
-- [ ] Draft PR, operational setup/migration/rollback and remaining approval/credential steps documented.
+- [x] Versioned local catalog, per-field provenance, conflict visibility and Blizzard precedence.
+- [x] Everloot documented-contract adapter and tests; ForeverDB gated by documented contract/access; optional TheWoWDB errors honest. **Live validation pending network/access.**
+- [x] No client provider requests; local names/search/attributes/artwork and desktop additive read contract.
+- [x] Manual single/missing/stale recovery; persistent resumable bounded deduplicated jobs and audited controls.
+- [x] Conservative independently scheduled automatic recovery with persistent provider limits.
+- [x] Encrypted provider secrets outside backup key boundary; staged validation and safe rotation; admin + CSRF; expiry warnings.
+- [x] Actual DB statistics, provider health, recent results and request estimates in accessible admin UI.
+- [x] Focused and full relevant tests, migration preservation, screenshots and performance evidence.
+- [x] Latest Companion committed schema checked without modifying its branch/session; v1 export preserved.
+- [x] Coverage source/age/sample limits explicit; 90% is a target, never fabricated.
+- [x] Draft PR, operational setup/migration/rollback and remaining approval/credential steps documented.
 
 External gates only block dependent work: real provider credentials/approval, owner-managed master secret, unavailable market snapshot, owner visual review, merge/deployment authorization. Fixtures never establish production coverage.
+
+## External acceptance still pending
+
+- [ ] Authorized successful Everloot/ForeverDB responses in the target environment and exact ForeverDB schema verification.
+- [ ] Owner-managed production keyring installation and independent secret backup/restore rehearsal.
+- [ ] Recent legitimate per-ID snapshot, genuine provider overlap/conflicts/name/icon/attribute gain, and assessment of the 90% target.
+- [ ] Owner visual approval, merge approval and deployment authorization. No deployment or merge performed.

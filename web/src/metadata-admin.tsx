@@ -71,8 +71,8 @@ export function DataSources({ readOnly = false }: { readOnly?: boolean }) {
         <div className="metadata-form-row"><label>Hourly budget<input name="hourly" type="number" min="1" max="240" defaultValue={provider.hourly_budget} required /></label><label>Daily budget<input name="daily" type="number" min="1" max="2000" defaultValue={provider.daily_budget} required /></label></div>
         <button disabled={busy || readOnly}>Save settings</button>
       </form>
-      {["everloot", "foreverdb"].includes(provider.provider) && <div className="metadata-actions"><button disabled={busy || readOnly} onClick={() => action(() => api(`/admin/metadata-providers/${provider.provider}/test`, "POST"), "Connection test queued. Provider limits still apply.")}>Test Connection</button>
-        <button disabled={busy || readOnly || !data.data?.credential_storage_ready} onClick={() => { setEditing(editing === provider.provider ? null : provider.provider); setError(""); }}>{provider.configured ? "Replace API Key" : "Add API Key"}</button></div>}
+      <div className="metadata-actions"><button disabled={busy || readOnly} onClick={() => action(() => api(`/admin/metadata-providers/${provider.provider}/test`, "POST"), "Connection test queued. Provider limits still apply.")}>Test Connection</button>
+        {["everloot", "foreverdb"].includes(provider.provider) && <button disabled={busy || readOnly || !data.data?.credential_storage_ready} onClick={() => { setEditing(editing === provider.provider ? null : provider.provider); setError(""); }}>{provider.configured ? "Replace API Key" : "Add API Key"}</button>}</div>
       {editing === provider.provider && <form className="metadata-key-form" autoComplete="off" onSubmit={event => {
         event.preventDefault(); const formElement = event.currentTarget; const form = new FormData(formElement);
         const key = String(form.get("key")); const date = String(form.get("expires"));

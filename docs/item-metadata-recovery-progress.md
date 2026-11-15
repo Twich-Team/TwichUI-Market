@@ -1,7 +1,7 @@
 # Item Metadata Recovery progress
 
 ## Current milestone
-M1: documented adapters and additive local catalog. Plan: [milestones and acceptance](item-metadata-recovery-plan.md).
+M4: independent implementation verified and delivered for review; external provider/coverage/keyring/owner gates remain pending. Plan: [milestones and acceptance](item-metadata-recovery-plan.md).
 
 ## M0 verified 2026-11-14
 - Exact starting commit `64ef6d2d08e7453458ed37d06d29f263ac19d126`, clean detached checkout, application files present; created independent `feature/item-metadata-recovery` after checking remote name availability.
@@ -12,10 +12,10 @@ M1: documented adapters and additive local catalog. Plan: [milestones and accept
 - Smoke: 17 PostgreSQL tests in test_metadata.py/test_auth.py pass (7.78 seconds). Setup's prior 34/50 test counts are historical setup evidence, not this task's full verification.
 
 ## Completed work
-Baseline and isolation verified. Provider research underway using public documentation and bounded credential-free GETs.
+Implemented and tested the versioned local catalog, documented adapters, persistent bounded workers/jobs, secure provider administration, local website/desktop metadata APIs and review-candidate UI. Historical checkpoint entries below retain their original status.
 
 ## Next actions
-Implement schema/catalog/adapters, verify security and worker behavior, then UI and complete acceptance evidence. Commit/push independently verifiable checkpoints.
+See the acceptance packet and PR checks for final verification. Owner follow-up: provision the private external keyring, supply keys through Data Sources, validate real provider contracts/access, obtain a legitimate recent per-ID snapshot and measure real coverage, then review visuals and separately authorize integration/deployment. Do not request keys through chat.
 
 ## Commits
 Starting baseline above; subsequent checkpoint hashes recorded after commit.

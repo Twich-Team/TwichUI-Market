@@ -97,16 +97,23 @@ def finalize(db, job, at):
     job.updated_at = at
 
 
+def provider_limits(row, at=None):
+    spec=PROVIDERS[row.provider]
+    keyed=row.provider=='everloot' and row.credential and row.validated_at and (not row.expires_at or aware(row.expires_at)>(at or now()))
+    # Even validated Everloot keys remain far below the documented 2,000/hour.
+    return (240,2000,15) if keyed else (spec.hourly_limit,spec.daily_limit,spec.interval)
+
+
 def reserve_budget(row, at):
-    spec = PROVIDERS[row.provider]
+    hourly_ceiling,daily_ceiling,interval=provider_limits(row,at)
     if row.cooldown_until and aware(row.cooldown_until) > at: return aware(row.cooldown_until)
     if row.next_request_at and aware(row.next_request_at) > at: return aware(row.next_request_at)
     if not row.hour_start or at >= aware(row.hour_start) + timedelta(hours=1): row.hour_start, row.hour_used = at, 0
     if not row.day_start or at >= aware(row.day_start) + timedelta(days=1): row.day_start, row.day_used = at, 0
-    if row.hour_used >= row.hourly_budget: return aware(row.hour_start) + timedelta(hours=1)
-    if row.day_used >= row.daily_budget: return aware(row.day_start) + timedelta(days=1)
+    if row.hour_used >= min(row.hourly_budget,hourly_ceiling): return aware(row.hour_start) + timedelta(hours=1)
+    if row.day_used >= min(row.daily_budget,daily_ceiling): return aware(row.day_start) + timedelta(days=1)
     row.hour_used += 1; row.day_used += 1
-    row.next_request_at = at + timedelta(seconds=spec.interval)
+    row.next_request_at = at + timedelta(seconds=interval)
     return None
 
 
@@ -153,6 +160,7 @@ def validate_credential_once(factory, *, at, fetcher):
         if reserve_budget(row, at): return False
         ident, revision = row.provider, row.validation_revision
         try:
+            if ident=='blizzard' and fetcher is fetch and not (os.environ.get('BLIZZARD_CLIENT_ID') and os.environ.get('BLIZZARD_CLIENT_SECRET')):raise SecretUnavailable('OAuth required')
             credential = credential_value(db, row, pending=True, at=at)
         except SecretUnavailable:
             row.validation_requested = False; row.validation_error = 'secret_unavailable'
@@ -166,6 +174,15 @@ def validate_credential_once(factory, *, at, fetcher):
             if ident == 'everloot':
                 from .metadata_providers import parse_everloot_page
                 parse_everloot_page(body, at=at)
+            elif ident == 'blizzard':
+                from .metadata_providers import plain
+                from .item_attributes import attributes,valid_namespace
+                if type(payload.get('id')) is not int or payload['id']!=25:raise ValueError('Blizzard validation identity')
+                plain(payload.get('name').get('en_US') if isinstance(payload.get('name'),dict) else payload.get('name'))
+                attributes(payload)
+                if headers.get('Battlenet-Namespace') and not valid_namespace(headers['Battlenet-Namespace'],'us'):raise ValueError('Blizzard validation edition')
+            elif ident == 'thewowdb':
+                PARSERS[ident](body,25,at=at)
             elif ident == 'foreverdb':
                 from .metadata_providers import build_identity
                 build_identity(payload.get('meta', {}).get('build') or payload.get('data', {}).get('build'))
@@ -186,7 +203,7 @@ def validate_credential_once(factory, *, at, fetcher):
             if row.pending_credential:
                 row.credential, row.credential_key_id = row.pending_credential, row.pending_key_id
                 row.expires_at = row.pending_expires_at
-            row.validated_at, row.credential_status = at, 'connected' if row.credential else 'keyless'
+            row.validated_at, row.credential_status = at, 'oauth_connected' if ident=='blizzard' else ('connected' if row.credential else 'keyless')
             row.last_error = None
             audit(db, None, 'metadata.credential.validated', f'provider={ident}')
         else:
