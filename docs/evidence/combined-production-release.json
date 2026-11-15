@@ -1,0 +1,1121 @@
+{
+  "recorded_at": "2026-11-15T03:21:11.573923+00:00",
+  "production_url": "https://market.twich.gg",
+  "integration_release_commit": "e7d312974196690dbc8eae70a0aa3d5ecb4cc88e",
+  "application_build_source_commit": "d165629ee3860f1745e854df8dfdfd37b1c4f4e9",
+  "application_tree_identical_at_release_commit": true,
+  "branch": "integration/companion-v2-metadata-recovery",
+  "frozen_inputs": {
+    "companion_implementation": "d9d5ae354931bfe9276c30fde6f83da8d661e457",
+    "companion_review": "75c6f38f93b1af7fcb493bb823b27e1fc948de66",
+    "installer_payload": "c7bad2f5e84213e1c69e3eb66e8daa6540f05bc9",
+    "metadata": "b18927ac867d3421f59cde163d3750af3ab17950"
+  },
+  "images": {
+    "api_and_metadata_worker": "sha256:8e2ae844d92be60484e30a0695dd830e8d1fda5050accb4c9fa310bb9112f9ab",
+    "website": "sha256:72d7a79e01b4debc1607aa72ad30a89501a3429e6545b564f1c3131e8f8b605f",
+    "offline_publisher": "sha256:3f757981f846016e3578f78998f4a8e2cb277705771f9bd83bb8daf6468c5b6f"
+  },
+  "ci": [
+    {
+      "id": 43671401028,
+      "name": "Backend",
+      "path": ".github/workflows/backend.yml",
+      "head_sha": "e7d312974196690dbc8eae70a0aa3d5ecb4cc88e",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "push",
+      "html_url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/43671401028"
+    },
+    {
+      "id": 43671401009,
+      "name": "Private website",
+      "path": ".github/workflows/web.yml",
+      "head_sha": "e7d312974196690dbc8eae70a0aa3d5ecb4cc88e",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "push",
+      "html_url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/43671401009"
+    },
+    {
+      "id": 43671401032,
+      "name": "Windows companion",
+      "path": ".github/workflows/desktop.yml",
+      "head_sha": "e7d312974196690dbc8eae70a0aa3d5ecb4cc88e",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "push",
+      "html_url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/43671401032"
+    }
+  ],
+  "ci_all_passed": true,
+  "acceptance_counts": {
+    "postgresql": 368,
+    "operational_release_guards": 26,
+    "frontend_units": 60,
+    "browser_workflows": 22
+  },
+  "migration": {
+    "revision": "meta_20261114",
+    "order": [
+      "0012",
+      "0013",
+      "meta_20261114"
+    ],
+    "restore_rehearsal_seconds": 2.429,
+    "all_original_columns_and_rows_preserved_on_rehearsal": true,
+    "production_original_metadata_rows_preserved": 5331,
+    "pg_trgm": true,
+    "single_head": true
+  },
+  "backups": {
+    "verified_archive_count": 23,
+    "all_earlier_archives_preserved": true,
+    "final_archive": {
+      "version": 1,
+      "filename": "market-development-20261115T031227463979Z.dump",
+      "source": "development",
+      "created_at": "2026-11-15T03:12:41.936843+00:00",
+      "bytes": 155526654,
+      "sha256": "83a308830a2935262661651783043459bb0c817a16a714cf4e22565194791f34",
+      "restoration_verified_at": "2026-11-15T03:13:09.060988+00:00",
+      "restored": {
+        "migration": "meta_20261114",
+        "users": 71,
+        "markets": 2,
+        "observations": 287,
+        "listings": 2799673,
+        "synthetic_observations": 0,
+        "buyout_total": "853736047869",
+        "snapshot_statistics": 624934,
+        "daily_observations": 3,
+        "market_verifications": 2,
+        "user_preferences": 10
+      }
+    },
+    "keep": 30,
+    "archive_budget_bytes": 3221225472,
+    "encrypted_credential_archive_check": {
+      "archive": "market-development-20261115T031227463979Z.dump",
+      "archive_sha256": "83a308830a2935262661651783043459bb0c817a16a714cf4e22565194791f34",
+      "actual_encrypted_everloot_credential_present": true,
+      "archive_envelope_matches_current_database": true,
+      "provider_key_plaintext_printed": false,
+      "keyring_key_not_part_of_database_backup": true,
+      "archive_restore_verified_at": "2026-11-15T03:13:09.060988+00:00"
+    }
+  },
+  "keyring": {
+    "runtime_path": "/home/marketdev/.local/share/twichui-market-metadata/keyring.json",
+    "file_mode": "0600",
+    "container_uid": 10001,
+    "host_mapped_uid": 241072,
+    "api_and_worker_read_verified": true,
+    "actual_owner_credential_recovery": {
+      "provider": "everloot",
+      "actual_owner_credential_recovered": true,
+      "matching_runtime_and_restored_keyring": true,
+      "recovered_file_mode": "0600",
+      "container_uid": 10001,
+      "provider_key_or_plain_keyring_printed": false,
+      "encrypted_keyring_backup_sha256": "80825278233dd190d59914645f359afd4428904c6cb365e6a1519100d4ff3337",
+      "off_host_copy_verified": false
+    },
+    "off_host_copy_verified": false
+  },
+  "preservation": {
+    "format_version": 2,
+    "columns": {
+      "observations": [
+        "id",
+        "market_id",
+        "snapshot_id",
+        "request_key",
+        "retrieved_at",
+        "upstream_modified",
+        "namespace",
+        "payload_hash",
+        "payload_bytes",
+        "synthetic"
+      ],
+      "snapshots": [
+        "id",
+        "market_id",
+        "content_hash",
+        "created_at",
+        "listing_count",
+        "raw_retained",
+        "statistics_retained"
+      ],
+      "listings": [
+        "id",
+        "snapshot_id",
+        "auction_id",
+        "item_id",
+        "variant",
+        "variant_key",
+        "quantity",
+        "buyout",
+        "unit_price",
+        "bid",
+        "time_left"
+      ],
+      "snapshot_statistics": [
+        "snapshot_id",
+        "item_id",
+        "variant_key",
+        "algorithm",
+        "recent_price",
+        "lowest_buyout",
+        "supply",
+        "priced_supply",
+        "listing_count"
+      ],
+      "users": [
+        "id",
+        "username",
+        "password_hash",
+        "role",
+        "active",
+        "created_at"
+      ],
+      "credentials": [
+        "id",
+        "user_id",
+        "token_hash",
+        "kind",
+        "name",
+        "csrf_hash",
+        "created_at",
+        "expires_at",
+        "revoked",
+        "audience"
+      ],
+      "user_preferences": [
+        "user_id",
+        "schema_version",
+        "revision",
+        "values_json",
+        "updated_at"
+      ],
+      "market_verifications": [
+        "id",
+        "market_id",
+        "actor_id",
+        "created_at",
+        "evidence",
+        "evidence_hash",
+        "notes"
+      ],
+      "player_market_mappings": [
+        "id",
+        "region",
+        "ruleset",
+        "faction",
+        "house_id",
+        "transport_ruleset_id",
+        "source_kind",
+        "confidence",
+        "evidence",
+        "evidence_hash",
+        "verified_at"
+      ],
+      "retention_policy": [
+        "id",
+        "revision",
+        "raw_days",
+        "intraday_days",
+        "daily_days",
+        "operational_days",
+        "security_days",
+        "approved_hash",
+        "approved_at",
+        "updated_at"
+      ]
+    },
+    "schema_revision": "meta_20261114",
+    "original_schema_revision": "0012",
+    "checked_at": "2026-11-15T03:20:48.947213+00:00",
+    "cutoffs": {
+      "snapshot": 26,
+      "observation": 278,
+      "user": 65,
+      "credential": 124
+    },
+    "fingerprints": {
+      "observations": {
+        "rows": 278,
+        "bytes_hashed": 52758,
+        "sha256": "461e384cf258878b51ff4b8cd3d7f8f1e20b7384a500b5859aa75755d2b21b6e"
+      },
+      "snapshots": {
+        "rows": 26,
+        "bytes_hashed": 2866,
+        "sha256": "23970b190a6c522ddc90c21def5f8b9cca68d7dfba1d3abfc492aa278ff26aea"
+      },
+      "listings": {
+        "rows": 2799673,
+        "bytes_hashed": 380730422,
+        "sha256": "535746bd168aafd7affb3e3f4ff65925a3e4ff84db5b9425aeb98ff5007c7e65"
+      },
+      "snapshot_statistics": {
+        "rows": 624934,
+        "bytes_hashed": 69883500,
+        "sha256": "720ab6350f75aa1b3efe76a14fd98239bfd2a35517f76cc17c3bc715179713d7"
+      },
+      "users": {
+        "rows": 65,
+        "bytes_hashed": 10960,
+        "sha256": "dfc01d1a0d285c524b4df545fb95c8a0162d15d8c8921cd87d953f4dfa421c33"
+      },
+      "credentials": {
+        "rows": 124,
+        "bytes_hashed": 27740,
+        "sha256": "97941df3f3e3b21ea5a9c7ee1c75708dcfd77aa472496beace3347063a40c663"
+      },
+      "user_preferences": {
+        "rows": 7,
+        "bytes_hashed": 2625,
+        "sha256": "22b3fc1b1df50acf14e39b3b1b172ec1591bdb1eb1dfa26b8ae56437204bf177"
+      },
+      "market_verifications": {
+        "rows": 2,
+        "bytes_hashed": 5028,
+        "sha256": "e7d6d471274fb9da263bf766a53941675224876ef60df832c1194ae61fa03d17"
+      },
+      "player_market_mappings": {
+        "rows": 1,
+        "bytes_hashed": 15546,
+        "sha256": "dde78a44cad988f6801006e0263f2bc09ae209428459ef17d26f9571c3c50cdd"
+      },
+      "retention_policy": {
+        "rows": 0,
+        "bytes_hashed": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "collection_configuration": [
+      {
+        "id": 1,
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 110,
+        "source_kind": "auctions",
+        "enabled": false,
+        "verified": true,
+        "interval_seconds": 300
+      },
+      {
+        "id": 2,
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 114,
+        "source_kind": "auctions",
+        "enabled": true,
+        "verified": true,
+        "interval_seconds": 300
+      }
+    ],
+    "all_preexisting_rows_identical": true,
+    "historical_retention_authorized": false,
+    "historical_retention_batches": 0,
+    "database_bytes": 1005729459,
+    "recent_collection_runs": [
+      {
+        "id": 289,
+        "market_id": 2,
+        "checked_at": "2026-11-15T03:18:13.888499+00:00",
+        "status": "collected",
+        "http_status": 200,
+        "duration_seconds": 14,
+        "error": null
+      },
+      {
+        "id": 288,
+        "market_id": 2,
+        "checked_at": "2026-11-15T03:13:11.552157+00:00",
+        "status": "unchanged",
+        "http_status": 304,
+        "duration_seconds": 0,
+        "error": null
+      },
+      {
+        "id": 287,
+        "market_id": 2,
+        "checked_at": "2026-11-15T03:08:09.220271+00:00",
+        "status": "unchanged",
+        "http_status": 304,
+        "duration_seconds": 0,
+        "error": null
+      },
+      {
+        "id": 286,
+        "market_id": 2,
+        "checked_at": "2026-11-15T03:03:06.826431+00:00",
+        "status": "unchanged",
+        "http_status": 304,
+        "duration_seconds": 0,
+        "error": null
+      },
+      {
+        "id": 285,
+        "market_id": 2,
+        "checked_at": "2026-11-15T02:58:04.315921+00:00",
+        "status": "unchanged",
+        "http_status": 304,
+        "duration_seconds": 0,
+        "error": null
+      },
+      {
+        "id": 284,
+        "market_id": 2,
+        "checked_at": "2026-11-15T02:53:01.973018+00:00",
+        "status": "unchanged",
+        "http_status": 304,
+        "duration_seconds": 0,
+        "error": null
+      }
+    ]
+  },
+  "production_browser": {
+    "verified_at": "2026-11-15T02:59:49.696Z",
+    "public_url": "https://market.twich.gg",
+    "public_tls": {
+      "issuer": "YR1",
+      "protocol": "TLS 1.3",
+      "subjectName": "*.twich.gg",
+      "validFrom": 1791687760,
+      "validTo": 1799463759
+    },
+    "tls_errors_ignored": false,
+    "secure_httponly_strict_cookie": true,
+    "existing_public_and_local_sessions_survived": true,
+    "existing_device_and_cursor_survived": true,
+    "existing_preferences_survived": true,
+    "csrf_and_origin_rejections_verified": true,
+    "member_admin_boundary_verified": true,
+    "environment_read_only": false,
+    "source_synthetic": false,
+    "item": {
+      "id": 35,
+      "name": "Bent Staff",
+      "supply": 13,
+      "listings": 13,
+      "recent_price": "413"
+    },
+    "explorer_charts_verified": true,
+    "deal_finder_all_modes_verified": true,
+    "preferences_refresh_logout_login_verified": true,
+    "administration_market_configuration_verified": true,
+    "account_devices_and_revocation_verified": true,
+    "companion": {
+      "installer_sha256": "0fbc53603c218ffa85c8ee7b4e54f25e53c52a6fc3b2330ae914337714d41869",
+      "version": "2.0.0-beta.2",
+      "exact_https_download_verified": true,
+      "public_download_denied": true,
+      "browser_protocol_pkce_one_use_verified": true,
+      "owned_native_signed_update_metadata_verified": true,
+      "no_downgrade_verified": true,
+      "complete_genuine_server_sync_verified": true,
+      "sync_pages": 260,
+      "refresh_and_revocation_verified": true,
+      "actual_windows_on_production": false,
+      "tray_actions_verified": false
+    },
+    "metadata": {
+      "coverage": {
+        "snapshot_scope": "Latest recorded observation per selected market",
+        "measured_at": "2026-11-15T02:59:32.560011+00:00",
+        "observed": 4861,
+        "resolved_names": 2232,
+        "missing_names": 2629,
+        "name_percent": 45.92,
+        "primary_names": 2232,
+        "supplemental_names": 0,
+        "primary_missing_responses": 2594,
+        "primary_pending": 35,
+        "icons_available": 4683,
+        "icons_missing": 178,
+        "primary_attributes": 2232,
+        "catalog_records": 4826,
+        "provider_name_overlap": 0,
+        "conflicting_names": 0,
+        "last_enrichment": null,
+        "pending_queue": 19,
+        "active_jobs": 1,
+        "provider_records": [
+          {
+            "provider": "blizzard",
+            "checked": 4826,
+            "names_available": 2232
+          }
+        ],
+        "recent_results": []
+      },
+      "credential_storage_ready": true,
+      "provider_settings": [
+        {
+          "provider": "blizzard",
+          "name": "Blizzard Forever",
+          "enabled": false,
+          "automatic": false,
+          "configured": true,
+          "key_required": true,
+          "credential_status": "not_configured",
+          "validation_pending": false,
+          "validation_error": null,
+          "last_validated_at": null,
+          "expires_at": null,
+          "expiration_warning": null,
+          "last_success": null,
+          "recent_error": null,
+          "cooldown_until": null,
+          "next_request_at": null,
+          "hourly_budget": 240,
+          "daily_budget": 2000,
+          "hour_used": 0,
+          "day_used": 0,
+          "note": "Authoritative Forever base-item fields. OAuth uses existing server secrets.",
+          "url": "https://develop.battle.net"
+        },
+        {
+          "provider": "everloot",
+          "name": "Everloot",
+          "enabled": false,
+          "automatic": false,
+          "configured": false,
+          "key_required": false,
+          "credential_status": "not_configured",
+          "validation_pending": false,
+          "validation_error": null,
+          "last_validated_at": null,
+          "expires_at": null,
+          "expiration_warning": null,
+          "last_success": null,
+          "recent_error": null,
+          "cooldown_until": null,
+          "next_request_at": null,
+          "hourly_budget": 20,
+          "daily_budget": 20,
+          "hour_used": 0,
+          "day_used": 0,
+          "note": "Documented Forever player names and unconfirmed client attributes. Live validation pending.",
+          "url": "https://everloot.app"
+        },
+        {
+          "provider": "foreverdb",
+          "name": "ForeverDB",
+          "enabled": false,
+          "automatic": false,
+          "configured": false,
+          "key_required": true,
+          "credential_status": "not_configured",
+          "validation_pending": false,
+          "validation_error": null,
+          "last_validated_at": null,
+          "expires_at": null,
+          "expiration_warning": null,
+          "last_success": null,
+          "recent_error": null,
+          "cooldown_until": null,
+          "next_request_at": null,
+          "hourly_budget": 60,
+          "daily_budget": 500,
+          "hour_used": 0,
+          "day_used": 0,
+          "note": "Approval required. Only minimal documented identity/name envelope; authorized fixture verification pending.",
+          "url": "https://foreverdb.net"
+        },
+        {
+          "provider": "thewowdb",
+          "name": "TheWoWDB",
+          "enabled": false,
+          "automatic": false,
+          "configured": false,
+          "key_required": false,
+          "credential_status": "not_configured",
+          "validation_pending": false,
+          "validation_error": null,
+          "last_validated_at": null,
+          "expires_at": null,
+          "expiration_warning": null,
+          "last_success": null,
+          "recent_error": null,
+          "cooldown_until": null,
+          "next_request_at": null,
+          "hourly_budget": 60,
+          "daily_budget": 500,
+          "hour_used": 0,
+          "day_used": 0,
+          "note": "Optional Forever beta data. Access restrictions are never bypassed.",
+          "url": "https://thewowdb.com"
+        }
+      ],
+      "empty_password_key_form": true,
+      "saved_keys_never_returned": true,
+      "disabled_source_job_controls_verified": true,
+      "external_recovery_attempts": 0
+    },
+    "retention_dry_run_only": true,
+    "retention_application_authorized": false,
+    "market_configuration_unchanged": true,
+    "axe_violations": 0,
+    "page_errors": []
+  },
+  "owner_private_beta": {
+    "verified_at": "2026-11-15T03:17:33.103748+00:00",
+    "owner_user_id": 1,
+    "owner_only_download_verified_after_test_access_removal": true,
+    "download_url": "https://market.twich.gg/api/v1/companion/private-beta/2.0.0-beta.2/windows-x64",
+    "version": "2.0.0-beta.2",
+    "installer_sha256": "0fbc53603c218ffa85c8ee7b4e54f25e53c52a6fc3b2330ae914337714d41869",
+    "anonymous_download_denied": true,
+    "credential_storage_ready": true,
+    "everloot_real_key_validated": true,
+    "saved_credentials_absent_from_read_responses": true,
+    "provider_enabled": false,
+    "automatic": false,
+    "day_used": 20,
+    "owner_preferences_password_and_devices_unchanged": true,
+    "temporary_verification_session_revoked_on_exit": true
+  },
+  "everloot_initial_fixed_snapshot_test": {
+    "snapshot_id": 26,
+    "population": 4861,
+    "ids_sha256": "721a399db0b79cb14d5990c248dde7af9972a94a059edfcd08c9dea0e683f692",
+    "price_supply_sha256": "22cba78ebcd974ec0b9eeb504d42d28330854384a52abdca0c1d008286f30619",
+    "before_names": 2232,
+    "after_names": 2232,
+    "before_percent": 45.92,
+    "after_percent": 45.92,
+    "delta_percentage_points": 0.0,
+    "gained_item_ids": [],
+    "lost_item_ids": [],
+    "validation_attempts": 1,
+    "recovery_attempts": 19,
+    "external_attempts_total": 20,
+    "window_minutes_max": 45,
+    "validation_at": "2026-11-15T03:02:49.94173+00:00",
+    "finished_at": "2026-11-15T03:11:52.828505+00:00",
+    "http_404": 18,
+    "http_200_without_usable_name": 1,
+    "http_200_with_name": 0,
+    "provider": {
+      "provider": "everloot",
+      "credential_status": "connected",
+      "enabled": false,
+      "automatic": false,
+      "hour_used": 20,
+      "day_used": 20,
+      "validated_at": "2026-11-15T03:02:49.94173+00:00",
+      "hourly_budget": 20,
+      "daily_budget": 20,
+      "cooldown_until": null
+    },
+    "tasks": [
+      {
+        "item_id": 647,
+        "state": "completed",
+        "attempts": 1,
+        "result": {
+          "provider": "everloot",
+          "item_id": 647,
+          "http_status": 404,
+          "status": "metadata_unavailable",
+          "recovered_fields": []
+        }
+      },
+      {
+        "item_id": 720,
+        "state": "completed",
+        "attempts": 1,
+        "result": {
+          "provider": "everloot",
+          "item_id": 720,
+          "http_status": 404,
+          "status": "metadata_unavailable",
+          "recovered_fields": []
+        }
+      },
+      {
+        "item_id": 727,
+        "state": "completed",
+        "attempts": 1,
+        "result": {
+          "provider": "everloot",
+          "item_id": 727,
+          "http_status": 404,
+          "status": "metadata_unavailable",
+          "recovered_fields": []
+        }
+      },
+      {
+        "item_id": 754,
+        "state": "completed",
+        "attempts": 1,
+        "result": {
+          "provider": "everloot",
+          "item_id": 754,
+          "http_status": 404,
+          "status": "metadata_unavailable",
+          "recovered_fields": []
+        }
+      },
+      {
+        "item_id": 776,
+        "state": "completed",
+        "attempts": 1,
+        "result": {
+          "provider": "everloot",
+          "item_id": 776,
+          "http_status": 404,
+          "status": "metadata_unavailable",
+          "recovered_fields": []
+        }
+      },
+      {
+        "item_id": 789,
+        "state": "completed",
+        "attempts": 1,
+        "result": {
+          "provider": "everloot",
+          "item_id": 789,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [],
+          "source": {
+            "provider": "everloot",
+            "edition": "forever",
+            "build": null,
+            "locale": "en_US",
+            "confidence": "player_consensus",
+            "attribution": {
+              "text": "Data from Everloot (https://everloot.app), CC BY-SA 4.0.",
+              "url": "https://everloot.app/database/items/789",
+              "license": "CC BY-SA 4.0",
+              "license_url": "https://creativecommons.org/licenses/by-sa/4.0/"
+            },
+            "url": "https://everloot.app/database/items/789",
+            "retrieved_at": "2026-11-15T03:07:28.552775+00:00",
+            "payload_hash": "da843c1144dfcb85b1ce3f64b1826e0c9d1b9abedd0231edfa2bd9a77f03b235"
+          }
+        }
+      },
+      {
+        "item_id": 790,
+        "state": "completed",
+        "attempts": 1,
+        "result": {
+          "provider": "everloot",
+          "item_id": 790,
+          "http_status": 404,
+          "status": "metadata_unavailable",
+          "recovered_fields": []
+        }
+      },
+      {
+        "item_id": 791,
+        "state": "completed",
+        "attempts": 1,
+        "result": {
+          "provider": "everloot",
+          "item_id": 791,
+          "http_status": 404,
+          "status": "metadata_unavailable",
+          "recovered_fields": []
+        }
+      },
+      {
+        "item_id": 809,
+        "state": "completed",
+        "attempts": 1,
+        "result": {
+          "provider": "everloot",
+          "item_id": 809,
+          "http_status": 404,
+          "status": "metadata_unavailable",
+          "recovered_fields": []
+        }
+      },
+      {
+        "item_id": 811,
+        "state": "completed",
+        "attempts": 1,
+        "result": {
+          "provider": "everloot",
+          "item_id": 811,
+          "http_status": 404,
+          "status": "metadata_unavailable",
+          "recovered_fields": []
+        }
+      },
+      {
+        "item_id": 812,
+        "state": "completed",
+        "attempts": 1,
+        "result": {
+          "provider": "everloot",
+          "item_id": 812,
+          "http_status": 404,
+          "status": "metadata_unavailable",
+          "recovered_fields": []
+        }
+      },
+      {
+        "item_id": 833,
+        "state": "completed",
+        "attempts": 1,
+        "result": {
+          "provider": "everloot",
+          "item_id": 833,
+          "http_status": 404,
+          "status": "metadata_unavailable",
+          "recovered_fields": []
+        }
+      },
+      {
+        "item_id": 863,
+        "state": "completed",
+        "attempts": 1,
+        "result": {
+          "provider": "everloot",
+          "item_id": 863,
+          "http_status": 404,
+          "status": "metadata_unavailable",
+          "recovered_fields": []
+        }
+      },
+      {
+        "item_id": 865,
+        "state": "completed",
+        "attempts": 1,
+        "result": {
+          "provider": "everloot",
+          "item_id": 865,
+          "http_status": 404,
+          "status": "metadata_unavailable",
+          "recovered_fields": []
+        }
+      },
+      {
+        "item_id": 866,
+        "state": "completed",
+        "attempts": 1,
+        "result": {
+          "provider": "everloot",
+          "item_id": 866,
+          "http_status": 404,
+          "status": "metadata_unavailable",
+          "recovered_fields": []
+        }
+      },
+      {
+        "item_id": 867,
+        "state": "completed",
+        "attempts": 1,
+        "result": {
+          "provider": "everloot",
+          "item_id": 867,
+          "http_status": 404,
+          "status": "metadata_unavailable",
+          "recovered_fields": []
+        }
+      },
+      {
+        "item_id": 868,
+        "state": "completed",
+        "attempts": 1,
+        "result": {
+          "provider": "everloot",
+          "item_id": 868,
+          "http_status": 404,
+          "status": "metadata_unavailable",
+          "recovered_fields": []
+        }
+      },
+      {
+        "item_id": 869,
+        "state": "completed",
+        "attempts": 1,
+        "result": {
+          "provider": "everloot",
+          "item_id": 869,
+          "http_status": 404,
+          "status": "metadata_unavailable",
+          "recovered_fields": []
+        }
+      },
+      {
+        "item_id": 870,
+        "state": "completed",
+        "attempts": 1,
+        "result": {
+          "provider": "everloot",
+          "item_id": 870,
+          "http_status": 404,
+          "status": "metadata_unavailable",
+          "recovered_fields": []
+        }
+      }
+    ],
+    "observations_and_price_supply_preserved": true,
+    "coverage_gain_claimed": false
+  },
+  "services": {
+    "services": [
+      {
+        "name": "/twichui-market-api-1",
+        "id": "5956a96b31448889e015d4fc3cb3764a2667643c6a56043c127895d58736cd3d",
+        "image": "sha256:8e2ae844d92be60484e30a0695dd830e8d1fda5050accb4c9fa310bb9112f9ab",
+        "started_at": "2026-11-15T03:00:30.074501425Z",
+        "restarts": 0,
+        "oom": false,
+        "memory": 402653184,
+        "cpus": 500000000
+      },
+      {
+        "name": "/twichui-market-local-api-1",
+        "id": "9c45699f1ed479055a0d0d5a86c537278a9c542e5c7258f08421b33695ef162a",
+        "image": "sha256:8e2ae844d92be60484e30a0695dd830e8d1fda5050accb4c9fa310bb9112f9ab",
+        "started_at": "2026-11-15T03:00:29.909482706Z",
+        "restarts": 0,
+        "oom": false,
+        "memory": 268435456,
+        "cpus": 250000000
+      },
+      {
+        "name": "/twichui-market-proxy-1",
+        "id": "0e7d8bad1590e47330610753841d2d06fc77d66117bb8fed02bc079861e3831d",
+        "image": "sha256:72d7a79e01b4debc1607aa72ad30a89501a3429e6545b564f1c3131e8f8b605f",
+        "started_at": "2026-11-15T02:56:11.857360457Z",
+        "restarts": 0,
+        "oom": false,
+        "memory": 134217728,
+        "cpus": 250000000
+      },
+      {
+        "name": "/twichui-market-enrichment-1",
+        "id": "3b898cd7620d5536848b95a2b5005165daf309dd33a53557b30e1194cda22208",
+        "image": "sha256:8e2ae844d92be60484e30a0695dd830e8d1fda5050accb4c9fa310bb9112f9ab",
+        "started_at": "2026-11-15T03:00:30.239346679Z",
+        "restarts": 0,
+        "oom": false,
+        "memory": 201326592,
+        "cpus": 250000000
+      },
+      {
+        "name": "/twichui-market-worker-1",
+        "id": "dc270e9490b7ed737575b3d0cfd5840d9f13d6894cfef65e1fad1146352072bb",
+        "image": "sha256:d1ae733744b7328199f7926121c34d313027331301bcc60851451275f50a1294",
+        "started_at": "2026-11-14T14:24:43.267611827Z",
+        "restarts": 0,
+        "oom": false,
+        "memory": 402653184,
+        "cpus": 500000000
+      },
+      {
+        "name": "/twichui-market-monitor-1",
+        "id": "295cc3e09e4927f38ffa1a221ef3f199f6e065561fb14fca859a8ce6de9228e2",
+        "image": "sha256:0323bca0334572b29d3e8d6c388b214b3c22891242b9e6eec35f4010595fd18a",
+        "started_at": "2026-11-14T04:42:59.157272882Z",
+        "restarts": 0,
+        "oom": false,
+        "memory": 134217728,
+        "cpus": 250000000
+      },
+      {
+        "name": "/twichui-market-backup-1",
+        "id": "1f1cbba535e2cd64cf900099a5fe92ee662fa9ced84f5f2ae4fa5b28b32d5f9c",
+        "image": "sha256:2669ec98d745fbb77942ed6696162436862334ebaebc71e884853226504b260b",
+        "started_at": "2026-11-15T03:11:29.671470444Z",
+        "restarts": 0,
+        "oom": false,
+        "memory": 268435456,
+        "cpus": 250000000
+      },
+      {
+        "name": "/twichui-market-db-1",
+        "id": "1a138045d430554c64142f230fa1555e61d3414b2926ae9b2606f58fb8fb3642",
+        "image": "sha256:d3244e8ce3f165ee3c93d9c4a4b1d0fe48b3a89e2287b717fdcbbde92d405065",
+        "started_at": "2026-11-14T01:46:45.864726511Z",
+        "restarts": 0,
+        "oom": false,
+        "memory": 805306368,
+        "cpus": 1000000000
+      }
+    ],
+    "collector_database_monitor_unchanged": true,
+    "backup_service_updated_only_for_archive_preservation": true,
+    "backup_keep": 30,
+    "backup_budget_bytes": 3221225472,
+    "zero_restarts_and_oom": true
+  },
+  "database": {
+    "revision": "meta_20261114",
+    "database_bytes": 1005729459,
+    "retention_batches": 0,
+    "observations_by_market": [
+      {
+        "market_id": 1,
+        "observations": 145
+      },
+      {
+        "market_id": 2,
+        "observations": 144
+      }
+    ],
+    "collection_configuration": [
+      {
+        "id": 1,
+        "house_id": 110,
+        "enabled": false,
+        "interval_seconds": 300
+      },
+      {
+        "id": 2,
+        "house_id": 114,
+        "enabled": true,
+        "interval_seconds": 300
+      }
+    ],
+    "recent_collection": {
+      "market_id": 2,
+      "checked_at": "2026-11-15T03:18:13.888499+00:00",
+      "status": "collected",
+      "http_status": 200,
+      "error": null
+    },
+    "active_operator_test_accounts": 0,
+    "providers": [
+      {
+        "provider": "blizzard",
+        "enabled": false,
+        "automatic": false,
+        "hourly_budget": 240,
+        "daily_budget": 2000,
+        "hour_used": 0,
+        "day_used": 0,
+        "credential_status": "not_configured",
+        "validated_at": null,
+        "validation_error": null,
+        "cooldown_until": null
+      },
+      {
+        "provider": "everloot",
+        "enabled": false,
+        "automatic": false,
+        "hourly_budget": 20,
+        "daily_budget": 20,
+        "hour_used": 20,
+        "day_used": 20,
+        "credential_status": "connected",
+        "validated_at": "2026-11-15T03:02:49.94173+00:00",
+        "validation_error": null,
+        "cooldown_until": null
+      },
+      {
+        "provider": "foreverdb",
+        "enabled": false,
+        "automatic": false,
+        "hourly_budget": 60,
+        "daily_budget": 500,
+        "hour_used": 0,
+        "day_used": 0,
+        "credential_status": "not_configured",
+        "validated_at": null,
+        "validation_error": null,
+        "cooldown_until": null
+      },
+      {
+        "provider": "thewowdb",
+        "enabled": false,
+        "automatic": false,
+        "hourly_budget": 60,
+        "daily_budget": 500,
+        "hour_used": 0,
+        "day_used": 0,
+        "credential_status": "not_configured",
+        "validated_at": null,
+        "validation_error": null,
+        "cooldown_until": null
+      }
+    ]
+  },
+  "security_audits": {
+    "python_no_reported_vulnerabilities": true,
+    "web_and_desktop_npm_no_reported_vulnerabilities": true,
+    "rust": [
+      {
+        "dependencies": 176,
+        "vulnerabilities": 0,
+        "warnings": {},
+        "advisory_database_commit": "4ef2df8e806a65e2f1ecc14f56f51249062b23d6"
+      },
+      {
+        "dependencies": 535,
+        "vulnerabilities": 0,
+        "warnings": {
+          "unmaintained": [
+            {
+              "package": "proc-macro-error",
+              "advisory": "RUSTSEC-2024-0370",
+              "kind": "unmaintained"
+            },
+            {
+              "package": "zbus_names",
+              "advisory": "RUSTSEC-2026-0371",
+              "kind": "unmaintained"
+            },
+            {
+              "package": "zvariant",
+              "advisory": "RUSTSEC-2026-0370",
+              "kind": "unmaintained"
+            },
+            {
+              "package": "zvariant_derive",
+              "advisory": "RUSTSEC-2026-0372",
+              "kind": "unmaintained"
+            }
+          ],
+          "unsound": [
+            {
+              "package": "glib",
+              "advisory": "RUSTSEC-2024-0429",
+              "kind": "unsound"
+            }
+          ]
+        },
+        "advisory_database_commit": "4ef2df8e806a65e2f1ecc14f56f51249062b23d6"
+      }
+    ],
+    "rust_warning_windows_applicability": {
+      "target": "x86_64-pc-windows-msvc",
+      "warning_packages_present": {
+        "glib": false,
+        "zbus_names": false,
+        "zvariant": false,
+        "zvariant_derive": false,
+        "proc-macro-error": false
+      },
+      "warnings_in_windows_dependency_graph": false
+    }
+  },
+  "rollback": {
+    "executed_once_for_real_multiline_catalog_defect": true,
+    "data_and_additive_schema_retained": true,
+    "corrected_with_regression_tests": true,
+    "api": "sha256:17d2c17591bd0ddea617fcf9018d0235a9100bd00813ea0faa025f3b83e679f2",
+    "website": "sha256:fb5f20db59d6a5ed92c1ea4d490e1d6af86772065b9d5be88f1096cf00cc6d0c"
+  },
+  "remaining_manual_windows": [
+    "Owner PC installation/connected native walkthrough",
+    "Tray Open/Sync/Pause/Settings/Quit actions"
+  ],
+  "known_limitations": [
+    "No commercial Windows publisher certificate; free Tauri update signatures retained",
+    "Everloot initial sample produced no usable new names; broader source coverage remains unproven",
+    "Provider recovery and automatic mode remain disabled after the 20-attempt test",
+    "Off-host keyring/recovery-key copies not verified",
+    "Resource measurements cover the initial observation window"
+  ]
+}

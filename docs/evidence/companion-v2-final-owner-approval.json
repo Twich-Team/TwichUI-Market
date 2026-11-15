@@ -13,7 +13,7 @@
   "windows_run_id": 43664574901,
   "signed_update_run_id": 43668266314,
   "visual_approval_commit": "e55807c58c4cf68560729471019b88cc518fb5b0",
-  "deployment_source_commit": "3e23425f508531b3e85307039e5ad939920b664a",
+  "deployment_source_commit": "e7d312974196690dbc8eae70a0aa3d5ecb4cc88e",
   "tray_actions_verified": false,
   "acknowledges_unverified_tray": true,
   "note": "The owner authorizes beta publication and explicitly requires reporting remaining manual Windows tray tests. Tray actions remain unverified; this receipt records authorization, never a new Windows observation."

@@ -1,5 +1,7 @@
 # Operations
 
+**Current production:** [combined Companion/metadata release acceptance](combined-release-acceptance.md). Use the complete [combined deployment and rollback procedure](combined-release-operations.md), including `.env.combined-release`, the private-beta overlay and pinned combined-release overlay. Schema is `meta_20261114`; owner-only signed beta2 delivery and encrypted metadata credentials are live. Retain all existing archives; the scheduled backup now keeps 30 under a 3 GiB budget. Historical local/preview instructions below are preserved and do not replace the current production procedure. Never run an unscoped Compose update or a seven-archive rotation on production.
+
 Use only `docker --context rootless` and project-scoped Compose commands. Do not enumerate or modify unrelated containers. No sudo. Before startup inspect `ss -ltn`, `free -h`, `df -h .` and confirm rootless security options. Services normally bind to 127.0.0.1. The owner has now authorized only 10.0.4.46:18780 for the existing Traefik route; it remains fail-closed pending administrator source filtering. Host firewall/daemon/AMP changes remain outside this account. See [current ingress/preview operations](traefik-preview-operations.md).
 
 Never put credentials in command arguments, Git, logs or fixtures. Read Blizzard credentials from environment. Store local configuration in ignored .env. Probe output must exclude access tokens and Authorization headers.

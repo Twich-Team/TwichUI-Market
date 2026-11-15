@@ -1,6 +1,6 @@
 {
-  "source_commit": "3e23425f508531b3e85307039e5ad939920b664a",
-  "application_source_commit": "f31050c5583b6864498195d8bc6e0b3a744a73e9",
+  "source_commit": "e7d312974196690dbc8eae70a0aa3d5ecb4cc88e",
+  "application_source_commit": "d165629ee3860f1745e854df8dfdfd37b1c4f4e9",
   "runtime_source_unchanged_since_application_build": true,
   "owner_approved_publication": true,
   "owner_approved_deployment": true,
@@ -41,16 +41,16 @@
     "recovery_roundtrip_verified": true,
     "off_host_backup_verified": false
   },
-  "backend_image": "sha256:775d0d687e438ae3c0401d91b6ffb9b40241e188650c3b9bdc9e1496f54f3bcb",
+  "backend_image": "sha256:8e2ae844d92be60484e30a0695dd830e8d1fda5050accb4c9fa310bb9112f9ab",
   "frontend_image": "sha256:72d7a79e01b4debc1607aa72ad30a89501a3429e6545b564f1c3131e8f8b605f",
   "publisher_image": "sha256:3f757981f846016e3578f78998f4a8e2cb277705771f9bd83bb8daf6468c5b6f",
   "rollback_backend_image": "sha256:17d2c17591bd0ddea617fcf9018d0235a9100bd00813ea0faa025f3b83e679f2",
   "rollback_frontend_image": "sha256:fb5f20db59d6a5ed92c1ea4d490e1d6af86772065b9d5be88f1096cf00cc6d0c",
   "ci_all_passed": true,
   "ci_runs": {
-    "backend": 43668266297,
-    "website": 43668266293,
-    "windows": 43668266314
+    "backend": 43671401028,
+    "website": 43671401009,
+    "windows": 43671401032
   },
   "local_backend_tests": 364,
   "local_operational_tests": 26,
@@ -62,38 +62,6 @@
     "house_id": 114,
     "interval_seconds": 300
   },
-  "ci": [
-    {
-      "id": 43668266297,
-      "name": "Backend",
-      "head_sha": "3e23425f508531b3e85307039e5ad939920b664a",
-      "path": ".github/workflows/backend.yml",
-      "event": "push",
-      "status": "completed",
-      "conclusion": "success",
-      "html_url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/43668266297"
-    },
-    {
-      "id": 43668266293,
-      "name": "Private website",
-      "head_sha": "3e23425f508531b3e85307039e5ad939920b664a",
-      "path": ".github/workflows/web.yml",
-      "event": "push",
-      "status": "completed",
-      "conclusion": "success",
-      "html_url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/43668266293"
-    },
-    {
-      "id": 43668266314,
-      "name": "Windows companion",
-      "head_sha": "3e23425f508531b3e85307039e5ad939920b664a",
-      "path": ".github/workflows/desktop.yml",
-      "event": "push",
-      "status": "completed",
-      "conclusion": "success",
-      "html_url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/43668266314"
-    }
-  ],
   "cargo_audit": [
     {
       "dependencies": 176,
@@ -142,5 +110,102 @@
   "browser_workflows": 22,
   "initial_production_attempt": "rolled_back",
   "rollback_reason": "Legacy Blizzard multiline tooltip source validation blocked catalog backfill; data/schema retained; public acceptance also found a verifier locator mismatch.",
-  "rollback_public_health_verified": true
+  "rollback_public_health_verified": true,
+  "local_metadata_regressions": 41,
+  "actual_legacy_backfill_settled": true,
+  "remaining_legacy_rows_backfilled": 656,
+  "all_provider_recovery_initially_disabled": true,
+  "fresh_postmigration_backup": {
+    "version": 1,
+    "filename": "market-development-20261115T024914842493Z.dump",
+    "source": "development",
+    "created_at": "2026-11-15T02:49:29.653447+00:00",
+    "bytes": 155519147,
+    "sha256": "17a9c725b47343b69b9eef04959e74558517f13e9faf65b1a4eaee2b1578a0d0",
+    "restoration_verified_at": "2026-11-15T02:49:55.401906+00:00",
+    "restored": {
+      "migration": "meta_20261114",
+      "users": 67,
+      "markets": 2,
+      "observations": 283,
+      "listings": 2799673,
+      "synthetic_observations": 0,
+      "buyout_total": "853736047869",
+      "snapshot_statistics": 624934,
+      "daily_observations": 3,
+      "market_verifications": 2,
+      "user_preferences": 8
+    }
+  },
+  "one_time_backup_budget_bytes": 3221225472,
+  "all_existing_backups_preserved": true,
+  "windows_audit_applicability": {
+    "target": "x86_64-pc-windows-msvc",
+    "warning_packages_present": {
+      "glib": false,
+      "zbus_names": false,
+      "zvariant": false,
+      "zvariant_derive": false,
+      "proc-macro-error": false
+    },
+    "warnings_in_windows_dependency_graph": false
+  },
+  "ci": [
+    {
+      "id": 43671401028,
+      "name": "Backend",
+      "path": ".github/workflows/backend.yml",
+      "head_sha": "e7d312974196690dbc8eae70a0aa3d5ecb4cc88e",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "push",
+      "html_url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/43671401028"
+    },
+    {
+      "id": 43671401009,
+      "name": "Private website",
+      "path": ".github/workflows/web.yml",
+      "head_sha": "e7d312974196690dbc8eae70a0aa3d5ecb4cc88e",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "push",
+      "html_url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/43671401009"
+    },
+    {
+      "id": 43671401032,
+      "name": "Windows companion",
+      "path": ".github/workflows/desktop.yml",
+      "head_sha": "e7d312974196690dbc8eae70a0aa3d5ecb4cc88e",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "push",
+      "html_url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/43671401032"
+    }
+  ],
+  "backend_tests": 368,
+  "final_backup": {
+    "version": 1,
+    "filename": "market-development-20261115T031227463979Z.dump",
+    "source": "development",
+    "created_at": "2026-11-15T03:12:41.936843+00:00",
+    "bytes": 155526654,
+    "sha256": "83a308830a2935262661651783043459bb0c817a16a714cf4e22565194791f34",
+    "restoration_verified_at": "2026-11-15T03:13:09.060988+00:00",
+    "restored": {
+      "migration": "meta_20261114",
+      "users": 71,
+      "markets": 2,
+      "observations": 287,
+      "listings": 2799673,
+      "synthetic_observations": 0,
+      "buyout_total": "853736047869",
+      "snapshot_statistics": 624934,
+      "daily_observations": 3,
+      "market_verifications": 2,
+      "user_preferences": 10
+    }
+  },
+  "keyring_real_credential_recovery_verified": true,
+  "production_acceptance": "passed",
+  "initial_everloot_test": "completed_20_attempts_no_name_gain"
 }

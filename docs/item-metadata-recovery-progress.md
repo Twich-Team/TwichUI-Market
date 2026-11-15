@@ -1,7 +1,7 @@
 # Item Metadata Recovery progress
 
 ## Current milestone
-M4: independent implementation verified and delivered for review; external provider/coverage/keyring/owner gates remain pending. Plan: [milestones and acceptance](item-metadata-recovery-plan.md).
+M4 is integrated and deployed in the owner-authorized [combined production release](combined-release-acceptance.md), source `e7d3129`. The production keyring and actual encrypted credential recovery pass. The owner's privately entered Everloot key validated; the bounded 20-attempt window completed with 18 missing responses and one unusable placeholder, so current fixed market-2 name coverage remains 2,232/4,861 (45.92%) with no claimed gain. All provider recovery and automatic modes are disabled again. ForeverDB remains unconfigured. Original independent implementation/Cloud evidence below is preserved. Plan: [milestones and acceptance](item-metadata-recovery-plan.md).
 
 ## M0 verified 2026-11-14
 - Exact starting commit `64ef6d2d08e7453458ed37d06d29f263ac19d126`, clean detached checkout, application files present; created independent `feature/item-metadata-recovery` after checking remote name availability.

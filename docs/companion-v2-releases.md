@@ -1,5 +1,7 @@
 # Companion release delivery: read side and remaining publisher gate
 
+**Current production delivery is the approved private signed-update beta:** [combined acceptance](combined-release-acceptance.md), [Get Desktop Companion](https://market.twich.gg/companion), [authenticated 2.0.0-beta.2 download](https://market.twich.gg/api/v1/companion/private-beta/2.0.0-beta.2/windows-x64). Owner-only admission, exact original bytes and free Tauri signatures are verified; commercial Windows publisher signing is not required. The stable channel is still unpublished. Earlier stable/read-side/signing-gate descriptions below are historical; use [current operations](combined-release-operations.md) for the deployed beta.
+
 The development API now exposes a controlled installer catalogue at `/api/v1/companion/releases/current` and immutable version download routes at `/api/v1/companion/releases/{version}/windows-x64`. They require no GitHub account or expiring artifact URL. There is no web publication/upload endpoint. The running production API has not been changed.
 
 Until a release has passed all Windows acceptance, owner visual approval and signing, the current catalogue reports `ready: false`, with no version or download URL. The setup guide displays that state honestly. Private CI beta artifacts do not become a stable release.
