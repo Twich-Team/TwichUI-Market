@@ -5,7 +5,7 @@ from urllib.parse import urlsplit
 from urllib.request import Request
 from sqlalchemy import func,or_,select,text
 from .db import Session,now
-from .models import ItemMedia,ItemMetadata,Market,Observation,SnapshotStatistic
+from .models import ItemMedia,ItemMetadata,MetadataSource,Market,Observation,SnapshotStatistic
 from .probe import opener
 from .item_attributes import valid_namespace
 
@@ -57,7 +57,7 @@ def fetch_icon(url,*,community=False):
         return data,mime
 
 
-def resolve_media_once(factory=Session,client=None,*,at=None,image_fetch=fetch_icon):
+def resolve_media_once(factory=Session,client=None,*,at=None,image_fetch=fetch_icon,budget_guard=None,failure_guard=None):
     from .worker import BlizzardClient,retry_seconds
     at=at or now();client=client or BlizzardClient()
     if getattr(client,'blocked_until',0)>time.monotonic():return False
@@ -75,6 +75,7 @@ def resolve_media_once(factory=Session,client=None,*,at=None,image_fetch=fetch_i
             if item is not None:candidate=(market.region,item);break
         if candidate is None:return False
         region,item=candidate
+        if budget_guard and not budget_guard(db,at):return False
         row=db.get(ItemMedia,(region,item))
         if row is None:row=ItemMedia(region=region,item_id=item);db.add(row)
         row.checked_at=at
@@ -85,11 +86,18 @@ def resolve_media_once(factory=Session,client=None,*,at=None,image_fetch=fetch_i
             meta,body=client.fetch_item_media(region,item)
             row.http_status=meta['status']
             if meta['status']!=200:
+                if failure_guard:failure_guard(db,meta['status'],meta['headers'],at)
                 if meta['status']==404:
                     primary=db.get(ItemMetadata,(region,item))
                     fallback=json.loads(primary.fallback) if primary and primary.fallback else None
+                    supplemental=db.get(MetadataSource,(region,item,'en_US','thewowdb'))
+                    if supplemental and supplemental.source_json:
+                        origin=json.loads(supplemental.source_json)
+                        fallback={'icon_url':origin.get('icon_url'),'source':origin}
                     url=fallback.get('icon_url') if fallback else None
-                    if fallback and icon_url(url,community=True):
+                    from .models import MetadataProvider
+                    settings=db.get(MetadataProvider,'thewowdb')
+                    if fallback and (settings is None or settings.enabled) and icon_url(url,community=True):
                         data,mime=fetch_icon(url,community=True)
                         if used-(row.byte_count or 0)+len(data)>MAX_CACHE_BYTES:raise ValueError('Icon budget')
                         row.status,row.source,row.namespace='available','thewowdb',fallback['source']['build']

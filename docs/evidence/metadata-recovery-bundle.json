@@ -1,0 +1,40 @@
+{
+  "baseline": {
+    "entry_js": {
+      "bytes": 270663,
+      "gzip_bytes": 83764
+    },
+    "research_js": {
+      "bytes": 267695,
+      "gzip_bytes": 83030
+    },
+    "administration_js": {
+      "bytes": 29361,
+      "gzip_bytes": 7777
+    },
+    "css": {
+      "bytes": 24826,
+      "gzip_bytes": 6345
+    }
+  },
+  "candidate": {
+    "entry_js": {
+      "bytes": 270663,
+      "gzip_bytes": 83763
+    },
+    "research_js": {
+      "bytes": 268812,
+      "gzip_bytes": 83302
+    },
+    "administration_js": {
+      "bytes": 44646,
+      "gzip_bytes": 11353
+    },
+    "css": {
+      "bytes": 27087,
+      "gzip_bytes": 6749
+    }
+  },
+  "note": "Built separately using the same locked dependencies and Node 24; no new frontend dependency. Existing large ECharts chunk warning remains.",
+  "baseline_commit": "64ef6d2d08e7453458ed37d06d29f263ac19d126"
+}

@@ -1,0 +1,73 @@
+{
+  "synthetic_only": true,
+  "captured_at": "2026-11-15T00:15:53.372559+00:00",
+  "application_commit": "90bc88f0c56185ce8d4e796b20fe6af32e7ea64b",
+  "source": "Actual Chromium 156 screenshots of final built frontend with local PostgreSQL/FastAPI APIs. No live-provider success or production data. Empty key form only; submitted fake keys are never shown.",
+  "tests": "Final complete run: 20/20 Chromium workflows (1.8m), including metadata desktop/mobile/axe checks.",
+  "review_status": "Development candidate; owner approval pending",
+  "screenshots": [
+    {
+      "file": "01-overview.png",
+      "width": 1440,
+      "height": 1604,
+      "bytes": 885290,
+      "sha256": "46e98baf62a25ef55d72af3580a6d6e9d2820181997eef8e2bd5a616e580a449"
+    },
+    {
+      "file": "02-single-item.png",
+      "width": 1440,
+      "height": 1768,
+      "bytes": 998644,
+      "sha256": "d02b8f046e44db8744acdc4dbce7453ca6c9f4f880afa7d3dc010a7e4f2e799a"
+    },
+    {
+      "file": "03-batch-preview.png",
+      "width": 1440,
+      "height": 2065,
+      "bytes": 1093567,
+      "sha256": "c2feaaf066543601c5b4261cad1d01914c63b43213a94cad0b39f17412e4dd84"
+    },
+    {
+      "file": "04-progress-results.png",
+      "width": 1440,
+      "height": 1990,
+      "bytes": 1037155,
+      "sha256": "5016442f94c45204d0429cf6bf82d17ef16aadf082384aa105a31313c96de398"
+    },
+    {
+      "file": "05-data-sources.png",
+      "width": 1440,
+      "height": 1713,
+      "bytes": 956370,
+      "sha256": "be627bd11dffc36de5512c02b1e95f3cde2df86558f44d2cb4395351b26970c5"
+    },
+    {
+      "file": "06-key-replacement.png",
+      "width": 1440,
+      "height": 2029,
+      "bytes": 1060462,
+      "sha256": "0e3e01c6d128763915d4050cfa51f8652d0055a429dc0c958b1d39196d275adf"
+    },
+    {
+      "file": "07-explorer.png",
+      "width": 1440,
+      "height": 2458,
+      "bytes": 859251,
+      "sha256": "cd6e216d21409879c35cf767940b5cf64ba7c2f22c46e7cef010a12aeb40db30"
+    },
+    {
+      "file": "08-tooltip-provenance.png",
+      "width": 1440,
+      "height": 2483,
+      "bytes": 1158581,
+      "sha256": "8f1ca3e523cbf0d4c271a25f213f925fd718ee98b763cbc1fcde63c2d304565f"
+    },
+    {
+      "file": "09-mobile-sources.png",
+      "width": 390,
+      "height": 3663,
+      "bytes": 801559,
+      "sha256": "76a69033abd96f5c93385e454c62c88b0e3c83dedc6a69c1aca5b3d43d2e8a16"
+    }
+  ]
+}

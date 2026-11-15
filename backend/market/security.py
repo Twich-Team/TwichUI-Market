@@ -70,6 +70,7 @@ def identity(request: Request, db: Session = Depends(session)):
         path = request.url.path
         read = request.method == 'GET' and (path in ('/api/v1/auth/me', '/api/v1/markets', '/api/v1/companion/bootstrap')
             or re.fullmatch(r'/api/v1/sync/markets/[0-9]+', path)
+            or re.fullmatch(r'/api/v1/metadata/markets/[0-9]+', path)
             or re.fullmatch(r'/api/v1/companion/markets/[0-9]+/observations/[0-9]+', path)
             or re.fullmatch(r'/api/v1/companion/private-beta/update/windows-x86_64/[0-9A-Za-z.-]{1,64}',path)
             or re.fullmatch(r'/api/v1/companion/private-beta/2\.[0-9]{1,4}\.[0-9]{1,4}-beta\.[1-9][0-9]{0,3}/windows-x64',path))

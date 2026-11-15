@@ -48,6 +48,11 @@ def attributes(payload):
         elif isinstance(value,list):
             for entry in value[:10]:
                 if isinstance(entry,dict):line(entry.get('description'),'effect')
+    for field,key in [('item_class','class'),('item_subclass','subclass'),('inventory_type','slot')]:
+        value=payload.get(field)
+        if isinstance(value,dict) and text(value.get('name')):result[key]=text(value['name'])
+    binding=preview.get('binding')
+    if isinstance(binding,dict) and text(binding.get('name')):result['binding']=text(binding['name'])
     sell=payload.get('sell_price')
     if type(sell) is int and 0<=sell<=2**63-1:result['vendor_sell']=str(sell)
     return result

@@ -12,13 +12,16 @@ export interface ItemIdentity {
   icon_url?: string | null;
   metadata_provider?: string | null;
   metadata_attribution?: { text: string; url: string } | null;
+  metadata_attributions?: { text: string; url: string; notice?: string }[];
   icon_attribution?: { text: string; url: string } | null;
   variant_key?: string;
 }
 export interface ItemProfile extends ItemIdentity {
+  catalog?: { schema_version: number; fields: Record<string, unknown>; provenance: Record<string, { provider: string; confidence: string; build?: string; attribution?: { text: string; url: string; license?: string; notice?: string } }>; conflicts: { field: string; selected: string; alternative_provider: string }[] } | null;
   attributes: {
     scope: string;
     quality: string | null;
+    class?: string; subclass?: string; slot?: string; binding?: string;
     level?: number;
     required_level?: number;
     vendor_sell?: string;
@@ -94,6 +97,7 @@ export function ItemFacts({ profile }: { profile: ItemProfile }) {
       >
         {profile.name}
       </div>
+      {!profile.metadata_provider && <p className="small muted">Name unavailable · Item #{profile.item_id}</p>}
       {!facts ? (
         <p className="muted">
           Verified item attributes are unavailable. Missing facts are not
@@ -101,6 +105,7 @@ export function ItemFacts({ profile }: { profile: ItemProfile }) {
         </p>
       ) : (
         <>
+          {[facts.class, facts.subclass, facts.slot, facts.binding].filter(Boolean).map((value,index)=><div key={index}>{value}</div>)}
           {facts.level !== undefined && (
             <div className="item-level">Item Level {facts.level}</div>
           )}
@@ -120,6 +125,13 @@ export function ItemFacts({ profile }: { profile: ItemProfile }) {
         </>
       )}
       <p className="small muted">{profile.variant_notice}</p>
+      {profile.catalog && <div className="item-provenance small">
+        <strong>Field provenance</strong>
+        {Object.entries(profile.catalog.provenance).map(([field, origin]) => <div key={field}>{field.replaceAll("_", " ")} · {origin.provider} · {origin.confidence.replaceAll("_", " ")}{origin.build ? ` · ${origin.build}` : ""}
+          {origin.attribution && <div><a href={origin.attribution.url} target="_blank" rel="noopener noreferrer">{origin.attribution.text}</a>{origin.attribution.notice && <span> · {origin.attribution.notice}</span>}</div>}
+        </div>)}
+        {profile.catalog.conflicts.length > 0 && <p>Conflicting provider fields retained for review. Higher-confidence fields are shown.</p>}
+      </div>}
       {profile.source && (
         <div className="item-source small">
           {profile.source.confidence === "community_beta" ? (
@@ -142,8 +154,8 @@ export function ItemFacts({ profile }: { profile: ItemProfile }) {
             <span>
               {profile.source.confidence === "synthetic"
                 ? "Synthetic fixture metadata"
-                : "Blizzard Forever base-item metadata"}{" "}
-              · {profile.source.namespace}
+                : profile.source.provider === "blizzard" ? "Blizzard Forever base-item metadata" : `${profile.source.provider} · ${profile.source.confidence.replaceAll("_", " ")}`}{" "}
+              · {profile.source.namespace || profile.source.build}
             </span>
           )}
           {profile.source.status && profile.source.status !== "available" && (
@@ -160,17 +172,8 @@ export function ItemFacts({ profile }: { profile: ItemProfile }) {
   );
 }
 export function ItemAttribution({ item }: { item: ItemIdentity }) {
-  const source = item.metadata_attribution || item.icon_attribution;
-  return source ? (
-    <a
-      className="item-credit small"
-      href={source.url}
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      Data from TheWoWDB · beta build
-    </a>
-  ) : null;
+  const credits = item.metadata_attributions?.length ? item.metadata_attributions : [item.metadata_attribution || item.icon_attribution].filter(Boolean);
+  return <>{credits.map((source, index) => source && <a key={index} className="item-credit small" href={source.url} target="_blank" rel="noopener noreferrer">{source.text}</a>)}</>;
 }
 export function ItemInfo({
   item,

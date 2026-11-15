@@ -6,7 +6,7 @@ from pydantic import BaseModel,Field
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from .db import now,session
-from .models import ItemMedia,ItemMetadata,SnapshotStatistic,User
+from .models import ItemMedia,ItemMetadata,MetadataSource,SnapshotStatistic,User
 from .market_api import MarketId,identity,latest_observation,metadata_name,require_market
 from .security import admin
 router=APIRouter(prefix='/api/v1')
@@ -18,14 +18,25 @@ def profile(market_id: MarketId,item_id: MarketId,user: User=Depends(identity),d
     row=db.get(ItemMetadata,(market.region,item_id))
     media=db.get(ItemMedia,(market.region,item_id))
     fallback=json.loads(row.fallback) if row and row.fallback else None
+    media_credit=fallback['source'].get('attribution') if fallback and media and media.source=='thewowdb' else None
+    if media and media.source=='thewowdb':
+        supplemental=db.get(MetadataSource,(market.region,item_id,'en_US','thewowdb'))
+        if supplemental and supplemental.source_json:media_credit=json.loads(supplemental.source_json).get('attribution')
     primary=bool(row and row.details)
     attributes=json.loads(row.details) if primary else (fallback.get('attributes') if fallback else None)
     source={'provider':'blizzard','namespace':row.resolved_namespace or row.namespace,'observed_at':row.resolved_at,
             'payload_hash':row.payload_hash,'confidence':'synthetic' if row.synthetic else 'blizzard_base_item','status':row.status} if primary else (fallback.get('source') if fallback else None)
-    return {'contract_version':1,'item_id':item_id,'region':market.region,**metadata_name(row,item_id),
+    catalog=json.loads(row.catalog_json) if row and row.catalog_json else None
+    if catalog:
+        fields=catalog['fields']
+        facts={k:v for k,v in fields.items() if k!='name'}
+        attributes={'scope':'base_item','quality':fields.get('quality'),'lines':[],**facts} if facts else None
+        origin=catalog['provenance'].get('name') or next(iter(catalog['provenance'].values()),None)
+        if origin and origin['provider']!='blizzard':source={**origin,'observed_at':origin.get('retrieved_at')}
+    return {'catalog':catalog,'catalog_revision':row.catalog_revision if row else 0,'contract_version':1,'item_id':item_id,'region':market.region,**metadata_name(row,item_id),
         'attributes':attributes,'source':source,'variant_notice':'Base item attributes; variant bonuses and enchantments are not inferred.',
         'icon_url':f'/api/v1/items/{market.region}/{item_id}/icon?v={media.asset_hash}' if media and media.asset_hash else None,
-        'icon_source':{'provider':media.source,'url':media.source_url,'namespace':media.namespace,'observed_at':media.resolved_at,'payload_hash':media.asset_hash,'attribution':fallback['source']['attribution'] if fallback and media.source=='thewowdb' else None} if media and media.asset_hash else None,
+        'icon_source':{'provider':media.source,'url':media.source_url,'namespace':media.namespace,'observed_at':media.resolved_at,'payload_hash':media.asset_hash,'attribution':media_credit} if media and media.asset_hash else None,
         'media_status':media.status if media else 'pending','metadata_status':row.status if row else 'unresolved'}
 
 

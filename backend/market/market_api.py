@@ -96,10 +96,18 @@ def item_name(db,region,item_id):
 def metadata_name(metadata,item_id):
     available=metadata is not None and metadata.name is not None
     fallback=json.loads(metadata.fallback) if metadata and metadata.fallback else None
-    return {'name':metadata.name if available else (fallback.get('name') if fallback else f'Item #{item_id}'),
-            'quality':metadata.quality if available else (fallback.get('attributes',{}).get('quality') if fallback else None),
-            'metadata_provider':'blizzard' if available else ('thewowdb' if fallback else None),
-            'metadata_attribution':fallback['source']['attribution'] if fallback and not available else None,
+    catalog=json.loads(metadata.catalog_json) if metadata and metadata.catalog_json else None
+    fields=catalog['fields'] if catalog else {}
+    attributions=[]
+    for origin in (catalog.get('provenance',{}).values() if catalog else []):
+        credit=origin.get('attribution')
+        if credit and credit not in attributions:attributions.append(credit)
+    name=metadata.name if available else ((fallback.get('name') or f'Item #{item_id}') if fallback else f'Item #{item_id}')
+    return {'name':name,
+            'quality':fields.get('quality') or (metadata.quality if available else (fallback.get('attributes',{}).get('quality') if fallback else None)),
+            'metadata_provider':'blizzard' if available else (fallback['source']['provider'] if fallback and fallback.get('name') else None),
+            'metadata_attribution':fallback['source'].get('attribution') if fallback and not available else None,
+            'metadata_attributions':attributions,
             'name_verified':bool(available and not metadata.synthetic and metadata.status=='available'),
             'metadata_synthetic':bool(metadata and metadata.synthetic),
             'metadata_observed_at':metadata.resolved_at if metadata else None,

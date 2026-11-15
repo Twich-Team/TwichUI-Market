@@ -84,9 +84,7 @@ async function tokens(
   return reply.json();
 }
 test.beforeAll(() => {
-  expect(new URL(process.env.BASE_URL || "http://proxy").hostname).toBe(
-    "proxy",
-  );
+  expect(["http://proxy", "http://127.0.0.1:5173"]).toContain(new URL(process.env.BASE_URL || "http://proxy").origin);
 });
 
 test("setup resumes after refresh and sign-in without claiming installation from a download", async ({
@@ -339,7 +337,7 @@ test("device ownership stays private while administrators can inspect and revoke
   browser,
 }) => {
   const member = await playwright.request.newContext({
-    baseURL: "http://proxy",
+    baseURL: process.env.BASE_URL || "http://proxy",
   });
   const loginReply = await member.post("/api/v1/auth/login", {
     data: { username: "member_fixture", password: memberPassword },
@@ -365,7 +363,7 @@ test("device ownership stays private while administrators can inspect and revoke
       "code",
     )!;
     const grant = await tokens(member, connection, code);
-    const other = await browser.newContext({ baseURL: "http://proxy" });
+    const other = await browser.newContext({ baseURL: process.env.BASE_URL || "http://proxy" });
     try {
       const otherPage = await other.newPage();
       await login(
