@@ -20,7 +20,7 @@ The authoritative M0.5 JSON fixtures remain unchanged. Python, Rust and Lua test
 
 `scripts/compare-pricing-shadow.py` accepts an explicit local original-snapshot export or the approved research fixture file. It executes only the audited existing pure legacy functions and the new canonical calculator, with no app imports, database or network calls. Captured excerpts retain their original scope/timestamp; synthetic cases remain synthetic. No representative full production snapshot is available to this Cloud task, and the owner previously confirmed no alternate export. The real-data gate remains open; no full 14/60-day claim follows from synthetic calendars or two available service dates.
 
-Exact final test counts, performance, observed failures and remaining client gates are recorded in the acceptance report before this implementation is offered for merge. No code from these implementation PRs is approved for automatic merge or production deployment.
+Exact test counts, performance, observed failures and remaining client gates are recorded in the [acceptance report](unified-pricing-m1a-acceptance.md). No code from these implementation PRs is approved for automatic merge or production deployment.
 
 ## Recommended M1b sequence
 
