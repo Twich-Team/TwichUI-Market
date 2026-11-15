@@ -37,6 +37,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Verify combined PR source
+        run: python scripts/verify-ci-checkout.py
+        env:
+          CI_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
       - run: cargo test --manifest-path desktop/Cargo.toml --workspace --locked
       - run: cargo test --manifest-path desktop/src-tauri/Cargo.toml --locked
       - run: cargo build --manifest-path desktop/Cargo.toml --example http_smoke --locked

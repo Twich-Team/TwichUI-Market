@@ -20,6 +20,11 @@ jobs:
           node-version: '24'
           cache: npm
           cache-dependency-path: web/package-lock.json
+      - name: Verify combined PR source
+        run: python3 scripts/verify-ci-checkout.py
+        env:
+          CI_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
       - run: npm ci --prefix web
       - run: npm --prefix web run build && npm --prefix web test
       - run: npm --prefix web audit --omit=dev

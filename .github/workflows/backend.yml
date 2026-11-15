@@ -32,6 +32,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Verify combined PR source
+        run: python ../scripts/verify-ci-checkout.py
+        env:
+          CI_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
       - run: pip install -r requirements.lock && pip install --no-deps .
       - run: pip install pip-audit==2.10.1 && pip-audit -r requirements.lock --no-deps --disable-pip
       - run: alembic upgrade head
