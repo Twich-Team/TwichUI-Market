@@ -17,8 +17,8 @@ fn schema1_schema2_and_exact_unicode_encoding(){
 }
 #[test]
 fn rejects_rehashed_semantic_corruption_and_unsupported_versions(){
- for mutation in 0..13{let mut g=fixture("source-canonical-generation.json");match mutation{
-  0=>g["schema_version"]=3.into(),1=>g["contract_version"]=2.into(),2=>g["pricing_algorithm"]="future".into(),3=>g["history_basis"]="legacy-local".into(),4=>g["coverage"]["generation_complete"]=false.into(),5=>g["observations"][0]["synthetic"]=true.into(),6=>g["records"][1]["variant_key"]="a".repeat(64).into(),7=>g["records"][1]["daily"][0]["observation_ref"]=60.into(),8=>g["records"][0]["current"]["supply"]=1.into(),9=>g["records"][1]["current"]["metrics"]["historical_value_copper"]="100".into(),10=>g["records"][1]["distribution"]["tiers"][0]["quantity"]=999.into(),11=>g["record_count"]=1.into(),_=>g["observations"][0]["observed_at"]="2026-11-14t12:00:00Z".into()}
+ for mutation in 0..14{let mut g=fixture("source-canonical-generation.json");match mutation{
+  0=>g["schema_version"]=3.into(),1=>g["contract_version"]=2.into(),2=>g["pricing_algorithm"]="future".into(),3=>g["history_basis"]="legacy-local".into(),4=>g["coverage"]["generation_complete"]=false.into(),5=>g["observations"][0]["synthetic"]=true.into(),6=>g["records"][1]["variant_key"]="a".repeat(64).into(),7=>g["records"][1]["daily"][0]["observation_ref"]=60.into(),8=>g["records"][0]["current"]["supply"]=1.into(),9=>g["records"][1]["current"]["metrics"]["historical_value_copper"]="100".into(),10=>g["records"][1]["distribution"]["tiers"][0]["quantity"]=999.into(),11=>g["record_count"]=1.into(),12=>{g["records"][1]["daily"].as_array_mut().unwrap().remove(0);},_=>g["observations"][0]["observed_at"]="2026-11-14t12:00:00Z".into()}
   if mutation==5{g["synthetic"]=false.into()};seal(&mut g);assert!(bridge::validate(&g).is_err(),"mutation {mutation}");}
 }
 #[test]
@@ -46,4 +46,38 @@ fn deterministic_assignment_only_lua_and_safe_staging(){
 #[test]
 fn symlink_escape_and_ambiguous_permissions_refused(){
  use std::os::unix::{fs::symlink,fs::PermissionsExt};let d=tempfile::tempdir().unwrap();let c=BridgeCache::memory().unwrap();let link=d.path().join("linked");symlink(d.path(),&link).unwrap();assert!(bridge::export_staging(&c,&scope(),&link).is_err());std::fs::set_permissions(d.path(),std::fs::Permissions::from_mode(0o777)).unwrap();assert!(bridge::export_staging(&c,&scope(),d.path()).is_err());std::fs::set_permissions(d.path(),std::fs::Permissions::from_mode(0o700)).unwrap();
+}
+
+#[test]
+fn real_http_auth_identity_interruption_and_invalid_cursor_keep_good_cache(){
+ use std::{io::{Read,Write},net::TcpListener};
+ use twichui_market_core::client::MarketClient;
+ for case in 0..6 {
+  let listener=TcpListener::bind("127.0.0.1:0").unwrap();let mut s=scope();s.server=format!("http://{}/",listener.local_addr().unwrap());
+  let mut g=fixture("source-canonical-generation.json");g["market"]["mapping_verified"]=true.into();g["market"]["mapping_evidence_sha256"]="a".repeat(64).into();seal(&mut g);let mut c=BridgeCache::memory().unwrap();complete(&mut c,&s,&g);let good=c.completed(&s).unwrap();
+  let boot=json!({"contract_version":1,"account":{"id":if case==1{2}else{1},"username":"synthetic"},"preferred_market_id":2,"suggested_market_id":2,"preference_fallback":false,"device":null,"markets":[{"id":2,"label":"Synthetic","region":"us","house_id":if case==2{115}else{114},"ruleset_id":1,"source_kind":"auctions","enabled":true,"verified":true,"player_identity_verified":true,"available_for_sync":true,"next_check":null,"source":{"market_id":2,"server_checked_at":null,"upstream_updated_at":null,"observation_id":null,"watermark_observation_id":null,"snapshot_id":null,"generation":null,"valuation_generation":null,"synthetic":true,"valuation_synthetic":null}}]});
+  let mut responses=vec![(if case==0{401}else{200},serde_json::to_vec(&boot).unwrap(),false)];
+  if case>=2 {responses.push((200,envelope(&g),false));}
+  if case==3{responses.push((401,b"{}".to_vec(),false));}
+  if case==4{responses.push((200,page(&g,0,1),false));responses.push((200,b"{".to_vec(),true));}
+  if case==5{responses.push((409,b"{}".to_vec(),false));responses.push((200,envelope(&g),false));responses.push((409,b"{}".to_vec(),false));}
+  let server=std::thread::spawn(move||{listener.set_nonblocking(true).unwrap();for(status,body,truncated)in responses{let deadline=std::time::Instant::now()+std::time::Duration::from_secs(10);let(mut stream,_)=loop{match listener.accept(){Ok(v)=>break v,Err(e) if e.kind()==std::io::ErrorKind::WouldBlock && std::time::Instant::now()<deadline=>std::thread::sleep(std::time::Duration::from_millis(5)),Err(e)=>panic!("unexpected client request sequence: {e}")}};stream.set_read_timeout(Some(std::time::Duration::from_secs(5))).unwrap();let mut request=Vec::new();while !request.ends_with(b"\r\n\r\n"){let mut byte=[0];assert_eq!(stream.read(&mut byte).unwrap(),1);request.push(byte[0]);}assert!(String::from_utf8_lossy(&request).to_ascii_lowercase().contains("authorization: bearer synthetic-bridge-test"));let size=if truncated{1000}else{body.len()};write!(stream,"HTTP/1.1 {status} Test\r\nContent-Type: application/json\r\nContent-Length: {size}\r\nConnection: close\r\n\r\n").unwrap();stream.write_all(&body).unwrap();}});
+  let client=MarketClient::new(&s.server,"synthetic-bridge-test".into()).unwrap();assert!(client.download_bridge(&mut c,&s,||false).is_err(),"case {case}");server.join().unwrap();assert_eq!(c.completed(&s).unwrap(),good,"case {case}");
+  if case==4{assert_eq!(c.pending(&s).unwrap().unwrap().1,"next");}
+ }
+}
+
+#[cfg(windows)]
+#[test]
+fn windows_junction_and_broad_write_acl_are_refused(){
+ use std::process::Command;
+ let root=tempfile::tempdir().unwrap();let target=root.path().join("owned");std::fs::create_dir(&target).unwrap();
+ let c=BridgeCache::memory().unwrap();let s=scope();
+ // A fresh, owned staging directory passes the native ownership guard.
+ bridge::staging_directory(&target,&s).unwrap();
+ let junction=root.path().join("junction");
+ assert!(Command::new("cmd").args(["/C","mklink","/J"]).arg(&junction).arg(&target).output().unwrap().status.success());
+ assert!(bridge::staging_directory(&junction,&s).is_err());std::fs::remove_dir(&junction).unwrap();
+ assert!(Command::new("icacls").arg(&target).args(["/grant","*S-1-1-0:(OI)(CI)M"]).output().unwrap().status.success());
+ assert!(bridge::staging_directory(&target,&s).is_err());
 }

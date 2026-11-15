@@ -85,3 +85,23 @@ impl BridgeCache {
   Ok(Some((g,receipt)))
  }
 }
+
+#[cfg(test)]
+mod tests {
+ use super::*;
+ use serde_json::json;
+ #[test]
+ fn sqlite_full_rolls_back_page_and_preserves_completed_generation(){
+  let g:Value=serde_json::from_str(include_str!("../../../../contracts/bridge/v1/source-canonical-generation.json")).unwrap();
+  let mut h=g.clone();h.as_object_mut().unwrap().remove("records");
+  let s=Scope{server:"http://127.0.0.1:8899/".into(),account_id:1,market_id:2,algorithm:"twichui-pricing-v1".into()};
+  let envelope=serde_json::to_vec(&json!({"format":"twichui-market-bridge-manifest","contract_version":1,"transport_version":1,"account_id":1,"manifest":h,"cursor":"first"})).unwrap();
+  let page=serde_json::to_vec(&json!({"format":"twichui-market-bridge-page","contract_version":1,"transport_version":1,"account_id":1,"market_id":2,"generation_id":g["generation_id"],"offset":0,"records":g["records"],"has_more":false,"next_cursor":null})).unwrap();
+  let mut c=BridgeCache::memory().unwrap();c.start(&s,&envelope).unwrap();c.apply(&s,"first",&page,Utc::now()).unwrap();let good=c.completed(&s).unwrap();
+  c.start(&s,&envelope).unwrap();c.db.execute_batch("CREATE TABLE quota(value BLOB)").unwrap();let count:u32=c.db.pragma_query_value(None,"page_count",|r|r.get(0)).unwrap();c.db.pragma_update(None,"max_page_count",count).unwrap();
+  let error=loop{match c.db.execute("INSERT INTO quota VALUES(zeroblob(4096))",[]){Ok(_)=>{},Err(e)=>break e}};
+  assert!(matches!(error,rusqlite::Error::SqliteFailure(e,_) if e.code==rusqlite::ErrorCode::DiskFull));
+  assert!(c.apply(&s,"first",&page,Utc::now()).is_err());assert_eq!(c.completed(&s).unwrap(),good);assert_eq!(c.pending(&s).unwrap().unwrap().1,"first");
+  c.db.pragma_update(None,"max_page_count",65536).unwrap();c.db.execute_batch("DROP TABLE quota").unwrap();c.apply(&s,"first",&page,Utc::now()).unwrap();assert_eq!(c.previous(&s).unwrap(),good);
+ }
+}

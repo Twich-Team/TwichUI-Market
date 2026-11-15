@@ -152,3 +152,33 @@ def test_oversize_generation_refused_and_no_materialization_published(bridge,dat
     assert client.get(f'/api/v1/bridge/markets/{mid}/manifest').status_code==413
     from sqlalchemy import func,select
     with database() as db:assert db.scalar(select(func.count()).select_from(BridgeGeneration))==0
+
+
+def test_cursor_expiry_and_no_per_item_history_queries(bridge,database,monkeypatch):
+    from market import bridge_api
+    from sqlalchemy import event
+    client,mid,_,_=bridge
+    g,_,e=download(client,mid)
+    statements=[]
+    def counted(conn,cursor,statement,parameters,context,executemany):
+        if 'bridge_derived_records' in statement.lower():statements.append(statement)
+    engine=database.kw['bind']
+    event.listen(engine,'before_cursor_execute',counted)
+    try:
+        # Force a generation rebuild while retaining canonical snapshot derivations.
+        with database.begin() as db:
+            db.execute(delete(BridgeRecord));db.execute(delete(BridgeGeneration))
+        _,_,new=download(client,mid)
+    finally:event.remove(engine,'before_cursor_execute',counted)
+    # Four exact variants x two dates are retrieved in a set, not per item/date.
+    assert len(statements)<=2
+    monkeypatch.setattr(bridge_api,'now',lambda:now()+timedelta(hours=2))
+    response=client.get(f'/api/v1/bridge/markets/{mid}/records',params={'cursor':new['cursor'],'generation':g['generation_id']})
+    assert response.status_code==409
+
+
+def test_contract_rejects_resealed_silent_daily_omission():
+    root=Path(__file__).resolve().parents[2]/'contracts/bridge/v1'
+    g=contract().read(root/'source-canonical-generation.json')
+    g['records'][1]['daily'].pop(0)
+    with pytest.raises(ValueError):contract().validate(contract().seal(g))

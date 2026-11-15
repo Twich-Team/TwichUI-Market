@@ -30,8 +30,8 @@
   ],
   "rust": {
     "algorithm": "twichui-pricing-v1",
-    "download_ms": 257.39297100000005,
-    "export_ms": 12.039266,
+    "download_ms": 255.532241,
+    "export_ms": 11.539371,
     "generation_id": "4e6cea38071018d519682ba4690b79566303f8ce67039ef6e99472f107ee453f",
     "lua_bytes": 31566,
     "market": {
@@ -54,16 +54,16 @@
     "cache_entries": 4,
     "corruption_rejected": true,
     "generation_id": "4e6cea38071018d519682ba4690b79566303f8ce67039ef6e99472f107ee453f",
-    "largest_slice_us": 1103,
-    "load_us": 49,
+    "largest_slice_us": 1032,
+    "load_us": 50,
     "local_saved_data_unchanged": true,
-    "navigation_100_us": 1965,
-    "navigation_growth_bytes": -344,
+    "navigation_100_us": 2196,
+    "navigation_growth_bytes": -343,
     "payload_bytes": 7702,
     "record_count": 4,
-    "retained_heap_bytes": 50982,
+    "retained_heap_bytes": 52656,
     "slices": 54,
-    "validation_us": 21445
+    "validation_us": 22380
   },
   "production_access": false,
   "installed_into_game": false,

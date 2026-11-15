@@ -52,7 +52,7 @@ pub fn export_staging(cache:&BridgeCache,scope:&Scope,root:&Path)->Result<PathBu
 fn publish(cache:&BridgeCache,scope:&Scope,root:&Path,replace:impl FnOnce(&Path,&[u8])->Result<()>)->Result<PathBuf>{
  safe_root(root)?;let(g,receipt)=cache.completed(scope)?.ok_or(Error::Invalid("complete a bridge download before export"))?;let bytes=artifact(&g,&receipt)?;inspect_artifact(&bytes)?;
  let marker=root.join(".twichui-bridge-scope");let key=scope.key()?;if marker.exists(){if read(&marker,128)?!=key.as_bytes(){return refuse()}}else{atomic(&marker,key.as_bytes())?}
- let folder=root.join("TwichUI_MarketData");no_links(&folder)?;if !folder.exists(){fs::create_dir(&folder)?}if !folder.is_dir(){return refuse()}
+ let folder=root.join("TwichUI_MarketData");no_links(&folder)?;if !folder.exists(){fs::create_dir(&folder)?}if !folder.is_dir(){return refuse()}safe_root(&folder)?;
  for entry in fs::read_dir(&folder)?{let path=entry?.path();no_links(&path)?;#[cfg(unix)]{use std::os::unix::fs::MetadataExt;if fs::metadata(&path)?.uid()!=fs::metadata(&folder)?.uid(){return refuse()}}
  #[cfg(windows)]super::windows_owner::check(&path)?;
  let name=path.file_name().unwrap().to_string_lossy();if !["TwichUI_MarketData.toc","Data.lua","Previous.lua"].contains(&name.as_ref())||!path.is_file(){return refuse()}}
