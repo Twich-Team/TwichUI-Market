@@ -3,6 +3,7 @@ pub mod cache;
 pub mod client;
 pub mod connection;
 pub mod profile;
+pub mod pricing;
 pub mod protocol;
 pub mod scheduler;
 pub mod settings;

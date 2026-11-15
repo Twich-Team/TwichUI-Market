@@ -1,0 +1,53 @@
+{
+  "case": "synthetic 150000 auctions, one exact variant, 32 price tiers, quantities 1..20",
+  "origin": "synthetic",
+  "rounds": 3,
+  "measurement": "interleaved legacy/canonical order; input allocation excluded; other verification processes active",
+  "scope_difference": "legacy takes prevalidated rows; canonical includes strict identity/type/range validation",
+  "no_speedup_or_client_performance_claim": true,
+  "results": {
+    "legacy_prevalidated_summary": {
+      "samples": [
+        {
+          "wall_ms": 47.765,
+          "cpu_ms": 47.78
+        },
+        {
+          "wall_ms": 48.851,
+          "cpu_ms": 48.864
+        },
+        {
+          "wall_ms": 47.552,
+          "cpu_ms": 47.565
+        }
+      ],
+      "median_wall_ms": 47.765,
+      "median_cpu_ms": 47.78,
+      "wall_spread_percent": 2.72,
+      "peak_auxiliary_traced_bytes": 18166732
+    },
+    "canonical_validation_and_summary": {
+      "samples": [
+        {
+          "wall_ms": 249.787,
+          "cpu_ms": 249.72
+        },
+        {
+          "wall_ms": 256.738,
+          "cpu_ms": 256.667
+        },
+        {
+          "wall_ms": 253.95,
+          "cpu_ms": 253.893
+        }
+      ],
+      "median_wall_ms": 253.95,
+      "median_cpu_ms": 253.893,
+      "wall_spread_percent": 2.74,
+      "peak_auxiliary_traced_bytes": 8309
+    }
+  },
+  "legacy_recent_copper": "5016",
+  "canonical_recent_copper": "5004",
+  "canonical_source_sha256": "460014bf3365de0ae992f153c444d7698dac114412738dc708c0be9bb73bbdcc"
+}
