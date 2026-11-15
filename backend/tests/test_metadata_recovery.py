@@ -356,3 +356,13 @@ def test_missing_batch_includes_named_items_without_basic_attributes(database):
         assert 720 in [r[1] for r in candidates(db,market,'missing',100,['everloot'])]
         import_everloot_page(db,'us',page())
         assert [r[1] for r in candidates(db,market,'missing',100,['everloot'])]==[721]
+
+
+def test_dashboard_pending_does_not_subtract_preserved_names_twice(owner,database):
+    market=setup(database)
+    with database.begin() as db:
+        for item in (720,721):
+            row=store_metadata(db,'us',item,json.dumps({'id':item,'name':'Synthetic cached name'}).encode(),synthetic=True)
+            row.http_status=404;row.status='missing'
+    stats=owner.get('/api/v1/admin/item-metadata',params={'market_id':market}).json()
+    assert stats['primary_names']==2 and stats['primary_missing_responses']==2 and stats['primary_pending']==0

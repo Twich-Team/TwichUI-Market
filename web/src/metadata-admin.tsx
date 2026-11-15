@@ -58,7 +58,7 @@ export function DataSources({ readOnly = false }: { readOnly?: boolean }) {
       <div className="title-row"><h3>{provider.name}</h3><span className="tag">{provider.configured ? "Connected" : provider.key_required ? "Not configured" : "Keyless access"}</span></div>
       <p className="small muted">{provider.note}</p>
       <dl className="metadata-facts"><div><dt>Credential</dt><dd>{metadataStatus(provider.credential_status)}{provider.validation_pending ? " · validation queued" : ""}</dd></div>
-        <div><dt>Last validation</dt><dd>{when(provider.last_validated_at)}</dd></div><div><dt>Expiration</dt><dd>{when(provider.expires_at)}</dd></div>
+        <div><dt>Last validation</dt><dd>{when(provider.last_validated_at)}</dd></div><div><dt>Expiration</dt><dd>{provider.expires_at ? when(provider.expires_at) : "Not recorded"}</dd></div>
         <div><dt>Recent error</dt><dd>{metadataStatus(provider.validation_error || provider.recent_error)}</dd></div>
         <div><dt>Cooldown until</dt><dd>{when(provider.cooldown_until)}</dd></div><div><dt>Requests this hour / day</dt><dd>{provider.hour_used} / {provider.day_used}</dd></div></dl>
       {provider.expiration_warning && <p className="notice" role="status">{metadataStatus(provider.expiration_warning)}. Replace this key before it expires.</p>}

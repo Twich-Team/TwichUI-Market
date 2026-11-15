@@ -5,7 +5,7 @@ import re
 from typing import Literal
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, ConfigDict, Field, SecretStr
-from sqlalchemy import JSON, Integer, cast, func, select, update
+from sqlalchemy import JSON, Integer, cast, func, or_, select, update
 from sqlalchemy.orm import Session
 from .db import now, session
 from .models import ItemMedia, ItemMetadata, MetadataJob, MetadataProvider, MetadataSource, MetadataTask, User
@@ -185,10 +185,11 @@ def overview(market_id: int | None = Query(None, ge=1), user: User = Depends(adm
     join = select(func.count(), func.count(ItemMetadata.name),
         func.count(ItemMetadata.fallback_name).filter(ItemMetadata.name.is_(None)), func.count(ItemMedia.asset_hash),
         func.count(ItemMetadata.item_id).filter(ItemMetadata.http_status == 404),
-        func.count(ItemMetadata.details), func.count(ItemMetadata.catalog_json)).select_from(ids).outerjoin(ItemMetadata,
+        func.count(ItemMetadata.details), func.count(ItemMetadata.catalog_json),
+        func.count().filter(ItemMetadata.name.is_(None),or_(ItemMetadata.http_status.is_(None),ItemMetadata.http_status!=404))).select_from(ids).outerjoin(ItemMetadata,
         (ItemMetadata.region == ids.c.region) & (ItemMetadata.item_id == ids.c.item_id)).outerjoin(ItemMedia,
         (ItemMedia.region == ids.c.region) & (ItemMedia.item_id == ids.c.item_id))
-    total, primary, supplemental, icons, primary_missing, attributes, catalog = db.execute(join).one()
+    total, primary, supplemental, icons, primary_missing, attributes, catalog, primary_pending = db.execute(join).one()
     source_name=cast(MetadataSource.fields_json,JSON)['name'].as_string()
     sources = list(db.execute(select(MetadataSource.provider, func.count(), func.count(source_name)).join(ids,
         (ids.c.region == MetadataSource.region) & (ids.c.item_id == MetadataSource.item_id)).group_by(MetadataSource.provider)))
@@ -200,7 +201,7 @@ def overview(market_id: int | None = Query(None, ge=1), user: User = Depends(adm
         'resolved_names':primary+supplemental, 'missing_names':total-primary-supplemental,
         'name_percent':round(100*(primary+supplemental)/total, 2) if total else None, 'primary_names':primary,
         'supplemental_names':supplemental, 'primary_missing_responses':primary_missing,
-        'primary_pending':total-primary-primary_missing, 'icons_available':icons, 'icons_missing':total-icons,
+        'primary_pending':primary_pending, 'icons_available':icons, 'icons_missing':total-icons,
         'primary_attributes':attributes, 'catalog_records':catalog, 'provider_name_overlap':overlap_count,'conflicting_names':conflicting_count,
         'last_enrichment':db.scalar(select(func.max(MetadataProvider.last_success))),
         'pending_queue':db.scalar(select(func.count()).select_from(MetadataTask).where(MetadataTask.state == 'queued')),
