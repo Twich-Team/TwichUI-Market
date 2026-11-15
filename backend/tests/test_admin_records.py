@@ -105,7 +105,7 @@ def test_temporary_provider_retry_after_blocks_other_items(database):
     from market.metadata_recovery import tick
     from market.security import aware
     market=setup(database);at=now()
-    with database.begin() as db:enqueue(db,market,'single',['everloot'],item_id=720,budget=2)
+    with database.begin() as db:enqueue(db,market,'single',['everloot'],item_id=720,budget=2,at=at)
     tick(database,at=at,fetcher=lambda *a,**k:response(status=503,body=b'{}',headers={'Retry-After':'7200'}),automatic=False)
     with database.begin() as db:
         provider=db.get(MetadataProvider,'everloot')
