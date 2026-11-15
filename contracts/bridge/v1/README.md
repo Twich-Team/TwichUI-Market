@@ -2,6 +2,8 @@
 
 Frozen M1a contract: `format=twichui-market-bridge`, contract/schema/transport versions all **1**. The normative machine schema is [generation.schema.json](generation.schema.json); [validate.py](validate.py) adds semantic, integrity and size checks. Both representative generations are explicitly synthetic: [canonical](canonical-generation.json) and [provisional](provisional-generation.json). This directory defines data, not a server route, installer, Lua file writer, desktop delivery or Workshop ingestion.
 
+M1b coordinated [Amendment 001](AMENDMENT-001.md) adds [schema 2](generation-schema2.schema.json) and separately checksummed source-generation fixtures. Contract and transport remain 1. Original schema-1 fixture bytes are unchanged. Server-sealed generations carry an unknown desktop completion time; real desktop delivery receipts stay outside their immutable identity. Fractional source timestamps are preserved.
+
 ## Algorithm and source identity
 
 One generation contains exactly one pricing algorithm/history basis pair:

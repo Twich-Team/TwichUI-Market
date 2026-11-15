@@ -49,15 +49,17 @@ def validate(g):
     def copper(value): return type(value) is str and len(value)<=19 and value.isascii() and value.isdigit() and int(value)<=2**63-1
     @checker.checks('positive-i64')
     def identifier(value): return copper(value) and int(value)>0
-    schema=json.loads((ROOT/'generation.schema.json').read_text())
+    version=g.get('schema_version')
+    if type(version) is not int or version not in (1,2): raise ValueError('Schema version')
+    schema=json.loads((ROOT/('generation.schema.json' if version==1 else 'generation-schema2.schema.json')).read_text())
     jsonschema.Draft202012Validator(schema,format_checker=checker).validate(g)
     expected=seal(g)
     if expected['integrity']!=g['integrity'] or expected['generation_id']!=g['generation_id']: raise ValueError('Generation integrity')
     manifest={k:v for k,v in g.items() if k not in ('records','integrity','generation_id')}
     if len(canonical(manifest))>MAX_MANIFEST_BYTES: raise ValueError('Manifest byte limit')
     if len(g['records'])!=g['record_count']: raise ValueError('Record count')
-    at=timestamp(g['generated_at']);sync=timestamp(g['desktop_sync_completed_at'])
-    if sync>at or (g['server_checked_at'] and timestamp(g['server_checked_at'])>at): raise ValueError('Delivery timestamps')
+    at=timestamp(g['generated_at']);sync=timestamp(g['desktop_sync_completed_at']) if g['desktop_sync_completed_at'] is not None else None
+    if (sync is not None and sync>at) or (g['server_checked_at'] and timestamp(g['server_checked_at'])>at): raise ValueError('Delivery timestamps')
     if g['as_of_utc_day']>at.date().isoformat(): raise ValueError('Future as-of date')
     market=g['market'];coverage=g['coverage'];algorithm=g['pricing_algorithm']
     if (market['source_kind']=='auctions')!=(coverage['scope']=='house_auctions'): raise ValueError('Source scope')
