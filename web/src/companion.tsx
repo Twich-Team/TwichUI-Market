@@ -41,7 +41,8 @@ function restore(key: string): SetupProgress {
 interface PrivateBeta extends Release {
   channel: "private-beta";
   signed: false;
-  updates: "manual";
+  updates: "signed";
+  updater_signature_verified: true;
   tray_actions_verified: false;
 }
 export function CompanionSetup({ user }: { user: User }) {
@@ -105,7 +106,7 @@ export function CompanionSetup({ user }: { user: User }) {
   );
   const url = companionDownloadUrl(release.data);
   const beta = privateBeta.data;
-  const betaUrl = beta?.channel === "private-beta" && beta.signed === false && beta.updates === "manual" && beta.tray_actions_verified === false
+  const betaUrl = beta?.channel === "private-beta" && beta.signed === false && beta.updates === "signed" && beta.updater_signature_verified === true && beta.tray_actions_verified === false
     ? companionDownloadUrl(beta, "private-beta") : null;
   function step(value: number, since = progress.since) {
     const next: SetupProgress = { schema_version: 1, step: value, since };
@@ -193,7 +194,7 @@ export function CompanionSetup({ user }: { user: User }) {
                   </p>
                   <p className="small muted">
                     Published {when(release.data?.published_at)}. The installer
-                    is signed and this release passed its Windows checks.
+                    has cryptographically signed updates. This release passed its Windows checks; Windows may show an unknown-publisher warning.
                   </p>
                   <details>
                     <summary>Release integrity details</summary>
@@ -205,13 +206,14 @@ export function CompanionSetup({ user }: { user: User }) {
                 <div className="notice" role="status">
                   <strong>Private Windows beta</strong>
                   <p>This test version is shared with your account. The installer is unsigned, so Windows may show a warning or block it.</p>
-                  <p>Updates are manual. Tray actions still need checking on your PC.</p>
+                  <p>Updates are checked automatically and verified before installation. You choose when to install. Tray actions still need checking on your PC.</p>
                   <a className="primary companion-download" href={betaUrl} download onClick={() => step(1)}>
                     Download private beta <span aria-hidden="true">↓</span>
                   </a>
                   <p className="small muted">Version {beta?.version} · Windows 10/11, 64-bit · {((beta?.bytes || 0) / 1048576).toFixed(1)} MiB</p>
                   <details>
-                    <summary>Download integrity details</summary>
+                    <summary>Download integrity and Windows warnings</summary>
+                    <p>Download only from market.twich.gg and compare the SHA-256 below. If SmartScreen offers More info, review the app and choose Run anyway only when you trust this exact download. If Windows blocks it without that option, stop and report the message. Keep Windows security protections enabled.</p>
                     <p className="small">SHA-256</p>
                     <code className="release-hash">{beta?.sha256}</code>
                   </details>

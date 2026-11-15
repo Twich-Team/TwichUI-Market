@@ -27,7 +27,8 @@ const fs=require('node:fs');const path=require('node:path');const {execFile,spaw
     // Run the new current-user installer over the actual old installation.
     const sdkInstall=process.env.MARKET_TEST_UPDATER_SDK==='true';
     if(sdkInstall){
-      const expected=createHash('sha256').update(fs.readFileSync('desktop/src-tauri/target/release/twichui-market-companion.exe')).digest('hex');
+      const expected=process.env.MARKET_TEST_EXPECTED_EXE_SHA256||createHash('sha256').update(fs.readFileSync('desktop/src-tauri/target/release/twichui-market-companion.exe')).digest('hex');
+      expect(expected).toMatch(/^[a-f0-9]{64}$/);
       await promisify(execFile)('cargo',['test','--manifest-path','desktop/src-tauri/Cargo.toml','--locked','updates::tests::launch_owner_signed_installer_on_disposable_runner','--','--ignored','--exact','--nocapture'],{timeout:180000,maxBuffer:2*1024*1024});
       await expect.poll(()=>{try{return createHash('sha256').update(fs.readFileSync(process.env.MARKET_TEST_INSTALLED_EXE)).digest('hex')}catch{return null}},{timeout:90000}).toBe(expected);
     }else{

@@ -1,81 +1,44 @@
-name: Owner companion release preparation
+name: Verify owner-signed updater candidate
 on:
   workflow_dispatch:
     inputs:
-      mode:
-        type: choice
-        options: [prepare-signed-candidate, approve-tested-candidate]
+      harness_commit:
+        description: Full verified harness commit (verification only; never deploys)
         required: true
-      source_commit:
-        description: Exact stable-version commit with passed CI
+      proof_path:
+        description: Committed public detached-signature proof path
+        default: docs/evidence/companion-v2-signed-candidate.json
         required: true
-      version:
-        description: Committed stable version (for example 2.0.0)
-        required: true
-      visual_approval_commit:
-        description: Owner-approved desktop and website design commit
-        required: true
-      windows_run_id:
-        required: true
-      backend_run_id:
-        required: true
-      website_run_id:
-        required: true
-      candidate_run_id:
-        description: Required for approval of an already built candidate
-      manual_receipt:
-        description: Committed exact-installer owner PC acceptance JSON path
-      manual_receipt_commit:
-        description: Exact commit containing the owner PC acceptance record
-      release_notes:
-        description: Public release notes
 permissions:
   contents: read
   actions: read
 concurrency:
-  group: companion-owner-release
+  group: companion-owner-update-verification
   cancel-in-progress: false
 jobs:
-  authorize:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Require explicit configured owner dispatch
-        env:
-          RELEASE_OWNER: ${{ vars.COMPANION_RELEASE_OWNER }}
-          ACTOR: ${{ github.actor }}
-        run: |
-          test -n "$RELEASE_OWNER"
-          test "${RELEASE_OWNER,,}" = "${ACTOR,,}"
-  prepare:
-    needs: authorize
+  verify:
     runs-on: windows-latest
-    environment: companion-release
-    timeout-minutes: 35
+    timeout-minutes: 25
     env:
-      RELEASE_SOURCE_COMMIT: ${{ inputs.source_commit }}
-      RELEASE_VERSION: ${{ inputs.version }}
-      RELEASE_VISUAL_COMMIT: ${{ inputs.visual_approval_commit }}
-      RELEASE_WINDOWS_RUN_ID: ${{ inputs.windows_run_id }}
-      RELEASE_BACKEND_RUN_ID: ${{ inputs.backend_run_id }}
-      RELEASE_WEBSITE_RUN_ID: ${{ inputs.website_run_id }}
-      RELEASE_NOTES: ${{ inputs.release_notes }}
-      COMPANION_RELEASE_OWNER: ${{ vars.COMPANION_RELEASE_OWNER }}
-      COMPANION_PUBLISHER_THUMBPRINT: ${{ vars.COMPANION_PUBLISHER_THUMBPRINT }}
-      COMPANION_UPDATER_PUBLIC_KEY: ${{ vars.COMPANION_UPDATER_PUBLIC_KEY }}
-      TWICHUI_UPDATER_PUBLIC_KEY: ${{ vars.COMPANION_UPDATER_PUBLIC_KEY }}
-      COMPANION_TIMESTAMP_URL: ${{ vars.COMPANION_TIMESTAMP_URL }}
-      COMPANION_WINDOWS_SIGN_COMMAND: ${{ vars.COMPANION_WINDOWS_SIGN_COMMAND }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      CANDIDATE_PROOF: ${{ inputs.proof_path }}
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.source_commit }}
-          fetch-depth: 0
+          ref: ${{ inputs.harness_commit }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12.10'
-      - name: Validate exact source, CI, owner and visual provenance
-        run: python scripts/prepare-companion-release.py preflight
+          python-version: '3.12'
+      - name: Validate canonical CI and public candidate identity
+        id: candidate
+        run: python scripts/verify-signed-update-candidate.py preflight --proof "$env:CANDIDATE_PROOF"
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ steps.candidate.outputs.windows_run_id }}
+          artifact-ids: ${{ steps.candidate.outputs.installer_artifact_id }}
+          path: artifacts/original-signed-update-payload
+          merge-multiple: true
       - uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: 1.100.0
@@ -88,120 +51,21 @@ jobs:
         with:
           node-version: '22'
       - run: pip install -r backend/requirements.lock
-        if: inputs.mode == 'prepare-signed-candidate'
       - run: npm ci --prefix web
-        if: inputs.mode == 'prepare-signed-candidate'
       - run: npm --prefix web run build
-        if: inputs.mode == 'prepare-signed-candidate'
-      - run: npm ci --prefix desktop
-        if: inputs.mode == 'prepare-signed-candidate'
-      - name: Provision optional owner certificate without changing trust roots
-        if: inputs.mode == 'prepare-signed-candidate'
-        shell: pwsh
-        env:
-          OWNER_PFX: ${{ secrets.COMPANION_CODESIGN_PFX_BASE64 }}
-          OWNER_PFX_PASSWORD: ${{ secrets.COMPANION_CODESIGN_PFX_PASSWORD }}
-        run: |
-          if ($env:OWNER_PFX) {
-            $certPath="Cert:\CurrentUser\My\$env:COMPANION_PUBLISHER_THUMBPRINT"
-            if (Test-Path $certPath) { throw 'Refusing to replace a pre-existing signing certificate' }
-            $path=Join-Path $env:RUNNER_TEMP 'companion-owner-signing.pfx'
-            try {
-              [IO.File]::WriteAllBytes($path,[Convert]::FromBase64String($env:OWNER_PFX))
-              $password=if ($env:OWNER_PFX_PASSWORD) { ConvertTo-SecureString $env:OWNER_PFX_PASSWORD -AsPlainText -Force } else { [Security.SecureString]::new() }
-              $metadata=Get-PfxData -FilePath $path -Password $password
-              if (@($metadata.EndEntityCertificates).Count -ne 1 -or $metadata.EndEntityCertificates[0].Thumbprint -ne $env:COMPANION_PUBLISHER_THUMBPRINT) { throw 'Configured signing identity differs' }
-              $cert=Import-PfxCertificate -FilePath $path -CertStoreLocation Cert:\CurrentUser\My -Password $password
-              'COMPANION_CERT_IMPORTED=true' | Out-File $env:GITHUB_ENV -Append -Encoding utf8
-              if ($cert.Thumbprint -ne $env:COMPANION_PUBLISHER_THUMBPRINT) { throw 'Imported signing identity differs' }
-            } finally { Remove-Item $path -ErrorAction SilentlyContinue }
-          } elseif (-not $env:COMPANION_WINDOWS_SIGN_COMMAND) {
-            throw 'Configure an owner-managed certificate or remote signing adapter first'
-          }
-      - name: Build signed current-user installer and version-bound updater signature
-        if: inputs.mode == 'prepare-signed-candidate'
-        env:
-          TWICHUI_UPDATER_PUBLIC_KEY: ${{ vars.COMPANION_UPDATER_PUBLIC_KEY }}
-          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.COMPANION_UPDATER_PRIVATE_KEY }}
-          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.COMPANION_UPDATER_PRIVATE_KEY_PASSWORD }}
-        shell: pwsh
-        run: |
-          $config=(Resolve-Path artifacts/companion-signed-release/tauri-signing.json).Path
-          npm --prefix desktop run tauri build -- --ci --config $config
-          if ($LASTEXITCODE -ne 0) { throw 'Signed installer build failed' }
-      - name: Verify installed signed candidate upgrade
-        if: inputs.mode == 'prepare-signed-candidate'
-        timeout-minutes: 8
-        shell: pwsh
-        run: |
-          $installer=@(Get-ChildItem 'desktop/src-tauri/target/release/bundle/nsis/*-setup.exe')
-          if ($installer.Count -ne 1) { throw 'Expected one signed installer' }
-          ./scripts/windows/verify-release-signing.ps1 -Installer $installer[0].FullName -Output artifacts/companion-signed-release/authenticode.json
-          $env:MARKET_TEST_UPDATER_SDK='true'
-          ./scripts/windows/verify-upgrade.ps1
-      - name: Verify installed signed candidate native workflows
-        if: inputs.mode == 'prepare-signed-candidate'
-        timeout-minutes: 5
-        shell: pwsh
-        run: ./scripts/windows/verify-installer.ps1
-      - name: Verify actual Windows signature and prepare incomplete candidate
-        if: inputs.mode == 'prepare-signed-candidate'
-        shell: pwsh
-        run: |
-          $installer=@(Get-ChildItem 'desktop/src-tauri/target/release/bundle/nsis/*-setup.exe')
-          if ($installer.Count -ne 1) { throw 'Expected one signed installer' }
-          ./scripts/windows/verify-release-signing.ps1 -Installer $installer[0].FullName -Output artifacts/companion-signed-release/authenticode.json
-          python scripts/prepare-companion-release.py candidate --acceptance artifacts/companion-v2 --signing artifacts/companion-signed-release/authenticode.json
-      - uses: actions/download-artifact@v4
-        if: inputs.mode == 'approve-tested-candidate'
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          run-id: ${{ inputs.candidate_run_id }}
-          name: companion-signed-candidate-${{ inputs.version }}
-          path: artifacts/companion-signed-release
-      - name: Admit only exact-installer owner manual acceptance
-        if: inputs.mode == 'approve-tested-candidate'
-        env:
-          RELEASE_MANUAL_RECEIPT: ${{ inputs.manual_receipt }}
-          RELEASE_CANDIDATE_RUN_ID: ${{ inputs.candidate_run_id }}
-          RELEASE_MANUAL_COMMIT: ${{ inputs.manual_receipt_commit }}
-        run: python scripts/prepare-companion-release.py approve --manual "$env:RELEASE_MANUAL_RECEIPT"
-      - name: Independently verify signed payload and version
-        shell: pwsh
-        run: |
-          cargo build --manifest-path desktop/Cargo.toml --release --example verify_release --locked
-          $directory=Join-Path 'artifacts/companion-signed-release/bundle' $env:RELEASE_VERSION
-          $installer=Join-Path $directory "TwichUI-Market-Companion-$env:RELEASE_VERSION-windows-x64.exe"
-          ./desktop/target/release/examples/verify_release.exe (Join-Path $directory 'manifest.json') $installer
-          if ($LASTEXITCODE -ne 0) { throw 'Actual updater signature/version verification failed' }
+      - run: cargo build --manifest-path desktop/Cargo.toml --release --example verify_release --locked
+      - name: Stage exact signed bytes and independently verify signature/version
+        run: python scripts/verify-signed-update-candidate.py stage --proof "$env:CANDIDATE_PROOF" --incoming artifacts/original-signed-update-payload
+      - name: Actual SDK upgrade, reconnect, export and uninstall retention
+        timeout-minutes: 10
+        run: ./scripts/windows/verify-upgrade.ps1
+      - name: Record source-bound actual signed updater acceptance
+        run: python scripts/verify-signed-update-candidate.py record --proof "$env:CANDIDATE_PROOF"
       - uses: actions/upload-artifact@v4
-        if: inputs.mode == 'prepare-signed-candidate'
+        if: always()
         with:
-          name: companion-signed-candidate-${{ inputs.version }}
-          path: |
-            artifacts/companion-signed-release/bundle/
-            artifacts/companion-signed-release/*-provenance.json
-            artifacts/companion-signed-release/authenticode.json
-            artifacts/companion-signed-release/owner-acceptance.json
-            artifacts/companion-signed-release/installed-acceptance/
-            artifacts/companion-signed-release/owner-manual-record.json
-          if-no-files-found: error
-      - uses: actions/upload-artifact@v4
-        if: inputs.mode == 'approve-tested-candidate'
-        with:
-          name: companion-approved-${{ inputs.version }}
-          path: |
-            artifacts/companion-signed-release/bundle/
-            artifacts/companion-signed-release/*-provenance.json
-            artifacts/companion-signed-release/authenticode.json
-            artifacts/companion-signed-release/owner-acceptance.json
-            artifacts/companion-signed-release/installed-acceptance/
-            artifacts/companion-signed-release/owner-manual-record.json
-          if-no-files-found: error
-      - name: Remove only the explicitly provisioned signing certificate
-        if: always() && inputs.mode == 'prepare-signed-candidate'
-        shell: pwsh
-        run: |
-          if ($env:COMPANION_CERT_IMPORTED -eq 'true' -and $env:COMPANION_PUBLISHER_THUMBPRINT -match '^[A-Fa-f0-9]{40}$') {
-            Remove-Item "Cert:\CurrentUser\My\$env:COMPANION_PUBLISHER_THUMBPRINT" -DeleteKey -ErrorAction Stop
-          }
+          name: companion-signed-update-acceptance
+          path: artifacts/companion-signed-update-test/
+          if-no-files-found: warn
+# Public key/signature only. Signing remains on the owner's host. No publication,
+# secret provisioning, certificate purchase or production deployment in this job.

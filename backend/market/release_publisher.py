@@ -1,9 +1,9 @@
 """Operator-only immutable release import and audited atomic pointer transitions.
 
 No web route imports this module. The approved owner-controlled Windows workflow
-must supply its actual CI/visual/Authenticode receipt. This importer independently
-checks its pinned identity, bounded bytes and updater signature/signed version.
-It cannot independently reproduce Windows trust-chain evaluation on Linux.
+must supply its actual CI/visual/owner receipt. This importer independently
+checks its pinned updater-key identity, bounded bytes and updater signature/signed version.
+Windows publisher status is observed transparently; a paid certificate is not required.
 """
 import argparse
 from contextlib import contextmanager

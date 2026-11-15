@@ -4,7 +4,6 @@ services:
   api:
     environment: &release-environment
       COMPANION_RELEASE_DIRECTORY: /releases
-      COMPANION_PUBLISHER_THUMBPRINT: ${COMPANION_PUBLISHER_THUMBPRINT:-}
       COMPANION_UPDATER_PUBLIC_KEY: ${COMPANION_UPDATER_PUBLIC_KEY:-}
     volumes:
       - companion-releases:/releases:ro

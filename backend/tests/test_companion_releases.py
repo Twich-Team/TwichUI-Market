@@ -16,11 +16,13 @@ def fixture_release(tmp_path,monkeypatch):
     monkeypatch.setenv('COMPANION_UPDATER_PUBLIC_KEY',key)
     payload=b'MZ'+b'synthetic-only-not-a-real-installer'*100
     name=f'TwichUI-Market-Companion-{version}-windows-x64.exe';asset=directory/name;asset.write_bytes(payload)
-    receipt={'schema_version':1,'channel':'stable','version':version,'filename':name,'bytes':len(payload),'sha256':hashlib.sha256(payload).hexdigest(),
-        'source_commit':'b'*40,'workflow_run_id':123,'published_at':datetime.now(timezone.utc).isoformat(),'publisher_thumbprint':'A'*40,
-        'authenticode_status':'Valid','updater_public_key_sha256':hashlib.sha256(key.encode()).hexdigest(),
+    receipt={'schema_version':2,'channel':'stable','version':version,'filename':name,'bytes':len(payload),'sha256':hashlib.sha256(payload).hexdigest(),
+        'source_commit':'b'*40,'workflow_run_id':123,'published_at':datetime.now(timezone.utc).isoformat(),'publisher_thumbprint':'',
+        'authenticode_status':'NotSigned','updater_public_key_sha256':hashlib.sha256(key.encode()).hexdigest(),
         'updater_signature':base64.b64encode(b'synthetic-signature-not-cryptographic-proof').decode(),'visual_approval_commit':'c'*40,
         'acceptance':dict.fromkeys(REQUIRED_TESTS,True),'notes':'Synthetic release service fixture only'}
+    (directory/'publication-proof.json').write_text(json.dumps({'owner_acceptance':{'owner':'synthetic-owner','owner_approved_publication':True,'owner_approved_deployment':True,'stable_publication_permitted':True,
+        **{name:receipt[name] for name in ('version','source_commit','sha256','updater_public_key_sha256')} , 'installer_sha256':receipt['sha256']}}))
     (directory/'manifest.json').write_text(json.dumps(receipt));(root/'current.json').write_text(json.dumps({'schema_version':1,'version':version}))
     return root,directory,asset,receipt,payload
 
@@ -46,7 +48,7 @@ def test_controlled_versioned_download_is_public_streamed_and_has_expected_diges
 
 
 @pytest.mark.parametrize('field,value',[
-    ('channel','preview'),('version','2.0.0-beta.1'),('filename','../../market.db'),('authenticode_status','NotSigned'),
+    ('channel','preview'),('version','2.0.0-beta.1'),('filename','../../market.db'),('authenticode_status','UnknownError'),
     ('publisher_thumbprint','F'*40),('updater_public_key_sha256','f'*64),('bytes',2**30),('sha256','f'*64),
     ('updater_signature','malformed! '*8),('published_at','2026-11-14T12:00:00'),('schema_version',99),
     ('visual_approval_commit',''),('unexpected_secret_field','must not be accepted')])
@@ -62,7 +64,7 @@ def test_missing_windows_acceptance_or_public_trust_configuration_fails_closed(c
     receipt['acceptance']['tray']=False;(directory/'manifest.json').write_text(json.dumps(receipt))
     assert not client.get('/api/v1/companion/releases/current').json()['ready']
     receipt['acceptance']['tray']=True;(directory/'manifest.json').write_text(json.dumps(receipt))
-    monkeypatch.delenv('COMPANION_UPDATER_PUBLIC_KEY');assert not client.get('/api/v1/companion/releases/current').json()['ready']
+    monkeypatch.setenv('COMPANION_UPDATER_PUBLIC_KEY','');assert not client.get('/api/v1/companion/releases/current').json()['ready']
 
 
 def test_public_trust_pins_ignore_surrounding_configuration_whitespace(client,tmp_path,monkeypatch):
@@ -107,3 +109,11 @@ def test_updater_metadata_requires_complete_release_and_never_forces_a_downgrade
         assert client.get(endpoint+installed).status_code==404
     (root/'current.json').unlink()
     assert client.get(endpoint+'0.1.0').status_code==204
+
+
+@pytest.mark.parametrize('changes',[{'owner_approved_publication':False},{'owner_approved_deployment':False},{'installer_sha256':'f'*64},{'updater_public_key_sha256':'f'*64}])
+def test_final_owner_proof_must_identify_exact_stable_candidate(client,tmp_path,monkeypatch,changes):
+    _,directory,_,_,_=fixture_release(tmp_path,monkeypatch)
+    path=directory/'publication-proof.json';proof=json.loads(path.read_text());proof['owner_acceptance'].update(changes);path.write_text(json.dumps(proof))
+    assert not client.get('/api/v1/companion/releases/current').json()['ready']
+    assert client.get('/api/v1/companion/releases/2.0.0/windows-x64').status_code==404

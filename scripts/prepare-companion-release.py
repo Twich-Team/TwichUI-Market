@@ -1,6 +1,6 @@
 """Owner-controlled Windows release preparation. Never publishes a live pointer.
 
-Modes: preflight verifies source/CI/visual provenance and prepares signing config;
+Modes: preflight verifies source/CI/visual provenance and prepares public signing config;
 candidate verifies signed bytes and writes a deliberately incomplete candidate;
 approve admits only an exact-hash manual owner record, then completes the receipt.
 No private key is read, serialized or printed by this script.
@@ -81,17 +81,8 @@ def preflight(output):
         if read(ROOT/path)['version']!=version:raise ValueError('Desktop version sources differ')
     runs={name:workflow(os.environ[f'RELEASE_{name.upper()}_RUN_ID'],path,source) for name,path in WORKFLOWS.items()}
     key=os.environ.get('COMPANION_UPDATER_PUBLIC_KEY','').strip()
-    thumb=os.environ.get('COMPANION_PUBLISHER_THUMBPRINT','').upper()
-    if not key or len(key)>4096 or not re.fullmatch(r'[A-F0-9]{40}',thumb):raise ValueError('Configure owner-managed public trust identities before signing')
-    windows={'certificateThumbprint':thumb,'digestAlgorithm':'sha256'}
-    command=os.environ.get('COMPANION_WINDOWS_SIGN_COMMAND','').strip()
-    if command:
-        if '%1' not in command:raise ValueError('Owner signing adapter must accept the installer placeholder')
-        windows['signCommand']=command
-    timestamp=os.environ.get('COMPANION_TIMESTAMP_URL','').strip()
-    if not timestamp.startswith(('https://','http://')) or len(timestamp)>512:raise ValueError('Configure the signing provider timestamp endpoint')
-    windows['timestampUrl']=timestamp
-    config={'bundle':{'createUpdaterArtifacts':True,'windows':windows},'plugins':{'updater':{'pubkey':key,'requireSignedVersion':True,'allowDowngrades':False,'windows':{'installMode':'basicUi'}}}}
+    if not key or len(key)>4096:raise ValueError('Configure the public updater trust key before signing')
+    config={'plugins':{'updater':{'pubkey':key,'requireSignedVersion':True,'allowDowngrades':False,'windows':{'installMode':'basicUi'}}}}
     output.mkdir(parents=True,exist_ok=True)
     (output/'tauri-signing.json').write_text(json.dumps(config),encoding='utf-8')
     (output/'source-provenance.json').write_text(json.dumps({'schema_version':1,'owner':actor,'source_commit':source,'version':version,'visual_approval_commit':approved,'runs':runs},indent=2),encoding='utf-8')
@@ -123,9 +114,10 @@ def candidate(output,acceptance,signing):
     files=list((ROOT/'desktop/src-tauri/target/release/bundle/nsis').glob('*-setup.exe'))
     if len(files)!=1:raise ValueError('Expected one signed NSIS installer')
     installer=files[0];proof=read(signing)
-    thumb=os.environ['COMPANION_PUBLISHER_THUMBPRINT'].upper()
-    if proof.get('status')!='Valid' or proof.get('thumbprint')!=thumb or proof.get('sha256')!=sha(installer) or not proof.get('timestamped'):
-        raise ValueError('Actual Windows Authenticode acceptance differs')
+    thumb=proof.get('thumbprint','')
+    if (proof.get('status') not in ('NotSigned','Valid') or proof.get('sha256')!=sha(installer)
+            or (proof['status']=='NotSigned' and thumb) or (proof['status']=='Valid' and not re.fullmatch(r'[A-F0-9]{40}',thumb))):
+        raise ValueError('Actual Windows publisher observation differs')
     signature=Path(str(installer)+'.sig')
     if signature.is_symlink() or not 32<=signature.stat().st_size<=4096:raise ValueError('Version-bound updater signature is missing')
     if not 1024<=installer.stat().st_size<=64*1024*1024:raise ValueError('Installer exceeds controlled delivery limits')
@@ -134,9 +126,9 @@ def candidate(output,acceptance,signing):
     key=os.environ['COMPANION_UPDATER_PUBLIC_KEY'].strip()
     notes=os.environ.get('RELEASE_NOTES','').strip()
     if len(notes)>4000:raise ValueError('Release notes exceed limit')
-    receipt={'schema_version':1,'channel':'stable','version':version,'filename':filename,'bytes':installer.stat().st_size,'sha256':sha(installer),
+    receipt={'schema_version':2,'channel':'stable','version':version,'filename':filename,'bytes':installer.stat().st_size,'sha256':sha(installer),
         'source_commit':source,'workflow_run_id':int(os.environ['GITHUB_RUN_ID']),'published_at':datetime.now(timezone.utc).isoformat(),
-        'publisher_thumbprint':thumb,'authenticode_status':'Valid','updater_public_key_sha256':hashlib.sha256(key.encode()).hexdigest(),
+        'publisher_thumbprint':thumb,'authenticode_status':proof['status'],'updater_public_key_sha256':hashlib.sha256(key.encode()).hexdigest(),
         'updater_signature':signature.read_text().strip(),'visual_approval_commit':approved,'acceptance':acceptance_flags,'notes':notes}
     (destination/'manifest.json').write_text(json.dumps(receipt,indent=2),encoding='utf-8')
     (output/'candidate-provenance.json').write_text(json.dumps({**provenance,'producer_run_id':int(os.environ['GITHUB_RUN_ID']),
@@ -173,13 +165,14 @@ def approve(output,manual_path):
     if (manual.get('schema_version')!=1 or manual.get('owner','').lower()!=actor.lower() or manual.get('source_commit')!=source
             or manual.get('installer_sha256')!=receipt['sha256'] or manual.get('version')!=version or not manual.get('observations')
             or not re.fullmatch(r'[a-f0-9]{64}',manual.get('tray_screenshot_sha256',''))
+            or manual.get('owner_approved_publication') is not True or manual.get('owner_approved_deployment') is not True
             or not manual.get('windows_version') or not manual.get('display_scaling') or manual.get('tray_actions_verified') is not True):
         raise ValueError('Exact-installer owner PC acceptance is missing')
     checks=manual.get('checks',{})
     required={'notification_menu','open','settings','sync','pause_resume','close_restore','minimize_restore','hidden_sync','startup','single_instance','quit'}
     if set(checks)!=required or not all(value is True for value in checks.values()):raise ValueError('Manual tray acceptance is incomplete')
     key=os.environ.get('COMPANION_UPDATER_PUBLIC_KEY','').strip()
-    if receipt['publisher_thumbprint']!=os.environ.get('COMPANION_PUBLISHER_THUMBPRINT','').upper() or receipt['updater_public_key_sha256']!=hashlib.sha256(key.encode()).hexdigest():
+    if receipt['updater_public_key_sha256']!=hashlib.sha256(key.encode()).hexdigest():
         raise ValueError('Candidate public trust identity differs')
     installer=manifest.parent/receipt['filename']
     if sha(installer)!=receipt['sha256']:raise ValueError('Candidate bytes changed')
@@ -188,7 +181,8 @@ def approve(output,manual_path):
     manifest.write_text(json.dumps(receipt,indent=2),encoding='utf-8')
     acceptance={'schema_version':1,'owner':actor,'source_commit':source,'version':version,
         'installer_sha256':receipt['sha256'],'manual_receipt_sha256':sha(manual_path),'approved_at':datetime.now(timezone.utc).isoformat(),
-        'approval_run_id':int(os.environ['GITHUB_RUN_ID']),'stable_publication_permitted':True}
+        'approval_run_id':int(os.environ['GITHUB_RUN_ID']),'stable_publication_permitted':True,
+        'owner_approved_publication':True,'owner_approved_deployment':True,'updater_public_key_sha256':receipt['updater_public_key_sha256']}
     (output/'owner-acceptance.json').write_text(json.dumps(acceptance,indent=2),encoding='utf-8')
     (manifest.parent/'publication-proof.json').write_text(json.dumps({'source_provenance':provenance,'owner_acceptance':acceptance},indent=2),encoding='utf-8')
 

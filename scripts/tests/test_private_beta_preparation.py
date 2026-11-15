@@ -73,23 +73,27 @@ class PrivateBetaPreparation(unittest.TestCase):
         asset=directory/manifest['filename'];asset.write_bytes(pe_bytes())
         change_evidence(directory,manifest,'windows-signature.json',{'sha256':hashlib.sha256(asset.read_bytes()).hexdigest(),'bytes':asset.stat().st_size})
         change_evidence(directory,manifest,'launch-metrics.json',{'installer_bytes':asset.stat().st_size})
+        digest=hashlib.sha256(asset.read_bytes()).hexdigest()
+        change_evidence(directory,manifest,'signed-update-acceptance.json',{'installer_sha256':digest})
+        change_evidence(directory,manifest,'owner-release-approval.json',{'installer_sha256':digest})
+        Path(str(asset)+'.sig').write_text(manifest['updater_signature'])
         return directory,asset,manifest
 
     def test_complete_private_candidate_keeps_original_receipts_and_cannot_overwrite(self):
         directory,asset,manifest=self.fixture();output=self.root/'prepared'
         with patch.object(private,'source_config',return_value={'version':manifest['version']}),patch.object(private,'workflow',side_effect=lambda run,path,source:next(value for value in manifest['ci'].values() if value['path']==path)):
-            result=private.prepare(asset,directory,directory/'owner-private-beta-approval.json','b'*40,{name:value['id'] for name,value in manifest['ci'].items()},output)
+            result=private.prepare(asset,directory,directory/'owner-release-approval.json','b'*40,{name:value['id'] for name,value in manifest['ci'].items()},output)
             receipt=json.loads((result/'manifest.json').read_text())
-            self.assertFalse(receipt['acceptance']['tray']);self.assertEqual(receipt['updates'],'manual')
+            self.assertFalse(receipt['acceptance']['tray']);self.assertEqual(receipt['updates'],'signed')
             self.assertEqual((result/manifest['filename']).read_bytes(),asset.read_bytes())
             for name in private.EVIDENCE:self.assertEqual((result/name).read_bytes(),(directory/name).read_bytes())
-            with self.assertRaisesRegex(ValueError,'overwrites'):private.prepare(asset,directory,directory/'owner-private-beta-approval.json','b'*40,{name:value['id'] for name,value in manifest['ci'].items()},output)
+            with self.assertRaisesRegex(ValueError,'overwrites'):private.prepare(asset,directory,directory/'owner-release-approval.json','b'*40,{name:value['id'] for name,value in manifest['ci'].items()},output)
 
     def test_wrong_installed_or_signature_evidence_leaves_no_admissible_prepared_bundle(self):
-        directory,asset,manifest=self.fixture();path=directory/'installed-smoke.json';record=json.loads(path.read_text());record['updater_disabled']=False;path.write_text(json.dumps(record))
+        directory,asset,manifest=self.fixture();path=directory/'installed-smoke.json';record=json.loads(path.read_text());record['updater_disabled']=True;path.write_text(json.dumps(record))
         output=self.root/'prepared'
         with patch.object(private,'source_config',return_value={'version':manifest['version']}),patch.object(private,'workflow',side_effect=lambda run,path,source:next(value for value in manifest['ci'].values() if value['path']==path)):
-            with self.assertRaises(ValueError):private.prepare(asset,directory,directory/'owner-private-beta-approval.json','b'*40,{name:value['id'] for name,value in manifest['ci'].items()},output)
+            with self.assertRaises(ValueError):private.prepare(asset,directory,directory/'owner-release-approval.json','b'*40,{name:value['id'] for name,value in manifest['ci'].items()},output)
         self.assertFalse((output/manifest['version']).exists());self.assertEqual(list(output.iterdir()),[])
 
 

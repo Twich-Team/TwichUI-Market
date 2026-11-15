@@ -4,6 +4,7 @@ services:
     environment: &private-beta-environment
       COMPANION_PRIVATE_BETA_DIRECTORY: /private-beta
       COMPANION_PRIVATE_BETA_USER_IDS: ${COMPANION_PRIVATE_BETA_USER_IDS:-}
+      COMPANION_UPDATER_PUBLIC_KEY: ${COMPANION_UPDATER_PUBLIC_KEY:-}
     volumes:
       - companion-private-beta:/private-beta:ro
   local-api:

@@ -46,7 +46,7 @@ class ReleasePreparation(unittest.TestCase):
         (self.acceptance/'launch-metrics.json').write_text('{"fixture":true,"cold_start_to_native_window_ms":1}')
         installer=self.root/'desktop/src-tauri/target/release/bundle/nsis/synthetic-setup.exe';installer.write_bytes(b'MZ'+b'x'*1024)
         Path(str(installer)+'.sig').write_text('A'*64)
-        self.signing=self.root/'signing.json';self.signing.write_text(json.dumps({'status':'Valid','thumbprint':'A'*40,'sha256':release.sha(installer),'timestamped':True}))
+        self.signing=self.root/'signing.json';self.signing.write_text(json.dumps({'status':'NotSigned','thumbprint':'','sha256':release.sha(installer),'timestamped':True}))
 
     def candidate(self):
         release.candidate(self.output,self.acceptance,self.signing)
@@ -56,7 +56,7 @@ class ReleasePreparation(unittest.TestCase):
         return {'schema_version':1,'owner':'fixture_owner','source_commit':self.source,'version':'2.0.0',
             'installer_sha256':json.loads(manifest.read_text())['sha256'],'tray_screenshot_sha256':'f'*64,
             'windows_version':'Synthetic Windows fixture','display_scaling':'100%','observations':'Synthetic gate test, not actual PC evidence',
-            'tray_actions_verified':True,'checks':dict.fromkeys(['notification_menu','open','settings','sync','pause_resume','close_restore',
+            'tray_actions_verified':True,'owner_approved_publication':True,'owner_approved_deployment':True,'checks':dict.fromkeys(['notification_menu','open','settings','sync','pause_resume','close_restore',
                 'minimize_restore','hidden_sync','startup','single_instance','quit'],True)}
 
     def test_candidate_cannot_be_published_before_exact_manual_acceptance(self):
@@ -105,7 +105,7 @@ class ReleasePreparation(unittest.TestCase):
         installed=self.acceptance/'installed-smoke.json';data=json.loads(installed.read_text());data['hidden_startup']=False;installed.write_text(json.dumps(data))
         with self.assertRaises(ValueError):self.candidate()
         data['hidden_startup']=True;installed.write_text(json.dumps(data))
-        proof=json.loads(self.signing.read_text());proof['status']='NotSigned';self.signing.write_text(json.dumps(proof))
+        proof=json.loads(self.signing.read_text());proof['status']='UnknownError';self.signing.write_text(json.dumps(proof))
         with self.assertRaises(ValueError):self.candidate()
         self.assertFalse((self.output/'bundle').exists())
 
@@ -114,7 +114,9 @@ class ReleasePreparation(unittest.TestCase):
             with self.assertRaises(ValueError):release.owner()
         with patch.object(release.subprocess,'run'),patch.object(release,'workflow',return_value={'synthetic':True}):
             release.preflight(self.output)
-        self.assertNotIn('SYNTHETIC-PRIVATE-MUST-NOT-BE-WRITTEN',(self.output/'tauri-signing.json').read_text())
+        config=(self.output/'tauri-signing.json').read_text()
+        self.assertNotIn('SYNTHETIC-PRIVATE-MUST-NOT-BE-WRITTEN',config)
+        for forbidden in ('certificateThumbprint','timestampUrl','signCommand'):self.assertNotIn(forbidden,config)
         (self.root/'desktop/core/Cargo.toml').write_text('[package]\nversion="2.0.0-beta.1"\n')
         with patch.object(release.subprocess,'run'):
             with self.assertRaises(ValueError):release.preflight(self.output)

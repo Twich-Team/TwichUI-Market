@@ -27,6 +27,8 @@ def test_immutable_import_idempotency_and_audited_rollback_keep_both_versions(tm
     assert publisher.publish(store,bundle,'synthetic-owner')=={'changed':False,'version':'2.0.0'}
     version='2.0.1';other=source/version;other.mkdir()
     updated={**receipt,'version':version,'filename':f'TwichUI-Market-Companion-{version}-windows-x64.exe'}
+    proof=json.loads((bundle/'publication-proof.json').read_text());proof['owner_acceptance']['version']=version
+    (other/'publication-proof.json').write_text(json.dumps(proof))
     (other/'manifest.json').write_text(json.dumps(updated));(other/updated['filename']).write_bytes(payload)
     second=publisher.publish(store,other,'synthetic-owner');assert second['previous_version']=='2.0.0'
     assert publisher.pointer(store)=='2.0.1'
@@ -90,12 +92,12 @@ def test_unrelated_directory_and_symlink_store_are_never_initialized(tmp_path,mo
 
 def test_publication_proof_is_bounded_immutable_and_preserved_in_audit(tmp_path,monkeypatch):
     store,_,bundle,_,_,_=fixture(tmp_path,monkeypatch)
-    proof=bundle/'publication-proof.json';proof.write_text('{"fixture":"Synthetic owner provenance, not acceptance"}')
+    proof=bundle/'publication-proof.json'
     original=proof.read_bytes();publisher.publish(store,bundle,'synthetic-owner')
     assert (store/bundle.name/proof.name).read_bytes()==original
     audit=json.loads((store/'audit/00000001.json').read_text())
     assert audit['publication_proof_sha256']==hashlib.sha256(original).hexdigest()
-    proof.write_text('{"fixture":"Changed provenance"}')
+    changed=json.loads(proof.read_text());changed['fixture']='Changed immutable synthetic provenance';proof.write_text(json.dumps(changed))
     with pytest.raises(ValueError,match='immutable'):publisher.publish(store,bundle,'synthetic-owner')
     assert (store/bundle.name/proof.name).read_bytes()==original
 
@@ -106,6 +108,6 @@ def test_invalid_publication_proof_cannot_create_an_active_release(tmp_path,monk
     proof=bundle/'publication-proof.json'
     if kind=='oversized':proof.write_bytes(b'x'*16385)
     else:
-        outside=tmp_path/'external-proof.json';outside.write_text('{}');proof.symlink_to(outside)
+        outside=tmp_path/'external-proof.json';outside.write_text('{}');proof.unlink();proof.symlink_to(outside)
     with pytest.raises(ValueError):publisher.publish(store,bundle,'synthetic-owner')
     assert not (store/'current.json').exists()

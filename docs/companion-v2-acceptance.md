@@ -1,6 +1,6 @@
 # Companion v2 acceptance and remaining gates
 
-**Engineering candidate; goal remains active.** Production is still the approved c8f03c2 website/API with schema0012. No v2 frontend, migration, release store or stable installer is live. The owner has approved the eight-screen new design packet; tray actions and owner signing remain separate gates.
+**Engineering candidate; goal remains active.** Production is still the approved c8f03c2 website/API with schema0012. No v2 frontend, migration, release store or stable installer is live. The owner has approved the eight-screen new design packet; tray actions, actual signed updater installation and final owner publication/deployment approval remain separate gates. Commercial Authenticode is not required.
 
 ## Verified Windows checkpoint
 
@@ -57,7 +57,7 @@ The isolated PostgreSQL100-variant/61-day benchmark identified a concrete backen
 | 14 Tests | Backend/Rust/browser/actual installed Windows suites pass at e55807c; tray/signing/public deployment gaps remain explicit |
 | 15 Performance | All named metrics sampled with scope/precision/synthetic limitations; demonstrated backend bottleneck optimized |
 | 16 Eight screenshots | All eight actual native/web/OS captures inspected and retained in the [review packet](companion-v2-visual-review.md); owner approval recorded |
-| 17 Completion | Visual approval complete; manual tray, distribution/signing decision, permanent release and compatible production verification remain |
+| 17 Completion | Visual approval complete; manual tray, actual signed-update acceptance, final owner approval, permanent release and compatible production verification remain |
 
 ## Production preservation and deployment gate
 
@@ -66,3 +66,8 @@ Read-only23:12UTC check: trusted public HTTPS200/schema0012; market2/house114 al
 Additive0013 populated migration/downgrade-preservation and retained old API fail-closed compatibility pass in isolation. The schema-aware audit projects original columns and preserves original history/account/credential/preferences at recorded cutoffs; a fresh production baseline and backup/checksum/isolated restoration are still mandatory immediately before deployment. Do not reuse stale restoration evidence. Preserve original image rollback, worker start/schedule, all backups/history/accounts/sessions/preferences and legacy contracts. No additional collector or destructive retention activation is authorized here.
 
 [Owner release procedure](companion-v2-release-operations.md) documents protected dispatch, separate Authenticode/updater keys, exact-source CI, immutable installed/manual acceptance receipts, bounded publication and audited pointer rollback. No private key is requested in chat. Significant visual approval is recorded. The owner has asked about a free three-person private beta; no paid signing expense is authorized. See [free/private and paid options](companion-v2-signing-options.md). Compatible public/native pairing and permanent download verification follow approved deployment; current production must not be presented as already supporting v2.
+
+
+## Final free signing decision
+
+The owner has definitively chosen NSIS with no paid Windows certificate and free Tauri-signed automatic updates. [Current operations](companion-v2-release-operations.md) supersede earlier commercial prerequisites/manual-only beta notes. A dedicated encrypted owner key/recovery rehearsal is verified, the public key is compiled in source, and signature/key/CI/actual updater/final approval gates are being completed. No real signed NSIS SDK install, PC tray result or publication/deployment approval is claimed yet. Production stays unchanged.

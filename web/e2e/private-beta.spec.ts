@@ -10,7 +10,7 @@ test("private pilot receives an honest unsigned beta download and loses it after
   await page.getByLabel("Password",{exact:true}).fill("synthetic private pilot password");
   await page.getByRole("button",{name:"Sign in",exact:true}).click();
   await expect(page.getByText("Private Windows beta",{exact:true})).toBeVisible();
-  await expect(page.getByText("Updates are manual. Tray actions still need checking on your PC.",{exact:true})).toBeVisible();
+  await expect(page.getByText("Updates are checked automatically and verified before installation. You choose when to install. Tray actions still need checking on your PC.",{exact:true})).toBeVisible();
   await expect(page.getByText(/The installer is unsigned/)).toBeVisible();
   await expect(page.getByText(/The installer is signed and this release/)).toHaveCount(0);
   const metadata=await (await page.request.get("/api/v1/companion/private-beta/current")).json();

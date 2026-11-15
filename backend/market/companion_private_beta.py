@@ -1,8 +1,8 @@
-"""Inactive-by-default private unsigned beta delivery; never an update source.
+"""Inactive-by-default private NSIS delivery with required Tauri update signatures.
 
 The dedicated operator store is trusted to admit actual CI/owner receipts. These
 routes recheck identity, original evidence and bytes, and require an allowlisted
-active browser session on every request. Stable release policy stays separate.
+active allowlisted identity on every request. Browser setup remains session-only.
 """
 from datetime import datetime
 import hashlib
@@ -11,9 +11,9 @@ from pathlib import Path
 import re
 from typing import Annotated, Literal
 from fastapi import APIRouter, Depends, HTTPException, Request
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel, ConfigDict, Field
-from .companion_releases import REQUIRED_TESTS, bounded_json, file_digest
+from .companion_releases import REQUIRED_TESTS, bounded_json, file_digest, updater_key, version_order
 from .models import User
 from .security import identity
 
@@ -22,8 +22,8 @@ VERSION=r'2\.(?:0|[1-9][0-9]{0,3})\.(?:0|[1-9][0-9]{0,3})-beta\.[1-9][0-9]{0,3}'
 SHA=Annotated[str,Field(pattern=r'^[a-f0-9]{64}$')]
 COMMIT=Annotated[str,Field(pattern=r'^[a-f0-9]{40}$')]
 WORKFLOWS={'windows':'.github/workflows/desktop.yml','backend':'.github/workflows/backend.yml','website':'.github/workflows/web.yml'}
-EVIDENCE={'installed-smoke.json','legacy-upgrade.json','performance.json','launch-metrics.json','windows-signature.json','owner-private-beta-approval.json'}
-GAPS={'tray_actions','authenticode','signed_update_install'}
+EVIDENCE={'installed-smoke.json','legacy-upgrade.json','performance.json','launch-metrics.json','windows-signature.json','owner-release-approval.json','signed-update-acceptance.json'}
+GAPS={'tray_actions'}
 
 
 class CI(BaseModel):
@@ -38,7 +38,7 @@ class CI(BaseModel):
 
 class Manifest(BaseModel):
     model_config=ConfigDict(extra='forbid',strict=True)
-    schema_version:Literal[1]
+    schema_version:Literal[2]
     channel:Literal['private-beta']
     version:Annotated[str,Field(pattern='^'+VERSION+'$')]
     filename:str
@@ -49,7 +49,9 @@ class Manifest(BaseModel):
     workflow_run_id:Annotated[int,Field(ge=1)]
     published_at:str
     authenticode_status:Literal['NotSigned']
-    updates:Literal['manual']
+    updates:Literal['signed']
+    updater_public_key_sha256:SHA
+    updater_signature:Annotated[str,Field(min_length=32,max_length=4096)]
     acceptance:dict[str,bool]
     unverified_requirements:list[str]
     ci:dict[str,CI]
@@ -66,7 +68,7 @@ def root():
 
 
 def reader(request:Request,user:User=Depends(identity)):
-    if request.state.credential.kind!='session':raise HTTPException(403,'Website sign-in required')
+    if request.url.path.endswith('/current') and request.state.credential.kind!='session':raise HTTPException(403,'Website sign-in required')
     configured=os.environ.get('COMPANION_PRIVATE_BETA_USER_IDS','')
     entries=configured.split(',')
     # This is explicitly a three-person pilot, not an implicit all-account feed.
@@ -97,14 +99,15 @@ def validate_evidence(manifest,directory):
         raise ValueError('Installed beta acceptance source/version differs')
     for name in ('native_browser_approval_ui','native_thread_hidden_sync','single_instance_restore','preferences_saved',
             'credential_and_cache_restart','hidden_startup','current_user_autostart_enable_disable','native_minimize_close_to_tray',
-            'export_valid','server_revocation','offline_cache_preserved','website_approval_ui_verified','uninstall_settings_and_cache_preserved','updater_disabled'):
+            'export_valid','server_revocation','offline_cache_preserved','website_approval_ui_verified','uninstall_settings_and_cache_preserved','update_checks_blocked_for_custom_server'):
         if installed.get(name) is not True:raise ValueError('Private beta installed acceptance is incomplete')
+    if installed.get('updater_disabled') is not False or installed.get('updater_public_key_sha256')!=manifest.updater_public_key_sha256:
+        raise ValueError('Installed public verification key differs')
     if installed.get('tray_acceptance')!='unverified' or installed.get('tray_settings_sync_pause_open_quit') is not False:
         raise ValueError('Private beta tray status must remain explicit')
     for name in ('actual_old_installer','actual_new_installer','legacy_credentials_preserved','cache_preserved',
             'connection_settings_preserved','legacy_metadata_migrated','new_native_sync','export_contract_preserved','uninstall_data_preservation_verified_by_parent'):
         if upgrade.get(name) is not True:raise ValueError('Private beta upgrade/uninstall evidence is incomplete')
-    if upgrade.get('signed_updater_sdk_install') is not False:raise ValueError('Private beta is manual-update only')
     perf=documents['performance.json'];network=perf.get('idle_market_api_requests',{})
     if (perf.get('source_commit')!=manifest.source_commit or not perf.get('resources') or not network.get('before')
             or network.get('before')!=network.get('after')):raise ValueError('Private beta idle performance evidence differs')
@@ -112,13 +115,32 @@ def validate_evidence(manifest,directory):
     if launch.get('installer_bytes')!=manifest.bytes:raise ValueError('Private beta installer size differs from installed acceptance')
     signature=documents['windows-signature.json']
     if (signature.get('source_commit')!=manifest.source_commit or signature.get('status')!='NotSigned'
-            or signature.get('sha256')!=manifest.sha256 or signature.get('bytes')!=manifest.bytes):
+            or signature.get('sha256')!=manifest.sha256 or signature.get('bytes')!=manifest.bytes
+            or signature.get('updater_public_key_sha256')!=manifest.updater_public_key_sha256
+            or not re.fullmatch(r'[a-f0-9]{64}',signature.get('executable_sha256',''))):
         raise ValueError('Actual Windows signature evidence differs')
-    owner=documents['owner-private-beta-approval.json']
-    if (type(owner.get('schema_version')) is not int or owner.get('schema_version')!=1 or owner.get('owner_authorized_private_beta') is not True
-            or owner.get('scope')!='private-unsigned-beta-with-manual-updates' or not owner.get('owner_statement')
-            or owner.get('visual_approval_commit')!=manifest.visual_approval_commit):
-        raise ValueError('Explicit owner private-beta authorization is missing')
+    proof=documents['signed-update-acceptance.json']
+    for name in ('supported_sdk_signature_verified','corrupt_payload_rejected','wrong_signed_version_rejected',
+            'actual_sdk_install','installed_executable_verified','reconnect_sync_export','uninstall_data_preserved'):
+        if proof.get(name) is not True:raise ValueError('Actual signed updater acceptance is incomplete')
+    if (proof.get('payload_source_commit')!=manifest.source_commit or proof.get('version')!=manifest.version
+            or proof.get('installer_sha256')!=manifest.sha256 or proof.get('executable_sha256')!=signature['executable_sha256']
+            or proof.get('updater_public_key_sha256')!=manifest.updater_public_key_sha256
+            or not re.fullmatch(r'[a-f0-9]{40}',proof.get('harness_source_commit',''))
+            or type(proof.get('workflow_run_id')) is not int or proof['workflow_run_id']<1):
+        raise ValueError('Signed updater proof does not identify the exact candidate')
+    owner=documents['owner-release-approval.json']
+    if (type(owner.get('schema_version')) is not int or owner.get('schema_version')!=2
+            or owner.get('owner_approved_publication') is not True or owner.get('owner_approved_deployment') is not True
+            or owner.get('scope')!='private-nsis-with-tauri-signed-updates' or not owner.get('owner_statement')
+            or owner.get('visual_approval_commit')!=manifest.visual_approval_commit
+            or owner.get('source_commit')!=manifest.source_commit or owner.get('version')!=manifest.version
+            or owner.get('installer_sha256')!=manifest.sha256 or owner.get('windows_run_id')!=manifest.workflow_run_id
+            or owner.get('signed_update_run_id')!=proof['workflow_run_id']
+            or owner.get('updater_public_key_sha256')!=manifest.updater_public_key_sha256
+            or owner.get('tray_actions_verified') is not False or owner.get('acknowledges_unverified_tray') is not True):
+        raise ValueError('Explicit exact-candidate final owner authorization is missing')
+
 
 
 def load(version,store=None):
@@ -141,6 +163,10 @@ def load(version,store=None):
         run=manifest.ci[name]
         if run.source_commit!=manifest.source_commit or run.path!=path:raise ValueError('Canonical exact-source CI is required')
     if manifest.ci['windows'].id!=manifest.workflow_run_id:raise ValueError('Windows beta build provenance differs')
+    key=updater_key()
+    if hashlib.sha256(key.encode()).hexdigest()!=manifest.updater_public_key_sha256:raise ValueError('Private updater trust key differs')
+    import base64
+    base64.b64decode(manifest.updater_signature,validate=True)
     validate_evidence(manifest,directory)
     asset=directory/manifest.filename;stat=asset.stat()
     if asset.is_symlink() or not asset.is_file() or stat.st_size!=manifest.bytes:raise ValueError('Invalid private beta installer')
@@ -163,9 +189,21 @@ def current(user:User=Depends(reader)):
             'message':'The private Windows beta is not available yet.'}
     return {'contract_version':1,'ready':True,'platform':'windows-x64','channel':'private-beta','version':manifest.version,
         'download_url':f'/api/v1/companion/private-beta/{manifest.version}/windows-x64','bytes':manifest.bytes,'sha256':manifest.sha256,
-        'source_commit':manifest.source_commit,'published_at':manifest.published_at,'updates':'manual','signed':False,
+        'source_commit':manifest.source_commit,'published_at':manifest.published_at,'updates':'signed','signed':False,'updater_signature_verified':True,'updater_public_key_sha256':manifest.updater_public_key_sha256,
         'tray_actions_verified':False,'notes':manifest.notes,
-        'message':'Private Windows beta. Unsigned installer; manual updates. Tray actions are still being checked.'}
+        'message':'Private Windows beta. Unsigned Windows publisher; cryptographically verified updates require your installation consent. Tray actions are still being checked.'}
+
+
+@router.get('/update/windows-x86_64/{installed}')
+def update_metadata(installed:str,user:User=Depends(reader)):
+    try:current=version_order(installed)
+    except ValueError:raise HTTPException(404,'Verified update not available')
+    try:manifest=latest()
+    except (OSError,ValueError,KeyError,TypeError):return Response(status_code=204,headers={'Cache-Control':'no-store'})
+    if current>=version_order(manifest.version):return Response(status_code=204,headers={'Cache-Control':'no-store'})
+    return {'version':manifest.version,'pub_date':manifest.published_at,'notes':manifest.notes,
+        'url':f'https://market.twich.gg/api/v1/companion/private-beta/{manifest.version}/windows-x64',
+        'signature':manifest.updater_signature,'bytes':manifest.bytes,'sha256':manifest.sha256,'source_commit':manifest.source_commit}
 
 
 @router.get('/{version}/windows-x64')

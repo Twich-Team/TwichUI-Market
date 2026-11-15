@@ -1,4 +1,4 @@
-"""Operator-only private-beta import. Never writes a stable store or update feed."""
+"""Operator-only private-beta import. Never writes a stable store; signatures are mandatory for private updates."""
 import argparse
 from datetime import datetime,timezone
 import hashlib
@@ -31,6 +31,7 @@ def pointer(store):
 def transition(store,version,actor,operation):
     actor_name(actor)
     manifest,asset=beta.load(version,store)
+    store_tools.verify_installer(asset.parent/'manifest.json',asset)
     previous=pointer(store)
     if previous==version:return {'changed':False,'channel':'private-beta','version':version}
     audit=store/'audit';audit.mkdir(mode=0o755,exist_ok=True)
@@ -49,7 +50,7 @@ def transition(store,version,actor,operation):
         'at':datetime.now(timezone.utc).isoformat(),'previous_version':previous,'version':version,
         'source_commit':manifest.source_commit,'workflow_run_id':manifest.workflow_run_id,'installer_sha256':manifest.sha256,
         'manifest_sha256':hashlib.sha256((asset.parent/'manifest.json').read_bytes()).hexdigest(),
-        'evidence_sha256':manifest.evidence_sha256,'tray_actions_verified':False,'updates':'manual','authenticode_status':'NotSigned'})
+        'evidence_sha256':manifest.evidence_sha256,'tray_actions_verified':False,'updates':'signed','updater_public_key_sha256':manifest.updater_public_key_sha256,'authenticode_status':'NotSigned'})
     store_tools.atomic_json(store/'current.json',{'schema_version':1,'version':version})
     store_tools.atomic_json(audit/f'{event:08d}.complete.json',{'schema_version':1,'phase':'committed','prepared':intent.name,
         'at':datetime.now(timezone.utc).isoformat(),'channel':'private-beta','version':version})
@@ -61,6 +62,7 @@ def publish(store,bundle,actor):
     if bundle.is_symlink():raise ValueError('Private beta bundle must not be a symlink')
     bundle=bundle.resolve(strict=True)
     manifest,asset=beta.load(bundle.name,bundle.parent)
+    store_tools.verify_installer(bundle/'manifest.json',asset)
     with store_tools.locked(store,PURPOSE) as store:
         destination=store/manifest.version
         if destination.exists():
@@ -79,6 +81,7 @@ def publish(store,bundle,actor):
                         shutil.copyfileobj(incoming,outgoing,64*1024);outgoing.flush();os.fsync(outgoing.fileno())
                     target.chmod(0o644)
                 beta.load(manifest.version,temporary)
+                store_tools.verify_installer(staging/'manifest.json',staging/manifest.filename)
                 staging.chmod(0o755);store_tools.sync_directory(staging)
                 os.rename(staging,destination);store_tools.sync_directory(store)
             finally:
