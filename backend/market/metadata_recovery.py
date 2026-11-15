@@ -10,7 +10,7 @@ import hashlib
 import json
 import os
 import secrets
-from sqlalchemy import and_, func, or_, select, text
+from sqlalchemy import JSON, and_, cast, func, or_, select, text
 from .db import Session, now
 from .models import ItemMetadata, Market, MetadataJob, MetadataProvider, MetadataSource, MetadataTask, Observation, SnapshotStatistic
 from .metadata_catalog import get_source, import_everloot_page, store_source
@@ -54,7 +54,9 @@ def candidates(db, market_id, mode, limit, providers, *, item_id=None, at=None):
     query = select(ids.c.region, ids.c.item_id).outerjoin(ItemMetadata,
         (ItemMetadata.region == ids.c.region) & (ItemMetadata.item_id == ids.c.item_id))
     if mode == 'missing':
-        query = query.where(or_(ItemMetadata.item_id.is_(None), and_(ItemMetadata.name.is_(None), ItemMetadata.fallback_name.is_(None)), ItemMetadata.catalog_json.is_(None)))
+        facts=cast(ItemMetadata.catalog_json,JSON)['fields']
+        basic_absent=and_(facts['quality'].as_string().is_(None),facts['class'].as_string().is_(None),facts['level'].as_integer().is_(None))
+        query = query.where(or_(ItemMetadata.item_id.is_(None), and_(ItemMetadata.name.is_(None), ItemMetadata.fallback_name.is_(None)), ItemMetadata.catalog_json.is_(None),basic_absent))
     elif mode == 'stale':
         eligible = select(MetadataSource.item_id).where(MetadataSource.region == ids.c.region,
             MetadataSource.item_id == ids.c.item_id, MetadataSource.provider.in_(providers), MetadataSource.refresh_at <= at).exists()

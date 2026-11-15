@@ -345,3 +345,14 @@ def test_validated_keys_allow_bounded_higher_budgets_but_keyless_does_not(owner,
         assert reserve_budget(row,at) is None and aware(row.next_request_at)==at+timedelta(seconds=15)
         row.credential=None;row.next_request_at=None;row.hour_used=20
         assert reserve_budget(row,at)==aware(row.hour_start)+timedelta(hours=1)
+
+
+def test_missing_batch_includes_named_items_without_basic_attributes(database):
+    from market.metadata_recovery import candidates
+    market=setup(database)
+    with database.begin() as db:
+        fields,origin=parse_everloot(tooltip(),720)
+        store_source(db,'us',720,'everloot',fields,origin)
+        assert 720 in [r[1] for r in candidates(db,market,'missing',100,['everloot'])]
+        import_everloot_page(db,'us',page())
+        assert [r[1] for r in candidates(db,market,'missing',100,['everloot'])]==[721]

@@ -41,3 +41,5 @@ First disable automatic supplemental providers and pause/cancel metadata jobs, t
 ## Owner gates
 
 Still required: provider access/credentials and current authorized contract samples; private production keyring installation/backup; actual recent market snapshot and target-host provider verification; visual review of development screenshots; eventual integration/merge/deployment approval. This Cloud work has not connected to production, touched the other Companion session, started an auction collector, published a release or deployed anything.
+
+The retained `scripts/enrich-item-names.py --limit N [--market ID]` operator command now only enqueues the same bounded durable job. It does not run the old one-request-per-second lookup loop or claim a completed before/after provider measurement. The independent worker, UI job status and fixed-snapshot coverage API provide the actual results.

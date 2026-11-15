@@ -53,6 +53,7 @@ test("administrator recovery, persistent jobs and data-source forms use local AP
   await expect(page.getByText("Access forbidden", { exact: true })).toBeVisible();
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: `${directory}/05-data-sources.png`, fullPage: true });
+  await expect(page.getByRole("button", { name: "Test Connection", exact: true })).toHaveCount(4);
   const everloot = page.getByRole("region", { name: "Everloot connection", exact: true });
   await everloot.getByRole("button", { name: "Add API Key", exact: true }).click();
   await expect(page.getByLabel("New API key", { exact: true })).toBeVisible();
