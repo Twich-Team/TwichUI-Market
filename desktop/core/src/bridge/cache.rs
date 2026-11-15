@@ -63,11 +63,19 @@ impl BridgeCache {
    let rows=statement.query_map([&key],|r|Ok((r.get::<_,u32>(0)?,r.get::<_,String>(1)?)))?;
    let mut records=Vec::new();let mut bytes=canonical(&header)?.len();for row in rows{let(i,s)=row?;if i!=records.len() as u32{return Err(Error::Invalid("incomplete bridge staging"))}bytes+=s.len()+1;if bytes>MAX_BYTES{return Err(Error::Invalid("bridge cache size"))}records.push(parse(s.as_bytes(),65536)?)}drop(statement);
    generation.as_object_mut().unwrap().insert("records".into(),records.into());validate(&generation)?;
-   // Promotion and previous-generation retention are one SQLite transaction.
-   tx.execute("DELETE FROM bridge_records WHERE scope=?1 AND slot='previous'",[&key])?;
-   tx.execute("DELETE FROM bridge_generations WHERE scope=?1 AND slot='previous'",[&key])?;
-   tx.execute("UPDATE bridge_records SET slot='previous' WHERE scope=?1 AND slot='active'",[&key])?;
-   tx.execute("UPDATE bridge_generations SET slot='previous' WHERE scope=?1 AND slot='active'",[&key])?;
+   // Preserve the preceding distinct generation when the server returns unchanged data.
+   let active:Option<String>=tx.query_row("SELECT manifest FROM bridge_generations WHERE scope=?1 AND slot='active'",[&key],|r|r.get(0)).optional()?;
+   let same=active.map(|s|parse(s.as_bytes(),65536)).transpose()?.is_some_and(|h|h["generation_id"]==header["generation_id"]);
+   if same {
+    tx.execute("DELETE FROM bridge_records WHERE scope=?1 AND slot='active'",[&key])?;
+    tx.execute("DELETE FROM bridge_generations WHERE scope=?1 AND slot='active'",[&key])?;
+   } else {
+    // Promotion and previous-generation retention are one SQLite transaction.
+    tx.execute("DELETE FROM bridge_records WHERE scope=?1 AND slot='previous'",[&key])?;
+    tx.execute("DELETE FROM bridge_generations WHERE scope=?1 AND slot='previous'",[&key])?;
+    tx.execute("UPDATE bridge_records SET slot='previous' WHERE scope=?1 AND slot='active'",[&key])?;
+    tx.execute("UPDATE bridge_generations SET slot='previous' WHERE scope=?1 AND slot='active'",[&key])?;
+   }
    tx.execute("UPDATE bridge_records SET slot='active' WHERE scope=?1 AND slot='staging'",[&key])?;
    tx.execute("UPDATE bridge_generations SET slot='active',cursor=NULL,next_position=?2,completed_at=?3 WHERE scope=?1 AND slot='staging'",params![key,end,completed_at.to_rfc3339_opts(chrono::SecondsFormat::Micros,true)])?;
   }
@@ -102,6 +110,6 @@ mod tests {
   let error=loop{match c.db.execute("INSERT INTO quota VALUES(zeroblob(4096))",[]){Ok(_)=>{},Err(e)=>break e}};
   assert!(matches!(error,rusqlite::Error::SqliteFailure(e,_) if e.code==rusqlite::ErrorCode::DiskFull));
   assert!(c.apply(&s,"first",&page,Utc::now()).is_err());assert_eq!(c.completed(&s).unwrap(),good);assert_eq!(c.pending(&s).unwrap().unwrap().1,"first");
-  c.db.pragma_update(None,"max_page_count",65536).unwrap();c.db.execute_batch("DROP TABLE quota").unwrap();c.apply(&s,"first",&page,Utc::now()).unwrap();assert_eq!(c.previous(&s).unwrap(),good);
+  c.db.pragma_update(None,"max_page_count",65536).unwrap();c.db.execute_batch("DROP TABLE quota").unwrap();c.apply(&s,"first",&page,Utc::now()).unwrap();assert_eq!(c.completed(&s).unwrap().unwrap().0,good.unwrap().0);assert!(c.previous(&s).unwrap().is_none());
  }
 }

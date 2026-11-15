@@ -24,11 +24,13 @@ fn rejects_rehashed_semantic_corruption_and_unsupported_versions(){
 #[test]
 fn transactional_promotion_resume_rejection_and_previous(){
  let d=tempfile::tempdir().unwrap();let path=d.path().join("bridge.sqlite");let s=scope();let g=fixture("source-canonical-generation.json");let mut c=BridgeCache::open(&path).unwrap();complete(&mut c,&s,&g);let first=c.completed(&s).unwrap().unwrap();
- c.start(&s,&envelope(&g)).unwrap();assert!(c.apply(&s,"first",&page(&g,0,1),Utc::now()).unwrap());drop(c);
+ let mut next=g.clone();next["producer"]["server_build"]="synthetic-next-generation".into();seal(&mut next);
+ c.start(&s,&envelope(&next)).unwrap();assert!(c.apply(&s,"first",&page(&next,0,1),Utc::now()).unwrap());drop(c);
  let mut c=BridgeCache::open(&path).unwrap();let(_,cursor)=c.pending(&s).unwrap().unwrap();assert_eq!(cursor,"next");assert_eq!(c.completed(&s).unwrap().unwrap().0,g);
- let mut corrupt:Value=serde_json::from_slice(&page(&g,1,2)).unwrap();corrupt["records"][0]["current"]["metrics"]["quantity_weighted_ask_copper"]="121".into();
+ let mut corrupt:Value=serde_json::from_slice(&page(&next,1,2)).unwrap();corrupt["records"][0]["current"]["metrics"]["quantity_weighted_ask_copper"]="121".into();
  assert!(c.apply(&s,"next",&serde_json::to_vec(&corrupt).unwrap(),Utc::now()).is_err());assert_eq!(c.completed(&s).unwrap().unwrap(),first);
- assert!(!c.apply(&s,"next",&page(&g,1,2),Utc::now()).unwrap());assert_eq!(c.previous(&s).unwrap().unwrap(),first);
+ assert!(!c.apply(&s,"next",&page(&next,1,2),Utc::now()).unwrap());assert_eq!(c.previous(&s).unwrap().unwrap(),first);
+ complete(&mut c,&s,&next);assert_eq!(c.previous(&s).unwrap().unwrap(),first,"unchanged downloads must retain the preceding distinct generation");
  let mut other=s.clone();other.account_id=2;assert!(c.completed(&other).unwrap().is_none());assert!(c.start(&other,&envelope(&g)).is_err());other=s.clone();other.market_id=99;assert!(c.start(&other,&envelope(&g)).is_err());
  c.start(&s,&envelope(&g)).unwrap();let mut wrong:Value=serde_json::from_slice(&page(&g,0,1)).unwrap();wrong["offset"]=1.into();assert!(c.apply(&s,"first",&serde_json::to_vec(&wrong).unwrap(),Utc::now()).is_err());assert_eq!(c.pending(&s).unwrap().unwrap().1,"first");
 }
@@ -40,7 +42,10 @@ fn deterministic_assignment_only_lua_and_safe_staging(){
  assert_eq!(std::fs::read(bridge::export_staging(&c,&s,d.path()).unwrap()).unwrap(),bytes);assert_eq!(std::fs::read(p.parent().unwrap().join("Previous.lua")).unwrap(),bytes);
  let mut bad=bytes.clone();bad.extend_from_slice(b"print('bad')");assert!(bridge::inspect_artifact(&bad).is_err());
  let unsafe_root=d.path().join("SavedVariables");std::fs::create_dir(&unsafe_root).unwrap();assert!(bridge::export_staging(&c,&s,&unsafe_root).is_err());
- let mut other=s.clone();other.account_id=2;assert!(c.start(&other,&envelope(&g)).is_err());assert!(bridge::export_staging(&c,&other,d.path()).is_err());assert_eq!(std::fs::read(p).unwrap(),bytes);
+ let mut other=s.clone();other.account_id=2;assert!(c.start(&other,&envelope(&g)).is_err());assert!(bridge::export_staging(&c,&other,d.path()).is_err());assert_eq!(std::fs::read(&p).unwrap(),bytes);
+ let mut newer=g.clone();newer["producer"]["server_build"]="synthetic-export-generation-b".into();seal(&mut newer);complete(&mut c,&s,&newer);bridge::export_staging(&c,&s,d.path()).unwrap();
+ assert_eq!(std::fs::read(p.parent().unwrap().join("Previous.lua")).unwrap(),bytes);
+ bridge::export_staging(&c,&s,d.path()).unwrap();assert_eq!(std::fs::read(p.parent().unwrap().join("Previous.lua")).unwrap(),bytes,"unchanged export must preserve the previous distinct artifact");
 }
 #[cfg(unix)]
 #[test]

@@ -58,7 +58,7 @@ fn publish(cache:&BridgeCache,scope:&Scope,root:&Path,replace:impl FnOnce(&Path,
  let name=path.file_name().unwrap().to_string_lossy();if !["TwichUI_MarketData.toc","Data.lua","Previous.lua"].contains(&name.as_ref())||!path.is_file(){return refuse()}}
  let toc=folder.join("TwichUI_MarketData.toc");if toc.exists(){if read(&toc,1024)?!=TOC.as_bytes(){return refuse()}}else{atomic(&toc,TOC.as_bytes())?}
  let target=folder.join("Data.lua");let previous=folder.join("Previous.lua");let old=if target.exists(){let b=read(&target,MAX_ARTIFACT)?;inspect_artifact(&b)?;Some(b)}else{None};
- if let Some(b)=&old{atomic(&previous,b)?;inspect_artifact(&read(&previous,MAX_ARTIFACT)?)?;}
+ if let Some(b)=&old{if !previous.exists() || inspect_artifact(b)?.0["generation_id"]!=g["generation_id"]{atomic(&previous,b)?;}inspect_artifact(&read(&previous,MAX_ARTIFACT)?)?;}
  if let Err(error)=replace(&target,&bytes){if let Some(b)=&old{atomic(&target,b)?}return Err(error)}
  let result=read(&target,MAX_ARTIFACT).and_then(|published|{if published!=bytes{return refuse()}inspect_artifact(&published).map(|_|())});
  if let Err(error)=result{if let Some(b)=&old{atomic(&target,b)?}else if target.is_file(){fs::remove_file(&target)?}return Err(error)}
