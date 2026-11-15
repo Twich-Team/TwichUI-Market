@@ -1,5 +1,7 @@
 # Item Metadata Recovery acceptance packet
 
+**Current integration assessment:** [Metadata / Companion readiness and exact owner actions](item-metadata-integration-readiness.md). It supersedes delivery-time branch/CI/rollout status below; the verified functional evidence remains unchanged.
+
 Independent implementation is delivered as a development candidate in [draft PR #2](https://github.com/Twich-Team/TwichUI-Market/pull/2), targeting `dev/s1-s5-implementation` from `feature/item-metadata-recovery`. Baseline is exactly `64ef6d2d08e7453458ed37d06d29f263ac19d126`. No rebase/branch merge, production access, collector launch, release publication or deployment occurred in this task. The concurrent Companion session/worktree/containers/database were never accessed or controlled.
 
 ## Implemented behavior
@@ -31,9 +33,11 @@ The latest legitimate repository coverage receipt is **historical market 1/snaps
 
 ## Remote CI and concurrent integration boundary
 
-Backend CI at exact code checkpoint `af0751cf42b123deede18533e0cdbba22e265afc` passed [run 43655431454](https://github.com/Twich-Team/TwichUI-Market/actions/runs/43655431454). Website CI passed the earlier implemented UI checkpoint [run 43654540502](https://github.com/Twich-Team/TwichUI-Market/actions/runs/43654540502). Later runs were superseded/cancelled by pushed checkpoints or blocked by concurrent workflow merge conflicts. Final PR checks are linked directly on the PR; pending/failed native/private-beta integration checks are not represented as passed.
+The [integration-readiness assessment](item-metadata-integration-readiness.md) records the current source/CI/migration assessment, bounded real-provider VM procedure, fixed-snapshot measurement and owner gates. Delivery-time Backend 43657495591 passed; its website failed at a newer Companion fixture absent from the head-only checkout. Compatibility commits `0c9e0a8` / `db08ab8` now test and identify GitHub's existing combined PR preview rather than mixing its workflow with older source. Preview checks are integration evidence, never real-commit release approval.
 
-The integration branch advanced to `cad6c8e9bb4ddcab8ae0f7b72f3a73c09f647366` with private-beta website fixtures and workflow steps. The workflow definitions now execute a head-only checkout while expecting newer private-beta fixture/helper files and an archived legacy installer absent from the pinned metadata head. Metadata fixture initialization and artifact upload were placed before retained shared steps so simulated integration remains conflict-free, without copying Companion release source/history into this feature. Its complete native/private-beta CI must run against the owner-reviewed combined integration tree. No new Windows acceptance or private-beta publication approval is claimed here. This is a separate integration gate; the local metadata/backend/frontend/browser checks above are complete.
+Latest inspected Companion `bb6b76c6a1e73bd257130854ad76df097cbc195b` embeds the zero-cost updater public key/bounded native checks and supersedes the older manual-only release plan. Its signing implementation/release work remains with the active Companion owner; no private key was accessed. Two equivalent midnight test-fixture conflicts were reconciled on metadata in `45e1498`; all 10 targeted PostgreSQL cases pass, with assertions/product ingestion unchanged. Merge simulation is clean at those SHAs and `meta_20261114` still follows the sole Companion head `0013`.
+
+Current native/browser/combined run outcomes are recorded by exact SHA in the progress ledger. Companion's earlier website 43658363949 failed an immediate post-click logout assertion (200 vs 401); bb6b76c already adds the completion wait while retaining access-control assertions. Verify that exact-source CI, rather than repeating its fix. No current failed/pending run, owner tray check, signed-updater installer acceptance or genuine coverage gate is represented as passed. Combined CI must be green again at the owner-frozen final Companion checkpoint, then on the real integration commit before release use. No merge/deployment occurred.
 
 ## Required owner follow-up
 
