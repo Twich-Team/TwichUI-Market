@@ -24,3 +24,7 @@ Selecting an Explorer row currently updates research farther down the same page,
 ## Sequence and authorization
 
 Finish the current administration/provider goal first. Then prepare a separate implementation plan covering routing/authentication, Explorer state restoration, reusable research components, legacy links and acceptance tests. No implementation or deployment is authorized by this recorded direction; both require another owner instruction. Keep collection and historical data untouched. Planning documentation must remain a separate Git commit from administration implementation changes.
+
+## Prepared implementation plan
+
+The current administration/provider goal reached its complete review boundary at `96f88a0`, with production unchanged. The separately prepared [implementation plan](explorer-item-details-plan.md) now covers inspected routing, reusable research/API components, exact variant URLs, authentication, Back restoration, legacy compatibility and acceptance evidence. No implementation or deployment is authorized.

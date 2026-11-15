@@ -1,4 +1,4 @@
-**Administration/provider review candidate:** [current findings and visual review](admin-modernization-review.md), [continuation ledger](admin-modernization-progress.md). New administration UI and authentic item-quality colors remain undeployed pending owner visual approval. The separate Explorer/Details milestone is queued only.
+**Administration/provider review candidate:** [current findings and visual review](admin-modernization-review.md), [continuation ledger](admin-modernization-progress.md). New administration UI and authentic item-quality colors remain undeployed pending owner visual approval. The current goal is complete at the review boundary. The separate [Explorer/Details implementation plan](explorer-item-details-plan.md) is prepared; implementation requires another owner instruction.
 
 # Implementation plan
 
