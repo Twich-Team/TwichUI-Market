@@ -28,6 +28,8 @@ from .item_profiles import router as profile_router
 app.include_router(profile_router)
 from .metadata_admin import router as metadata_admin_router
 app.include_router(metadata_admin_router)
+from .admin_records import router as admin_records_router
+app.include_router(admin_records_router)
 from .metadata_api import router as metadata_catalog_router
 app.include_router(metadata_catalog_router)
 from .distribution import router as distribution_router

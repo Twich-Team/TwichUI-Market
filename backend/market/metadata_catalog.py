@@ -122,11 +122,17 @@ def sync_blizzard(db, row, *, at=None):
         'payload_hash': row.payload_hash, 'retrieved_at': (at or now()).isoformat(), 'attribution': None}, at=at)
 
 
-def import_everloot_page(db, region, body, *, at=None):
+def import_everloot_page(db, region, body, *, at=None, changes=None):
     from .metadata_providers import parse_everloot_page
     records, next_offset = parse_everloot_page(body, at=at)
     # Validate the whole page before any writes. Caller owns the transaction.
-    for ident, fields, source in records: store_source(db, region, ident, 'everloot', fields, source, at=at)
+    for ident, fields, source in records:
+        previous = db.get(ItemMetadata, (region, ident))
+        before = json.loads(previous.catalog_json).get('fields', {}) if previous and previous.catalog_json else {}
+        projected = store_source(db, region, ident, 'everloot', fields, source, at=at)
+        if changes is not None:
+            for field, value in projected['fields'].items():
+                if value is not None and value != [] and before.get(field) in (None, []): changes[field] = changes.get(field, 0) + 1
     return len(records), next_offset
 
 

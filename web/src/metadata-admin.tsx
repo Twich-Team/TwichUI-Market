@@ -1,4 +1,8 @@
 import { useState } from "react";
+import { DataTable } from "./data-table";
+import { LocalTime, ProviderEmblem, Status, useRecordPage } from "./admin-table";
+import { MetadataAttempts } from "./metadata-attempts";
+import { ProviderHealth, UnresolvedNames } from "./metadata-records";
 import { useQuery } from "@tanstack/react-query";
 import { api, when } from "./api";
 import { Market } from "./types";
@@ -14,7 +18,7 @@ export interface MetadataProvider {
 interface Providers { credential_storage_ready: boolean; providers: MetadataProvider[] }
 interface Result { provider: string; item_id?: number; status: string; recovered_fields?: string[]; imported_items?: number; source?: { provider?: string; build?: string; confidence?: string; attribution?: { text: string; url: string } } }
 interface Job {
-  id: number; mode: string; state: string; total: number; counts: Record<string, number>;
+  recovered: number; failed: number; created_at: string; updated_at: string; id: number; mode: string; state: string; total: number; counts: Record<string, number>;
   requests_used: number; request_budget: number; providers: string[];
   results?: { id: number; item_id: number; provider: string; state: string; available_at: string; result: Result | null }[];
   next_after?: number | null;
@@ -54,13 +58,10 @@ export function DataSources({ readOnly = false }: { readOnly?: boolean }) {
     {message && <p role="status" className="notice success">{message}</p>}
     {data.isPending && <p role="status">Loading data sources…</p>}
     {data.data && !data.data.credential_storage_ready && <p className="notice">API key storage needs an owner-managed encryption key file. Keyless recovery remains available.</p>}
-    <div className="metadata-provider-grid">{data.data?.providers.map(provider => <section className="panel padded metadata-provider" key={provider.provider} aria-label={`${provider.name} connection`}>
+    <ProviderHealth providers={data.data?.providers || []} />
+    <h3>Provider settings and credentials</h3><div className="metadata-provider-grid">{data.data?.providers.map(provider => <section className="panel padded metadata-provider" key={provider.provider} aria-label={`${provider.name} connection`}>
       <div className="title-row"><h3>{provider.name}</h3><span className="tag">{provider.configured ? "Connected" : provider.key_required ? "Not configured" : "Keyless access"}</span></div>
       <p className="small muted">{provider.note}</p>
-      <dl className="metadata-facts"><div><dt>Credential</dt><dd>{metadataStatus(provider.credential_status)}{provider.validation_pending ? " · validation queued" : ""}</dd></div>
-        <div><dt>Last validation</dt><dd>{when(provider.last_validated_at)}</dd></div><div><dt>Expiration</dt><dd>{provider.expires_at ? when(provider.expires_at) : "Not recorded"}</dd></div>
-        <div><dt>Recent error</dt><dd>{metadataStatus(provider.validation_error || provider.recent_error)}</dd></div>
-        <div><dt>Cooldown until</dt><dd>{when(provider.cooldown_until)}</dd></div><div><dt>Requests this hour / day</dt><dd>{provider.hour_used} / {provider.day_used}</dd></div></dl>
       {provider.expiration_warning && <p className="notice" role="status">{metadataStatus(provider.expiration_warning)}. Replace this key before it expires.</p>}
       <form className="metadata-config" key={`${provider.provider}-${provider.enabled}-${provider.automatic}-${provider.hourly_budget}-${provider.daily_budget}`} onSubmit={event => {
         event.preventDefault(); const form = new FormData(event.currentTarget);
@@ -95,14 +96,16 @@ export function ItemMetadataAdmin({ markets, readOnly = false }: { markets: Mark
   const [input, setInput] = useState({ item_id: "", limit: 100, request_budget: 100 });
   const providers = useProviders();
   const stats = useQuery({ queryKey: ["private", "metadata-overview", market], enabled: !!market, queryFn: ({ signal }) => api<Overview>(`/admin/item-metadata?market_id=${market}`, "GET", undefined, signal), refetchInterval: 5000 });
-  const jobs = useQuery({ queryKey: ["private", "metadata-jobs"], queryFn: ({ signal }) => api<{ jobs: Job[] }>("/admin/item-metadata/jobs", "GET", undefined, signal), refetchInterval: 3000 });
+  const [jobState, setJobState] = useState(""), [jobSearch,setJobSearch]=useState("");
+  const jobPage = useRecordPage<Job>("jobs", { q:jobSearch, market_id: String(market), ...(jobState ? {state:jobState}: {}) }, "id");
+  const jobs = jobPage.query;
   const detail = useQuery({ queryKey: ["private", "metadata-job", jobId, resultAfter], enabled: !!jobId, queryFn: ({ signal }) => api<Job>(`/admin/item-metadata/jobs/${jobId}?after=${resultAfter}`, "GET", undefined, signal), refetchInterval: 3000 });
   const body = { market_id: market, mode, providers: selected, limit: input.limit, request_budget: input.request_budget, item_id: mode === "single" ? Number(input.item_id) || null : null };
   function resetPreview() { setPreview(null); setMessage(""); }
   async function action(work: () => Promise<void>) { setBusy(true); setError(""); try { await work(); await jobs.refetch(); await stats.refetch(); } catch (e) { setError((e as Error).message); } finally { setBusy(false); } }
   const state = stats.data;
   return <section aria-labelledby="metadata-heading" className="metadata-admin">
-    <div className="title-row"><div><div className="eyebrow">LOCAL ITEM CATALOG</div><h2 id="metadata-heading">Item Metadata</h2></div><MarketSelect markets={markets} market={market} setMarket={value => { setMarket(value); resetPreview(); }} /></div>
+    <div className="title-row"><div><div className="eyebrow">LOCAL ITEM CATALOG</div><h2 id="metadata-heading">Item Metadata</h2></div><MarketSelect markets={markets} market={market} setMarket={value => { setMarket(value); jobPage.reset(); resetPreview(); }} /></div>
     <p className="muted">Recover observed item names and base attributes. Unavailable provider metadata never means an auction item does not exist.</p>
     <ErrorNotice error={error || stats.error?.message || jobs.error?.message || detail.error?.message || providers.error?.message || ""} />
     {message && <p className="notice success" role="status">{message}</p>}
@@ -124,16 +127,32 @@ export function ItemMetadataAdmin({ markets, readOnly = false }: { markets: Mark
       {preview && <div className="metadata-preview" role="status"><h4>Recovery preview</h4><p>{preview.item_count} item{preview.item_count === 1 ? "" : "s"} · up to {preview.estimated_requests} requests · budget {preview.request_budget}</p><p className="small muted">{preview.note}</p>
         <button className="primary" disabled={busy || readOnly || !preview.item_count} onClick={() => action(async () => { const job = await api<{ job_id: number }>("/admin/item-metadata/jobs", "POST", body); setJobId(job.job_id); setResultAfter(0); setPreview(null); setMessage(`Recovery job #${job.job_id} queued. You can leave this page while it runs.`); })}>Start recovery</button></div>}
     </section>
-    <section className="panel padded"><h3>Recovery jobs</h3>{!jobs.data?.jobs.length && <p className="muted">No recovery jobs yet.</p>}
-      <div className="metadata-job-list">{jobs.data?.jobs.map(job => <div key={job.id} className="metadata-job-row"><button className="text-button" onClick={() => { setJobId(job.id); setResultAfter(0); }}>Job #{job.id} · {job.mode}</button>
-        <span>{job.state} · {Object.entries(job.counts).map(([key, value]) => `${value} ${key}`).join(", ")} / {job.total}</span><span className="small muted">{job.requests_used}/{job.request_budget} requests</span>
-        <div className="metadata-actions">{["queued", "running"].includes(job.state) && <button disabled={busy || readOnly} onClick={() => action(async () => { await api(`/admin/item-metadata/jobs/${job.id}/pause`, "POST"); })}>Pause</button>}{job.state === "paused" && <button disabled={busy || readOnly} onClick={() => action(async () => { await api(`/admin/item-metadata/jobs/${job.id}/resume`, "POST"); })}>Resume</button>}{["queued", "running", "paused"].includes(job.state) && <button disabled={busy || readOnly} onClick={() => action(async () => { await api(`/admin/item-metadata/jobs/${job.id}/cancel`, "POST"); })}>Cancel</button>}</div>
-      </div>)}</div>
+    <section className="panel padded"><h3>Recovery jobs</h3>
+      <div className="toolbar"><label>Search job reference<input type="search" value={jobSearch} maxLength={64} onChange={e=>{setJobSearch(e.target.value);jobPage.reset();}}/></label><label>Job status<select value={jobState} onChange={e=>{setJobState(e.target.value);jobPage.reset();}}><option value="">All statuses</option>{["queued","running","paused","completed","cancelled"].map(value=><option key={value}>{value}</option>)}</select></label></div>
+      <DataTable<Job> label="recovery jobs" data={jobs.data?.rows || []} server={jobPage.server} loading={jobs.isPending} error={jobs.error?.message} getRowId={row=>String(row.id)} columns={[
+        {accessorKey:"id",header:"Job",enableHiding:false,cell:({row})=><button className="text-button" onClick={()=>{setJobId(row.original.id);setResultAfter(0);}}>Job #{row.original.id} · {row.original.mode}</button>},
+        {accessorKey:"mode",header:"Recovery type"},
+        {id:"providers",header:"Providers",enableSorting:false,cell:({row})=>row.original.providers.map(provider=><ProviderEmblem key={provider} provider={provider}/>)},
+        {accessorKey:"state",header:"Status",cell:({row})=><Status>{row.original.state}</Status>},
+        {id:"progress",header:"Progress",enableSorting:false,cell:({row})=>`${["completed","failed","skipped","cancelled"].reduce((n,key)=>n+(row.original.counts[key]||0),0)} / ${row.original.total}`},
+        {id:"recovered",header:"Recovered / failed / skipped",enableSorting:false,cell:({row})=>`${row.original.recovered||0} / ${row.original.failed||0} / ${row.original.counts.skipped||0}`},
+        {accessorKey:"created_at",header:"Started",cell:({row})=><LocalTime value={row.original.created_at}/>},
+        {accessorKey:"updated_at",header:"Updated",cell:({row})=><LocalTime value={row.original.updated_at}/>},
+        {id:"actions",header:"Actions",enableSorting:false,cell:({row})=><div className="metadata-actions">{["queued","running","paused"].includes(row.original.state) && <><button disabled={busy||readOnly} onClick={()=>action(async()=>{await api(`/admin/item-metadata/jobs/${row.original.id}/${row.original.state==="paused"?"resume":"pause"}`,"POST");})}>{row.original.state==="paused"?"Resume":"Pause"}</button><button disabled={busy||readOnly} onClick={()=>action(async()=>{await api(`/admin/item-metadata/jobs/${row.original.id}/cancel`,"POST");})}>Cancel</button></>}</div>},
+      ]} renderDetails={row=><p>Job #{row.id} · {row.requests_used}/{row.request_budget} requests. Completed tasks include missing or empty responses; see provider results for actual recovery.</p>}/>
       {detail.data && <div className="metadata-job-detail"><h4>Job #{detail.data.id} results</h4><progress aria-label="Recovery progress" max={Math.max(1, detail.data.total)} value={["completed", "failed", "skipped", "cancelled"].reduce((n, key) => n + (detail.data!.counts[key] || 0), 0)} />
-        {detail.data.results?.map(result => <div className="metadata-result" key={result.id}><strong>Item #{result.item_id} · {result.provider}</strong><span>{metadataStatus(result.result?.status || result.state)}</span><span className="small muted">{result.result?.recovered_fields?.join(", ") || "No recovered fields"}{result.state === "queued" ? ` · eligible ${when(result.available_at)}` : ""}</span>{result.result?.source && <span className="small muted">{result.result.source.build} · {metadataStatus(result.result.source.confidence)} {result.result.source.attribution && <a href={result.result.source.attribution.url} target="_blank" rel="noopener noreferrer">{result.result.source.attribution.text}</a>}</span>}</div>)}
+        <p className="small muted">Search and sorting apply to this bounded result batch. Use Next results for the next batch.</p>
+        <DataTable label="job results" data={detail.data.results || []} getRowId={row=>String(row.id)} columns={[
+          {accessorKey:"item_id",header:"Item ID",cell:({row})=>`Item #${row.original.item_id}`},
+          {accessorKey:"provider",header:"Provider",cell:({row})=><ProviderEmblem provider={row.original.provider}/>},
+          {id:"status",header:"Result",accessorFn:row=>metadataStatus(row.result?.status||row.state)},
+          {id:"fields",header:"Returned fields",accessorFn:row=>row.result?.recovered_fields?.join(", ")||"None"},
+          {accessorKey:"available_at",header:"Eligible",cell:({row})=><LocalTime value={row.original.available_at}/>},
+        ]}/>
         <div className="metadata-actions">{resultAfter > 0 && <button onClick={() => setResultAfter(0)}>First results</button>}{detail.data.next_after && <button onClick={() => setResultAfter(detail.data!.next_after!)}>Next results</button>}</div></div>}
     </section>
-    <section className="panel padded"><h3>Provider health</h3>{providers.data?.providers.map(provider => <p key={provider.provider}><strong>{provider.name}</strong> · {provider.enabled ? "enabled" : "disabled"} · {metadataStatus(provider.recent_error)}{provider.cooldown_until ? ` · cooldown ${when(provider.cooldown_until)}` : ""}</p>)}</section>
-    <section className="panel padded"><h3>Recent provider results</h3>{!state?.recent_results.length && <p className="muted">No completed provider attempts yet.</p>}{state?.recent_results.map((r, i) => <p key={i}>Item #{r.item_id} · {r.provider} · {metadataStatus(r.result.status)} · {when(r.at)}</p>)}</section>
+    <section className="panel padded"><h3>Provider health</h3><ProviderHealth providers={providers.data?.providers || []}/></section>
+    <MetadataAttempts key={`attempts-${market}`} market={market} readOnly={readOnly}/>
+    <UnresolvedNames key={`unresolved-${market}`} market={market} chooseItem={id=>{setMode("single");setInput({...input,item_id:String(id)});resetPreview();document.querySelector<HTMLInputElement>('input[type="number"]')?.focus();}}/>
   </section>;
 }

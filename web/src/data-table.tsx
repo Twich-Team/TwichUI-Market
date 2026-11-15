@@ -1,10 +1,11 @@
-import { useMemo, useState } from "react";
+import { Fragment, ReactNode, useEffect, useId, useMemo, useState } from "react";
 import {
   ColumnDef,
   OnChangeFn,
   PaginationState,
   SortingState,
   VisibilityState,
+  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -20,12 +21,24 @@ export function DataTable<T>({
   initialSorting = [],
   getRowId,
   server,
+  loading = false,
+  error,
+  emptyMessage = "No matching records.",
+  renderDetails,
+  filters = [],
+  toolbar,
 }: {
   data: T[];
   columns: ColumnDef<T>[];
   label: string;
   initialSorting?: SortingState;
   getRowId?: (row: T) => string;
+  loading?: boolean;
+  error?: string;
+  emptyMessage?: string;
+  renderDetails?: (row: T) => ReactNode;
+  filters?: { id: string; label: string; options: { value: string; label: string }[] }[];
+  toolbar?: ReactNode;
   server?: {
     rowCount: number;
     pagination: PaginationState;
@@ -36,7 +49,10 @@ export function DataTable<T>({
 }) {
   const [filter, setFilter] = useState(""),
     [sorting, setSorting] = useState<SortingState>(initialSorting),
-    [visibility, setVisibility] = useState<VisibilityState>({});
+    [visibility, setVisibility] = useState<VisibilityState>({}),
+    [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]),
+    [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const tableId = useId();
   const rows = useMemo(() => data, [data]);
   const table = useReactTable({
     data: rows,
@@ -46,13 +62,16 @@ export function DataTable<T>({
       globalFilter: filter,
       sorting: server?.sorting ?? sorting,
       columnVisibility: visibility,
+      columnFilters,
       ...(server ? { pagination: server.pagination } : {}),
     },
     onGlobalFilterChange: setFilter,
+    onColumnFiltersChange: setColumnFilters,
     onSortingChange: server?.onSortingChange ?? setSorting,
     onPaginationChange: server?.onPaginationChange,
     manualPagination: !!server,
     manualSorting: !!server,
+    manualFiltering: !!server,
     rowCount: server?.rowCount,
     onColumnVisibilityChange: setVisibility,
     getCoreRowModel: getCoreRowModel(),
@@ -61,9 +80,17 @@ export function DataTable<T>({
     getPaginationRowModel: getPaginationRowModel(),
     initialState: { pagination: { pageSize: 25 } },
   });
+  const pageIndex = table.getState().pagination.pageIndex;
+  const pageCount = table.getPageCount();
+  useEffect(() => {
+    if (!loading && pageIndex > 0 && pageIndex >= pageCount) {
+      table.setPageIndex(Math.max(0, pageCount - 1));
+    }
+  }, [loading, pageIndex, pageCount, table]);
   return (
-    <div className="managed-table">
+    <div className="managed-table" aria-busy={loading}>
       <div className="managed-table-controls">
+        {toolbar}
         {!server && (
           <label>
             Search {label}
@@ -74,6 +101,11 @@ export function DataTable<T>({
             />
           </label>
         )}
+        {!server && filters.map(({ id, label: filterLabel, options }) => <label key={id}>{filterLabel}
+          <select value={String(table.getColumn(id)?.getFilterValue() ?? "")} onChange={e => table.getColumn(id)?.setFilterValue(e.target.value || undefined)}>
+            <option value="">All</option>{options.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
+          </select>
+        </label>)}
         <Menu.Root>
           <Menu.Trigger>Columns</Menu.Trigger>
           <Menu.Portal>
@@ -114,6 +146,7 @@ export function DataTable<T>({
           <thead>
             {table.getHeaderGroups().map((group) => (
               <tr key={group.id}>
+                {renderDetails && <th scope="col">Details</th>}
                 {group.headers.map((header) => (
                   <th
                     key={header.id}
@@ -160,7 +193,8 @@ export function DataTable<T>({
           </thead>
           <tbody>
             {table.getRowModel().rows.map((row) => (
-              <tr key={row.id}>
+              <Fragment key={row.id}><tr>
+                {renderDetails && <td><button aria-label={`${expanded[row.id] ? "Hide" : "Show"} details for ${label} ${row.id}`} aria-expanded={!!expanded[row.id]} aria-controls={`${tableId}-${row.id}`} onClick={() => setExpanded(value => ({ ...value, [row.id]: !value[row.id] }))}>{expanded[row.id] ? "−" : "+"}</button></td>}
                 {row.getVisibleCells().map((cell) => (
                   <td
                     key={cell.id}
@@ -175,31 +209,35 @@ export function DataTable<T>({
                   </td>
                 ))}
               </tr>
+              {renderDetails && expanded[row.id] && <tr><td id={`${tableId}-${row.id}`} colSpan={row.getVisibleCells().length + 1} className="table-row-details">{renderDetails(row.original)}</td></tr>}</Fragment>
             ))}
           </tbody>
         </table>
       </div>
-      {!table.getFilteredRowModel().rows.length && (
-        <p className="empty">No matching records.</p>
+      {loading && <p role="status">Loading {label}…</p>}
+      {error && <p className="notice error" role="alert">{error}</p>}
+      {!loading && !error && !table.getRowModel().rows.length && (
+        <p className="empty">{emptyMessage}</p>
       )}
       <div className="table-pagination">
-        <span>
+        <span aria-live="polite">
           {server?.rowCount ?? table.getFilteredRowModel().rows.length} records
           · Page {table.getState().pagination.pageIndex + 1} of{" "}
           {Math.max(1, table.getPageCount())}
         </span>
         <button
-          disabled={!table.getCanPreviousPage()}
+          disabled={loading || !table.getCanPreviousPage()}
           onClick={() => table.previousPage()}
         >
           Previous {label}
         </button>
         <button
-          disabled={!table.getCanNextPage()}
+          disabled={loading || !table.getCanNextPage()}
           onClick={() => table.nextPage()}
         >
           Next {label}
         </button>
+        <label>Rows per page<select value={table.getState().pagination.pageSize} onChange={e => table.setPageSize(Number(e.target.value))}>{[10, 25, 50, 100].map(size => <option key={size} value={size}>{size}</option>)}</select></label>
       </div>
     </div>
   );

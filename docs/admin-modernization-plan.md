@@ -21,7 +21,7 @@ Owner request: continue the deployed Companion v2 / metadata release. Developmen
 | Markets and schedules | Shared table plus configuration form | Retain controls/safety checks; add stable identity/details consistency |
 | Collection runs / failures | Shared table of bounded recent runs | Server-side filtering/sorting/pagination, failure filter, safe details |
 | Storage measurements | Shared table | Stable timestamp identity, newest first |
-| Retention | Policy forms, preview summary, static approval explanation | Justified exception: keep forms and scalar summaries; no record list |
+| Retention | Shared preview-stage table, policy forms and approval explanation | Retain shared table with stable stage identity; keep forms/scalar summaries |
 | Desktop companions | Stacked device cards, manual Show more | Shared table in administration; preserve ownership/revoke confirmation and account card UX |
 | Legacy devices | Shared table | Retain permissions/actions; stable identity |
 | Security / audit events | Shared client table, most recent 200 | Server-side page/search/category/date filters and expandable redacted details |

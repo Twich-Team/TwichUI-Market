@@ -9,6 +9,10 @@ from .item_attributes import QUALITIES, text
 from .probe import request
 
 
+class IdentityMismatch(ValueError):
+    """Item, edition or client-build evidence disagrees with the requested record."""
+
+
 @dataclass(frozen=True)
 class ProviderSpec:
     label: str
@@ -43,7 +47,7 @@ def plain(value, limit=255):
 def build_identity(build):
     # Accept only Forever's documented 1.60 client family, never Retail/Classic.
     if not isinstance(build, str) or not re.fullmatch(r'(?:wow_classic(?:_beta)?-)?1\.60\.[0-9]+[._][0-9]+', build):
-        raise ValueError('Unverified Forever build')
+        raise IdentityMismatch('Unverified Forever build')
     return build
 
 
@@ -80,7 +84,7 @@ def everloot_attribution(value):
 def parse_everloot(body, item_id, *, at=None):
     value = decode(body)
     if value.get('ok') is not True or value.get('type') != 'item' or type(value.get('id')) is not int or value['id'] != item_id:
-        raise ValueError('Everloot item identity mismatch')
+        raise IdentityMismatch('Everloot item identity mismatch')
     credit = everloot_attribution(value.get('attribution'))
     safe_link(value.get('url'), 'everloot.app')
     title = plain(value.get('title'))
@@ -140,7 +144,7 @@ def parse_foreverdb(body, item_id, *, at=None):
     row, meta = value.get('data'), value.get('meta')
     if not isinstance(row, dict) or not isinstance(meta, dict) or type(row.get('id')) is not int or row['id'] != item_id:
         raise ValueError('ForeverDB documented envelope mismatch; authorized fixture required')
-    if meta.get('edition', 'forever') != 'forever': raise ValueError('Wrong game edition')
+    if meta.get('edition', 'forever') != 'forever': raise IdentityMismatch('Wrong game edition')
     build = build_identity(meta.get('build'))
     fields = {'name': plain(row.get('name'))}
     return fields, source('foreverdb', body, build=build, confidence='client_record_unverified', at=at,
@@ -149,7 +153,11 @@ def parse_foreverdb(body, item_id, *, at=None):
 
 def parse_thewowdb(body, item_id, *, at=None):
     from .community_metadata import parse_community
-    value = parse_community(body, item_id, at=at)
+    try: value = parse_community(body, item_id, at=at)
+    except ValueError as error:
+        if str(error) in ('Community identity/edition mismatch','Unrecognized community build'): raise IdentityMismatch('TheWoWDB identity or build rejected') from None
+        raise
+    build_identity(value['source']['build'])
     attrs = value['attributes']
     fields = {k: v for k, v in attrs.items() if k != 'scope' and v is not None and v != []}
     fields['name'] = value['name']

@@ -239,7 +239,7 @@ test("shared deal tooltips and manageable account/admin tables", async ({
     .click();
   await page.getByRole("tab", { name: "Collection", exact: true }).click();
   await expect(
-    page.getByLabel("Search collection checks", { exact: true }),
+    page.getByRole("combobox", { name: "Collection market", exact: true }),
   ).toBeVisible();
   await page.screenshot({
     path: "../artifacts/modernization/administration-desktop.png",
