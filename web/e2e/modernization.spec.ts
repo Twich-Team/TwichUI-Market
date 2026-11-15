@@ -87,7 +87,7 @@ test("catalogue variants, accessible item facts, chart controls and bounded hist
       exact: true,
     })
     .click();
-  await page.getByRole("link",{name:/Inspect Synthetic Arcane Crystal:/}).click();
+
   await expect(page.getByRole("heading",{name:"Synthetic Arcane Crystal",exact:true})).toBeVisible();
   await page.getByRole("button", { name: "10Y", exact: true }).click();
   await page.locator(".chart-viewport").first().scrollIntoViewIfNeeded();

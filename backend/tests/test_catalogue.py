@@ -27,6 +27,7 @@ def test_catalogue_groups_variants_without_blending_price_and_pages_stably(owner
     response=owner.get(f'/api/v1/markets/{ident}/catalogue?page_size=1').json()
     assert response['total_items']==3 and len(response['items'])==1
     item=response['items'][0]
+    assert item['sole_variant_key'] is None
     assert item['variant_count']==2 and item['supply']==5 and item['listing_count']==2
     assert item['price_ranges']['recent_price']=={'minimum':'200','maximum':'500'}
     assert item['price_ranges']['market_value']=={'minimum':'200','maximum':'500'}
@@ -119,5 +120,27 @@ def test_compact_chart_history_preserves_exact_prices_and_provenance_flags(owner
     for actual,expected in zip(chart['points'],full['points']):
         assert actual=={key:expected[key] for key in actual}
         assert isinstance(actual['recent_price'],str)
+        assert actual['observed_at']==expected['observed_at']
         assert 'payload_hash' not in actual and actual['reference_synthetic']
     assert owner.get(path+'?view=unknown').status_code==422
+
+
+def test_catalogue_supplies_only_verified_sole_current_variant(owner,database):
+    ident=seed(database)
+    rows=owner.get(f'/api/v1/markets/{ident}/catalogue').json()['items']
+    for row in rows:
+        variants=owner.get(f"/api/v1/markets/{ident}/catalogue/{row['item_id']}/variants").json()['variants']
+        assert row['sole_variant_key']==(variants[0]['variant_key'] if len(variants)==1 else None)
+
+
+def test_last_seen_is_variant_observation_not_latest_market_check(owner,database):
+    from market.security import aware
+    ident=seed(database)
+    variant=owner.get(f'/api/v1/markets/{ident}/catalogue/25/variants').json()['variants'][0]['variant_key']
+    before=owner.get(f'/api/v1/markets/{ident}/items/25/{variant}').json()
+    with database.begin() as db:
+        ingest(db,ident,b'{"auctions":[{"id":99,"item":{"id":26},"quantity":1,"buyout":50}]}',request_key='variant-gone',retrieved_at=now()+timedelta(minutes=1),synthetic=True)
+    after=owner.get(f'/api/v1/markets/{ident}/items/25/{variant}').json()
+    assert after['last_seen_at']==before['last_seen_at']
+    unknown=owner.get(f'/api/v1/markets/{ident}/items/999999/{variant}').json()
+    assert unknown['last_seen_at'] is None

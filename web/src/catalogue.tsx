@@ -23,6 +23,7 @@ export interface Range {
 }
 export interface Group extends ItemIdentity {
   variant_count: number;
+  sole_variant_key?: string | null;
   priced_variant_count: number;
   supply: number;
   listing_count: number;
@@ -103,16 +104,20 @@ export function ItemCatalogue({market,query,state,onChange,onSummary}: {
         undefined,
         signal,
       ),
+    placeholderData: (previous, previousQuery) => previousQuery?.queryKey[2] === market && previousQuery?.queryKey[3] === query ? previous : undefined,
     refetchInterval: 60_000,
   });
+  const retained=useRef<Page|undefined>(undefined);
+  if(response.data&&!response.isPlaceholderData)retained.current=response.data;
+  const data=response.data ?? retained.current;
   useEffect(()=>{
-    if(!response.data)return;
+    if(!response.data || response.isPlaceholderData || response.isError)return;
     const last=Math.max(0,Math.ceil(response.data.total_items/pagination.pageSize)-1);
     if(pagination.pageIndex>last){setClamped(true);onChange({...state,pageIndex:last});}
   },[response.data,pagination.pageIndex,pagination.pageSize]);
   useEffect(() => {
     const data = response.data;
-    if (!data) return;
+    if (!data || response.isPlaceholderData) return;
     summaryRef.current({
       synthetic: data.synthetic,
       empty: data.items.length === 0,
@@ -141,23 +146,11 @@ export function ItemCatalogue({market,query,state,onChange,onSummary}: {
               />
               <ItemAttribution item={row.original} />
               <a className="select-item" id={`catalogue-item-${row.original.item_id}`}
-                href={itemUrl(market,row.original.item_id)} onClick={followItem}
+                href={itemUrl(market,row.original.item_id,row.original.variant_count===1 ? row.original.sole_variant_key ?? undefined : undefined)} onClick={followItem}
                 aria-label={`Research ${row.original.name}`}>
                 <ItemName name={row.original.name} quality={row.original.quality}/>
               </a>
-              {row.original.variant_count > 1 && (
-                <button
-                  className="item-name-button"
-                  onClick={()=>{const next={...expandedRef.current,[row.original.item_id]:!expandedRef.current[row.original.item_id]};setExpanded(next);saveRestoration({expanded:next});}}
-                  aria-expanded={!!expandedRef.current[row.original.item_id]}
-                >
-                  <small>
-                    #{row.original.item_id} · {row.original.variant_count}{" "}
-                    {row.original.variant_count === 1 ? "variant" : "variants"}{" "}
-                    {expandedRef.current[row.original.item_id] ? "▴" : "▾"}
-                  </small>
-                </button>
-              )}
+
             </div>
           </div>
         ),
@@ -196,11 +189,17 @@ export function ItemCatalogue({market,query,state,onChange,onSummary}: {
         cell: ({ getValue }) => Number(getValue()).toLocaleString(),
       },
       { id: "item_id", accessorKey: "item_id", header: "ID" },
+      { id: "expand", header: "Variants", enableSorting: false, enableHiding: false,
+        cell: ({row}) => row.original.variant_count > 1 ? <button className="variant-chevron"
+          aria-label={`${expandedRef.current[row.original.item_id] ? "Collapse" : "Expand"} ${row.original.variant_count} variants of ${row.original.name}`}
+          aria-expanded={!!expandedRef.current[row.original.item_id]} aria-controls={`variants-${row.original.item_id}`}
+          onClick={()=>{const next={...expandedRef.current,[row.original.item_id]:!expandedRef.current[row.original.item_id]};setExpanded(next);saveRestoration({expanded:next});}}>
+          <span aria-hidden="true">{expandedRef.current[row.original.item_id] ? "⌄" : "›"}</span></button> : null },
     ],
     [market, query],
   );
   const table = useReactTable({
-    data: response.data?.items || [],
+    data: data?.items || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     manualSorting: true,
@@ -208,7 +207,7 @@ export function ItemCatalogue({market,query,state,onChange,onSummary}: {
     manualPagination: true,
     enableSortingRemoval: false,
     enableMultiSort: false,
-    rowCount: response.data?.total_items || 0,
+    rowCount: data?.total_items || 0,
     state: { sorting, pagination, columnVisibility:preferences.values.item_columns },
     onColumnVisibilityChange:updater=>{
       const next=typeof updater==='function'?updater(preferences.values.item_columns):updater;
@@ -228,40 +227,22 @@ export function ItemCatalogue({market,query,state,onChange,onSummary}: {
       aria-label="Item catalogue"
       aria-busy={response.isFetching}
     >
-      <div className="catalogue-heading">
-        <span>
-          <strong>
-            {(response.data?.total_items || 0).toLocaleString()} items
-          </strong>
-          <small>Exact prices stay with their variants</small>
-        </span>
-        <span className="small muted">
-          {response.isFetching
-            ? "Updating catalogue…"
-            : `Snapshot ${response.data?.snapshot_id || "—"} · ${when(response.data?.observed_at)}`}
-        </span>
+      <div className="catalogue-heading catalogue-toolbar">
+        <strong>{(data?.total_items || 0).toLocaleString()} items</strong>
+        <span className="small muted catalogue-updated" title={when(data?.observed_at)}>{data?.observed_at ? `Updated ${new Date(data.observed_at!).toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"})}` : ""}</span>
+        <details className="column-controls">
+          <summary>Columns</summary>
+          <fieldset aria-label="Item table columns">{table.getAllLeafColumns().filter(column=>column.getCanHide()).map(column=><label key={column.id}>
+            <input type="checkbox" checked={column.getIsVisible()} onChange={column.getToggleVisibilityHandler()}/>{String(column.columnDef.header)}
+          </label>)}</fieldset>
+        </details>
+        <button className="icon-button" aria-label="Refresh catalogue" title="Refresh catalogue" disabled={response.isFetching} onClick={()=>response.refetch()}><span aria-hidden="true">↻</span></button>
       </div>
-      <button className="text-button" onClick={() => response.refetch()}>
-        Refresh catalogue
-      </button>
-      {response.isPending && <p role="status" className="empty">Loading item catalogue…</p>}
+      <p role="status" aria-live="polite" className="sr-only">{response.isFetching ? "Loading item catalogue…" : response.error ? "Catalogue update failed." : `Catalogue page ${data?.page != null ? data!.page+1 : 1} loaded.`}</p>
       {clamped && <p role="status" className="notice">The live results changed. Your saved page was moved to the last available page.</p>}
-      {response.error && (
-        <p role="alert" className="notice error">
-          {response.error.message}
-        </p>
-      )}
-      <details className="column-controls">
-        <summary>Item columns</summary>
-        <fieldset aria-label="Item table columns">
-          {table.getAllLeafColumns().filter(column=>column.getCanHide()).map(column=><label key={column.id}>
-            <input type="checkbox" checked={column.getIsVisible()} onChange={column.getToggleVisibilityHandler()} />
-            {String(column.columnDef.header)}
-          </label>)}
-        </fieldset>
-      </details>
+      {response.error && <p role="alert" className="notice error">{response.error.message} <button onClick={()=>response.refetch()}>Retry catalogue</button></p>}
       <div
-        className="table-scroll"
+        className={`table-scroll catalogue-scroll ${response.isFetching ? "catalogue-loading" : ""}`}
         tabIndex={0}
         role="region"
         aria-label="Scrollable item catalogue"
@@ -286,7 +267,7 @@ export function ItemCatalogue({market,query,state,onChange,onSummary}: {
                           : "none"
                     }
                   >
-                    <button onClick={header.column.getToggleSortingHandler()}>
+                    {header.column.getCanSort() ? <button onClick={header.column.getToggleSortingHandler()}>
                       {flexRender(
                         header.column.columnDef.header,
                         header.getContext(),
@@ -298,7 +279,7 @@ export function ItemCatalogue({market,query,state,onChange,onSummary}: {
                             ? " ↓"
                             : " ↕"}
                       </span>
-                    </button>
+                    </button> : <span className="sr-only">Variants</span>}
                   </th>
                 ))}
               </tr>
@@ -314,7 +295,7 @@ export function ItemCatalogue({market,query,state,onChange,onSummary}: {
                         "button,a,input,select",
                       )
                     )
-                      {saveRestoration({focus:`catalogue-item-${row.original.item_id}`});navigate(itemUrl(market,row.original.item_id));}
+                      {saveRestoration({focus:`catalogue-item-${row.original.item_id}`});navigate(itemUrl(market,row.original.item_id,row.original.variant_count===1 ? row.original.sole_variant_key ?? undefined : undefined));}
                   }}
                 >
                   {row.getVisibleCells().map((cell) => (
@@ -327,12 +308,12 @@ export function ItemCatalogue({market,query,state,onChange,onSummary}: {
                   ))}
                 </tr>
                 {expanded[row.original.item_id] && (
-                  <tr className="variant-container">
+                  <tr className="variant-container" id={`variants-${row.original.item_id}`}>
                     <td colSpan={table.getVisibleLeafColumns().length}>
                       <Variants
                         market={market}
                         item={row.original}
-                        snapshot={response.data?.snapshot_id}
+                        snapshot={data?.snapshot_id}
                       />
                     </td>
                   </tr>
@@ -342,7 +323,7 @@ export function ItemCatalogue({market,query,state,onChange,onSummary}: {
           </tbody>
         </table>
       </div>
-      {response.data?.items.length === 0 && (
+      {data?.items.length === 0 && (
         <p className="empty">
           {query
             ? "No matching current items. Try an item ID or another search."
@@ -364,7 +345,7 @@ export function ItemCatalogue({market,query,state,onChange,onSummary}: {
           </select>
         </label>
         <span role="status" aria-label="Catalogue page">
-          Page {pagination.pageIndex + 1} of {Math.max(1, table.getPageCount())}
+          Page {(data?.page ?? pagination.pageIndex) + 1} of {Math.max(1, table.getPageCount())}{response.isFetching ? " · Loading…" : ""}
         </span>
         <button
           onClick={() => table.previousPage()}
@@ -436,7 +417,7 @@ export function Variants({
                   item={{ ...variant, icon_url: item.icon_url }}
                   prices={variant}
                 />
-                <span> {variantLabel(variant.variant)}</span><small className="variant-key" title={variant.variant_key}>Exact key: {variant.variant_key.slice(0,12)}…</small>
+                <span> Variant {page * 50 + (result.data?.variants.indexOf(variant) ?? 0) + 1}</span><details className="small"><summary>Variant properties</summary>{variantLabel(variant.variant)}<code className="variant-key">{variant.variant_key}</code></details>
               </td>
               <td>
                 <Currency value={variant.recent_price} />

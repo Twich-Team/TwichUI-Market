@@ -82,6 +82,7 @@ test("administrator recovery, persistent jobs and data-source forms use local AP
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: `${directory}/07-explorer.png`, fullPage: true });
   await page.getByRole("button", { name: /Synthetic Recovered Gloves/ }).first().click();
+  await page.getByRole("dialog").getByText("Technical details",{exact:true}).click();
   await expect(page.getByText("Field provenance", { exact: true }).first()).toBeVisible();
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: `${directory}/08-tooltip-provenance.png`, fullPage: true });

@@ -114,6 +114,6 @@ def daily_history(db,market_id,item_id,variant_key,days=365,*,at=None,compact=Fa
             'algorithm':algorithm,'observation_id':str(observation.id),'namespace':observation.namespace,
             'payload_hash':observation.payload_hash,'upstream_modified':observation.upstream_modified})
     if compact:
-        fields=('date','recent_price','market_value','historical_value','supply','listing_count','reference_status','reference_synthetic','synthetic')
+        fields=('date','observed_at','recent_price','market_value','historical_value','supply','listing_count','reference_status','reference_synthetic','synthetic')
         points=[{key:row[key] for key in fields} for row in points]
     return {'algorithm':ALGORITHM,'points':points,'synthetic':any(row['synthetic'] or row['reference_synthetic'] for row in points)}

@@ -62,7 +62,7 @@ def catalogue(market_id: MarketId,q: str=Query('',max_length=64),sort: Sort='ite
     ids=base.distinct().subquery('matching_items')
     envelope['total_items']=db.scalar(select(func.count()).select_from(ids))
     refs=references(market_id,now())
-    joined=select(stat.item_id,func.count().label('variant_count'),func.sum(stat.supply).label('supply'),
+    joined=select(stat.item_id,func.count().label('variant_count'),case((func.count()==1,func.min(stat.variant_key)),else_=None).label('sole_variant_key'),func.sum(stat.supply).label('supply'),
         func.sum(stat.listing_count).label('listing_count'),func.min(stat.recent_price).label('recent_min'),
         func.max(stat.recent_price).label('recent_max'),func.min(refs.c.market_value).label('market_min'),
         func.max(refs.c.market_value).label('market_max'),func.min(refs.c.historical_value).label('historical_min'),
@@ -81,7 +81,7 @@ def catalogue(market_id: MarketId,q: str=Query('',max_length=64),sort: Sort='ite
         envelope['items'].append({'item_id':row['item_id'],**metadata_name(metadata[row['item_id']][0] if row['item_id'] in metadata else None,row['item_id']),
             'icon_attribution':json.loads(metadata[row['item_id']][0].fallback)['source']['attribution'] if row['item_id'] in metadata and metadata[row['item_id']][2]=='thewowdb' and metadata[row['item_id']][0].fallback else None,
             'icon_url':f'/api/v1/items/{market.region}/{row["item_id"]}/icon?v={metadata[row["item_id"]][1]}' if row['item_id'] in metadata and metadata[row['item_id']][1] else None,
-            'variant_count':row['variant_count'],'priced_variant_count':row['priced_variants'],
+            'variant_count':row['variant_count'],'sole_variant_key':row['sole_variant_key'],'priced_variant_count':row['priced_variants'],
             'supply':row['supply'],'listing_count':row['listing_count'],
             'price_ranges':{key:{'minimum':cash(row[prefix+'_min']),'maximum':cash(row[prefix+'_max'])} for key,prefix in
                             [('recent_price','recent'),('market_value','market'),('historical_value','historical')]},

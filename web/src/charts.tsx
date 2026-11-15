@@ -11,7 +11,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { api, money } from "./api";
-import { HistoryPoint, withMissingDays, exactPriceTooltip } from "./chart-data";
+import { HistoryPoint, withMissingDays, exactPriceTooltip, observationLabel } from "./chart-data";
 const ChartEngine = lazy(() => import("./chart-engine"));
 function DeferredChart(props: ComponentProps<typeof ChartEngine>) {
   const container = useRef<HTMLDivElement>(null);
@@ -135,7 +135,7 @@ export function PriceHistory({
       },
       xAxis: {
         type: "category",
-        data: rows.map((r) => r.date),
+        data: rows.map(observationLabel),
         axisLabel: { color: palette.text, hideOverlap: true },
         axisLine: { lineStyle: { color: palette.grid } },
       },
@@ -279,7 +279,7 @@ export function PriceHistory({
         onZoom={(a, b) => setZoom([a, b])}
       />
       <p className="small muted">
-        {history.data?.points.length} observed UTC days · gaps remain
+        Local observation times · {Intl.DateTimeFormat().resolvedOptions().timeZone}. {history.data?.points.length} UTC-day buckets · gaps remain
         unobserved. Chart scales are approximate; tooltips and data retain exact
         copper values.
       </p>
@@ -343,7 +343,7 @@ function HistoryTable({ rows }: { rows: HistoryPoint[] }) {
       <table aria-label="Exact historical observations">
         <thead>
           <tr>
-            <th scope="col">UTC day</th>
+            <th scope="col">Local observation / UTC bucket</th>
             <th scope="col">Recent price</th>
             <th scope="col">14-day</th>
             <th scope="col">60-day</th>
@@ -362,7 +362,7 @@ function HistoryTable({ rows }: { rows: HistoryPoint[] }) {
 function HistoryRow({ row, index }: { row: HistoryPoint; index?: number }) {
   return (
     <tr aria-rowindex={index === undefined ? undefined : index + 2}>
-      <th scope="row">{row.date}</th>
+      <th scope="row" title={row.observed_at ? new Date(row.observed_at).toLocaleString(undefined,{timeZoneName:"long"}) : "No observation instant recorded"}>{observationLabel(row)}<small>UTC bucket {row.date}</small></th>
       <td>
         <Currency value={row.recent_price} />
       </td>
@@ -399,7 +399,7 @@ function VirtualHistory({ rows }: { rows: HistoryPoint[] }) {
       >
         <thead>
           <tr>
-            <th scope="col">UTC day</th>
+            <th scope="col">Local observation / UTC bucket</th>
             <th scope="col">Recent price</th>
             <th scope="col">14-day</th>
             <th scope="col">60-day</th>

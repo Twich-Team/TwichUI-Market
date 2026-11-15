@@ -36,7 +36,7 @@ test('preferences auto-save every supported choice and restore across independen
  await catalogue.getByLabel('Listings',{exact:true}).uncheck();
  await catalogue.getByRole('columnheader',{name:/Supply/}).getByRole('button').click();
  await catalogue.getByRole('columnheader',{name:/Supply/}).getByRole('button').click();
- await page.getByRole('link',{name:'Research Synthetic Arcane Crystal',exact:true}).click();await page.getByRole('link',{name:/Inspect Synthetic Arcane Crystal:/}).click();await page.getByRole('button',{name:'60D',exact:true}).click();
+ await page.getByRole('link',{name:'Research Synthetic Arcane Crystal',exact:true}).click();await page.getByRole('button',{name:'60D',exact:true}).click();
  await saved(page,{market_id:2,explorer_days:60,item_page_size:50,item_columns:{listing_count:false},item_sort:{id:'supply',desc:true}});
  await page.getByRole('button',{name:'Deal Finder',exact:true}).click();
  await page.getByRole('tab',{name:'Below reference',exact:true}).click();
@@ -60,7 +60,7 @@ test('preferences auto-save every supported choice and restore across independen
  await expect(otherTable.getByLabel('Items per page')).toHaveValue('50');
  await expect(otherTable.locator('th[aria-sort="descending"]')).toContainText('Supply');
  await expect(otherTable.getByRole('columnheader',{name:'Listings',exact:true})).toHaveCount(0);
- await other.getByRole('link',{name:'Research Synthetic Arcane Crystal',exact:true}).click();await other.getByRole('link',{name:/Inspect Synthetic Arcane Crystal:/}).click();await expect(other.getByRole('button',{name:'60D',exact:true})).toHaveClass(/selected/);
+ await other.getByRole('link',{name:'Research Synthetic Arcane Crystal',exact:true}).click();await expect(other.getByRole('button',{name:'60D',exact:true})).toHaveClass(/selected/);
  await other.getByRole('button',{name:'Deal Finder',exact:true}).click();
  await expect(other.getByRole('tab',{name:'Price changes',exact:true})).toHaveAttribute('aria-selected','true');
  await expect(other.getByLabel('Minimum change (%)')).toHaveValue('30');

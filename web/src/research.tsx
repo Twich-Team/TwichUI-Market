@@ -80,19 +80,19 @@ export function Explorer({markets,market,setMarket,searchParams,marketsReady}: {
   useEffect(()=>{setSearch(restoration()?.draft??state.query);},[state.query,state.market]);
   useEffect(()=>{if(markets.length&&current&&currentLocation()!==explorerUrl(state))navigate(explorerUrl(state),true);},[markets.length,state.market,state.query,state.sort.id,state.sort.desc,state.pageIndex,state.pageSize]);
   function change(next:ExplorerState){navigate(explorerUrl(next),true);}
-  return <>
+  return <div className="explorer-page">
     <div className="eyebrow">KNOW YOUR MARKET</div><h1>Market Explorer</h1>
-    <p className="intro">Browse current asking prices and supply. Open an item to research its history, variants and auctions.</p>
+
     <form className="toolbar" onSubmit={event=>{event.preventDefault();saveRestoration({draft:search,expanded:{}});change({...state,query:search,pageIndex:0});}}>
       <label className="grow">Search items<input value={search} onChange={e=>{setSearch(e.target.value);saveRestoration({draft:e.target.value});}} placeholder="Item name or ID, e.g. Arcane Crystal" maxLength={64}/></label>
       <MarketSelect markets={markets} market={state.market} setMarket={id=>{setMarket(id);saveRestoration({draft:'',expanded:{}});change({...state,market:id,query:'',pageIndex:0});}}/>
       <button className="primary" disabled={!current}>Search</button>
     </form>
-    {current&&<Freshness market={current}/>}
+    {current&&(current.freshness!=="current"||!current.verified)&&<p className="small muted explorer-freshness" title={`Last collection check: ${when(current.last_success)}`}>{current.freshness==="stale"?"Source data is stale":current.freshness==="unknown"?"Source freshness unknown":""}{!current.verified&&" · Mapping not live-verified; collection disabled"}</p>}
     {!marketsReady&&<p role="status" className="empty panel">Loading available markets…</p>}
     {marketsReady&&!markets.length&&<p className="empty panel">No market mappings are configured. An administrator can add a mapping under Administration.</p>}
     {markets.length>0&&!current&&<p className="notice" role="alert">This market is unavailable. Choose an available market to browse; your link has not been moved to another market.</p>}
     {summary.synthetic&&<p className="notice warning">Synthetic fixture data · not live Auction House observations.</p>}
     {current&&<ItemCatalogue key={`${state.market}:${state.query}`} market={state.market} query={state.query} state={state} onChange={change} onSummary={setSummary}/>}
-  </>;
+  </div>;
 }
