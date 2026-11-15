@@ -1,3 +1,5 @@
+**Authorized implementation in progress:** Phase 1 is deployed and verified at `e9c4d29`. The owner authorizes this plan on `feature/explorer-item-details`, targeting the verified integration branch. [Continuation ledger](explorer-item-details-progress.md). Final Phase 2 production promotion requires explicit owner visual approval. Historical planning-only language below is superseded for implementation, not promotion.
+
 # Explorer and Item Details implementation plan
 
 Status: **planned, implementation and deployment require another owner instruction**. Prepared after completing the Administration Table Modernization / Metadata Provider Investigation review boundary at `96f88a0`. The administration/quality candidate remains undeployed. This document implements no application behavior and authorizes no provider, collector or infrastructure changes.
