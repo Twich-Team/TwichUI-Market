@@ -117,6 +117,8 @@ def validate_evidence(manifest,directory):
     if (signature.get('source_commit')!=manifest.source_commit or signature.get('status')!='NotSigned'
             or signature.get('sha256')!=manifest.sha256 or signature.get('bytes')!=manifest.bytes
             or signature.get('updater_public_key_sha256')!=manifest.updater_public_key_sha256
+            or signature.get('executable_reference')!='actual-installed-windows-executable'
+            or installed.get('installed_executable_sha256')!=signature.get('executable_sha256')
             or not re.fullmatch(r'[a-f0-9]{64}',signature.get('executable_sha256',''))):
         raise ValueError('Actual Windows signature evidence differs')
     proof=documents['signed-update-acceptance.json']

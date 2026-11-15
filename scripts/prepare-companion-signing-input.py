@@ -33,6 +33,8 @@ def stage(installer,acceptance,source,runs,artifact_id,output):
     import re
     if (signature.get('source_commit')!=source or signature.get('status')!='NotSigned' or signature.get('sha256')!=digest
             or signature.get('bytes')!=size or signature.get('updater_public_key_sha256')!=key_hash
+            or signature.get('executable_reference')!='actual-installed-windows-executable'
+            or installed.get('installed_executable_sha256')!=signature.get('executable_sha256')
             or not re.fullmatch(r'[a-f0-9]{64}',signature.get('executable_sha256',''))):raise ValueError('Original Windows candidate identity differs')
     if (installed.get('source_commit')!=source or installed.get('version')!=version or installed.get('updater_disabled') is not False
             or installed.get('updater_public_key_sha256')!=key_hash or launch.get('installer_bytes')!=size):raise ValueError('Installed key/version/size differs')

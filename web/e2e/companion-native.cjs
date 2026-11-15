@@ -9,6 +9,7 @@ const {createHash}=require('node:crypto');const fs=require('node:fs');const path
   const api=await request.newContext({baseURL:process.env.MARKET_TEST_SERVER,extraHTTPHeaders:{Origin:process.env.MARKET_TEST_SERVER}});
   const shots=path.resolve('artifacts/companion-v2');fs.mkdirSync(shots,{recursive:true});
   const sourceCommit=(await promisify(execFile)('git',['rev-parse','HEAD'])).stdout.trim();
+  const installedExecutableHash=createHash('sha256').update(fs.readFileSync(process.env.MARKET_TEST_INSTALLED_EXE)).digest('hex');
   let websiteBrowser;
   try{
     let page=browser.contexts()[0].pages()[0];
@@ -140,7 +141,7 @@ const {createHash}=require('node:crypto');const fs=require('node:fs');const path
     await page.locator('#disconnect').click();await expect.poll(async()=>(await invoke('app_state')).mode,{timeout:20000}).toBe('disconnected');
     expect((await invoke('app_state')).cache.item_count).toBe(2);
     const revoked=(await(await api.get('/api/v1/companion/devices')).json()).devices.find(row=>row.id===device.id);expect(revoked.revoked).toBe(true);
-    fs.writeFileSync(path.join(shots,'installed-smoke.json'),JSON.stringify({fixture:true,source_commit:sourceCommit,acceptance_scope:'Installed non-tray workflows; tray actions are a separate explicit gate',version:(await invoke('app_state')).version,native_browser_approval_api:true,native_browser_approval_ui:true,
+    fs.writeFileSync(path.join(shots,'installed-smoke.json'),JSON.stringify({fixture:true,source_commit:sourceCommit,installed_executable_sha256:installedExecutableHash,acceptance_scope:'Installed non-tray workflows; tray actions are a separate explicit gate',version:(await invoke('app_state')).version,native_browser_approval_api:true,native_browser_approval_ui:true,
       native_thread_hidden_sync:true,single_instance_restore:true,preferences_saved:true,credential_and_cache_restart:true,hidden_startup:true,current_user_autostart_enable_disable:true,actual_tray_menu:trayVerified,tray_settings_sync_pause_open_quit:trayVerified,native_minimize_close_to_tray:true,export_valid:true,server_revocation:true,offline_cache_preserved:true,updater_disabled:false,updater_public_key_sha256:updaterKeyHash,update_checks_blocked_for_custom_server:true,
       website_approval_ui_verified:true,tray_rendering_evidence:{run_id:43647891422,real_menu_rendering_verified:true,actions_verified:false},tray_acceptance:trayVerified?'verified':'unverified',
       tray_limitation:trayVerified?null:'Focused runner attempt opened the real notification menu; UIA exposed no menu items. Owner manual acceptance required.',

@@ -28,14 +28,14 @@ def fixture_beta(tmp_path,monkeypatch,version='2.0.0-beta.1',source='b'*40):
     installed={name:True for name in ('native_browser_approval_ui native_thread_hidden_sync single_instance_restore preferences_saved credential_and_cache_restart '
         'hidden_startup current_user_autostart_enable_disable native_minimize_close_to_tray export_valid server_revocation offline_cache_preserved '
         'website_approval_ui_verified uninstall_settings_and_cache_preserved update_checks_blocked_for_custom_server').split()}
-    installed.update(source_commit=source,version=version,updater_disabled=False,updater_public_key_sha256=manifest['updater_public_key_sha256'],tray_acceptance='unverified',tray_settings_sync_pause_open_quit=False)
+    installed.update(source_commit=source,version=version,installed_executable_sha256='e'*64,updater_disabled=False,updater_public_key_sha256=manifest['updater_public_key_sha256'],tray_acceptance='unverified',tray_settings_sync_pause_open_quit=False)
     upgrade={name:True for name in ('actual_old_installer actual_new_installer legacy_credentials_preserved cache_preserved connection_settings_preserved '
         'legacy_metadata_migrated new_native_sync export_contract_preserved uninstall_data_preservation_verified_by_parent').split()}
     upgrade.update(source_commit=source,to_version=version,signed_updater_sdk_install=False)
     documents={'installed-smoke.json':installed,'legacy-upgrade.json':upgrade,
         'performance.json':{'source_commit':source,'resources':{'synthetic':True},'idle_market_api_requests':{'before':{'requests':1},'after':{'requests':1}}},
         'launch-metrics.json':{'installer_bytes':len(payload)},
-        'windows-signature.json':{'source_commit':source,'status':'NotSigned','sha256':manifest['sha256'],'bytes':len(payload),'updater_public_key_sha256':manifest['updater_public_key_sha256'],'executable_sha256':'e'*64},
+        'windows-signature.json':{'source_commit':source,'status':'NotSigned','sha256':manifest['sha256'],'bytes':len(payload),'updater_public_key_sha256':manifest['updater_public_key_sha256'],'executable_sha256':'e'*64,'executable_reference':'actual-installed-windows-executable'},
         'signed-update-acceptance.json':{'payload_source_commit':source,'harness_source_commit':'f'*40,'version':version,'installer_sha256':manifest['sha256'],
             'executable_sha256':'e'*64,'updater_public_key_sha256':manifest['updater_public_key_sha256'],'workflow_run_id':456,
             **dict.fromkeys(('supported_sdk_signature_verified','corrupt_payload_rejected','wrong_signed_version_rejected',
@@ -203,7 +203,9 @@ def test_private_update_feed_is_owned_signed_and_never_downgrades(owner,tmp_path
     ('owner-release-approval.json',{'owner_approved_deployment':False}),
     ('owner-release-approval.json',{'signed_update_run_id':999}),
     ('owner-release-approval.json',{'acknowledges_unverified_tray':False}),
-    ('installed-smoke.json',{'updater_public_key_sha256':'f'*64})])
+    ('installed-smoke.json',{'updater_public_key_sha256':'f'*64}),
+    ('installed-smoke.json',{'installed_executable_sha256':'f'*64}),
+    ('windows-signature.json',{'executable_reference':'build-directory-reference'})])
 def test_signing_and_final_approval_cannot_be_substituted(owner,tmp_path,monkeypatch,proof,changes):
     _,directory,manifest,_=fixture_beta(tmp_path,monkeypatch)
     change_evidence(directory,manifest,proof,changes)
