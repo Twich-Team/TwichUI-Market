@@ -5,3 +5,6 @@ desktop/src-tauri/tests/fixtures/synthetic-public.key -text
 
 # Pinned unsigned engineering fixture; never shipped as an ordinary-user release.
 desktop/test-fixtures/*.exe binary
+
+# Public updater trust identity must retain the same bytes across checkouts.
+desktop/src-tauri/updater-public-key.txt -text
