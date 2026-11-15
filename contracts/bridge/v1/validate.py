@@ -1,7 +1,7 @@
 """Offline frozen-contract conformance; no delivery or application integration."""
 import argparse
 import copy
-from datetime import datetime
+from datetime import date, datetime
 import hashlib
 import json
 from pathlib import Path
@@ -63,6 +63,7 @@ def validate(g):
     if (market['source_kind']=='auctions')!=(coverage['scope']=='house_auctions'): raise ValueError('Source scope')
     if market['mapping_verified'] and (market['mapping_evidence_sha256'] is None or market['player_ruleset'] is None): raise ValueError('Mapping evidence')
     if coverage['history_from_day']>coverage['history_through_day'] or coverage['history_through_day']>g['as_of_utc_day']: raise ValueError('History window')
+    if not 0<=(date.fromisoformat(g['as_of_utc_day'])-date.fromisoformat(coverage['history_from_day'])).days<60: raise ValueError('History retention window')
     if coverage['delivered_observed_days']>coverage['available_observed_days']: raise ValueError('Coverage count')
     if coverage['history_complete'] and coverage['history_truncated']: raise ValueError('History completeness')
     if coverage['history_complete'] and coverage['delivered_observed_days']!=coverage['available_observed_days']: raise ValueError('Complete history count')

@@ -25,6 +25,8 @@ The shared observation table carries actual observation/snapshot IDs, UTC date, 
 
 Times are UTC RFC3339 strings ending in Z, with at most six fractional digits. Preserve observation precision. `generated_at` is artifact creation; `desktop_sync_completed_at` is the successful complete bridge-data acquisition, not just the old scalar-cache sync; `server_checked_at` is a separate successful collection check. `observed_at` preserves the collector's timestamp semantics (currently check/request start), not an invented response-completion instant. Upstream modification time describes content; a newer 304, desktop check or artifact never makes old content fresh. Unknown upstream time stays null. Future timestamps beyond the generation instant are rejected.
 
+Synthetic provenance is the conservative OR of every contributing source, including reference support omitted from the delivered daily subset. An omitted synthetic supporting date must not be hidden by a genuine current snapshot. Receivers can check included provenance but cannot prove the absence of omitted inputs; producers own this invariant.
+
 Required features are exactly `exact_copper`, `current_summaries`, `daily_history`. Unknown versions, required features, algorithms, fields or incompatible bases reject the generation. Quality-policy version 1 retains the approved safeguards. Capabilities in Rust/Lua check header compatibility only; they are explicitly not full generation validation or ingestion.
 
 ## Records and daily history

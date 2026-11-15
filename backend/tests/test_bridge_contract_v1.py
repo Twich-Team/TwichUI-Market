@@ -50,6 +50,7 @@ def changed(path,value):
     changed(['records',1,'distribution','algorithm'],'linear-unit-price-bands-v1'),
     changed(['coverage','history_truncated'],True),changed(['coverage','delivered_observed_days'],1),
     changed(['record_count'],1),changed(['records',1,'current','supply'],10.0),
+    changed(['coverage','history_from_day'],'2026-01-01'),
 ])
 def test_reject_semantic_corruption_even_with_recomputed_hashes(mutation):
     generation=json.loads((ROOT/'canonical-generation.json').read_text());mutation(generation)
