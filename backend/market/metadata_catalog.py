@@ -41,7 +41,12 @@ def store_source(db, region, item_id, provider, fields, source, *, at=None, etag
             if not isinstance(value,list) or len(value)>40: raise ValueError('Invalid tooltip lines')
             for entry in value:
                 if not isinstance(entry,dict) or entry.get('kind') not in ('attribute','stat','effect','flavor'): raise ValueError('Invalid tooltip line')
-                plain(entry.get('text'),512)
+                line = entry.get('text')
+                if not isinstance(line, str): raise ValueError('Invalid tooltip text')
+                # Existing Blizzard tooltips allow paragraph breaks and tabs.
+                # Validate their plain text without changing the stored layout;
+                # HTML and every other control character remain rejected.
+                plain(line.replace('\n', ' ').replace('\t', ' '),512)
         elif key == 'icon_reference':
             if not isinstance(value,str) or not value.startswith('/api/v1/items/'): raise ValueError('Only locally served artwork references')
     row = get_source(db, region, item_id, provider)

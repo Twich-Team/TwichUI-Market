@@ -11,9 +11,9 @@
   "installer_sha256": "0fbc53603c218ffa85c8ee7b4e54f25e53c52a6fc3b2330ae914337714d41869",
   "updater_public_key_sha256": "5794736c840c7c09a49396e60cd569ff6b5f24f872eb0318ed95d55c16616ecf",
   "windows_run_id": 43664574901,
-  "signed_update_run_id": 43665403770,
+  "signed_update_run_id": 43668266314,
   "visual_approval_commit": "e55807c58c4cf68560729471019b88cc518fb5b0",
-  "deployment_source_commit": "f31050c5583b6864498195d8bc6e0b3a744a73e9",
+  "deployment_source_commit": "3e23425f508531b3e85307039e5ad939920b664a",
   "tray_actions_verified": false,
   "acknowledges_unverified_tray": true,
   "note": "The owner authorizes beta publication and explicitly requires reporting remaining manual Windows tray tests. Tray actions remain unverified; this receipt records authorization, never a new Windows observation."

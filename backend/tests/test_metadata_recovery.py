@@ -8,7 +8,7 @@ from sqlalchemy import func, select, text
 from market.db import now
 from market.ingest import ingest
 from market.metadata import store_metadata
-from market.metadata_catalog import import_everloot_page, store_source
+from market.metadata_catalog import backfill_legacy, import_everloot_page, store_source
 from market.metadata_providers import fetch, parse_everloot, parse_foreverdb
 from market.metadata_recovery import enqueue, ensure_providers, tick
 from market.models import ItemMetadata, Market, MetadataJob, MetadataProvider, MetadataSource, MetadataTask, MetadataVersion, SecurityEvent, User
@@ -62,6 +62,28 @@ def test_precedence_versions_conflicts_and_field_provenance(database):
         src=db.get(MetadataSource,('us',720,'en_US','everloot'))
         assert json.loads(src.source_json)['field_sources']['name']['confidence']=='player_consensus'
         assert db.scalar(select(func.count()).select_from(MetadataVersion))==4
+
+
+def test_legacy_multiline_tooltips_backfill_without_blocking_worker(database):
+    lines = [{'kind':'effect', 'text':'Use: Adds this toy to your Toy Box.\n\nSummon a fixture.\t(10 Min Cooldown)'}]
+    with database.begin() as db:
+        row=ItemMetadata(region='us',item_id=22728,name='Synthetic multiline toy',namespace='static-forever-us',details=json.dumps({'scope':'base_item','lines':lines}))
+        db.add(row);db.flush()
+        original=row.details
+        assert backfill_legacy(db)==1
+        assert row.details==original
+        assert json.loads(row.catalog_json)['fields']['lines']==lines
+        assert json.loads(db.get(MetadataSource,('us',22728,'en_US','blizzard')).fields_json)['lines']==lines
+        assert json.loads(row.catalog_json)['conflicts']==[]
+        assert backfill_legacy(db)==0
+
+
+@pytest.mark.parametrize('unsafe',['<script>bad</script>','bad\x00control','bad\rcontrol'])
+def test_multiline_tooltip_support_keeps_markup_and_other_controls_rejected(database,unsafe):
+    with database.begin() as db:
+        origin={'provider':'blizzard','edition':'forever','locale':'en_US'}
+        with pytest.raises(ValueError):
+            store_source(db,'us',720,'blizzard',{'lines':[{'kind':'effect','text':unsafe}]},origin)
 
 
 @pytest.mark.parametrize('mutation',[{'id':721},{'type':'npc'},{'gameData':{'build':'12.1.5.70783'}},{'attribution':{'licence':'unknown'}},{'url':'https://evil.test/'},{'title':'<script>bad</script>'}])

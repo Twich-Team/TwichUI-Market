@@ -213,7 +213,7 @@ const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
   phase='metadata_recovery_and_secure_provider_readiness';
   await admin.getByRole('tab',{name:'Item Metadata',exact:true}).click();
   await expect(admin.getByRole('heading',{name:'Item Metadata',exact:true})).toBeVisible();
-  await admin.getByRole('region',{name:'Item Metadata'}).getByLabel('Market',{exact:true}).selectOption('2');
+  await admin.locator('.metadata-admin').getByRole('combobox').first().selectOption('2');
   const coverage=await get(admin,publicOrigin,'/admin/item-metadata?market_id=2');expect(coverage.observed).toBeGreaterThan(0);
   await admin.getByLabel('Numeric item ID').fill(String(item.item_id));
   await admin.getByLabel('Request budget',{exact:true}).fill('1');
