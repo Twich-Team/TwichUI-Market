@@ -13,7 +13,7 @@ docker --context rootless compose --env-file .env --env-file .env.combined-relea
   up -d --no-deps --wait api local-api proxy
 ```
 
-The combined overlay pins API, website and offline publisher images. It does not retag older production/rollback images. Existing collector, PostgreSQL, monitor and backup services remain on their existing identities. Enrichment is the one separately replaced worker, started with `--profile metadata ... up -d --no-deps enrichment` after schema/provider setup. There is one auction collector; no new collection project is started.
+The combined overlay pins API, website and offline publisher images. It does not retag older production/rollback images. Existing collector, PostgreSQL and monitor services remain on their existing identities. Enrichment is separately replaced, started with `--profile metadata ... up -d --no-deps enrichment` after schema/provider setup. The related backup service retains its image, schedule and resource limits but now keeps up to 30 archives under a 3 GiB archive budget, preserving all current release backups instead of applying the former seven-archive limit. There is one auction collector; no new collection project is started.
 
 Before migration, require exact-commit backend/browser/Windows CI, signed original-byte Windows acceptance, current checked backup/actual isolated restore, every-table original-column migration preservation, resource headroom and pinned rollback images. The verified rehearsal uses only `market_restore`; destructive test fixtures remain restricted to `market_test`. Required order is `0012 → 0013 → meta_20261114`. Keep the additive schema during application rollback.
 

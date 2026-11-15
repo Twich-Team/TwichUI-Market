@@ -30,3 +30,8 @@ services:
       - ${METADATA_KEYRING_PATH:?Set private metadata keyring path}:/run/metadata/keyring.json:ro
   private-beta-publisher:
     image: sha256:3f757981f846016e3578f78998f4a8e2cb277705771f9bd83bb8daf6468c5b6f
+  backup:
+    environment:
+      # Preserve the current release archives; retain a finite disk allowance.
+      BACKUP_KEEP: "30"
+      MAX_BACKUP_BYTES: "3221225472"

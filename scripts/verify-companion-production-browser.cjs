@@ -55,8 +55,8 @@ async function verifyCompanion(page){
   expect((await api.get('/api/v1/companion/private-beta/update/windows-x86_64/'+expected.version,{headers})).status()).toBe(204);
   const activity=await api.post('/api/v1/companion/activity',{headers,data:{market_id:2,app_version:expected.version}});expect(activity.status()).toBe(204);
   let cursor=null,complete=false,pages=0;
-  while(pages++<100){
-   const response=await api.get('/api/v1/sync/markets/2',{headers,params:{limit:1000,...(cursor?{cursor}:{})}});expect(response.status()).toBe(200);
+  while(pages++<1500){
+   const response=await api.get('/api/v1/sync/markets/2',{headers,params:{limit:100,...(cursor?{cursor}:{})}});expect(response.status()).toBe(200);
    const page=await response.json();expect(page.contract_version).toBe(1);expect(page.synthetic).toBe(false);cursor=page.cursor;if(!page.has_more){complete=true;break;}
   }
   expect(complete).toBe(true);
