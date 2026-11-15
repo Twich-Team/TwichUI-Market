@@ -8,8 +8,17 @@ from market.models import Market,User,StorageMeasurement,CollectionRun,Companion
 from market.security import hasher
 
 assert engine.url.database=='market_test','Refusing to seed a non-test database'
+# An ephemeral test-only master key in the running API container, never in artifacts.
+import os,base64,secrets
+from pathlib import Path
+if os.environ.get('METADATA_KEYRING_FILE'):
+    path=Path(os.environ['METADATA_KEYRING_FILE'])
+    assert str(path)=='/tmp/metadata-browser-keyring.json'
+    path.write_text(json.dumps({'active':'browser','keys':{'browser':base64.b64encode(secrets.token_bytes(32)).decode()}}))
+    path.chmod(0o600)
+if os.environ.get("METADATA_TEST_KEYRING_ONLY")=="true":raise SystemExit(0)
 with Session.begin() as db:
-    db.add(CompanionAuthorization(id='E'*43,device_name='Expired browser fixture',platform='Windows',app_version='2.0.0-beta.1',issuer_origin='http://proxy',
+    db.add(CompanionAuthorization(id='E'*43,device_name='Expired browser fixture',platform='Windows',app_version='2.0.0-beta.1',issuer_origin=os.environ.get('APP_ORIGIN','http://proxy'),
         redirect_uri='http://127.0.0.1:43123/companion/callback',state_value='S'*43,state_hash=__import__('hashlib').sha256(('S'*43).encode()).hexdigest(),code_challenge='C'*43,
         created_at=now()-timedelta(minutes=6),expires_at=now()-timedelta(minutes=1)))
     db.add_all([StorageMeasurement(sampled_at=now()-timedelta(days=1),database_bytes=10485760),StorageMeasurement(sampled_at=now(),database_bytes=11534336)])
@@ -34,3 +43,26 @@ with Session.begin() as db:
             ingest(db,market.id,body,request_key=f'browser-{house}-{days}',retrieved_at=now()-timedelta(days=days),synthetic=True)
         db.add(CollectionRun(market_id=market.id,checked_at=now(),status='success',http_status=200,duration_seconds=2,payload_bytes=len(body),error=None))
 print('Synthetic browser fixtures seeded in isolated market_test')
+
+# Synthetic local catalog recovery evidence; no external provider is contacted.
+from market.metadata_providers import parse_everloot
+from market.metadata_catalog import store_source
+from market.metadata_recovery import ensure_providers,enqueue
+from market.models import MetadataProvider,MetadataTask
+from sqlalchemy import select
+with Session.begin() as db:
+    ensure_providers(db)
+    db.get(MetadataProvider,'everloot').enabled=True
+    db.get(MetadataProvider,'thewowdb').last_error='forbidden'
+    fields,origin=parse_everloot(json.dumps({'ok':True,'type':'item','id':20001,'title':'Synthetic Recovered Gloves',
+        'url':'https://everloot.app/item/20001','gameData':{'build':'1.60.1.70532'},
+        'attribution':{'licence':'CC BY-SA 4.0','credit':'Data from Everloot, CC BY-SA 4.0','source':'https://everloot.app'}}).encode(),20001)
+    store_source(db,'eu',20001,'everloot',fields,origin)
+    owner=db.scalar(select(User).where(User.username=='owner'))
+    market=db.scalar(select(Market).where(Market.house_id==113))
+    job,_=enqueue(db,market.id,'single',['everloot'],actor_id=owner.id,item_id=20001,budget=1)
+    db.flush()
+    task=db.scalar(select(MetadataTask).where(MetadataTask.job_id==job.id))
+    task.state='completed';task.attempts=1;task.result_json=json.dumps({'status':'available','provider':'everloot',
+        'recovered_fields':['name'],'source':origin})
+    job.state='completed';job.requests_used=1

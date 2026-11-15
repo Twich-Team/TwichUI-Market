@@ -71,6 +71,8 @@ alembic('upgrade', 'head')
 alembic('check')
 after = originals()
 with engine.connect() as connection:
+    upgraded_revision = connection.scalar(text('SELECT version_num FROM alembic_version'))
+with engine.connect() as connection:
     assert connection.scalar(text('SELECT companion_device_id FROM credentials WHERE id=1')) is None
 assert before == after
 
@@ -88,7 +90,7 @@ with Session(engine) as db, db.begin():
 rejected = alembic('downgrade', '0012', succeed=False)
 assert rejected.returncode and 'Export native authorization/device records' in rejected.stderr
 with engine.begin() as connection:
-    assert connection.scalar(text('SELECT version_num FROM alembic_version')) == '0013'
+    assert connection.scalar(text('SELECT version_num FROM alembic_version')) == upgraded_revision
     assert connection.scalar(text('SELECT count(*) FROM companion_authorizations')) == 1
     connection.execute(text('DELETE FROM companion_authorizations'))
 alembic('downgrade', '0012')
@@ -103,4 +105,4 @@ alembic('check')
 print(json.dumps({'database': 'market_test', 'legacy_0012_rows_preserved': True,
     'native_populated_downgrade_refused': True, 'rejected_downgrade_retained_revision_and_rows': True,
     'empty_native_downgrade_preserved_legacy_rows': True, 'full_upgrade_parity_round_trip': True,
-    'revision': '0013', 'synthetic_only': True}))
+    'revision': upgraded_revision, 'synthetic_only': True}))

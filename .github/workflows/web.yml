@@ -22,13 +22,24 @@ jobs:
           node-version: '24'
           cache: npm
           cache-dependency-path: web/package-lock.json
+      - name: Verify combined PR source
+        run: python3 scripts/verify-ci-checkout.py
+        env:
+          CI_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
       - run: npm ci --prefix web
       - run: npm --prefix web run build && npm --prefix web test
       - run: npm --prefix web audit --omit=dev
       - run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml up -d --build
+      - run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml exec -T -e METADATA_TEST_KEYRING_ONLY=true api python - < web/e2e/seed.py
       - run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml run --rm -T --no-deps api python - < web/e2e/seed.py
       - run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml exec -T api python - < web/e2e/seed-private-beta.py
       - run: docker run --rm --network twichui-market-browser_default -v "$PWD:/work" -w /work/web mcr.microsoft.com/playwright:v1.65.1-noble npm run test:e2e
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: metadata-recovery-browser-evidence
+          path: artifacts/metadata-recovery
       - if: always()
         uses: actions/upload-artifact@v4
         with:

@@ -9,6 +9,8 @@ import secrets
 from typing import Literal
 from datetime import timedelta
 from fastapi import Depends, FastAPI, HTTPException, Request, Response
+from fastapi.exceptions import RequestValidationError
+from fastapi.exception_handlers import request_validation_exception_handler
 from pydantic import BaseModel, Field
 from sqlalchemy import select, text, update
 from sqlalchemy.exc import IntegrityError
@@ -24,6 +26,10 @@ from .catalogue import router as catalogue_router
 app.include_router(catalogue_router)
 from .item_profiles import router as profile_router
 app.include_router(profile_router)
+from .metadata_admin import router as metadata_admin_router
+app.include_router(metadata_admin_router)
+from .metadata_api import router as metadata_catalog_router
+app.include_router(metadata_catalog_router)
 from .distribution import router as distribution_router
 app.include_router(distribution_router)
 from .sync_api import router as sync_router
@@ -46,6 +52,12 @@ app.include_router(companion_releases_router)
 app.include_router(companion_private_beta_router)
 COOKIE_SECURE = os.environ.get("COOKIE_SECURE", "true").lower() == "true"
 ORIGIN = os.environ.get("APP_ORIGIN", "https://localhost")
+
+@app.exception_handler(RequestValidationError)
+async def safe_validation_error(request, error):
+    if request.url.path.startswith('/api/v1/admin/metadata-providers'):
+        return Response(status_code=422, content='{"detail":"Invalid provider settings or credential input"}', media_type='application/json')
+    return await request_validation_exception_handler(request, error)
 
 
 def finite_json_number(value):
@@ -85,7 +97,7 @@ async def security_headers(request, call_next):
         if not length.isdigit() or int(length) > 16384:
             return Response(status_code=413)
         native_body = request.url.path.startswith('/api/v1/companion/')
-        if personal_preference or native_body:
+        if personal_preference or native_body or request.url.path.startswith('/api/v1/admin/metadata-providers'):
             chunks=[]
             size=0
             async for chunk in request.stream():

@@ -1,3 +1,4 @@
+import { DataSources, ItemMetadataAdmin } from "./metadata-admin";
 import { MyPreferences } from "./user-preferences";
 import { MarketConfiguration } from "./market-configuration";
 import { RetentionControls } from "./retention-controls";
@@ -368,6 +369,8 @@ export function Administration({
     storage: "Storage & backups",
     devices: "Devices",
     security: "Security events",
+    metadata: "Item Metadata",
+    sources: "Data Sources",
   };
   const invite = () =>
     action(async () => {
@@ -422,6 +425,8 @@ export function Administration({
           </button>
         ))}
       </div>
+      {tab === "metadata" && <ItemMetadataAdmin markets={markets} readOnly={readOnly} />}
+      {tab === "sources" && <DataSources readOnly={readOnly} />}
       {state && (
         <>
           {tab === "overview" && (

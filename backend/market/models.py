@@ -179,7 +179,11 @@ class ItemMetadata(Base):
     fallback: Mapped[str | None] = mapped_column(Text)
     fallback_name: Mapped[str | None] = mapped_column(String(255))
     fallback_retry_after: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
-    __table_args__=(Index('ix_item_metadata_region_name',region,func.lower(name)),)
+    catalog_json: Mapped[str | None] = mapped_column(Text)
+    catalog_revision: Mapped[int] = mapped_column(Integer, default=0, server_default='0')
+    __table_args__=(Index('ix_item_metadata_region_name',region,func.lower(name)),
+        Index('ix_item_metadata_catalog_search',func.lower(func.coalesce(name,fallback_name)).label('catalog_name'),
+              postgresql_using='gin',postgresql_ops={'catalog_name':'gin_trgm_ops'}),)
 
 
 class StorageMeasurement(Base):
@@ -320,3 +324,6 @@ class CompanionRefreshHistory(Base):
     token_hash: Mapped[str] = mapped_column(String(64), primary_key=True)
     device_id: Mapped[int] = mapped_column(ForeignKey('companion_devices.id'), index=True)
     consumed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+
+# Register additive metadata tables with the same migration/test metadata.
+from .metadata_models import MetadataProvider, MetadataSource, MetadataVersion, MetadataJob, MetadataTask
