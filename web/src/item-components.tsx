@@ -231,7 +231,7 @@ export function ItemInfo({
           sideOffset={10}
           className="item-popover-positioner"
         >
-          <Popover.Popup className="wow-tooltip" initialFocus={false}>
+          <Popover.Popup className="wow-tooltip" initialFocus={false} onClick={event=>event.stopPropagation()}>
             <Popover.Title className="sr-only">
               {item.name} item details
             </Popover.Title>
@@ -283,9 +283,7 @@ export function ItemInfo({
                 {prices.supply !== undefined && (
                   <div>Supply: {prices.supply.toLocaleString()}</div>
                 )}
-                <small>
-                  Variant market data is separate from base item attributes.
-                </small>
+
               </section>
             )}
             <Popover.Close className="text-button">

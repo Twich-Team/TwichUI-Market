@@ -142,7 +142,8 @@ export function ItemCatalogue({market,query,state,onChange,onSummary}: {
               <ItemInfo
                 market={market}
                 item={row.original}
-                ranges={row.original.price_ranges}
+                ranges={row.original.variant_count>1 ? row.original.price_ranges : undefined}
+                prices={row.original.variant_count===1 ? {recent_price:row.original.price_ranges.recent_price.minimum,market_value:row.original.price_ranges.market_value.minimum,supply:row.original.supply} : undefined}
               />
               <ItemAttribution item={row.original} />
               <a className="select-item" id={`catalogue-item-${row.original.item_id}`}

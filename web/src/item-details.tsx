@@ -41,7 +41,7 @@ function Research({route,market}:{route:ItemRoute;market:Market}){
   return <div className="item-research">
     <div className="research-breadcrumb"><a href={back} onClick={returnToBrowse}>{back.startsWith('/deals')?'← Back to Deal Finder':'← Back to Explorer'}</a><span>{market.label}</span><button className="text-button" onClick={()=>{void overview.refetch();void profile.refetch();if(variant)void detail.refetch();}}>Refresh item</button></div>
     <div className="item-heading research-heading">
-      <ItemInfo eager market={marketId} item={identity} prices={value} ranges={group?.price_ranges}/>
+      <ItemInfo eager market={marketId} item={identity} prices={value} ranges={!variant ? group?.price_ranges : undefined}/>
       <div><div className="eyebrow">ITEM RESEARCH</div><h1><ItemName name={identity.name} quality={identity.quality}/></h1><ItemAttribution item={identity}/>
         <p className="small muted">{variant?'Exact variant':'Overview across current variants'}</p>
       </div>

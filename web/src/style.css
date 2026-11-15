@@ -1674,3 +1674,6 @@ a.secondary { display:inline-block; padding:10px 14px; border:1px solid var(--bo
 .explorer-page > .toolbar { margin:12px 0; padding:12px; }
 .explorer-page > .notice { margin:10px 0; padding:8px 12px; }
 .explorer-page > .explorer-freshness { margin:8px 0; font-size:.8rem; }
+.icon-button,.variant-chevron { background:#31241b; color:#dcc59d; border:1px solid #695036; border-radius:3px; }
+.icon-button:hover:not(:disabled),.variant-chevron:hover { background:#463121; border-color:#aa8753; }
+.research-charts th > small { display:block; font-weight:400; color:var(--muted); font-size:.75rem; }
