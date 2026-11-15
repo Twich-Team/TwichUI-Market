@@ -33,3 +33,8 @@ Production authorization is separate. Before any0013 migration or API/frontend p
 ## Windows warnings
 
 Windows publisher signing and Tauri update verification answer different questions. A correctly Tauri-signed update can still show Unknown Publisher or SmartScreen warnings. Download only from the exact HTTPS market.twich.gg account page, compare its version/SHA256 and verify it is the intended installer. If the normal SmartScreen prompt offers **More info**, inspect it; choose **Run anyway** only if you trust this exact download. An ordinary confirmation is individual installation consent. If policy, Smart App Control or Defender blocks it without that option, stop and report the exact message. Never disable Windows security, add a trust-root certificate, use a global exclusion or promise that Tauri signing removes Windows warnings. Updates install only after explicit confirmation in the companion.
+
+
+## Owner-review boundary
+
+The owner requested convergence on the frozen beta2 candidate. Unexecuted production-verifier/configuration drafts are preserved under ignored artifacts/companion-v2/deferred-production-drafts for a separately authorized rollout; they are not delivered as tested release infrastructure or activated. Use the exact future approved tool/API/frontend image identities for integration/deployment, preserving the existing offline publisher and its signature/owner gates. No additional infrastructure is started at this review checkpoint.

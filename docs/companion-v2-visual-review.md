@@ -1,5 +1,7 @@
 # Companion v2 actual screenshot review
 
+Current frozen beta2 captures and version provenance are in the [final eight-image gallery](evidence/companion-v2-keyed-screenshots/index.html), with [owner-review instructions](companion-v2-owner-review.md). The original approved gallery below remains unchanged. Real tray rendering is captured; tray actions remain explicitly unverified.
+
 **Owner visual approval recorded.** The owner explicitly answered “Approve these designs” after reviewing this packet. [Approval evidence](evidence/companion-v2-owner-visual-approval.json) binds that approval to the exact screenshot hashes and source. Tray actions and signed-installer acceptance remain unverified. These are actual installed Windows WebView2/Edge captures from verified source **e55807c58c4cf68560729471019b88cc518fb5b0 / Windows43652127596**, plus the actual OS notification-area capture from **2d66026 / Windows43647891422**. No generated mockups or replacement tray imagery. All data/accounts shown are synthetic; no production market-price or owner-account claim is made. CI timestamps reflect its Windows locale/timezone. Full-page captures include the app's scrollable content; they do not imply a taller default native window.
 
 The [provenance manifest](evidence/companion-v2-screenshots/provenance.json) records each original PNG SHA-256, exact source, run and downloaded/verified artifact hash. The eight files are preserved unchanged in the repository so owner review does not depend on expiring artifacts. [Functional acceptance](companion-v2-acceptance.md) and [manual PC checklist](companion-v2-windows-manual-acceptance.md) remain distinct. A local [eight-image gallery](evidence/companion-v2-screenshots/index.html) opens without a server or network.
@@ -54,4 +56,4 @@ Actual Account & Devices with preferences, owned native metadata, expiry/activit
 
 ![Actual website devices](evidence/companion-v2-screenshots/website-devices.png)
 
-The recorded owner approval covers the new desktop and website companion surfaces at the source above. It does not accept tray actions, provision signing credentials, authorize expense or prove signed update/public deployment behavior. Those outcomes retain their own evidence gates.
+The recorded owner approval covers the new desktop and website companion surfaces at the source above. It does not accept tray actions, prove signed updater installation or authorize final publication/deployment. The owner’s separate zero-cost decision authorizes the dedicated updater key, not commercial signing expenditure. Those outcomes retain their own evidence gates.

@@ -1,0 +1,11 @@
+{
+  "status": "NotSigned",
+  "sha256": "0fbc53603c218ffa85c8ee7b4e54f25e53c52a6fc3b2330ae914337714d41869",
+  "executable_reference": "actual-installed-windows-executable",
+  "bytes": 4426483,
+  "executable_sha256": "fc11b4428f712779e8ac0f954847c8089f869a30567e71c67a422b1ce057d46f",
+  "build_executable_sha256": "954b3abfe6fbabab3d38315a0faacfbbe5e100c7c263997f88f642dcfa30464b",
+  "updater_public_key_sha256": "5794736c840c7c09a49396e60cd569ff6b5f24f872eb0318ed95d55c16616ecf",
+  "schema_version": 1,
+  "source_commit": "c7bad2f5e84213e1c69e3eb66e8daa6540f05bc9"
+}

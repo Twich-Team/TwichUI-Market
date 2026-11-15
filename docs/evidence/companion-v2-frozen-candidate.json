@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "frozen_at_utc": "2026-11-15T02:06:50.056857+00:00",
+  "status": "owner-review-boundary",
+  "version": "2.0.0-beta.2",
+  "frozen_commit": "d9d5ae354931bfe9276c30fde6f83da8d661e457",
+  "installer_source_commit": "c7bad2f5e84213e1c69e3eb66e8daa6540f05bc9",
+  "installer": {
+    "filename": "TwichUI-Market-Companion-2.0.0-beta.2-windows-x64.exe",
+    "bytes": 4426483,
+    "sha256": "0fbc53603c218ffa85c8ee7b4e54f25e53c52a6fc3b2330ae914337714d41869",
+    "installed_executable_sha256": "fc11b4428f712779e8ac0f954847c8089f869a30567e71c67a422b1ce057d46f",
+    "authenticode_status": "NotSigned",
+    "artifact_id": 14141637538,
+    "artifact_zip_sha256": "75d8b3696a0e15739409105cdc6276e279e2bb8337df435b6516233b794b5110"
+  },
+  "source_ci": {
+    "backend": 43664574952,
+    "website": 43664574886,
+    "windows": 43664574901
+  },
+  "verification_ci": {
+    "backend": 43665403724,
+    "website": 43665403722,
+    "windows": 43665403770
+  },
+  "all_listed_ci_conclusions": "success",
+  "signed_updater": {
+    "verified": true,
+    "receipt": "companion-v2-signed-update-acceptance.json",
+    "run_id": 43665403770,
+    "artifact_id": 14142013249,
+    "artifact_zip_sha256": "17008aaf6de5f7a33febc63131a2ae5bbd46d79bd738b2f30e10eb6b22e1fc0e",
+    "public_key_sha256": "5794736c840c7c09a49396e60cd569ff6b5f24f872eb0318ed95d55c16616ecf",
+    "private_key_in_git_or_ci": false
+  },
+  "remaining": {
+    "release_blocking_demonstrated_security_or_functionality_defects": [],
+    "owner_approval_required": [
+      "Windows PC manual acceptance; tray actions remain unverified",
+      "Authorize controlled integration with PR2",
+      "Separate final installer publication and production deployment authorization"
+    ],
+    "nonblocking_limitations": [
+      "Runner UIA cannot reliably select the real tray menu actions",
+      "Optional installer-exit observer did not capture an exit code; actual installed bytes, reconnect/sync/export/uninstall are independently verified",
+      "Sync timing uses a two-variant delayed fixture, not full live-market throughput",
+      "Existing production does not yet expose the new Companion pairing/download API"
+    ]
+  },
+  "integration_pr2": {
+    "url": "https://github.com/Twich-Team/TwichUI-Market/pull/2",
+    "inspected_head": "b18927ac867d3421f59cde163d3750af3ab17950",
+    "ready_as_frozen_input_for_controlled_integration": true,
+    "combined_commit_tested": false,
+    "merge_authorized": false,
+    "deploy_authorized": false,
+    "required_reconciliation": [
+      "Keep private updater authorization routes alongside the additive metadata read route",
+      "Preserve exact-source release provenance and signed-updater CI when reconciling workflow changes",
+      "Keep both browser fixture environments; preserve linear 0013 to meta_20261114 migration order"
+    ]
+  },
+  "publication_approved": false,
+  "deployment_approved": false,
+  "production_changed": false,
+  "tray_actions_verified": false,
+  "additional_beta_or_pipeline_redesign_planned": false
+}

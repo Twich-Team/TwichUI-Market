@@ -13,7 +13,10 @@
   "changed_payload_with_updated_digest_rejected": true,
   "wrong_authenticated_version_rejected": true,
   "private_key_on_owner_host_only": true,
-  "supported_windows_sdk_install_verified": false,
+  "supported_windows_sdk_install_verified": true,
   "publication_approved": false,
-  "deployment_approved": false
+  "deployment_approved": false,
+  "supported_windows_sdk_receipt": "companion-v2-signed-update-acceptance.json",
+  "supported_windows_sdk_run_id": 43665403770,
+  "sdk_checked_at_utc": "2026-11-15T02:06:50+00:00"
 }
