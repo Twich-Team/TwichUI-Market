@@ -44,11 +44,19 @@ def verify(environment=None):
         changed=True
     actual=sha(git('rev-parse','HEAD'))
     if actual!=expected:raise ValueError('CI tested commit differs from the event commit')
+    actual_base=None
     if preview:
         parents=[line.split()[1] for line in git('cat-file','-p','HEAD').splitlines() if line.startswith('parent ')]
-        if parents!=[base,head]:raise ValueError('PR preview parents differ from the event base/head')
+        if len(parents)!=2 or parents[1]!=head:
+            raise ValueError('PR preview does not contain the exact event head')
+        actual_base=sha(parents[0])
+        if actual_base!=base:
+            # GitHub can advance the preview's base after the PR event was saved.
+            # Accept only a provable forward base advance, never an unrelated tree.
+            git('fetch','--no-tags','--deepen=64','origin',actual_base,base)
+            git('merge-base','--is-ancestor',base,actual_base)
     return {'event':event,'tested_commit':actual,'source_kind':'pull_request_preview' if preview else 'commit',
-        'pr_base_commit':base,'pr_head_commit':head,'checkout_changed':changed,
+        'event_base_commit':base,'pr_base_commit':actual_base,'pr_head_commit':head,'checkout_changed':changed,
         'release_admissible':False if preview else None,
         'notice':'PR preview validation is integration evidence only. Release/deployment require separate exact-commit CI and owner authorization.'}
 

@@ -34,6 +34,18 @@ class CICheckout(unittest.TestCase):
             with patch.object(module,'git',side_effect=replies):
                 with self.assertRaises(ValueError):module.verify(self.env())
 
+    def test_preview_base_advance_requires_proven_ancestry_and_records_both(self):
+        advanced='e'*40
+        replies=[PREVIEW,PREVIEW,f'parent {advanced}\nparent {HEAD}','','']
+        with patch.object(module,'git',side_effect=replies) as git:
+            result=module.verify(self.env())
+        self.assertEqual(result['event_base_commit'],BASE)
+        self.assertEqual(result['pr_base_commit'],advanced)
+        self.assertEqual(git.call_args_list[-1].args,('merge-base','--is-ancestor',BASE,advanced))
+        import subprocess
+        with patch.object(module,'git',side_effect=replies[:-1]+[subprocess.CalledProcessError(1,'git')]):
+            with self.assertRaises(subprocess.CalledProcessError):module.verify(self.env())
+
     def test_non_pr_runs_never_switch_sources(self):
         with patch.object(module,'git',side_effect=[HEAD]):
             with self.assertRaises(ValueError):module.verify(self.env('push'))
