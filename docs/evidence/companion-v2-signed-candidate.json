@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
-  "version": "2.0.0-beta.1",
-  "payload_source_commit": "40fa2dd223f9f314c465ac3ad5c265e54c1d2592",
-  "windows_run_id": 43660434206,
-  "backend_run_id": 43660434281,
-  "website_run_id": 43660434216,
-  "installer_artifact_id": 14139642463,
-  "installer_sha256": "bbc7518e9608fdd9b1db89f14eeab842dc2f212291b1a38841eb9f6750ba4a1d",
-  "installer_bytes": 4426335,
-  "executable_sha256": "0eb7473b0e4ba09fe080883b6d57592596f842d31b3de8b838073f9aaff0e000",
+  "version": "2.0.0-beta.2",
+  "payload_source_commit": "c7bad2f5e84213e1c69e3eb66e8daa6540f05bc9",
+  "windows_run_id": 43664574901,
+  "backend_run_id": 43664574952,
+  "website_run_id": 43664574886,
+  "installer_artifact_id": 14141637538,
+  "installer_sha256": "0fbc53603c218ffa85c8ee7b4e54f25e53c52a6fc3b2330ae914337714d41869",
+  "installer_bytes": 4426483,
+  "executable_sha256": "fc11b4428f712779e8ac0f954847c8089f869a30567e71c67a422b1ce057d46f",
   "updater_public_key_sha256": "5794736c840c7c09a49396e60cd569ff6b5f24f872eb0318ed95d55c16616ecf",
-  "updater_signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTSTBwUk5ybTY3SmU5eVU3QUpjV2t0YUxZMWJxTkl5cnhtZDRtR2sxcy9VdzQxby91TXFJZHZzRmZLbHNRTS9yY2JmQ3lHQ0FCUVk4MXhsU1E0MmQrbU10VUt1TUpJUmc4PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzk0NzA0NTE4CWZpbGU6VHdpY2hVSS1NYXJrZXQtQ29tcGFuaW9uLTIuMC4wLWJldGEuMS13aW5kb3dzLXg2NC5leGUJdmVyc2lvbjoyLjAuMC1iZXRhLjEKUy9nMkZwL2xERFVJLzRLbTczMVBQVERVMDlXbEdKZnd5S0ZYNjhZbXBDVEpJZi9PMUM4TzNscFF2cjhkN3lRNDBzT3VPOWZtb0E4WWVYNThuZzJ4Q3c9PQo="
+  "updater_signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTSTBwUk5ybTY3SmNZa3E3ZnRueXRLWlFjY3F6VzBRcmN0NWpTTENzRGNFcjZYUy9sMVlxMnFYRElORm1rcjVMaVBlUUVvQlBxK0N6S0lwRzJCM0J1dWdHUFN5RngrMUFnPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzk0NzA3NjUyCWZpbGU6VHdpY2hVSS1NYXJrZXQtQ29tcGFuaW9uLTIuMC4wLWJldGEuMi13aW5kb3dzLXg2NC5leGUJdmVyc2lvbjoyLjAuMC1iZXRhLjIKUThCUWxIM2thNjk4d0dHSklUemFSSGV1bDRkMTgvSkNaeHJQTXBSUWp4emNnVmthbU9oYVErWDV3OW5BRFVOTm5pa045K2k4eUdvdXpMd3o1eVJ4QUE9PQo="
 }

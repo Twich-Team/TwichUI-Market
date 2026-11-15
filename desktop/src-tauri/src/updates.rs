@@ -330,7 +330,12 @@ mod tests {
     #[test]
     #[ignore = "Requires the owner's actual signed installer on a disposable runner"]
     fn launch_owner_signed_installer_on_disposable_runner() {
-        use std::{env, fs, path::PathBuf};
+        use std::os::windows::process::CommandExt;
+        use std::{
+            env, fs,
+            path::PathBuf,
+            process::{Command, Stdio},
+        };
         assert_eq!(env::var("GITHUB_ACTIONS").as_deref(), Ok("true"));
         assert_eq!(env::var("RUNNER_OS").as_deref(), Ok("Windows"));
         assert_eq!(env::var("MARKET_TEST_UPDATER_SDK").as_deref(), Ok("true"));
@@ -392,8 +397,8 @@ mod tests {
             .unwrap()
             .verify(&bytes)
             .is_err());
-        let evidence = PathBuf::from(env::var("GITHUB_WORKSPACE").unwrap())
-            .join("artifacts/companion-signed-update-test/sdk-crypto.json");
+        let workspace = PathBuf::from(env::var("GITHUB_WORKSPACE").unwrap());
+        let evidence = workspace.join("artifacts/companion-signed-update-test/sdk-crypto.json");
         fs::create_dir_all(evidence.parent().unwrap()).unwrap();
         fs::write(
             &evidence,
@@ -409,6 +414,24 @@ mod tests {
         eprintln!(
             "Actual owner-key SDK crypto assertions passed; invoking the verified NSIS installer."
         );
+        // Start the observer only now, after Cargo compilation and crypto checks.
+        // Its bounded interval must cover installation, not compilation time.
+        let _observer = Command::new("powershell.exe")
+            .args(["-NoProfile", "-NonInteractive", "-File"])
+            .arg(workspace.join("scripts/windows/watch-update-installer.ps1"))
+            .current_dir(&workspace)
+            .stdin(Stdio::null())
+            .stdout(Stdio::null())
+            .stderr(Stdio::null())
+            .creation_flags(0x08000000)
+            .spawn()
+            .unwrap();
+        let ready = evidence.parent().unwrap().join("installer-observer.ready");
+        let deadline = Instant::now() + Duration::from_secs(15);
+        while !ready.exists() && Instant::now() < deadline {
+            std::thread::sleep(Duration::from_millis(25));
+        }
+        assert!(ready.exists(), "Installer observer did not become ready");
         candidate
             .install(bytes)
             .expect("The supported updater must launch the verified installer");

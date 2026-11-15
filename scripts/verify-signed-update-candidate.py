@@ -119,7 +119,9 @@ def record(path):
     for name in ('actual_old_installer','actual_new_installer','legacy_credentials_preserved','cache_preserved','connection_settings_preserved',
             'new_native_sync','export_contract_preserved','signed_updater_sdk_install','uninstall_data_preservation_verified_by_parent'):
         if upgrade.get(name) is not True:raise ValueError('Signed updater installation/retention acceptance is incomplete')
-    receipt={'schema_version':1,'payload_source_commit':proof['payload_source_commit'],'harness_source_commit':harness,
+    exit_path=ROOT/'artifacts/companion-signed-update-test/installer-exit.json'
+    exit_record=prepare.read(exit_path) if exit_path.is_file() else {}
+    receipt={'schema_version':1,'installer_process_exit_observed':exit_record.get('observed') is True,'installer_exit_code':exit_record.get('exit_code'), 'payload_source_commit':proof['payload_source_commit'],'harness_source_commit':harness,
         'version':proof['version'],'installer_sha256':proof['installer_sha256'],'executable_sha256':proof['executable_sha256'],
         'updater_public_key_sha256':proof['updater_public_key_sha256'],'workflow_run_id':int(os.environ['GITHUB_RUN_ID']),
         **dict.fromkeys(('supported_sdk_signature_verified','corrupt_payload_rejected','wrong_signed_version_rejected',
