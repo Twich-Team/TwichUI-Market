@@ -37,6 +37,7 @@ export interface Valuation extends PriceSummary {
   history: History[];
 }
 export interface Detail {
+  quality?: string | null;
   market: Market;
   item_id: number;
   variant_key: string;
@@ -54,6 +55,7 @@ export interface Detail {
   listings_truncated: boolean;
 }
 export interface Deal {
+  quality?: string | null;
   name: string;
   name_verified: boolean;
   auction_id: string;
@@ -70,6 +72,7 @@ export interface Deal {
 }
 
 export interface Signal {
+  quality?: string | null;
   kind: "supply" | "price";
   item_id: number;
   variant_key: string;

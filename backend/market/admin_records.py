@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from .db import now, session
 from .models import CollectionRun, ItemMedia, ItemMetadata, Market, MetadataJob, MetadataProvider, MetadataSource, MetadataTask, SecurityEvent, User
 from .metadata_admin import job_view
+from .market_api import metadata_name
 from .metadata_catalog import FIELDS
 from .metadata_recovery import ACTIVE, enqueue, observed_query, provider_limits
 from .security import admin, aware
@@ -73,7 +74,7 @@ def safe_attempt(db, task, metadata, provider, src, outcome, job, active_identit
     if job and job.mode in ('bulk','diagnostic'): permitted,reason=False,'Preview a bounded recovery job'
     # Explicit allowlist. No payload, URLs, headers, exception text or credentials.
     return {'id':task.id,'job_id':task.job_id,'item_id':task.item_id,'region':task.region,'provider':task.provider,
-        'item_name':(metadata.name or metadata.fallback_name) if metadata else None,'state':task.state,
+        'item_name':(metadata.name or metadata.fallback_name) if metadata else None,'quality':metadata_name(metadata,task.item_id)['quality'],'state':task.state,
         'at':task.updated_at,'attempts':task.attempts,'http_status':value.get('http_status'),
         'outcome':outcome,'fields_returned':[f for f in value.get('recovered_fields',[]) if f in FIELDS or f in ('base_attributes','client_attributes')],
         'fields_recovered':[f for f in value.get('new_fields',[]) if f in FIELDS],

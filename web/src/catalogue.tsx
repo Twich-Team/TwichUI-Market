@@ -1,3 +1,4 @@
+import { ItemName } from "./item-name";
 import { usePreferences } from "./preferences";
 import type { ItemSort } from "./preferences-store";
 import { Currency } from "./currency";
@@ -202,12 +203,12 @@ export function ItemCatalogue({
               />
               <ItemAttribution item={row.original} />
               <button
-                className={`select-item quality-text-${row.original.quality?.toLowerCase() || "unknown"}`}
+                className="select-item"
                 onClick={() => choose(row.original)}
                 aria-label={`Select ${row.original.name}`}
                 aria-pressed={target === row.original.item_id}
               >
-                {row.original.name}
+                <ItemName name={row.original.name} quality={row.original.quality}/>
               </button>
               {row.original.variant_count > 1 && (
                 <button

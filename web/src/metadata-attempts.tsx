@@ -1,9 +1,10 @@
+import { ItemName } from "./item-name";
 import { useState } from "react";
 import { api } from "./api";
 import { DataTable } from "./data-table";
 import { LocalTime, ProviderEmblem, providerNames, Status, useRecordPage } from "./admin-table";
 export interface Attempt {
-  id: number; job_id: number; item_id: number; item_name: string | null; region: string; provider: string; state: string;
+  id: number; job_id: number; item_id: number; item_name: string | null; quality?:string|null; region: string; provider: string; state: string;
   at: string; attempts: number; http_status: number | null; outcome: string; fields_returned: string[]; fields_recovered: string[];
   error_category: string | null; source: { edition: string; build: string | null; confidence: string | null };
   next_retry: string | null; retry_allowed: boolean; retry_reason: string | null;
@@ -50,7 +51,7 @@ export function MetadataAttempts({ market, readOnly }: { market: number; readOnl
     <DataTable<Attempt> label="provider attempts" data={page.query.data?.rows || []} server={page.server} loading={page.query.isPending} error={page.query.error?.message} getRowId={row => String(row.id)}
       columns={[
         {accessorKey:"provider",header:"Provider",cell:({row})=><ProviderEmblem provider={row.original.provider}/>},
-        {accessorKey:"item_id",header:"Item",enableHiding:false,cell:({row})=><><strong>{row.original.item_name || `Item #${row.original.item_id}`}</strong>{row.original.item_name && <div className="small muted">#{row.original.item_id}</div>}</>},
+        {accessorKey:"item_id",header:"Item",enableHiding:false,cell:({row})=><><strong><ItemName name={row.original.item_name || `Item #${row.original.item_id}`} quality={row.original.item_name ? row.original.quality : null}/></strong>{row.original.item_name && <div className="small muted">#{row.original.item_id}</div>}</>},
         {accessorKey:"outcome",header:"What happened",cell:({row})=><AttemptStatus attempt={row.original}/>},
         {id:"fields",header:"Recovered fields",enableSorting:false,cell:({row})=>row.original.fields_recovered.join(", ") || "None recorded"},
         {accessorKey:"at",header:"Last attempt",cell:({row})=><LocalTime value={row.original.at}/>},

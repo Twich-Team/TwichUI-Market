@@ -1088,24 +1088,6 @@ footer span:last-child {
 .quality-poor {
   border-color: #777;
 }
-.quality-text-common {
-  color: #f1eadb;
-}
-.quality-text-uncommon {
-  color: #79c953;
-}
-.quality-text-rare {
-  color: #79b5ed;
-}
-.quality-text-epic {
-  color: #bd8de8;
-}
-.quality-text-legendary {
-  color: #e9a45a;
-}
-.quality-text-poor {
-  color: #aaa;
-}
 .item-popover-positioner {
   z-index: 70;
   max-width: calc(100vw - 24px);
@@ -1639,3 +1621,7 @@ small,
 .record-filters input[type="datetime-local"] { max-width: 100%; }
 .metadata-admin .managed-table table { min-width: 960px; }
 .metadata-admin .managed-table td { max-width: 280px; }
+
+/* Exact game colors need large bold type for the darker blue/purple names.
+   19px bold meets the large-text threshold while preserving heading sizes. */
+.item-name { font-size: max(1em, 19px); font-weight: 700; line-height: 1.35; }
