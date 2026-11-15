@@ -78,7 +78,7 @@ def safe_attempt(db, task, metadata, provider, src, outcome, job, active_identit
     return {'id':task.id,'job_id':task.job_id,'item_id':task.item_id,'region':task.region,'provider':task.provider,
         'record_scope':scope,'item_name':(metadata.name or metadata.fallback_name) if metadata and scope=='item' else None,'quality':metadata_name(metadata,task.item_id)['quality'] if scope=='item' else None,'state':task.state,
         'at':task.updated_at,'attempts':task.attempts,'http_status':value.get('http_status'),
-        'outcome':outcome,'fields_returned':[f for f in value.get('fields_returned',value.get('recovered_fields',[])) if f in FIELDS or f in ('base_attributes','client_attributes')],
+        'outcome':outcome,'delta_recorded':'new_fields' in value,'fields_returned':[f for f in value.get('fields_returned',value.get('recovered_fields',[])) if f in FIELDS or f in ('base_attributes','client_attributes')],
         'fields_recovered':[f for f in value.get('new_fields',[]) if f in FIELDS],
         'error_category':value.get('status') if value.get('status') in ('authorization','forbidden','rate_limited','metadata_unavailable','transport_or_schema','wrong_identity','upstream_error','invalid_not_modified') else None,
         'source':{'edition':'forever','build':origin.get('build'),'confidence':origin.get('confidence')},
@@ -89,7 +89,7 @@ def safe_attempt(db, task, metadata, provider, src, outcome, job, active_identit
 @router.get('/metadata-attempts')
 def attempts(market_id: int | None = Query(None, ge=1), provider: Provider | None = None,
              outcome: str | None = None, item_id: int | None = Query(None, ge=1, le=2**31-1),
-             since: datetime | None = None, until: datetime | None = None,
+             since: datetime | None = None, until: datetime | None = None, q: str = Query('',max_length=64),
              offset: int = Query(0, ge=0, le=1000000), limit: int = Query(25, ge=1, le=100),
              sort: Literal['at','item_id','provider','outcome'] = 'at', desc: bool = True,
              user: User = Depends(admin), db: Session = Depends(session)):
@@ -98,6 +98,9 @@ def attempts(market_id: int | None = Query(None, ge=1), provider: Provider | Non
     if market_id: query = query.where(MetadataJob.market_id==market_id)
     if provider: query = query.where(MetadataTask.provider==provider)
     if item_id: query = query.where(MetadataTask.item_id==item_id)
+    if q.strip():
+        term=q.strip()
+        query=query.where(or_(cast(MetadataTask.item_id,String)==term,ItemMetadata.name.icontains(term,autoescape=True),ItemMetadata.fallback_name.icontains(term,autoescape=True)))
     query = dates(query, MetadataTask.updated_at, since, until)
     if outcome:
         if outcome not in OUTCOMES: raise HTTPException(422, 'Unknown attempt outcome')

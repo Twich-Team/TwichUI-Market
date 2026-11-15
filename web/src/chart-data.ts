@@ -1,6 +1,9 @@
 import { money } from "./api";
+import {localTimestamp,localObservationDate} from "./local-time";
+export function observationLabel(row:HistoryPoint):string {return row.observed_at ? localObservationDate(row.observed_at) : `${row.date} UTC day`;}
 export interface HistoryPoint {
   date: string;
+  observed_at?: string;
   recent_price: string | null;
   lowest_buyout?: string | null;
   market_value?: string | null;
@@ -38,5 +41,5 @@ export function withMissingDays(points: HistoryPoint[]): HistoryPoint[] {
   return result;
 }
 export function exactPriceTooltip(row: HistoryPoint): string {
-  return `${row.date}\nRecent: ${money(row.recent_price)}\n14-day: ${money(row.market_value)}\n60-day: ${money(row.historical_value)}\nSupply: ${row.supply?.toLocaleString() ?? "Unobserved"}`;
+  return `${row.observed_at ? localTimestamp(row.observed_at) : "Observation time unrecorded"}\nUTC-day bucket: ${row.date}\nRecent: ${money(row.recent_price)}\n14-day: ${money(row.market_value)}\n60-day: ${money(row.historical_value)}\nSupply: ${row.supply?.toLocaleString() ?? "Unobserved"}`;
 }

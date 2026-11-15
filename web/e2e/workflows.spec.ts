@@ -33,7 +33,7 @@ test("private Explorer, history, listings, Deal Finder and browser reload use re
   await page.getByLabel("Search items",{exact:true}).fill("arcane");
   await page.getByRole("button",{name:"Search",exact:true}).click();
   await page.getByRole("link",{name:"Research Synthetic Arcane Crystal",exact:true}).click();
-  await page.getByRole("link",{name:/Inspect Synthetic Arcane Crystal:/}).click();
+
   await expect(page.getByRole("heading",{name:"Synthetic Arcane Crystal",exact:true})).toBeVisible();
   await page.locator(".chart-viewport").first().scrollIntoViewIfNeeded();
   await expect(

@@ -67,6 +67,12 @@ jobs:
           name: explorer-item-details-review-evidence
           path: artifacts/explorer-details
           if-no-files-found: ignore
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: everyday-market-polish-review-evidence
+          path: artifacts/everyday-polish
+          if-no-files-found: ignore
       - if: failure()
         uses: actions/upload-artifact@v4
         with:

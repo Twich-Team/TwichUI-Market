@@ -76,9 +76,8 @@ test("catalogue variants, accessible item facts, chart controls and bounded hist
   await item.focus();
   await expect(page.getByRole("dialog")).toBeVisible();
   await expect(page.getByRole("dialog")).toContainText("+10 Fixture Strength");
-  await expect(page.getByRole("dialog")).toContainText(
-    "Asking-price ranges across variants",
-  );
+  await expect(page.getByRole("dialog")).toContainText("Market estimates · asking listings");
+  await expect(page.getByRole("dialog").getByRole("region",{name:"Variant market ranges"})).toHaveCount(0);
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await catalogue
@@ -87,7 +86,7 @@ test("catalogue variants, accessible item facts, chart controls and bounded hist
       exact: true,
     })
     .click();
-  await page.getByRole("link",{name:/Inspect Synthetic Arcane Crystal:/}).click();
+
   await expect(page.getByRole("heading",{name:"Synthetic Arcane Crystal",exact:true})).toBeVisible();
   await page.getByRole("button", { name: "10Y", exact: true }).click();
   await page.locator(".chart-viewport").first().scrollIntoViewIfNeeded();

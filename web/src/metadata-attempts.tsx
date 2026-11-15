@@ -7,6 +7,7 @@ export interface Attempt {
   id: number; job_id: number; item_id: number; item_name: string | null; quality?:string|null; region: string; provider: string; state: string;
   record_scope?: "item"|"catalog"; at: string; attempts: number; http_status: number | null; outcome: string; fields_returned: string[]; fields_recovered: string[];
   error_category: string | null; source: { edition: string; build: string | null; confidence: string | null };
+  delta_recorded?: boolean;
   next_retry: string | null; retry_allowed: boolean; retry_reason: string | null;
 }
 export const outcomeLabels: Record<string, string> = {
@@ -22,13 +23,16 @@ export function AttemptStatus({ attempt }: { attempt: Attempt }) {
   const label = attempt.outcome === "name_recovered" && fields.length ? `Recovered ${fields.join(" and ")}` : outcomeLabels[attempt.outcome] || "Outcome unavailable";
   return <Status tone={tone}>{label}</Status>;
 }
+function recentLocalStart(){const date=new Date(Date.now()-7*86400000);return new Date(date.getTime()-date.getTimezoneOffset()*60000).toISOString().slice(0,16);}
 export function MetadataAttempts({ market, readOnly }: { market: number; readOnly: boolean }) {
-  const [provider, setProvider] = useState(""), [outcome, setOutcome] = useState(""), [item, setItem] = useState(""), [since, setSince] = useState(""), [until, setUntil] = useState("");
+  const [provider, setProvider] = useState(""), [outcome, setOutcome] = useState(""), [item, setItem] = useState(""), [since, setSince] = useState(recentLocalStart), [until, setUntil] = useState("");
+  const [scope,setScope]=useState("all");
   const [message, setMessage] = useState(""), [error, setError] = useState(""), [busy, setBusy] = useState(false);
-  const filters: Record<string, string> = { market_id: String(market) };
+  const filters: Record<string, string> = {};
+  if(scope==="current")filters.market_id=String(market);
   if (provider) filters.provider = provider;
   if (outcome) filters.outcome = outcome;
-  if (item) filters.item_id = item;
+  if (item) filters.q = item;
   if (since) filters.since = new Date(since).toISOString();
   if (until) filters.until = new Date(until).toISOString();
   const page = useRecordPage<Attempt>("metadata-attempts", filters, "at");
@@ -42,19 +46,21 @@ export function MetadataAttempts({ market, readOnly }: { market: number; readOnl
     <p className="small muted">A successful request may return no usable name. Times use your local timezone ({Intl.DateTimeFormat().resolvedOptions().timeZone}).</p>
     {message && <p role="status">{message}</p>}{error && <p role="alert" className="notice error">{error}</p>}
     <div className="toolbar record-filters">
+      <label>Attempt scope<select value={scope} onChange={e=>change(setScope,e.target.value)}><option value="all">All markets</option><option value="current">Selected market</option></select></label>
       <label>Provider<select value={provider} onChange={e => change(setProvider, e.target.value)}><option value="">All providers</option>{Object.entries(providerNames).map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select></label>
       <label>Outcome<select value={outcome} onChange={e => change(setOutcome, e.target.value)}><option value="">All outcomes</option>{Object.entries(outcomeLabels).map(([id, label]) => <option key={id} value={id}>{label}</option>)}</select></label>
-      <label>Item ID<input type="search" inputMode="numeric" value={item} maxLength={10} onChange={e => { if (/^\d*$/.test(e.target.value) && Number(e.target.value) <= 2147483647) change(setItem,e.target.value); }} /></label>
+      <label>Item name or ID<input type="search" value={item} maxLength={64} onChange={e=>change(setItem,e.target.value)} /></label>
       <label>From (local time)<input type="datetime-local" value={since} onChange={e => change(setSince,e.target.value)} /></label>
       <label>Until (local time)<input type="datetime-local" value={until} onChange={e => change(setUntil,e.target.value)} /></label>
     </div>
+    <p className="small muted">Showing all markets by default; clear From to include older attempts. Historical field changes may be unrecorded.</p>
     {page.query.data?.summary && <div className="attempt-summary" role="status">{[["Names recovered","name_recovered"],["Attributes recovered","attributes_recovered"],["Already known","already_known"],["Access blocked","access_blocked"]].map(([label,key]) => <span key={key}><strong>{(page.query.data!.summary![key] || 0).toLocaleString()}</strong> {label}</span>)}<span><strong>{["no_usable_data","missing","wrong_identity","invalid_response","credentials_invalid","access_blocked","rate_limited","unavailable"].reduce((n,key)=>n+(page.query.data!.summary![key]||0),0).toLocaleString()}</strong> Failed</span></div>}
-    <DataTable<Attempt> label="provider attempts" data={page.query.data?.rows || []} server={page.server} loading={page.query.isPending} error={page.query.error?.message} getRowId={row => String(row.id)}
+    <DataTable<Attempt> label="provider attempts" data={page.query.data?.rows || []} server={page.server} loading={page.query.isFetching} error={page.query.error?.message} getRowId={row => String(row.id)}
       columns={[
         {accessorKey:"provider",header:"Provider",cell:({row})=><ProviderEmblem provider={row.original.provider}/>},
         {accessorKey:"item_id",header:"Item",enableHiding:false,cell:({row})=><><strong><ItemName name={row.original.record_scope==="catalog" ? "Catalog page" : row.original.item_name || `Item #${row.original.item_id}`} quality={row.original.item_name ? row.original.quality : null}/></strong>{row.original.record_scope!=="catalog" && row.original.item_name && <div className="small muted">#{row.original.item_id}</div>}</>},
         {accessorKey:"outcome",header:"What happened",cell:({row})=><AttemptStatus attempt={row.original}/>},
-        {id:"fields",header:"Recovered fields",enableSorting:false,cell:({row})=>row.original.fields_recovered.join(", ") || "None recorded"},
+        {id:"fields",header:"Recovered fields",enableSorting:false,cell:({row})=>row.original.fields_recovered.map(field=>field.replaceAll("_"," ")).join(", ") || (row.original.delta_recorded===false ? "Historical changes unrecorded" : "None recorded")},
         {accessorKey:"at",header:"Last attempt",cell:({row})=><LocalTime value={row.original.at}/>},
         {id:"retry",header:"Retry",enableSorting:false,cell:({row})=>row.original.retry_allowed && !readOnly ? <button disabled={busy} onClick={()=>retry(row.original)}>Retry item #{row.original.item_id}</button> : <span className="small muted">{readOnly ? "Read-only access" : row.original.retry_reason || "Unavailable"}</span>},
       ]}

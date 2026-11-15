@@ -27,7 +27,7 @@ test("administration tables support real server pages, readable outcomes, action
   await page.getByRole("button",{name:"Next provider attempts",exact:true}).click();
   await expect(attempts.locator("..").locator("..").getByText(/records · Page 2/)).toBeVisible();
   await page.getByRole("combobox",{name:"Provider",exact:true}).selectOption("everloot");
-  await page.getByLabel("Item ID",{exact:true}).fill("20001");
+  await page.getByLabel("Item name or ID",{exact:true}).fill("20001");
   await expect(attempts.getByRole("row")).toHaveCount(2);
   await page.getByRole("button",{name:/Show details for provider attempts/}).focus();
   await page.keyboard.press("Enter");
@@ -40,7 +40,7 @@ test("administration tables support real server pages, readable outcomes, action
   await expect(attempts.locator('th[aria-sort="descending"]')).toHaveCount(1);
   await attempts.getByRole("button",{name:"Item ↓",exact:true}).click();
   await expect(attempts.locator('th[aria-sort="ascending"]')).toHaveCount(1);
-  await page.getByLabel("Item ID",{exact:true}).fill("");
+  await page.getByLabel("Item name or ID",{exact:true}).fill("");
   const jobs=page.getByRole("table",{name:"recovery jobs",exact:true});
   await jobs.getByRole("button",{name:/Job #/}).first().click();
   await expect(page.getByRole("table",{name:"job results",exact:true})).toBeVisible();
@@ -64,8 +64,8 @@ test("attempt date filters and failed or loading pages stay understandable",asyn
   await page.getByLabel("From (local time)",{exact:true}).fill("");
   await expect(attempts.getByRole("row").nth(1)).toBeVisible();
   await page.route("**/api/v1/admin/records/metadata-attempts?**",async route=>{await new Promise(resolve=>setTimeout(resolve,500));await route.fulfill({status:503,contentType:"application/json",body:'{"detail":"Provider history is temporarily unavailable"}'});});
-  await page.getByLabel("Item ID",{exact:true}).fill("290000");
+  await page.getByLabel("Item name or ID",{exact:true}).fill("290000");
   await expect(container.getByRole("status",{name:""}).filter({hasText:"Loading provider attempts"})).toBeVisible();
   await expect(container.getByRole("alert")).toContainText("Provider history is temporarily unavailable");
-  await page.unroute("**/api/v1/admin/records/metadata-attempts?**");await page.getByLabel("Item ID",{exact:true}).fill("");await expect(attempts.getByRole("row").nth(1)).toBeVisible();
+  await page.unroute("**/api/v1/admin/records/metadata-attempts?**");await page.getByLabel("Item name or ID",{exact:true}).fill("");await expect(attempts.getByRole("row").nth(1)).toBeVisible();
 });

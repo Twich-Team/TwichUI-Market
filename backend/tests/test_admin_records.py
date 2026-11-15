@@ -126,3 +126,31 @@ def test_connection_validation_respects_long_temporary_retry_after(database):
         from market.security import aware
         assert aware(provider.cooldown_until)>=at+timedelta(hours=2)
         assert provider.validation_requested
+
+
+def test_attempt_default_includes_other_markets_search_dates_sort_and_historical_delta(owner,database):
+    from market.models import MetadataJob,ItemMetadata
+    market=setup(database)
+    with database.begin() as db:
+        job,_=enqueue(db,market,'single',['everloot'],item_id=720,budget=1)
+        task=db.scalar(select(MetadataTask).where(MetadataTask.job_id==job.id))
+        task.state='completed';task.updated_at=now()-timedelta(days=20)
+        task.result_json=json.dumps({'status':'available','recovered_fields':['name']})
+        db.add(ItemMetadata(region='us',item_id=720,namespace='static-forever-us',fallback_name='Recovered old sword'))
+        other=MetadataJob(market_id=None,mode='single',state='completed',dedupe_key='unscoped',providers_json='["blizzard"]')
+        db.add(other);db.flush()
+        db.add(MetadataTask(job_id=other.id,provider='blizzard',region='us',item_id=721,state='completed',updated_at=now(),result_json=json.dumps({'status':'available','outcome':'name_recovered','new_fields':['name'],'recovered_fields':['name']})))
+    all_rows=owner.get('/api/v1/admin/records/metadata-attempts').json()
+    assert all_rows['total']==2
+    assert all_rows['rows'][0]['provider']=='blizzard'
+    historical=owner.get('/api/v1/admin/records/metadata-attempts?q=Recovered%20old').json()
+    assert historical['total']==1 and historical['rows'][0]['outcome']=='metadata_returned'
+    assert historical['rows'][0]['delta_recorded'] is False and historical['rows'][0]['fields_recovered']==[]
+    assert owner.get(f'/api/v1/admin/records/metadata-attempts?market_id={market}').json()['total']==1
+    recent=(now()-timedelta(days=7)).isoformat()
+    assert owner.get('/api/v1/admin/records/metadata-attempts',params={'since':recent}).json()['total']==1
+    assert owner.get('/api/v1/admin/records/metadata-attempts',params={'since':now().isoformat(),'until':recent}).status_code==422
+    page1=owner.get('/api/v1/admin/records/metadata-attempts?limit=1&sort=at&desc=false').json()
+    page2=owner.get('/api/v1/admin/records/metadata-attempts?limit=1&offset=1&sort=at&desc=false').json()
+    assert page1['rows'][0]['id']!=page2['rows'][0]['id']
+    assert owner.get('/api/v1/admin/records/metadata-attempts?q=%25').json()['total']==0

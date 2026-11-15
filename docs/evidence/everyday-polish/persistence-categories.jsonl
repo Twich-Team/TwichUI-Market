@@ -1,0 +1,23 @@
+{"legacy_metadata_rows" : 5581, "metadata_with_catalogue" : 5581}
+{"provider" : "blizzard", "status" : "cached", "outcome" : "unrecorded", "count" : 1}
+{"provider" : "blizzard", "status" : "metadata_unavailable", "outcome" : "unrecorded", "count" : 99}
+{"provider" : "blizzard", "status" : "available", "outcome" : "unrecorded", "count" : 75}
+{"provider" : "blizzard", "status" : "metadata_unavailable", "outcome" : "missing", "count" : 43}
+{"provider" : "blizzard", "status" : "available", "outcome" : "name_recovered", "count" : 33}
+{"provider" : "everloot", "status" : "metadata_unavailable", "outcome" : "missing", "count" : 865}
+{"provider" : "everloot", "status" : "job_budget", "outcome" : "unrecorded", "count" : 1}
+{"provider" : "everloot", "status" : "available", "outcome" : "unrecorded", "count" : 1}
+{"provider" : "everloot", "status" : "named_record", "outcome" : "name_recovered", "count" : 3}
+{"provider" : "everloot", "status" : "unrecorded", "outcome" : "unrecorded", "count" : 3}
+{"provider" : "everloot", "status" : "missing", "outcome" : "missing", "count" : 50}
+{"provider" : "everloot", "status" : "metadata_unavailable", "outcome" : "unrecorded", "count" : 21}
+{"provider" : "everloot", "status" : "observations_only", "outcome" : "no_usable_data", "count" : 12}
+{"provider" : "everloot", "status" : "named_record", "outcome" : "metadata_returned", "count" : 1}
+{"provider" : "everloot", "status" : "cached", "outcome" : "unrecorded", "count" : 1}
+{"provider" : "everloot", "status" : "attributes_only", "outcome" : "metadata_returned", "count" : 1}
+{"provider" : "everloot", "status" : "available", "outcome" : "no_usable_data", "count" : 564}
+{"provider" : "thewowdb", "status" : "named_record", "outcome" : "name_recovered", "count" : 9}
+{"provider" : "thewowdb", "status" : "named_record", "outcome" : "metadata_returned", "count" : 2}
+{"provider" : "thewowdb", "status" : "job_budget", "outcome" : "unrecorded", "count" : 1}
+{"provider" : "thewowdb", "status" : "available", "outcome" : "name_recovered", "count" : 14}
+{"provider" : "thewowdb", "status" : "missing", "outcome" : "missing", "count" : 15}

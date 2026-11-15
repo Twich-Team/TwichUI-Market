@@ -171,8 +171,11 @@ def item_detail(market_id: MarketId, item_id: Annotated[int,Path(ge=1,le=2**31-1
     listings = list(db.scalars(select(Listing).where(Listing.snapshot_id == latest.snapshot_id,
         Listing.item_id == item_id,Listing.variant_key == variant_key).order_by(Listing.auction_id).limit(201))) if latest else []
     result = values(db,market_id,item_id,variant_key)
+    last_seen=db.scalar(select(Observation.retrieved_at).join(SnapshotStatistic,SnapshotStatistic.snapshot_id==Observation.snapshot_id).where(
+        Observation.market_id==market_id,SnapshotStatistic.item_id==item_id,SnapshotStatistic.variant_key==variant_key,
+        SnapshotStatistic.listing_count>0).order_by(Observation.retrieved_at.desc(),Observation.id.desc()).limit(1))
     return money_contract({'contract_version':1,'market':market_view(market),'item_id':item_id,'variant_key':variant_key,
-        **item_name(db,market.region,item_id),'valuation':result,
+        **item_name(db,market.region,item_id),'valuation':result,'last_seen_at':last_seen,
         'listings':[{'auction_id':str(row.auction_id),'quantity':row.quantity,'buyout':row.buyout,
                      'unit_price':row.unit_price,'bid':row.bid,'time_left':row.time_left} for row in listings[:200]],
         'listings_truncated':len(listings)>200,'provenance':'asking_listings_only'})

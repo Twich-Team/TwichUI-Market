@@ -18,7 +18,7 @@ export interface ItemIdentity {
   variant_key?: string;
 }
 export interface ItemProfile extends ItemIdentity {
-  catalog?: { schema_version: number; fields: Record<string, unknown>; provenance: Record<string, { provider: string; confidence: string; build?: string; attribution?: { text: string; url: string; license?: string; notice?: string } }>; conflicts: { field: string; selected: string; alternative_provider: string }[] } | null;
+  catalog?: { schema_version: number; fields: Record<string, unknown>; provenance: Record<string, { provider: string; confidence: string; build?: string; retrieved_at?: string; attribution?: { text: string; url: string; license?: string; notice?: string } }>; conflicts: { field: string; selected: string; alternative_provider: string }[] } | null;
   attributes: {
     scope: string;
     quality: string | null;
@@ -106,10 +106,11 @@ export function ItemFacts({ profile }: { profile: ItemProfile }) {
         </p>
       ) : (
         <>
-          {[facts.class, facts.subclass, facts.slot, facts.binding].filter(Boolean).map((value,index)=><div key={index}>{value}</div>)}
+
           {facts.level !== undefined && (
             <div className="item-level">Item Level {facts.level}</div>
           )}
+          {[facts.slot, facts.subclass || facts.class, facts.binding].filter(Boolean).map((value,index)=><div key={index}>{value}</div>)}
           {facts.lines.map((line, index) => (
             <div key={index} className={`item-line ${line.kind}`}>
               {line.text}
@@ -125,52 +126,31 @@ export function ItemFacts({ profile }: { profile: ItemProfile }) {
           )}
         </>
       )}
-      <p className="small muted">{profile.variant_notice}</p>
-      {profile.catalog && <div className="item-provenance small">
-        <strong>Field provenance</strong>
-        {Object.entries(profile.catalog.provenance).map(([field, origin]) => <div key={field}>{field.replaceAll("_", " ")} · {origin.provider} · {origin.confidence.replaceAll("_", " ")}{origin.build ? ` · ${origin.build}` : ""}
-          {origin.attribution && <div><a href={origin.attribution.url} target="_blank" rel="noopener noreferrer">{origin.attribution.text}</a>{origin.attribution.notice && <span> · {origin.attribution.notice}</span>}</div>}
-        </div>)}
-        {profile.catalog.conflicts.length > 0 && <p>Conflicting provider fields retained for review. Higher-confidence fields are shown.</p>}
-      </div>}
-      {profile.source && (
-        <div className="item-source small">
-          {profile.source.confidence === "community_beta" ? (
-            <>
-              <strong>Community / beta build · attributes may differ</strong>
-              <br />
-              {profile.source.build}
-              <br />
-              {profile.source.attribution && (
-                <a
-                  href={profile.source.attribution.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {profile.source.attribution.text}
-                </a>
-              )}
-            </>
-          ) : (
-            <span>
-              {profile.source.confidence === "synthetic"
-                ? "Synthetic fixture metadata"
-                : profile.source.provider === "blizzard" ? "Blizzard Forever base-item metadata" : `${profile.source.provider} · ${profile.source.confidence.replaceAll("_", " ")}`}{" "}
-              · {profile.source.namespace || profile.source.build}
-            </span>
-          )}
-          {profile.source.status && profile.source.status !== "available" && (
-            <>
-              <br />
-              Previously observed · latest refresh unavailable
-            </>
-          )}
-          <br />
-          Observed {when(profile.source.observed_at)}
-        </div>
-      )}
+      {profile.source?.confidence === "synthetic" && <p className="small muted">Synthetic fixture metadata</p>}
+      {Object.values(profile.catalog?.provenance || {}).some(origin=>["game_file_unconfirmed","client_record_unverified"].includes(origin.confidence)) && <p className="small muted">Unconfirmed client-file attributes may differ.</p>}
+      {profile.source?.confidence === "community_beta" && <p className="small muted">Community / beta attributes may differ.</p>}
+      {profile.source?.status && profile.source.status !== "available" && <p className="small muted">Previously observed metadata · latest check unavailable.</p>}
+      <ProfileCredits profile={profile}/>
+      <details className="item-technical">
+        <summary>Technical details</summary>
+        <p className="small muted">{profile.variant_notice}</p>
+        {profile.source && <p className="small">{profile.source.provider} · {profile.source.namespace || profile.source.build} · {profile.source.confidence.replaceAll("_", " ")}<br/>Metadata retrieved: {when(profile.source.observed_at)}</p>}
+        {profile.catalog && <div className="item-provenance small">
+          <strong>Field provenance</strong>
+          {Object.entries(profile.catalog.provenance).map(([field, origin]) => <div key={field}>{field.replaceAll("_", " ")} · {origin.provider} · {origin.confidence.replaceAll("_", " ")}{origin.build ? ` · ${origin.build}` : ""}{origin.retrieved_at && <span> · Retrieved {when(origin.retrieved_at)}</span>}</div>)}
+          {profile.catalog.conflicts.length > 0 && <p>Conflicting provider fields retained for review. Higher-confidence fields are shown.</p>}
+        </div>}
+      </details>
     </>
   );
+}
+// Deduplicate only identical credits; retain every supplied license and notice.
+function ProfileCredits({profile}:{profile:ItemProfile}) {
+  const credits = [...(profile.metadata_attributions || []), profile.metadata_attribution, profile.icon_attribution,
+    profile.source?.attribution, profile.icon_source?.attribution,
+    ...Object.values(profile.catalog?.provenance || {}).map(origin=>origin.attribution)].filter(Boolean) as {text:string;url:string;notice?:string;license?:string}[];
+  const unique = [...new Map(credits.map(credit=>[JSON.stringify([credit.text,credit.url,credit.notice,credit.license]),credit])).values()];
+  return <div className="item-credits small">{unique.map((credit,index)=><div key={index}><a href={credit.url} target="_blank" rel="noopener noreferrer">{credit.text}</a>{credit.license && !credit.text.includes(credit.license) && <span> · {credit.license}</span>}{credit.notice && <span> · {credit.notice}</span>}</div>)}</div>;
 }
 export function ItemAttribution({ item }: { item: ItemIdentity }) {
   const credits = item.metadata_attributions?.length ? item.metadata_attributions : [item.metadata_attribution || item.icon_attribution].filter(Boolean);
@@ -251,7 +231,7 @@ export function ItemInfo({
           sideOffset={10}
           className="item-popover-positioner"
         >
-          <Popover.Popup className="wow-tooltip" initialFocus={false}>
+          <Popover.Popup className="wow-tooltip" initialFocus={false} onClick={event=>event.stopPropagation()}>
             <Popover.Title className="sr-only">
               {item.name} item details
             </Popover.Title>
@@ -267,18 +247,6 @@ export function ItemInfo({
                   : "Loading verified item facts…"}
               </p>
             )}
-            {profile.data?.icon_source?.provider === "thewowdb" &&
-              profile.data.source?.provider !== "thewowdb" &&
-              profile.data.icon_source.attribution && (
-                <a
-                  href={profile.data.icon_source.attribution.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="small"
-                >
-                  Artwork data from TheWoWDB · community source
-                </a>
-              )}
             {ranges && (
               <section
                 className="tooltip-market"
@@ -315,9 +283,7 @@ export function ItemInfo({
                 {prices.supply !== undefined && (
                   <div>Supply: {prices.supply.toLocaleString()}</div>
                 )}
-                <small>
-                  Variant market data is separate from base item attributes.
-                </small>
+
               </section>
             )}
             <Popover.Close className="text-button">

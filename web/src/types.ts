@@ -44,6 +44,7 @@ export interface Detail {
   name: string;
   name_verified: boolean;
   valuation: Valuation;
+  last_seen_at?: string | null;
   listings: {
     auction_id: string;
     quantity: number;

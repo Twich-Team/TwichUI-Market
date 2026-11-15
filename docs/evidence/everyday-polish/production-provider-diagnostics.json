@@ -1,0 +1,193 @@
+{
+  "read_only": true,
+  "scope": "Actual persisted production records; candidate GET handler, no HTTP authentication bypass claim. Authentication/redaction verified separately in isolated suites. Counts may change through the existing worker.",
+  "scopes": [
+    {
+      "handler_ms": 129.33,
+      "market_id": null,
+      "sample": [
+        {
+          "delta_recorded": true,
+          "fields_recovered": [],
+          "fields_returned": [],
+          "id": 1807,
+          "item_id": 3196,
+          "outcome": "no_usable_data",
+          "provider": "everloot"
+        },
+        {
+          "delta_recorded": false,
+          "fields_recovered": [],
+          "fields_returned": [],
+          "id": 1806,
+          "item_id": 9837,
+          "outcome": "missing",
+          "provider": "everloot"
+        },
+        {
+          "delta_recorded": true,
+          "fields_recovered": [],
+          "fields_returned": [],
+          "id": 1805,
+          "item_id": 6528,
+          "outcome": "no_usable_data",
+          "provider": "everloot"
+        }
+      ],
+      "summary": {
+        "attributes_returned": 1,
+        "metadata_returned": 75,
+        "missing": 1091,
+        "name_recovered": 59,
+        "name_returned": 3,
+        "no_usable_data": 560,
+        "observations_returned": 12,
+        "skipped": 6
+      },
+      "total": 1807
+    },
+    {
+      "handler_ms": 28.82,
+      "market_id": 1,
+      "sample": [
+        {
+          "delta_recorded": true,
+          "fields_recovered": [
+            "level",
+            "lines",
+            "name",
+            "quality",
+            "required_level",
+            "vendor_sell"
+          ],
+          "fields_returned": [
+            "quality",
+            "lines",
+            "level",
+            "required_level",
+            "vendor_sell",
+            "name"
+          ],
+          "id": 1762,
+          "item_id": 9813,
+          "outcome": "name_recovered",
+          "provider": "thewowdb"
+        },
+        {
+          "delta_recorded": false,
+          "fields_recovered": [],
+          "fields_returned": [],
+          "id": 1761,
+          "item_id": 9813,
+          "outcome": "skipped",
+          "provider": "everloot"
+        },
+        {
+          "delta_recorded": false,
+          "fields_recovered": [],
+          "fields_returned": [],
+          "id": 1760,
+          "item_id": 9813,
+          "outcome": "skipped",
+          "provider": "blizzard"
+        }
+      ],
+      "summary": {
+        "name_recovered": 1,
+        "skipped": 2
+      },
+      "total": 3
+    },
+    {
+      "handler_ms": 46.64,
+      "market_id": 2,
+      "sample": [
+        {
+          "delta_recorded": true,
+          "fields_recovered": [],
+          "fields_returned": [],
+          "id": 1807,
+          "item_id": 3196,
+          "outcome": "no_usable_data",
+          "provider": "everloot"
+        },
+        {
+          "delta_recorded": false,
+          "fields_recovered": [],
+          "fields_returned": [],
+          "id": 1806,
+          "item_id": 9837,
+          "outcome": "missing",
+          "provider": "everloot"
+        },
+        {
+          "delta_recorded": true,
+          "fields_recovered": [],
+          "fields_returned": [],
+          "id": 1805,
+          "item_id": 6528,
+          "outcome": "no_usable_data",
+          "provider": "everloot"
+        }
+      ],
+      "summary": {
+        "attributes_returned": 1,
+        "metadata_returned": 75,
+        "missing": 1091,
+        "name_recovered": 58,
+        "name_returned": 3,
+        "no_usable_data": 560,
+        "observations_returned": 12,
+        "skipped": 4
+      },
+      "total": 1804
+    }
+  ],
+  "source_current_record_counts": [
+    {
+      "count": 2996,
+      "provider": "blizzard",
+      "status": "missing"
+    },
+    {
+      "count": 102,
+      "provider": "everloot",
+      "status": "available"
+    },
+    {
+      "count": 925,
+      "provider": "everloot",
+      "status": "metadata_unavailable"
+    },
+    {
+      "count": 21,
+      "provider": "everloot",
+      "status": "pending"
+    },
+    {
+      "count": 2585,
+      "provider": "blizzard",
+      "status": "available"
+    },
+    {
+      "count": 13,
+      "provider": "thewowdb",
+      "status": "metadata_unavailable"
+    },
+    {
+      "count": 3,
+      "provider": "thewowdb",
+      "status": "pending"
+    },
+    {
+      "count": 1,
+      "provider": "thewowdb",
+      "status": "transport_or_schema"
+    },
+    {
+      "count": 23,
+      "provider": "thewowdb",
+      "status": "available"
+    }
+  ]
+}
