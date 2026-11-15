@@ -63,7 +63,7 @@ def baseline(snapshot_id=None):
             'markets':[{'id':m.id,'enabled':m.enabled,'house_id':m.house_id,'interval':m.interval_seconds} for m in db.scalars(select(Market))]}
 
 
-def probe(provider,item_id,deadline,kind='item',store_validated=False,etag=None):
+def probe(provider,item_id,deadline,kind='item',store_validated=False,etag=None,corpus_sink=None):
     if now()>=deadline: raise ValueError('Diagnostic window has ended')
     with worker_lock(Session) as locked:
         if not locked: return {'blocked':'Metadata worker is using its normal request lock; retry later'}
@@ -91,12 +91,13 @@ def probe(provider,item_id,deadline,kind='item',store_validated=False,etag=None)
             audit(db,1,'metadata.diagnostic.started',f'job={job.id}; provider={provider}; kind={kind}; item={item_id}; cap=200')
         raw=None;meta={};fields={};origin=None;category=None;fixture=None
         try:
-            meta,raw=(diagnostic_request('https://everloot.app/api/corpus/public?kinds=item_seen,item_fact&limit=100',authorization=f'Bearer {credential}') if kind=='corpus' else fetch(provider,item_id,credential=credential,validate=kind=='attributes',transport=diagnostic_request,etag=etag))
+            meta,raw=(diagnostic_request('https://everloot.app/api/corpus/public?kinds=item_seen,item_fact&limit='+('100' if kind=='corpus' else '1000')+'&offset='+str(item_id-1),authorization=f'Bearer {credential}') if kind in ('corpus','corpus_page') else fetch(provider,item_id,credential=credential,validate=kind=='attributes',transport=diagnostic_request,etag=etag))
             status=meta['status']
             if status==200:
-                if kind=='corpus':
+                if kind in ('corpus','corpus_page'):
                     value=json.loads(raw)
                     if value.get('ok') is not True or not isinstance(value.get('records'),list):raise ValueError('Unexpected public corpus shape')
+                    if corpus_sink:corpus_sink(value)
                     category='observations_only'
                     fixture={key:value[key] for key in ('ok','uploads','dataAsOf','kinds','offset','limit','total','next','attribution') if key in value}
                     fixture['record_count']=len(value['records'])
@@ -151,26 +152,73 @@ def probe(provider,item_id,deadline,kind='item',store_validated=False,etag=None)
             'body_bytes':len(raw) if raw else 0,'fields_returned':list(fields),'fixture':fixture,'new_names_committed':new_names,'new_fields_committed':new_fields}
 
 
+def scan_corpus(deadline,snapshot):
+    import time
+    from collections import defaultdict
+    from market.metadata_providers import plain
+    with Session() as db:
+        observed=set(db.scalars(select(SnapshotStatistic.item_id).where(SnapshotStatistic.snapshot_id==snapshot)))
+        named=set(db.scalars(select(ItemMetadata.item_id).where(ItemMetadata.region=='us',ItemMetadata.item_id.in_(observed),func.coalesce(ItemMetadata.name,ItemMetadata.fallback_name).is_not(None))))
+    groups=defaultdict(set);builds=defaultdict(set);rejected=0;state={};offset=0;pages=[]
+    def consume(value):
+        nonlocal rejected
+        identity=(value.get('dataAsOf'),value.get('total'))
+        if state and state['identity']!=identity:raise ValueError('Corpus changed during offset pagination')
+        if value.get('offset')!=offset or not isinstance(value.get('total'),int) or value['total']>100000:raise ValueError('Unbounded or mismatched corpus page')
+        state['identity']=identity
+        for row in value['records']:
+            if not isinstance(row,dict) or row.get('kind')!='item_seen' or not row.get('name'):continue
+            try:
+                ident=row.get('itemId');install=row.get('installId')
+                if type(ident) is not int or not 1<=ident<=2**31-1 or not isinstance(install,str) or not re.fullmatch(r'pub-[0-9a-f]{32}',install):raise ValueError('Unverifiable public identity')
+                name=plain(row['name'])
+                if row.get('clientBuild'):build_identity(row['clientBuild'])
+                groups[(ident,name)].add(install)
+                if row.get('clientBuild'):builds[(ident,name)].add(row['clientBuild'])
+            except ValueError:rejected+=1
+    while now()<deadline:
+        result=probe('everloot',offset+1,deadline,'corpus_page',corpus_sink=consume)
+        if result.get('blocked'):
+            if result.get('next_retry') and aware(datetime.fromisoformat(str(result['next_retry'])))>=deadline:break
+            time.sleep(3);continue
+        pages.append({k:v for k,v in result.items() if k!='fixture'})
+        print(json.dumps({'corpus_page':offset,'request':result['attempt_number'],'status':result['category']},default=str),flush=True)
+        if result['category']!='observations_only':break
+        fixture=result['fixture'];offset+=fixture['record_count']
+        if not fixture.get('next'):break
+        if not fixture['record_count']:break
+        time.sleep(1)
+    settled=defaultdict(list)
+    for (ident,name),installs in groups.items():
+        if len(installs)>=3:settled[ident].append({'name':name,'distinct_public_contributors':len(installs),'builds':sorted(builds[(ident,name)])})
+    eligible=[{'item_id':ident,**rows[0]} for ident,rows in sorted(settled.items()) if ident in observed and len(rows)==1]
+    return {'investigation':INVESTIGATION,'kind':'public_corpus_scan','complete':bool(state and offset>=state['identity'][1]),'data_as_of':state.get('identity',[None])[0],
+        'rows_inspected':offset,'request_count':len(pages),'named_item_groups':len(groups),'quorum_items':len(settled),'rejected_observations':rejected,
+        'observed_quorum_names':eligible,'already_named':sum(r['item_id'] in named for r in eligible),
+        'potential_new_names':[r for r in eligible if r['item_id'] not in named], 'new_names_committed':0,'requests':pages,
+        'note':'Inspection only. Public contributor pseudonyms stay in process memory and are never emitted. Three matching contributors required; competing name quorums rejected. Missing builds remain unknown.'}
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action',choices=['baseline','probe'])
+    parser.add_argument('action',choices=['baseline','probe','corpus-scan'])
     parser.add_argument('--snapshot',type=int)
     parser.add_argument('--provider',choices=['everloot','thewowdb'])
     parser.add_argument('--item',type=int,default=25)
-    parser.add_argument('--kind',choices=['item','attributes','corpus','conditional'],default='item')
+    parser.add_argument('--kind',choices=['item','attributes','corpus','corpus_page','conditional'],default='item')
     parser.add_argument('--etag',help='Public response ETag for one bounded conditional check')
     parser.add_argument('--store-validated',action='store_true',help='Manually store only valid named responses; preserve precedence and existing data')
     parser.add_argument('--deadline',help='Owner-approved verification-window end, ISO UTC')
     args=parser.parse_args()
     if args.action=='baseline':value=baseline(args.snapshot)
     else:
-        if not args.provider or not args.deadline:parser.error('Probe needs provider and explicit deadline')
+        if (args.action=='probe' and not args.provider) or not args.deadline:parser.error('Probe needs provider and explicit deadline')
         deadline=aware(datetime.fromisoformat(args.deadline))
         if deadline>now()+timedelta(minutes=45):parser.error('Window must end within 45 minutes')
         if not 1<=args.item<=2**31-1:parser.error('Invalid item ID')
         if args.kind in ('attributes','corpus') and args.provider!='everloot':parser.error('Attributes contract is Everloot only')
         if args.kind=='conditional' and (not args.etag or len(args.etag)>255 or any(ord(c)<32 for c in args.etag)):parser.error('Conditional check needs a valid public ETag')
-        value=probe(args.provider,args.item,deadline,args.kind,args.store_validated,args.etag)
+        value=scan_corpus(deadline,args.snapshot or 27) if args.action=='corpus-scan' else probe(args.provider,args.item,deadline,args.kind,args.store_validated,args.etag)
     print(json.dumps(value,default=str,sort_keys=True))
 
 if __name__=='__main__':main()

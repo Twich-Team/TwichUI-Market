@@ -391,6 +391,7 @@ test("device ownership stays private while administrators can inspect and revoke
       "synthetic browser owner password",
     );
     await page.getByRole("tab", { name: "Devices", exact: true }).click();
+    await page.getByRole("button", {name:`Show details for desktop companions ${grant.device.id}`,exact:true}).click();
     const card = page.getByRole("article", {
       name: "Administrator inspection fixture device",
       exact: true,

@@ -51,3 +51,19 @@ test("administration tables support real server pages, readable outcomes, action
   await page.screenshot({path:`${output}/security-mobile.png`,fullPage:true});
   expect(errors).toEqual([]);
 });
+
+test("attempt date filters and failed or loading pages stay understandable",async({page})=>{
+  await page.goto("/");await page.getByLabel("Username",{exact:true}).fill("owner");await page.getByLabel("Password",{exact:true}).fill("synthetic browser owner password");await page.getByRole("button",{name:"Sign in",exact:true}).click();
+  await page.getByRole("button",{name:"Administration",exact:true}).click();await page.getByRole("tab",{name:"Item Metadata",exact:true}).click();
+  const attempts=page.getByRole("table",{name:"provider attempts",exact:true}),container=attempts.locator("..").locator("..");
+  await expect(attempts.getByRole("row").nth(1)).toBeVisible();
+  await page.getByLabel("From (local time)",{exact:true}).fill("2099-01-01T00:00");
+  await expect(container.getByText("No matching records.",{exact:true})).toBeVisible();
+  await page.getByLabel("From (local time)",{exact:true}).fill("");
+  await expect(attempts.getByRole("row").nth(1)).toBeVisible();
+  await page.route("**/api/v1/admin/records/metadata-attempts?**",async route=>{await new Promise(resolve=>setTimeout(resolve,500));await route.fulfill({status:503,contentType:"application/json",body:'{"detail":"Provider history is temporarily unavailable"}'});});
+  await page.getByLabel("Item ID",{exact:true}).fill("290000");
+  await expect(container.getByRole("status",{name:""}).filter({hasText:"Loading provider attempts"})).toBeVisible();
+  await expect(container.getByRole("alert")).toContainText("Provider history is temporarily unavailable");
+  await page.unroute("**/api/v1/admin/records/metadata-attempts?**");await page.getByLabel("Item ID",{exact:true}).fill("");await expect(attempts.getByRole("row").nth(1)).toBeVisible();
+});
