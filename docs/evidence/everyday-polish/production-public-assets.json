@@ -1,0 +1,24 @@
+{
+  "revision": "4ddf137712084292b899e7b352fe41b751e8e70b",
+  "public_index_matches_production_image": true,
+  "assets": [
+    {
+      "path": "/assets/index-Cwd7fUcQ.js",
+      "bytes": 267662,
+      "sha256": "1acbdfbd5216c13bcf4664b4928048e7afad7ae0b1567981976fc69e5fc64395",
+      "matches_production_image": true
+    },
+    {
+      "path": "/assets/index-D98supzX.css",
+      "bytes": 29995,
+      "sha256": "c77e15639a6c0c4c0da599ac868912a36a9d4d39bb7d25ace93a044a160035b1",
+      "matches_production_image": true
+    },
+    {
+      "path": "/assets/jsx-runtime-Wy9s6hX0.js",
+      "bytes": 8911,
+      "sha256": "bcb9f6586cd973c2fb2faa4a2d38d4b06660e2fe2806aaa0de1c39306ff0f69a",
+      "matches_production_image": true
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+2026-11-15T14:20:40.0511794Z   "tested_commit": "4ecd870d2462dddc1b4b6ca365aa0cf1d2d673a4",
+2026-11-15T14:20:40.0540239Z   "pr_base_commit": "e34b1498b078454869da7905b3b498ef99060e4c",
+2026-11-15T14:20:40.0541283Z   "pr_head_commit": "dfb645b8946f0d158e8da9855fef01768e382674",
+2026-11-15T14:20:40.0542348Z   "release_admissible": false,
+2026-11-15T14:20:43.2735855Z found 0 vulnerabilities
+2026-11-15T14:20:48.6194222Z [2m      Tests [22m [1m[32m115 passed[39m[22m[90m (115)[39m
+2026-11-15T14:20:49.1139642Z found 0 vulnerabilities
+2026-11-15T14:25:36.3759487Z   39 passed (3.3m)

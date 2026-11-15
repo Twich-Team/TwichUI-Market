@@ -1,0 +1,11 @@
+{
+  "origin": "http://127.0.0.1:18444",
+  "loopback_only": true,
+  "synthetic_database": "market_test",
+  "unique_cookie": "market_polish_review_session",
+  "login": true,
+  "catalogue": true,
+  "provider_attempts": 79,
+  "gallery": true,
+  "application": "dfb645b8946f0d158e8da9855fef01768e382674"
+}
