@@ -1,0 +1,24 @@
+2026-11-15T14:40:03.8351578Z   "tested_commit": "7202e07a62f1770642b50afe5a3ec671d9b488cf",
+2026-11-15T14:40:03.8351977Z   "source_kind": "commit",
+2026-11-15T14:40:03.8353302Z   "release_admissible": null,
+2026-11-15T14:40:20.6131374Z test result: ok. 23 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.32s
+2026-11-15T14:40:21.2353800Z test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.61s
+2026-11-15T14:40:21.2486279Z test bootstrap_cannot_offer_unverified_duplicate_or_cross_account_device_identity ... ok
+2026-11-15T14:40:21.3146556Z test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+2026-11-15T14:40:21.3544485Z test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+2026-11-15T14:40:21.3669958Z test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-11-15T14:40:21.4344294Z test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+2026-11-15T14:40:21.5663766Z test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+2026-11-15T14:40:21.7506763Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-11-15T14:40:35.7702410Z test result: ok. 1 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-11-15T14:40:58.1674414Z Actual HTTP authentication, sync, incremental no-op, offline cache and JSON export verified.
+2026-11-15T14:41:03.0217814Z Real Rust/API PKCE approval, strict loopback, secure storage, sync, renewal, revocation and offline cache preservation passed.
+2026-11-15T14:43:56.3615939Z Installed v2 native UI/API authorization and background synchronization smoke passed.
+2026-11-15T14:43:56.8308872Z Actual legacy upgrade and uninstall retention acceptance passed.
+2026-11-15T14:44:30.2709194Z Tray acceptance: UNVERIFIED — owner manual checklist required
+2026-11-15T14:44:30.2710707Z Installed v2: actual Edge website approval, real Rust hidden-window sync, preference save, single-instance restore, export, revocation and offline cache passed.
+2026-11-15T14:44:30.5596481Z Installed v2 native UI/API authorization and background synchronization smoke passed.
+2026-11-15T14:44:30.7660761Z NSIS per-user install, native-window launch and uninstall retention verified. See separate tray acceptance status.
+2026-11-15T14:44:31.4781700Z   name: companion-v2-acceptance
+2026-11-15T14:44:32.8467428Z Artifact companion-v2-acceptance.zip successfully finalized. Artifact ID 14166551186
+2026-11-15T14:44:32.8468454Z Artifact companion-v2-acceptance has been successfully uploaded! Final size is 1979682 bytes. Artifact ID is 14166551186

@@ -1,0 +1,41 @@
+{
+  "actual_public_https": true,
+  "synthetic": false,
+  "pagination": {
+    "imposed_latency_ms": 1200,
+    "before_height": 620,
+    "loading_height": 620,
+    "footer_movement_px": 0,
+    "scroll_preserved": true,
+    "rapid_stale_response_rejected": true
+  },
+  "single_variant_direct": true,
+  "multiple_variant_item": 647,
+  "variant_chevron_at_far_right": true,
+  "tooltip_provenance_optional": true,
+  "credits_linked": true,
+  "qualityChecks": [
+    {
+      "item_id": 25,
+      "name": "Worn Shortsword",
+      "quality": "COMMON"
+    },
+    {
+      "item_id": 864,
+      "name": "Knightly Longsword",
+      "quality": "UNCOMMON"
+    },
+    {
+      "item_id": 935,
+      "name": "Night Watch Shortsword",
+      "quality": "RARE"
+    },
+    {
+      "item_id": 810,
+      "name": "Hammer of the Northern Wind",
+      "quality": "EPIC"
+    }
+  ],
+  "local_timezone": "America/Denver",
+  "history_observation_instants_and_utc_buckets_preserved": true
+}

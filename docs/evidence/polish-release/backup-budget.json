@@ -1,0 +1,9 @@
+{
+  "existing_archives_preserved": 25,
+  "previous_bytes": 1971438564,
+  "actual_new_bytes": 232493758,
+  "configured_budget": 3221225472,
+  "maximum_new_bytes": 1249786908,
+  "uncompressed_database_bytes": 1452209843,
+  "service_settings_changed": false
+}

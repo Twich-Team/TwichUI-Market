@@ -1,0 +1,12 @@
+{
+  "owner_approved_visual_design": true,
+  "owner_approved_implementation": true,
+  "owner_approved_merge_and_deployment": true,
+  "approved_pr": "https://github.com/Twich-Team/TwichUI-Market/pull/5",
+  "frozen_application": "dfb645b8946f0d158e8da9855fef01768e382674",
+  "review_head": "09b3c1d84c976da0251e786c2931c4022f9f4e8b",
+  "integration_base": "e34b1498b078454869da7905b3b498ef99060e4c",
+  "integrated_commit": "7202e07a62f1770642b50afe5a3ec671d9b488cf",
+  "recorded_at": "2026-11-15T14:40:22.039185+00:00",
+  "scope": "Matching production APIs and frontend; no provider, collector, retention, infrastructure or desktop release changes."
+}

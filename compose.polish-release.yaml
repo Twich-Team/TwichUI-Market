@@ -1,0 +1,9 @@
+# Owner-approved Everyday Market Polish 7202e07. Append LAST after the complete production overlays.
+# Replace matching APIs and frontend only; retain collector, enrichment, DB and schema.
+services:
+  api:
+    image: sha256:48caf6befd76baa96460d2096e6c71280b961e2e8060ccc3d39a05b2f86bd5a8
+  local-api:
+    image: sha256:48caf6befd76baa96460d2096e6c71280b961e2e8060ccc3d39a05b2f86bd5a8
+  proxy:
+    image: sha256:06605be1c7b4651c4bc2fa763af30e1a517177189fd861e5c1404960f37f4c79

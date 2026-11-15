@@ -1,3 +1,5 @@
+**Released:** Owner approved this candidate; [PR #5](https://github.com/Twich-Team/TwichUI-Market/pull/5) is merged and production APIs/frontend are `7202e07`. [Production acceptance and current rollback](everyday-market-polish-release-acceptance.md). The isolated localhost:18444 review containers are retired. The review evidence below is historical; its prior stop boundary is superseded by the explicit deployment approval.
+
 # Everyday Market polish — owner review candidate
 
 Draft [PR #5](https://github.com/Twich-Team/TwichUI-Market/pull/5) targets `integration/companion-v2-metadata-recovery`. Final application: `dfb645b8946f0d158e8da9855fef01768e382674`. Earlier pushed checkpoints are `42374c4`, `edb164c`, `8d28334`, `740e810` and `12cc8bb`. **Not deployed. Owner visual approval is required before promotion.**

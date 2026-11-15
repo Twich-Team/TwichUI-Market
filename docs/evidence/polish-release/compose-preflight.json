@@ -1,0 +1,25 @@
+{
+  "only_approved_images_change": true,
+  "changes": [
+    {
+      "service": "api",
+      "field": "image",
+      "from": "sha256:b645901b9b982e64881eff9743da56959ef3b7192239bcfa3b4d8ce691e732c9",
+      "to": "sha256:48caf6befd76baa96460d2096e6c71280b961e2e8060ccc3d39a05b2f86bd5a8"
+    },
+    {
+      "service": "local-api",
+      "field": "image",
+      "from": "sha256:b645901b9b982e64881eff9743da56959ef3b7192239bcfa3b4d8ce691e732c9",
+      "to": "sha256:48caf6befd76baa96460d2096e6c71280b961e2e8060ccc3d39a05b2f86bd5a8"
+    },
+    {
+      "service": "proxy",
+      "field": "image",
+      "from": "sha256:e996c241a2e128aeb1512801596ecae009e2d84020e6e92b4860e57acaeee9f4",
+      "to": "sha256:06605be1c7b4651c4bc2fa763af30e1a517177189fd861e5c1404960f37f4c79"
+    }
+  ],
+  "collector_and_metadata_worker_unchanged": true,
+  "runtime_environment_unchanged": true
+}

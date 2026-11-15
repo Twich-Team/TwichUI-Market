@@ -1,0 +1,10 @@
+2026-11-15T14:39:15.6907353Z   "tested_commit": "7202e07a62f1770642b50afe5a3ec671d9b488cf",
+2026-11-15T14:39:15.6907726Z   "source_kind": "commit",
+2026-11-15T14:39:15.6909111Z   "release_admissible": null,
+2026-11-15T14:39:31.1464944Z No known vulnerabilities found
+2026-11-15T14:39:33.2926476Z No new upgrade operations detected.
+2026-11-15T14:42:27.7844889Z 383 passed in 170.28s (0:02:50)
+2026-11-15T14:42:48.2463077Z test_candidate_cannot_be_published_before_exact_manual_acceptance (test_release_preparation.ReleasePreparation.test_candidate_cannot_be_published_before_exact_manual_acceptance) ... ok
+2026-11-15T14:42:48.2587900Z test_changed_candidate_acceptance_or_unexpected_idle_requests_are_rejected (test_release_preparation.ReleasePreparation.test_changed_candidate_acceptance_or_unexpected_idle_requests_are_rejected) ... ok
+2026-11-15T14:42:48.2634887Z test_missing_installed_acceptance_or_actual_signature_proof_blocks_candidate (test_release_preparation.ReleasePreparation.test_missing_installed_acceptance_or_actual_signature_proof_blocks_candidate) ... ok
+2026-11-15T14:42:48.2926489Z Ran 34 tests in 2.757s

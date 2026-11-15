@@ -1,0 +1,19 @@
+{
+  "read_only": true,
+  "query": "Bent Staff, item_id asc, page 0/25",
+  "results": [
+    {
+      "source": "previous",
+      "ms": 3198.36,
+      "error_type": "OperationalError",
+      "statement_timeout": true
+    },
+    {
+      "source": "current",
+      "ms": 3099.33,
+      "error_type": "OperationalError",
+      "statement_timeout": true
+    }
+  ],
+  "record_source": "Initial bounded probe output retained in operator transcript; the helper default output filename was reused during the post-maintenance probe."
+}

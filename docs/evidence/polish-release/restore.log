@@ -1,0 +1,19 @@
+ Network twichui-market-restore_default Creating
+ Network twichui-market-restore_default Creating
+ Network twichui-market-restore_default Created
+ Network twichui-market-restore_default Created
+ Container twichui-market-restore-db-1 Creating
+ Container twichui-market-restore-db-1 Created
+ Container twichui-market-restore-db-1 Starting
+ Container twichui-market-restore-db-1 Started
+ Container twichui-market-restore-db-1 Waiting
+ Container twichui-market-restore-db-1 Healthy
+No new upgrade operations detected.
+Restored owner role/account and 1 encrypted provider envelope verified with protected production keyring; no external requests
+ Container twichui-market-restore-db-1 Stopping
+ Container twichui-market-restore-db-1 Stopped
+ Container twichui-market-restore-db-1 Removing
+ Container twichui-market-restore-db-1 Removed
+ Network twichui-market-restore_default Removing
+ Network twichui-market-restore_default Removed
+{"output": "artifacts/polish-release/restored-preservation.json", "cutoffs": {"snapshot": 38, "observation": 422, "user": 85, "credential": 191}, "all_preexisting_rows_identical": true, "only_enabled_house": 114, "historical_retention_authorized": false}
