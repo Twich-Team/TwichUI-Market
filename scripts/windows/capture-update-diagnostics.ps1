@@ -13,8 +13,12 @@ try {
     $graphics.CopyFromScreen($bounds.Location,[Drawing.Point]::Empty,$bounds.Size)
     $image.Save((Join-Path $directory 'sdk-installer-desktop.png'),[Drawing.Imaging.ImageFormat]::Png)
 } finally { $graphics.Dispose();$image.Dispose() }
-$windows=@(Get-Process | Where-Object {$_.Name -like '*installer*' -or $_.Name -eq 'twichui-market-companion'} | Select-Object Id,Name,Path,MainWindowTitle)
-$programs=@(Get-CimInstance Win32_Process | Where-Object {$_.Name -like '*-installer.exe'} | Select-Object Name,ExecutablePath,CommandLine)
-$installed=Get-Item $env:MARKET_TEST_INSTALLED_EXE -ErrorAction SilentlyContinue
-@{windows=$windows;installer_processes=$programs;installed_version=$installed.VersionInfo.ProductVersion;installed_sha256=(Get-FileHash $env:MARKET_TEST_INSTALLED_EXE -Algorithm SHA256).Hash.ToLowerInvariant()} |
-    ConvertTo-Json -Depth 4 | Set-Content (Join-Path $directory 'sdk-installer-diagnostics.json')
+$report=@{}
+try { $report.windows=@(Get-Process | Where-Object {$_.Name -like '*installer*' -or $_.Name -eq 'twichui-market-companion'} | Select-Object Id,Name,Path,MainWindowTitle) } catch { $report.process_scan_error=$_.Exception.GetType().Name }
+try { $report.installer_processes=@(Get-CimInstance Win32_Process | Where-Object {$_.Name -like '*-installer.exe'} | Select-Object Name,ExecutablePath,CommandLine) } catch { $report.cim_error=$_.Exception.GetType().Name }
+try {
+    $installed=Get-Item $env:MARKET_TEST_INSTALLED_EXE
+    $report.installed_version=$installed.VersionInfo.ProductVersion
+    $report.installed_sha256=(Get-FileHash $env:MARKET_TEST_INSTALLED_EXE -Algorithm SHA256).Hash.ToLowerInvariant()
+} catch { $report.installed_scan_error=$_.Exception.GetType().Name }
+$report | ConvertTo-Json -Depth 4 | Set-Content (Join-Path $directory 'sdk-installer-diagnostics.json')

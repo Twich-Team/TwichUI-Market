@@ -395,13 +395,20 @@ mod tests {
         let evidence = PathBuf::from(env::var("GITHUB_WORKSPACE").unwrap())
             .join("artifacts/companion-signed-update-test/sdk-crypto.json");
         fs::create_dir_all(evidence.parent().unwrap()).unwrap();
-        fs::write(&evidence, serde_json::to_vec_pretty(&json!({
-            "sdk_test_executed":true,"supported_sdk_signature_verified":true,
-            "corrupt_payload_rejected":true,"wrong_signed_version_rejected":true,
-            "version":version,"installer":installer,"expected_install_directory":directory,
-            "updater_public_key_sha256":update::public_key_fingerprint(key)
-        })).unwrap()).unwrap();
-        eprintln!("Actual owner-key SDK crypto assertions passed; invoking the verified NSIS installer.");
+        fs::write(
+            &evidence,
+            serde_json::to_vec_pretty(&json!({
+                "sdk_test_executed":true,"supported_sdk_signature_verified":true,
+                "corrupt_payload_rejected":true,"wrong_signed_version_rejected":true,
+                "version":version,"installer":installer,"expected_install_directory":directory,
+                "updater_public_key_sha256":update::public_key_fingerprint(key)
+            }))
+            .unwrap(),
+        )
+        .unwrap();
+        eprintln!(
+            "Actual owner-key SDK crypto assertions passed; invoking the verified NSIS installer."
+        );
         candidate
             .install(bytes)
             .expect("The supported updater must launch the verified installer");

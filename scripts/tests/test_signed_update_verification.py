@@ -48,6 +48,19 @@ class SignedUpdateVerification(unittest.TestCase):
         with patch.object(verify.prepare,'workflow',side_effect=ValueError('Synthetic failed canonical CI')):
             with self.assertRaises(ValueError):verify.preflight(self.path)
 
+    def test_only_matching_completed_installer_evidence_avoids_repeating_expiring_artifact_download(self):
+        root=self.root/'isolated-root';target=root/'docs/evidence';target.mkdir(parents=True)
+        archive=target/'companion-v2-signed-update-acceptance.json'
+        receipt={name:self.proof[name] for name in ('payload_source_commit','version','installer_sha256','executable_sha256','updater_public_key_sha256')}
+        receipt.update(workflow_run_id=999,**dict.fromkeys(('supported_sdk_signature_verified','corrupt_payload_rejected','wrong_signed_version_rejected',
+            'actual_sdk_install','installed_executable_verified','reconnect_sync_export','uninstall_data_preserved'),True))
+        with patch.object(verify,'ROOT',root),patch.object(verify,'read_proof',return_value=(self.proof,'synthetic-public')):
+            self.assertTrue(verify.selection(self.path))
+            archive.write_text(json.dumps(receipt));self.assertFalse(verify.selection(self.path))
+            self.assertTrue(verify.selection(self.path,pending_only=False))
+            for field,value in [('installer_sha256','f'*64),('actual_sdk_install',False),('workflow_run_id',True)]:
+                changed={**receipt,field:value};archive.write_text(json.dumps(changed));self.assertTrue(verify.selection(self.path))
+
     def test_parent_record_requires_actual_sdk_install_and_retention(self):
         # A correct public signature alone cannot attest the parent-run installer.
         target=self.root/'artifacts/companion-v2';target.mkdir(parents=True)

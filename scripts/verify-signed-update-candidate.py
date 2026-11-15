@@ -37,6 +37,23 @@ def read_proof(path):
     return value,key
 
 
+def selection(path,pending_only=True):
+    path=Path(path);pending=path.is_file()
+    archived=ROOT/'docs/evidence/companion-v2-signed-update-acceptance.json'
+    if pending and pending_only and archived.is_file():
+        proof,_=read_proof(path);receipt=prepare.read(archived)
+        fields={'payload_source_commit':'payload_source_commit','version':'version','installer_sha256':'installer_sha256',
+            'executable_sha256':'executable_sha256','updater_public_key_sha256':'updater_public_key_sha256'}
+        flags=('supported_sdk_signature_verified','corrupt_payload_rejected','wrong_signed_version_rejected',
+            'actual_sdk_install','installed_executable_verified','reconnect_sync_export','uninstall_data_preserved')
+        pending=not (all(receipt.get(name)==proof[field] for name,field in fields.items())
+            and all(receipt.get(name) is True for name in flags)
+            and type(receipt.get('workflow_run_id')) is int and receipt['workflow_run_id']>0)
+    if os.environ.get('GITHUB_OUTPUT'):
+        with open(os.environ['GITHUB_OUTPUT'],'a') as file:file.write('pending='+str(pending).lower()+'\n')
+    return pending
+
+
 def preflight(path):
     proof,key=read_proof(path)
     for name,workflow_path in prepare.WORKFLOWS.items():prepare.workflow(proof[name+'_run_id'],workflow_path,proof['payload_source_commit'])
@@ -117,9 +134,10 @@ def record(path):
 def main():
     if os.environ.get('GITHUB_ACTIONS')!='true' or os.environ.get('RUNNER_OS')!='Windows':raise ValueError('Disposable Windows runner only')
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('mode',choices=['preflight','stage','record']);parser.add_argument('--proof',type=Path,required=True);parser.add_argument('--incoming',type=Path)
+    parser.add_argument('mode',choices=['selection','preflight','stage','record']);parser.add_argument('--proof',type=Path,required=True);parser.add_argument('--incoming',type=Path);parser.add_argument('--pending-only',action='store_true')
     args=parser.parse_args()
-    if args.mode=='preflight':preflight(args.proof)
+    if args.mode=='selection':selection(args.proof,args.pending_only)
+    elif args.mode=='preflight':preflight(args.proof)
     elif args.mode=='stage':stage(args.proof,args.incoming)
     else:record(args.proof)
     print('Public signed-candidate verification checkpoint complete. No publication or deployment.')

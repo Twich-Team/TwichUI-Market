@@ -30,6 +30,8 @@ const fs=require('node:fs');const path=require('node:path');const {execFile,spaw
       const expected=process.env.MARKET_TEST_EXPECTED_EXE_SHA256||createHash('sha256').update(fs.readFileSync('desktop/src-tauri/target/release/twichui-market-companion.exe')).digest('hex');
       expect(expected).toMatch(/^[a-f0-9]{64}$/);
       const evidence=path.resolve('artifacts/companion-signed-update-test');fs.mkdirSync(evidence,{recursive:true});
+      const observer=spawn('powershell.exe',['-NoProfile','-NonInteractive','-File','scripts/windows/watch-update-installer.ps1'],{stdio:'ignore',windowsHide:true});
+      await expect.poll(()=>fs.existsSync(path.join(evidence,'installer-observer.ready')),{timeout:15000}).toBe(true);
       const child=await promisify(execFile)('cargo',['test','--manifest-path','desktop/src-tauri/Cargo.toml','--locked','updates::tests::launch_owner_signed_installer_on_disposable_runner','--','--ignored','--exact','--nocapture'],{timeout:180000,maxBuffer:2*1024*1024});
       fs.writeFileSync(path.join(evidence,'sdk-child-stdout.txt'),child.stdout);fs.writeFileSync(path.join(evidence,'sdk-child-stderr.txt'),child.stderr);
       expect(child.stdout).toContain('running 1 test');
@@ -39,6 +41,8 @@ const fs=require('node:fs');const path=require('node:path');const {execFile,spaw
       }catch(error){
         await promisify(execFile)('powershell.exe',['-NoProfile','-NonInteractive','-File','scripts/windows/capture-update-diagnostics.ps1'],{timeout:15000}).catch(()=>{});
         throw error;
+      }finally{
+        if(observer.exitCode===null)observer.kill();
       }
     }else{
       await promisify(execFile)(process.env.MARKET_TEST_NEW_INSTALLER,['/S',`/D=${process.env.MARKET_TEST_INSTALL_DIRECTORY}`],{timeout:90000});

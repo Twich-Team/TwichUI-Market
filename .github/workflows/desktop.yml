@@ -68,35 +68,10 @@ jobs:
           path: desktop/src-tauri/target/release/bundle/nsis/*.exe
           if-no-files-found: error
 
-      - name: Validate available public signed-update candidate
-        if: hashFiles('docs/evidence/companion-v2-signed-candidate.json') != '' && hashFiles('docs/evidence/companion-v2-signed-update-acceptance.json') == ''
-        id: signed-candidate
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python scripts/verify-signed-update-candidate.py preflight --proof docs/evidence/companion-v2-signed-candidate.json
-      - uses: actions/download-artifact@v4
-        if: steps.signed-candidate.outcome == 'success'
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          run-id: ${{ steps.signed-candidate.outputs.windows_run_id }}
-          artifact-ids: ${{ steps.signed-candidate.outputs.installer_artifact_id }}
-          path: artifacts/original-signed-update-payload
-          merge-multiple: true
-      - name: Verify exact candidate with independent public-key verifier
-        if: steps.signed-candidate.outcome == 'success'
-        run: |
-          cargo build --manifest-path desktop/Cargo.toml --release --example verify_release --locked
-          python scripts/verify-signed-update-candidate.py stage --proof docs/evidence/companion-v2-signed-candidate.json --incoming artifacts/original-signed-update-payload
-      - name: Actual signed updater SDK upgrade and retained data
-        if: steps.signed-candidate.outcome == 'success'
-        timeout-minutes: 10
-        run: ./scripts/windows/verify-upgrade.ps1
-      - name: Record actual signed updater candidate acceptance
-        if: steps.signed-candidate.outcome == 'success'
-        run: python scripts/verify-signed-update-candidate.py record --proof docs/evidence/companion-v2-signed-candidate.json
-      - uses: actions/upload-artifact@v4
-        if: always() && steps.signed-candidate.outcome != 'skipped'
-        with:
-          name: companion-signed-update-acceptance
-          path: artifacts/companion-signed-update-test/
-          if-no-files-found: warn
+
+  signed-update:
+    uses: ./.github/workflows/companion-release.yml
+    with:
+      harness_commit: ${{ github.event.pull_request.head.sha || github.sha }}
+      proof_path: docs/evidence/companion-v2-signed-candidate.json
+      pending_only: true
