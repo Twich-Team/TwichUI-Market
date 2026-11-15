@@ -1,72 +1,73 @@
 {
   "synthetic_only": true,
-  "source": "Actual Chromium 156 screenshots of built frontend using local PostgreSQL and FastAPI APIs. No production data or live provider success. Secret form is empty; only fake keys were submitted after capture.",
-  "frontend_commit": "f245a57",
-  "tests": "web/e2e/metadata.spec.ts",
+  "captured_at": "2026-11-15T00:15:53.372559+00:00",
+  "application_commit": "90bc88f0c56185ce8d4e796b20fe6af32e7ea64b",
+  "source": "Actual Chromium 156 screenshots of final built frontend with local PostgreSQL/FastAPI APIs. No live-provider success or production data. Empty key form only; submitted fake keys are never shown.",
+  "tests": "Final complete run: 20/20 Chromium workflows (1.8m), including metadata desktop/mobile/axe checks.",
   "review_status": "Development candidate; owner approval pending",
   "screenshots": [
     {
       "file": "01-overview.png",
       "width": 1440,
-      "height": 1662,
-      "bytes": 883798,
-      "sha256": "60da6fad79d43b9aab6f02645d3bc4ad2675374ed3b77cc25d7f6f997f9a3530"
+      "height": 1604,
+      "bytes": 885290,
+      "sha256": "46e98baf62a25ef55d72af3580a6d6e9d2820181997eef8e2bd5a616e580a449"
     },
     {
       "file": "02-single-item.png",
       "width": 1440,
-      "height": 1826,
-      "bytes": 997979,
-      "sha256": "a072a09ef98baf85f01d4834ffbeb8f1ea88c491a952add728f585cc2b1951d0"
+      "height": 1768,
+      "bytes": 998644,
+      "sha256": "d02b8f046e44db8744acdc4dbce7453ca6c9f4f880afa7d3dc010a7e4f2e799a"
     },
     {
       "file": "03-batch-preview.png",
       "width": 1440,
-      "height": 2123,
-      "bytes": 1099171,
-      "sha256": "b96df8ad2d4e31416c11363d6c9e0c3582b26cf83d5ed9dd36cf7df8a190e33f"
+      "height": 2065,
+      "bytes": 1093567,
+      "sha256": "c2feaaf066543601c5b4261cad1d01914c63b43213a94cad0b39f17412e4dd84"
     },
     {
       "file": "04-progress-results.png",
       "width": 1440,
-      "height": 2049,
-      "bytes": 1039850,
-      "sha256": "95d026f67075716c2383e71604b9fed726f9131a535c12102e6e36d22deabe95"
+      "height": 1990,
+      "bytes": 1037155,
+      "sha256": "5016442f94c45204d0429cf6bf82d17ef16aadf082384aa105a31313c96de398"
     },
     {
       "file": "05-data-sources.png",
       "width": 1440,
-      "height": 1734,
-      "bytes": 971836,
-      "sha256": "0038fd6709e56750e0b9346c6cb98e87673f6512c2a83ca18553ccbd7e173c35"
+      "height": 1713,
+      "bytes": 956370,
+      "sha256": "be627bd11dffc36de5512c02b1e95f3cde2df86558f44d2cb4395351b26970c5"
     },
     {
       "file": "06-key-replacement.png",
       "width": 1440,
-      "height": 2050,
-      "bytes": 1224720,
-      "sha256": "339690abb750bff1090576845c47feb07e70e3a2b060aca81f7759a6feb5cfea"
+      "height": 2029,
+      "bytes": 1060462,
+      "sha256": "0e3e01c6d128763915d4050cfa51f8652d0055a429dc0c958b1d39196d275adf"
     },
     {
       "file": "07-explorer.png",
       "width": 1440,
-      "height": 1020,
-      "bytes": 344639,
-      "sha256": "9dd9111321300cf2dcee5732358f6bb86b9d79b487e1346bd9fd61e892e6d70b"
+      "height": 2458,
+      "bytes": 859251,
+      "sha256": "cd6e216d21409879c35cf767940b5cf64ba7c2f22c46e7cef010a12aeb40db30"
     },
     {
       "file": "08-tooltip-provenance.png",
       "width": 1440,
       "height": 2483,
-      "bytes": 1157997,
-      "sha256": "0fcde016c769953aba914764128d67a20520411ab5ca583bd1edafda44d9a1e2"
+      "bytes": 1158581,
+      "sha256": "8f1ca3e523cbf0d4c271a25f213f925fd718ee98b763cbc1fcde63c2d304565f"
     },
     {
       "file": "09-mobile-sources.png",
       "width": 390,
-      "height": 3542,
-      "bytes": 744419,
-      "sha256": "1c76795a2a9c622bbbdee5d7c8a66a8f2b32aa784fcd766d42569f0c8aa3e365"
+      "height": 3663,
+      "bytes": 801559,
+      "sha256": "76a69033abd96f5c93385e454c62c88b0e3c83dedc6a69c1aca5b3d43d2e8a16"
     }
   ]
 }

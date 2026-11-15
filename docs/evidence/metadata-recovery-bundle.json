@@ -20,15 +20,15 @@
   "candidate": {
     "entry_js": {
       "bytes": 270663,
-      "gzip_bytes": 83764
+      "gzip_bytes": 83763
     },
     "research_js": {
       "bytes": 268812,
-      "gzip_bytes": 83304
+      "gzip_bytes": 83302
     },
     "administration_js": {
-      "bytes": 44618,
-      "gzip_bytes": 11336
+      "bytes": 44646,
+      "gzip_bytes": 11353
     },
     "css": {
       "bytes": 27087,
