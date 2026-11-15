@@ -1,0 +1,13 @@
+{
+  "migration": "meta_20261114",
+  "users": 71,
+  "markets": 2,
+  "observations": 313,
+  "listings": 3222487,
+  "synthetic_observations": 0,
+  "buyout_total": "859956658878",
+  "snapshot_statistics": 706437,
+  "daily_observations": 3,
+  "market_verifications": 2,
+  "user_preferences": 10
+}

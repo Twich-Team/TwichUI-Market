@@ -1,3 +1,5 @@
+**Current owner-authorized two-phase release:** PR #3 deployed and accepted at `e9c4d29`; administration production acceptance is recorded in [the release report](admin-modernization-release-acceptance.md). Phase 1 is complete. Proceed with the separately authorized [Explorer / Item Details implementation](explorer-item-details-plan.md). Phase 2 must use its own feature branch and stop at final owner visual review; no Phase 2 production promotion is authorized. Older review-only instructions below are superseded within this explicit scope.
+
 **Administration/provider review candidate:** [current findings and visual review](admin-modernization-review.md), [continuation ledger](admin-modernization-progress.md). New administration UI and authentic item-quality colors remain undeployed pending owner visual approval. The current goal is complete at the review boundary. The separate [Explorer/Details implementation plan](explorer-item-details-plan.md) is prepared; implementation requires another owner instruction.
 
 # Active milestone

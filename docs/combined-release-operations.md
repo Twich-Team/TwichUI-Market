@@ -1,3 +1,5 @@
+**Current release:** Administration modernization PR #3 is owner-approved, merged, deployed and accepted at `e9c4d29`. [Production acceptance, current image overlay and rollback](admin-modernization-release-acceptance.md) supersede historical review/deployment instructions below. Explorer / Item Details implementation is separately authorized on a feature branch; its production promotion requires final owner visual approval.
+
 # Combined Companion v2 / metadata release operations
 
 The owner's attached integration request authorizes this deployment and exact signed beta2 publication. Frozen inputs remain Companion `d9d5ae3` / review `75c6f38`, installer source `c7bad2f`, and metadata PR #2 `b18927a`. Original evidence and installer bytes are retained. The application merge is `f31050c`; release operations and complete signed-updater reacceptance are `3e23425`. No application source changed between those two commits.

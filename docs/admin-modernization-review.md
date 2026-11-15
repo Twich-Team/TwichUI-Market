@@ -1,3 +1,5 @@
+**Current release:** Administration modernization PR #3 is owner-approved, merged, deployed and accepted at `e9c4d29`. [Production acceptance, current image overlay and rollback](admin-modernization-release-acceptance.md) supersede historical review/deployment instructions below. Explorer / Item Details implementation is separately authorized on a feature branch; its production promotion requires final owner visual approval.
+
 # Administration tables and metadata provider review
 
 **Review candidate only — not deployed.** Production still runs release `e7d3129`. Administration changes and the separately requested item-quality correction need owner visual approval before promotion. [Draft PR #3](https://github.com/Twich-Team/TwichUI-Market/pull/3) targets the deployed integration branch. [Inventory and milestone plan](admin-modernization-plan.md), [continuation ledger](admin-modernization-progress.md), [visual gallery](evidence/admin-modernization/review.html).

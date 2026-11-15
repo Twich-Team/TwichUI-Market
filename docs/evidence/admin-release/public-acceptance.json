@@ -1,0 +1,474 @@
+{
+  "verified_at": "2026-11-15T05:35:21.457Z",
+  "public_url": "https://market.twich.gg",
+  "public_tls": {
+    "issuer": "YR1",
+    "protocol": "TLS 1.3",
+    "subjectName": "*.twich.gg",
+    "validFrom": 1791687760,
+    "validTo": 1799463759
+  },
+  "tls_errors_ignored": false,
+  "secure_httponly_strict_cookie": true,
+  "existing_public_and_local_sessions_survived": true,
+  "existing_device_and_cursor_survived": true,
+  "existing_preferences_survived": true,
+  "csrf_and_origin_rejections_verified": true,
+  "member_admin_boundary_verified": true,
+  "environment_read_only": false,
+  "source_synthetic": false,
+  "item": {
+    "id": 35,
+    "name": "Bent Staff",
+    "supply": 8,
+    "listings": 8,
+    "recent_price": "402"
+  },
+  "explorer_charts_verified": true,
+  "deal_finder_all_modes_verified": true,
+  "preferences_refresh_logout_login_verified": true,
+  "administration_market_configuration_verified": true,
+  "account_devices_and_revocation_verified": true,
+  "companion": {
+    "installer_sha256": "0fbc53603c218ffa85c8ee7b4e54f25e53c52a6fc3b2330ae914337714d41869",
+    "version": "2.0.0-beta.2",
+    "exact_https_download_verified": true,
+    "public_download_denied": true,
+    "browser_protocol_pkce_one_use_verified": true,
+    "owned_native_signed_update_metadata_verified": true,
+    "no_downgrade_verified": true,
+    "complete_genuine_server_sync_verified": true,
+    "sync_pages": 275,
+    "refresh_and_revocation_verified": true,
+    "actual_windows_on_production": false,
+    "tray_actions_verified": false
+  },
+  "metadata": {
+    "coverage": {
+      "snapshot_scope": "Latest recorded observation per selected market",
+      "measured_at": "2026-11-15T05:34:45.582922+00:00",
+      "observed": 4949,
+      "resolved_names": 2301,
+      "missing_names": 2648,
+      "name_percent": 46.49,
+      "primary_names": 2289,
+      "supplemental_names": 12,
+      "primary_missing_responses": 2660,
+      "primary_pending": 0,
+      "icons_available": 4949,
+      "icons_missing": 0,
+      "primary_attributes": 2289,
+      "catalog_records": 4949,
+      "provider_name_overlap": 0,
+      "conflicting_names": 0,
+      "last_enrichment": "2026-11-15T05:27:56.411097+00:00",
+      "pending_queue": 0,
+      "active_jobs": 0,
+      "provider_records": [
+        {
+          "provider": "blizzard",
+          "checked": 4949,
+          "names_available": 2289
+        },
+        {
+          "provider": "everloot",
+          "checked": 72,
+          "names_available": 3
+        },
+        {
+          "provider": "thewowdb",
+          "checked": 24,
+          "names_available": 9
+        }
+      ],
+      "recent_results": [
+        {
+          "item_id": 286616,
+          "provider": "blizzard",
+          "at": "2026-11-15T05:28:57.825170+00:00",
+          "result": {
+            "provider": "blizzard",
+            "item_id": 286616,
+            "http_status": 404,
+            "status": "metadata_unavailable",
+            "recovered_fields": []
+          }
+        },
+        {
+          "item_id": 282094,
+          "provider": "blizzard",
+          "at": "2026-11-15T05:28:27.202836+00:00",
+          "result": {
+            "provider": "blizzard",
+            "item_id": 282094,
+            "http_status": 404,
+            "status": "metadata_unavailable",
+            "recovered_fields": []
+          }
+        },
+        {
+          "item_id": 18587,
+          "provider": "blizzard",
+          "at": "2026-11-15T05:27:56.411097+00:00",
+          "result": {
+            "provider": "blizzard",
+            "item_id": 18587,
+            "http_status": 200,
+            "status": "available",
+            "recovered_fields": [
+              "name",
+              "base_attributes"
+            ]
+          }
+        },
+        {
+          "item_id": 16249,
+          "provider": "blizzard",
+          "at": "2026-11-15T05:27:25.603864+00:00",
+          "result": {
+            "provider": "blizzard",
+            "item_id": 16249,
+            "http_status": 200,
+            "status": "available",
+            "recovered_fields": [
+              "name",
+              "base_attributes"
+            ]
+          }
+        },
+        {
+          "item_id": 16223,
+          "provider": "blizzard",
+          "at": "2026-11-15T05:26:54.751744+00:00",
+          "result": {
+            "provider": "blizzard",
+            "item_id": 16223,
+            "http_status": 200,
+            "status": "available",
+            "recovered_fields": [
+              "name",
+              "base_attributes"
+            ]
+          }
+        },
+        {
+          "item_id": 16206,
+          "provider": "blizzard",
+          "at": "2026-11-15T05:26:23.975632+00:00",
+          "result": {
+            "provider": "blizzard",
+            "item_id": 16206,
+            "http_status": 200,
+            "status": "available",
+            "recovered_fields": [
+              "name",
+              "base_attributes"
+            ]
+          }
+        },
+        {
+          "item_id": 15967,
+          "provider": "blizzard",
+          "at": "2026-11-15T05:25:53.300683+00:00",
+          "result": {
+            "provider": "blizzard",
+            "item_id": 15967,
+            "http_status": 200,
+            "status": "available",
+            "recovered_fields": [
+              "name",
+              "base_attributes"
+            ]
+          }
+        },
+        {
+          "item_id": 15195,
+          "provider": "blizzard",
+          "at": "2026-11-15T05:25:22.580790+00:00",
+          "result": {
+            "provider": "blizzard",
+            "item_id": 15195,
+            "http_status": 404,
+            "status": "metadata_unavailable",
+            "recovered_fields": []
+          }
+        },
+        {
+          "item_id": 14969,
+          "provider": "blizzard",
+          "at": "2026-11-15T05:24:51.924633+00:00",
+          "result": {
+            "provider": "blizzard",
+            "item_id": 14969,
+            "http_status": 404,
+            "status": "metadata_unavailable",
+            "recovered_fields": []
+          }
+        },
+        {
+          "item_id": 14864,
+          "provider": "blizzard",
+          "at": "2026-11-15T05:24:21.192786+00:00",
+          "result": {
+            "provider": "blizzard",
+            "item_id": 14864,
+            "http_status": 200,
+            "status": "available",
+            "recovered_fields": [
+              "name",
+              "base_attributes"
+            ]
+          }
+        },
+        {
+          "item_id": 14795,
+          "provider": "blizzard",
+          "at": "2026-11-15T05:23:50.514456+00:00",
+          "result": {
+            "provider": "blizzard",
+            "item_id": 14795,
+            "http_status": 404,
+            "status": "metadata_unavailable",
+            "recovered_fields": []
+          }
+        },
+        {
+          "item_id": 14103,
+          "provider": "blizzard",
+          "at": "2026-11-15T05:23:19.782978+00:00",
+          "result": {
+            "provider": "blizzard",
+            "item_id": 14103,
+            "http_status": 200,
+            "status": "available",
+            "recovered_fields": [
+              "name",
+              "base_attributes"
+            ]
+          }
+        },
+        {
+          "item_id": 12845,
+          "provider": "blizzard",
+          "at": "2026-11-15T05:22:49.002627+00:00",
+          "result": {
+            "provider": "blizzard",
+            "item_id": 12845,
+            "http_status": 200,
+            "status": "available",
+            "recovered_fields": [
+              "name",
+              "base_attributes"
+            ]
+          }
+        },
+        {
+          "item_id": 12711,
+          "provider": "blizzard",
+          "at": "2026-11-15T05:22:18.254203+00:00",
+          "result": {
+            "provider": "blizzard",
+            "item_id": 12711,
+            "http_status": 200,
+            "status": "available",
+            "recovered_fields": [
+              "name",
+              "base_attributes"
+            ]
+          }
+        },
+        {
+          "item_id": 12549,
+          "provider": "blizzard",
+          "at": "2026-11-15T05:21:47.478179+00:00",
+          "result": {
+            "provider": "blizzard",
+            "item_id": 12549,
+            "http_status": 404,
+            "status": "metadata_unavailable",
+            "recovered_fields": []
+          }
+        },
+        {
+          "item_id": 12419,
+          "provider": "blizzard",
+          "at": "2026-11-15T05:21:16.752719+00:00",
+          "result": {
+            "provider": "blizzard",
+            "item_id": 12419,
+            "http_status": 200,
+            "status": "available",
+            "recovered_fields": [
+              "name",
+              "base_attributes"
+            ]
+          }
+        },
+        {
+          "item_id": 11992,
+          "provider": "blizzard",
+          "at": "2026-11-15T05:20:46.009810+00:00",
+          "result": {
+            "provider": "blizzard",
+            "item_id": 11992,
+            "http_status": 404,
+            "status": "metadata_unavailable",
+            "recovered_fields": []
+          }
+        },
+        {
+          "item_id": 8750,
+          "provider": "blizzard",
+          "at": "2026-11-15T05:20:15.269970+00:00",
+          "result": {
+            "provider": "blizzard",
+            "item_id": 8750,
+            "http_status": 200,
+            "status": "available",
+            "recovered_fields": [
+              "name",
+              "base_attributes"
+            ]
+          }
+        },
+        {
+          "item_id": 85,
+          "provider": "blizzard",
+          "at": "2026-11-15T05:19:44.579253+00:00",
+          "result": {
+            "provider": "blizzard",
+            "item_id": 85,
+            "http_status": 200,
+            "status": "available",
+            "recovered_fields": [
+              "name",
+              "base_attributes"
+            ]
+          }
+        },
+        {
+          "item_id": 287039,
+          "provider": "blizzard",
+          "at": "2026-11-15T04:47:00.720803+00:00",
+          "result": {
+            "provider": "blizzard",
+            "item_id": 287039,
+            "http_status": 404,
+            "status": "metadata_unavailable",
+            "recovered_fields": []
+          }
+        }
+      ]
+    },
+    "credential_storage_ready": true,
+    "provider_settings": [
+      {
+        "provider": "blizzard",
+        "name": "Blizzard Forever",
+        "enabled": true,
+        "automatic": true,
+        "configured": true,
+        "key_required": true,
+        "credential_status": "oauth_connected",
+        "validation_pending": false,
+        "validation_error": null,
+        "last_validated_at": "2026-11-15T03:21:58.000517+00:00",
+        "expires_at": null,
+        "expiration_warning": null,
+        "last_success": "2026-11-15T05:27:56.411097+00:00",
+        "recent_error": "metadata_unavailable",
+        "cooldown_until": null,
+        "next_request_at": "2026-11-15T05:32:37.255497+00:00",
+        "hourly_budget": 240,
+        "daily_budget": 2000,
+        "hour_used": 39,
+        "day_used": 451,
+        "note": "Authoritative Forever base-item fields. OAuth uses existing server secrets.",
+        "url": "https://develop.battle.net"
+      },
+      {
+        "provider": "everloot",
+        "name": "Everloot",
+        "enabled": false,
+        "automatic": true,
+        "configured": true,
+        "key_required": false,
+        "credential_status": "connected",
+        "validation_pending": false,
+        "validation_error": null,
+        "last_validated_at": "2026-11-15T03:02:49.941730+00:00",
+        "expires_at": "2027-11-13T23:59:59+00:00",
+        "expiration_warning": null,
+        "last_success": "2026-11-15T03:07:28.552775+00:00",
+        "recent_error": "metadata_unavailable",
+        "cooldown_until": null,
+        "next_request_at": "2026-11-15T04:20:04.800913+00:00",
+        "hourly_budget": 240,
+        "daily_budget": 2000,
+        "hour_used": 36,
+        "day_used": 90,
+        "note": "Forever consensus names with attribution. Bulk client attributes are unconfirmed and do not supply names.",
+        "url": "https://everloot.app"
+      },
+      {
+        "provider": "foreverdb",
+        "name": "ForeverDB",
+        "enabled": false,
+        "automatic": false,
+        "configured": false,
+        "key_required": true,
+        "credential_status": "not_configured",
+        "validation_pending": false,
+        "validation_error": null,
+        "last_validated_at": null,
+        "expires_at": null,
+        "expiration_warning": null,
+        "last_success": null,
+        "recent_error": null,
+        "cooldown_until": null,
+        "next_request_at": null,
+        "hourly_budget": 60,
+        "daily_budget": 500,
+        "hour_used": 0,
+        "day_used": 0,
+        "note": "Approval required. Only minimal documented identity/name envelope; authorized fixture verification pending.",
+        "url": "https://foreverdb.net"
+      },
+      {
+        "provider": "thewowdb",
+        "name": "TheWoWDB",
+        "enabled": false,
+        "automatic": false,
+        "configured": false,
+        "key_required": false,
+        "credential_status": "keyless",
+        "validation_pending": false,
+        "validation_error": null,
+        "last_validated_at": "2026-11-15T03:30:55.909543+00:00",
+        "expires_at": null,
+        "expiration_warning": null,
+        "last_success": null,
+        "recent_error": null,
+        "cooldown_until": null,
+        "next_request_at": "2026-11-15T04:20:59.220477+00:00",
+        "hourly_budget": 60,
+        "daily_budget": 500,
+        "hour_used": 27,
+        "day_used": 27,
+        "note": "Optional Forever beta data. Access restrictions are never bypassed.",
+        "url": "https://thewowdb.com"
+      }
+    ],
+    "empty_password_key_form": true,
+    "saved_keys_never_returned": true,
+    "recovery_preview_verified": true,
+    "live_recovery_jobs_started": 0,
+    "external_recovery_attempts": 0
+  },
+  "retention_dry_run_only": true,
+  "retention_application_authorized": false,
+  "market_configuration_unchanged": true,
+  "axe_violations": 0,
+  "page_errors": [],
+  "session_continuity_note": "The first run crossed deployment and passed continuity before its unrelated obsolete-bootstrap-password failure. The final complete run checks post-deployment behavior and uses a new audited owner session for owner-scoped Companion acceptance."
+}

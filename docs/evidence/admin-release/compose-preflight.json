@@ -1,0 +1,22 @@
+{
+  "api": {
+    "existing_environment_unchanged": true,
+    "existing_memory_limit_unchanged": true,
+    "target_image": "sha256:b645901b9b982e64881eff9743da56959ef3b7192239bcfa3b4d8ce691e732c9"
+  },
+  "local-api": {
+    "existing_environment_unchanged": true,
+    "existing_memory_limit_unchanged": true,
+    "target_image": "sha256:b645901b9b982e64881eff9743da56959ef3b7192239bcfa3b4d8ce691e732c9"
+  },
+  "proxy": {
+    "existing_environment_unchanged": true,
+    "existing_memory_limit_unchanged": true,
+    "target_image": "sha256:2c16372dc3254d897e57d980529f62c9a1550ed356cdc66e121e23b64cf267c9"
+  },
+  "enrichment": {
+    "existing_environment_unchanged": true,
+    "existing_memory_limit_unchanged": true,
+    "target_image": "sha256:b645901b9b982e64881eff9743da56959ef3b7192239bcfa3b4d8ce691e732c9"
+  }
+}

@@ -1,0 +1,10 @@
+# Approved administration release e9c4d29; apply LAST after the complete production overlays.
+services:
+  api:
+    image: sha256:b645901b9b982e64881eff9743da56959ef3b7192239bcfa3b4d8ce691e732c9
+  local-api:
+    image: sha256:b645901b9b982e64881eff9743da56959ef3b7192239bcfa3b4d8ce691e732c9
+  proxy:
+    image: sha256:2c16372dc3254d897e57d980529f62c9a1550ed356cdc66e121e23b64cf267c9
+  enrichment:
+    image: sha256:b645901b9b982e64881eff9743da56959ef3b7192239bcfa3b4d8ce691e732c9

@@ -1,3 +1,5 @@
+**Current release:** Administration modernization PR #3 is owner-approved, merged, deployed and accepted at `e9c4d29`. [Production acceptance, current image overlay and rollback](admin-modernization-release-acceptance.md) supersede historical review/deployment instructions below. Explorer / Item Details implementation is separately authorized on a feature branch; its production promotion requires final owner visual approval.
+
 # Current review result
 
 Implementation checkpoints are pushed through `23c9b94`, with separate queued-UX planning `505b9c3` and quality correction `7033bf4`. Live diagnostics are closed: **93 requests, 3 Everloot + 9 TheWoWDB names stored**. Same-snapshot coverage rose from 2,250/4,893 to 2,263/4,893; one additional gain belongs to the independently running Blizzard worker. No names were lost, and all original auction/history/account/preference hashes match. Only two owner/native-session revocation flags changed, reconciled against exact original credential hashes.
