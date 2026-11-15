@@ -1,0 +1,7 @@
+{
+  "checked": true,
+  "only_change": "proxy.image",
+  "release_source": "4ddf137712084292b899e7b352fe41b751e8e70b",
+  "retained_api_worker_collector_db_settings": true,
+  "schema_migration": false
+}

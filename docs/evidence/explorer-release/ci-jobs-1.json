@@ -1,0 +1,158 @@
+{
+  "jobs": [
+    {
+      "id": 132768007836,
+      "name": "browser",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 43699729878,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Verify combined PR source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Run npm ci --prefix web",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Run npm --prefix web run build && npm --prefix web test",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Run npm --prefix web audit --omit=dev",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Run docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml up -d --build",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Run docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml exec -T -e METADATA_TEST_KEYRING_ONLY=true api python - < web/e2e/seed.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Run docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml run --rm -T --no-deps api python - < web/e2e/seed.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Run docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml exec -T api python - < web/e2e/seed-admin.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        },
+        {
+          "name": "Run docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml exec -T api python - < web/e2e/seed-quality.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Run docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml exec -T api python - < web/e2e/seed-private-beta.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        },
+        {
+          "name": "Run docker run --rm --network twichui-market-browser_default -v \"$PWD:/work\" -w /work/web mcr.microsoft.com/playwright:v1.65.1-noble npm run test:e2e",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 20
+        },
+        {
+          "name": "Run docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml down",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 41
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 42
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 43
+        }
+      ]
+    }
+  ]
+}

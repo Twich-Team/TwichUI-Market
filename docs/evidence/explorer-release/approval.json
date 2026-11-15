@@ -1,0 +1,13 @@
+{
+  "owner_approved_merge_and_deployment": true,
+  "repository": "Twich-Team/TwichUI-Market",
+  "pr": 4,
+  "frozen_application_commit": "b3e48bd8408cfb7ba09115abfc3ccc12a721d480",
+  "final_review_checkpoint": "f3d9172ecad611b49fb4ce52585c35e7a3a1bdea",
+  "previous_integration_head": "9ce465a00c159283b9b64d5abfcb089d8056f5a5",
+  "previous_production_release": "e9c4d299cdf781be0e362edb26b4de6097a33e6a",
+  "integrated_release_commit": "4ddf137712084292b899e7b352fe41b751e8e70b",
+  "conflicts": [],
+  "backend_schema_desktop_contract_changes": false,
+  "scope": "Frontend-only production promotion after exact integrated CI, checksummed backup and isolated restoration"
+}

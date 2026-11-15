@@ -1,0 +1,46 @@
+{
+  "keyring_ready": true,
+  "all_envelopes_decrypt": true,
+  "providers": [
+    {
+      "provider": "blizzard",
+      "enabled": true,
+      "automatic": true,
+      "hourly_budget": 240,
+      "daily_budget": 2000,
+      "credential_status": "oauth_connected",
+      "credential_key_id": null,
+      "credential_sha256": null
+    },
+    {
+      "provider": "everloot",
+      "enabled": true,
+      "automatic": true,
+      "hourly_budget": 240,
+      "daily_budget": 2000,
+      "credential_status": "connected",
+      "credential_key_id": "metadata-20261115",
+      "credential_sha256": "52551096b001ed48d24195218d968f3527bbb44c75826ddf3769415be7a0b1f9"
+    },
+    {
+      "provider": "foreverdb",
+      "enabled": false,
+      "automatic": false,
+      "hourly_budget": 60,
+      "daily_budget": 500,
+      "credential_status": "not_configured",
+      "credential_key_id": null,
+      "credential_sha256": null
+    },
+    {
+      "provider": "thewowdb",
+      "enabled": true,
+      "automatic": true,
+      "hourly_budget": 60,
+      "daily_budget": 500,
+      "credential_status": "keyless",
+      "credential_key_id": null,
+      "credential_sha256": null
+    }
+  ]
+}

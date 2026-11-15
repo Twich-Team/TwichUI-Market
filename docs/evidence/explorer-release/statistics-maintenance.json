@@ -1,0 +1,12 @@
+{
+  "command": "ANALYZE snapshot_statistics",
+  "exit_code": 0,
+  "schema_or_observation_changes": false,
+  "observed": {
+    "table": "snapshot_statistics",
+    "last_analyze": "2026-11-15T09:46:09.385223+00:00",
+    "estimated_live_rows": 816369,
+    "modifications_since_analyze": 0,
+    "actual_snapshot_33_rows": 27155
+  }
+}

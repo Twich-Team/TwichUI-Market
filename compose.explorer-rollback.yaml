@@ -1,0 +1,5 @@
+# Immediate preceding approved administration frontend; append LAST for frontend-only rollback.
+# Keep every API/worker/database image, setting, volume and schema unchanged.
+services:
+  proxy:
+    image: sha256:2c16372dc3254d897e57d980529f62c9a1550ed356cdc66e121e23b64cf267c9

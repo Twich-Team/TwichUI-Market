@@ -1,0 +1,298 @@
+[
+  {
+    "Plan": {
+      "Node Type": "Limit",
+      "Parallel Aware": false,
+      "Async Capable": false,
+      "Startup Cost": 12704.32,
+      "Total Cost": 12704.33,
+      "Plan Rows": 1,
+      "Plan Width": 272,
+      "Plans": [
+        {
+          "Node Type": "Sort",
+          "Parent Relationship": "Outer",
+          "Parallel Aware": false,
+          "Async Capable": false,
+          "Startup Cost": 12704.32,
+          "Total Cost": 12704.32,
+          "Plan Rows": 1,
+          "Plan Width": 272,
+          "Sort Key": [
+            "(lower(item_groups.name))",
+            "item_groups.item_id"
+          ],
+          "Plans": [
+            {
+              "Node Type": "Subquery Scan",
+              "Parent Relationship": "Outer",
+              "Parallel Aware": false,
+              "Async Capable": false,
+              "Alias": "item_groups",
+              "Startup Cost": 9286.78,
+              "Total Cost": 12704.31,
+              "Plan Rows": 1,
+              "Plan Width": 272,
+              "Plans": [
+                {
+                  "Node Type": "Aggregate",
+                  "Strategy": "Sorted",
+                  "Partial Mode": "Simple",
+                  "Parent Relationship": "Subquery",
+                  "Parallel Aware": false,
+                  "Async Capable": false,
+                  "Startup Cost": 9286.78,
+                  "Total Cost": 12704.31,
+                  "Plan Rows": 1,
+                  "Plan Width": 240,
+                  "Group Key": [
+                    "snapshot_statistics.item_id"
+                  ],
+                  "Plans": [
+                    {
+                      "Node Type": "Nested Loop",
+                      "Parent Relationship": "Outer",
+                      "Parallel Aware": false,
+                      "Async Capable": false,
+                      "Join Type": "Left",
+                      "Startup Cost": 9286.78,
+                      "Total Cost": 12704.26,
+                      "Plan Rows": 1,
+                      "Plan Width": 130,
+                      "Inner Unique": true,
+                      "Plans": [
+                        {
+                          "Node Type": "Merge Join",
+                          "Parent Relationship": "Outer",
+                          "Parallel Aware": false,
+                          "Async Capable": false,
+                          "Join Type": "Left",
+                          "Startup Cost": 9286.5,
+                          "Total Cost": 12695.96,
+                          "Plan Rows": 1,
+                          "Plan Width": 92,
+                          "Inner Unique": true,
+                          "Merge Cond": "((snapshot_statistics.item_id = snapshot_statistics_2.item_id) AND ((snapshot_statistics.variant_key)::text = (snapshot_statistics_2.variant_key)::text))",
+                          "Plans": [
+                            {
+                              "Node Type": "Nested Loop",
+                              "Parent Relationship": "Outer",
+                              "Parallel Aware": false,
+                              "Async Capable": false,
+                              "Join Type": "Inner",
+                              "Startup Cost": 1.13,
+                              "Total Cost": 21.22,
+                              "Plan Rows": 1,
+                              "Plan Width": 89,
+                              "Inner Unique": true,
+                              "Join Filter": "(snapshot_statistics.item_id = snapshot_statistics_1.item_id)",
+                              "Plans": [
+                                {
+                                  "Node Type": "Index Scan",
+                                  "Parent Relationship": "Outer",
+                                  "Parallel Aware": false,
+                                  "Async Capable": false,
+                                  "Scan Direction": "Forward",
+                                  "Index Name": "snapshot_statistics_pkey",
+                                  "Relation Name": "snapshot_statistics",
+                                  "Alias": "snapshot_statistics",
+                                  "Startup Cost": 0.42,
+                                  "Total Cost": 8.44,
+                                  "Plan Rows": 1,
+                                  "Plan Width": 89,
+                                  "Index Cond": "(snapshot_id = 33)"
+                                },
+                                {
+                                  "Node Type": "Unique",
+                                  "Parent Relationship": "Inner",
+                                  "Parallel Aware": false,
+                                  "Async Capable": false,
+                                  "Startup Cost": 0.71,
+                                  "Total Cost": 12.76,
+                                  "Plan Rows": 1,
+                                  "Plan Width": 4,
+                                  "Plans": [
+                                    {
+                                      "Node Type": "Nested Loop",
+                                      "Parent Relationship": "Outer",
+                                      "Parallel Aware": false,
+                                      "Async Capable": false,
+                                      "Join Type": "Left",
+                                      "Startup Cost": 0.71,
+                                      "Total Cost": 12.76,
+                                      "Plan Rows": 1,
+                                      "Plan Width": 4,
+                                      "Inner Unique": true,
+                                      "Filter": "(lower((COALESCE(item_metadata_1.name, item_metadata_1.fallback_name))::text) ~~ '%%cloth%%'::text)",
+                                      "Plans": [
+                                        {
+                                          "Node Type": "Index Only Scan",
+                                          "Parent Relationship": "Outer",
+                                          "Parallel Aware": false,
+                                          "Async Capable": false,
+                                          "Scan Direction": "Forward",
+                                          "Index Name": "snapshot_statistics_pkey",
+                                          "Relation Name": "snapshot_statistics",
+                                          "Alias": "snapshot_statistics_1",
+                                          "Startup Cost": 0.42,
+                                          "Total Cost": 4.44,
+                                          "Plan Rows": 1,
+                                          "Plan Width": 4,
+                                          "Index Cond": "(snapshot_id = 33)"
+                                        },
+                                        {
+                                          "Node Type": "Index Scan",
+                                          "Parent Relationship": "Inner",
+                                          "Parallel Aware": false,
+                                          "Async Capable": false,
+                                          "Scan Direction": "Forward",
+                                          "Index Name": "item_metadata_pkey",
+                                          "Relation Name": "item_metadata",
+                                          "Alias": "item_metadata_1",
+                                          "Startup Cost": 0.28,
+                                          "Total Cost": 8.3,
+                                          "Plan Rows": 1,
+                                          "Plan Width": 42,
+                                          "Index Cond": "(((region)::text = 'us'::text) AND (item_id = snapshot_statistics_1.item_id))"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "Node Type": "Aggregate",
+                              "Strategy": "Sorted",
+                              "Partial Mode": "Simple",
+                              "Parent Relationship": "Inner",
+                              "Parallel Aware": false,
+                              "Async Capable": false,
+                              "Startup Cost": 9285.36,
+                              "Total Cost": 11892.56,
+                              "Plan Rows": 52144,
+                              "Plan Width": 145,
+                              "Group Key": [
+                                "snapshot_statistics_2.item_id",
+                                "snapshot_statistics_2.variant_key"
+                              ],
+                              "Plans": [
+                                {
+                                  "Node Type": "Sort",
+                                  "Parent Relationship": "Outer",
+                                  "Parallel Aware": false,
+                                  "Async Capable": false,
+                                  "Startup Cost": 9285.36,
+                                  "Total Cost": 9415.72,
+                                  "Plan Rows": 52144,
+                                  "Plan Width": 108,
+                                  "Sort Key": [
+                                    "snapshot_statistics_2.item_id",
+                                    "snapshot_statistics_2.variant_key"
+                                  ],
+                                  "Plans": [
+                                    {
+                                      "Node Type": "Nested Loop",
+                                      "Parent Relationship": "Outer",
+                                      "Parallel Aware": false,
+                                      "Async Capable": false,
+                                      "Join Type": "Inner",
+                                      "Startup Cost": 0.57,
+                                      "Total Cost": 2168.82,
+                                      "Plan Rows": 52144,
+                                      "Plan Width": 108,
+                                      "Inner Unique": false,
+                                      "Plans": [
+                                        {
+                                          "Node Type": "Nested Loop",
+                                          "Parent Relationship": "Outer",
+                                          "Parallel Aware": false,
+                                          "Async Capable": false,
+                                          "Join Type": "Inner",
+                                          "Startup Cost": 0.15,
+                                          "Total Cost": 17.42,
+                                          "Plan Rows": 2,
+                                          "Plan Width": 13,
+                                          "Inner Unique": true,
+                                          "Plans": [
+                                            {
+                                              "Node Type": "Seq Scan",
+                                              "Parent Relationship": "Outer",
+                                              "Parallel Aware": false,
+                                              "Async Capable": false,
+                                              "Relation Name": "daily_observations",
+                                              "Alias": "daily_observations",
+                                              "Startup Cost": 0.0,
+                                              "Total Cost": 1.04,
+                                              "Plan Rows": 2,
+                                              "Plan Width": 4,
+                                              "Filter": "(market_id = 2)"
+                                            },
+                                            {
+                                              "Node Type": "Index Scan",
+                                              "Parent Relationship": "Inner",
+                                              "Parallel Aware": false,
+                                              "Async Capable": false,
+                                              "Scan Direction": "Forward",
+                                              "Index Name": "observations_pkey",
+                                              "Relation Name": "observations",
+                                              "Alias": "observations",
+                                              "Startup Cost": 0.15,
+                                              "Total Cost": 8.17,
+                                              "Plan Rows": 1,
+                                              "Plan Width": 17,
+                                              "Index Cond": "(id = daily_observations.observation_id)",
+                                              "Filter": "((retrieved_at >= '2026-09-16 09:45:29.708025+00'::timestamp with time zone) AND (retrieved_at <= '2026-11-15 09:45:29.708025+00'::timestamp with time zone))"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "Node Type": "Index Scan",
+                                          "Parent Relationship": "Inner",
+                                          "Parallel Aware": false,
+                                          "Async Capable": false,
+                                          "Scan Direction": "Forward",
+                                          "Index Name": "snapshot_statistics_pkey",
+                                          "Relation Name": "snapshot_statistics",
+                                          "Alias": "snapshot_statistics_2",
+                                          "Startup Cost": 0.42,
+                                          "Total Cost": 812.36,
+                                          "Plan Rows": 26334,
+                                          "Plan Width": 103,
+                                          "Index Cond": "(snapshot_id = observations.snapshot_id)"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "Node Type": "Index Scan",
+                          "Parent Relationship": "Inner",
+                          "Parallel Aware": false,
+                          "Async Capable": false,
+                          "Scan Direction": "Forward",
+                          "Index Name": "item_metadata_pkey",
+                          "Relation Name": "item_metadata",
+                          "Alias": "item_metadata",
+                          "Startup Cost": 0.28,
+                          "Total Cost": 8.3,
+                          "Plan Rows": 1,
+                          "Plan Width": 42,
+                          "Index Cond": "(((region)::text = 'us'::text) AND (item_id = snapshot_statistics.item_id))"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+]

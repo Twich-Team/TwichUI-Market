@@ -1,3 +1,5 @@
+**Current frontend procedure:** Explorer / Item Details is live at `4ddf137`; use the full overlay order in [current release operations](explorer-item-details-release-acceptance.md). Backend/worker pins from administration release `e9c4d29` remain unchanged. Earlier frontend pins below are historical rollback references.
+
 **Current release:** Administration modernization PR #3 is owner-approved, merged, deployed and accepted at `e9c4d29`. [Production acceptance, current image overlay and rollback](admin-modernization-release-acceptance.md) supersede historical review/deployment instructions below. Explorer / Item Details implementation is separately authorized on a feature branch; its production promotion requires final owner visual approval.
 
 # Combined Companion v2 / metadata release operations

@@ -1,0 +1,17 @@
+Acceptance phase: predeployment_public_sessions
+Acceptance phase: predeployment_admin_login
+Acceptance phase: predeployment_member_login
+Acceptance phase: predeployment_local_login
+Acceptance phase: predeployment_existing_device
+Acceptance phase: predeployment_saved_preferences
+Post-deployment acceptance recheck with the existing public/local authentication and preference controls.
+Acceptance phase: waiting_for_deployment
+Acceptance phase: existing_session_continuity
+Acceptance phase: csrf_and_authorization
+Acceptance phase: explorer_browsing_and_restoration
+Acceptance phase: exact_variant_charts_auctions_and_direct_links
+Acceptance phase: multiple_variants_and_quality_provenance
+Acceptance phase: deal_finder_to_details
+Acceptance phase: preferences_and_administration
+Acceptance phase: companion_compatibility
+Public HTTPS Explorer/Details, navigation restoration, real charts/auctions/colors, authentication/preferences, administration and existing Companion download passed.

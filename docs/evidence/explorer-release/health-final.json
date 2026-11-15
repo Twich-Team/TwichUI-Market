@@ -1,0 +1,58 @@
+{
+  "checked_at": "2026-11-15T09:56:15.288081+00:00",
+  "active_markets": [
+    {
+      "id": 2,
+      "house_id": 114,
+      "interval_seconds": 300,
+      "failures": 0,
+      "last_success": "2026-11-15T09:51:35.684445+00:00"
+    }
+  ],
+  "collection_failures_since_baseline": 0,
+  "latest_checks": [
+    {
+      "id": 367,
+      "checked_at": "2026-11-15T09:51:35.684445+00:00",
+      "status": "unchanged",
+      "http_status": 304,
+      "error": null
+    },
+    {
+      "id": 366,
+      "checked_at": "2026-11-15T09:46:33.347108+00:00",
+      "status": "unchanged",
+      "http_status": 304,
+      "error": null
+    },
+    {
+      "id": 365,
+      "checked_at": "2026-11-15T09:41:30.890376+00:00",
+      "status": "unchanged",
+      "http_status": 304,
+      "error": null
+    },
+    {
+      "id": 364,
+      "checked_at": "2026-11-15T09:36:28.5541+00:00",
+      "status": "unchanged",
+      "http_status": 304,
+      "error": null
+    },
+    {
+      "id": 363,
+      "checked_at": "2026-11-15T09:31:26.1417+00:00",
+      "status": "unchanged",
+      "http_status": 304,
+      "error": null
+    },
+    {
+      "id": 362,
+      "checked_at": "2026-11-15T09:26:23.806722+00:00",
+      "status": "unchanged",
+      "http_status": 304,
+      "error": null
+    }
+  ],
+  "retention_batches": 0
+}

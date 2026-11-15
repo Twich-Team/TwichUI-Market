@@ -1,0 +1,80 @@
+{
+  "source": "Unchanged deployed e9c4d29 backend after standard planner-statistics ANALYZE; read-only transactions, per-query 8 second limit",
+  "checks": [
+    {
+      "q": "",
+      "sort": "item_id",
+      "page": 0,
+      "seconds": 0.17,
+      "rows": 25,
+      "total_items": 4981,
+      "items": [
+        {
+          "id": 35,
+          "name": "Bent Staff",
+          "variant_count": 1
+        },
+        {
+          "id": 36,
+          "name": "Worn Mace",
+          "variant_count": 1
+        },
+        {
+          "id": 37,
+          "name": "Worn Axe",
+          "variant_count": 1
+        }
+      ]
+    },
+    {
+      "q": "cloth",
+      "sort": "item_id",
+      "page": 0,
+      "seconds": 0.1,
+      "rows": 25,
+      "total_items": 59,
+      "items": [
+        {
+          "id": 193,
+          "name": "Tattered Cloth Vest",
+          "variant_count": 1
+        },
+        {
+          "id": 194,
+          "name": "Tattered Cloth Pants",
+          "variant_count": 1
+        },
+        {
+          "id": 195,
+          "name": "Tattered Cloth Boots",
+          "variant_count": 1
+        }
+      ]
+    },
+    {
+      "q": "cloth",
+      "sort": "name",
+      "page": 1,
+      "seconds": 0.11,
+      "rows": 25,
+      "total_items": 59,
+      "items": [
+        {
+          "id": 14506,
+          "name": "Pattern: Felcloth Robe",
+          "variant_count": 4
+        },
+        {
+          "id": 14508,
+          "name": "Pattern: Felcloth Shoulders",
+          "variant_count": 5
+        },
+        {
+          "id": 14499,
+          "name": "Pattern: Mooncloth Bag",
+          "variant_count": 5
+        }
+      ]
+    }
+  ]
+}

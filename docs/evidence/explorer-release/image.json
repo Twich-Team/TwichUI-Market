@@ -1,0 +1,26 @@
+{
+  "source_commit": "4ddf137712084292b899e7b352fe41b751e8e70b",
+  "image": "sha256:e996c241a2e128aeb1512801596ecae009e2d84020e6e92b4860e57acaeee9f4",
+  "revision": "4ddf137712084292b899e7b352fe41b751e8e70b",
+  "asset_hashes": {
+    "design/index.html": "a476239cd126f4a8961ad50b24cef960862e4c6922f18256e1b9d7b7a8574655",
+    "design/preview.js": "4209bd3a6bcb6e94baf5b356c072ab7d0fac30f5c87757d9b3f3ee71d8e6b36c",
+    "design/style.css": "b8b5b1b677923969a8b9f02564f4912f342f6725adbe27ffd7a289d4134e8ab2",
+    "index.html": "72b21cac8c8d1f15f6f487d35c49cb370861a22e8717f0f8f008d7bc8d652d19",
+    "assets/deals-BMvQ1pbw.js": "4f77cd1bb9e9d410c3a85178cf0eba65bc398412acc042e998c6db273748968c",
+    "assets/data-table-Djs60-0r.js": "276c8c4fbbe6c00196b31c74c091d12e9a4240a03d92c2329125bba856c0c46d",
+    "assets/settings-DEMZljCU.js": "6fcfb978286d67f6fe662a58d29dbbf0fb2c5f4cac740731e729e556fb5084b2",
+    "assets/companion-devices-Bxx-yAZ4.js": "1bae2677b723538096ff60895046a0a5e2e78a6be87aa5e9c26aae61de8786ca",
+    "assets/useTriggerFocusGuards-Cykp-e6y.js": "1ba8e983c5eedb30d70df4e60121a296bc222bd9320a9004df1d8030aba6c47f",
+    "assets/research-D7DMhuWU.js": "d98e7fb1be2fa3b163f958f44637fe46225b1d7285e56d16113ad58573f52c56",
+    "assets/companion-DwNzWcDi.js": "6b2a8aeeaae246d4c8c2e93adcad33a1cbbbe97ca951f4e2e61ffa653e5bc1de",
+    "assets/index-Cwd7fUcQ.js": "1acbdfbd5216c13bcf4664b4928048e7afad7ae0b1567981976fc69e5fc64395",
+    "assets/jsx-runtime-Wy9s6hX0.js": "bcb9f6586cd973c2fb2faa4a2d38d4b06660e2fe2806aaa0de1c39306ff0f69a",
+    "assets/companion-approval-9kijVXm6.js": "22ab744084658b0684d886ebca77fea5c29ced3cf8b855532d2b1a441381e94a",
+    "assets/chart-engine-Bzqihi_9.js": "f495c45a85be51bae393d39e5205c89230b6cdf94ad38e4079ac73da2cec1d86",
+    "assets/item-details-dwLhIrGi.js": "cf4a2538234b04695e1617089cd07dd9566f6bd8ca3d4ef0f1b3c695015e804d",
+    "assets/index-D98supzX.css": "c77e15639a6c0c4c0da599ac868912a36a9d4d39bb7d25ace93a044a160035b1"
+  },
+  "all_reviewed_assets_match": true,
+  "reviewed_asset_count": 13
+}

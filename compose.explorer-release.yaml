@@ -1,0 +1,5 @@
+# Owner-approved Explorer / Item Details release 4ddf137; append LAST to the full production stack.
+# Replaces only the frontend. Existing backend, workers, database and schema are retained.
+services:
+  proxy:
+    image: sha256:e996c241a2e128aeb1512801596ecae009e2d84020e6e92b4860e57acaeee9f4

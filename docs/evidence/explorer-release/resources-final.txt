@@ -1,0 +1,16 @@
+twichui-market-proxy-1	26.33MiB / 128MiB	0.00%
+twichui-market-explorer-gallery-inspection	174.4MiB / 768MiB	0.02%
+twichui-market-admin-release-check-proxy-1	10.95MiB / 96MiB	0.00%
+twichui-market-admin-release-check-api-1	218.7MiB / 384MiB	0.11%
+twichui-market-admin-release-check-db-1	113.2MiB / 512MiB	0.00%
+twichui-market-enrichment-1	64.27MiB / 192MiB	0.00%
+twichui-market-local-api-1	151MiB / 256MiB	0.15%
+twichui-market-api-1	261.5MiB / 384MiB	0.15%
+twichui-market-backup-1	145.6MiB / 256MiB	0.00%
+twichui-market-companion-browser-proxy-1	10.55MiB / 128MiB	0.00%
+twichui-market-companion-browser-api-1	204.9MiB / 384MiB	0.14%
+twichui-market-companion-browser-db-1	89.72MiB / 768MiB	0.50%
+twichui-market-test-db-1	244.4MiB / 768MiB	2.78%
+twichui-market-worker-1	110MiB / 384MiB	0.00%
+twichui-market-monitor-1	42.66MiB / 128MiB	0.00%
+twichui-market-db-1	683.1MiB / 768MiB	0.06%
