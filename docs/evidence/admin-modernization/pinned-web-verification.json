@@ -1,0 +1,21 @@
+{
+  "source_commit": "a81a4e395f8367571c6188c23dff143611fb1f1c",
+  "tested_assets_equal": true,
+  "asset_count": 14,
+  "hashes": {
+    "design/index.html": "a476239cd126f4a8961ad50b24cef960862e4c6922f18256e1b9d7b7a8574655",
+    "design/preview.js": "4209bd3a6bcb6e94baf5b356c072ab7d0fac30f5c87757d9b3f3ee71d8e6b36c",
+    "design/style.css": "b8b5b1b677923969a8b9f02564f4912f342f6725adbe27ffd7a289d4134e8ab2",
+    "index.html": "e97328de83ef9e94c8444b2affa974da96ebcbd58f67895198fd7e95b4f7260c",
+    "assets/chart-engine-rVWxopKw.js": "50f46c48d618aeedf31cbac7242e3a3e34955345eb3339db35a98efd4ba1ebf6",
+    "assets/index-OjbTS0Ag.js": "22722d263a178a374fea8e6ddde4e92ecbd6f5b70c4231c799eff0040ea954c3",
+    "assets/data-table-BjB33RlQ.js": "05c943222b8e817d2af4e68e23fb8a69f22f4a4311a195f87563fe1f8c69532e",
+    "assets/index-BvKrhEMD.css": "9ac5be69a9800590850fd760b287622fef6418a14cca00ab0626b39ef6603ada",
+    "assets/research-DwfFueA5.js": "7a27da5511f63915b5bad2e9f71a013b12d7f0173549a0e58d28447229d6cd99",
+    "assets/companion-devices-BOhYXFDq.js": "705fc10dd2c893476df057e17bfabf25ced8029503c6dc39c5489b42a1380d96",
+    "assets/settings-DsixSOpN.js": "9b07cc9489d622503779df02baeeec185e65ec7479229dfabf96e6b55158bbc8",
+    "assets/companion-approval-W2o0909T.js": "da3939499bdefded6badb8e1b25184e70e8c1a2ff194aa714b00801e1eb435f5",
+    "assets/companion-B3FXTfdA.js": "d9ca2a0ccfe76f7f3ae579666854ada9864d0ab814be019b990ef9dc3fcdeff9",
+    "assets/deals-BZMtrDiB.js": "c9a85b5f6e0e78f744ca846e2553588fca3bf9a6ca38ffdb0f8d72ab2cc7d805"
+  }
+}

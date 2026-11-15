@@ -1,0 +1,433 @@
+{
+  "at": "2026-11-15 04:20:44.313520+00:00",
+  "id_hash": "bbbacaf1ed0d9d35f997a16f83d92b6f0f009bd126284d3868d7115f8b076fc1",
+  "investigation": "admin-provider-investigation-20261115",
+  "markets": [
+    {
+      "enabled": false,
+      "house_id": 110,
+      "id": 1,
+      "interval": 300
+    },
+    {
+      "enabled": true,
+      "house_id": 114,
+      "id": 2,
+      "interval": 300
+    }
+  ],
+  "name_percent": 46.2497,
+  "named": 2263,
+  "observation_id": 300,
+  "price_supply_hash": "91a89965afb73887ebee713ebf0053f5bcca93f3997125e5dc16ae60505025b5",
+  "snapshot_id": 27,
+  "total": 4893,
+  "unresolved": 2630,
+  "gains": [
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 1482,
+      "name": "Shadowfang",
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": null,
+          "provider": "everloot",
+          "retry_at": null,
+          "status": "pending"
+        },
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-21 03:33:23.485454+00:00",
+          "status": "missing"
+        },
+        {
+          "has_attributes": true,
+          "has_name": true,
+          "http_status": 200,
+          "provider": "thewowdb",
+          "retry_at": "2026-11-15 04:55:19.472950+00:00",
+          "status": "available"
+        }
+      ]
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 3283,
+      "name": "Battle Chain Tunic",
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-21 06:58:01.476697+00:00",
+          "status": "missing"
+        },
+        {
+          "has_attributes": false,
+          "has_name": true,
+          "http_status": 200,
+          "provider": "everloot",
+          "retry_at": "2026-11-15 05:19:09.129137+00:00",
+          "status": "available"
+        }
+      ]
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 3308,
+      "name": "Barbaric Cloth Gloves",
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-21 07:02:13.447599+00:00",
+          "status": "missing"
+        },
+        {
+          "has_attributes": false,
+          "has_name": true,
+          "http_status": 200,
+          "provider": "everloot",
+          "retry_at": "2026-11-15 05:19:31.627331+00:00",
+          "status": "available"
+        }
+      ]
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 5071,
+      "name": "Shadow Wand",
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-21 09:12:17.526136+00:00",
+          "status": "missing"
+        },
+        {
+          "has_attributes": false,
+          "has_name": true,
+          "http_status": 200,
+          "provider": "everloot",
+          "retry_at": "2026-11-15 05:19:53.117700+00:00",
+          "status": "available"
+        }
+      ]
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 7438,
+      "name": "Twilight Belt",
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "everloot",
+          "retry_at": "2026-11-22 03:55:40.503656+00:00",
+          "status": "metadata_unavailable"
+        },
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-21 11:16:17.724682+00:00",
+          "status": "missing"
+        },
+        {
+          "has_attributes": true,
+          "has_name": true,
+          "http_status": 200,
+          "provider": "thewowdb",
+          "retry_at": "2026-11-15 05:00:53.545200+00:00",
+          "status": "available"
+        }
+      ]
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 9917,
+      "name": "Tracker's Boots",
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "everloot",
+          "retry_at": "2026-11-22 03:59:22.196974+00:00",
+          "status": "metadata_unavailable"
+        },
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-21 13:55:06.241150+00:00",
+          "status": "missing"
+        },
+        {
+          "has_attributes": true,
+          "has_name": true,
+          "http_status": 200,
+          "provider": "thewowdb",
+          "retry_at": "2026-11-15 05:12:00.410366+00:00",
+          "status": "available"
+        }
+      ]
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 14184,
+      "name": "Watcher's Robes",
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "everloot",
+          "retry_at": "2026-11-22 04:01:14.385623+00:00",
+          "status": "metadata_unavailable"
+        },
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-21 18:04:11.226687+00:00",
+          "status": "missing"
+        },
+        {
+          "has_attributes": true,
+          "has_name": true,
+          "http_status": 200,
+          "provider": "thewowdb",
+          "retry_at": "2026-11-15 05:17:40.339497+00:00",
+          "status": "available"
+        }
+      ]
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 15620,
+      "name": "Gryphon Mail Bracelets",
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "everloot",
+          "retry_at": "2026-11-22 03:57:29.857265+00:00",
+          "status": "metadata_unavailable"
+        },
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-21 22:07:14.869433+00:00",
+          "status": "missing"
+        },
+        {
+          "has_attributes": true,
+          "has_name": true,
+          "http_status": 200,
+          "provider": "thewowdb",
+          "retry_at": "2026-11-15 05:06:33.710798+00:00",
+          "status": "available"
+        }
+      ]
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 215373,
+      "name": "Silver Hand Training Hammer",
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "everloot",
+          "retry_at": "2026-11-22 03:57:52.744307+00:00",
+          "status": "metadata_unavailable"
+        },
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-21 23:44:02.327677+00:00",
+          "status": "missing"
+        },
+        {
+          "has_attributes": true,
+          "has_name": true,
+          "http_status": 200,
+          "provider": "thewowdb",
+          "retry_at": "2026-11-15 05:07:41.157423+00:00",
+          "status": "available"
+        }
+      ]
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 215374,
+      "name": "Ancestral Sword",
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "everloot",
+          "retry_at": "2026-11-22 03:56:03.584512+00:00",
+          "status": "metadata_unavailable"
+        },
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-21 23:44:17.964277+00:00",
+          "status": "missing"
+        },
+        {
+          "has_attributes": true,
+          "has_name": true,
+          "http_status": 200,
+          "provider": "thewowdb",
+          "retry_at": "2026-11-15 05:02:02.627098+00:00",
+          "status": "available"
+        }
+      ]
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 215375,
+      "name": "Tactician's Staff",
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "everloot",
+          "retry_at": "2026-11-22 04:01:37.149895+00:00",
+          "status": "metadata_unavailable"
+        },
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-21 23:44:33.608524+00:00",
+          "status": "missing"
+        },
+        {
+          "has_attributes": true,
+          "has_name": true,
+          "http_status": 200,
+          "provider": "thewowdb",
+          "retry_at": "2026-11-15 05:18:44.757764+00:00",
+          "status": "available"
+        }
+      ]
+    },
+    {
+      "currently_active": true,
+      "icon": true,
+      "item_id": 215376,
+      "name": "Crusader's Mace",
+      "primary_http": 404,
+      "quality": null,
+      "sources": [
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "everloot",
+          "retry_at": "2026-11-22 03:59:43.192036+00:00",
+          "status": "metadata_unavailable"
+        },
+        {
+          "has_attributes": false,
+          "has_name": false,
+          "http_status": 404,
+          "provider": "blizzard",
+          "retry_at": "2026-11-21 23:44:49.113267+00:00",
+          "status": "missing"
+        },
+        {
+          "has_attributes": true,
+          "has_name": true,
+          "http_status": 200,
+          "provider": "thewowdb",
+          "retry_at": "2026-11-15 05:13:04.899895+00:00",
+          "status": "available"
+        }
+      ]
+    },
+    {
+      "currently_active": true,
+      "icon": false,
+      "item_id": 289560,
+      "name": "Formula: Enchant Boots - Speed",
+      "primary_http": 200,
+      "quality": "UNCOMMON",
+      "sources": [
+        {
+          "has_attributes": true,
+          "has_name": true,
+          "http_status": 200,
+          "provider": "blizzard",
+          "retry_at": "2026-12-15 04:03:55.781087+00:00",
+          "status": "available"
+        }
+      ]
+    }
+  ],
+  "lost_names": [],
+  "baseline_named": 2250,
+  "baseline_unresolved": 2643
+}

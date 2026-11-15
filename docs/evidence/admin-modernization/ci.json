@@ -1,0 +1,56 @@
+{
+  "source_commit": "a81a4e395f8367571c6188c23dff143611fb1f1c",
+  "workflow_runs": [
+    {
+      "id": 43678852944,
+      "name": "Backend",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 117,
+      "jobs_url": "https://api.github.com/repos/Twich-Team/TwichUI-Market/actions/runs/43678852944/jobs",
+      "logs_url": "https://api.github.com/repos/Twich-Team/TwichUI-Market/actions/runs/43678852944/logs",
+      "workflow_id": 417841759
+    },
+    {
+      "id": 43678852973,
+      "name": "Private website",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 105,
+      "jobs_url": "https://api.github.com/repos/Twich-Team/TwichUI-Market/actions/runs/43678852973/jobs",
+      "logs_url": "https://api.github.com/repos/Twich-Team/TwichUI-Market/actions/runs/43678852973/logs",
+      "workflow_id": 417881467
+    },
+    {
+      "id": 43678852969,
+      "name": "Windows companion",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 109,
+      "jobs_url": "https://api.github.com/repos/Twich-Team/TwichUI-Market/actions/runs/43678852969/jobs",
+      "logs_url": "https://api.github.com/repos/Twich-Team/TwichUI-Market/actions/runs/43678852969/logs",
+      "workflow_id": 417870542
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 14147911454,
+      "name": "administration-and-quality-review-evidence",
+      "size_in_bytes": 14247690,
+      "url": "https://api.github.com/repos/Twich-Team/TwichUI-Market/actions/artifacts/14147911454",
+      "archive_download_url": "https://api.github.com/repos/Twich-Team/TwichUI-Market/actions/artifacts/14147911454/zip",
+      "expired": false,
+      "created_at": "2026-11-15T04:59:50Z",
+      "expires_at": "2027-02-13T04:55:41Z",
+      "updated_at": "2026-11-15T04:59:50Z",
+      "digest": "sha256:43b62f8dc14e5b149812f589d47d16e0944698d95b107eb34e2262960f6b088f",
+      "workflow_run": {
+        "id": 43678852973,
+        "repository_id": 1457156728,
+        "head_repository_id": 1457156728,
+        "head_branch": "development/admin-tables-provider-diagnostics",
+        "head_sha": "a81a4e395f8367571c6188c23dff143611fb1f1c"
+      }
+    }
+  ]
+}

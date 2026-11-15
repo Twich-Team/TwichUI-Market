@@ -1,0 +1,63 @@
+{
+  "synthetic": true,
+  "provider_requests": 0,
+  "history_rows": 10000,
+  "measurements": [
+    {
+      "path": "metadata-attempts?limit=25",
+      "mean_ms": 73.5,
+      "max_ms": 81.38,
+      "response_bytes": 12324,
+      "rows_returned": 25,
+      "total": 10073
+    },
+    {
+      "path": "metadata-attempts?limit=25&offset=5000&provider=everloot&outcome=missing",
+      "mean_ms": 236.54,
+      "max_ms": 290.96,
+      "response_bytes": 11177,
+      "rows_returned": 25,
+      "total": 10000
+    },
+    {
+      "path": "security?limit=25",
+      "mean_ms": 6.86,
+      "max_ms": 8.89,
+      "response_bytes": 3203,
+      "rows_returned": 25,
+      "total": 10148
+    },
+    {
+      "path": "security?limit=25&q=metadata",
+      "mean_ms": 14.6,
+      "max_ms": 16.58,
+      "response_bytes": 3551,
+      "rows_returned": 25,
+      "total": 10076
+    },
+    {
+      "path": "jobs?limit=25",
+      "mean_ms": 37.02,
+      "max_ms": 50.47,
+      "response_bytes": 1193,
+      "rows_returned": 4,
+      "total": 4
+    },
+    {
+      "path": "unresolved?market_id=1&limit=25",
+      "mean_ms": 16.12,
+      "max_ms": 26.02,
+      "response_bytes": 6821,
+      "rows_returned": 25,
+      "total": 34
+    },
+    {
+      "path": "collection?limit=25",
+      "mean_ms": 5.91,
+      "max_ms": 8.01,
+      "response_bytes": 349,
+      "rows_returned": 2,
+      "total": 2
+    }
+  ]
+}

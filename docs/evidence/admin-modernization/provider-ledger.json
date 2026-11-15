@@ -1,0 +1,2232 @@
+{
+  "request_count": 93,
+  "tasks": [
+    {
+      "id": 76,
+      "job_id": 58,
+      "provider": "everloot",
+      "item_id": 19019,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 03:49:10.586397+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing"
+      }
+    },
+    {
+      "id": 77,
+      "job_id": 59,
+      "provider": "thewowdb",
+      "item_id": 25,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 03:49:19.837991+00:00",
+      "result": {
+        "kind": "item",
+        "status": "named_record",
+        "http_status": 200,
+        "provider": "thewowdb",
+        "recovered_fields": [],
+        "fields_returned": [
+          "quality",
+          "lines",
+          "level",
+          "vendor_sell",
+          "name"
+        ],
+        "outcome": "metadata_returned"
+      }
+    },
+    {
+      "id": 78,
+      "job_id": 60,
+      "provider": "everloot",
+      "item_id": 25,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 03:49:34.297342+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing"
+      }
+    },
+    {
+      "id": 82,
+      "job_id": 64,
+      "provider": "everloot",
+      "item_id": 1,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 03:50:50.120441+00:00",
+      "result": {
+        "kind": "attributes",
+        "status": "attributes_only",
+        "http_status": 200,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "metadata_returned"
+      }
+    },
+    {
+      "id": 84,
+      "job_id": 66,
+      "provider": "everloot",
+      "item_id": 2589,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 03:51:24.509746+00:00",
+      "result": {
+        "kind": "item",
+        "status": "named_record",
+        "http_status": 200,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [
+          "name"
+        ],
+        "outcome": "metadata_returned"
+      }
+    },
+    {
+      "id": 88,
+      "job_id": 70,
+      "provider": "everloot",
+      "item_id": 287033,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 03:53:01.654246+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 89,
+      "job_id": 71,
+      "provider": "thewowdb",
+      "item_id": 287033,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 03:53:03.892435+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "thewowdb",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 91,
+      "job_id": 73,
+      "provider": "everloot",
+      "item_id": 283545,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 03:53:24.703290+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 93,
+      "job_id": 75,
+      "provider": "everloot",
+      "item_id": 1482,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 03:53:45.441489+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 94,
+      "job_id": 76,
+      "provider": "everloot",
+      "item_id": 216483,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 03:54:07.396964+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 95,
+      "job_id": 77,
+      "provider": "thewowdb",
+      "item_id": 283545,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 03:54:10.166260+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "thewowdb",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 97,
+      "job_id": 79,
+      "provider": "everloot",
+      "item_id": 263937,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 03:54:30.607064+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 99,
+      "job_id": 81,
+      "provider": "everloot",
+      "item_id": 287070,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 03:54:54.328735+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 100,
+      "job_id": 82,
+      "provider": "everloot",
+      "item_id": 277074,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 03:55:17.140958+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 101,
+      "job_id": 83,
+      "provider": "thewowdb",
+      "item_id": 1482,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 03:55:19.465056+00:00",
+      "result": {
+        "kind": "item",
+        "status": "named_record",
+        "http_status": 200,
+        "provider": "thewowdb",
+        "recovered_fields": [
+          "quality",
+          "lines",
+          "level",
+          "required_level",
+          "vendor_sell",
+          "name"
+        ],
+        "fields_returned": [
+          "quality",
+          "lines",
+          "level",
+          "required_level",
+          "vendor_sell",
+          "name"
+        ],
+        "outcome": "name_recovered",
+        "new_fields": [
+          "level",
+          "lines",
+          "name",
+          "quality",
+          "required_level",
+          "vendor_sell"
+        ],
+        "source": {
+          "provider": "thewowdb",
+          "edition": "forever",
+          "build": "wow_classic_beta-1.60.1.70532",
+          "locale": "en_US",
+          "confidence": "community_beta",
+          "attribution": {
+            "text": "Data from TheWoWDB (thewowdb.com)",
+            "url": "https://thewowdb.com/wow-forever/item/shadowfang-1482/"
+          },
+          "url": "https://thewowdb.com/api/v1/forever/item/1482",
+          "retrieved_at": "2026-11-15T03:55:19.458414+00:00",
+          "payload_hash": "aaba26b3a537c3907b11f076ee665ee952825bb53c269587d8cd8def29b2c9d2",
+          "icon_url": "https://thewowdb.com/assets/icons/inv_sword_13.jpg"
+        }
+      }
+    },
+    {
+      "id": 102,
+      "job_id": 84,
+      "provider": "everloot",
+      "item_id": 7438,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 03:55:40.501422+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 104,
+      "job_id": 86,
+      "provider": "everloot",
+      "item_id": 215374,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 03:56:03.582294+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 106,
+      "job_id": 88,
+      "provider": "everloot",
+      "item_id": 263935,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 03:56:24.456752+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 107,
+      "job_id": 89,
+      "provider": "thewowdb",
+      "item_id": 216483,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 03:56:26.712230+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "thewowdb",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 108,
+      "job_id": 90,
+      "provider": "everloot",
+      "item_id": 287008,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 03:56:45.933052+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 109,
+      "job_id": 91,
+      "provider": "everloot",
+      "item_id": 286993,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 03:57:06.687821+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 111,
+      "job_id": 93,
+      "provider": "everloot",
+      "item_id": 15620,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 03:57:29.854828+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 112,
+      "job_id": 94,
+      "provider": "thewowdb",
+      "item_id": 263937,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 03:57:32.366089+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "thewowdb",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 114,
+      "job_id": 96,
+      "provider": "everloot",
+      "item_id": 215373,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 03:57:52.741624+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 115,
+      "job_id": 97,
+      "provider": "everloot",
+      "item_id": 263015,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 03:58:14.004180+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 117,
+      "job_id": 99,
+      "provider": "everloot",
+      "item_id": 287063,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 03:58:37.592517+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 118,
+      "job_id": 100,
+      "provider": "thewowdb",
+      "item_id": 287070,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 03:58:39.924814+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "thewowdb",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 120,
+      "job_id": 102,
+      "provider": "everloot",
+      "item_id": 283460,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 03:59:00.819182+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 122,
+      "job_id": 104,
+      "provider": "everloot",
+      "item_id": 9917,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 03:59:22.194720+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 123,
+      "job_id": 105,
+      "provider": "everloot",
+      "item_id": 215376,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 03:59:43.189864+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 124,
+      "job_id": 106,
+      "provider": "thewowdb",
+      "item_id": 277074,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 03:59:45.741039+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "thewowdb",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 126,
+      "job_id": 108,
+      "provider": "everloot",
+      "item_id": 277059,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:00:07.329287+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 128,
+      "job_id": 110,
+      "provider": "everloot",
+      "item_id": 287009,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:00:29.137992+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 129,
+      "job_id": 111,
+      "provider": "everloot",
+      "item_id": 282014,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:00:50.671892+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 131,
+      "job_id": 113,
+      "provider": "thewowdb",
+      "item_id": 7438,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:00:53.536910+00:00",
+      "result": {
+        "kind": "item",
+        "status": "named_record",
+        "http_status": 200,
+        "provider": "thewowdb",
+        "recovered_fields": [
+          "quality",
+          "lines",
+          "level",
+          "required_level",
+          "vendor_sell",
+          "name"
+        ],
+        "fields_returned": [
+          "quality",
+          "lines",
+          "level",
+          "required_level",
+          "vendor_sell",
+          "name"
+        ],
+        "outcome": "name_recovered",
+        "new_fields": [
+          "level",
+          "lines",
+          "name",
+          "quality",
+          "required_level",
+          "vendor_sell"
+        ],
+        "source": {
+          "provider": "thewowdb",
+          "edition": "forever",
+          "build": "wow_classic_beta-1.60.1.70532",
+          "locale": "en_US",
+          "confidence": "community_beta",
+          "attribution": {
+            "text": "Data from TheWoWDB (thewowdb.com)",
+            "url": "https://thewowdb.com/wow-forever/item/twilight-belt-7438/"
+          },
+          "url": "https://thewowdb.com/api/v1/forever/item/7438",
+          "retrieved_at": "2026-11-15T04:00:53.529503+00:00",
+          "payload_hash": "99ad397bef3d8a2bb70acb8a359d0a32a8b1a2009134d98d75ece0c231f54c54",
+          "icon_url": "https://thewowdb.com/assets/icons/inv_belt_10.jpg"
+        }
+      }
+    },
+    {
+      "id": 132,
+      "job_id": 114,
+      "provider": "everloot",
+      "item_id": 14184,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:01:14.382018+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 134,
+      "job_id": 116,
+      "provider": "everloot",
+      "item_id": 215375,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:01:37.147559+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 136,
+      "job_id": 118,
+      "provider": "everloot",
+      "item_id": 277057,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:02:00.245583+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 137,
+      "job_id": 119,
+      "provider": "thewowdb",
+      "item_id": 215374,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:02:02.622526+00:00",
+      "result": {
+        "kind": "item",
+        "status": "named_record",
+        "http_status": 200,
+        "provider": "thewowdb",
+        "recovered_fields": [
+          "quality",
+          "lines",
+          "level",
+          "required_level",
+          "vendor_sell",
+          "name"
+        ],
+        "fields_returned": [
+          "quality",
+          "lines",
+          "level",
+          "required_level",
+          "vendor_sell",
+          "name"
+        ],
+        "outcome": "name_recovered",
+        "new_fields": [
+          "level",
+          "lines",
+          "name",
+          "quality",
+          "required_level",
+          "vendor_sell"
+        ],
+        "source": {
+          "provider": "thewowdb",
+          "edition": "forever",
+          "build": "wow_classic_beta-1.60.1.70532",
+          "locale": "en_US",
+          "confidence": "community_beta",
+          "attribution": {
+            "text": "Data from TheWoWDB (thewowdb.com)",
+            "url": "https://thewowdb.com/wow-forever/item/ancestral-sword-215374/"
+          },
+          "url": "https://thewowdb.com/api/v1/forever/item/215374",
+          "retrieved_at": "2026-11-15T04:02:02.615858+00:00",
+          "payload_hash": "5377750a1a3ca9ea9af71dc86abc1b02b00b6935d86c4ab80c754703b530009c"
+        }
+      }
+    },
+    {
+      "id": 138,
+      "job_id": 120,
+      "provider": "everloot",
+      "item_id": 287025,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:02:23.183410+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 140,
+      "job_id": 122,
+      "provider": "everloot",
+      "item_id": 283462,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:02:46.131253+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 142,
+      "job_id": 124,
+      "provider": "everloot",
+      "item_id": 14230,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:03:08.204777+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 143,
+      "job_id": 125,
+      "provider": "thewowdb",
+      "item_id": 263935,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:03:10.820190+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "thewowdb",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 145,
+      "job_id": 127,
+      "provider": "everloot",
+      "item_id": 263936,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:03:30.247787+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 146,
+      "job_id": 128,
+      "provider": "everloot",
+      "item_id": 287026,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:03:51.727211+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 148,
+      "job_id": 130,
+      "provider": "everloot",
+      "item_id": 284105,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:04:14.455429+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 149,
+      "job_id": 131,
+      "provider": "thewowdb",
+      "item_id": 287008,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:04:17.403078+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "thewowdb",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 151,
+      "job_id": 133,
+      "provider": "everloot",
+      "item_id": 9938,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:04:36.542120+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 152,
+      "job_id": 134,
+      "provider": "everloot",
+      "item_id": 251932,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:05:00.175647+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 153,
+      "job_id": 135,
+      "provider": "everloot",
+      "item_id": 287068,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:05:23.002404+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 154,
+      "job_id": 136,
+      "provider": "thewowdb",
+      "item_id": 286993,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:05:25.985165+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "thewowdb",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 156,
+      "job_id": 138,
+      "provider": "everloot",
+      "item_id": 287003,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:05:45.610618+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 158,
+      "job_id": 140,
+      "provider": "everloot",
+      "item_id": 15168,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:06:07.960294+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 159,
+      "job_id": 141,
+      "provider": "everloot",
+      "item_id": 263017,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:06:30.420884+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 161,
+      "job_id": 143,
+      "provider": "thewowdb",
+      "item_id": 15620,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:06:33.706099+00:00",
+      "result": {
+        "kind": "item",
+        "status": "named_record",
+        "http_status": 200,
+        "provider": "thewowdb",
+        "recovered_fields": [
+          "quality",
+          "lines",
+          "level",
+          "required_level",
+          "name"
+        ],
+        "fields_returned": [
+          "quality",
+          "lines",
+          "level",
+          "required_level",
+          "name"
+        ],
+        "outcome": "name_recovered",
+        "new_fields": [
+          "level",
+          "lines",
+          "name",
+          "quality",
+          "required_level"
+        ],
+        "source": {
+          "provider": "thewowdb",
+          "edition": "forever",
+          "build": "wow_classic_beta-1.60.1.70532",
+          "locale": "en_US",
+          "confidence": "community_beta",
+          "attribution": {
+            "text": "Data from TheWoWDB (thewowdb.com)",
+            "url": "https://thewowdb.com/wow-forever/item/gryphon-mail-bracelets-15620/"
+          },
+          "url": "https://thewowdb.com/api/v1/forever/item/15620",
+          "retrieved_at": "2026-11-15T04:06:33.698585+00:00",
+          "payload_hash": "ab9a6d8db94ae3648d1a005c16c181facc132ca19c8c11fea645848f448a2ec2",
+          "icon_url": "https://render.worldofwarcraft.com/us/icons/56/inv_bracer_13.jpg"
+        }
+      }
+    },
+    {
+      "id": 162,
+      "job_id": 144,
+      "provider": "everloot",
+      "item_id": 287012,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:06:53.899104+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 164,
+      "job_id": 146,
+      "provider": "everloot",
+      "item_id": 283480,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:07:15.481749+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 165,
+      "job_id": 147,
+      "provider": "everloot",
+      "item_id": 8249,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:07:38.959194+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 166,
+      "job_id": 148,
+      "provider": "thewowdb",
+      "item_id": 215373,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:07:41.152634+00:00",
+      "result": {
+        "kind": "item",
+        "status": "named_record",
+        "http_status": 200,
+        "provider": "thewowdb",
+        "recovered_fields": [
+          "quality",
+          "lines",
+          "level",
+          "required_level",
+          "vendor_sell",
+          "name"
+        ],
+        "fields_returned": [
+          "quality",
+          "lines",
+          "level",
+          "required_level",
+          "vendor_sell",
+          "name"
+        ],
+        "outcome": "name_recovered",
+        "new_fields": [
+          "level",
+          "lines",
+          "name",
+          "quality",
+          "required_level",
+          "vendor_sell"
+        ],
+        "source": {
+          "provider": "thewowdb",
+          "edition": "forever",
+          "build": "wow_classic_beta-1.60.1.70532",
+          "locale": "en_US",
+          "confidence": "community_beta",
+          "attribution": {
+            "text": "Data from TheWoWDB (thewowdb.com)",
+            "url": "https://thewowdb.com/wow-forever/item/silver-hand-training-hammer-215373/"
+          },
+          "url": "https://thewowdb.com/api/v1/forever/item/215373",
+          "retrieved_at": "2026-11-15T04:07:41.145477+00:00",
+          "payload_hash": "c13b8c9ebf9b3f1cf492b3fc80a4bbf4f3a9c743927136329dd6294cc0057782"
+        }
+      }
+    },
+    {
+      "id": 167,
+      "job_id": 149,
+      "provider": "everloot",
+      "item_id": 277060,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:08:00.419610+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 169,
+      "job_id": 151,
+      "provider": "everloot",
+      "item_id": 287035,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:08:23.567488+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 171,
+      "job_id": 153,
+      "provider": "everloot",
+      "item_id": 286751,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:08:44.830005+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 172,
+      "job_id": 154,
+      "provider": "thewowdb",
+      "item_id": 263015,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:08:47.247600+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "thewowdb",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 173,
+      "job_id": 155,
+      "provider": "everloot",
+      "item_id": 15560,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:09:07.305716+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 174,
+      "job_id": 156,
+      "provider": "everloot",
+      "item_id": 274517,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:09:28.605576+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 176,
+      "job_id": 158,
+      "provider": "everloot",
+      "item_id": 287022,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:09:49.202781+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 177,
+      "job_id": 159,
+      "provider": "thewowdb",
+      "item_id": 287063,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:09:51.471793+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "thewowdb",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 178,
+      "job_id": 160,
+      "provider": "everloot",
+      "item_id": 283259,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:10:10.431767+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 179,
+      "job_id": 161,
+      "provider": "everloot",
+      "item_id": 7482,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:10:33.004466+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 181,
+      "job_id": 163,
+      "provider": "thewowdb",
+      "item_id": 283460,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:10:55.882725+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "thewowdb",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 183,
+      "job_id": 165,
+      "provider": "everloot",
+      "item_id": 1,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:11:31.777353+00:00",
+      "result": {
+        "kind": "corpus",
+        "status": "observations_only",
+        "http_status": 200,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "no_usable_data",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 185,
+      "job_id": 167,
+      "provider": "thewowdb",
+      "item_id": 9917,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:12:00.399167+00:00",
+      "result": {
+        "kind": "item",
+        "status": "named_record",
+        "http_status": 200,
+        "provider": "thewowdb",
+        "recovered_fields": [
+          "quality",
+          "lines",
+          "level",
+          "required_level",
+          "name"
+        ],
+        "fields_returned": [
+          "quality",
+          "lines",
+          "level",
+          "required_level",
+          "name"
+        ],
+        "outcome": "name_recovered",
+        "new_fields": [
+          "level",
+          "lines",
+          "name",
+          "quality",
+          "required_level"
+        ],
+        "source": {
+          "provider": "thewowdb",
+          "edition": "forever",
+          "build": "wow_classic_beta-1.60.1.70532",
+          "locale": "en_US",
+          "confidence": "community_beta",
+          "attribution": {
+            "text": "Data from TheWoWDB (thewowdb.com)",
+            "url": "https://thewowdb.com/wow-forever/item/tracker-s-boots-9917/"
+          },
+          "url": "https://thewowdb.com/api/v1/forever/item/9917",
+          "retrieved_at": "2026-11-15T04:12:00.391179+00:00",
+          "payload_hash": "6e3d7841417bb9de6c63a73cd2864e96330f8de77aedcaa7112567e8cd3b50ea",
+          "icon_url": "https://render.worldofwarcraft.com/us/icons/56/inv_boots_08.jpg"
+        }
+      }
+    },
+    {
+      "id": 188,
+      "job_id": 170,
+      "provider": "thewowdb",
+      "item_id": 215376,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:13:04.895343+00:00",
+      "result": {
+        "kind": "item",
+        "status": "named_record",
+        "http_status": 200,
+        "provider": "thewowdb",
+        "recovered_fields": [
+          "quality",
+          "lines",
+          "level",
+          "required_level",
+          "vendor_sell",
+          "name"
+        ],
+        "fields_returned": [
+          "quality",
+          "lines",
+          "level",
+          "required_level",
+          "vendor_sell",
+          "name"
+        ],
+        "outcome": "name_recovered",
+        "new_fields": [
+          "level",
+          "lines",
+          "name",
+          "quality",
+          "required_level",
+          "vendor_sell"
+        ],
+        "source": {
+          "provider": "thewowdb",
+          "edition": "forever",
+          "build": "wow_classic_beta-1.60.1.70532",
+          "locale": "en_US",
+          "confidence": "community_beta",
+          "attribution": {
+            "text": "Data from TheWoWDB (thewowdb.com)",
+            "url": "https://thewowdb.com/wow-forever/item/crusader-s-mace-215376/"
+          },
+          "url": "https://thewowdb.com/api/v1/forever/item/215376",
+          "retrieved_at": "2026-11-15T04:13:04.888788+00:00",
+          "payload_hash": "8eb36cd3870921746f265d1fff66d413aafd55986f34279548da7f32df055ede"
+        }
+      }
+    },
+    {
+      "id": 191,
+      "job_id": 173,
+      "provider": "thewowdb",
+      "item_id": 277059,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:14:09.290797+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "thewowdb",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 194,
+      "job_id": 176,
+      "provider": "everloot",
+      "item_id": 1,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:15:19.645787+00:00",
+      "result": {
+        "kind": "corpus_page",
+        "status": "observations_only",
+        "http_status": 200,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "no_usable_data",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 196,
+      "job_id": 178,
+      "provider": "thewowdb",
+      "item_id": 287009,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:15:23.388002+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "thewowdb",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 197,
+      "job_id": 179,
+      "provider": "everloot",
+      "item_id": 1001,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:15:38.866018+00:00",
+      "result": {
+        "kind": "corpus_page",
+        "status": "observations_only",
+        "http_status": 200,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "no_usable_data",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 198,
+      "job_id": 180,
+      "provider": "everloot",
+      "item_id": 2001,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:15:52.723598+00:00",
+      "result": {
+        "kind": "corpus_page",
+        "status": "observations_only",
+        "http_status": 200,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "no_usable_data",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 200,
+      "job_id": 182,
+      "provider": "everloot",
+      "item_id": 3001,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:16:12.218799+00:00",
+      "result": {
+        "kind": "corpus_page",
+        "status": "observations_only",
+        "http_status": 200,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "no_usable_data",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 201,
+      "job_id": 183,
+      "provider": "everloot",
+      "item_id": 4001,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:16:27.658055+00:00",
+      "result": {
+        "kind": "corpus_page",
+        "status": "observations_only",
+        "http_status": 200,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "no_usable_data",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 202,
+      "job_id": 184,
+      "provider": "thewowdb",
+      "item_id": 282014,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:16:35.938787+00:00",
+      "result": {
+        "kind": "item",
+        "status": "missing",
+        "http_status": 404,
+        "provider": "thewowdb",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "missing",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 203,
+      "job_id": 185,
+      "provider": "everloot",
+      "item_id": 5001,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:16:40.880141+00:00",
+      "result": {
+        "kind": "corpus_page",
+        "status": "observations_only",
+        "http_status": 200,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "no_usable_data",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 204,
+      "job_id": 186,
+      "provider": "everloot",
+      "item_id": 6001,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:16:58.042572+00:00",
+      "result": {
+        "kind": "corpus_page",
+        "status": "observations_only",
+        "http_status": 200,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "no_usable_data",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 205,
+      "job_id": 187,
+      "provider": "everloot",
+      "item_id": 7001,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:17:15.521600+00:00",
+      "result": {
+        "kind": "corpus_page",
+        "status": "observations_only",
+        "http_status": 200,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "no_usable_data",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 207,
+      "job_id": 189,
+      "provider": "everloot",
+      "item_id": 8001,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:17:33.170651+00:00",
+      "result": {
+        "kind": "corpus_page",
+        "status": "observations_only",
+        "http_status": 200,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "no_usable_data",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 208,
+      "job_id": 190,
+      "provider": "thewowdb",
+      "item_id": 14184,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:17:40.334591+00:00",
+      "result": {
+        "kind": "item",
+        "status": "named_record",
+        "http_status": 200,
+        "provider": "thewowdb",
+        "recovered_fields": [
+          "quality",
+          "lines",
+          "level",
+          "required_level",
+          "vendor_sell",
+          "name"
+        ],
+        "fields_returned": [
+          "quality",
+          "lines",
+          "level",
+          "required_level",
+          "vendor_sell",
+          "name"
+        ],
+        "outcome": "name_recovered",
+        "new_fields": [
+          "level",
+          "lines",
+          "name",
+          "quality",
+          "required_level",
+          "vendor_sell"
+        ],
+        "source": {
+          "provider": "thewowdb",
+          "edition": "forever",
+          "build": "wow_classic_beta-1.60.1.70532",
+          "locale": "en_US",
+          "confidence": "community_beta",
+          "attribution": {
+            "text": "Data from TheWoWDB (thewowdb.com)",
+            "url": "https://thewowdb.com/wow-forever/item/watcher-s-robes-14184/"
+          },
+          "url": "https://thewowdb.com/api/v1/forever/item/14184",
+          "retrieved_at": "2026-11-15T04:17:40.328086+00:00",
+          "payload_hash": "624234230388ef9d8754f8537077817af740e5a3fbc327cb4562c6fa0d0b6ce0",
+          "icon_url": "https://thewowdb.com/assets/icons/inv_chest_cloth_22.jpg"
+        }
+      }
+    },
+    {
+      "id": 209,
+      "job_id": 191,
+      "provider": "everloot",
+      "item_id": 9001,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:17:49.809613+00:00",
+      "result": {
+        "kind": "corpus_page",
+        "status": "observations_only",
+        "http_status": 200,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "no_usable_data",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 211,
+      "job_id": 193,
+      "provider": "everloot",
+      "item_id": 10001,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:18:08.588696+00:00",
+      "result": {
+        "kind": "corpus_page",
+        "status": "observations_only",
+        "http_status": 200,
+        "provider": "everloot",
+        "recovered_fields": [],
+        "fields_returned": [],
+        "outcome": "no_usable_data",
+        "new_fields": []
+      }
+    },
+    {
+      "id": 213,
+      "job_id": 195,
+      "provider": "thewowdb",
+      "item_id": 215375,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:18:44.752911+00:00",
+      "result": {
+        "kind": "item",
+        "status": "named_record",
+        "http_status": 200,
+        "provider": "thewowdb",
+        "recovered_fields": [
+          "quality",
+          "lines",
+          "level",
+          "required_level",
+          "vendor_sell",
+          "name"
+        ],
+        "fields_returned": [
+          "quality",
+          "lines",
+          "level",
+          "required_level",
+          "vendor_sell",
+          "name"
+        ],
+        "outcome": "name_recovered",
+        "new_fields": [
+          "level",
+          "lines",
+          "name",
+          "quality",
+          "required_level",
+          "vendor_sell"
+        ],
+        "source": {
+          "provider": "thewowdb",
+          "edition": "forever",
+          "build": "wow_classic_beta-1.60.1.70532",
+          "locale": "en_US",
+          "confidence": "community_beta",
+          "attribution": {
+            "text": "Data from TheWoWDB (thewowdb.com)",
+            "url": "https://thewowdb.com/wow-forever/item/tactician-s-staff-215375/"
+          },
+          "url": "https://thewowdb.com/api/v1/forever/item/215375",
+          "retrieved_at": "2026-11-15T04:18:44.746242+00:00",
+          "payload_hash": "a4c4b43026310436ef9aaa57a929408d11787cefa9e8f02ccef4294cf37fa5d2"
+        }
+      }
+    },
+    {
+      "id": 215,
+      "job_id": 197,
+      "provider": "everloot",
+      "item_id": 3283,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:19:09.124042+00:00",
+      "result": {
+        "kind": "item",
+        "status": "named_record",
+        "http_status": 200,
+        "provider": "everloot",
+        "recovered_fields": [
+          "name"
+        ],
+        "fields_returned": [
+          "name"
+        ],
+        "outcome": "name_recovered",
+        "new_fields": [
+          "name"
+        ],
+        "source": {
+          "provider": "everloot",
+          "edition": "forever",
+          "build": null,
+          "locale": "en_US",
+          "confidence": "player_consensus",
+          "attribution": {
+            "text": "Data from Everloot (https://everloot.app), CC BY-SA 4.0.",
+            "url": "https://everloot.app/database/items/3283",
+            "license": "CC BY-SA 4.0",
+            "license_url": "https://creativecommons.org/licenses/by-sa/4.0/"
+          },
+          "url": "https://everloot.app/database/items/3283",
+          "retrieved_at": "2026-11-15T04:19:09.118172+00:00",
+          "payload_hash": "b182c7351e8c9e57e82202c4eeedc34b1c0289db2cf860323c283ddb9abdb1fa"
+        }
+      }
+    },
+    {
+      "id": 216,
+      "job_id": 198,
+      "provider": "everloot",
+      "item_id": 3308,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:19:31.622047+00:00",
+      "result": {
+        "kind": "item",
+        "status": "named_record",
+        "http_status": 200,
+        "provider": "everloot",
+        "recovered_fields": [
+          "name"
+        ],
+        "fields_returned": [
+          "name"
+        ],
+        "outcome": "name_recovered",
+        "new_fields": [
+          "name"
+        ],
+        "source": {
+          "provider": "everloot",
+          "edition": "forever",
+          "build": null,
+          "locale": "en_US",
+          "confidence": "player_consensus",
+          "attribution": {
+            "text": "Data from Everloot (https://everloot.app), CC BY-SA 4.0.",
+            "url": "https://everloot.app/database/items/3308",
+            "license": "CC BY-SA 4.0",
+            "license_url": "https://creativecommons.org/licenses/by-sa/4.0/"
+          },
+          "url": "https://everloot.app/database/items/3308",
+          "retrieved_at": "2026-11-15T04:19:31.616079+00:00",
+          "payload_hash": "76f42af9ade4fd93c06fc6a7d19821e192fd9e44bfc0c0897a44b9a1748720ae"
+        }
+      }
+    },
+    {
+      "id": 218,
+      "job_id": 200,
+      "provider": "everloot",
+      "item_id": 5071,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:19:53.108413+00:00",
+      "result": {
+        "kind": "item",
+        "status": "named_record",
+        "http_status": 200,
+        "provider": "everloot",
+        "recovered_fields": [
+          "name"
+        ],
+        "fields_returned": [
+          "name"
+        ],
+        "outcome": "name_recovered",
+        "new_fields": [
+          "name"
+        ],
+        "source": {
+          "provider": "everloot",
+          "edition": "forever",
+          "build": null,
+          "locale": "en_US",
+          "confidence": "player_consensus",
+          "attribution": {
+            "text": "Data from Everloot (https://everloot.app), CC BY-SA 4.0.",
+            "url": "https://everloot.app/database/items/5071",
+            "license": "CC BY-SA 4.0",
+            "license_url": "https://creativecommons.org/licenses/by-sa/4.0/"
+          },
+          "url": "https://everloot.app/database/items/5071",
+          "retrieved_at": "2026-11-15T04:19:53.102977+00:00",
+          "payload_hash": "f47819b0af2b96dd1bace69814cc659b24e3344e00b9c8dd598d82adc2075a78"
+        }
+      }
+    },
+    {
+      "id": 219,
+      "job_id": 201,
+      "provider": "thewowdb",
+      "item_id": 25,
+      "state": "completed",
+      "attempts": 1,
+      "at": "2026-11-15 04:19:59.470426+00:00",
+      "result": {
+        "kind": "conditional",
+        "status": "named_record",
+        "http_status": 200,
+        "provider": "thewowdb",
+        "recovered_fields": [
+          "quality",
+          "lines",
+          "level",
+          "vendor_sell",
+          "name"
+        ],
+        "fields_returned": [
+          "quality",
+          "lines",
+          "level",
+          "vendor_sell",
+          "name"
+        ],
+        "outcome": "metadata_returned",
+        "new_fields": [],
+        "source": {
+          "provider": "thewowdb",
+          "edition": "forever",
+          "build": "wow_classic_beta-1.60.1.70532",
+          "locale": "en_US",
+          "confidence": "community_beta",
+          "attribution": {
+            "text": "Data from TheWoWDB (thewowdb.com)",
+            "url": "https://thewowdb.com/wow-forever/item/worn-shortsword-25/"
+          },
+          "url": "https://thewowdb.com/api/v1/forever/item/25",
+          "retrieved_at": "2026-11-15T04:19:59.463620+00:00",
+          "payload_hash": "030fc9fc0cc7a565b68b1f593cda611e2ac4879b6963866bf06dad5f287bc225",
+          "icon_url": "https://render.worldofwarcraft.com/us/icons/56/inv_sword_04.jpg"
+        }
+      }
+    }
+  ],
+  "providers": [
+    {
+      "provider": "foreverdb",
+      "enabled": false,
+      "automatic": false,
+      "hourly_budget": 60,
+      "daily_budget": 500,
+      "hour_used": 0,
+      "day_used": 0,
+      "cooldown_until": null,
+      "next_request_at": null,
+      "credential_validated": false
+    },
+    {
+      "provider": "everloot",
+      "enabled": false,
+      "automatic": true,
+      "hourly_budget": 240,
+      "daily_budget": 2000,
+      "hour_used": 36,
+      "day_used": 90,
+      "cooldown_until": null,
+      "next_request_at": "2026-11-15 04:20:04.800913+00:00",
+      "credential_validated": true
+    },
+    {
+      "provider": "thewowdb",
+      "enabled": false,
+      "automatic": false,
+      "hourly_budget": 60,
+      "daily_budget": 500,
+      "hour_used": 27,
+      "day_used": 27,
+      "cooldown_until": null,
+      "next_request_at": "2026-11-15 04:20:59.220477+00:00",
+      "credential_validated": false
+    },
+    {
+      "provider": "blizzard",
+      "enabled": true,
+      "automatic": true,
+      "hourly_budget": 240,
+      "daily_budget": 2000,
+      "hour_used": 2,
+      "day_used": 234,
+      "cooldown_until": null,
+      "next_request_at": "2026-11-15 04:22:40.547562+00:00",
+      "credential_validated": false
+    }
+  ]
+}
