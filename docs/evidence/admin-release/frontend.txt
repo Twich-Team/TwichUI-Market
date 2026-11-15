@@ -19,7 +19,7 @@ dist/assets/data-table-BjB33RlQ.js          188.63 kB │ gzip:  59.91 kB
 dist/assets/index-OjbTS0Ag.js               270.72 kB │ gzip:  84.90 kB
 dist/assets/chart-engine-rVWxopKw.js        573.27 kB │ gzip: 192.99 kB
 
-[plugin builtin:vite-reporter] 
+[plugin builtin:vite-reporter]
 (!) Some chunks are larger than 500 kB after minification. Consider:
 - Using dynamic import() to code-split the application
 - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
@@ -35,27 +35,27 @@ npm notice
 > vitest run --maxWorkers=1
 
 
-[1m[30m[46m RUN [49m[39m[22m [36mv5.1.0 [39m[90m/work/web[39m
+ RUN  v5.1.0 /work/web
 
- [32m✓[39m src/api.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 42[2mms[22m[39m
- [32m✓[39m src/currency.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 20[2mms[22m[39m
- [32m✓[39m src/metadata-attempts.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 56[2mms[22m[39m
- [32m✓[39m src/preferences-store.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 20[2mms[22m[39m
- [32m✓[39m src/chart-data.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 14[2mms[22m[39m
- [32m✓[39m src/item-name.test.tsx [2m([22m[2m14 tests[22m[2m)[22m[32m 11[2mms[22m[39m
- [32m✓[39m src/metadata-priority.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 9[2mms[22m[39m
- [32m✓[39m src/companion-callback.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 7[2mms[22m[39m
- [32m✓[39m src/companion-downloads.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 22[2mms[22m[39m
- [32m✓[39m src/query.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 5[2mms[22m[39m
- [32m✓[39m src/listing-prices.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 4[2mms[22m[39m
- [32m✓[39m src/variant-label.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ ✓ src/api.test.ts (4 tests) 42ms
+ ✓ src/currency.test.tsx (3 tests) 20ms
+ ✓ src/metadata-attempts.test.tsx (5 tests) 56ms
+ ✓ src/preferences-store.test.ts (12 tests) 20ms
+ ✓ src/chart-data.test.ts (3 tests) 14ms
+ ✓ src/item-name.test.tsx (14 tests) 11ms
+ ✓ src/metadata-priority.test.ts (6 tests) 9ms
+ ✓ src/companion-callback.test.ts (15 tests) 7ms
+ ✓ src/companion-downloads.test.ts (10 tests) 22ms
+ ✓ src/query.test.ts (2 tests) 5ms
+ ✓ src/listing-prices.test.ts (3 tests) 4ms
+ ✓ src/variant-label.test.ts (2 tests) 3ms
 
-[2m Test Files [22m [1m[32m12 passed[39m[22m[90m (12)[39m
-[2m      Tests [22m [1m[32m79 passed[39m[22m[90m (79)[39m
-[2m   Start at [22m 05:25:20
-[2m   Duration [22m 2.24s[2m (import 58%, tests 22%, transform 13%, worker 7%)[22m
+ Test Files  12 passed (12)
+      Tests  79 passed (79)
+   Start at  05:25:20
+   Duration  2.24s (import 58%, tests 22%, transform 13%, worker 7%)
 
-[2m    Isolate [22m [33m12 workers spawned[39m[2m · ~97ms startup each (spawn + environment, per file)[22m
-[2m            [22m [2mat least ~1.06s faster with [22m[33misolate: false[39m[2m — reuses workers across files instead of one per file[22m
+    Isolate  12 workers spawned · ~97ms startup each (spawn + environment, per file)
+             at least ~1.06s faster with isolate: false — reuses workers across files instead of one per file
 
 found 0 vulnerabilities

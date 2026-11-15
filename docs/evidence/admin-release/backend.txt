@@ -1,5 +1,5 @@
- Container twichui-market-test-test-run-2c34cff68b96 Creating 
- Container twichui-market-test-test-run-2c34cff68b96 Created 
+ Container twichui-market-test-test-run-2c34cff68b96 Creating
+ Container twichui-market-test-test-run-2c34cff68b96 Created
 ........................................................................ [ 18%]
 ........................................................................ [ 37%]
 ........................................................................ [ 56%]
