@@ -14,3 +14,21 @@ describe('restorable browsing URLs',()=>{
  it.each(['https://evil.example','//evil.example','/\\evil','/account','/deals\n/evil'])('rejects unsafe origin %s',url=>expect(safeBrowseUrl(url)).toBeNull());
  it('strips credentials and unknown parameters from return links',()=>{expect(safeBrowseUrl('/?market=2&q=cloth&token=secret')).toBe('/?market=2&q=cloth');expect(safeBrowseUrl('/deals?mode=supply&password=secret')).toBe('/deals?mode=supply');});
 });
+import {dealState,dealUrl,saveRestoration,restoration,navigate} from './navigation';
+import {clearPrivateCache,setQueryIdentity} from './query';
+import {vi,afterEach} from 'vitest';
+const deals={market:2,mode:'listings' as const,filters:{change:15,spend:500,coverage:3,confidence:'limited',direction:'any'}};
+describe('Deal Finder state',()=>{
+ it('clamps saved defaults when a direct URL changes opportunity mode',()=>{expect(dealState('?mode=listings',{...deals,mode:'supply',filters:{...deals.filters,change:1000,coverage:60}}).filters).toMatchObject({change:99,coverage:15});});
+ it('preserves applied filters and exact market through a shared URL',()=>{const value={market:7,mode:'supply' as const,filters:{change:30,spend:123.45,coverage:5,confidence:'moderate',direction:'decrease'}};expect(dealState(dealUrl(value).split('?')[1],deals)).toEqual(value);});
+ it('rejects invalid numeric, mode and evidence state',()=>{expect(dealState('?mode=anything&change=NaN&spend=-1&coverage=99&confidence=bad&direction=bad',deals)).toEqual(deals);});
+});
+describe('private transient restoration',()=>{
+ afterEach(()=>{clearPrivateCache();vi.unstubAllGlobals();});
+ function browser(){
+  const state={state:null as any,replaceState(next:unknown){this.state=next;},pushState(next:unknown){this.state=next;}};
+  vi.stubGlobal('history',state);vi.stubGlobal('location',{pathname:'/',search:'?market=2'});vi.stubGlobal('HTMLElement',class{});vi.stubGlobal('document',{activeElement:null});vi.stubGlobal('window',{scrollY:120,scrollTo:vi.fn(),dispatchEvent:vi.fn()});return state;
+ }
+ it('retains a bounded origin entry and clears optional state on account change',()=>{const history=browser();setQueryIdentity('one:member');saveRestoration({focus:'catalogue-item-25',expanded:{25:true},draft:'cloth'});expect(restoration()).toMatchObject({scroll:120,draft:'cloth',focus:'catalogue-item-25',expanded:{25:true}});navigate(itemUrl(2,25));expect(history.state.marketOrigin).toBe('/?market=2');setQueryIdentity('two:member');expect(restoration()).toBeUndefined();});
+ it('clears optional state on logout while retaining the direct URL',()=>{browser();saveRestoration({draft:'cloth'});clearPrivateCache();expect(restoration()).toBeUndefined();expect(location.search).toBe('?market=2');});
+});

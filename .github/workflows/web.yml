@@ -61,6 +61,12 @@ jobs:
           name: companion-private-beta-browser-evidence
           path: artifacts/companion-v2/private-beta-wizard*.png
           if-no-files-found: ignore
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: explorer-item-details-review-evidence
+          path: artifacts/explorer-details
+          if-no-files-found: ignore
       - if: failure()
         uses: actions/upload-artifact@v4
         with:

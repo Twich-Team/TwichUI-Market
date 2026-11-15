@@ -36,7 +36,7 @@ test('preferences auto-save every supported choice and restore across independen
  await catalogue.getByLabel('Listings',{exact:true}).uncheck();
  await catalogue.getByRole('columnheader',{name:/Supply/}).getByRole('button').click();
  await catalogue.getByRole('columnheader',{name:/Supply/}).getByRole('button').click();
- await page.getByRole('button',{name:'60D',exact:true}).click();
+ await page.getByRole('link',{name:'Research Synthetic Arcane Crystal',exact:true}).click();await page.getByRole('link',{name:/Inspect Synthetic Arcane Crystal:/}).click();await page.getByRole('button',{name:'60D',exact:true}).click();
  await saved(page,{market_id:2,explorer_days:60,item_page_size:50,item_columns:{listing_count:false},item_sort:{id:'supply',desc:true}});
  await page.getByRole('button',{name:'Deal Finder',exact:true}).click();
  await page.getByRole('tab',{name:'Below reference',exact:true}).click();
@@ -60,7 +60,7 @@ test('preferences auto-save every supported choice and restore across independen
  await expect(otherTable.getByLabel('Items per page')).toHaveValue('50');
  await expect(otherTable.locator('th[aria-sort="descending"]')).toContainText('Supply');
  await expect(otherTable.getByRole('columnheader',{name:'Listings',exact:true})).toHaveCount(0);
- await expect(other.getByRole('button',{name:'60D',exact:true})).toHaveClass(/selected/);
+ await other.getByRole('link',{name:'Research Synthetic Arcane Crystal',exact:true}).click();await other.getByRole('link',{name:/Inspect Synthetic Arcane Crystal:/}).click();await expect(other.getByRole('button',{name:'60D',exact:true})).toHaveClass(/selected/);
  await other.getByRole('button',{name:'Deal Finder',exact:true}).click();
  await expect(other.getByRole('tab',{name:'Price changes',exact:true})).toHaveAttribute('aria-selected','true');
  await expect(other.getByLabel('Minimum change (%)')).toHaveValue('30');
@@ -103,10 +103,10 @@ test('unavailable preferred market falls back and returns without a destructive 
   const response=await route.fetch();const data=await response.json();
   await route.fulfill({response,json:{...data,markets:data.markets.filter((m:any)=>m.id===1)}});
  });
- await page.reload();await expect(page.getByText('Your preferred market is unavailable.',{exact:false})).toBeVisible();
+ await page.goto('/');await expect(page.getByText('Your preferred market is unavailable.',{exact:false})).toBeVisible();
  await expect(page.locator('select').filter({has:page.locator('option[value="1"]')}).first()).toHaveValue('1');
  expect((await read(page)).values.market_id).toBe(2);expect(writes).toBe(0);
- await page.unroute('**/api/v1/markets');await page.reload();await expect(market(page)).toHaveValue('2');
+ await page.unroute('**/api/v1/markets');await page.goto('/');await expect(market(page)).toHaveValue('2');
  expect(writes).toBe(0);
 });
 

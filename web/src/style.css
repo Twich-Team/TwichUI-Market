@@ -1625,3 +1625,20 @@ small,
 /* Exact game colors need large bold type for the darker blue/purple names.
    19px bold meets the large-text threshold while preserving heading sizes. */
 .item-name { font-size: max(1em, 19px); font-weight: 700; line-height: 1.35; }
+/* Dedicated research uses the established espresso surfaces and compact controls. */
+a.select-item { display:inline-block; text-decoration:none; cursor:pointer; }
+a.secondary { display:inline-block; padding:10px 14px; border:1px solid var(--border, #51402d); border-radius:3px; text-decoration:none; }
+.research-breadcrumb { display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between; margin:0 0 24px; color:var(--muted,#aa967a); font-size:14px; }
+.research-heading { margin:0 0 12px; }
+.research-heading h1 { margin:4px 0 8px; }
+.research-heading h1 .item-name { font-size:inherit; }
+.variant-identity { display:flex; flex-wrap:wrap; gap:8px 16px; align-items:center; margin:12px 0; font-size:13px; color:var(--muted,#aa967a); }
+.variant-identity code { overflow-wrap:anywhere; max-width:100%; }
+.research-variants { margin:22px 0; }
+.research-variants .variant-panel { padding-top:0; overflow-x:auto; }
+.research-variants h2,.research-charts h2,.research-metadata h2 { font-size:22px; margin:0; }
+.research-metadata { margin-top:24px; }
+.research-metadata .wow-name { margin-top:16px; }
+.item-research .stats strong { overflow-wrap:anywhere; }
+@media(max-width:700px) { .research-charts .panel-heading { flex-wrap:wrap; gap:12px; } .research-breadcrumb { align-items:flex-start; } .research-heading h1 { font-size:27px; } .variant-identity { align-items:flex-start; } }
+.variant-key { display:block; max-width:380px; overflow-wrap:anywhere; font:11px/1.5 ui-monospace,monospace; color:#b7a58d; margin-top:4px; }

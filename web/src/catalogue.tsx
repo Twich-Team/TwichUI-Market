@@ -16,12 +16,12 @@ import {
 import { requestItemMetadata } from "./metadata-priority";
 import { api, when } from "./api";
 import { ItemIdentity, ItemInfo, ItemAttribution } from "./item-components";
-import type { Item } from "./types";
-interface Range {
+import { type ExplorerState, itemUrl, followItem, navigate, restoration, saveRestoration, useRestoreView } from "./navigation";
+export interface Range {
   minimum: string | null;
   maximum: string | null;
 }
-interface Group extends ItemIdentity {
+export interface Group extends ItemIdentity {
   variant_count: number;
   priced_variant_count: number;
   supply: number;
@@ -33,7 +33,7 @@ interface Group extends ItemIdentity {
   };
   synthetic: boolean;
 }
-interface Variant extends ItemIdentity {
+export interface Variant extends ItemIdentity {
   name_verified: boolean;
   variant_key: string;
   variant: unknown;
@@ -44,7 +44,7 @@ interface Variant extends ItemIdentity {
   listing_count: number;
   coverage_days: number;
 }
-interface Page {
+export interface Page {
   items: Group[];
   total_items: number;
   page: number;
@@ -53,12 +53,12 @@ interface Page {
   observed_at: string | null;
   synthetic: boolean;
 }
-interface VariantPage {
+export interface VariantPage {
   variants: Variant[];
   total_variants: number;
   snapshot_id: string | null;
 }
-function range(value: Range) {
+export function range(value: Range) {
   return value.minimum === value.maximum ? (
     <Currency value={value.minimum} />
   ) : (
@@ -67,44 +67,24 @@ function range(value: Range) {
     </>
   );
 }
-export function ItemCatalogue({
-  market,
-  query,
-  focus,
-  onSelect,
-  onSummary,
-}: {
-  market: number;
-  query: string;
-  focus?: { item_id: number; variant_key: string } | null;
-  onSelect: (item: Item) => void;
-  onSummary: (summary: { synthetic: boolean; empty: boolean }) => void;
+export function ItemCatalogue({market,query,state,onChange,onSummary}: {
+  market:number; query:string; state:ExplorerState;
+  onChange:(state:ExplorerState)=>void;
+  onSummary:(summary:{synthetic:boolean;empty:boolean})=>void;
 }) {
-  const preferences = usePreferences();
-  const [pageIndex, setPageIndex] = useState(0);
-  const pagination: PaginationState = {pageIndex, pageSize:preferences.values.item_page_size};
-  const sorting: SortingState = [preferences.values.item_sort];
-  function setPagination(updater: typeof pagination | ((previous:typeof pagination)=>typeof pagination)) {
+  const preferences=usePreferences();
+  const pagination:PaginationState={pageIndex:state.pageIndex,pageSize:state.pageSize};
+  const sorting:SortingState=[state.sort];
+  function setPagination(updater:PaginationState|((previous:PaginationState)=>PaginationState)){
     const next=typeof updater==='function'?updater(pagination):updater;
-    setPageIndex(next.pageIndex);
-    if(next.pageSize!==pagination.pageSize)preferences.update({item_page_size:next.pageSize as 25|50|100});
+    onChange({...state,pageIndex:next.pageSize===state.pageSize?next.pageIndex:0,pageSize:next.pageSize as ExplorerState['pageSize']});
+    if(next.pageSize!==state.pageSize)preferences.update({item_page_size:next.pageSize as 25|50|100});
   }
-  useEffect(()=>setPageIndex(0),[preferences.values.item_page_size,preferences.values.item_sort.id,preferences.values.item_sort.desc]);
-  const [expanded, setExpanded] = useState<Record<number, boolean>>({});
-  const selectRef = useRef(onSelect),
-    summaryRef = useRef(onSummary);
-  selectRef.current = onSelect;
-  summaryRef.current = onSummary;
-  const [choice, setChoice] = useState<{
-    query: string;
-    item_id: number;
-    variant_key?: string;
-  } | null>(focus ? { query, ...focus } : null);
-  useEffect(() => {
-    setPagination((p) => ({ ...p, pageIndex: 0 }));
-    setExpanded({});
-  }, [market, query]);
-  const sort = sorting[0] || { id: "item_id", desc: false };
+  const [expanded,setExpanded]=useState<Record<number,boolean>>(()=>restoration()?.expanded??{});
+  const [clamped,setClamped]=useState(false);
+  const summaryRef=useRef(onSummary);summaryRef.current=onSummary;
+  const expandedRef=useRef(expanded);expandedRef.current=expanded;
+  const sort=state.sort;
   const response = useQuery({
     queryKey: [
       "private",
@@ -125,54 +105,11 @@ export function ItemCatalogue({
       ),
     refetchInterval: 60_000,
   });
-  const first = response.data?.items[0];
-  const target = choice?.query === query ? choice.item_id : first?.item_id;
-  const firstVariants = useQuery({
-    queryKey: [
-      "private",
-      "variants",
-      market,
-      target,
-      0,
-      response.data?.snapshot_id,
-    ],
-    enabled: !!market && !!target,
-    queryFn: ({ signal }) =>
-      api<VariantPage>(
-        `/markets/${market}/catalogue/${target}/variants?page_size=50&expected_snapshot=${response.data?.snapshot_id || ""}`,
-        "GET",
-        undefined,
-        signal,
-      ),
-  });
-  useEffect(() => {
-    if (!firstVariants.data || !target) return;
-    const preferred =
-      choice?.query === query ? choice.variant_key : focus?.variant_key;
-    const row = preferred
-      ? firstVariants.data.variants.find((r) => r.variant_key === preferred)
-      : firstVariants.data.variants[0];
-    if (row) {
-      if (choice?.query !== query)
-        setChoice({
-          query,
-          item_id: row.item_id,
-          variant_key: row.variant_key,
-        });
-      const identity = response.data?.items.find(
-        (r) => r.item_id === row.item_id,
-      );
-      selectRef.current({
-        ...row,
-        icon_url: identity?.icon_url,
-        quality: identity?.quality,
-        metadata_attribution: identity?.metadata_attribution,
-      });
-    }
-  }, [firstVariants.data, target, query, choice?.variant_key]);
-  function choose(item: Group) {
-    setChoice({ query, item_id: item.item_id });
-  }
+  useEffect(()=>{
+    if(!response.data)return;
+    const last=Math.max(0,Math.ceil(response.data.total_items/pagination.pageSize)-1);
+    if(pagination.pageIndex>last){setClamped(true);onChange({...state,pageIndex:last});}
+  },[response.data,pagination.pageIndex,pagination.pageSize]);
   useEffect(() => {
     const data = response.data;
     if (!data) return;
@@ -186,6 +123,7 @@ export function ItemCatalogue({
         data.items.map((r) => r.item_id),
       ).catch(() => {});
   }, [response.data, market]);
+  useRestoreView(!response.isPending&&!response.isFetching,`${market}:${query}:${state.pageIndex}`);
   const columns = useMemo<ColumnDef<Group>[]>(
     () => [
       {
@@ -202,30 +140,21 @@ export function ItemCatalogue({
                 ranges={row.original.price_ranges}
               />
               <ItemAttribution item={row.original} />
-              <button
-                className="select-item"
-                onClick={() => choose(row.original)}
-                aria-label={`Select ${row.original.name}`}
-                aria-pressed={target === row.original.item_id}
-              >
+              <a className="select-item" id={`catalogue-item-${row.original.item_id}`}
+                href={itemUrl(market,row.original.item_id)} onClick={followItem}
+                aria-label={`Research ${row.original.name}`}>
                 <ItemName name={row.original.name} quality={row.original.quality}/>
-              </button>
+              </a>
               {row.original.variant_count > 1 && (
                 <button
                   className="item-name-button"
-                  onClick={() =>
-                    setExpanded((p) =>
-                      p[row.original.item_id]
-                        ? {}
-                        : { [row.original.item_id]: true },
-                    )
-                  }
-                  aria-expanded={!!expanded[row.original.item_id]}
+                  onClick={()=>{const next={...expandedRef.current,[row.original.item_id]:!expandedRef.current[row.original.item_id]};setExpanded(next);saveRestoration({expanded:next});}}
+                  aria-expanded={!!expandedRef.current[row.original.item_id]}
                 >
                   <small>
                     #{row.original.item_id} · {row.original.variant_count}{" "}
                     {row.original.variant_count === 1 ? "variant" : "variants"}{" "}
-                    {expanded[row.original.item_id] ? "▴" : "▾"}
+                    {expandedRef.current[row.original.item_id] ? "▴" : "▾"}
                   </small>
                 </button>
               )}
@@ -268,7 +197,7 @@ export function ItemCatalogue({
       },
       { id: "item_id", accessorKey: "item_id", header: "ID" },
     ],
-    [market, expanded, target, query],
+    [market, query],
   );
   const table = useReactTable({
     data: response.data?.items || [],
@@ -288,7 +217,7 @@ export function ItemCatalogue({
     onSortingChange: (updater) => {
       const next=typeof updater==='function'?updater(sorting):updater;
       preferences.update({item_sort:next[0] as ItemSort});
-      setPagination((p) => ({ ...p, pageIndex: 0 }));
+      onChange({...state,sort:next[0] as ItemSort,pageIndex:0});
     },
     onPaginationChange: setPagination,
     getRowId: (row) => String(row.item_id),
@@ -315,7 +244,8 @@ export function ItemCatalogue({
       <button className="text-button" onClick={() => response.refetch()}>
         Refresh catalogue
       </button>
-      {firstVariants.error && <p role="alert">{firstVariants.error.message}</p>}
+      {response.isPending && <p role="status" className="empty">Loading item catalogue…</p>}
+      {clamped && <p role="status" className="notice">The live results changed. Your saved page was moved to the last available page.</p>}
       {response.error && (
         <p role="alert" className="notice error">
           {response.error.message}
@@ -378,18 +308,13 @@ export function ItemCatalogue({
             {table.getRowModel().rows.map((row) => (
               <Fragment key={row.id}>
                 <tr
-                  className={
-                    target === row.original.item_id
-                      ? "item-selected"
-                      : undefined
-                  }
                   onClick={(event) => {
                     if (
                       !(event.target as HTMLElement).closest(
                         "button,a,input,select",
                       )
                     )
-                      choose(row.original);
+                      {saveRestoration({focus:`catalogue-item-${row.original.item_id}`});navigate(itemUrl(market,row.original.item_id));}
                   }}
                 >
                   {row.getVisibleCells().map((cell) => (
@@ -408,14 +333,6 @@ export function ItemCatalogue({
                         market={market}
                         item={row.original}
                         snapshot={response.data?.snapshot_id}
-                        onSelect={(item) => {
-                          setChoice({
-                            query,
-                            item_id: item.item_id,
-                            variant_key: item.variant_key,
-                          });
-                          selectRef.current(item);
-                        }}
                       />
                     </td>
                   </tr>
@@ -446,7 +363,7 @@ export function ItemCatalogue({
             ))}
           </select>
         </label>
-        <span role="status">
+        <span role="status" aria-label="Catalogue page">
           Page {pagination.pageIndex + 1} of {Math.max(1, table.getPageCount())}
         </span>
         <button
@@ -465,18 +382,22 @@ export function ItemCatalogue({
     </section>
   );
 }
-function Variants({
+export function Variants({
   market,
   item,
   snapshot,
-  onSelect,
+  replaceSelection=false,
+  selectedVariant,
 }: {
   market: number;
   item: Group;
   snapshot?: string | null;
-  onSelect: (item: Item) => void;
+  replaceSelection?: boolean;
+  selectedVariant?:string;
 }) {
   const [page, setPage] = useState(0);
+  const linkedDays=Number(new URLSearchParams(location.search).get('days'));
+  const destination=(key:string)=>itemUrl(market,item.item_id,key)+(replaceSelection&&[7,14,60,365,3650].includes(linkedDays)?`&days=${linkedDays}`:'');
   const result = useQuery({
     queryKey: ["private", "variants", market, item.item_id, page, snapshot],
     queryFn: ({ signal }) =>
@@ -494,7 +415,7 @@ function Variants({
         extra bonuses.
       </p>
       {result.isPending && <p role="status">Loading exact variant prices…</p>}
-      {result.error && <p role="alert">{result.error.message}</p>}
+      {result.error && <p role="alert">{result.error.message} <button onClick={()=>result.refetch()}>Retry variants</button></p>}
       <table aria-label={`Variants of ${item.name}`}>
         <thead>
           <tr>
@@ -508,14 +429,14 @@ function Variants({
         </thead>
         <tbody>
           {result.data?.variants.map((variant) => (
-            <tr key={variant.variant_key}>
+            <tr key={variant.variant_key} className={selectedVariant===variant.variant_key?"item-selected":undefined}>
               <td>
                 <ItemInfo
                   market={market}
                   item={{ ...variant, icon_url: item.icon_url }}
                   prices={variant}
                 />
-                <span> {variantLabel(variant.variant)}</span>
+                <span> {variantLabel(variant.variant)}</span><small className="variant-key" title={variant.variant_key}>Exact key: {variant.variant_key.slice(0,12)}…</small>
               </td>
               <td>
                 <Currency value={variant.recent_price} />
@@ -527,18 +448,10 @@ function Variants({
               <td>{variant.supply.toLocaleString()}</td>
               <td>{variant.listing_count.toLocaleString()}</td>
               <td>
-                <button
-                  onClick={() =>
-                    onSelect({
-                      ...variant,
-                      icon_url: item.icon_url,
-                      quality: item.quality,
-                    })
-                  }
-                  aria-label={`Inspect ${item.name}: ${variantLabel(variant.variant)}`}
-                >
-                  Inspect variant
-                </button>
+                <a className="secondary" id={`variant-${variant.variant_key}`} aria-current={selectedVariant===variant.variant_key?"page":undefined} href={destination(variant.variant_key)} onClick={event=>{
+                    if(replaceSelection&&event.button===0&&!event.ctrlKey&&!event.metaKey&&!event.shiftKey&&!event.altKey){event.preventDefault();navigate(destination(variant.variant_key),true);}else followItem(event);
+                  }}
+                  aria-label={`Inspect ${item.name}: ${variantLabel(variant.variant)}`}>Inspect variant</a>
               </td>
             </tr>
           ))}

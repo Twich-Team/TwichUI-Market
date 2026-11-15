@@ -16,7 +16,7 @@ async function login(page: Page) {
     const session = await (await page.request.get("/api/v1/auth/session")).json();
     const reset = await page.request.post("/api/v1/me/preferences/reset", {headers:{"X-CSRF-Token":session.csrf_token},data:{schema_version:1,expected_revision:saved.revision}});
     expect(reset.status()).toBe(200);
-    await page.reload();
+    await page.goto("/");
     await expect(page.getByRole("heading",{name:"Market Explorer",exact:true})).toBeVisible();
   }
 }
@@ -42,14 +42,14 @@ test("catalogue variants, accessible item facts, chart controls and bounded hist
     name: "Item catalogue",
     exact: true,
   });
-  await expect(catalogue.getByRole("status")).toHaveText("Page 1 of 2");
+  await expect(catalogue.getByRole("status",{name:"Catalogue page"})).toHaveText("Page 1 of 2");
   await expect(catalogue.locator("tbody > tr")).toHaveCount(25);
-  const selectedName = await page.locator(".item-heading h2").textContent();
+  await expect(page.locator(".item-research")).toHaveCount(0);
   await catalogue
     .getByRole("button", { name: "Next items", exact: true })
     .click();
-  await expect(catalogue.getByRole("status")).toHaveText("Page 2 of 2");
-  await expect(page.locator(".item-heading h2")).toHaveText(selectedName!);
+  await expect(catalogue.getByRole("status",{name:"Catalogue page"})).toHaveText("Page 2 of 2");
+  await expect(page.locator(".item-research")).toHaveCount(0);
   await catalogue
     .getByRole("button", { name: "Previous items", exact: true })
     .click();
@@ -61,15 +61,6 @@ test("catalogue variants, accessible item facts, chart controls and bounded hist
   const blade = catalogue
     .getByRole("row")
     .filter({ hasText: "Synthetic Enchanted Blade" });
-  await blade
-    .getByRole("button", {
-      name: "Select Synthetic Enchanted Blade",
-      exact: true,
-    })
-    .click();
-  await expect(page.locator(".item-heading h2")).toHaveText(
-    "Synthetic Enchanted Blade",
-  );
   await blade.getByRole("button", { name: /2 variants/ }).click();
   const variants = page.getByRole("table", {
     name: "Variants of Synthetic Enchanted Blade",
@@ -91,14 +82,13 @@ test("catalogue variants, accessible item facts, chart controls and bounded hist
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await catalogue
-    .getByRole("button", {
-      name: "Select Synthetic Arcane Crystal",
+    .getByRole("link", {
+      name: "Research Synthetic Arcane Crystal",
       exact: true,
     })
     .click();
-  await expect(page.locator(".item-heading h2")).toHaveText(
-    "Synthetic Arcane Crystal",
-  );
+  await page.getByRole("link",{name:/Inspect Synthetic Arcane Crystal:/}).click();
+  await expect(page.getByRole("heading",{name:"Synthetic Arcane Crystal",exact:true})).toBeVisible();
   await page.getByRole("button", { name: "10Y", exact: true }).click();
   await page.locator(".chart-viewport").first().scrollIntoViewIfNeeded();
   await expect(
@@ -167,7 +157,7 @@ test("catalogue variants, accessible item facts, chart controls and bounded hist
       page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
     )
     .toBe(true);
-  await item.click();
+  await page.getByRole("button",{name:"Item details for Synthetic Arcane Crystal",exact:true}).first().click();
   await expect(page.getByRole("dialog")).toBeVisible();
   await page.screenshot({
     path: "../artifacts/modernization/item-touch-mobile.png",
@@ -181,7 +171,7 @@ test("shared deal tooltips and manageable account/admin tables", async ({
 }) => {
   await login(page);
   await expect(
-    page.getByRole("heading", { name: "Current listings", exact: true }),
+    page.getByRole("region", { name: "Item catalogue", exact: true }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Deal Finder", exact: true }).click();
   await expect(
@@ -208,7 +198,7 @@ test("shared deal tooltips and manageable account/admin tables", async ({
     .getByRole("button", { name: "Market Explorer", exact: true })
     .click();
   await expect(
-    page.getByRole("heading", { name: "Current listings", exact: true }),
+    page.getByRole("region", { name: "Item catalogue", exact: true }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Deal Finder", exact: true }).click();
   await page

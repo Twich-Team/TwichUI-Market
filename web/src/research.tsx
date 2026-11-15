@@ -1,15 +1,10 @@
-import { ItemName } from "./item-name";
+import { currentLocation, explorerState, explorerUrl, navigate, restoration, saveRestoration, type ExplorerState } from "./navigation";
 import { usePreferences } from "./preferences";
-import { Currency } from "./currency";
-import { CurrentListings } from "./listings";
-import { variantLabel } from "./variant-label";
 import { useQuery } from "@tanstack/react-query";
-import { useLayoutEffect, useState, DependencyList } from "react";
+import { useEffect, useState, DependencyList } from "react";
 import { api, when } from "./api";
-import { PriceHistory, SupplyDistribution } from "./charts";
 import { ItemCatalogue } from "./catalogue";
-import { ItemInfo, ItemAttribution } from "./item-components";
-import { Detail, Item, Market } from "./types";
+import { Market } from "./types";
 
 export function useLoad<T>(
   key: string,
@@ -46,6 +41,7 @@ export function MarketSelect({
         disabled={!markets.length}
       >
         {!markets.length && <option value={0}>No markets configured</option>}
+        {!!markets.length&&!markets.some(m=>m.id===market)&&<option value={market}>Unavailable market #{market}</option>}
         {markets.map((row) => (
           <option key={row.id} value={row.id}>
             {row.label}
@@ -73,237 +69,30 @@ export function Freshness({ market }: { market: Market }) {
     </div>
   );
 }
-function Loading({ error, loading }: { error: string; loading: boolean }) {
-  return (
-    <>
-      {loading && (
-        <p role="status" className="muted">
-          Loading your research…
-        </p>
-      )}
-      {error && (
-        <p role="alert" className="notice error">
-          {error}
-        </p>
-      )}
-    </>
-  );
-}
-
-export function Explorer({
-  markets,
-  market,
-  setMarket,
-  focus,
-}: {
-  markets: Market[];
-  market: number;
-  setMarket: (id: number) => void;
-  focus?: { item_id: number; variant_key: string } | null;
+export function Explorer({markets,market,setMarket,searchParams,marketsReady}: {
+  markets:Market[];market:number;setMarket:(id:number)=>void;searchParams:string;marketsReady:boolean;
 }) {
-  const preferences = usePreferences();
-  const range = preferences.values.explorer_days;
-  const [query, setQuery] = useState(focus?.item_id.toString() || ""),
-    [search, setSearch] = useState(focus?.item_id.toString() || ""),
-    [selected, setSelected] = useState<Item | null>(null);
-  const [catalogueSummary, setCatalogueSummary] = useState({
-    synthetic: false,
-    empty: false,
-  });
-  useLayoutEffect(() => {
-    setSelected(
-      focus
-        ? {
-            ...focus,
-            name: `Item #${focus.item_id}`,
-            name_verified: false,
-            variant: null,
-          }
-        : null,
-    );
-  }, [market, focus?.item_id, focus?.variant_key]);
-  const detail = useLoad(
-    "item-detail",
-    () =>
-      market && selected
-        ? api<Detail>(
-            `/markets/${market}/items/${selected.item_id}/${selected.variant_key}`,
-          )
-        : Promise.resolve(null),
-    [market, selected?.item_id, selected?.variant_key],
-  );
-  const current = markets.find((row) => row.id === market),
-    value = detail.data?.valuation;
-  const cutoff = new Date(Date.now() - range * 86400000)
-    .toISOString()
-    .slice(0, 10);
-  return (
-    <>
-      <div className="eyebrow">KNOW YOUR MARKET</div>
-      <h1>Market Explorer</h1>
-      <p className="intro">
-        Understand current listings, long-term references, and the evidence
-        behind them.
-      </p>
-      <form
-        className="toolbar"
-        onSubmit={(event) => {
-          event.preventDefault();
-          setQuery(search);
-        }}
-      >
-        <label className="grow">
-          Search items
-          <input
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Item name or ID, e.g. Arcane Crystal"
-            maxLength={64}
-          />
-        </label>
-        <MarketSelect {...{ markets, market, setMarket }} />
-        <button className="primary" disabled={!market}>
-          Search
-        </button>
-      </form>
-      {current && <Freshness market={current} />}
-      <Loading error={detail.error} loading={detail.loading} />
-      {!market && (
-        <div className="empty panel">
-          No market mappings are configured. An administrator can add a mapping
-          under Administration.
-        </div>
-      )}
-      {catalogueSummary.synthetic && (
-        <p className="notice warning">
-          Synthetic fixture data · not live Auction House observations.
-        </p>
-      )}
-      {!!market && (
-        <ItemCatalogue
-          key={market}
-          market={market}
-          query={query}
-          focus={focus}
-          onSelect={setSelected}
-          onSummary={setCatalogueSummary}
-        />
-      )}
-      {detail.data && value && (
-        <>
-          <div className="item-heading">
-            <ItemInfo
-              eager
-              market={market}
-              item={{
-                ...detail.data,
-                icon_url: selected?.icon_url,
-                quality: detail.data.quality ?? selected?.quality,
-              }}
-              prices={value}
-            />
-            <div>
-              <div className="eyebrow">ITEM #{detail.data.item_id}</div>
-              <h2><ItemName name={detail.data.name} quality={detail.data.quality ?? selected?.quality}/></h2>
-              <ItemAttribution
-                item={{
-                  ...detail.data,
-                  metadata_attribution: selected?.metadata_attribution,
-                }}
-              />
-              <small className="muted">{variantLabel(selected?.variant)}</small>
-              <br />
-              <small className="muted">
-                {detail.data.name_verified
-                  ? "Verified item metadata"
-                  : "Item name is unverified · variant kept separate"}
-              </small>
-            </div>
-          </div>
-          <div className="stats">
-            <article>
-              <label>LOWEST BUYOUT / UNIT</label>
-              <strong>
-                <Currency value={value.lowest_buyout} />
-              </strong>
-              <small>Current asking price</small>
-            </article>
-            <article>
-              <label>RECENT PRICE</label>
-              <strong>
-                <Currency value={value.recent_price} />
-              </strong>
-              <small>Quantity-weighted listings</small>
-            </article>
-            <article>
-              <label>14-DAY MARKET VALUE</label>
-              <strong>
-                <Currency value={value.market_value} />
-              </strong>
-              <small>{value.market_coverage_days} observed UTC days</small>
-            </article>
-            <article>
-              <label>AVAILABLE SUPPLY</label>
-              <strong>{value.supply.toLocaleString()} units</strong>
-              <small>
-                {value.listing_count.toLocaleString()} listings ·{" "}
-                {value.priced_supply.toLocaleString()} priced units
-              </small>
-            </article>
-          </div>
-          <div className="two-col">
-            <section className="panel">
-              <div className="panel-heading">
-                <h3>Price history</h3>
-                <div className="segmented">
-                  {([7, 14, 60, 365, 3650] as const).map((days) => (
-                    <button
-                      key={days}
-                      className={range === days ? "selected" : ""}
-                      onClick={() => preferences.update({explorer_days:days})}
-                    >
-                      {days === 3650 ? "10Y" : `${days}D`}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <PriceHistory
-                key={`${market}:${selected!.item_id}:${selected!.variant_key}:${range}`}
-                market={market}
-                item={selected!.item_id}
-                variant={selected!.variant_key}
-                days={range}
-              />
-              <p className="panel-note">
-                60-day historical value:{" "}
-                <Currency value={value.historical_value} /> ·{" "}
-                {value.coverage_days} observed days
-              </p>
-            </section>
-            <section className="panel">
-              <div className="panel-heading">
-                <h3>Supply by price</h3>
-              </div>
-              <SupplyDistribution
-                market={market}
-                item={selected!.item_id}
-                variant={selected!.variant_key}
-              />
-            </section>
-          </div>
-          <CurrentListings
-            key={`${market}:${selected!.item_id}:${selected!.variant_key}`}
-            market={market}
-            item={selected!.item_id}
-            variant={selected!.variant_key}
-          />
-          <p className="notice">
-            Reference algorithm: {value.algorithm}. Workshop compatibility
-            remains unverified. Missing days are not filled in, and disappearing
-            listings do not establish sales.
-          </p>
-        </>
-      )}
-    </>
-  );
+  const preferences=usePreferences();
+  const state=explorerState(searchParams,{market,query:'',sort:preferences.values.item_sort,pageIndex:0,pageSize:preferences.values.item_page_size});
+  const [search,setSearch]=useState(()=>restoration()?.draft??state.query);
+  const [summary,setSummary]=useState({synthetic:false,empty:false});
+  const current=markets.find(row=>row.id===state.market);
+  useEffect(()=>{setSearch(restoration()?.draft??state.query);},[state.query,state.market]);
+  useEffect(()=>{if(markets.length&&current&&currentLocation()!==explorerUrl(state))navigate(explorerUrl(state),true);},[markets.length,state.market,state.query,state.sort.id,state.sort.desc,state.pageIndex,state.pageSize]);
+  function change(next:ExplorerState){navigate(explorerUrl(next),true);}
+  return <>
+    <div className="eyebrow">KNOW YOUR MARKET</div><h1>Market Explorer</h1>
+    <p className="intro">Browse current asking prices and supply. Open an item to research its history, variants and auctions.</p>
+    <form className="toolbar" onSubmit={event=>{event.preventDefault();saveRestoration({draft:search,expanded:{}});change({...state,query:search,pageIndex:0});}}>
+      <label className="grow">Search items<input value={search} onChange={e=>{setSearch(e.target.value);saveRestoration({draft:e.target.value});}} placeholder="Item name or ID, e.g. Arcane Crystal" maxLength={64}/></label>
+      <MarketSelect markets={markets} market={state.market} setMarket={id=>{setMarket(id);saveRestoration({draft:'',expanded:{}});change({...state,market:id,query:'',pageIndex:0});}}/>
+      <button className="primary" disabled={!current}>Search</button>
+    </form>
+    {current&&<Freshness market={current}/>}
+    {!marketsReady&&<p role="status" className="empty panel">Loading available markets…</p>}
+    {marketsReady&&!markets.length&&<p className="empty panel">No market mappings are configured. An administrator can add a mapping under Administration.</p>}
+    {markets.length>0&&!current&&<p className="notice" role="alert">This market is unavailable. Choose an available market to browse; your link has not been moved to another market.</p>}
+    {summary.synthetic&&<p className="notice warning">Synthetic fixture data · not live Auction House observations.</p>}
+    {current&&<ItemCatalogue key={`${state.market}:${state.query}`} market={state.market} query={state.query} state={state} onChange={change} onSummary={setSummary}/>}
+  </>;
 }

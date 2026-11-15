@@ -199,7 +199,7 @@ export function PriceHistory({
   if (history.error)
     return (
       <p role="alert" className="notice error">
-        {history.error.message}
+        {history.error.message} <button onClick={()=>history.refetch()}>Retry price history</button>
       </p>
     );
   if (!rows.length)
@@ -507,7 +507,7 @@ export function SupplyDistribution({
   );
   if (result.isPending)
     return <p role="status">Loading complete distribution…</p>;
-  if (result.error) return <p role="alert">{result.error.message}</p>;
+  if (result.error) return <p role="alert">{result.error.message} <button onClick={()=>result.refetch()}>Retry supply distribution</button></p>;
   if (!result.data?.bands.length)
     return (
       <p className="empty">
