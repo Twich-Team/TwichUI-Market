@@ -29,7 +29,7 @@ PROVIDERS = {
     'blizzard': ProviderSpec('Blizzard Forever', True, 240, 2000, 15, 2592000,
         'https://develop.battle.net', 'Authoritative Forever base-item fields. OAuth uses existing server secrets.'),
     'everloot': ProviderSpec('Everloot', False, 20, 100, 180, 3600,
-        'https://everloot.app', 'Documented Forever player names and unconfirmed client attributes. Live validation pending.'),
+        'https://everloot.app', 'Forever consensus names with attribution. Bulk client attributes are unconfirmed and do not supply names.'),
     'foreverdb': ProviderSpec('ForeverDB', True, 60, 500, 3, 86400,
         'https://foreverdb.net', 'Approval required. Only minimal documented identity/name envelope; authorized fixture verification pending.'),
     'thewowdb': ProviderSpec('TheWoWDB', False, 60, 500, 60, 3600,
