@@ -220,11 +220,11 @@ fn metadata_with(
 /// Native update-check policy. Market synchronization preferences do not own it.
 #[derive(Default)]
 pub struct CheckSchedule {
-    next_ms: Option<u64>,
-    last_clock_ms: Option<u64>,
+    next_ms: Option<i64>,
+    last_clock_ms: Option<i64>,
 }
 impl CheckSchedule {
-    pub fn claim(&mut self, now_ms: u64, eligible: bool) -> bool {
+    pub fn claim(&mut self, now_ms: i64, eligible: bool) -> bool {
         if self.last_clock_ms.is_some_and(|previous| now_ms < previous) {
             self.next_ms = Some(now_ms); // Reconcile one backward-clock event.
         }
@@ -236,21 +236,21 @@ impl CheckSchedule {
             false
         }
     }
-    pub fn completed(&mut self, now_ms: u64, success: bool) {
+    pub fn completed(&mut self, now_ms: i64, success: bool) {
         self.last_clock_ms = Some(now_ms);
         self.next_ms = Some(now_ms.saturating_add(if success { 86_400_000 } else { 3_600_000 }));
     }
-    pub fn connection_ready(&mut self, now_ms: u64) {
+    pub fn connection_ready(&mut self, now_ms: i64) {
         self.next_ms = Some(now_ms);
     }
-    pub fn wait_ms(&self, now_ms: u64, eligible: bool) -> u64 {
+    pub fn wait_ms(&self, now_ms: i64, eligible: bool) -> u64 {
         if !eligible {
             return 900_000;
         }
         self.next_ms
             .unwrap_or(now_ms)
             .saturating_sub(now_ms)
-            .clamp(1000, 900_000)
+            .clamp(1000, 900_000) as u64
     }
 }
 pub fn public_key_fingerprint(key: &str) -> String {

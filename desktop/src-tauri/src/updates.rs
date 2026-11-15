@@ -385,6 +385,13 @@ mod tests {
         corrupt[0] ^= 1;
         assert!(candidate.verify(&corrupt).is_err());
         candidate.verify(&bytes).unwrap();
+        let wrong = serde_json::json!({"version":"2.9999.9999","url":format!("{}/api/v1/companion/releases/2.9999.9999/windows-x64",update::ORIGIN),"signature":signature.trim()});
+        assert!(updater
+            .restore_update(wrong)
+            .unwrap()
+            .unwrap()
+            .verify(&bytes)
+            .is_err());
         candidate
             .install(bytes)
             .expect("The supported updater must launch the verified installer");
