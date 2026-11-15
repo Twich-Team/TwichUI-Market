@@ -95,6 +95,11 @@ async fn export_market(app: AppHandle) -> Result<String, String> {
         .map_err(|_| "Export interrupted")?
 }
 #[tauri::command]
+async fn export_workshop(app: AppHandle,algorithm:String) -> Result<String,String> {
+    let owned=runtime(&app);
+    tauri::async_runtime::spawn_blocking(move || owned.export_workshop(&algorithm)).await.map_err(|_| "Workshop test export interrupted".to_string())?
+}
+#[tauri::command]
 fn open_exports(app: AppHandle) -> Result<(), String> {
     runtime(&app).open_exports()
 }
@@ -204,6 +209,7 @@ fn main() {
             refresh_connection,
             disconnect,
             export_market,
+            export_workshop,
             open_exports,
             open_website,
             save_diagnostics,

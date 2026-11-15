@@ -327,3 +327,39 @@ class CompanionRefreshHistory(Base):
 
 # Register additive metadata tables with the same migration/test metadata.
 from .metadata_models import MetadataProvider, MetadataSource, MetadataVersion, MetadataJob, MetadataTask
+
+
+# M1b derived/export evidence only. Originals, legacy statistics and caches are not rewritten.
+class BridgeDerivation(Base):
+    __tablename__ = 'bridge_derivations'
+    snapshot_id: Mapped[int] = mapped_column(ForeignKey('snapshots.id', ondelete='CASCADE'), primary_key=True)
+    algorithm: Mapped[str] = mapped_column(String(80), primary_key=True)
+    revision: Mapped[int] = mapped_column(Integer, primary_key=True)
+    record_count: Mapped[int] = mapped_column(Integer)
+
+
+class BridgeDerivedRecord(Base):
+    __tablename__ = 'bridge_derived_records'
+    snapshot_id: Mapped[int] = mapped_column(ForeignKey('snapshots.id', ondelete='CASCADE'), primary_key=True)
+    algorithm: Mapped[str] = mapped_column(String(80), primary_key=True)
+    revision: Mapped[int] = mapped_column(Integer, primary_key=True)
+    item_id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    variant_key: Mapped[str] = mapped_column(String(64), primary_key=True)
+    record_json: Mapped[str] = mapped_column(Text)
+
+
+class BridgeGeneration(Base):
+    __tablename__ = 'bridge_generations'
+    generation_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    market_id: Mapped[int] = mapped_column(ForeignKey('markets.id'), index=True)
+    algorithm: Mapped[str] = mapped_column(String(80))
+    source_signature: Mapped[str] = mapped_column(String(64), index=True)
+    manifest_json: Mapped[str] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now, index=True)
+
+
+class BridgeRecord(Base):
+    __tablename__ = 'bridge_records'
+    generation_id: Mapped[str] = mapped_column(ForeignKey('bridge_generations.generation_id', ondelete='CASCADE'), primary_key=True)
+    position: Mapped[int] = mapped_column(Integer, primary_key=True)
+    record_json: Mapped[str] = mapped_column(Text)

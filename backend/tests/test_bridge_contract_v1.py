@@ -32,7 +32,7 @@ def changed(path,value):
 
 
 @pytest.mark.parametrize('mutation',[
-    changed(['contract_version'],2),changed(['schema_version'],2),changed(['transport_version'],2),
+    changed(['contract_version'],2),changed(['schema_version'],3),changed(['transport_version'],2),
     changed(['pricing_algorithm'],'future'),changed(['history_basis'],'market_rolling_daily_means'),
     changed(['synthetic'],False),changed(['watermark_observation_id'],'900'),
     changed(['market','source_kind'],'commodities'),changed(['market','mapping_verified'],True),

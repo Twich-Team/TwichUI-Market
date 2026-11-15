@@ -769,6 +769,38 @@ impl Runtime {
             .map_err(friendly)?;
         Ok(output.to_string_lossy().into_owned())
     }
+    /// Explicit M1b test export. No automatic schedule, game discovery or installation.
+    pub fn export_workshop(&self,algorithm:&str) -> Result<String> {
+        let _gate=self.data.gate.lock().map_err(|_| "Connection operation interrupted")?;
+        let view=self.view()?;
+        if view.approving || view.refreshing || !view.connected {return Err("Finish connecting before exporting Workshop data".into())}
+        let profile=self.data.local.lock().map_err(|_| "Connection settings unavailable")?.profile.clone();
+        let account=profile.bootstrap.as_ref().ok_or("Refresh the connection before exporting")?.account.id;
+        let market=view.settings.selected_market.or(view.sync.sync.selected_market).ok_or("Choose a market first")?;
+        let scope=twichui_market_core::bridge::Scope{server:server_url(&view.settings.server).map_err(friendly)?.to_string(),account_id:account,market_id:market,algorithm:algorithm.into()};
+        let mut cache=twichui_market_core::bridge::BridgeCache::open(&self.data.path.join("bridge-v1.sqlite")).map_err(friendly)?;
+        let download=|client:&MarketClient,cache:&mut twichui_market_core::bridge::BridgeCache| client.download_bridge(cache,&scope,||self.data.quitting.load(Ordering::Acquire));
+        match profile.mode {
+            Mode::Companion=>AuthorizationClient::new(&scope.server).map_err(friendly)?.authenticated(&NativeCredentialStore,Utc::now(),|session|{
+                if !profile.matches_session(session){return Err(Error::Authentication)}
+                download(&session.client()?,&mut cache)
+            }).map_err(friendly)?,
+            Mode::Legacy=>download(&MarketClient::new(&scope.server,vault::load(&scope.server).map_err(friendly)?).map_err(friendly)?,&mut cache).map_err(friendly)?,
+            Mode::Disconnected=>return Err("Sign in before exporting".into()),
+        }
+        if self.data.quitting.load(Ordering::Acquire){return Err("Export cancelled".into())}
+        // Settings can change while the native connection gate is held. Never publish
+        // an export for a connection/market that is no longer selected.
+        let current=self.view()?;
+        let current_account=self.data.local.lock().map_err(|_| "Connection settings unavailable")?.profile.bootstrap.as_ref().map(|b|b.account.id);
+        if !current.connected || server_url(&current.settings.server).map_err(friendly)?.as_str()!=scope.server
+            || current_account!=Some(account) || current.settings.selected_market.or(current.sync.sync.selected_market)!=Some(market) {
+            return Err("Connection or market changed. Completed data is preserved; export again for the selected market.".into())
+        }
+        let root=twichui_market_core::bridge::staging_directory(&self.data.path,&scope).map_err(friendly)?;
+        let output=twichui_market_core::bridge::export_staging(&cache,&scope,&root).map_err(friendly)?;
+        Ok(output.to_string_lossy().into_owned())
+    }
     pub fn open_exports(&self) -> Result<()> {
         let dir = self.data.path.join("exports");
         std::fs::create_dir_all(&dir).map_err(friendly)?;

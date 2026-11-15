@@ -355,3 +355,7 @@ def update_user(user_id: int, body: UserUpdate, user: User = Depends(admin), db:
 def events(user: User = Depends(admin), db: Session = Depends(session)):
     return [{"id": r.id, "actor_id": r.actor_id, "action": r.action, "detail": r.detail,
              "created_at": r.created_at} for r in db.scalars(select(SecurityEvent).order_by(SecurityEvent.id.desc()).limit(200))]
+
+# Separate, opt-in bridge API. Existing synchronization and collector behavior stay unchanged.
+from .bridge_api import router as bridge_router
+app.include_router(bridge_router)
