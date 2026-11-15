@@ -79,4 +79,5 @@ jobs:
     with:
       harness_commit: ${{ github.event.pull_request.head.sha || github.sha }}
       proof_path: docs/evidence/companion-v2-signed-candidate.json
-      pending_only: true
+      # Integration must recheck the original signed bytes against its real API.
+      pending_only: ${{ !startsWith(github.ref, 'refs/heads/integration/') }}

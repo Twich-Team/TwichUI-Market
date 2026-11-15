@@ -1,0 +1,9 @@
+# Apply LAST after the complete combined release overlays; retain additive schema/data.
+# Pause metadata jobs and stop only enrichment before replacing these three services.
+services:
+  api:
+    image: sha256:17d2c17591bd0ddea617fcf9018d0235a9100bd00813ea0faa025f3b83e679f2
+  local-api:
+    image: sha256:17d2c17591bd0ddea617fcf9018d0235a9100bd00813ea0faa025f3b83e679f2
+  proxy:
+    image: sha256:fb5f20db59d6a5ed92c1ea4d490e1d6af86772065b9d5be88f1096cf00cc6d0c

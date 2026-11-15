@@ -1,0 +1,32 @@
+# Owner-authorized combined release. Apply after base + TLS + Traefik + private beta.
+# Never invoke an unscoped `up`; the existing collector/monitor/database stay intact.
+services:
+  migrate:
+    image: sha256:775d0d687e438ae3c0401d91b6ffb9b40241e188650c3b9bdc9e1496f54f3bcb
+    build: !reset null
+  api:
+    image: sha256:775d0d687e438ae3c0401d91b6ffb9b40241e188650c3b9bdc9e1496f54f3bcb
+    environment: &metadata-environment
+      METADATA_KEYRING_FILE: /run/metadata/keyring.json
+      BLIZZARD_CLIENT_ID: ${BLIZZARD_CLIENT_ID:-}
+      BLIZZARD_CLIENT_SECRET: ${BLIZZARD_CLIENT_SECRET:-}
+    volumes:
+      - ${METADATA_KEYRING_PATH:?Set private metadata keyring path}:/run/metadata/keyring.json:ro
+    pids_limit: 100
+  local-api:
+    image: sha256:775d0d687e438ae3c0401d91b6ffb9b40241e188650c3b9bdc9e1496f54f3bcb
+    environment: *metadata-environment
+    volumes:
+      - ${METADATA_KEYRING_PATH:?Set private metadata keyring path}:/run/metadata/keyring.json:ro
+  proxy:
+    image: sha256:72d7a79e01b4debc1607aa72ad30a89501a3429e6545b564f1c3131e8f8b605f
+    build: !reset null
+  enrichment:
+    image: sha256:775d0d687e438ae3c0401d91b6ffb9b40241e188650c3b9bdc9e1496f54f3bcb
+    profiles: [metadata]
+    environment:
+      METADATA_KEYRING_FILE: /run/metadata/keyring.json
+    volumes:
+      - ${METADATA_KEYRING_PATH:?Set private metadata keyring path}:/run/metadata/keyring.json:ro
+  private-beta-publisher:
+    image: sha256:3f757981f846016e3578f78998f4a8e2cb277705771f9bd83bb8daf6468c5b6f
