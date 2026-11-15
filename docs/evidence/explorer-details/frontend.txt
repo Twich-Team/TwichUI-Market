@@ -1,0 +1,65 @@
+
+> twichui-market-web@0.1.0 build
+> tsc --noEmit && vite build
+
+vite v8.3.8 building client environment for production...
+transforming...
+✓ 976 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                  0.47 kB │ gzip:   0.31 kB
+dist/assets/index-D98supzX.css                  29.99 kB │ gzip:   7.44 kB
+dist/assets/companion-approval-9kijVXm6.js       5.01 kB │ gzip:   1.97 kB
+dist/assets/companion-devices-Bxx-yAZ4.js        8.14 kB │ gzip:   2.90 kB
+dist/assets/jsx-runtime-Wy9s6hX0.js              8.91 kB │ gzip:   3.39 kB
+dist/assets/deals-BMvQ1pbw.js                    9.78 kB │ gzip:   3.11 kB
+dist/assets/companion-DwNzWcDi.js               12.63 kB │ gzip:   4.12 kB
+dist/assets/research-D7DMhuWU.js                32.49 kB │ gzip:  10.94 kB
+dist/assets/data-table-Djs60-0r.js              44.67 kB │ gzip:  15.66 kB
+dist/assets/item-details-dwLhIrGi.js            57.85 kB │ gzip:  17.20 kB
+dist/assets/settings-DEMZljCU.js                58.33 kB │ gzip:  14.42 kB
+dist/assets/useTriggerFocusGuards-Cykp-e6y.js  145.74 kB │ gzip:  45.96 kB
+dist/assets/index-Cwd7fUcQ.js                  267.66 kB │ gzip:  84.04 kB
+dist/assets/chart-engine-Bzqihi_9.js           573.27 kB │ gzip: 193.01 kB
+
+[plugin builtin:vite-reporter]
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 908ms
+npm notice
+npm notice New major version of npm available! 11.20.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice
+
+> twichui-market-web@0.1.0 test
+> vitest run --maxWorkers=1
+
+
+ RUN  v5.1.0 /work/web
+
+ ✓ src/navigation.test.ts (30 tests) 11ms
+ ✓ src/preferences-store.test.ts (12 tests) 19ms
+ ✓ src/api.test.ts (4 tests) 49ms
+ ✓ src/currency.test.tsx (3 tests) 20ms
+ ✓ src/metadata-attempts.test.tsx (5 tests) 22ms
+ ✓ src/chart-data.test.ts (3 tests) 28ms
+ ✓ src/item-name.test.tsx (14 tests) 11ms
+ ✓ src/metadata-priority.test.ts (6 tests) 27ms
+ ✓ src/companion-callback.test.ts (15 tests) 8ms
+ ✓ src/query.test.ts (2 tests) 5ms
+ ✓ src/companion-downloads.test.ts (10 tests) 5ms
+ ✓ src/listing-prices.test.ts (3 tests) 4ms
+ ✓ src/variant-label.test.ts (2 tests) 3ms
+
+ Test Files  13 passed (13)
+      Tests  109 passed (109)
+   Start at  06:08:15
+   Duration  2.49s (import 61%, tests 23%, transform 10%, worker 6%)
+
+    Isolate  13 workers spawned · ~112ms startup each (spawn + environment, per file)
+             at least ~1.34s faster with isolate: false — reuses workers across files instead of one per file
+
+found 0 vulnerabilities

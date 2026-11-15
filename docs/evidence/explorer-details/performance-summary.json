@@ -1,0 +1,13 @@
+{
+  "synthetic": true,
+  "samples": 3,
+  "medians": {
+    "signed_in_catalogue_including_login_ms": 1302,
+    "parent_and_exact_navigation_ms": 1082,
+    "back_ms": 207,
+    "catalogue_requests_on_return": 0,
+    "initial_js_encoded_bytes": 148782
+  },
+  "production_p95": false,
+  "overall_speedup_claimed": false
+}

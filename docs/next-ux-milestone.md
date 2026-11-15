@@ -1,3 +1,5 @@
+**Owner-review boundary reached:** Explorer / Item Details is fully implemented and verified at `b3e48bd` on `feature/explorer-item-details`, with [draft PR #4](https://github.com/Twich-Team/TwichUI-Market/pull/4), [complete review report](explorer-item-details-review.md) and [actual screenshot gallery](evidence/explorer-details/review.html). Backend, website and Windows CI are green (380 PostgreSQL, 109 frontend, 34 browser workflows, operational/security/migration checks). Production remains approved administration release `e9c4d29`; Phase 2 is not deployed. Stop at this boundary pending explicit final owner visual approval. Earlier instructions to begin/continue this implementation are superseded by this completion record.
+
 # Next UX milestone: Explorer and Item Details
 
 Owner direction, November 14, 2026 (America/Denver). This is queued work. It does not expand or interrupt the Administration Table Modernization / Metadata Provider Investigation goal.
