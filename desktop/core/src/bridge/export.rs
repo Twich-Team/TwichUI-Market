@@ -14,8 +14,12 @@ fn no_links(path:&Path)->Result<()>{
 fn safe_root(root:&Path)->Result<()>{
  if !root.is_absolute()||!root.is_dir(){return refuse()}no_links(root)?;
  #[cfg(windows)]super::windows_owner::check(root)?;
- for part in root.components(){if ["savedvariables","wtf","interface","addons"].contains(&part.as_os_str().to_string_lossy().to_ascii_lowercase().as_str()){return refuse()}}
- for p in root.ancestors(){if p.join("WTF").exists()||p.join("Interface").join("AddOns").exists(){return refuse()}}
+ let resolved=fs::canonicalize(root)?;
+ // Check the opened filesystem identity as well as spelling (including Windows short-name aliases).
+ for part in root.components().chain(resolved.components()){
+ #[cfg(windows)]{let name=part.as_os_str().to_string_lossy();if name.ends_with(' ')||name.ends_with('.') {return refuse()}}
+ if ["savedvariables","wtf","interface","addons"].contains(&part.as_os_str().to_string_lossy().to_ascii_lowercase().as_str()){return refuse()}}
+ for p in root.ancestors().chain(resolved.ancestors()){if p.join("WTF").exists()||p.join("Interface").join("AddOns").exists(){return refuse()}}
  #[cfg(unix)]{use std::os::unix::fs::PermissionsExt;if fs::metadata(root)?.permissions().mode()&0o022!=0{return refuse()}}
  Ok(())
 }

@@ -78,6 +78,8 @@ fn windows_junction_and_broad_write_acl_are_refused(){
  use std::process::Command;
  let root=tempfile::tempdir().unwrap();let target=root.path().join("owned");std::fs::create_dir(&target).unwrap();
  let c=BridgeCache::memory().unwrap();let s=scope();
+ let saved=root.path().join("SavedVariables");std::fs::create_dir(&saved).unwrap();
+ assert!(bridge::staging_directory(&saved.with_file_name("SavedVariables."),&s).is_err());
  // A fresh, owned staging directory passes the native ownership guard.
  bridge::staging_directory(&target,&s).unwrap();
  let junction=root.path().join("junction");
