@@ -6,8 +6,8 @@ All endpoints below are documented read-only GET under `https://foreverdb.net`. 
 
 | Resource | Documented endpoint(s) | Documented fields/concepts and qualifiers | Pagination/filter | Market relevance / implementation |
 |---|---|---|---|---|
-| Data identity | `/api/v1/meta` | Client build, level cap, resource counts. Complete schema unknown. | None documented | Validate identity; expose observed build, never infer key scope/plan/verification |
-| Items | `/api/v1/items`, `/api/v1/items/{id}` | List identity/name; detail stats, damage, speed, binding, sell price, effects, `disenchant`. `betaEvent`, `speculation`, `speculationReasons` on both. `liveClient` field beta/live changes; `dataFromBuild` retained older record. | q, quality 0–5, class, slot, minLevel, maxLevel; limit/offset | Detail-first for observed/requested IDs; no full crawl. Exact mappings gated on samples |
+| Data identity | `/api/v1/meta` | Client build, level cap and integer resource counts; authenticated types are captured below. No key-type/account-verification field was observed. | None documented | Validate identity; expose observed build, never infer key scope/plan/verification |
+| Items | `/api/v1/items`, `/api/v1/items/{id}` | List identity/name; detail stats, damage, speed, binding, sell price, effects, `disenchant`. `betaEvent`, `speculation`, `speculationReasons` on both. `liveClient` field beta/live changes; `dataFromBuild` retained older record. | q, quality 0–5, class, slot, minLevel, maxLevel; limit/offset | Detail-first for observed/requested IDs; no full crawl. Exact mappings are sample-backed; unknown optional fields are retained in original evidence |
 | Spells | `/api/v1/spells`, `/api/v1/spells/{id}` | Name/rank/description/icon/school/cast time/range/cooldown/required level/base costs. `liveClient` added/removed/changed, beta/live values | q; limit/offset | Direct item-effect references only; no spell encyclopedia |
 | Professions | `/api/v1/professions`, `/api/v1/professions/{slug}` | Twelve identities; counts, ranks/caps, trainers, recipes, reagents, outputs `count`/`min`/`max`; skill orange/yellow/green/grey; `skill.orangeSource`, `orangeClassic`; `learnedFrom.sources`, category/parent, `trainerCostSource`, `recipeItemsHidden` / legacy alias `recipeItemsNotInClient`; Forever changes | Detail q/new/changed; limit/offset. List no pagination documented | Related recipe inputs/output acquisition; no Workshop pricing/formula changes |
 | Vendors | `/api/v1/vendors`, `/api/v1/vendors/{id}` | Locations; `reputationFaction` controls discounts; details sold items, copper prices and `costs` currencies/items; Classic vs seen-in-Forever | q/zone/seen; limit/offset | Direct acquisition, preserve stock/cost/source semantics; never AH price |
@@ -32,7 +32,7 @@ Visible credit/link to ForeverDB.net is required wherever free-tier data appears
 
 ## Existing application coverage, before change
 
-`D` = documented by ForeverDB; `A` = confirmed authenticated current response; `I/S/V` = ingested/stored/visible. `pending` is an evidence gate, not an unsupported-field claim.
+`D` = documented by ForeverDB; `A` = confirmed authenticated current response; `I/S/V` = ingested/stored/visible. `pending` records the initial pre-probe evidence gate, not an unsupported-field claim. The authenticated/implemented table below supersedes those initial pending states.
 
 | Field | ForeverDB docs | ForeverDB A | ForeverDB I/S/V before | TheWoWDB existing mapping |
 |---|---|---|---|---|
@@ -40,12 +40,12 @@ Visible credit/link to ForeverDB.net is required wherever free-tier data appears
 | Quality | List filter and rich item concept; exact property pending | pending | no/no/no | quality enum; sample-backed |
 | Class/subclass, inventory slot | List class/slot filters; detail schema pending | pending | no/no/no | slot/item_subtype display lines |
 | Required level, item level | Required-level list filters; detail schema pending | pending | no/no/no | required_level/item_level |
-| Equip requirements | Exact schema pending | pending | no/no/no | verified non-null detail fields only |
-| Damage/speed, armor | Damage/speed documented; armor exact schema pending | pending | no/no/no | only fields represented by existing community parser |
+| Equip requirements | Exact schema pending | pending | no/no/no | required_level only; other equip requirements are not mapped |
+| Damage/speed, armor | Damage/speed documented; armor exact schema pending | pending | no/no/no | No structured damage/speed/armor mapping; capabilities beyond sampled detail remain unverified |
 | Stats | D | pending | no/no/no | stats label/value converted to lines |
 | Binding | D | pending | no/no/no | binding |
 | Vendor sell copper | D | pending | no/no/no | vendor_sell as exact copper string |
-| Effects/spell references | D | pending | no/no/no | current community parser coverage only |
+| Effects/spell references | D | pending | no/no/no | No structured effect mapping |
 | Sets | Separate endpoint D | pending | no/no/no | no structured set mapping |
 | Icon/appearance references | Spell icon D; item schema pending | pending | no/no/no | allowlisted attributed icon via local media |
 | Disenchant | D, Classic vs observed Forever | pending | no/no/no | no structured mapping |
