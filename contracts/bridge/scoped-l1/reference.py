@@ -1,4 +1,7 @@
-"""Offline L1 reference only. Never imported by server, desktop or addon runtime."""
+"""Pure schema-3 primitives shared by the L1 proof and opt-in L2 producer.
+
+No networking, provider collection, game integration or executable deserialization.
+"""
 import copy
 from datetime import date, timedelta
 import hashlib

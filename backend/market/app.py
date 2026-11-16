@@ -359,3 +359,6 @@ def events(user: User = Depends(admin), db: Session = Depends(session)):
 # Separate, opt-in bridge API. Existing synchronization and collector behavior stay unchanged.
 from .bridge_api import router as bridge_router
 app.include_router(bridge_router)
+
+from .archive_api import router as archive_router
+app.include_router(archive_router)

@@ -4,6 +4,8 @@ use crate::{Error,Result};
 use serde_json::Value;
 use std::{fs,io::{Read,Write},path::{Component,Path,PathBuf}};
 const MAX_ARTIFACT:usize=MAX_BYTES*4+2*1024*1024;
+fn validate_export(g:&Value)->Result<()>{if g["schema_version"]==3{crate::archive::scoped::validate(g,None)}else{validate(g)}}
+fn manifest_limit(g:&Value)->usize{if g["schema_version"]==3{256*1024}else{65536}}
 const PREFIX:&str="TwichUIMarketData = { transport_version = 1, manifest = ";
 const TOC:&str="## Interface: 16001\n## Title: TwichUI Market Data\n## Notes: Companion-generated market observations. No local scans or SavedVariables.\n## LoadOnDemand: 1\nData.lua\n";
 fn refuse<T>()->Result<T>{Err(Error::Invalid("use an owned companion staging directory outside game files"))}
@@ -47,8 +49,8 @@ fn read_literal(bytes:&[u8],i:&mut usize,max:usize)->Result<Vec<u8>>{
  }
 }
 pub(crate) fn artifact(g:&Value,receipt:&Value)->Result<Vec<u8>>{
- validate(g)?;let h:serde_json::Map<String,Value>=g.as_object().unwrap().iter().filter(|(k,_)|k.as_str()!="records").map(|(k,v)|(k.clone(),v.clone())).collect();
- let records=g["records"].as_array().unwrap();let header=canonical(&Value::Object(h))?;if header.len()>65536{return refuse()}
+ validate_export(g)?;let h:serde_json::Map<String,Value>=g.as_object().unwrap().iter().filter(|(k,_)|k.as_str()!="records").map(|(k,v)|(k.clone(),v.clone())).collect();
+ let records=g["records"].as_array().unwrap();let header=canonical(&Value::Object(h))?;if header.len()>manifest_limit(g){return refuse()}
  let mut out=PREFIX.as_bytes().to_vec();literal(&header,&mut out);out.extend_from_slice(b", records = {\n");
  for r in records{let raw=canonical(r)?;if raw.len()>65536{return refuse()}literal(&raw,&mut out);out.extend_from_slice(b",\n")}
  out.extend_from_slice(b"}, receipt = ");let raw=canonical(receipt)?;if raw.len()>4096{return refuse()}literal(&raw,&mut out);out.extend_from_slice(b" }\n");if out.len()>MAX_ARTIFACT{return refuse()}Ok(out)
@@ -58,9 +60,9 @@ pub fn inspect_artifact(bytes:&[u8])->Result<(Value,Value)>{
  if bytes.len()>MAX_ARTIFACT{return refuse()}
  struct Reader<'a>{b:&'a[u8],i:usize}
  impl Reader<'_>{fn exact(&mut self,s:&[u8])->Result<()>{if self.b.get(self.i..self.i+s.len())!=Some(s){return refuse()}self.i+=s.len();Ok(())}fn string(&mut self,max:usize)->Result<Vec<u8>>{read_literal(self.b,&mut self.i,max)}}
- let mut r=Reader{b:bytes,i:0};r.exact(PREFIX.as_bytes())?;let mut g=parse(&r.string(65536)?,65536)?;r.exact(b", records = {\n")?;let mut records=Vec::new();let mut size=0;
+ let mut r=Reader{b:bytes,i:0};r.exact(PREFIX.as_bytes())?;let mut g=parse(&r.string(256*1024)?,256*1024)?;r.exact(b", records = {\n")?;let mut records=Vec::new();let mut size=0;
  while r.b.get(r.i)==Some(&b'"'){let raw=r.string(65536)?;size+=raw.len()+1;if size>MAX_BYTES||records.len()>=150000{return refuse()}records.push(parse(&raw,65536)?);r.exact(b",\n")?}
- r.exact(b"}, receipt = ")?;let receipt=parse(&r.string(4096)?,4096)?;r.exact(b" }\n")?;if r.i!=bytes.len(){return refuse()}g.as_object_mut().ok_or(Error::Invalid("bridge Lua manifest"))?.insert("records".into(),records.into());validate(&g)?;
+ r.exact(b"}, receipt = ")?;let receipt=parse(&r.string(4096)?,4096)?;r.exact(b" }\n")?;if r.i!=bytes.len(){return refuse()}g.as_object_mut().ok_or(Error::Invalid("bridge Lua manifest"))?.insert("records".into(),records.into());validate_export(&g)?;
  if receipt["schema_version"]!=1||receipt["generation_id"]!=g["generation_id"]||receipt.as_object().is_none_or(|o|o.len()!=4)||receipt["desktop_build"].as_str().is_none_or(|s|s.is_empty()||s.len()>80)||super::validation::time(&receipt["completed_at"]).is_err(){return refuse()}Ok((g,receipt))
 }
 fn read(path:&Path,maximum:usize)->Result<Vec<u8>>{no_links(path)?;let mut data=Vec::new();fs::File::open(path)?.take(maximum as u64+1).read_to_end(&mut data)?;if data.len()>maximum{return refuse()}Ok(data)}
@@ -77,7 +79,18 @@ pub fn staging_directory(base:&Path,scope:&Scope)->Result<PathBuf>{
 
 pub fn export_staging(cache:&BridgeCache,scope:&Scope,root:&Path)->Result<PathBuf>{publish(cache,scope,root,|p,b|atomic(p,b))}
 fn publish(cache:&BridgeCache,scope:&Scope,root:&Path,replace:impl FnOnce(&Path,&[u8])->Result<()>)->Result<PathBuf>{
- safe_root(root)?;let(g,receipt)=cache.completed(scope)?.ok_or(Error::Invalid("complete a bridge download before export"))?;let bytes=artifact(&g,&receipt)?;inspect_artifact(&bytes)?;
+ let(g,receipt)=cache.completed(scope)?.ok_or(Error::Invalid("complete a bridge download before export"))?;
+ publish_value(scope,root,&g,&receipt,replace)
+}
+/// Explicit schema-3 export uses the identical safe publisher, never game discovery.
+pub fn export_generation(scope:&Scope,root:&Path,g:&Value,receipt:&Value,budget:&crate::archive::DeliveryBudget)->Result<PathBuf>{
+ crate::archive::scoped::preflight(g,receipt,budget)?;
+ publish_value(scope,root,g,receipt,|p,b|atomic(p,b))
+}
+fn publish_value(scope:&Scope,root:&Path,g:&Value,receipt:&Value,replace:impl FnOnce(&Path,&[u8])->Result<()>)->Result<PathBuf>{
+ safe_root(root)?;scope.key()?;
+ if g["market"]["server_market_id"]!=scope.market_id||g["pricing_algorithm"]!=scope.algorithm{return refuse()}
+ let bytes=artifact(g,receipt)?;inspect_artifact(&bytes)?;
  let marker=root.join(".twichui-bridge-scope");let key=scope.key()?;if marker.exists(){if read(&marker,128)?!=key.as_bytes(){return refuse()}}else{atomic(&marker,key.as_bytes())?}
  let folder=root.join("TwichUI_MarketData");no_links(&folder)?;if !folder.exists(){fs::create_dir(&folder)?}if !folder.is_dir(){return refuse()}safe_root(&folder)?;
  for entry in fs::read_dir(&folder)?{let path=entry?.path();no_links(&path)?;#[cfg(unix)]{use std::os::unix::fs::MetadataExt;if fs::metadata(&path)?.uid()!=fs::metadata(&folder)?.uid(){return refuse()}}

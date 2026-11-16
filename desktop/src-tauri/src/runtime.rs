@@ -801,6 +801,191 @@ impl Runtime {
         let output=twichui_market_core::bridge::export_staging(&cache,&scope,&root).map_err(friendly)?;
         Ok(output.to_string_lossy().into_owned())
     }
+    /// L2 manual archive/scope actions. Never called by the background scheduler.
+    pub fn archive_workshop(
+        &self,
+        algorithm: &str,
+        disk_budget_mib: u64,
+        selected: Option<serde_json::Value>,
+        publish: bool,
+        compatible: bool,
+    ) -> Result<serde_json::Value> {
+        let _gate = self
+            .data
+            .gate
+            .lock()
+            .map_err(|_| "Connection operation interrupted")?;
+        let view = self.view()?;
+        if view.approving || view.refreshing {
+            return Err("Finish connecting before using history archives".into());
+        }
+        if !(64..=65536).contains(&disk_budget_mib) {
+            return Err("Archive disk budget must be 64–65536 MiB".into());
+        }
+        let profile = self
+            .data
+            .local
+            .lock()
+            .map_err(|_| "Connection settings unavailable")?
+            .profile
+            .clone();
+        if profile.mode == Mode::Disconnected {
+            return Err("Sign in before selecting a private archive".into());
+        }
+        let account = profile
+            .bootstrap
+            .as_ref()
+            .ok_or("Refresh the connection before using an archive")?
+            .account
+            .id;
+        let market = view
+            .settings
+            .selected_market
+            .or(view.sync.sync.selected_market)
+            .ok_or("Choose a market first")?;
+        let scope = twichui_market_core::bridge::Scope {
+            server: server_url(&view.settings.server)
+                .map_err(friendly)?
+                .to_string(),
+            account_id: account,
+            market_id: market,
+            algorithm: algorithm.into(),
+        };
+        let mut archive = twichui_market_core::archive::ArchiveStore::open(
+            &self.data.path.join("history-archive-v1.sqlite"),
+            disk_budget_mib * 1024 * 1024,
+        )
+        .map_err(friendly)?;
+        if selected.is_none() {
+            let download =
+                |client: &MarketClient, cache: &mut twichui_market_core::archive::ArchiveStore| {
+                    client.download_archive(cache, &scope, || {
+                        self.data.quitting.load(Ordering::Acquire)
+                    })
+                };
+            match profile.mode {
+                Mode::Companion => AuthorizationClient::new(&scope.server)
+                    .map_err(friendly)?
+                    .authenticated(&NativeCredentialStore, Utc::now(), |session| {
+                        if !profile.matches_session(session) {
+                            return Err(Error::Authentication);
+                        }
+                        download(&session.client()?, &mut archive)
+                    })
+                    .map_err(friendly)?,
+                Mode::Legacy => download(
+                    &MarketClient::new(
+                        &scope.server,
+                        vault::load(&scope.server).map_err(friendly)?,
+                    )
+                    .map_err(friendly)?,
+                    &mut archive,
+                )
+                .map_err(friendly)?,
+                Mode::Disconnected => return Err("Sign in before synchronizing history".into()),
+            }
+        }
+        let verify_context = || -> Result<()> {
+            let current = self.view()?;
+            let account_now = self
+                .data
+                .local
+                .lock()
+                .map_err(|_| "Connection settings unavailable")?
+                .profile
+                .bootstrap
+                .as_ref()
+                .map(|b| b.account.id);
+            if self.data.quitting.load(Ordering::Acquire)
+                || server_url(&current.settings.server)
+                    .map_err(friendly)?
+                    .as_str()
+                    != scope.server
+                || account_now != Some(account)
+                || current
+                    .settings
+                    .selected_market
+                    .or(current.sync.sync.selected_market)
+                    != Some(market)
+            {
+                return Err("Connection or market changed; completed archive preserved".into());
+            }
+            Ok(())
+        };
+        verify_context()?;
+        let header = archive
+            .active(&scope)
+            .map_err(friendly)?
+            .ok_or("Complete the retained-history download first")?;
+        let mut result = serde_json::json!({"header":header,"archive_bytes":archive.allocated_bytes().map_err(friendly)?,"selection":archive.selection(&scope).map_err(friendly)?,
+            "schema3_workshop_runtime_available":false,"notice":"Schema 3 is a testing artifact. Production Workshop support requires L3. No game files are installed or reloaded."});
+        if let Some(input) = selected {
+            let object = input.as_object().ok_or("Invalid exact selection")?;
+            if object.len() != 3
+                || !["variants", "history_from_day", "history_through_day"]
+                    .iter()
+                    .all(|k| object.contains_key(*k))
+            {
+                return Err("Selection requires exact variants and a date window".into());
+            }
+            let request=twichui_market_core::archive::normalize_selection(serde_json::json!({"format":"twichui-market-selection","contract_version":1,"expected_schema_version":3,
+                "issuer_id":header.issuer_id,"market":header.market,"scope_type":"explicit_variants","variants":input["variants"],"history_from_day":input["history_from_day"],"history_through_day":input["history_through_day"],
+                "pricing_algorithm":header.pricing_algorithm,"history_basis":header.history_basis,"profile":"daily_research_v1"})).map_err(friendly)?;
+            archive.save_selection(&scope, &request).map_err(friendly)?;
+            let (generation, receipt, sizes) = twichui_market_core::archive::project(
+                &archive,
+                &scope,
+                &request,
+                &twichui_market_core::archive::DeliveryBudget::default(),
+            )
+            .map_err(friendly)?;
+            result["selection"] = request;
+            result["sizes"] = serde_json::to_value(sizes).map_err(|_| "Size report unavailable")?;
+            result["generation_id"] = generation["generation_id"].clone();
+            if publish {
+                if !compatible {
+                    return Err("Acknowledge that this schema-3 staging artifact requires the future L3 reader".into());
+                }
+                let current = self.view()?;
+                let current_account = self
+                    .data
+                    .local
+                    .lock()
+                    .map_err(|_| "Connection settings unavailable")?
+                    .profile
+                    .bootstrap
+                    .as_ref()
+                    .map(|b| b.account.id);
+                if self.data.quitting.load(Ordering::Acquire)
+                    || server_url(&current.settings.server)
+                        .map_err(friendly)?
+                        .as_str()
+                        != scope.server
+                    || current_account != Some(account)
+                    || current
+                        .settings
+                        .selected_market
+                        .or(current.sync.sync.selected_market)
+                        != Some(market)
+                {
+                    return Err("Connection or market changed; completed archive preserved".into());
+                }
+                let root = twichui_market_core::bridge::staging_directory(&self.data.path, &scope)
+                    .map_err(friendly)?;
+                let path = twichui_market_core::bridge::export_generation(
+                    &scope,
+                    &root,
+                    &generation,
+                    &receipt,
+                    &twichui_market_core::archive::DeliveryBudget::default(),
+                )
+                .map_err(friendly)?;
+                result["path"] = path.to_string_lossy().into_owned().into();
+            }
+        }
+        verify_context()?;
+        Ok(result)
+    }
     pub fn open_exports(&self) -> Result<()> {
         let dir = self.data.path.join("exports");
         std::fs::create_dir_all(&dir).map_err(friendly)?;

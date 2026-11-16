@@ -1,10 +1,11 @@
-pub mod bridge;
+pub mod archive;
 pub mod authorization;
+pub mod bridge;
 pub mod cache;
 pub mod client;
 pub mod connection;
-pub mod profile;
 pub mod pricing;
+pub mod profile;
 pub mod protocol;
 pub mod scheduler;
 pub mod settings;
@@ -39,6 +40,12 @@ pub enum Error {
     RateLimited(u64),
     #[error("Server rejected the saved cursor; reset this market to synchronize again")]
     ResetRequired,
+    #[error("Delivery exceeds {limit}: {actual} bytes/records exceeds {maximum}; previous data is preserved")]
+    Capacity {
+        limit: &'static str,
+        actual: u64,
+        maximum: u64,
+    },
     #[error("Windows Credential Manager is unavailable")]
     Vault,
     #[error("No saved desktop connection; sign in in your browser")]
