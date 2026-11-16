@@ -38,7 +38,7 @@ fn transactional_promotion_resume_rejection_and_previous(){
 fn deterministic_assignment_only_lua_and_safe_staging(){
  let d=tempfile::tempdir().unwrap();let mut c=BridgeCache::memory().unwrap();let s=scope();let mut g=fixture("source-canonical-generation.json");
  let descriptor=String::from_utf8(bridge::canonical(&json!({"id":2589,"text":"\"; os.execute('bad')\n😀"})).unwrap()).unwrap();g["records"][1]["variant_json"]=descriptor.clone().into();g["records"][1]["variant_key"]=format!("{:x}",Sha256::digest(descriptor.as_bytes())).into();seal(&mut g);complete(&mut c,&s,&g);
- let p=bridge::export_staging(&c,&s,d.path()).unwrap();let bytes=std::fs::read(&p).unwrap();assert!(!String::from_utf8_lossy(&bytes).contains("os.execute"));assert_eq!(bridge::inspect_artifact(&bytes).unwrap().0,g);
+ let p=bridge::export_staging(&c,&s,d.path()).unwrap();let bytes=std::fs::read(&p).unwrap();assert!(String::from_utf8_lossy(&bytes).contains("os.execute"),"injection fixture must survive as quoted data");assert_eq!(bridge::inspect_artifact(&bytes).unwrap().0,g);
  assert_eq!(std::fs::read(bridge::export_staging(&c,&s,d.path()).unwrap()).unwrap(),bytes);assert_eq!(std::fs::read(p.parent().unwrap().join("Previous.lua")).unwrap(),bytes);
  let mut bad=bytes.clone();bad.extend_from_slice(b"print('bad')");assert!(bridge::inspect_artifact(&bad).is_err());
  let unsafe_root=d.path().join("SavedVariables");std::fs::create_dir(&unsafe_root).unwrap();assert!(bridge::export_staging(&c,&s,&unsafe_root).is_err());
