@@ -1,0 +1,457 @@
+{
+  "origin": "synthetic",
+  "production_access": false,
+  "method": "stream existing M1.5 record generator, retain only size integers",
+  "profiles": [
+    {
+      "profile": "one",
+      "counts": [
+        {
+          "variants": 100,
+          "record_sum_bytes": 132000,
+          "canonical_bytes": 134077,
+          "manifest_bytes": 1965,
+          "positional_records_bytes": 42701,
+          "exceeds_build_guard": false,
+          "exceeds_contract": false
+        },
+        {
+          "variants": 1000,
+          "record_sum_bytes": 1320000,
+          "canonical_bytes": 1322979,
+          "manifest_bytes": 1967,
+          "positional_records_bytes": 427001,
+          "exceeds_build_guard": false,
+          "exceeds_contract": false
+        },
+        {
+          "variants": 5000,
+          "record_sum_bytes": 6600000,
+          "canonical_bytes": 6606979,
+          "manifest_bytes": 1967,
+          "positional_records_bytes": 2135001,
+          "exceeds_build_guard": false,
+          "exceeds_contract": false
+        },
+        {
+          "variants": 10000,
+          "record_sum_bytes": 13200000,
+          "canonical_bytes": 13211981,
+          "manifest_bytes": 1969,
+          "positional_records_bytes": 4270001,
+          "exceeds_build_guard": false,
+          "exceeds_contract": false
+        },
+        {
+          "variants": 25000,
+          "record_sum_bytes": 33000000,
+          "canonical_bytes": 33026981,
+          "manifest_bytes": 1969,
+          "positional_records_bytes": 10675001,
+          "exceeds_build_guard": false,
+          "exceeds_contract": false
+        },
+        {
+          "variants": 45125,
+          "record_sum_bytes": 59565000,
+          "canonical_bytes": 59612106,
+          "manifest_bytes": 1969,
+          "positional_records_bytes": 19268376,
+          "exceeds_build_guard": false,
+          "exceeds_contract": true
+        }
+      ],
+      "record_bytes": {
+        "min": 1320,
+        "p50": 1320,
+        "p95": 1320,
+        "max": 1320
+      },
+      "value_section_bytes_full": {
+        "item_id": 225625,
+        "variant_key": 2978250,
+        "variant_json": 722000,
+        "identity_basis": 722000,
+        "current": 20261125,
+        "daily": 8799375,
+        "distribution": 19945250,
+        "distribution_status": 496375
+      }
+    },
+    {
+      "profile": "two-gap",
+      "counts": [
+        {
+          "variants": 100,
+          "record_sum_bytes": 148730,
+          "canonical_bytes": 151244,
+          "manifest_bytes": 2402,
+          "positional_records_bytes": 48139,
+          "exceeds_build_guard": false,
+          "exceeds_contract": false
+        },
+        {
+          "variants": 1000,
+          "record_sum_bytes": 1487745,
+          "canonical_bytes": 1491161,
+          "manifest_bytes": 2404,
+          "positional_records_bytes": 481508,
+          "exceeds_build_guard": false,
+          "exceeds_contract": false
+        },
+        {
+          "variants": 5000,
+          "record_sum_bytes": 7438725,
+          "canonical_bytes": 7446141,
+          "manifest_bytes": 2404,
+          "positional_records_bytes": 2407536,
+          "exceeds_build_guard": false,
+          "exceeds_contract": false
+        },
+        {
+          "variants": 10000,
+          "record_sum_bytes": 14877895,
+          "canonical_bytes": 14890313,
+          "manifest_bytes": 2406,
+          "positional_records_bytes": 4815198,
+          "exceeds_build_guard": false,
+          "exceeds_contract": false
+        },
+        {
+          "variants": 25000,
+          "record_sum_bytes": 37195405,
+          "canonical_bytes": 37222823,
+          "manifest_bytes": 2406,
+          "positional_records_bytes": 12038184,
+          "exceeds_build_guard": false,
+          "exceeds_contract": true
+        },
+        {
+          "variants": 45125,
+          "record_sum_bytes": 67137775,
+          "canonical_bytes": 67185318,
+          "manifest_bytes": 2406,
+          "positional_records_bytes": 21728941,
+          "exceeds_build_guard": true,
+          "exceeds_contract": true
+        }
+      ],
+      "record_bytes": {
+        "min": 1069,
+        "p50": 1514,
+        "p95": 1514,
+        "max": 1514
+      },
+      "value_section_bytes_full": {
+        "item_id": 225625,
+        "variant_key": 2978250,
+        "variant_json": 722000,
+        "identity_basis": 722000,
+        "current": 20247850,
+        "daily": 17543005,
+        "distribution": 18782360,
+        "distribution_status": 501685
+      }
+    },
+    {
+      "profile": "fourteen",
+      "counts": [
+        {
+          "variants": 100,
+          "record_sum_bytes": 382430,
+          "canonical_bytes": 390191,
+          "manifest_bytes": 7649,
+          "positional_records_bytes": 123439,
+          "exceeds_build_guard": false,
+          "exceeds_contract": false
+        },
+        {
+          "variants": 1000,
+          "record_sum_bytes": 3824745,
+          "canonical_bytes": 3833408,
+          "manifest_bytes": 7651,
+          "positional_records_bytes": 1234508,
+          "exceeds_build_guard": false,
+          "exceeds_contract": false
+        },
+        {
+          "variants": 5000,
+          "record_sum_bytes": 19123725,
+          "canonical_bytes": 19136389,
+          "manifest_bytes": 7652,
+          "positional_records_bytes": 6172536,
+          "exceeds_build_guard": false,
+          "exceeds_contract": false
+        },
+        {
+          "variants": 10000,
+          "record_sum_bytes": 38247895,
+          "canonical_bytes": 38265560,
+          "manifest_bytes": 7653,
+          "positional_records_bytes": 12345198,
+          "exceeds_build_guard": false,
+          "exceeds_contract": true
+        },
+        {
+          "variants": 25000,
+          "record_sum_bytes": 95620405,
+          "canonical_bytes": 95653070,
+          "manifest_bytes": 7653,
+          "positional_records_bytes": 30863184,
+          "exceeds_build_guard": true,
+          "exceeds_contract": true
+        },
+        {
+          "variants": 45125,
+          "record_sum_bytes": 172594900,
+          "canonical_bytes": 172647691,
+          "manifest_bytes": 7654,
+          "positional_records_bytes": 55708066,
+          "exceeds_build_guard": true,
+          "exceeds_contract": true
+        }
+      ],
+      "record_bytes": {
+        "min": 3406,
+        "p50": 3851,
+        "p95": 3851,
+        "max": 3851
+      },
+      "value_section_bytes_full": {
+        "item_id": 225625,
+        "variant_key": 2978250,
+        "variant_json": 722000,
+        "identity_basis": 722000,
+        "current": 20473475,
+        "daily": 122774505,
+        "distribution": 18782360,
+        "distribution_status": 501685
+      }
+    },
+    {
+      "profile": "sixty",
+      "counts": [
+        {
+          "variants": 100,
+          "record_sum_bytes": 1279430,
+          "canonical_bytes": 1307294,
+          "manifest_bytes": 27752,
+          "positional_records_bytes": 413239,
+          "exceeds_build_guard": false,
+          "exceeds_contract": false
+        },
+        {
+          "variants": 1000,
+          "record_sum_bytes": 12794745,
+          "canonical_bytes": 12823511,
+          "manifest_bytes": 27754,
+          "positional_records_bytes": 4132508,
+          "exceeds_build_guard": false,
+          "exceeds_contract": false
+        },
+        {
+          "variants": 5000,
+          "record_sum_bytes": 63973725,
+          "canonical_bytes": 64006491,
+          "manifest_bytes": 27754,
+          "positional_records_bytes": 20662536,
+          "exceeds_build_guard": false,
+          "exceeds_contract": true
+        },
+        {
+          "variants": 10000,
+          "record_sum_bytes": 127947895,
+          "canonical_bytes": 127985663,
+          "manifest_bytes": 27756,
+          "positional_records_bytes": 41325198,
+          "exceeds_build_guard": true,
+          "exceeds_contract": true
+        },
+        {
+          "variants": 25000,
+          "record_sum_bytes": 319870405,
+          "canonical_bytes": 319923173,
+          "manifest_bytes": 27756,
+          "positional_records_bytes": 103313184,
+          "exceeds_build_guard": true,
+          "exceeds_contract": true
+        },
+        {
+          "variants": 45125,
+          "record_sum_bytes": 577366150,
+          "canonical_bytes": 577439043,
+          "manifest_bytes": 27756,
+          "positional_records_bytes": 186480316,
+          "exceeds_build_guard": true,
+          "exceeds_contract": true
+        }
+      ],
+      "record_bytes": {
+        "min": 12376,
+        "p50": 12821,
+        "p95": 12821,
+        "max": 12821
+      },
+      "value_section_bytes_full": {
+        "item_id": 225625,
+        "variant_key": 2978250,
+        "variant_json": 722000,
+        "identity_basis": 722000,
+        "current": 20473475,
+        "daily": 527545755,
+        "distribution": 18782360,
+        "distribution_status": 501685
+      }
+    },
+    {
+      "profile": "sparse-sixty",
+      "counts": [
+        {
+          "variants": 100,
+          "record_sum_bytes": 187630,
+          "canonical_bytes": 191018,
+          "manifest_bytes": 3276,
+          "positional_records_bytes": 60639,
+          "exceeds_build_guard": false,
+          "exceeds_contract": false
+        },
+        {
+          "variants": 1000,
+          "record_sum_bytes": 1876745,
+          "canonical_bytes": 1881035,
+          "manifest_bytes": 3278,
+          "positional_records_bytes": 606508,
+          "exceeds_build_guard": false,
+          "exceeds_contract": false
+        },
+        {
+          "variants": 5000,
+          "record_sum_bytes": 9383725,
+          "canonical_bytes": 9392015,
+          "manifest_bytes": 3278,
+          "positional_records_bytes": 3032536,
+          "exceeds_build_guard": false,
+          "exceeds_contract": false
+        },
+        {
+          "variants": 10000,
+          "record_sum_bytes": 18767895,
+          "canonical_bytes": 18781187,
+          "manifest_bytes": 3280,
+          "positional_records_bytes": 6065198,
+          "exceeds_build_guard": false,
+          "exceeds_contract": false
+        },
+        {
+          "variants": 25000,
+          "record_sum_bytes": 46920405,
+          "canonical_bytes": 46948697,
+          "manifest_bytes": 3280,
+          "positional_records_bytes": 15163184,
+          "exceeds_build_guard": false,
+          "exceeds_contract": true
+        },
+        {
+          "variants": 45125,
+          "record_sum_bytes": 84691400,
+          "canonical_bytes": 84739817,
+          "manifest_bytes": 3280,
+          "positional_records_bytes": 27369566,
+          "exceeds_build_guard": true,
+          "exceeds_contract": true
+        }
+      ],
+      "record_bytes": {
+        "min": 1458,
+        "p50": 1903,
+        "p95": 1903,
+        "max": 1903
+      },
+      "value_section_bytes_full": {
+        "item_id": 225625,
+        "variant_key": 2978250,
+        "variant_json": 722000,
+        "identity_basis": 722000,
+        "current": 20292975,
+        "daily": 35051505,
+        "distribution": 18782360,
+        "distribution_status": 501685
+      }
+    },
+    {
+      "profile": "historical-only",
+      "counts": [
+        {
+          "variants": 100,
+          "record_sum_bytes": 106900,
+          "canonical_bytes": 109414,
+          "manifest_bytes": 2402,
+          "positional_records_bytes": 36201,
+          "exceeds_build_guard": false,
+          "exceeds_contract": false
+        },
+        {
+          "variants": 1000,
+          "record_sum_bytes": 1069000,
+          "canonical_bytes": 1072416,
+          "manifest_bytes": 2404,
+          "positional_records_bytes": 362001,
+          "exceeds_build_guard": false,
+          "exceeds_contract": false
+        },
+        {
+          "variants": 5000,
+          "record_sum_bytes": 5345000,
+          "canonical_bytes": 5352416,
+          "manifest_bytes": 2404,
+          "positional_records_bytes": 1810001,
+          "exceeds_build_guard": false,
+          "exceeds_contract": false
+        },
+        {
+          "variants": 10000,
+          "record_sum_bytes": 10690000,
+          "canonical_bytes": 10702418,
+          "manifest_bytes": 2406,
+          "positional_records_bytes": 3620001,
+          "exceeds_build_guard": false,
+          "exceeds_contract": false
+        },
+        {
+          "variants": 25000,
+          "record_sum_bytes": 26725000,
+          "canonical_bytes": 26752418,
+          "manifest_bytes": 2406,
+          "positional_records_bytes": 9050001,
+          "exceeds_build_guard": false,
+          "exceeds_contract": false
+        },
+        {
+          "variants": 45125,
+          "record_sum_bytes": 48238625,
+          "canonical_bytes": 48286168,
+          "manifest_bytes": 2406,
+          "positional_records_bytes": 16335251,
+          "exceeds_build_guard": false,
+          "exceeds_contract": true
+        }
+      ],
+      "record_bytes": {
+        "min": 1069,
+        "p50": 1069,
+        "p95": 1069,
+        "max": 1069
+      },
+      "value_section_bytes_full": {
+        "item_id": 225625,
+        "variant_key": 2978250,
+        "variant_json": 722000,
+        "identity_basis": 722000,
+        "current": 20035500,
+        "daily": 17373125,
+        "distribution": 180500,
+        "distribution_status": 586625
+      }
+    }
+  ]
+}
