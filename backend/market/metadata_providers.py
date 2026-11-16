@@ -107,6 +107,9 @@ def parse_everloot_page(body, *, at=None):
     if not isinstance(game, dict): raise ValueError('Missing game build')
     build = build_identity(game.get('build'))
     credit = {'text': plain(game.get('credit')), 'url': 'https://everloot.app', 'notice': 'Found in game files, unconfirmed'}
+    # Large authenticated pages share one envelope/hash; avoid hashing up to
+    # 1 MiB once per record when an administrator permits 5,000-row pages.
+    origin = source('everloot', body, build=build, confidence='game_file_unconfirmed', attribution=credit, at=at)
     records = []
     seen = set()
     for row in rows:
@@ -125,7 +128,7 @@ def parse_everloot_page(body, *, at=None):
             quality = plain(quality.get('name')).upper()
             if quality not in QUALITIES: raise ValueError('Invalid item quality')
             fields['quality'] = quality
-        records.append((ident, fields, source('everloot', body, build=build, confidence='game_file_unconfirmed', attribution=credit, at=at)))
+        records.append((ident, fields, origin.copy()))
     offset, limit, total = (value.get(k) for k in ('offset', 'limit', 'total'))
     if any(type(n) is not int or n < 0 for n in (offset, limit, total)) or not 1 <= limit <= 5000 or len(rows) > limit or offset+len(rows)>total:
         raise ValueError('Invalid pagination')

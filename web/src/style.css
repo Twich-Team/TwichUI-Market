@@ -1686,5 +1686,6 @@ a.secondary { display:inline-block; padding:10px 14px; border:1px solid var(--bo
 .provider-rate-limits form { display: grid; gap: .8rem; margin-block: 1rem; }
 .provider-rate-limits label { min-width: 0; }
 .provider-rate-limits input, .provider-rate-limits select { max-width: 100%; }
+.provider-rate-limits select { width: 100%; min-width: 0; }
 .provider-entitlement { align-items: flex-start; font-size: .85rem; }
 .provider-rate-limits details .metadata-form-row { margin-top: .8rem; }

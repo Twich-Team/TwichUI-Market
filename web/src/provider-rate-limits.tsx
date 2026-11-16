@@ -46,7 +46,7 @@ export function ProviderRateLimits({ provider, disabled, save }: { provider: Met
   const ident = provider.provider;
   const beyond = Object.entries(status.documented).some(([key,value]) => config[key as keyof RateConfiguration] !== null && config[key as keyof RateConfiguration]! > value!);
   function field(key: keyof RateConfiguration, label: string, maximum: number, minimum = 1, step = 1) {
-    return <label>{label}<input type="number" min={minimum} max={maximum} step={step} required value={config[key] ?? ""} disabled={disabled} onChange={e => setConfig({ ...config, [key]: e.target.value === "" ? null : Number(e.target.value) })}/>
+    return <label>{label}<input aria-label={label} type="number" min={minimum} max={maximum} step={step} required value={config[key] ?? ""} disabled={disabled} onChange={e => setConfig({ ...config, [key]: e.target.value === "" ? null : Number(e.target.value) })}/>
       <span className="small muted">{sources[status.limit_sources[key]] || "Conservative application default"}{status.documented[key] !== undefined && ` · documented ${numbers(status.documented[key]!)}`}</span>
     </label>;
   }

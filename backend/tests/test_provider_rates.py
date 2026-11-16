@@ -361,3 +361,24 @@ def test_retry_after_starts_at_response_receipt_not_request_start(database,monke
         row=db.get(MetadataProvider,'everloot')
         assert aware(row.cooldown_until) == at+timedelta(seconds=308)
         assert row.rate_inflight_until is None
+
+
+def test_authenticated_page_bound_is_distinct_from_request_allowance():
+    import hashlib
+    from market.metadata_providers import fetch,parse_everloot_page
+    value={'items':[{'itemId':i+1,'quality':{'name':'Rare'}} for i in range(5000)],
+        'gameData':{'build':'1.60.1.70532','credit':'Game data © Blizzard Entertainment'},
+        'offset':0,'limit':5000,'total':5000,'next':None}
+    raw=json.dumps(value).encode()
+    records,next_offset=parse_everloot_page(raw,at=AT)
+    assert len(records) == 5000 and next_offset is None
+    assert records[0][1] == records[-1][1] == {'quality':'RARE'}
+    assert records[0][2]['payload_hash'] == records[-1][2]['payload_hash'] == hashlib.sha256(raw).hexdigest()
+    assert 'name' not in records[0][1]
+    calls=[]
+    fetch('everloot',1,credential='evl_synthetic_only',offset=0,page_size=5000,
+        transport=lambda url,**kw:(calls.append(url),response(body=raw))[1])
+    assert len(calls) == 1 and calls[0].endswith('offset=0&limit=5000')
+    with pytest.raises(ValueError):fetch('everloot',1,offset=0,page_size=5000)
+    value['items'].append({'itemId':5001})
+    with pytest.raises(ValueError):parse_everloot_page(json.dumps(value).encode())

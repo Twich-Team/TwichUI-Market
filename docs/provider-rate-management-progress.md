@@ -1,5 +1,7 @@
 # Provider rate management progress
 
+**Current status:** implementation and local visual verification complete; separate draft PR and hosted CI are blocked by automatic approval review not recognizing authorization inside the uploaded request. [Review packet](provider-rate-management-review.md), [ten screenshots](evidence/provider-rates/review.html), [prepared PR destination/body](provider-rate-management-pr.md), [deployment/rollback](provider-rate-management-operations.md). No merge or deployment.
+
 ## Isolation and baseline
 
 - Separate Cloud worktree and feature branch created from pushed integration SHA `68c075138d5f50608c741b0e51b7013d9bf8769d`. No other branch/worktree is modified; production and addon repository are untouched.
@@ -28,3 +30,18 @@ Verified locally: full baseline-plus-feature PostgreSQL suite **543 passed** (23
 Synthetic full-day bucket benchmark improved from 56.265 ms median / 9 SQL statements to **18.000 ms / 6 statements** after using scalar rows and a bounded atomic bucket upsert. Status view: 10.208 ms / 1 statement; quota relation 237,568 bytes for 1,441 minute buckets. These are local warm handler measurements, not production p95 or real provider throughput.
 
 The browser review uses a separately named rootless `provider-rate-review` Compose project, uniquely tagged images, temporary `market_test`, localhost port 19482, bounded memory/CPU/logs, and only db/migrate/api/proxy. No collector, enrichment worker, live credentials, production networks or volumes are used. Synthetic quota fixtures are applied after ordinary browser workflows to keep those tests independent.
+
+## Verified delivery state
+
+- Core implementation pushed at `8588f1a90f5bd491acd804540f985fad4e1a8568`; initial isolation/plan checkpoint `96374be`. Final visual/verification checkpoint follows this entry.
+- Final PostgreSQL run: **550 passed in 290.95 seconds**. Frontend: **119 passed** plus TypeScript/Vite; operations: **36 passed**. Both dependency audits report no known findings.
+- A new slow-response regression proves Retry-After begins at response receipt rather than request start. 503 resumes after its appropriate cooldown; HTTP success is tracked independently from schema/name recovery. A 5,000-row authenticated Everloot fixture preserves page/request distinctions and hashes the page once.
+- Final clean ordinary Chromium run: **38 passed in 4.6 minutes**, including all seven Companion auth/device flows. The provider flow: **1 passed in 14.9 seconds**, ten actual screenshots, zero desktop/mobile axe violations, keyboard expansion, saved configuration, retained drafts, 429/job waits, source labels and credential controls. Visual inspection found/fixed a native preset-select clip at 390px; a bounding-box regression now guards it. Synthetic waiting work belongs to an enabled provider with automatic mode off and no worker.
+- One unchanged private-download test requires hostname `proxy`; not run locally because managed Chromium blocks that hostname. CI retains it. Initial blocked-hostname attempts contaminated synthetic device fixtures; the final ordinary suite ran after recreating the disposable project/database. No unrelated source/tests were changed to force a pass.
+- Browser fallback uses the supported **localhost:5173** origin. The earlier localhost:19482/temporary alias probes are retired; no host DNS/proxy setting was modified. Locked wheels and the verified host build support temporary offline review images after nested build DNS / Playwright image pull failures. All 50 backend module hashes and frontend index match current source.
+- Provider, metadata and Companion migration verifiers pass with one linear head `rates_20261115` → `bridge_20261115`. Final synthetic full-day reservation median **21.244 ms / 6 SQL statements**, status **18.515 ms / 1**, relation **237,568 bytes**. API RSS **147,184 KiB** at capture. Docker records requested API/frontend/DB resource limits, but Cloud exposes a shared 16 GiB cgroup; per-container enforcement/CPU statistics are not claimed. Production collector limits are unchanged.
+- Final integration fetch remains `68c075138d5f50608c741b0e51b7013d9bf8769d`; Workshop remains `e2116007638b23228eace44d524b9fe2a43c2249`. No actual upstream conflict or migration ancestry change exists. Full backend/Companion browser checks include that pinned merged baseline. Original checkout remains clean at `64ef6d2d08e7453458ed37d06d29f263ac19d126`.
+
+### Remaining external gate
+
+Automatic approval review rejected both an incomplete PR-tool request and a fully specified retry for Twich-Team/TwichUI-Market, feature/provider-rate-management → integration/companion-v2-metadata-recovery. It states that the trusted transcript does not contain the authorization carried in the uploaded file and therefore refuses PR publication. The request's repository/PR instructions were read back from the attachment; no alternate PR-creation route was used. All unaffected work continues to a concrete pushed packet. Ask for direct confirmation only after that packet is complete; then create/attach the **draft**, inspect hosted CI and stop at owner review. No PR URL, hosted CI or native Windows success is fabricated.
