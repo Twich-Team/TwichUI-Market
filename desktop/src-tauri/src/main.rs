@@ -100,6 +100,22 @@ async fn export_workshop(app: AppHandle,algorithm:String) -> Result<String,Strin
     tauri::async_runtime::spawn_blocking(move || owned.export_workshop(&algorithm)).await.map_err(|_| "Workshop test export interrupted".to_string())?
 }
 #[tauri::command]
+async fn archive_workshop(
+    app: AppHandle,
+    algorithm: String,
+    disk_budget_mib: u64,
+    selected: Option<serde_json::Value>,
+    publish: bool,
+    compatible: bool,
+) -> Result<serde_json::Value, String> {
+    let owned = runtime(&app).clone();
+    tauri::async_runtime::spawn_blocking(move || {
+        owned.archive_workshop(&algorithm, disk_budget_mib, selected, publish, compatible)
+    })
+    .await
+    .map_err(|_| "History archive action interrupted".to_string())?
+}
+#[tauri::command]
 fn open_exports(app: AppHandle) -> Result<(), String> {
     runtime(&app).open_exports()
 }
@@ -210,6 +226,7 @@ fn main() {
             disconnect,
             export_market,
             export_workshop,
+            archive_workshop,
             open_exports,
             open_website,
             save_diagnostics,

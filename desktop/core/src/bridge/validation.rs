@@ -57,7 +57,7 @@ fn pattern(p:&str,s:&str)->bool{
   p if p.contains("T[0-9]")=>{let fraction=s.split_once('.').map(|(_,s)|s.trim_end_matches('Z'));s.len()>=20&&time(&s.into()).is_ok()&&fraction.is_none_or(|f|!p.contains("\\\\.")&&!f.is_empty()&&f.len()<=6&&f.bytes().all(|b|b.is_ascii_digit()))},_=>false
  }
 }
-fn schema_check(s:&Value,v:&Value)->Result<()>{
+pub(crate) fn schema_check(s:&Value,v:&Value)->Result<()>{
  if let Some(t)=s.get("type") {let types=t.as_array().map(|a|a.iter().collect::<Vec<_>>()).unwrap_or_else(||vec![t]);if !types.iter().any(|t|match t.as_str(){Some("null")=>v.is_null(),Some("object")=>v.is_object(),Some("array")=>v.is_array(),Some("string")=>v.is_string(),Some("boolean")=>v.is_boolean(),Some("integer")=>v.is_i64()||v.is_u64(),_=>false}){return bad()}}
  if s.get("const").is_some_and(|x|x!=v)||s.get("enum").and_then(Value::as_array).is_some_and(|a|!a.contains(v)){return bad()}
  if let Some(a)=s.get("anyOf").and_then(Value::as_array){if !a.iter().any(|s|schema_check(s,v).is_ok()){return bad()}}

@@ -71,11 +71,13 @@ def identity(request: Request, db: Session = Depends(session)):
         read = request.method == 'GET' and (path in ('/api/v1/auth/me', '/api/v1/markets', '/api/v1/companion/bootstrap')
             or re.fullmatch(r'/api/v1/sync/markets/[0-9]+', path)
             or re.fullmatch(r'/api/v1/bridge/markets/[0-9]+/(manifest|records)', path)
+            or re.fullmatch(r'/api/v1/archive/markets/[0-9]+/(checkpoint|pages)', path)
             or re.fullmatch(r'/api/v1/metadata/markets/[0-9]+', path)
             or re.fullmatch(r'/api/v1/companion/markets/[0-9]+/observations/[0-9]+', path)
             or re.fullmatch(r'/api/v1/companion/private-beta/update/windows-x86_64/[0-9A-Za-z.-]{1,64}',path)
             or re.fullmatch(r'/api/v1/companion/private-beta/2\.[0-9]{1,4}\.[0-9]{1,4}-beta\.[1-9][0-9]{0,3}/windows-x64',path))
-        write = request.method == 'POST' and path in ('/api/v1/companion/activity', '/api/v1/companion/devices/self/revoke')
+        write = request.method == 'POST' and (path in ('/api/v1/companion/activity', '/api/v1/companion/devices/self/revoke')
+            or re.fullmatch(r'/api/v1/archive/markets/[0-9]+/scoped', path))
         if not (read or write):
             raise HTTPException(403, 'This desktop connection only permits market synchronization')
         request.state.companion_device = device

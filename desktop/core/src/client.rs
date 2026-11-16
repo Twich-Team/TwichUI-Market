@@ -287,3 +287,145 @@ impl MarketClient {
         if bytes.len()>maximum{return Err(Error::Invalid("bridge response size"))}Ok((status,bytes))
     }
 }
+
+impl MarketClient {
+    /// Explicit manual archive synchronization. Independent of legacy background scheduling.
+    pub fn download_archive(
+        &self,
+        store: &mut crate::archive::ArchiveStore,
+        scope: &crate::bridge::Scope,
+        cancelled: impl Fn() -> bool,
+    ) -> Result<()> {
+        if self.download_archive_pages(store, scope, cancelled, 1_100_000)? {
+            Ok(())
+        } else {
+            Err(Error::Invalid("archive page safety bound"))
+        }
+    }
+    /// Bounded stepping also provides a real interruption/resume seam for native tests.
+    pub fn download_archive_pages(
+        &self,
+        store: &mut crate::archive::ArchiveStore,
+        scope: &crate::bridge::Scope,
+        cancelled: impl Fn() -> bool,
+        max_pages: usize,
+    ) -> Result<bool> {
+        if self.server.as_str() != scope.server {
+            return Err(Error::Invalid("archive origin scope"));
+        }
+        let (_, bytes) = self.bridge_request("/api/v1/companion/bootstrap", &[], 262144)?;
+        let value = crate::bridge::parse(&bytes, 262144)?;
+        let bootstrap: crate::connection::Bootstrap = serde_json::from_value(value.clone())?;
+        bootstrap.validate()?;
+        if bootstrap.account.id != scope.account_id
+            || bootstrap
+                .resolve_market(Some(scope.market_id))
+                .map(|m| m.id)
+                != Some(scope.market_id)
+        {
+            return Err(Error::Authentication);
+        }
+        let expected = value["markets"]
+            .as_array()
+            .and_then(|a| a.iter().find(|m| m["id"] == scope.market_id))
+            .ok_or(Error::Invalid("archive selected market"))?;
+        let matches = |h: &crate::archive::Header| {
+            h.market["region"] == expected["region"]
+                && h.market["house_id"] == expected["house_id"]
+                && h.market["transport_ruleset_id"] == expected["ruleset_id"]
+                && h.market["source_kind"] == expected["source_kind"]
+                && h.market["mapping_verified"] == expected["player_identity_verified"]
+        };
+        let mut resets = 0;
+        let mut full = false;
+        for _ in 0..max_pages {
+            if cancelled() {
+                return Err(Error::Cancelled);
+            }
+            if store.pending(scope)?.is_none() {
+                let active = store.active(scope)?;
+                let mut ready = false;
+                for _ in 0..4097 {
+                    if cancelled() {
+                        return Err(Error::Cancelled);
+                    }
+                    let mut query = vec![("algorithm", scope.algorithm.as_str())];
+                    if !full {
+                        if let Some(h) = &active {
+                            query.push(("base", h.checkpoint_id.as_str()));
+                        }
+                    }
+                    let response = self.bridge_request(
+                        &format!("/api/v1/archive/markets/{}/checkpoint", scope.market_id),
+                        &query,
+                        131072,
+                    );
+                    let (status, bytes) = match response {
+                        Err(Error::ResetRequired) if resets < 2 => {
+                            full = true;
+                            resets += 1;
+                            continue;
+                        }
+                        other => other?,
+                    };
+                    if status == 202 {
+                        if crate::bridge::parse(&bytes, 4096)?
+                            != serde_json::json!({"state":"preparing","retry_after_seconds":1})
+                        {
+                            return Err(Error::Invalid("archive preparation response"));
+                        }
+                        std::thread::sleep(Duration::from_secs(1));
+                        continue;
+                    }
+                    let e: crate::archive::Envelope =
+                        serde_json::from_value(crate::bridge::parse(&bytes, 131072)?)?;
+                    e.header.validate(scope)?;
+                    if !matches(&e.header) {
+                        return Err(Error::Invalid("archive differs from authenticated market"));
+                    }
+                    if active.as_ref().is_some_and(|h| {
+                        h.watermark_observation_id == e.header.watermark_observation_id
+                            && h.metadata_sha256 == e.header.metadata_sha256
+                            && h.generated_at.get(..10) == e.header.generated_at.get(..10)
+                            && h.issuer_id == e.header.issuer_id
+                            && h.market == e.header.market
+                    }) {
+                        return Ok(true);
+                    }
+                    store.begin(scope, &bytes)?;
+                    ready = true;
+                    break;
+                }
+                if !ready {
+                    return Err(Error::ServiceUnavailable);
+                }
+            }
+            let (header, cursor) = store
+                .pending(scope)?
+                .ok_or(Error::Invalid("archive staging"))?;
+            if !matches(&header) {
+                return Err(Error::Invalid("pending archive market changed"));
+            }
+            let response = self.bridge_request(
+                &format!("/api/v1/archive/markets/{}/pages", scope.market_id),
+                &[("checkpoint", &header.checkpoint_id), ("cursor", &cursor)],
+                1024 * 1024,
+            );
+            let (_, bytes) = match response {
+                Err(Error::ResetRequired) if resets < 2 => {
+                    store.abandon_pending(scope)?;
+                    resets += 1;
+                    continue;
+                }
+                other => other?,
+            };
+            if cancelled() {
+                return Err(Error::Cancelled);
+            }
+            if !store.apply(scope, &cursor, &bytes)? {
+                return Ok(true);
+            }
+        }
+        Ok(false)
+    }
+}

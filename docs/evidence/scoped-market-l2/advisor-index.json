@@ -1,0 +1,52 @@
+{
+  "origin": "synthetic",
+  "production_distribution": false,
+  "assumptions": "all 45,125 exact variants priced, three distinct 11-digit copper strings each, supply 12 and age 300 seconds; synthetic capacity shape",
+  "python": "3.12.14",
+  "runtime": "offline Lua 5.1, one sample each; not Forever acceptance",
+  "columns": [
+    "item_id",
+    "variant_key",
+    "state",
+    "recent_copper",
+    "market_value_copper",
+    "minimum_copper",
+    "supply",
+    "age_seconds",
+    "confidence"
+  ],
+  "whole_envelope_canonical_bytes": 5777366,
+  "manifest_overhead_bytes": 1365,
+  "cases": [
+    {
+      "case": "whole",
+      "records": 45125,
+      "canonical_row_bytes": 5776001,
+      "lua_row_source_bytes": 5776029,
+      "compile_ms": 238.087,
+      "assignment_ms": 42.867,
+      "minimal_structure_index_ms": 58.531,
+      "explicit_global_gc_ms": 20.34,
+      "retained_heap_with_compiled_chunk_and_index_bytes": 31371429,
+      "lookup_10000_ms": 2.261
+    },
+    {
+      "case": "one_of_16_item_id_partitions",
+      "records": 2821,
+      "canonical_row_bytes": 361089,
+      "lua_row_source_bytes": 361117,
+      "compile_ms": 7.717,
+      "assignment_ms": 0.543,
+      "minimal_structure_index_ms": 2.811,
+      "explicit_global_gc_ms": 0.811,
+      "retained_heap_with_compiled_chunk_and_index_bytes": 1960373,
+      "lookup_10000_ms": 0.908
+    }
+  ],
+  "limitations": [
+    "Row validation benchmark excludes complete future cryptographic consumer validation.",
+    "All 16 partitions eventually retained would retain the whole index plus overhead.",
+    "Compile, assignment, global GC and startup must be measured in the real client.",
+    "Proposal is not advertised, installed or accepted by production consumers."
+  ]
+}

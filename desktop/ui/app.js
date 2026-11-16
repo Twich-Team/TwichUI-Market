@@ -2,7 +2,7 @@
 const invoke = window.__TAURI__?.core.invoke;
 const listen = window.__TAURI__?.event.listen;
 const $ = id => document.getElementById(id);
-let view = null, editing = false, latestRevision = -1, nativeErrorShown = false, workshopExporting = false;
+let view = null, editing = false, latestRevision = -1, nativeErrorShown = false, workshopExporting = false, archiveBusy = false, archiveContext = null;
 const text = (id, value) => { $(id).textContent = value; };
 function message(value, error=false) { $('message').hidden=!value; text('message', value||''); $('message').classList.toggle('error',error); }
 const datetime = value => value ? new Date(value).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}) : 'Unknown';
@@ -51,7 +51,11 @@ function render(next) {
   $('synthetic-warning').hidden=!view.cache?.synthetic;$('legacy-warning').hidden=view.mode!=='legacy';
   $('export').disabled=!view.cache?.has_completed_cache;
   $('workshop-export').disabled=workshopExporting||!view.connected||view.refreshing||s.running;
-  $('workshop-pricing').disabled=workshopExporting;
+  $('workshop-pricing').disabled=workshopExporting||archiveBusy;
+  const historyContext=`${view.settings.server}|${view.bootstrap?.account?.id}|${view.settings.selected_market||s.selected_market}`;
+  if(archiveContext!==historyContext){archiveContext=historyContext;text('archive-status','No completed archive selected.');text('scope-status','Choose exact variants after downloading retained history.');$('scope-variants').value='';$('scope-compatible').checked=false;}
+  for(const id of ['archive-sync','scope-preview','scope-export'])$(id).disabled=archiveBusy||workshopExporting;
+
   $('disconnect').disabled=view.approving||view.refreshing;
   if(view.error||view.sync.error) {message(view.error||view.sync.error,true);nativeErrorShown=true;}
   else if(nativeErrorShown) {message('');nativeErrorShown=false;}
@@ -144,3 +148,38 @@ $('workshop-export').onclick=async()=>{
   try{await action('export_workshop',{algorithm},path=>`Workshop test addon saved outside the game installation: ${path}`);}
   finally{workshopExporting=false;render(view);}
 };
+
+function scopeInput(){
+  const rows=$('scope-variants').value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+  const variants=rows.map(line=>{const m=line.match(/^(\d{1,10})[\s,:]+([0-9a-fA-F]{64})$/);if(!m)throw new Error('Each line needs an item ID and its full exact variant key.');return {item_id:Number(m[1]),variant_key:m[2].toLowerCase()};});
+  return {variants,history_from_day:$('scope-from').value,history_through_day:$('scope-through').value};
+}
+$('scope-variants').oninput=()=>{text('scope-count',`${$('scope-variants').value.split(/\r?\n/).filter(s=>s.trim()).length} selected · initial operating budget: 100 variants, 2 MiB data, 3 MiB Lua.`);};
+async function historyAction(sync,publish){
+  if(archiveBusy)return;
+  const requestedContext=archiveContext;
+  archiveBusy=true;render(view);text('scope-status',sync?'Downloading/resuming retained history. Completed data stays available during errors…':'Checking the complete requested scope…');
+  try{
+    const selected=sync?null:scopeInput();
+    const result=await action('archive_workshop',{algorithm:$('workshop-pricing').value,diskBudgetMib:Number($('archive-budget').value),selected,publish,compatible:$('scope-compatible').checked});
+    if(archiveContext!==requestedContext)return;
+    if(!result?.ok){text('scope-status',sync?'Download incomplete. Committed progress and the previous completed archive are preserved.':'Request refused. The previous completed archive and export are preserved.');return;}
+    if(!view?.error&&!view?.sync?.error)message('');
+    const r=result.value,h=r.header;
+    text('archive-status',`${h.market.region.toUpperCase()} · house ${h.market.house_id} · ${h.pricing_algorithm} · ${h.total_observations.toLocaleString()} retained observations · ${(r.archive_bytes/1048576).toFixed(2)} MiB SQLite. Checkpoint ${h.checkpoint_id}`);
+    if(sync){
+      const saved=r.selection;
+      const through=h.generated_at.slice(0,10),from=new Date(through+'T00:00:00Z');from.setUTCDate(from.getUTCDate()-59);
+      $('scope-through').value=saved?.history_through_day||through;$('scope-from').value=saved?.history_from_day||from.toISOString().slice(0,10);
+      if(saved)$('scope-variants').value=saved.variants.map(v=>`${v.item_id} ${v.variant_key}`).join('\n');
+      $('scope-variants').oninput();text('scope-status','Archive complete. Current Workshop has no scoped reader yet; testing exports stay outside game files.');
+    }else{
+      const s=r.sizes;
+      text('scope-status',`${s.records} exact variants · ${selected.history_from_day} through ${selected.history_through_day} · exact data ${s.canonical_bytes.toLocaleString()} bytes · Lua ${s.lua_bytes.toLocaleString()} bytes · manifest ${s.manifest_bytes.toLocaleString()} bytes. Generation ${r.generation_id}.${r.path?' Exported to '+r.path+'.':''} Current Workshop scoped compatibility: unavailable. No game files were installed or loaded.`);
+    }
+  }catch(e){if(archiveContext===requestedContext){text('scope-status','Selection not exported. Previous completed data is preserved.');message(String(e?.message||e),true);}}
+  finally{archiveBusy=false;render(view);}
+}
+$('archive-sync').onclick=()=>historyAction(true,false);
+$('scope-preview').onclick=()=>historyAction(false,false);
+$('scope-export').onclick=()=>historyAction(false,true);

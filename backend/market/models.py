@@ -363,3 +363,34 @@ class BridgeRecord(Base):
     generation_id: Mapped[str] = mapped_column(ForeignKey('bridge_generations.generation_id', ondelete='CASCADE'), primary_key=True)
     position: Mapped[int] = mapped_column(Integer, primary_key=True)
     record_json: Mapped[str] = mapped_column(Text)
+
+
+class ArchiveDigest(Base):
+    """Versioned digest of normalized retained snapshot evidence, never raw listings."""
+    __tablename__ = 'archive_digests'
+    snapshot_id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    algorithm: Mapped[str] = mapped_column(String(80), primary_key=True)
+    revision: Mapped[int] = mapped_column(Integer, primary_key=True)
+    record_count: Mapped[int] = mapped_column(Integer)
+    records_sha256: Mapped[str] = mapped_column(String(64))
+    records_bytes: Mapped[int] = mapped_column(BigInteger)
+
+
+class ArchiveCheckpoint(Base):
+    __tablename__ = 'archive_checkpoints'
+    checkpoint_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    market_id: Mapped[int] = mapped_column(ForeignKey('markets.id'), index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'), index=True)
+    credential_id: Mapped[int] = mapped_column(Integer)
+    header_json: Mapped[str] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class ArchiveMember(Base):
+    __tablename__ = 'archive_members'
+    checkpoint_id: Mapped[str] = mapped_column(ForeignKey('archive_checkpoints.checkpoint_id', ondelete='CASCADE'), primary_key=True)
+    phase: Mapped[int] = mapped_column(Integer, primary_key=True)
+    source_id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    value_json: Mapped[str] = mapped_column(Text)
+    transmit: Mapped[bool] = mapped_column(Boolean)
