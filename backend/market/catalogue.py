@@ -3,7 +3,7 @@ import json
 from datetime import timedelta
 from typing import Literal
 from fastapi import APIRouter,Depends,HTTPException,Query
-from sqlalchemy import Integer,case,cast,func,select,text
+from sqlalchemy import Integer,case,cast,func,literal,null,select,text,union_all
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm import Session
 from .db import now,session
@@ -26,7 +26,7 @@ def bounded_search(db:Session=Depends(session)):
         raise HTTPException(503,'Catalogue search took too long. Try an item ID or a narrower search, then retry.') from None
 
 
-def references(market_id,at,item_ids=None):
+def references(market_id,at):
     stat=SnapshotStatistic
     bad=func.sum(case((stat.algorithm!=ALGORITHM,1),else_=0))
     query=select(stat.item_id,stat.variant_key,
@@ -37,9 +37,6 @@ def references(market_id,at,item_ids=None):
         Observation,Observation.snapshot_id==stat.snapshot_id).join(DailyObservation,DailyObservation.observation_id==Observation.id).where(
         DailyObservation.market_id==market_id,Observation.retrieved_at>=at-timedelta(days=60),Observation.retrieved_at<=at
         ).group_by(stat.item_id,stat.variant_key)
-    if item_ids is not None:query=query.where(stat.item_id.in_(select(item_ids.c.item_id)))
-    # Preserve a single evaluation even when stale statistics underestimate the
-    # outer item/variant scan. Broad searches must not repeat history aggregation.
     return query.cte('catalogue_references').prefix_with('MATERIALIZED',dialect='postgresql')
 
 
@@ -76,23 +73,32 @@ def catalogue(market_id: MarketId,q: str=Query('',max_length=64),sort: Sort='ite
         else:filters.append(func.lower(func.coalesce(ItemMetadata.name,ItemMetadata.fallback_name)).contains(term.lower(),autoescape=True))
     base=select(stat.item_id).outerjoin(ItemMetadata,(ItemMetadata.region==market.region)&(ItemMetadata.item_id==stat.item_id)
         ).where(*filters)
-    # A just-ingested snapshot can be absent from PostgreSQL's sampled statistics.
-    # Materialize once: an underestimated outer scan must not rerun the complete
-    # name/variant search for each current variant. Scope history to these IDs too.
-    ids=base.distinct().cte('matching_items').prefix_with('MATERIALIZED',dialect='postgresql')
+    ids=base.distinct().subquery('matching_items')
     envelope['total_items']=db.scalar(select(func.count()).select_from(ids))
-    refs=references(market_id,now(),ids if q.strip() else None)
-    joined=select(stat.item_id,func.count().label('variant_count'),case((func.count()==1,func.min(stat.variant_key)),else_=None).label('sole_variant_key'),func.sum(stat.supply).label('supply'),
-        func.sum(stat.listing_count).label('listing_count'),func.min(stat.recent_price).label('recent_min'),
-        func.max(stat.recent_price).label('recent_max'),func.min(refs.c.market_value).label('market_min'),
-        func.max(refs.c.market_value).label('market_max'),func.min(refs.c.historical_value).label('historical_min'),
-        func.max(refs.c.historical_value).label('historical_max'),func.count(stat.recent_price).label('priced_variants'),
-        func.max(refs.c.synthetic).label('historical_synthetic'),func.max(func.coalesce(ItemMetadata.name,ItemMetadata.fallback_name)).label('name'))
-    # Apply the same predicate directly. Rejoining the complete ID set can turn
-    # a stale one-row estimate into a quadratic full-catalogue or broad-name sort.
-    grouped=joined.outerjoin(refs,(refs.c.item_id==stat.item_id)&(refs.c.variant_key==stat.variant_key)
-        ).outerjoin(ItemMetadata,(ItemMetadata.region==market.region)&(ItemMetadata.item_id==stat.item_id)
-        ).where(*filters).group_by(stat.item_id).subquery('item_groups')
+    refs=references(market_id,now())
+    # Combine current variants and historical references before grouping, rather
+    # than joining two large relations whose newest-snapshot estimates may be
+    # stale. Each input is evaluated once; vanished variants are excluded below.
+    current=select(stat.item_id,stat.variant_key,literal(1).label('present'),
+        stat.supply,stat.listing_count,stat.recent_price,
+        null().label('market_value'),null().label('historical_value'),null().label('historical_synthetic'),
+        func.coalesce(ItemMetadata.name,ItemMetadata.fallback_name).label('name')
+        ).outerjoin(ItemMetadata,(ItemMetadata.region==market.region)&(ItemMetadata.item_id==stat.item_id)).where(*filters)
+    history=select(refs.c.item_id,refs.c.variant_key,literal(0),null(),null(),null(),
+        refs.c.market_value,refs.c.historical_value,refs.c.synthetic,null())
+    combined=union_all(current,history).subquery('current_and_history')
+    variant=select(combined.c.item_id,combined.c.variant_key,
+        *[func.max(combined.c[key]).label(key) for key in
+          ('supply','listing_count','recent_price','market_value','historical_value','historical_synthetic','name')]
+        ).group_by(combined.c.item_id,combined.c.variant_key).having(func.max(combined.c.present)==1).subquery('current_variants')
+    grouped=select(variant.c.item_id,func.count().label('variant_count'),
+        case((func.count()==1,func.min(variant.c.variant_key)),else_=None).label('sole_variant_key'),
+        func.sum(variant.c.supply).label('supply'),func.sum(variant.c.listing_count).label('listing_count'),
+        func.min(variant.c.recent_price).label('recent_min'),func.max(variant.c.recent_price).label('recent_max'),
+        func.min(variant.c.market_value).label('market_min'),func.max(variant.c.market_value).label('market_max'),
+        func.min(variant.c.historical_value).label('historical_min'),func.max(variant.c.historical_value).label('historical_max'),
+        func.count(variant.c.recent_price).label('priced_variants'),func.max(variant.c.historical_synthetic).label('historical_synthetic'),
+        func.max(variant.c.name).label('name')).group_by(variant.c.item_id).subquery('item_groups')
     sort_column={'item_id':grouped.c.item_id,'name':func.lower(grouped.c.name),
         'recent_price':grouped.c.recent_min,'market_value':grouped.c.market_min,'historical_value':grouped.c.historical_min,
         'supply':grouped.c.supply,'listing_count':grouped.c.listing_count}[sort]
