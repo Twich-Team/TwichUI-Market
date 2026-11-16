@@ -39,15 +39,14 @@ pub fn project(
         "projection supported history window",
     )?;
     let key = scope.key()?;
-    let watermark = id(&h.watermark_observation_id)?;
-    let current = read_one(store, &key, watermark)?;
+    let current = read_one(store, &key, &h.checkpoint_id)?;
     let canonical_model = h.pricing_algorithm == "twichui-pricing-v1";
     let mut observations = Vec::new();
-    let mut statement=store.db.prepare("SELECT value,sha256 FROM (SELECT value,sha256,row_number() OVER(PARTITION BY day ORDER BY at_us DESC,source_id DESC) AS ordinal FROM history_entries WHERE scope=?1 AND phase=0 AND source_id<=?2 AND day>=?3 AND day<=?4 AND (?5=0 OR json_extract(value,'$.observation.scope_complete')=1)) WHERE ordinal=1")?;
+    let mut statement=store.db.prepare("SELECT value,sha256 FROM (SELECT value,sha256,row_number() OVER(PARTITION BY day ORDER BY at_us DESC,source_id DESC) AS ordinal FROM history_entries WHERE scope=?1 AND phase=0 AND source_id IN (SELECT source_id FROM history_members WHERE scope=?1 AND checkpoint=?2 AND phase=0) AND day>=?3 AND day<=?4 AND (?5=0 OR json_extract(value,'$.observation.scope_complete')=1)) WHERE ordinal=1")?;
     for row in statement.query_map(
         params![
             key,
-            watermark as i64,
+            h.checkpoint_id,
             (today - Duration::days(59)).to_string(),
             today.to_string(),
             canonical_model
@@ -79,8 +78,31 @@ pub fn project(
         .collect::<Result<BTreeSet<_>>>()?;
     let selected_json = String::from_utf8(canonical(&request["variants"])?).unwrap();
     let snapshots_json = serde_json::to_string(&snapshots)?;
+    // A missing cached row cannot become evidence of absence. Verify complete
+    // snapshot membership before interpreting any selected non-membership.
+    let mut check=store.db.prepare("SELECT e.source_id,e.value,e.sha256,(SELECT count(*) FROM history_entries v WHERE v.scope=e.scope AND v.phase=2 AND v.source_id=e.source_id) FROM history_entries e WHERE e.scope=?1 AND e.phase=1 AND e.source_id IN (SELECT value FROM json_each(?2))")?;
+    let mut checked = 0;
+    for row in check.query_map(params![key, snapshots_json], |r| {
+        Ok((
+            r.get::<_, String>(1)?,
+            r.get::<_, String>(2)?,
+            unsigned(r, 3)?,
+        ))
+    })? {
+        let (raw, sum, count) = row?;
+        let descriptor = ArchiveStore::checked(raw, sum)?;
+        need(
+            descriptor["record_count"] == count,
+            "archive snapshot membership incomplete",
+        )?;
+        checked += 1;
+    }
+    need(
+        checked == snapshots.len(),
+        "archive snapshot descriptor missing",
+    )?;
     let mut values = BTreeMap::new();
-    let mut q=store.db.prepare("SELECT e.source_id,e.item_id,e.variant,e.value,e.sha256 FROM history_entries e JOIN json_each(?2) chosen ON e.item_id=json_extract(chosen.value,'$.item_id') AND e.variant=json_extract(chosen.value,'$.variant_key') WHERE e.scope=?1 AND e.phase=2 AND e.source_id IN (SELECT value FROM json_each(?3))")?;
+    let mut q=store.db.prepare("SELECT e.source_id,e.item_id,e.variant,e.value,e.sha256 FROM json_each(?2) chosen CROSS JOIN history_entries e INDEXED BY history_variant_identity ON e.item_id=json_extract(chosen.value,'$.item_id') AND e.variant=json_extract(chosen.value,'$.variant_key') WHERE e.scope=?1 AND e.phase=2 AND e.source_id IN (SELECT value FROM json_each(?3))")?;
     for row in q.query_map(params![key, selected_json, snapshots_json], |row| {
         Ok((
             unsigned(row, 0)?,
@@ -113,9 +135,9 @@ pub fn project(
     if !missing.is_empty() {
         // Historical-only identity may predate the current 60-day view. Resolve
         // its exact descriptor in one streamed indexed query, never by base ID.
-        let mut q=store.db.prepare("SELECT e.item_id,e.variant,e.value,e.sha256 FROM history_entries e JOIN json_each(?2) chosen ON e.item_id=json_extract(chosen.value,'$.item_id') AND e.variant=json_extract(chosen.value,'$.variant_key') WHERE e.scope=?1 AND e.phase=2 AND e.source_id IN (SELECT snapshot_ref FROM history_entries WHERE scope=?1 AND phase=0 AND source_id<=?3)")?;
+        let mut q=store.db.prepare("SELECT e.item_id,e.variant,e.value,e.sha256 FROM json_each(?2) chosen CROSS JOIN history_entries e INDEXED BY history_variant_identity ON e.item_id=json_extract(chosen.value,'$.item_id') AND e.variant=json_extract(chosen.value,'$.variant_key') WHERE e.scope=?1 AND e.phase=2 AND e.source_id IN (SELECT source_id FROM history_members WHERE scope=?1 AND checkpoint=?3 AND phase=1)")?;
         for row in q.query_map(
-            params![key, serde_json::to_string(&missing)?, watermark as i64],
+            params![key, serde_json::to_string(&missing)?, h.checkpoint_id],
             |row| {
                 Ok((
                     row.get::<_, u32>(0)?,
@@ -205,7 +227,7 @@ pub fn project(
         .map(|o| o["utc_day"].as_str().unwrap())
         .collect::<BTreeSet<_>>()
         .len();
-    let synthetic:bool=store.db.query_row("SELECT EXISTS(SELECT 1 FROM history_entries WHERE scope=?1 AND phase=0 AND source_id<=?2 AND json_extract(value,'$.observation.synthetic')=1)",params![key,watermark as i64],|r|r.get(0))?;
+    let synthetic:bool=store.db.query_row("SELECT EXISTS(SELECT 1 FROM history_entries WHERE scope=?1 AND phase=0 AND source_id IN (SELECT source_id FROM history_members WHERE scope=?1 AND checkpoint=?2 AND phase=0) AND json_extract(value,'$.observation.synthetic')=1)",params![key,h.checkpoint_id],|r|r.get(0))?;
     let g = json!({"format":"twichui-market-bridge","contract_version":1,"schema_version":3,"transport_version":1,
         "issuer_id":h.issuer_id,"producer":{"server_build":h.server_build,"desktop_build":"not-applicable-server-export"},
         "required_features":["exact_copper","current_summaries","daily_history","scoped_selection"],"market":h.market,
@@ -225,8 +247,8 @@ pub fn project(
     scoped::validate(&g, Some(request))?;
     Ok((g, receipt, sizes))
 }
-fn read_one(store: &ArchiveStore, key: &str, watermark: u64) -> Result<Value> {
-    let(value,sum):(String,String)=store.db.query_row("SELECT value,sha256 FROM history_entries WHERE scope=?1 AND phase=0 AND source_id<=?2 ORDER BY at_us DESC,source_id DESC LIMIT 1",params![key,watermark as i64],|r|Ok((r.get(0)?,r.get(1)?)))?;
+fn read_one(store: &ArchiveStore, key: &str, checkpoint: &str) -> Result<Value> {
+    let(value,sum):(String,String)=store.db.query_row("SELECT value,sha256 FROM history_entries WHERE scope=?1 AND phase=0 AND source_id IN (SELECT source_id FROM history_members WHERE scope=?1 AND checkpoint=?2 AND phase=0) ORDER BY at_us DESC,source_id DESC LIMIT 1",params![key,checkpoint],|r|Ok((r.get(0)?,r.get(1)?)))?;
     Ok(ArchiveStore::checked(value, sum)?["observation"].clone())
 }
 fn point(value: Option<&Evidence>, observation: &Value, index: usize, algorithm: &str) -> Value {

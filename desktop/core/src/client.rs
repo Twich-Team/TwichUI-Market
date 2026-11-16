@@ -345,7 +345,7 @@ impl MarketClient {
             if store.pending(scope)?.is_none() {
                 let active = store.active(scope)?;
                 let mut ready = false;
-                for _ in 0..1025 {
+                for _ in 0..4097 {
                     if cancelled() {
                         return Err(Error::Cancelled);
                     }

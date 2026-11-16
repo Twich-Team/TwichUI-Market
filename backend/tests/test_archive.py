@@ -179,3 +179,60 @@ def test_scoped_schema3_selection_gap_exact_values_and_refusals(bridge, monkeypa
     monkeypatch.setattr(archive.scoped_contract(),'preflight',tiny)
     refused=client.post(url,json=request)
     assert refused.status_code==413 and 'canonical_bytes' in refused.json()['exceeded']
+
+
+def test_companion_rotation_resumes_same_device_and_revocation_stops_it(owner, database, monkeypatch):
+    monkeypatch.setenv('SYNC_CURSOR_SECRET', 'synthetic-archive-device-rotation-'+'a'*32)
+    from test_companion_auth import authorize, refresh_form, seed_market
+    seed_market(database)
+    tokens = authorize(owner)
+    owner.headers['Authorization'] = 'Bearer ' + tokens['access_token']
+    envelope = start(owner, 2)
+    first = page(owner, 2, envelope).json()
+    owner.headers.pop('Authorization')
+    refreshed = owner.post('/api/v1/companion/token', data=refresh_form(tokens))
+    assert refreshed.status_code == 200, refreshed.text
+    renewed = refreshed.json()
+    owner.headers['Authorization'] = 'Bearer ' + renewed['access_token']
+    assert page(owner, 2, envelope).json() == first
+    owner.headers.pop('Authorization')
+    other_device = authorize(owner)
+    owner.headers['Authorization'] = 'Bearer ' + other_device['access_token']
+    assert page(owner, 2, envelope).status_code == 409
+    owner.headers['Authorization'] = 'Bearer ' + renewed['access_token']
+    assert owner.post('/api/v1/companion/devices/self/revoke').status_code == 204
+    assert page(owner, 2, envelope).status_code == 401
+
+
+def test_equivalent_checkpoint_reuse_and_capacity_never_evicts_pending_peer(bridge, database, monkeypatch):
+    client, mid, _, _ = bridge
+    envelope = start(client, mid)
+    assert start(client, mid) == envelope
+    monkeypatch.setattr(archive, 'MAX_CHECKPOINTS', 1)
+    with database.begin() as db:
+        ingest(db, mid, b'{"auctions":[{"id":1,"item":{"id":99},"quantity":1,"buyout":777}]}', request_key='archive-storage-next', synthetic=True)
+    response = client.get(f'/api/v1/archive/markets/{mid}/checkpoint')
+    assert response.status_code == 503
+    assert download(client, mid, envelope)
+
+
+def test_retention_change_requires_full_bootstrap_and_old_exact_descriptor_is_preserved(bridge, database):
+    from market.models import Observation
+    client, mid, oids, _ = bridge
+    with database.begin() as db:
+        ingest(db, mid, b'{"auctions":[{"id":1,"item":{"id":77},"quantity":1,"buyout":700}]}', request_key='archive-old-only', retrieved_at=now()-timedelta(days=90), synthetic=True)
+    envelope = start(client, mid)
+    request = selection_for(envelope, [(77,key({'id':77}))])
+    response = client.post(f'/api/v1/archive/markets/{mid}/scoped', params={'checkpoint':envelope['header']['checkpoint_id']}, json=request)
+    assert response.status_code == 200, response.text
+    assert response.json()['records'][0]['variant_json'] == '{"id":77}'
+    assert response.json()['records'][0]['current']['state'] == 'absent'
+    with database.begin() as db:
+        db.execute(delete(Observation).where(Observation.id == oids[0]))
+    assert client.get(f'/api/v1/archive/markets/{mid}/checkpoint', params={'base':envelope['header']['checkpoint_id']}).status_code == 409
+    # Genuine retained-source changes need a new pinned full checkpoint. The old
+    # frozen metadata is not silently reused just because the watermark matches.
+    replacement = start(client, mid)
+    assert replacement['header']['checkpoint_id'] != envelope['header']['checkpoint_id']
+    assert replacement['header']['total_observations'] == 2
+    assert len([e for e in download(client, mid, replacement) if e['kind']=='observation']) == 2

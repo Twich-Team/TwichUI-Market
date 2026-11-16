@@ -52,7 +52,7 @@ function render(next) {
   $('export').disabled=!view.cache?.has_completed_cache;
   $('workshop-export').disabled=workshopExporting||!view.connected||view.refreshing||s.running;
   $('workshop-pricing').disabled=workshopExporting||archiveBusy;
-  const historyContext=`${view.settings.server}|${view.bootstrap?.account?.id}|${s.selected_market||view.settings.selected_market}`;
+  const historyContext=`${view.settings.server}|${view.bootstrap?.account?.id}|${view.settings.selected_market||s.selected_market}`;
   if(archiveContext!==historyContext){archiveContext=historyContext;text('archive-status','No completed archive selected.');text('scope-status','Choose exact variants after downloading retained history.');$('scope-variants').value='';$('scope-compatible').checked=false;}
   for(const id of ['archive-sync','scope-preview','scope-export'])$(id).disabled=archiveBusy||workshopExporting;
 
@@ -157,11 +157,12 @@ function scopeInput(){
 $('scope-variants').oninput=()=>{text('scope-count',`${$('scope-variants').value.split(/\r?\n/).filter(s=>s.trim()).length} selected · initial operating budget: 100 variants, 2 MiB data, 3 MiB Lua.`);};
 async function historyAction(sync,publish){
   if(archiveBusy)return;
+  const requestedContext=archiveContext;
   archiveBusy=true;render(view);text('scope-status',sync?'Downloading/resuming retained history. Completed data stays available during errors…':'Checking the complete requested scope…');
   try{
     const selected=sync?null:scopeInput();
     const result=await action('archive_workshop',{algorithm:$('workshop-pricing').value,diskBudgetMib:Number($('archive-budget').value),selected,publish,compatible:$('scope-compatible').checked});
-    if(!result?.ok)return;
+    if(!result?.ok||archiveContext!==requestedContext)return;
     const r=result.value,h=r.header;
     text('archive-status',`${h.market.region.toUpperCase()} · house ${h.market.house_id} · ${h.pricing_algorithm} · ${h.total_observations.toLocaleString()} retained observations · ${(r.archive_bytes/1048576).toFixed(2)} MiB SQLite. Checkpoint ${h.checkpoint_id}`);
     if(sync){

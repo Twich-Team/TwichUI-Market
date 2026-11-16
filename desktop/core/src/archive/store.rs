@@ -51,6 +51,7 @@ impl ArchiveStore {
           CREATE TABLE IF NOT EXISTS history_headers(scope TEXT NOT NULL,slot TEXT NOT NULL,header TEXT NOT NULL,cursor TEXT,position INTEGER NOT NULL,chain TEXT NOT NULL,last_key TEXT,completed_at TEXT,PRIMARY KEY(scope,slot));
           CREATE TABLE IF NOT EXISTS history_entries(scope TEXT NOT NULL,phase INTEGER NOT NULL,source_id INTEGER NOT NULL,item_id INTEGER NOT NULL,variant TEXT NOT NULL,snapshot_ref INTEGER NOT NULL,at_us INTEGER NOT NULL,day TEXT NOT NULL,value TEXT NOT NULL,sha256 TEXT NOT NULL,PRIMARY KEY(scope,phase,source_id,item_id,variant));
           CREATE TABLE IF NOT EXISTS history_stage(scope TEXT NOT NULL,phase INTEGER NOT NULL,source_id INTEGER NOT NULL,item_id INTEGER NOT NULL,variant TEXT NOT NULL,snapshot_ref INTEGER NOT NULL,at_us INTEGER NOT NULL,day TEXT NOT NULL,value TEXT NOT NULL,sha256 TEXT NOT NULL,PRIMARY KEY(scope,phase,source_id,item_id,variant));
+          CREATE TABLE IF NOT EXISTS history_members(scope TEXT NOT NULL,checkpoint TEXT NOT NULL,phase INTEGER NOT NULL,source_id INTEGER NOT NULL,PRIMARY KEY(scope,checkpoint,phase,source_id));
           CREATE TABLE IF NOT EXISTS history_selections(scope TEXT PRIMARY KEY,request TEXT NOT NULL);
           CREATE INDEX IF NOT EXISTS history_variant_identity ON history_entries(scope,phase,item_id,variant,source_id);
           CREATE INDEX IF NOT EXISTS history_observation_time ON history_entries(scope,phase,at_us,source_id);
@@ -321,6 +322,10 @@ impl ArchiveStore {
                     .transfer_bytes
                     .saturating_add(header.transferred() * 128),
             )?;
+            if let Some(base) = &header.base_checkpoint_id {
+                tx.execute("INSERT INTO history_members SELECT scope,?2,phase,source_id FROM history_members WHERE scope=?1 AND checkpoint=?3",params![key,header.checkpoint_id,base])?;
+            }
+            tx.execute("INSERT OR IGNORE INTO history_members SELECT scope,?2,phase,source_id FROM history_stage WHERE scope=?1 AND phase<2",params![key,header.checkpoint_id])?;
             tx.execute(
                 "INSERT OR IGNORE INTO history_entries SELECT * FROM history_stage WHERE scope=?1",
                 [&key],
@@ -349,6 +354,7 @@ impl ArchiveStore {
                 [&key],
             )?;
             tx.execute("UPDATE history_headers SET slot='active',completed_at=?2 WHERE scope=?1 AND slot='staging'",params![key,Utc::now().to_rfc3339()])?;
+            tx.execute("DELETE FROM history_members WHERE scope=?1 AND checkpoint NOT IN (SELECT json_extract(header,'$.checkpoint_id') FROM history_headers WHERE scope=?1 AND slot IN ('active','previous'))",[&key])?;
         }
         tx.commit()?;
         self.metrics.pages_applied += 1;
@@ -414,7 +420,7 @@ fn complete(db: &Connection, key: &str, h: &Header) -> Result<()> {
         "archive incomplete transfer",
     )?;
     let transferred = db.query_row(
-        "SELECT coalesce(sum(length(value)+1),0) FROM history_stage WHERE scope=?1",
+        "SELECT coalesce(sum(length(CAST(value AS BLOB))+1),0) FROM history_stage WHERE scope=?1",
         [key],
         |r| unsigned(r, 0),
     )?;
@@ -424,13 +430,14 @@ fn complete(db: &Connection, key: &str, h: &Header) -> Result<()> {
     )?;
     // Full metadata digest is independently reconstructed from trusted old and new
     // rows; source pruning or missing bootstrap members cannot silently promote.
-    let union="SELECT phase,source_id,value,sha256,snapshot_ref FROM history_entries WHERE scope=?1 AND phase<2 UNION ALL SELECT s.phase,s.source_id,s.value,s.sha256,s.snapshot_ref FROM history_stage s WHERE s.scope=?1 AND s.phase<2 AND NOT EXISTS(SELECT 1 FROM history_entries e WHERE e.scope=s.scope AND e.phase=s.phase AND e.source_id=s.source_id) ORDER BY phase,source_id";
+    let union="SELECT e.phase,e.source_id,e.value,e.sha256,e.snapshot_ref FROM history_entries e JOIN history_members m ON e.scope=m.scope AND e.phase=m.phase AND e.source_id=m.source_id WHERE e.scope=?1 AND m.checkpoint=?2 AND e.phase<2 UNION ALL SELECT s.phase,s.source_id,s.value,s.sha256,s.snapshot_ref FROM history_stage s WHERE s.scope=?1 AND s.phase<2 AND NOT EXISTS(SELECT 1 FROM history_members m WHERE m.scope=s.scope AND m.checkpoint=?2 AND m.phase=s.phase AND m.source_id=s.source_id) ORDER BY phase,source_id";
     let mut statement = db.prepare(union)?;
-    let mut rows = statement.query([key])?;
+    let mut rows = statement.query(params![key, h.base_checkpoint_id.as_deref().unwrap_or("")])?;
     let mut sha = Sha256::new();
     let mut meta_counts = [0u64; 2];
     let mut snapshots = BTreeMap::new();
-    let mut observed_snapshots = Vec::new();
+    let mut observed_snapshots = std::collections::BTreeSet::new();
+    let mut maximum_observation = 0;
     while let Some(r) = rows.next()? {
         let phase = r.get::<_, u8>(0)? as usize;
         let source: u64 = unsigned(r, 1)?;
@@ -441,7 +448,14 @@ fn complete(db: &Connection, key: &str, h: &Header) -> Result<()> {
         if phase == 1 {
             snapshots.insert(source, value);
         } else {
-            observed_snapshots.push(unsigned(r, 4)?);
+            maximum_observation = maximum_observation.max(source);
+            observed_snapshots.insert((
+                unsigned(r, 4)?,
+                value["observation"]["snapshot_content_sha256"]
+                    .as_str()
+                    .unwrap()
+                    .to_owned(),
+            ));
         }
     }
     need(
@@ -450,9 +464,12 @@ fn complete(db: &Connection, key: &str, h: &Header) -> Result<()> {
         "archive metadata completeness/digest",
     )?;
     need(
-        observed_snapshots
-            .iter()
-            .all(|sid| snapshots.contains_key(sid)),
+        observed_snapshots.iter().all(|(sid, sum)| {
+            snapshots
+                .get(sid)
+                .is_some_and(|s| s["content_sha256"] == *sum)
+        }) && observed_snapshots.len() == snapshots.len()
+            && maximum_observation == id(&h.watermark_observation_id)?,
         "archive missing snapshot reference",
     )?;
     // Verify each transferred snapshot in a single ordered row stream.
@@ -546,4 +563,39 @@ fn available(path: &Path) -> Result<u64> {
 pub(super) fn unsigned(row: &rusqlite::Row<'_>, column: usize) -> rusqlite::Result<u64> {
     let n: i64 = row.get(column)?;
     u64::try_from(n).map_err(|_| rusqlite::Error::IntegralValueOutOfRange(column, n))
+}
+
+#[cfg(test)]
+mod disk_tests {
+    use super::*;
+    #[test]
+    fn sqlite_full_rolls_back_progress_and_preserves_completed_pointer() {
+        let mut store = ArchiveStore::memory(64 * 1024 * 1024).unwrap();
+        store.db.execute("INSERT INTO history_headers VALUES('scope','active','completed',NULL,0,'chain',NULL,'receipt')",[]).unwrap();
+        store.db.execute("INSERT INTO history_headers VALUES('scope','staging','candidate','before',0,'chain',NULL,NULL)",[]).unwrap();
+        let pages: i64 = store
+            .db
+            .pragma_query_value(None, "page_count", |r| r.get(0))
+            .unwrap();
+        store
+            .db
+            .pragma_update(None, "max_page_count", pages)
+            .unwrap();
+        {
+            let tx = store.db.transaction().unwrap();
+            tx.execute(
+                "UPDATE history_headers SET cursor='after' WHERE slot='staging'",
+                [],
+            )
+            .unwrap();
+            let error=tx.execute("INSERT INTO history_stage VALUES('scope',2,1,1,'key',1,0,'',zeroblob(65536),'sha')",[]).unwrap_err();
+            assert!(
+                matches!(error,rusqlite::Error::SqliteFailure(ref e,_) if e.code==rusqlite::ErrorCode::DiskFull)
+            );
+            // SQLite may already have rolled back after SQLITE_FULL. Drop is safe.
+        }
+        let (cursor,active):(String,String)=store.db.query_row("SELECT (SELECT cursor FROM history_headers WHERE slot='staging'),(SELECT header FROM history_headers WHERE slot='active')",[],|r|Ok((r.get(0)?,r.get(1)?))).unwrap();
+        assert_eq!(cursor, "before");
+        assert_eq!(active, "completed");
+    }
 }

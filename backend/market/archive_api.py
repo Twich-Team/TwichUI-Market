@@ -18,6 +18,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy import and_, delete, func, or_, select, tuple_
 from sqlalchemy.orm import Session
+from starlette.concurrency import run_in_threadpool
 from . import bridge_api as bridge, canonical_pricing as cp, environment
 from .bridge_contract import contract
 from .db import now, session
@@ -34,6 +35,8 @@ MAX_OBSERVATIONS = 100_000
 MAX_SNAPSHOTS = 4096
 MAX_RECORDS = 10_000_000
 MAX_METADATA = 64 * 1024 * 1024
+MAX_CHECKPOINTS = 512
+MAX_CHECKPOINT_METADATA = 256 * 1024 * 1024
 TTL = timedelta(hours=24)
 SUMMARY_FIELDS = ('state', 'supply', 'priced_supply', 'listing_count', 'minimum_listing_copper',
                   'recent_copper', 'quantity_weighted_ask_copper')
@@ -177,11 +180,35 @@ def checkpoint(market_id: MarketId, request: Request, algorithm: str = Query(cp.
     digests = {d.snapshot_id: d for d in db.scalars(select(ArchiveDigest).where(
         ArchiveDigest.snapshot_id.in_(ids), ArchiveDigest.algorithm == algorithm, ArchiveDigest.revision == REVISION))}
     pending = [s for s in snapshots.values() if s.id not in digests]
-    for s in pending[:4]:
+    for s in pending[:1]:
         digests[s.id] = evidence_digest(db, s, algorithm, market.source_kind)
-    if len(pending) > 4:
+    if len(pending) > 1:
         db.commit()
         return JSONResponse({'state': 'preparing', 'retry_after_seconds': 1}, status_code=202, headers={'Cache-Control': 'no-store', 'Retry-After': '1'})
+    identity = bridge.market_identity(db, market)
+    # Repeated equivalent requests reuse a still-valid checkpoint. Never evict an
+    # unexpired peer download merely because another device requests a refresh.
+    previous_rows = list(db.scalars(select(ArchiveCheckpoint).order_by(ArchiveCheckpoint.created_at.desc())))
+    for existing in previous_rows:
+        if aware(existing.expires_at) <= at:
+            continue
+        saved = json.loads(existing.header_json)
+        if (existing.market_id == market_id and existing.user_id == user.id
+                and existing.credential_id == authorization_key(request.state.credential)
+                and saved['pricing_algorithm'] == algorithm and saved['base_checkpoint_id'] == base
+                and saved['watermark_observation_id'] == str(watermark)
+                and saved['total_observations'] == count and saved['total_snapshots'] == len(ids)
+                and saved['market'] == identity and saved['generated_at'][:10] == at.date().isoformat()):
+            db.commit()
+            return JSONResponse({'header': saved, 'cursor': cursor(existing)}, headers={'Cache-Control': 'no-store'})
+    for existing in reversed(previous_rows):
+        if aware(existing.expires_at) <= at and (len(previous_rows) >= MAX_CHECKPOINTS or aware(existing.created_at) < at - timedelta(days=7)):
+            db.execute(delete(ArchiveMember).where(ArchiveMember.checkpoint_id == existing.checkpoint_id))
+            db.delete(existing)
+    db.flush()
+    if db.scalar(select(func.count()).select_from(ArchiveCheckpoint)) >= MAX_CHECKPOINTS:
+        raise HTTPException(503, 'Archive checkpoint storage busy; retry after an existing checkpoint expires')
+    stored_metadata = db.scalar(select(func.coalesce(func.sum(func.length(ArchiveMember.value_json)), 0)))
     # Persist only bounded checkpoint metadata. Variant evidence remains normalized
     # in existing immutable versioned derivations/statistics, never copied per checkpoint.
     checkpoint_id = hashlib.sha256(uuid.uuid4().bytes).hexdigest()
@@ -200,6 +227,8 @@ def checkpoint(market_id: MarketId, request: Request, algorithm: str = Query(cp.
         entry = {'kind': 'observation', 'observation': bridge.observation_view(o, snapshots[o.snapshot_id], aware(o.retrieved_at))}
         raw = canonical(entry)
         byte_count += len(raw)
+        if stored_metadata + byte_count > MAX_CHECKPOINT_METADATA:
+            raise HTTPException(503, 'Archive checkpoint metadata budget unavailable; retry later')
         if byte_count > MAX_METADATA:
             raise HTTPException(413, 'Archive checkpoint metadata bound')
         sha.update(raw + b'\n')
@@ -219,6 +248,9 @@ def checkpoint(market_id: MarketId, request: Request, algorithm: str = Query(cp.
         entry = {'kind': 'snapshot', 'snapshot_id': str(sid), 'content_sha256': s.content_hash,
                  'record_count': d.record_count, 'records_sha256': d.records_sha256, 'records_bytes': d.records_bytes}
         raw = canonical(entry)
+        byte_count += len(raw)
+        if byte_count > MAX_METADATA or stored_metadata + byte_count > MAX_CHECKPOINT_METADATA:
+            raise HTTPException(503, 'Archive checkpoint metadata budget unavailable; retry later')
         transfer_bytes += len(raw) + 1 + d.records_bytes if send else 0
         sha.update(raw + b'\n')
         db.add(ArchiveMember(checkpoint_id=checkpoint_id, phase=1, source_id=sid, value_json=raw.decode(), transmit=send))
@@ -226,7 +258,7 @@ def checkpoint(market_id: MarketId, request: Request, algorithm: str = Query(cp.
         raise HTTPException(413, 'Archive record bound')
     header = {'format': 'twichui-history-archive', 'protocol_version': 1, 'checkpoint_id': checkpoint_id,
               'account_id': user.id, 'issuer_id': str(uuid.uuid5(uuid.NAMESPACE_URL, environment.SESSION_ORIGIN)),
-              'market': bridge.market_identity(db, market), 'pricing_algorithm': algorithm,
+              'market': identity, 'pricing_algorithm': algorithm,
               'history_basis': cp.HISTORY_BASIS if algorithm == cp.ALGORITHM else 'market_rolling_daily_means',
               'evidence_revision': REVISION, 'watermark_observation_id': str(watermark),
               'base_checkpoint_id': base, 'base_watermark_observation_id': str(base_watermark),
@@ -239,13 +271,6 @@ def checkpoint(market_id: MarketId, request: Request, algorithm: str = Query(cp.
               'transfer_bytes': transfer_bytes,
               'metadata_sha256': sha.hexdigest()}
     row.header_json = canonical(header).decode()
-    # Preserve completed bases for incremental continuity for seven days; bound
-    # disposable checkpoint metadata, never source observations or derivations.
-    older = list(db.scalars(select(ArchiveCheckpoint).order_by(ArchiveCheckpoint.created_at.desc())))
-    for i, entry in enumerate(older):
-        if entry.checkpoint_id != checkpoint_id and (i >= 128 or aware(entry.created_at) < at - timedelta(days=7)):
-            db.execute(delete(ArchiveMember).where(ArchiveMember.checkpoint_id == entry.checkpoint_id))
-            db.delete(entry)
     db.commit()
     return JSONResponse({'header': header, 'cursor': cursor(row)}, headers={'Cache-Control': 'no-store'})
 
@@ -377,6 +402,20 @@ def scoped_generation(db, row, requested):
         r = bridge.assemble_record(key, values, latest, closes, remapped, h['pricing_algorithm'], at, delivered)
         r['distribution'], r['distribution_status'] = None, 'omitted_budget'
         records.append(r)
+    missing_descriptors = [(r['item_id'], r['variant_key']) for r in records if r['variant_json'] is None]
+    if missing_descriptors:
+        descriptors = {}
+        for derived in db.scalars(select(BridgeDerivedRecord).where(BridgeDerivedRecord.snapshot_id.in_(union_ids),
+                BridgeDerivedRecord.algorithm == h['pricing_algorithm'], BridgeDerivedRecord.revision == bridge.REVISION,
+                tuple_(BridgeDerivedRecord.item_id, BridgeDerivedRecord.variant_key).in_(missing_descriptors))
+                .order_by(BridgeDerivedRecord.snapshot_id).execution_options(yield_per=500)):
+            descriptor = json.loads(derived.record_json)['variant_json']
+            if descriptor is not None:
+                descriptors[derived.item_id, derived.variant_key] = descriptor
+        for record in records:
+            descriptor = descriptors.get((record['item_id'], record['variant_key']))
+            if record['variant_json'] is None and descriptor is not None:
+                record['variant_json'], record['identity_basis'] = descriptor, 'exact_upstream'
     days = len({o['utc_day'] for o in selected if request['history_from_day'] <= o['utc_day'] <= request['history_through_day']})
     g = {'format': 'twichui-market-bridge', 'contract_version': 1, 'schema_version': 3, 'transport_version': 1,
          'issuer_id': h['issuer_id'], 'producer': {'server_build': h['server_build'], 'desktop_build': 'not-applicable-server-export'},
@@ -417,8 +456,10 @@ async def scoped(market_id: MarketId, request: Request, checkpoint: str = Query(
         return out
     try:
         selected = json.loads(body, object_pairs_hook=unique)
-        bridge.lock(db)
-        result = scoped_generation(db, row, selected)
+        def produce():
+            bridge.lock(db)
+            return scoped_generation(db, row, selected)
+        result = await run_in_threadpool(produce)
     except scoped_contract().Refusal as error:
         if error.code == 'capacity':
             return JSONResponse({'error': 'capacity', **error.diagnostics}, status_code=413, headers={'Cache-Control': 'no-store'})

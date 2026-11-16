@@ -256,3 +256,134 @@ fn unknown_future_wrong_scope_selection_and_cache_corruption_refuse() {
     let (_, _, request) = fixture("1");
     assert!(project(&s, &scope(), &request, &DeliveryBudget::default()).is_err());
 }
+
+// Independently reseal test transport envelopes after altering synthetic source
+// metadata. Does not invoke either production producer or reader hash routines.
+fn repack(mut envelope: Value, entries: Vec<Value>) -> (Value, Vec<Value>) {
+    let h = &mut envelope["header"];
+    for (kind, total, transfer) in [
+        ("observation", "total_observations", "transfer_observations"),
+        ("snapshot", "total_snapshots", "transfer_snapshots"),
+        ("variant", "total_records", "transfer_records"),
+    ] {
+        let n = entries.iter().filter(|e| e["kind"] == kind).count();
+        h[total] = n.into();
+        h[transfer] = n.into();
+    }
+    h["transfer_bytes"] = entries
+        .iter()
+        .map(|v| encoded(v).len() + 1)
+        .sum::<usize>()
+        .into();
+    h["metadata_sha256"] = format!(
+        "{:x}",
+        Sha256::digest(
+            entries
+                .iter()
+                .filter(|e| e["kind"] != "variant")
+                .flat_map(|v| {
+                    let mut x = encoded(v);
+                    x.push(b'\n');
+                    x
+                })
+                .collect::<Vec<_>>()
+        )
+    )
+    .into();
+    let v = Value::Array(entries);
+    let mut hasher = Sha256::new();
+    hasher.update([0u8; 32]);
+    hasher.update(encoded(&v));
+    let p = json!({"format":"twichui-history-archive-page","protocol_version":1,"checkpoint_id":h["checkpoint_id"],"account_id":1,"market_id":2,"offset":0,
+        "entries":v,"previous_sha256":"0".repeat(64),"page_sha256":sha(&v),"chain_sha256":format!("{:x}",hasher.finalize()),"has_more":false,"next_cursor":null});
+    (envelope, vec![p])
+}
+#[test]
+fn full_rebootstrap_after_source_retention_keeps_previous_evidence_separate() {
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("archive.sqlite");
+    let mut s = ArchiveStore::open(&path, 64 * 1024 * 1024).unwrap();
+    let (e, pages, request) = fixture("1");
+    accept(&mut s, &e, &pages);
+    let db = rusqlite::Connection::open(&path).unwrap();
+    let before: i64 = db
+        .query_row("SELECT count(*) FROM history_entries", [], |r| r.get(0))
+        .unwrap();
+    let (new, np, _) = fixture("2");
+    let entries = np
+        .iter()
+        .flat_map(|p| p["entries"].as_array().unwrap().clone())
+        .collect::<Vec<_>>();
+    let sid = entries.iter().find(|e| e["kind"] == "observation").unwrap()["observation"]
+        ["snapshot_id"]
+        .clone();
+    let oid = entries.iter().find(|e| e["kind"] == "observation").unwrap()["observation"]
+        ["observation_id"]
+        .clone();
+    let entries = entries
+        .into_iter()
+        .filter(|e| {
+            if e["kind"] == "observation" {
+                e["observation"]["observation_id"] != oid
+            } else {
+                e["snapshot_id"] != sid
+            }
+        })
+        .collect();
+    let (new, np) = repack(new, entries);
+    accept(&mut s, &new, &np);
+    assert_eq!(
+        s.previous(&scope()).unwrap().unwrap().checkpoint_id,
+        "1".repeat(64)
+    );
+    let after: i64 = db
+        .query_row("SELECT count(*) FROM history_entries", [], |r| r.get(0))
+        .unwrap();
+    assert_eq!(before, after, "complete old evidence was deleted");
+    assert!(
+        project(&s, &scope(), &request, &DeliveryBudget::default()).is_err(),
+        "unretained identity must not be satisfied from another checkpoint"
+    );
+    let mut bounded = request.clone();
+    bounded["variants"]
+        .as_array_mut()
+        .unwrap()
+        .retain(|r| r["item_id"] == 2589);
+    let (g, _, _) = project(&s, &scope(), &bounded, &DeliveryBudget::default()).unwrap();
+    assert_eq!(g["observations"].as_array().unwrap().len(), 1);
+    assert_eq!(
+        g["scope"]["date_coverage"][0]["state"], "no_observation",
+        "pruned source evidence leaked into the new checkpoint"
+    );
+    assert_eq!(g["records"][0]["identity_basis"], "exact_upstream");
+}
+#[test]
+fn incomplete_observation_stays_unknown_and_deleted_cache_row_is_not_absence() {
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("archive.sqlite");
+    let mut s = ArchiveStore::open(&path, 64 * 1024 * 1024).unwrap();
+    let (e, pages, request) = fixture("1");
+    let mut entries = pages
+        .iter()
+        .flat_map(|p| p["entries"].as_array().unwrap().clone())
+        .collect::<Vec<_>>();
+    let current = entries
+        .iter_mut()
+        .filter(|e| e["kind"] == "observation")
+        .last()
+        .unwrap();
+    current["observation"]["scope_complete"] = false.into();
+    let (e, pages) = repack(e, entries);
+    accept(&mut s, &e, &pages);
+    let (g, _, _) = project(&s, &scope(), &request, &DeliveryBudget::default()).unwrap();
+    assert_eq!(g["records"][0]["current"]["state"], "unknown");
+    assert!(g["records"][0]["current"]["metrics"]["recent_copper"].is_null());
+    assert_eq!(g["scope"]["date_coverage"][1]["state"], "incomplete_only");
+    let db = rusqlite::Connection::open(&path).unwrap();
+    db.execute(
+        "DELETE FROM history_entries WHERE phase=2 AND item_id=2589",
+        [],
+    )
+    .unwrap();
+    assert!(project(&s, &scope(), &request, &DeliveryBudget::default()).is_err());
+}
