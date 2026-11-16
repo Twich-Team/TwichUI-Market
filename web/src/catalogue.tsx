@@ -104,13 +104,16 @@ export function ItemCatalogue({market,query,state,onChange,onSummary}: {
         "GET",
         undefined,
         signal,
+        15_000,
       ),
+    retry: false,
     placeholderData: (previous, previousQuery) => previousQuery?.queryKey[2] === market && previousQuery?.queryKey[3] === query ? previous : undefined,
     refetchInterval: 60_000,
   });
-  const retained=useRef<Page|undefined>(undefined);
-  if(response.data&&!response.isPlaceholderData)retained.current=response.data;
-  const data=response.data ?? retained.current;
+  const scope=`${market}:${query}`;
+  const retained=useRef<{scope:string;data:Page}|undefined>(undefined);
+  if(response.data&&!response.isPlaceholderData)retained.current={scope,data:response.data};
+  const data=response.data ?? (retained.current?.scope===scope ? retained.current.data : undefined);
   useEffect(()=>{
     if(!response.data || response.isPlaceholderData || response.isError)return;
     const last=Math.max(0,Math.ceil(response.data.total_items/pagination.pageSize)-1);

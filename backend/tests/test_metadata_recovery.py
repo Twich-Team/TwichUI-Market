@@ -267,7 +267,8 @@ def test_persistent_provider_hourly_budget_and_automatic_priority(database):
     assert calls==[721]
     tick(database,at=at+timedelta(minutes=4),fetcher=record)
     assert calls==[721]
-    tick(database,at=at+timedelta(hours=1,seconds=1),fetcher=record)
+    # Minute accounting conservatively retains an intersecting bucket for <60s.
+    tick(database,at=at+timedelta(hours=1,seconds=61),fetcher=record)
     assert calls==[721,720]
 
 

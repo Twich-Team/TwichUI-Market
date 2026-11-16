@@ -48,7 +48,8 @@ def request(url, *, token=None, data=None, authorization=None, conditional=None,
             "duration_seconds": round(time.monotonic() - started, 3),
             "bytes": len(body), "sha256": hashlib.sha256(body).hexdigest(),
             "headers": {key: response.headers.get(key) for key in (
-                "Last-Modified", "ETag", "Date", "Cache-Control", "Retry-After", "Battlenet-Namespace"
+                "Last-Modified", "ETag", "Date", "Cache-Control", "Retry-After", "Battlenet-Namespace",
+                "RateLimit-Limit", "RateLimit-Remaining", "RateLimit-Reset", "X-RateLimit-Remaining"
             )},
         }
     return metadata, body

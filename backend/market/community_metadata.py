@@ -1,6 +1,5 @@
 """Optional attributed Forever beta metadata. Never imports third-party prices."""
-import hashlib,json,os,re,time
-BLOCKED_UNTIL=0.0
+import hashlib,json,os,re
 from datetime import timedelta
 from urllib.parse import urlsplit
 from .db import now
@@ -48,18 +47,19 @@ def parse_community(body,item_id,*,at=None,etag=None):
 
 
 def enrich_missing(row,*,at=None,transport=request):
-    global BLOCKED_UNTIL
     from .security import aware
     from .worker import retry_seconds
     at=at or now()
-    if time.monotonic()<BLOCKED_UNTIL:return False
     if os.environ.get('ITEM_COMMUNITY_FALLBACK_ENABLED','false').lower()!='true' or row.name is not None:return False
     if row.fallback_retry_after and aware(row.fallback_retry_after)>at:return False
     previous=json.loads(row.fallback) if row.fallback else None
     conditional={'If-None-Match':previous['source'].get('etag')} if previous else None
     try:
-        meta,body=transport(f'https://thewowdb.com/api/v1/forever/item/{row.item_id}',timeout=5,max_bytes=65536,conditional=conditional)
-        if meta['status']==429:BLOCKED_UNTIL=time.monotonic()+max(3600,retry_seconds(meta['headers'].get('Retry-After'),at))
+        from sqlalchemy.orm import object_session,sessionmaker
+        from .provider_rates import reserved_request,ProviderWaiting
+        db=object_session(row)
+        if db is None:return False
+        meta,body=reserved_request(sessionmaker(db.get_bind(),expire_on_commit=False),'thewowdb',lambda:transport(f'https://thewowdb.com/api/v1/forever/item/{row.item_id}',timeout=5,max_bytes=65536,conditional=conditional),at=at)
         if meta['status']==304 and previous:
             row.fallback_retry_after=at+timedelta(hours=1);return True
         if meta['status']==200:
@@ -67,6 +67,9 @@ def enrich_missing(row,*,at=None,transport=request):
             row.fallback,row.fallback_name=json.dumps(parsed),parsed['name']
             row.fallback_retry_after=at+timedelta(hours=1)
         else:row.fallback_retry_after=at+timedelta(seconds=604800 if meta['status']==404 else max(3600,retry_seconds(meta['headers'].get('Retry-After'),at)))
+    except ProviderWaiting as waiting:
+        if waiting.until:row.fallback_retry_after=waiting.until
+        return False
     except Exception:row.fallback_retry_after=at+timedelta(hours=1)
     return True
 
@@ -75,7 +78,7 @@ def resolve_community_once(factory=None,*,at=None):
     from sqlalchemy import or_,select,text as sqltext
     from .db import Session
     from .models import ItemMedia,ItemMetadata,Market,Observation,SnapshotStatistic
-    if os.environ.get('ITEM_COMMUNITY_FALLBACK_ENABLED','false').lower()!='true' or time.monotonic()<BLOCKED_UNTIL:return False
+    if os.environ.get('ITEM_COMMUNITY_FALLBACK_ENABLED','false').lower()!='true':return False
     at=at or now();factory=factory or Session
     with factory.begin() as db:
         if db.bind.dialect.name=='postgresql' and not db.scalar(sqltext('SELECT pg_try_advisory_xact_lock(7140236)')):return False

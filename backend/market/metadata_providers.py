@@ -102,11 +102,14 @@ def parse_everloot(body, item_id, *, at=None):
 def parse_everloot_page(body, *, at=None):
     value = decode(body)
     rows = value.get('items')
-    if not isinstance(rows, list) or len(rows) > 500: raise ValueError('Invalid Everloot page')
+    if not isinstance(rows, list) or len(rows) > 5000: raise ValueError('Invalid Everloot page')
     game = value.get('gameData')
     if not isinstance(game, dict): raise ValueError('Missing game build')
     build = build_identity(game.get('build'))
     credit = {'text': plain(game.get('credit')), 'url': 'https://everloot.app', 'notice': 'Found in game files, unconfirmed'}
+    # Large authenticated pages share one envelope/hash; avoid hashing up to
+    # 1 MiB once per record when an administrator permits 5,000-row pages.
+    origin = source('everloot', body, build=build, confidence='game_file_unconfirmed', attribution=credit, at=at)
     records = []
     seen = set()
     for row in rows:
@@ -125,9 +128,9 @@ def parse_everloot_page(body, *, at=None):
             quality = plain(quality.get('name')).upper()
             if quality not in QUALITIES: raise ValueError('Invalid item quality')
             fields['quality'] = quality
-        records.append((ident, fields, source('everloot', body, build=build, confidence='game_file_unconfirmed', attribution=credit, at=at)))
+        records.append((ident, fields, origin.copy()))
     offset, limit, total = (value.get(k) for k in ('offset', 'limit', 'total'))
-    if any(type(n) is not int or n < 0 for n in (offset, limit, total)) or not 1 <= limit <= 500 or len(rows) > limit or offset+len(rows)>total:
+    if any(type(n) is not int or n < 0 for n in (offset, limit, total)) or not 1 <= limit <= 5000 or len(rows) > limit or offset+len(rows)>total:
         raise ValueError('Invalid pagination')
     next_offset = None
     if value.get('next') is not None:
@@ -168,13 +171,14 @@ def parse_thewowdb(body, item_id, *, at=None):
     return fields,origin
 
 
-def fetch(provider, item_id, *, credential=None, etag=None, offset=None, validate=False, transport=request, client=None, region='us'):
+def fetch(provider, item_id, *, credential=None, etag=None, offset=None, validate=False, transport=request, client=None, region='us', page_size=500):
     if provider not in PROVIDERS or type(item_id) is not int or not 1 <= item_id <= 2**31-1: raise ValueError('Invalid provider identity')
     if provider == 'blizzard':
         from .worker import BlizzardClient
         return (client or BlizzardClient()).fetch_item(region, item_id)
     if provider == 'everloot':
-        url = 'https://everloot.app/api/items?' + urlencode({'offset': offset or 0, 'limit': 1 if validate else 500}) if validate or offset is not None else f'https://everloot.app/api/tooltip/item/{item_id}'
+        if type(page_size) is not int or not 1 <= page_size <= (5000 if credential else 500): raise ValueError('Invalid provider page size')
+        url = 'https://everloot.app/api/items?' + urlencode({'offset': offset or 0, 'limit': 1 if validate else page_size}) if validate or offset is not None else f'https://everloot.app/api/tooltip/item/{item_id}'
     elif provider == 'foreverdb':
         if not credential: raise ValueError('Provider key required')
         url = 'https://foreverdb.net/api/v1/meta' if validate else f'https://foreverdb.net/api/v1/items/{item_id}'

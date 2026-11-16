@@ -25,35 +25,53 @@ export async function api<T>(
   method = "GET",
   body?: unknown,
   signal?: AbortSignal,
+  timeoutMs?: number,
 ): Promise<T> {
   const requestCsrf = csrf;
-  const response = await fetch(`/api/v1${path}`, {
-    method,
-    signal,
-    credentials: "same-origin",
-    headers: {
-      "Content-Type": "application/json",
-      ...(method === "GET" ? {} : { "X-CSRF-Token": csrf }),
-    },
-    body: body === undefined ? undefined : JSON.stringify(body),
-  });
-  if (!response.ok) {
-    if (
-      response.status === 401 &&
-      requestCsrf === csrf &&
-      path !== "/auth/login" &&
-      typeof window !== "undefined"
-    )
-      window.dispatchEvent(new Event("market-auth-expired"));
-    let message = `Request failed (${response.status})`;
-    try {
-      const result = await response.json();
-      if (typeof result.detail === "string") message = result.detail;
-      else if (response.status === 422) message = "Check the entered values.";
-    } catch {}
-    throw new ApiError(response.status, message);
+  const controller = timeoutMs === undefined ? undefined : new AbortController();
+  let timedOut = false;
+  const cancel = () => controller?.abort();
+  if (signal?.aborted) cancel();
+  else if (controller) signal?.addEventListener("abort", cancel, { once: true });
+  const timer = controller && setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, timeoutMs);
+  try {
+    const response = await fetch(`/api/v1${path}`, {
+      method,
+      signal: controller?.signal ?? signal,
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json",
+        ...(method === "GET" ? {} : { "X-CSRF-Token": csrf }),
+      },
+      body: body === undefined ? undefined : JSON.stringify(body),
+    });
+    if (!response.ok) {
+      if (
+        response.status === 401 &&
+        requestCsrf === csrf &&
+        path !== "/auth/login" &&
+        typeof window !== "undefined"
+      )
+        window.dispatchEvent(new Event("market-auth-expired"));
+      let message = `Request failed (${response.status})`;
+      try {
+        const result = await response.json();
+        if (typeof result.detail === "string") message = result.detail;
+        else if (response.status === 422) message = "Check the entered values.";
+      } catch {}
+      throw new ApiError(response.status, message);
+    }
+    return response.status === 204 ? (undefined as T) : await response.json();
+  } catch (error) {
+    if (timedOut) throw new ApiError(408, "Search took too long. Try an item ID or a narrower search, then retry.");
+    throw error;
+  } finally {
+    if (timer !== undefined) clearTimeout(timer);
+    signal?.removeEventListener("abort", cancel);
   }
-  return response.status === 204 ? (undefined as T) : response.json();
 }
 export function money(value: string | null | undefined): string {
   if (value == null) return "Unavailable";

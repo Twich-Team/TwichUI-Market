@@ -16,7 +16,7 @@ class InvestigationGuards(unittest.TestCase):
                     self.assertNotIn(target.attr,('enabled','automatic','hourly_budget','daily_budget','hour_used','day_used','credential','credential_key_id'))
     def test_secrets_and_io_use_existing_safeguards(self):
         source=SCRIPT.read_text()
-        for required in ('worker_lock(Session)','reserve_budget(row,now())','credential_value(db,row)','cooldown(row,status','SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY','if now()>=deadline','if used>=CAP'):
+        for required in ('worker_lock(Session)','reserve_budget(row,reserved_at)','credential_value(db,row)','cooldown(row,status','SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY','if now()>=deadline','if used>=CAP'):
             self.assertIn(required,source)
         self.assertNotIn('print(credential',source)
         self.assertNotIn("'Authorization':",source)

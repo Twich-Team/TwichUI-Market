@@ -13,7 +13,35 @@ describe("copper formatting", () => {
 
 afterEach(() => {
   vi.unstubAllGlobals();
+  vi.useRealTimers();
   setCsrf("");
+});
+
+it("bounds a stalled search and reports an actionable timeout", async () => {
+  vi.useFakeTimers();
+  const external = new AbortController();
+  vi.stubGlobal("fetch", vi.fn((_url, options: RequestInit) => new Promise((_resolve, reject) => {
+    options.signal?.addEventListener("abort", () => reject(new DOMException("Aborted", "AbortError")), { once: true });
+  })));
+  const pending = api("/markets/2/catalogue?q=linen", "GET", undefined, external.signal, 15_000);
+  const rejected = expect(pending).rejects.toMatchObject({ status: 408, message: expect.stringContaining("Try an item ID or a narrower search") });
+  await vi.advanceTimersByTimeAsync(15_000);
+  await rejected;
+  expect(external.signal.aborted).toBe(false);
+  expect(vi.getTimerCount()).toBe(0);
+});
+
+it("preserves navigation cancellation instead of reporting it as a timeout", async () => {
+  vi.useFakeTimers();
+  const external = new AbortController();
+  vi.stubGlobal("fetch", vi.fn((_url, options: RequestInit) => new Promise((_resolve, reject) => {
+    options.signal?.addEventListener("abort", () => reject(new DOMException("Aborted", "AbortError")), { once: true });
+  })));
+  const pending = api("/markets/2/catalogue", "GET", undefined, external.signal, 15_000);
+  const rejected = expect(pending).rejects.toMatchObject({ name: "AbortError" });
+  external.abort();
+  await rejected;
+  expect(vi.getTimerCount()).toBe(0);
 });
 it("ignores an old account's delayed unauthorized response", async () => {
   const events = new EventTarget(),

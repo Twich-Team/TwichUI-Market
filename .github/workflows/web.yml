@@ -36,7 +36,16 @@ jobs:
       - run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml exec -T api python - < web/e2e/seed-admin.py
       - run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml exec -T api python - < web/e2e/seed-quality.py
       - run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml exec -T api python - < web/e2e/seed-private-beta.py
-      - run: docker run --rm --network twichui-market-browser_default -v "$PWD:/work" -w /work/web mcr.microsoft.com/playwright:v1.65.1-noble npm run test:e2e
+      - run: docker run --rm --network twichui-market-browser_default -v "$PWD:/work" -w /work/web mcr.microsoft.com/playwright:v1.65.1-noble npm run test:e2e -- --grep-invert 'provider rate limits:'
+      - name: Seed synthetic provider quota review after ordinary workflows
+        run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml exec -T api python - < web/e2e/seed-provider-rates.py
+      - run: docker run --rm --network twichui-market-browser_default -v "$PWD:/work" -w /work/web mcr.microsoft.com/playwright:v1.65.1-noble npm run test:e2e -- provider-rates.spec.ts
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: provider-rate-management-review
+          path: artifacts/provider-rates
+          if-no-files-found: ignore
       - if: always()
         uses: actions/upload-artifact@v4
         with:

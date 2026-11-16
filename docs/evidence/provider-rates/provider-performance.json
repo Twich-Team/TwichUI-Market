@@ -1,0 +1,25 @@
+{
+  "origin": "synthetic",
+  "scope": "Warm local PostgreSQL handler measurements; not upstream throughput or production p95",
+  "minute_buckets_seeded": 1441,
+  "runs": 10,
+  "reservation_median_ms": 21.244,
+  "reservation_max_ms": 93.588,
+  "reservation_sql_statements": [
+    6,
+    6,
+    6,
+    6,
+    6,
+    6,
+    6,
+    6,
+    6,
+    6
+  ],
+  "status_view_ms": 18.515,
+  "status_view_sql_statements": 1,
+  "quota_relation_bytes": 237568,
+  "max_tick_rate_per_second": 4,
+  "transaction_rolled_back": true
+}

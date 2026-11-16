@@ -1,0 +1,8 @@
+{
+  "database": "market_test",
+  "revision": "rates_20261115",
+  "existing_rows_preserved": true,
+  "populated_downgrade_refused": true,
+  "empty_downgrade_reupgrade": true,
+  "synthetic_only": true
+}

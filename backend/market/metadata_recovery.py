@@ -5,13 +5,14 @@ before sending, and controls remain available while the network is slow.
 """
 from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
-from email.utils import parsedate_to_datetime
+from time import monotonic
 import hashlib
 import json
 import os
 import secrets
 from sqlalchemy import JSON, and_, cast, func, or_, select, text
 from .db import Session, now
+from .provider_rates import reserve_budget, retry_delay, cooldown, observe, effective
 from .models import ItemMetadata, Market, MetadataJob, MetadataProvider, MetadataSource, MetadataTask, Observation, SnapshotStatistic
 from .metadata_catalog import get_source, import_everloot_page, store_source
 from .metadata_providers import IdentityMismatch, PARSERS, PROVIDERS, decode, fetch
@@ -106,19 +107,6 @@ def provider_limits(row, at=None):
     return (240,2000,15) if keyed else (spec.hourly_limit,spec.daily_limit,spec.interval)
 
 
-def reserve_budget(row, at):
-    hourly_ceiling,daily_ceiling,interval=provider_limits(row,at)
-    if row.cooldown_until and aware(row.cooldown_until) > at: return aware(row.cooldown_until)
-    if row.next_request_at and aware(row.next_request_at) > at: return aware(row.next_request_at)
-    if not row.hour_start or at >= aware(row.hour_start) + timedelta(hours=1): row.hour_start, row.hour_used = at, 0
-    if not row.day_start or at >= aware(row.day_start) + timedelta(days=1): row.day_start, row.day_used = at, 0
-    if row.hour_used >= min(row.hourly_budget,hourly_ceiling): return aware(row.hour_start) + timedelta(hours=1)
-    if row.day_used >= min(row.daily_budget,daily_ceiling): return aware(row.day_start) + timedelta(days=1)
-    row.hour_used += 1; row.day_used += 1
-    row.next_request_at = at + timedelta(seconds=interval)
-    return None
-
-
 def credential_value(db, row, *, pending=False, at=None):
     if pending and row.pending_credential:
         if row.pending_expires_at and aware(row.pending_expires_at)<=(at or now()):raise SecretUnavailable('Candidate expired')
@@ -137,36 +125,20 @@ def error_category(status):
         429: 'rate_limited'}.get(status, 'upstream_error')
 
 
-def retry_delay(value, at):
-    if value is None:return 0
-    try:
-        seconds=int(value) if str(value).isdigit() else int((aware(parsedate_to_datetime(value))-at).total_seconds())
-    except (TypeError,ValueError,OverflowError):return 0
-    return max(0,min(seconds,int((datetime.max.replace(tzinfo=timezone.utc)-at).total_seconds())-1))
-
-
-def cooldown(row, status, headers, at):
-    category = error_category(status)
-    row.last_error = category
-    if status in (401, 402, 403, 429):
-        # Respect Retry-After, including dates, with a conservative minimum.
-        delay = max(3600 if status != 429 else 60, retry_delay(headers.get('Retry-After'), at))
-        row.cooldown_until = at + timedelta(seconds=delay)
-    return category
-
-
 def validate_credential_once(factory, *, at, fetcher):
     with factory.begin() as db:
-        row = db.scalar(select(MetadataProvider).where(MetadataProvider.validation_requested.is_(True)).order_by(MetadataProvider.provider).with_for_update(skip_locked=True).limit(1))
+        row = next((candidate for candidate in db.scalars(select(MetadataProvider).where(MetadataProvider.validation_requested.is_(True)).order_by(MetadataProvider.provider).with_for_update(skip_locked=True)) if reserve_budget(candidate, at) is None), None)
         if row is None: return False
-        if reserve_budget(row, at): return False
         ident, revision = row.provider, row.validation_revision
         try:
             if ident=='blizzard' and fetcher is fetch and not (os.environ.get('BLIZZARD_CLIENT_ID') and os.environ.get('BLIZZARD_CLIENT_SECRET')):raise SecretUnavailable('OAuth required')
             credential = credential_value(db, row, pending=True, at=at)
         except SecretUnavailable:
+            observe(row, None, {}, at)
             row.validation_requested = False; row.validation_error = 'secret_unavailable'
             return True
+    started = monotonic()
+    status, headers = None, {}
     try:
         meta, body = fetcher(ident, 25, credential=credential, validate=True)
         status, headers = meta['status'], meta.get('headers', {})
@@ -190,14 +162,16 @@ def validate_credential_once(factory, *, at, fetcher):
                 build_identity(payload.get('meta', {}).get('build') or payload.get('data', {}).get('build'))
         category = None if status == 200 else error_category(status)
     except Exception:
-        status, headers, category = None, {}, 'transport_or_schema'
+        category = 'transport_or_schema'
     with factory.begin() as db:
         row = db.get(MetadataProvider, ident, with_for_update=True)
+        received = at + timedelta(seconds=max(0,monotonic()-started))
+        observe(row, status, headers, received, reserved_at=at)
+        if status in (401, 402, 403, 429, 503): cooldown(row, status, headers, received)
         if row.validation_revision != revision: return True
-        if status in (429, 503) or status is None:
+        if status in (429, 503) or status is None or category == 'transport_or_schema':
             row.validation_error = category
-            row.cooldown_until = at + timedelta(seconds=max(900,retry_delay(headers.get('Retry-After'),at)))
-            if status == 429: cooldown(row, status, headers, at)
+            row.cooldown_until = max(aware(row.cooldown_until) if row.cooldown_until else received, received + timedelta(seconds=900 if status is None or category == 'transport_or_schema' else 60))
             return True  # Retry the still-encrypted candidate after cooldown.
         row.validation_requested = False
         row.validation_error = category
@@ -283,17 +257,27 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_cl
                 MetadataTask.state == 'queued', MetadataTask.available_at <= at).order_by(MetadataJob.actor_id.is_(None), MetadataTask.id).limit(30)))
             chosen = None
             for task in tasks:
-                job, provider = db.get(MetadataJob, task.job_id), db.get(MetadataProvider, task.provider)
+                job, provider = db.get(MetadataJob, task.job_id), db.get(MetadataProvider, task.provider, with_for_update=True)
                 if not provider.enabled:
                     task.state, task.result_json = 'skipped', json.dumps({'status':'provider_disabled','provider':task.provider})
                     finalize(db, job, at); continue
                 src = get_source(db, task.region, task.item_id, task.provider)
                 if job.mode != 'bulk' and src.retry_at and aware(src.retry_at) > at:
-                    task.state, task.result_json = 'skipped', json.dumps({'status':'cached','provider':task.provider,'retry_at':src.retry_at.isoformat()})
-                    finalize(db, job, at); continue
+                    if src.status in ('rate_limited', 'upstream_error', 'transport_or_schema'):
+                        task.available_at = src.retry_at
+                    else:
+                        task.state, task.result_json = 'skipped', json.dumps({'status':'cached','provider':task.provider,'retry_at':src.retry_at.isoformat()})
+                        finalize(db, job, at)
+                    continue
                 if job.requests_used >= job.request_budget:
-                    task.state, task.result_json = 'skipped', json.dumps({'status':'job_budget','provider':task.provider})
-                    finalize(db, job, at); continue
+                    if task.result_json and json.loads(task.result_json).get('status') == 'rate_limited':
+                        # A 429 consumes quota, but is not a permanently failed item.
+                        # Do not silently exceed the owner's finite campaign budget.
+                        job.state = 'paused'
+                    else:
+                        task.state, task.result_json = 'skipped', json.dumps({'status':'job_budget','provider':task.provider})
+                        finalize(db, job, at)
+                    continue
                 try:
                     key = credential_value(db, provider, at=at)
                     if task.provider == 'foreverdb' and not key: raise SecretUnavailable('Key required')
@@ -308,14 +292,17 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_cl
                     task.available_at = waiting; continue
                 task.state, task.lease_token, task.lease_until = 'running', secrets.token_urlsafe(24), at + timedelta(seconds=LEASE_SECONDS)
                 task.attempts += 1; job.requests_used += 1; job.state = 'running'; job.updated_at = at
-                chosen = (task.id, task.lease_token, task.provider, task.region, task.item_id, job.mode, key, src.etag)
+                chosen = (task.id, task.lease_token, task.provider, task.region, task.item_id, job.mode, key, src.etag, effective(provider, at)['page_size'])
                 break
         if chosen is None: return bool(tasks or expired)
-        task_id, token, ident, region, item_id, mode, key, etag = chosen
+        task_id, token, ident, region, item_id, mode, key, etag, page_size = chosen
         parsed, raw, status, headers, category = None, None, None, {}, None
+        started = monotonic()
         try:
             kwargs={'credential':key,'etag':etag,'offset':item_id-1 if mode=='bulk' else None,'region':region}
-            if ident=='blizzard' and fetcher is fetch:kwargs['client']=provider_client
+            if fetcher is fetch:
+                kwargs['page_size'] = page_size
+                if ident=='blizzard':kwargs['client']=provider_client
             meta, raw = fetcher(ident, item_id, **kwargs)
             status, headers = meta['status'], meta.get('headers', {})
             if status == 200 and ident != 'blizzard' and mode != 'bulk': parsed = PARSERS[ident](raw, item_id, at=at)
@@ -325,7 +312,9 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_cl
         with factory.begin() as db:
             task = db.get(MetadataTask, task_id, with_for_update=True)
             if task.lease_token != token: return True
-            job, provider = db.get(MetadataJob, task.job_id), db.get(MetadataProvider, ident)
+            job, provider = db.get(MetadataJob, task.job_id), db.get(MetadataProvider, ident, with_for_update=True)
+            received = at + timedelta(seconds=max(0,monotonic()-started))
+            observe(provider, status, headers, received, reserved_at=at)
             src = get_source(db, region, item_id, ident)
             src.checked_at, src.http_status = at, status
             result = {'provider':ident, 'item_id':item_id, 'http_status':status, 'status':category or 'available', 'recovered_fields':[]}
@@ -358,6 +347,7 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_cl
                         result['outcome'] = ('name_recovered' if 'name' in result['new_fields'] else 'attributes_recovered' if result['new_fields']
                             else 'already_known' if result['recovered_fields'] else 'no_usable_data')
                         provider.last_success, provider.last_error = at, None
+                        if result.get('new_fields'): provider.last_recovery = at
                         task.state = 'completed'
                         audit(db, job.actor_id, 'metadata.item.recovered', f'job={job.id}; provider={ident}; item={item_id}')
                 elif category is None and status == 304 and src.fields_json:
@@ -378,7 +368,7 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_cl
                 delay = 604800 if status == 404 else 900
                 src.retry_at = at + timedelta(seconds=max(delay,retry_delay(headers.get('Retry-After'),at)))
                 provider.last_error = category
-                if status is not None and status >= 500 and headers.get('Retry-After'):
+                if status is not None and status >= 500 and status != 503 and headers.get('Retry-After'):
                     provider.cooldown_until = max(aware(provider.cooldown_until) if provider.cooldown_until else at,src.retry_at)
                 if ident == 'blizzard':
                     primary=db.get(ItemMetadata,(region,item_id))
@@ -387,9 +377,9 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_cl
                         db.add(primary)
                     primary.http_status,primary.checked_at,primary.retry_after=status,at,src.retry_at
                     primary.status='missing' if status==404 else 'error'
-                if status in (401, 402, 403, 429):
-                    cooldown(provider, status, headers, at)
-                    src.retry_at = max(aware(src.retry_at), aware(provider.cooldown_until))
+                if status in (401, 402, 403, 429, 503):
+                    cooldown(provider, status, headers, received)
+                    src.retry_at = (aware(provider.cooldown_until) if status in (429, 503) else max(aware(src.retry_at), aware(provider.cooldown_until)))
                 result['status'] = category
                 result['outcome'] = {'wrong_identity':'wrong_identity','transport_or_schema':'invalid_response','metadata_unavailable':'missing','forbidden':'access_blocked','authorization':'credentials_invalid','rate_limited':'rate_limited'}.get(category,'unavailable')
                 # Missing is a completed provider result, never a nonexistent item.
