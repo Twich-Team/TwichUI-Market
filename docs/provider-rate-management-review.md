@@ -4,7 +4,7 @@ Implemented on `feature/provider-rate-management` from exact pushed baseline **`
 
 Production, the original checkout, the concurrent Workshop branch and the addon repository were not modified. Nothing was merged or deployed. No real provider credentials were read and no live provider quota was consumed.
 
-**Remaining delivery gate:** automatic approval review rejected draft-PR creation, including a retry that explicitly named the authorized repository/head/base and quoted the uploaded request. Its stated reason is that it cannot recognize the user's authorization in the uploaded file and considers publishing PR metadata unauthorized. No alternative PR-creation path was used. The prepared [draft PR](provider-rate-management-pr.md) targets `integration/companion-v2-metadata-recovery`; direct user confirmation is needed to unblock that action and hosted CI. No PR URL or hosted CI success is claimed.
+**Draft PR created after direct owner confirmation:** [PR #10](https://github.com/Twich-Team/TwichUI-Market/pull/10) targets `integration/companion-v2-metadata-recovery`, is attached to the task, and remains unmerged/draft. GitHub reports the branch mergeable against baseline `68c0751`. Hosted backend, website and Windows checks are running; their final results are maintained in the PR description/checks. Earlier automatic approval review could not recognize the authorization in the uploaded request; the direct confirmation resolved that publication gate.
 
 ## Result
 
@@ -31,7 +31,7 @@ The original rate-control audit is in [progress](provider-rate-management-progre
 | Dependency audits | npm production: zero vulnerabilities; backend lock: no known vulnerabilities |
 | Migrations | Single head `rates_20261115`, parent `bridge_20261115`; provider, legacy metadata and Companion preservation, protected downgrade and re-upgrade rehearsals passed |
 | Source identity | All 50 backend module hashes and frontend index match the tested Cloud workspace/image; [runtime receipt](evidence/provider-rates/runtime.json) |
-| Hosted backend/website/Windows CI | **Not run**: draft PR remains blocked; native Windows execution is not claimed |
+| Hosted backend/website/Windows CI | Running on [draft PR #10](https://github.com/Twich-Team/TwichUI-Market/pull/10); final run results and exact tested SHA are maintained in its description/checks |
 
 One unchanged private-download browser workflow requires hostname `proxy`; it was not run locally because the managed Cloud Chromium proxy blocks that hostname. It remains in normal hosted CI. The other private-download retry workflow and all seven Companion authorization/device workflows passed at the supported localhost origin. Early blocked-hostname runs left synthetic records; the final 38-workflow run used a fully recreated disposable database and passed cleanly. No unrelated desktop tests or contracts were changed to hide an environment failure.
 
@@ -57,6 +57,6 @@ Container builds used the unchanged locked dependencies downloaded on the host a
 
 Final fetch resolves integration to the same baseline `68c075138d5f50608c741b0e51b7013d9bf8769d` and Workshop to `e2116007638b23228eace44d524b9fe2a43c2249`. There are no new upstream changes to reconcile. The complete backend suite already contains that merged bridge/pricing/worker baseline; the feature adds one linear migration after its head. No moving-branch rebase, unrelated cherry-pick or other worktree modification occurred. Original checkout remains clean at `64ef6d2d08e7453458ed37d06d29f263ac19d126`.
 
-After PR authorization: create the prepared **draft**, attach it to the task, inspect hosted backend/website/Windows CI and address any relevant failures on this feature branch only. Retain draft/visual-review status; do not merge or deploy. The actual ForeverDB grant remains an owner input before any separately approved production limit change. No live keys are required for the candidate's mocked tests.
+The owner confirmed draft publication and PR #10 is created/attached. Inspect hosted backend/website/Windows CI and address any relevant failures on this feature branch only; record the exact tested SHA and run links in the PR description. Retain draft/visual-review status; do not merge or deploy. The actual ForeverDB grant remains an owner input before any separately approved production limit change. No live keys are required for the candidate's mocked tests.
 
 [Deployment and data-preserving rollback](provider-rate-management-operations.md) require explicit later release approval, preserve the additive schema and accounting on rollback, and never start the collector profile wholesale. Production's actual approved migration ancestry must be checked before any release; parent bridge changes must not be silently skipped or promoted without their own approval.

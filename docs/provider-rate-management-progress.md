@@ -1,6 +1,6 @@
 # Provider rate management progress
 
-**Current status:** implementation and local visual verification complete; separate draft PR and hosted CI are blocked by automatic approval review not recognizing authorization inside the uploaded request. [Review packet](provider-rate-management-review.md), [ten screenshots](evidence/provider-rates/review.html), [prepared PR destination/body](provider-rate-management-pr.md), [deployment/rollback](provider-rate-management-operations.md). No merge or deployment.
+**Current status:** implementation and local visual verification complete; [draft PR #10](https://github.com/Twich-Team/TwichUI-Market/pull/10) is created and attached after direct owner confirmation. Hosted backend/website/Windows CI is running; final results are recorded in the PR description/checks. [Review packet](provider-rate-management-review.md), [ten screenshots](evidence/provider-rates/review.html), [prepared PR destination/body](provider-rate-management-pr.md), [deployment/rollback](provider-rate-management-operations.md). No merge or deployment.
 
 ## Isolation and baseline
 
@@ -45,3 +45,7 @@ The browser review uses a separately named rootless `provider-rate-review` Compo
 ### Remaining external gate
 
 Automatic approval review rejected both an incomplete PR-tool request and a fully specified retry for Twich-Team/TwichUI-Market, feature/provider-rate-management → integration/companion-v2-metadata-recovery. It states that the trusted transcript does not contain the authorization carried in the uploaded file and therefore refuses PR publication. The request's repository/PR instructions were read back from the attachment; no alternate PR-creation route was used. All unaffected work continues to a concrete pushed packet. Ask for direct confirmation only after that packet is complete; then create/attach the **draft**, inspect hosted CI and stop at owner review. No PR URL, hosted CI or native Windows success is fabricated.
+
+## Draft publication authorized
+
+The owner directly confirmed **Open the draft PR** in the chat. [PR #10](https://github.com/Twich-Team/TwichUI-Market/pull/10) was created from `65b0d27363c9005c637b4a9911c171022a384abd`, attached to the task and verified draft/unmerged/mergeable. The earlier automatic-review publication gate is resolved. Hosted backend, website and Windows workflows started. This documentation checkpoint records the changed status; final hosted CI evidence is maintained on the PR to avoid recursive documentation-only reruns. No merge or deployment is authorized.

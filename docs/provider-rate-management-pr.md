@@ -6,7 +6,9 @@ Head: `feature/provider-rate-management`
 
 Base: `integration/companion-v2-metadata-recovery`
 
-## Prepared description
+Published as [draft PR #10](https://github.com/Twich-Team/TwichUI-Market/pull/10).
+
+## Description
 
 ForeverDB's application ceilings could not represent an approved key's allowance, and administrators could not see minute/token-bucket usage or reliably understand cooldown recovery. Data Sources now supports independently saved provider allowances, labelled usage estimates/provider observations, automatic cooldown status and recovery-job waits.
 
