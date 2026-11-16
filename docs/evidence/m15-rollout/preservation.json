@@ -1,0 +1,35 @@
+{
+  "schema_revision": "bridge_20261115",
+  "all_original_history_account_preference_market_retention_fingerprints_match": true,
+  "credentials_preserved_except_verified_normal_refresh": true,
+  "normal_refresh": {
+    "old_credential_id": 233,
+    "new_credential_id": 234,
+    "device_id": 3,
+    "event_id": 7565,
+    "at": "2026-11-16T02:51:22.035269Z",
+    "before_api_deployment": true,
+    "only_changed_column": "revoked",
+    "old_token_revoked": true,
+    "device_still_active": true
+  },
+  "baseline_cutoffs": {
+    "snapshot": 50,
+    "observation": 559,
+    "user": 97,
+    "credential": 233
+  },
+  "restored_backup_and_migration_fingerprints_identical": true,
+  "original_row_counts": {
+    "observations": 559,
+    "snapshots": 50,
+    "listings": 5806623,
+    "snapshot_statistics": 1243274,
+    "users": 97,
+    "credentials": 233,
+    "user_preferences": 22,
+    "market_verifications": 2,
+    "player_market_mappings": 1,
+    "retention_policy": 0
+  }
+}

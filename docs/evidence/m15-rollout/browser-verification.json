@@ -1,0 +1,32 @@
+{
+  "trusted_public_https": true,
+  "authenticated_owner_session": true,
+  "pages": [
+    {
+      "path": "/",
+      "heading": "Market Explorer",
+      "visible": true
+    },
+    {
+      "path": "/deals",
+      "heading": "Deal Finder",
+      "visible": true
+    },
+    {
+      "path": "/administration",
+      "heading": "Administration",
+      "visible": true
+    },
+    {
+      "path": "/account",
+      "heading": "Account & devices",
+      "visible": true
+    },
+    {
+      "path": "/companion",
+      "heading": "Your market, ready on your PC.",
+      "visible": true
+    }
+  ],
+  "page_errors": []
+}

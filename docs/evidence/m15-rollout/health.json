@@ -1,0 +1,45 @@
+{
+  "schema": "bridge_20261115",
+  "markets": [
+    {
+      "id": 1,
+      "house_id": 110,
+      "enabled": false,
+      "interval_seconds": 300,
+      "failures": 0,
+      "last_success": "2026-11-14T15:14:21.190053+00:00"
+    },
+    {
+      "id": 2,
+      "house_id": 114,
+      "enabled": true,
+      "interval_seconds": 300,
+      "failures": 0,
+      "last_success": "2026-11-16T02:56:48.682184+00:00"
+    }
+  ],
+  "new_collection_failures": 0,
+  "recent_collection_runs": [
+    {
+      "id": 562,
+      "market_id": 2,
+      "checked_at": "2026-11-16T02:51:01.345989+00:00",
+      "status": "unchanged",
+      "http_status": 304,
+      "error": null
+    },
+    {
+      "id": 563,
+      "market_id": 2,
+      "checked_at": "2026-11-16T02:56:48.682184+00:00",
+      "status": "unchanged",
+      "http_status": 304,
+      "error": null
+    }
+  ],
+  "retention_batches": 0,
+  "retention_authorizations": 0,
+  "bridge_generations": 0,
+  "bridge_derivations": 0,
+  "provider_configuration_and_encrypted_credentials_unchanged": true
+}

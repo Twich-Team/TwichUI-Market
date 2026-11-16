@@ -1,0 +1,32 @@
+{
+  "daily_sources": [
+    {
+      "id": 249,
+      "snapshot_id": 23,
+      "retrieved_at": "2026-11-14T23:56:45.070255+00:00",
+      "synthetic": false,
+      "listing_count": 130399,
+      "raw_retained": true,
+      "statistics_retained": true
+    },
+    {
+      "id": 531,
+      "snapshot_id": 47,
+      "retrieved_at": "2026-11-15T23:59:23.239649+00:00",
+      "synthetic": false,
+      "listing_count": 135956,
+      "raw_retained": true,
+      "statistics_retained": true
+    },
+    {
+      "id": 560,
+      "snapshot_id": 50,
+      "retrieved_at": "2026-11-16T02:45:58.902815+00:00",
+      "synthetic": false,
+      "listing_count": 142001,
+      "raw_retained": true,
+      "statistics_retained": true
+    }
+  ],
+  "exact_variant_union": 45125
+}

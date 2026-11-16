@@ -1,0 +1,10 @@
+# M1.5 application rollback. Keep additive schema and all production data.
+services:
+  api:
+    image: sha256:48caf6befd76baa96460d2096e6c71280b961e2e8060ccc3d39a05b2f86bd5a8
+    environment:
+      APP_COMMIT: 7202e07a62f1770642b50afe5a3ec671d9b488cf
+  local-api:
+    image: sha256:48caf6befd76baa96460d2096e6c71280b961e2e8060ccc3d39a05b2f86bd5a8
+    environment:
+      APP_COMMIT: 7202e07a62f1770642b50afe5a3ec671d9b488cf

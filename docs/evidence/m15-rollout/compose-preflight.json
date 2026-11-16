@@ -1,0 +1,21 @@
+{
+  "changes": [
+    {
+      "service": "api",
+      "only_changes": [
+        "image",
+        "APP_COMMIT"
+      ]
+    },
+    {
+      "service": "local-api",
+      "only_changes": [
+        "image",
+        "APP_COMMIT"
+      ]
+    }
+  ],
+  "other_services_identical": true,
+  "previous_image": "sha256:48caf6befd76baa96460d2096e6c71280b961e2e8060ccc3d39a05b2f86bd5a8",
+  "new_image": "sha256:39b28f3d18506efd5e9e710cac6450302e7dabdd002b64f5841c1d9cb5689e54"
+}

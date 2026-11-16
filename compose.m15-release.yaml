@@ -1,0 +1,10 @@
+# M1.5 approved production rollout. Append LAST; replace only api and local-api.
+services:
+  api:
+    image: sha256:39b28f3d18506efd5e9e710cac6450302e7dabdd002b64f5841c1d9cb5689e54
+    environment:
+      APP_COMMIT: 5b27cc754795f554b08a8d2d4ce7366c27c11bfb
+  local-api:
+    image: sha256:39b28f3d18506efd5e9e710cac6450302e7dabdd002b64f5841c1d9cb5689e54
+    environment:
+      APP_COMMIT: 5b27cc754795f554b08a8d2d4ce7366c27c11bfb

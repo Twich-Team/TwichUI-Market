@@ -1,0 +1,27 @@
+{
+  "metadata": {
+    "contract_version": 1,
+    "ready": true,
+    "platform": "windows-x64",
+    "channel": "private-beta",
+    "version": "2.0.0-beta.3",
+    "download_url": "/api/v1/companion/private-beta/2.0.0-beta.3/windows-x64",
+    "bytes": 4515855,
+    "sha256": "d31efbb8a6611cad107f8b368eb8c16585125e269fae180bfabdd9ae6c287183",
+    "source_commit": "bd656f19b68f10418e966c8a6418fb3aeaff045e",
+    "published_at": "2026-11-16T03:08:23.993769+00:00",
+    "updates": "signed",
+    "signed": false,
+    "updater_signature_verified": true,
+    "updater_public_key_sha256": "5794736c840c7c09a49396e60cd569ff6b5f24f872eb0318ed95d55c16616ecf",
+    "tray_actions_verified": false,
+    "notes": "M1.5 manual Workshop export performance update. Owner-PC tray and Forever acceptance remain open. Full house-114 bridge export currently exceeds the server build bound; addon delivery is held. No automatic game-directory writing or reload.",
+    "message": "Private Windows beta. Unsigned Windows publisher; cryptographically verified updates require your installation consent. Tray actions are still being checked."
+  },
+  "exact_installer_bytes_verified": true,
+  "unauthenticated_download_denied": true,
+  "device_beta2_to_beta3_update_offered": true,
+  "current_beta3_returns_no_update": true,
+  "previous_beta2_bytes_preserved": true,
+  "owner_pc_acceptance": false
+}

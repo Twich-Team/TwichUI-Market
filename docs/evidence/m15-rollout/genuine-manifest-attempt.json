@@ -1,0 +1,7 @@
+{
+  "status": 413,
+  "seconds": 155.989,
+  "body": {
+    "detail": "Bridge build exceeds bounded working set; request a narrower history window"
+  }
+}

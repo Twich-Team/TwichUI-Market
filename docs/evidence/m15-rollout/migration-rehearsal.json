@@ -1,0 +1,7 @@
+{
+  "actual_revision": "bridge_20261115",
+  "upgrade_check_downgrade_reupgrade_disposable_only": true,
+  "old_application_reads_additive_schema": true,
+  "original_rows_unchanged": true,
+  "production_downgrade": false
+}

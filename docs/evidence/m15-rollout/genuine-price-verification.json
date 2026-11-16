@@ -1,0 +1,77 @@
+{
+  "result": "PASS",
+  "algorithm": "asking-v1-provisional",
+  "exact_copper_and_daily_statistics_match": true,
+  "samples": [
+    {
+      "item_id": 647,
+      "variant_key": "bd06e80e4090c7ea5e683c4997f73a753ad0b57d9f9d30379d991531ddff63ef",
+      "genuine_daily_prices": {
+        "2026-11-15": "1499999",
+        "2026-11-16": "1699900"
+      },
+      "current_price": "1699900",
+      "market_value": "1599950",
+      "historical_value": "1599950",
+      "observed_utc_dates": [
+        "2026-11-14",
+        "2026-11-15",
+        "2026-11-16"
+      ],
+      "synthetic": false
+    },
+    {
+      "item_id": 647,
+      "variant_key": "cdd8fb2e3934817e43af42f8b230fa6900254eb50149bbed7219c325acc46a6c",
+      "genuine_daily_prices": {
+        "2026-11-14": "2300000",
+        "2026-11-15": "1699900"
+      },
+      "current_price": null,
+      "market_value": "1999950",
+      "historical_value": "1999950",
+      "observed_utc_dates": [
+        "2026-11-14",
+        "2026-11-15",
+        "2026-11-16"
+      ],
+      "synthetic": false
+    },
+    {
+      "item_id": 647,
+      "variant_key": "e0c9ffb60690c00b3e91029c270e21e80deda31869ccbb67a7dde3abf9e9912f",
+      "genuine_daily_prices": {
+        "2026-11-15": "1679900"
+      },
+      "current_price": null,
+      "market_value": "1679900",
+      "historical_value": "1679900",
+      "observed_utc_dates": [
+        "2026-11-14",
+        "2026-11-15",
+        "2026-11-16"
+      ],
+      "synthetic": false
+    },
+    {
+      "item_id": 647,
+      "variant_key": "f5dba3029a4ceb42fa7f57300932f441c538600b6f3547bac9cbffefb792fa18",
+      "genuine_daily_prices": {
+        "2026-11-14": "2345000",
+        "2026-11-15": "1499999"
+      },
+      "current_price": null,
+      "market_value": "1922500",
+      "historical_value": "1922500",
+      "observed_utc_dates": [
+        "2026-11-14",
+        "2026-11-15",
+        "2026-11-16"
+      ],
+      "synthetic": false
+    }
+  ],
+  "maximum_available_utc_days": 3,
+  "empirical_14_or_60_day_validation": false,
+  "full_bridge_generation_verified": false
+}

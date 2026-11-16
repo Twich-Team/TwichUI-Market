@@ -1,0 +1,6 @@
+{
+  "encrypted_backup_decrypt_compare": true,
+  "runtime_keyring_unchanged": true,
+  "restored_database_credential_envelopes_verified": 2,
+  "off_host_copy_verified": false
+}

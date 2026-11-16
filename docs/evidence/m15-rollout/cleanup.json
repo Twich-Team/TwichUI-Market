@@ -1,0 +1,10 @@
+{
+  "temporary_session_id": 235,
+  "temporary_credential_id": 236,
+  "temporary_device_id": 5,
+  "temporary_credentials_revoked_and_denied": true,
+  "private_token_file_removed": true,
+  "original_owner_device_active": true,
+  "owner_account_not_reset": true,
+  "game_files_untouched": true
+}

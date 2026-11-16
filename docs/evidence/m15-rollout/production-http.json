@@ -1,0 +1,75 @@
+{
+  "tls_trusted": true,
+  "session_and_scoped_device_survived_deploy": true,
+  "checks": [
+    {
+      "path": "/api/v1/health",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/markets",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/companion/bootstrap",
+      "status": 200
+    },
+    {
+      "path": "authenticated market items",
+      "status": 200
+    },
+    {
+      "path": "legacy sync predeployment cursor after deployment",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/bridge/markets/2/manifest",
+      "status": 401,
+      "expected": 401
+    },
+    {
+      "path": "/api/v1/bridge/markets/2/manifest",
+      "status": 403,
+      "expected": 403
+    },
+    {
+      "path": "/api/v1/markets/2/items?limit=2",
+      "status": 403,
+      "expected": 403
+    },
+    {
+      "path": "/api/v1/admin/storage",
+      "status": 403,
+      "expected": 403
+    },
+    {
+      "path": "/api/v1/bridge/markets/2/manifest?algorithm=unsupported",
+      "status": 422,
+      "expected": 422
+    },
+    {
+      "path": "/",
+      "status": 200,
+      "sha256": "d9063551c6a9f22a43bb41709cb56906c2007eeb08350af3e3ce47e467e77d22"
+    },
+    {
+      "path": "/explorer",
+      "status": 200,
+      "sha256": "d9063551c6a9f22a43bb41709cb56906c2007eeb08350af3e3ce47e467e77d22"
+    },
+    {
+      "path": "/companion",
+      "status": 200,
+      "sha256": "d9063551c6a9f22a43bb41709cb56906c2007eeb08350af3e3ce47e467e77d22"
+    },
+    {
+      "path": "/administration",
+      "status": 200,
+      "sha256": "d9063551c6a9f22a43bb41709cb56906c2007eeb08350af3e3ce47e467e77d22"
+    }
+  ]
+}

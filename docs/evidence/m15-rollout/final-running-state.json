@@ -1,0 +1,44 @@
+{
+  "public_health": {
+    "status": "ok",
+    "contract_version": 1
+  },
+  "database": {
+    "schema": "bridge_20261115",
+    "enabled_markets": [
+      {
+        "id": 2,
+        "house_id": 114,
+        "interval_seconds": 300,
+        "failures": 0,
+        "last_success": "2026-11-16T03:11:56.153744+00:00"
+      }
+    ],
+    "recent_collection_runs": [
+      {
+        "id": 566,
+        "checked_at": "2026-11-16T03:11:56.153744+00:00",
+        "status": "unchanged",
+        "http_status": 304,
+        "error": null
+      },
+      {
+        "id": 565,
+        "checked_at": "2026-11-16T03:06:53.643371+00:00",
+        "status": "unchanged",
+        "http_status": 304,
+        "error": null
+      },
+      {
+        "id": 564,
+        "checked_at": "2026-11-16T03:01:51.241024+00:00",
+        "status": "unchanged",
+        "http_status": 304,
+        "error": null
+      }
+    ],
+    "bridge_generations": 0,
+    "retention_batches": 0
+  },
+  "private_acceptance_tokens_removed": true
+}
