@@ -91,7 +91,7 @@ def enqueue(db, market_id, mode, providers, *, actor_id=None, item_id=None, limi
 
 def enqueue_related(db, market_id, resource, *, actor_id=None, pages=1, offset=0, at=None):
     from .foreverdb import RELATED
-    if not RELATED.fullmatch(resource) or not 1 <= pages <= 10 or not 0 <= offset <= 100000:
+    if not RELATED.fullmatch(resource) or not 1 <= pages <= 10 or not 0 <= offset <= offset+20*(pages-1) <= 100000:
         raise ValueError('Select a documented bounded profession, vendor or item set resource')
     market = db.get(Market, market_id)
     if market is None: raise ValueError('Market not found')
@@ -264,7 +264,7 @@ def schedule_automatic(db, at, *, allow_mock=False):
                     (MetadataSource.region == ids.c.region) & (MetadataSource.item_id == ids.c.item_id) & (MetadataSource.provider == provider.provider) & (MetadataSource.locale == 'en_US'))
                 if phase=='missing':query=query.where(func.coalesce(ItemMetadata.name,ItemMetadata.fallback_name).is_(None))
                 if phase=='priority':query=query.where(ItemMetadata.requested_at>=at-timedelta(days=7))
-                outdated = (MetadataSource.status=='available') & MetadataSource.fields_json.is_not(None) & or_(func.coalesce(cast(MetadataSource.source_json,JSON)['item_mapping_version'].as_integer(),0)<2, cast(MetadataSource.source_json,JSON)['current_build'].as_string()!=current_build if current_build else False)
+                outdated = (MetadataSource.status=='available') & MetadataSource.fields_json.is_not(None) & or_(func.coalesce(cast(MetadataSource.source_json,JSON)['item_mapping_version'].as_integer(),0)<2, func.coalesce(cast(MetadataSource.source_json,JSON)['item_build'].as_string(),'')!=current_build if current_build else False)
                 if phase=='detail':
                     query=query.where(func.coalesce(ItemMetadata.name,ItemMetadata.fallback_name).is_not(None),
                         or_(MetadataSource.item_id.is_(None),outdated))

@@ -19,7 +19,7 @@ export interface ItemIdentity {
   variant_key?: string;
 }
 export interface ItemProfile extends ItemIdentity {
-  catalog?: { schema_version: number; fields: Record<string, unknown>; provenance: Record<string, { provider: string; confidence: string; build?: string; retrieved_at?: string; qualifiers?: {dataFromBuild?:string;betaEvent?:boolean;speculation?:boolean}; attribution?: { text: string; url: string; license?: string; notice?: string } }>; conflicts: { field: string; selected: string; alternative_provider: string }[] } | null;
+  catalog?: { schema_version: number; fields: Record<string, unknown>; provenance: Record<string, { provider: string; confidence: string; build?: string; current_build?: string; retrieved_at?: string; qualifiers?: {dataFromBuild?:string;betaEvent?:boolean;speculation?:boolean}; attribution?: { text: string; url: string; license?: string; notice?: string } }>; conflicts: { field: string; selected: string; alternative_provider: string }[] } | null;
   attributes: RichFacts & {
     scope: string;
     quality: string | null;
@@ -134,6 +134,7 @@ export function ItemFacts({ profile }: { profile: ItemProfile }) {
       {profile.source?.status && profile.source.status !== "available" && <p className="small muted">Previously observed metadata · latest check unavailable.</p>}
       {Object.values(profile.catalog?.provenance || {}).some(origin=>origin.confidence==="retained_earlier_build" || origin.qualifiers?.dataFromBuild) && <p className="notice">Some retained fields come from an earlier build; current-client verification is unavailable.</p>}
       {Object.values(profile.catalog?.provenance || {}).some(origin=>origin.qualifiers?.betaEvent || origin.qualifiers?.speculation) && <p className="notice">Some fields describe historical beta or unconfirmed availability.</p>}
+      {new Set(Object.values(profile.catalog?.provenance || {}).filter(origin=>origin.provider==="foreverdb").map(origin=>origin.current_build || origin.build).filter(Boolean)).size>1 && <p className="notice">Retained ForeverDB fields span different client builds. Check field provenance before treating them as current.</p>}
       <ProfileCredits profile={profile}/>
       <details className="item-technical">
         <summary>Technical details</summary>

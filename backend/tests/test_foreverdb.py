@@ -145,6 +145,7 @@ def test_related_failures_preserve_data_and_charge_quota(database,status,expecte
     with database() as db:
         task=db.scalar(select(MetadataTask).where(MetadataTask.job_id==job_id))
         assert json.loads(task.result_json)['status']==expected
+        assert task.state==('completed' if status==404 else 'queued' if status in (429,503) else 'failed')
         assert db.get(MetadataProvider,'foreverdb').day_used==1
         assert json.loads(db.get(MetadataSource,('us',2488,'en_US','foreverdb')).fields_json)['vendors']
 
@@ -174,7 +175,7 @@ def test_related_requests_are_bounded_and_share_item_pacing(database):
 def test_changed_build_enrichment_preserves_old_field_provenance(database):
     with database.begin() as db:
         fields,origin=item(body('items-8188.json'),8188)
-        origin['current_build']='1.60.1.70888'
+        origin['current_build']=origin['item_build']='1.60.1.70888'
         store_source(db,'us',8188,'foreverdb',fields,origin)
         src=db.get(MetadataSource,('us',8188,'en_US','foreverdb'))
         assert needs_detail(src,'1.60.1.70938')
@@ -183,3 +184,16 @@ def test_changed_build_enrichment_preserves_old_field_provenance(database):
         store_source(db,'us',8188,'foreverdb',{'name':'Explosive Shotgun'},
             {**origin,'current_build':'1.60.1.70938','payload_hash':'synthetic-partial-new-build'})
         assert json.loads(src.source_json)['field_sources']['stats']==before
+
+
+def test_new_related_build_does_not_mark_old_item_details_current(database):
+    with database.begin() as db:
+        fields,origin=item(body('items-8188.json'),8188)
+        origin['current_build']=origin['item_build']='1.60.1.70888'
+        store_source(db,'us',8188,'foreverdb',fields,origin)
+        # A newer related response has its own build; it cannot renew core facts.
+        store_source(db,'us',8188,'foreverdb',{'vendors':[]},
+            {'provider':'foreverdb','edition':'forever','locale':'en_US','current_build':'1.60.1.70938','build':'1.60.1.70938','payload_hash':'synthetic-related'})
+        src=db.get(MetadataSource,('us',8188,'en_US','foreverdb'))
+        assert json.loads(src.source_json)['item_build']=='1.60.1.70888'
+        assert needs_detail(src,'1.60.1.70938')

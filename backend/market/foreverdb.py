@@ -65,7 +65,7 @@ def item(body,item_id,*,at=None):
     if not isinstance(row,dict) or type(row.get('id')) is not int or row['id']!=item_id:raise IdentityMismatch('ForeverDB item identity mismatch')
     safe_json(row)
     fields={'name':plain(row.get('name'))}
-    origin.update(resource_id=item_id,record=row,item_mapping_version=MAPPING_VERSION)
+    origin.update(resource_id=item_id,record=row,item_mapping_version=MAPPING_VERSION,item_build=origin['current_build'])
     from .item_media import icon_url
     if icon_url(row.get('icon'),foreverdb=True):origin['icon_url']=row['icon']
     for src,dst in [('class','class'),('subclass','subclass'),('inventoryType','slot'),('bonding','binding')]:
@@ -124,7 +124,7 @@ def item(body,item_id,*,at=None):
 def needs_detail(record, current_build=None):
     if record.provider!='foreverdb' or record.status!='available' or not record.fields_json:return False
     origin=json.loads(record.source_json or '{}')
-    return origin.get('item_mapping_version',0)<MAPPING_VERSION or bool(current_build and origin.get('current_build')!=current_build)
+    return origin.get('item_mapping_version',0)<MAPPING_VERSION or bool(current_build and origin.get('item_build')!=current_build)
 
 
 def related(body,resource,*,at=None):
@@ -161,7 +161,7 @@ def related(body,resource,*,at=None):
             value={'profession':row['slug'],'profession_name':plain(row['name']), 'recipe':recipe,'source':origin}
             for ident in ids:add(ident,'crafting',value)
     elif resource.startswith('vendors/'):
-        if row.get('id')!=int(resource.split('/')[1]) or not isinstance(row.get('sells'),list):raise IdentityMismatch('Vendor identity mismatch')
+        if type(row.get('id')) is not int or row['id']!=int(resource.split('/')[1]) or not isinstance(row.get('sells'),list):raise IdentityMismatch('Vendor identity mismatch')
         vendor={k:v for k,v in row.items() if k!='sells'}
         for sale in row['sells']:
             if sale.get('price') is not None:integer(sale['price'],maximum=2**63-1)
@@ -171,6 +171,6 @@ def related(body,resource,*,at=None):
             if sale.get('pricePerItem') is not None:offer['price_per_item_copper']=number(sale['pricePerItem'])
             add(sale['itemId'],'vendors',{'vendor':vendor,'offer':offer,'source':origin})
     else:
-        if row.get('id')!=int(resource.split('/')[1]) or not isinstance(row.get('items'),list):raise IdentityMismatch('Item set identity mismatch')
+        if type(row.get('id')) is not int or row['id']!=int(resource.split('/')[1]) or not isinstance(row.get('items'),list):raise IdentityMismatch('Item set identity mismatch')
         for ident in row['items']:add(ident,'item_sets',{'set':row,'source':origin})
     return records,origin
