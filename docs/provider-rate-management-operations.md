@@ -1,6 +1,6 @@
 # Provider limits: operation, deployment and rollback
 
-This is a development/review candidate. No production commands have been run. Credentials remain encrypted under the existing owner-managed keyring; budgets never rewrite a secret.
+Owner-authorized integration and deployment are complete at `73617a9`, schema `rates_20261115`. [Current production acceptance, exact deployment overlays and rollback](explorer-provider-repair-release.md) supersede the historical candidate-only gate below for this release. Credentials remain encrypted under the existing owner-managed keyring; budgets never rewrite a secret.
 
 ## Administration
 

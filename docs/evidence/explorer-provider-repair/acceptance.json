@@ -1,0 +1,277 @@
+{
+  "kind": "genuine-production-acceptance",
+  "origin": "https://market.twich.gg",
+  "application_commit": "73617a9e2ce6b32f539700c72caab4592a443a2f",
+  "schema": "rates_20261115",
+  "saved_preference_landing": {
+    "status": 200,
+    "sort": "item_id",
+    "returned": 25,
+    "elapsed_ms": 992
+  },
+  "full_name_sort": {
+    "status": 200,
+    "total_items": 5083,
+    "elapsed_ms": 839
+  },
+  "searches": [
+    {
+      "query": "linen",
+      "status": 200,
+      "total_items": 33,
+      "returned": 25,
+      "elapsed_ms": 751,
+      "snapshot_id": "52",
+      "synthetic": false
+    },
+    {
+      "query": "Destiny",
+      "status": 200,
+      "total_items": 1,
+      "returned": 1,
+      "elapsed_ms": 708,
+      "snapshot_id": "52",
+      "synthetic": false
+    },
+    {
+      "query": "647",
+      "status": 200,
+      "total_items": 1,
+      "returned": 1,
+      "elapsed_ms": 1468,
+      "snapshot_id": "52",
+      "synthetic": false
+    },
+    {
+      "query": "zzzz-no-real-item-zzzz",
+      "status": 200,
+      "total_items": 0,
+      "returned": 0,
+      "elapsed_ms": 1541,
+      "snapshot_id": "52",
+      "synthetic": false
+    }
+  ],
+  "pagination": true,
+  "item_navigation": true,
+  "browser_errors": [],
+  "owner_preferences_preserved": true,
+  "foreverdb": {
+    "initial_daily": 500,
+    "saved_daily": 499,
+    "after_restart_daily": 499,
+    "final_daily": 500,
+    "hourly": 60,
+    "above_2000_form_valid_without_increased_save": true,
+    "form_daily_maximum": "1000000"
+  },
+  "restart": {
+    "api_local_api_enrichment_restarted": true,
+    "database_saved_value_preserved": true,
+    "credentials_preserved": true,
+    "usage_not_reset": true,
+    "persisted_bucket_rows_before": 9,
+    "persisted_bucket_rows_after": 12,
+    "unexpired_buckets_not_reset": true
+  },
+  "preservation": {
+    "original_rows_identical": true,
+    "cutoffs": {
+      "snapshot": 52,
+      "observation": 581,
+      "user": 97,
+      "credential": 237
+    },
+    "rows": {
+      "observations": 581,
+      "snapshots": 52,
+      "listings": 6094525,
+      "snapshot_statistics": 1301793,
+      "users": 97,
+      "credentials": 237,
+      "user_preferences": 22,
+      "market_verifications": 2,
+      "player_market_mappings": 1,
+      "retention_policy": 0
+    },
+    "only_temporary_repair_session_revoked": true
+  },
+  "production_smoke": {
+    "commit": "73617a9e2ce6b32f539700c72caab4592a443a2f",
+    "schema": "rates_20261115",
+    "unchanged_containers": [
+      "worker",
+      "db",
+      "monitor",
+      "backup"
+    ],
+    "only_application_services_replaced": true,
+    "provider_credentials_and_original_limits_preserved": true,
+    "legacy_sync_cursor_accepted": true,
+    "existing_beta3_exact_bytes_preserved": true,
+    "private_download_requires_authentication": true,
+    "admin_csrf_and_origin_rejected": true,
+    "collector": {
+      "markets": [
+        {
+          "id": 1,
+          "house_id": 110,
+          "enabled": false,
+          "interval_seconds": 300,
+          "failures": 0,
+          "last_success": "2026-11-14T15:14:21.190053+00:00"
+        },
+        {
+          "id": 2,
+          "house_id": 114,
+          "enabled": true,
+          "interval_seconds": 300,
+          "failures": 0,
+          "last_success": "2026-11-16T04:42:56.805942+00:00"
+        }
+      ],
+      "runs": [
+        {
+          "id": 584,
+          "checked_at": "2026-11-16T04:42:56.805942+00:00",
+          "status": "unchanged",
+          "http_status": 304,
+          "duration_seconds": 0,
+          "error": null
+        },
+        {
+          "id": 583,
+          "checked_at": "2026-11-16T04:37:54.455801+00:00",
+          "status": "unchanged",
+          "http_status": 304,
+          "duration_seconds": 0,
+          "error": null
+        },
+        {
+          "id": 582,
+          "checked_at": "2026-11-16T04:32:52.069458+00:00",
+          "status": "unchanged",
+          "http_status": 304,
+          "duration_seconds": 0,
+          "error": null
+        },
+        {
+          "id": 581,
+          "checked_at": "2026-11-16T04:27:49.753456+00:00",
+          "status": "unchanged",
+          "http_status": 304,
+          "duration_seconds": 0,
+          "error": null
+        },
+        {
+          "id": 580,
+          "checked_at": "2026-11-16T04:22:48.845737+00:00",
+          "status": "collected",
+          "http_status": 200,
+          "duration_seconds": 13,
+          "error": null
+        },
+        {
+          "id": 579,
+          "checked_at": "2026-11-16T04:17:46.30297+00:00",
+          "status": "unchanged",
+          "http_status": 304,
+          "duration_seconds": 0,
+          "error": null
+        }
+      ],
+      "retention_batches": 0,
+      "schema": "rates_20261115"
+    },
+    "provider_usage": [
+      {
+        "provider": "blizzard",
+        "hourly_budget": 240,
+        "daily_budget": 2000,
+        "hour_used": 18,
+        "day_used": 27,
+        "cooldown_until": null
+      },
+      {
+        "provider": "everloot",
+        "hourly_budget": 240,
+        "daily_budget": 2000,
+        "hour_used": 90,
+        "day_used": 157,
+        "cooldown_until": null
+      },
+      {
+        "provider": "foreverdb",
+        "hourly_budget": 60,
+        "daily_budget": 500,
+        "hour_used": 43,
+        "day_used": 403,
+        "cooldown_until": "2026-11-16T04:29:56.941525+00:00"
+      },
+      {
+        "provider": "thewowdb",
+        "hourly_budget": 60,
+        "daily_budget": 500,
+        "hour_used": 10,
+        "day_used": 11,
+        "cooldown_until": "2026-11-16T00:36:08.34737+00:00"
+      }
+    ]
+  },
+  "ci": {
+    "commit": "73617a9e2ce6b32f539700c72caab4592a443a2f",
+    "backend": {
+      "id": 43804981828,
+      "conclusion": "success",
+      "postgres_tests": 553,
+      "operational_tests": 39
+    },
+    "website": {
+      "id": 43804981898,
+      "conclusion": "success",
+      "frontend_tests": 121,
+      "browser_workflows": 40,
+      "provider_browser_workflows": 1
+    },
+    "windows": {
+      "id": 43804981822,
+      "conclusion": "success",
+      "signed_update": "success"
+    }
+  },
+  "backup": {
+    "version": 1,
+    "filename": "market-development-20261116T033956666546Z.dump",
+    "source": "development",
+    "created_at": "2026-11-16T03:41:32.394181+00:00",
+    "bytes": 314364523,
+    "sha256": "8f0a81246d3963f3a379afe87f3c28fc6827e460f2691efdee993b6a4f153530",
+    "restoration_verified_at": "2026-11-16T03:45:31.227676+00:00",
+    "restored": {
+      "migration": "bridge_20261115",
+      "users": 97,
+      "markets": 2,
+      "observations": 570,
+      "listings": 5950417,
+      "synthetic_observations": 0,
+      "buyout_total": "904306610191",
+      "snapshot_statistics": 1272429,
+      "daily_observations": 4,
+      "market_verifications": 2,
+      "user_preferences": 22
+    }
+  },
+  "image_identities": {
+    "api": "sha256:7aad395c64c26f388ee0720cf368b9f0ae6c4d2be3c25fb58dcf399fd3cc8b7e",
+    "website": "sha256:6543a36bd81c2bea72bcf804ccdd85284fc73aaffd6be14cf5784abe6f028712"
+  },
+  "bridge_capacity": {
+    "changed": false,
+    "earlier_variants": 45125,
+    "earlier_http_status": 413,
+    "build_bound_mib": 64,
+    "full_generation_retried": false,
+    "addon_acceptance": false
+  },
+  "temporary_session_revoked": true
+}

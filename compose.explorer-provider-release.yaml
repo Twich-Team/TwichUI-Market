@@ -1,0 +1,14 @@
+# Approved Explorer/provider repair. Append last; replace these four services only.
+services:
+  api:
+    image: sha256:7aad395c64c26f388ee0720cf368b9f0ae6c4d2be3c25fb58dcf399fd3cc8b7e
+    environment:
+      APP_COMMIT: 73617a9e2ce6b32f539700c72caab4592a443a2f
+  local-api:
+    image: sha256:7aad395c64c26f388ee0720cf368b9f0ae6c4d2be3c25fb58dcf399fd3cc8b7e
+    environment:
+      APP_COMMIT: 73617a9e2ce6b32f539700c72caab4592a443a2f
+  proxy:
+    image: sha256:6543a36bd81c2bea72bcf804ccdd85284fc73aaffd6be14cf5784abe6f028712
+  enrichment:
+    image: sha256:7aad395c64c26f388ee0720cf368b9f0ae6c4d2be3c25fb58dcf399fd3cc8b7e

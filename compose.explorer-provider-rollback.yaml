@@ -1,0 +1,14 @@
+# Keep rates_20261115, all production data, credentials and quota state.
+services:
+  api:
+    image: sha256:39b28f3d18506efd5e9e710cac6450302e7dabdd002b64f5841c1d9cb5689e54
+    environment:
+      APP_COMMIT: 5b27cc754795f554b08a8d2d4ce7366c27c11bfb
+  local-api:
+    image: sha256:39b28f3d18506efd5e9e710cac6450302e7dabdd002b64f5841c1d9cb5689e54
+    environment:
+      APP_COMMIT: 5b27cc754795f554b08a8d2d4ce7366c27c11bfb
+  proxy:
+    image: sha256:06605be1c7b4651c4bc2fa763af30e1a517177189fd861e5c1404960f37f4c79
+  enrichment:
+    image: sha256:b645901b9b982e64881eff9743da56959ef3b7192239bcfa3b4d8ce691e732c9
