@@ -33,7 +33,7 @@ const path=require('node:path');const fs=require('node:fs');const http=require('
  await expect(page.locator('#account-name')).toHaveText('Synthetic');
  expect(await page.evaluate(()=>window.__calls.filter(c=>c.command==='archive_workshop').length)).toBe(0);
  // Preserve the installed-client legacy selector's unique existing More actions.
- await expect(page.locator('.more summary')).toHaveCount(1);
+ await expect(page.locator('.more summary')).toHaveCount(1);await expect(page.locator('.advanced summary')).toHaveCount(1);
  await page.locator('#history-panel summary').click();await page.locator('#archive-sync').click();
  await expect(page.locator('#archive-status')).toContainText('Checkpoint '+ 'c'.repeat(64));
  await expect(page.locator('#scope-through')).toHaveValue('2026-11-16');await expect(page.locator('#scope-from')).toHaveValue('2026-09-18');
@@ -43,7 +43,7 @@ const path=require('node:path');const fs=require('node:fs');const http=require('
  await page.locator('#scope-export').click();await expect(page.locator('#message')).toContainText('Acknowledge schema-3');
  await page.locator('#scope-compatible').check();await page.locator('#scope-export').click();
  await expect(page.locator('#scope-status')).toContainText('Exported to C:\\Companion\\workshop-testing');
- await expect(page.locator('#scope-status')).toContainText('No game files were installed or loaded');
+ await expect(page.locator('#scope-status')).toContainText('No game files were installed or loaded');await expect(page.locator('#message')).toBeHidden();
  await page.evaluate(()=>window.__refuse=true);await page.locator('#scope-preview').click();await expect(page.locator('#message')).toContainText('previous data is preserved');
  await page.evaluate(()=>window.__refuse=false);await page.locator('#scope-variants').fill('2589 incomplete-key');
  const before=await page.evaluate(()=>window.__calls.length);await page.locator('#scope-preview').click();await expect(page.locator('#message')).toContainText('full exact variant key');

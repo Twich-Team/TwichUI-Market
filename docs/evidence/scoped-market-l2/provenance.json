@@ -1,0 +1,20 @@
+{
+  "archive-45125.json": {
+    "runtime_source_commit": "2487360bb004e28ad14b6987ffbd8604c3495118",
+    "all_recorded_implementation_hashes_match_commit": true,
+    "acceptance_harness_revision": "2487360bb004e28ad14b6987ffbd8604c3495118",
+    "source_revision_note": "source_revision records the checkout HEAD during a run; fingerprints identify exact implementation bytes even while a worktree is being verified"
+  },
+  "archive-129.json": {
+    "runtime_source_commit": "2487360bb004e28ad14b6987ffbd8604c3495118",
+    "all_recorded_implementation_hashes_match_commit": true,
+    "acceptance_harness_revision": "2487360bb004e28ad14b6987ffbd8604c3495118",
+    "source_revision_note": "source_revision records the checkout HEAD during a run; fingerprints identify exact implementation bytes even while a worktree is being verified"
+  },
+  "archive-provisional-129.json": {
+    "runtime_source_commit": "2487360bb004e28ad14b6987ffbd8604c3495118",
+    "all_recorded_implementation_hashes_match_commit": true,
+    "acceptance_harness_revision": "59699fe8a99f4806604f9e510ad0a06aaea2eeca",
+    "source_revision_note": "source_revision records the checkout HEAD during a run; fingerprints identify exact implementation bytes even while a worktree is being verified"
+  }
+}

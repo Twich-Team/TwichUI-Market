@@ -183,9 +183,9 @@ Exact server hashes cannot simply be inferred from every WoW item link. Future r
 
 Initial CI also correctly refused the Python fixture's ambiguous Windows temporary staging ACL. Only that newly created disposable fixture directory now receives a private user/System/Administrators ACL; production guards remain strict, including broad-write/junction negative tests.
 
-Initial CI found two migration heads after concurrent metadata integration and an ambiguous `.more summary` selector caused by the new panel. The archive now descends from the new metadata head; its separate panel preserves the legacy selector. Initial full local PostgreSQL execution passed 583 cases and failed one new retention fixture because its synthetic deletion omitted an existing daily-observation FK; that fixture was corrected and all nine archive tests pass on PostgreSQL. No assertions were removed to hide a failure. The affected existing UI assertion now explicitly checks the fixed sync-interval select and the bounded, collapsed archive-budget field.
+Initial CI found two migration heads after concurrent metadata integration and an ambiguous `.more summary` selector caused by the new panel. The archive now descends from the new metadata head; its uniquely classified panel preserves both legacy More/Advanced selectors, with explicit browser regression checks. Successful archive actions clear prior transient UI errors while retaining native connection errors. Initial full local PostgreSQL execution passed 583 cases and failed one new retention fixture because its synthetic deletion omitted an existing daily-observation FK; that fixture was corrected and all nine archive tests pass on PostgreSQL. No assertions were removed to hide a failure. The affected existing UI assertion now explicitly checks the fixed sync-interval select and the bounded, collapsed archive-budget field.
 
-CI's final exact-source outcomes and links are published with PR #15's checks and the accompanying evidence ledger. No unrelated two-hour addon simulator or five-pair performance campaign was run. No production credential/history access, external provider quota, live collection, deployment, real game files or SavedVariables were used.
+At `59699fe8a99f4806604f9e510ad0a06aaea2eeca`, PostgreSQL CI passed all **584 backend tests**, five nonempty migration rehearsals, 43 operational tests and 16 L1 tests. Website CI passed the build/audit, **123 unit tests**, 41 ordinary browser workflows plus one ForeverDB and one provider workflow, and focused archive UI/accessibility. Native Windows core/Tauri compilation and both archive pipeline modes passed; the final installed-UI selector correction is verified by the final PR checks. Exact-source outcomes and links are published with PR #15's checks and the accompanying evidence ledger. No unrelated two-hour addon simulator or five-pair performance campaign was run. No production credential/history access, external provider quota, live collection, deployment, real game files or SavedVariables were used.
 
 ## Reproduction
 
@@ -204,7 +204,7 @@ python scripts/verify-archive-e2e.py --rust-client desktop/target/debug/examples
 python scripts/verify-archive-e2e.py --rust-client desktop/target/debug/examples/archive_smoke --addon-root /path/to/TwichUI --algorithm asking-v1-provisional --report /tmp/archive-provisional.json
 cargo test --manifest-path desktop/Cargo.toml --test archive dense_history -- --nocapture
 python scripts/advisor_index_feasibility.py --report /tmp/advisor-index.json
-python -m unittest discover -s scripts/tests -v
+PYTHONPATH=backend python -m unittest discover -s scripts/tests -v
 node web/e2e/companion-archive.cjs
 ```
 

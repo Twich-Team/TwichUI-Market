@@ -163,6 +163,7 @@ async function historyAction(sync,publish){
     const selected=sync?null:scopeInput();
     const result=await action('archive_workshop',{algorithm:$('workshop-pricing').value,diskBudgetMib:Number($('archive-budget').value),selected,publish,compatible:$('scope-compatible').checked});
     if(!result?.ok||archiveContext!==requestedContext)return;
+    if(!view?.error&&!view?.sync?.error)message('');
     const r=result.value,h=r.header;
     text('archive-status',`${h.market.region.toUpperCase()} · house ${h.market.house_id} · ${h.pricing_algorithm} · ${h.total_observations.toLocaleString()} retained observations · ${(r.archive_bytes/1048576).toFixed(2)} MiB SQLite. Checkpoint ${h.checkpoint_id}`);
     if(sync){
