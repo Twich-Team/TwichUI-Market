@@ -23,7 +23,7 @@ Universal Item Advisor remains a separate coverage goal. A detailed set of 100 e
 | Latest integrated development base (already merged release documentation), preserved | `da3ae92dd5fbe02d201869d8d4a06ba01cb98451` |
 | L2 merge preserving latest integrated documentation | `cb808c5a72e8e385062ee647e92c7dbdf71e06fc` |
 | Isolated L2 merge preserving those upstream changes | `b4ea388ffd3ef89ef81c0c29cf97eb2bdd6d8c80` |
-| Frozen L2 runtime / representative capacity source | `2487360bb004e28ad14b6987ffbd8604c3495118` |
+| Frozen archive/projector runtime / representative capacity source | `2487360bb004e28ad14b6987ffbd8604c3495118` |
 
 #12's head was reconciled with then-current development at `7825059f364946e40fd5da02ff62ee788ca07eb7`; all four checks passed before merge. #13 was reconciled with merged #12 at `aa2321ef6048ad3f0552c06b051bfa6d30696a82`; all four checks passed. #24 had no configured CI checks; its four scoped and six legacy affected proofs passed locally before merge. Drafts were marked ready only for these owner-authorized L1 merges, using expected-head checks and normal merge operations. No protection bypass or force push occurred. #15 remains draft and unmerged.
 
@@ -177,9 +177,9 @@ Exact server hashes cannot simply be inferred from every WoW item link. Future r
 
 ## Verification and known corrections
 
-- **89 Rust checks pass**, one existing opt-in profiler intentionally ignored. Includes legacy caches/bridge/publisher, new transactional archive, crash/resume, duplicate/order/context/hash/version controls, real SQLite-full rollback, corruption/newer-schema refusal, source-retention membership, incomplete-source unknown states and dense exact-byte refusal.
+- **90 Rust checks pass**, one existing opt-in profiler intentionally ignored. Includes legacy caches/bridge/publisher, new transactional archive, crash/resume, duplicate/order/context/hash/version controls, real SQLite-full rollback, corruption/newer-schema refusal, source-retention membership, incomplete-source unknown states and dense exact-byte refusal.
 - **Nine final archive tests pass on PostgreSQL and SQLite**, including real companion token rotation, device mismatch/revocation, immutable pages during new arrivals, reused snapshots, historical-only/bid/large-copper evidence, retention changes, schema validation and scoped server generation/refusal.
-- **16 L1 Python conformance tests and four pinned addon Lua proofs pass**. All 15 mirrored payloads plus manifest remain exact; unknown schema and legacy refusal remain intact.
+- **16 L1 Python conformance tests and four pinned addon Lua proofs pass**. All 15 mirrored payloads plus manifest remain exact; unknown schema and legacy refusal remain intact. The actual Rust scoped validator also consumes all 18 authoritative negative mutations, recomputing record/outer hashes where specified to exercise semantic refusals rather than stale hashes.
 - **43 operational Python checks pass**, including proposal unknown/missing/not-zero/independent-coverage/provenance controls and refusal of non-test database migration invocations.
 - Nonempty PostgreSQL rehearsals pass for archive, existing metadata, provider rates, ForeverDB and companion migrations. New archive downgrade removes only its disposable checkpoint/digest tables, preserving all 35 existing tables and seeded history/preferences. Source data and installed old caches are retained.
 - Actual authenticated HTTP → Rust archive → independent server/Rust scoped byte equality → safe publisher → L1 Lua artifact proof passes at 129 and 45,125 variants, including interruption/resume, incremental updates, exact `100/120→100/140` closes, canonical lower weighted median `100`, absent historical-only current state, bid supply `2`, 58 missing days and excluded same-item variant. Explicit provisional mode separately proves `110→120` daily-reference means without silently changing algorithms.

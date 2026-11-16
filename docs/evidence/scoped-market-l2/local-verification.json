@@ -2,9 +2,11 @@
   "origin": "synthetic/offline",
   "runtime_source": "2487360bb004e28ad14b6987ffbd8604c3495118",
   "rust_workspace": {
-    "passed": 89,
+    "passed": 90,
     "ignored": 1,
-    "ignored_reason": "explicit M1.5 profiling workload not invoked"
+    "ignored_reason": "explicit M1.5 profiling workload not invoked",
+    "authoritative_negative_mutations": 18,
+    "test_source": "final L2 PR head; archive/projector runtime unchanged from runtime_source"
   },
   "focused_final_postgresql_archive": {
     "passed": 9
@@ -37,5 +39,10 @@
   },
   "production_access": false,
   "real_forever_acceptance": false,
-  "ci": "See PR #15 checks; final exact-source results are recorded separately."
+  "ci": "See PR #15 checks; final exact-source results are recorded separately.",
+  "read_only_aggregate_procedure": {
+    "valid_disposable_market_passed": true,
+    "missing_or_unknown_market_refused": true,
+    "production_access": false
+  }
 }

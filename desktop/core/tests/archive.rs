@@ -503,3 +503,77 @@ fn future_sqlite_version_and_structural_corruption_do_not_reinitialize() {
     assert!(ArchiveStore::open(&bad, 64 * 1024 * 1024).is_err());
     assert_eq!(std::fs::read(bad).unwrap(), b"invalid sqlite bytes");
 }
+
+#[test]
+fn authoritative_l1_negative_corpus_reseals_before_semantic_refusal() {
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../../contracts/bridge/scoped-l1/fixtures");
+    let read = |name: &str| -> Value {
+        serde_json::from_slice(&std::fs::read(root.join(name)).unwrap()).unwrap()
+    };
+    let good = read("scoped.json");
+    let request = read("selection.json");
+    validate_scoped(&good, Some(&request)).unwrap();
+    let cases = read("cases.json");
+    assert_eq!(cases.as_array().unwrap().len(), 18);
+    for case in cases.as_array().unwrap() {
+        let is_request = case["target"] == "request";
+        let mut bad = if is_request {
+            request.clone()
+        } else {
+            good.clone()
+        };
+        let pointer = case["path"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|v| {
+                format!(
+                    "/{}",
+                    v.as_str()
+                        .map(str::to_owned)
+                        .unwrap_or_else(|| v.to_string())
+                )
+            })
+            .collect::<String>();
+        let field = bad.pointer_mut(&pointer).unwrap();
+        match case["op"].as_str().unwrap() {
+            "set" => *field = case["value"].clone(),
+            "pop" => {
+                field.as_array_mut().unwrap().pop();
+            }
+            "append_first" => {
+                let first = field[0].clone();
+                field.as_array_mut().unwrap().push(first);
+            }
+            _ => panic!("unsupported authoritative fixture operation"),
+        }
+        if case["reseal"] == true {
+            if case["refresh_record_hashes"] != false {
+                bad["scope"]["record_sha256"] = bad["records"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .map(|r| Value::String(sha(r)))
+                    .collect();
+            }
+            bad.as_object_mut().unwrap().remove("generation_id");
+            bad.as_object_mut().unwrap().remove("integrity");
+            let id = sha(&bad);
+            let mut header = bad.clone();
+            header.as_object_mut().unwrap().remove("records");
+            bad["integrity"] = json!({"records_bytes":encoded(&bad["records"]).len(),"records_sha256":sha(&bad["records"]),"manifest_sha256":sha(&header)});
+            bad["generation_id"] = id.into();
+        }
+        let refused = if is_request {
+            validate_scoped(&good, Some(&bad))
+        } else {
+            validate_scoped(&bad, Some(&request))
+        };
+        assert!(
+            refused.is_err(),
+            "accepted authoritative negative {}",
+            case["name"]
+        );
+    }
+}
