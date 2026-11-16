@@ -153,7 +153,7 @@ const {createHash}=require('node:crypto');const fs=require('node:fs');const path
     expect(scoped.schema3_workshop_runtime_available).toBe(false);expect(scoped.sizes.records).toBe(1);
     expect(path.relative(process.env.MARKET_TEST_APP_DATA,scoped.path).startsWith('workshop-testing'+path.sep)).toBe(true);
     const lua=fs.readFileSync(scoped.path);expect(lua.length).toBe(scoped.sizes.lua_bytes);expect(lua.toString().startsWith('TwichUIMarketData = { transport_version = 1')).toBe(true);
-    expect(fs.readFileSync(path.join(path.dirname(scoped.path),'TwichUI_MarketData.toc'),'utf8')).not.toContain('SavedVariables');
+    expect(fs.readFileSync(path.join(path.dirname(scoped.path),'TwichUI_MarketData.toc'),'utf8')).not.toMatch(/^\s*##\s*SavedVariables(?:PerCharacter)?\s*:/mi);
     expect(fs.existsSync(path.join(process.env.MARKET_TEST_APP_DATA,'history-archive-v1.sqlite'))).toBe(true);
     fs.writeFileSync(path.join(shots,'installed-archive-smoke.json'),JSON.stringify({fixture:true,source_commit:sourceCommit,header:scoped.header,sizes:scoped.sizes,generation_id:scoped.generation_id,native_archive_command:true,manual_schema3_staging:true,no_game_installation:true},null,2));
     await page.locator('#disconnect').click();await expect.poll(async()=>(await invoke('app_state')).mode,{timeout:20000}).toBe('disconnected');
