@@ -27,6 +27,10 @@ def test_unverified_community_identity_build_or_links_fail_closed(mutation):
 
 
 def test_opt_in_enrichment_does_not_overwrite_primary(database,monkeypatch):
+    from market.metadata_recovery import ensure_providers
+    from market.models import MetadataProvider
+    with database.begin() as db:
+        ensure_providers(db);db.get(MetadataProvider,'thewowdb').enabled=True
     called=[]
     def fetch(url,**kwargs):called.append(url);return {'status':200,'headers':{'ETag':'fixture'}},json.dumps(payload()).encode()
     with database.begin() as db:

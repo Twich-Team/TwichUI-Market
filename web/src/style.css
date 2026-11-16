@@ -1677,3 +1677,14 @@ a.secondary { display:inline-block; padding:10px 14px; border:1px solid var(--bo
 .research-charts th > small { display:block; font-weight:400; color:var(--muted); font-size:.75rem; }
 
 .catalogue-toolbar .column-menu-trigger { padding:.3rem; border:0; background:transparent; color:#dcc59d; font:inherit; font-size:.85rem; }
+
+.provider-rate-limits { border-top: 1px solid var(--edge); margin-top: 1rem; padding-top: .5rem; }
+.provider-usage-windows { display: grid; gap: .65rem; }
+.provider-usage-windows dt { font-size: .8rem; color: var(--muted); }
+.provider-usage-windows dd { margin: .15rem 0; font-size: .85rem; }
+.provider-usage progress { width: 100%; height: .4rem; accent-color: var(--gold); }
+.provider-rate-limits form { display: grid; gap: .8rem; margin-block: 1rem; }
+.provider-rate-limits label { min-width: 0; }
+.provider-rate-limits input, .provider-rate-limits select { max-width: 100%; }
+.provider-entitlement { align-items: flex-start; font-size: .85rem; }
+.provider-rate-limits details .metadata-form-row { margin-top: .8rem; }

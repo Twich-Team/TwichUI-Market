@@ -33,7 +33,7 @@ def diagnostic_request(url, *, authorization=None, conditional=None, timeout=8, 
     with response:
         body=response.read(max_bytes+1)
         if len(body)>max_bytes:raise ValueError('Response exceeds diagnostic size cap')
-        allowed=('ETag','Cache-Control','Retry-After','Content-Type','Server','CF-Mitigated','X-RateLimit-Limit','X-RateLimit-Remaining','X-RateLimit-Reset','RateLimit-Limit','RateLimit-Remaining','RateLimit-Reset','X-Everloot-Licence','X-Everloot-Credit')
+        allowed=('Date','ETag','Cache-Control','Retry-After','Content-Type','Server','CF-Mitigated','X-RateLimit-Limit','X-RateLimit-Remaining','X-RateLimit-Reset','RateLimit-Limit','RateLimit-Remaining','RateLimit-Reset','X-Everloot-Licence','X-Everloot-Credit')
         return {'status':response.status,'headers':{key:response.headers.get(key) for key in allowed}},body
 
 
@@ -82,7 +82,8 @@ def probe(provider,item_id,deadline,kind='item',store_validated=False,etag=None,
             # An explicit owner window is required; automatic recovery is never enabled here.
             credential=credential_value(db,row)
             if provider=='everloot' and not (credential and row.validated_at):raise ValueError('Validated Everloot credential required')
-            waiting=reserve_budget(row,now())
+            reserved_at=now()
+            waiting=reserve_budget(row,reserved_at)
             if waiting: return {'blocked':'Existing provider quota/cooldown applies','next_retry':waiting}
             job=MetadataJob(actor_id=1,market_id=2,mode='diagnostic',state='paused',dedupe_key=INVESTIGATION,providers_json=json.dumps([provider]),total=1,request_budget=1,requests_used=1)
             db.add(job);db.flush()
@@ -90,6 +91,8 @@ def probe(provider,item_id,deadline,kind='item',store_validated=False,etag=None,
             db.add(task);db.flush();task_id=task.id
             audit(db,1,'metadata.diagnostic.started',f'job={job.id}; provider={provider}; kind={kind}; item={item_id}; cap=200')
         raw=None;meta={};fields={};origin=None;category=None;fixture=None
+        from time import monotonic
+        started=monotonic()
         try:
             meta,raw=(diagnostic_request('https://everloot.app/api/corpus/public?kinds=item_seen,item_fact&limit='+('100' if kind=='corpus' else '1000')+'&offset='+str(item_id-1),authorization=f'Bearer {credential}') if kind in ('corpus','corpus_page') else fetch(provider,item_id,credential=credential,validate=kind=='attributes',transport=diagnostic_request,etag=etag))
             status=meta['status']
@@ -124,7 +127,9 @@ def probe(provider,item_id,deadline,kind='item',store_validated=False,etag=None,
             task=db.get(MetadataTask,task_id);job=db.get(MetadataJob,task.job_id);row=db.get(MetadataProvider,provider)
             task.state='completed';job.state='completed';task.updated_at=job.updated_at=now()
             status=meta.get('status')
-            if status in (401,402,403,429):cooldown(row,status,meta.get('headers',{}),now())
+            from market.provider_rates import observe
+            observe(row,status,meta.get('headers',{}),reserved_at+timedelta(seconds=max(0,monotonic()-started)),reserved_at=reserved_at)
+            if status in (401,402,403,429,503):cooldown(row,status,meta.get('headers',{}),reserved_at+timedelta(seconds=max(0,monotonic()-started)))
             if category in ('missing','access_blocked','rate_limited','credentials_invalid','payload_validation_rejected','transport_failed'):
                 src=get_source(db,'us',item_id,provider)
                 src.status={'missing':'metadata_unavailable','access_blocked':'forbidden','credentials_invalid':'authorization','payload_validation_rejected':'transport_or_schema','transport_failed':'transport_or_schema'}.get(category,category)

@@ -11,7 +11,7 @@ export function ProviderHealth({ providers }: { providers: MetadataProvider[] })
     {accessorKey:"last_success",header:"Last accepted response",cell:({row})=><LocalTime value={row.original.last_success}/>},
     {accessorKey:"recent_error",header:"Recent issue",cell:({row})=>metadataStatus(row.original.validation_error||row.original.recent_error)},
     {accessorKey:"cooldown_until",header:"Cooldown until",cell:({row})=><LocalTime value={row.original.cooldown_until}/>},
-    {accessorKey:"hour_used",header:"Requests · hour / day",cell:({row})=>`${row.original.hour_used} / ${row.original.day_used}`},
+    {accessorKey:"hour_used",header:"Requests · hour / day",cell:({row})=>`${row.original.rate_limits?.windows.hour?.used ?? row.original.hour_used} / ${row.original.rate_limits?.windows.day?.used ?? row.original.day_used}`},
   ]} renderDetails={row=><dl className="record-details"><dt>Provider note</dt><dd>{row.note}</dd><dt>Last validation</dt><dd><LocalTime value={row.last_validated_at}/></dd><dt>Credential expiry</dt><dd><LocalTime value={row.expires_at}/></dd><dt>Configured budgets</dt><dd>{row.hourly_budget} / hour · {row.daily_budget} / day</dd><dt>Automatic recovery</dt><dd>{row.automatic?"Enabled":"Disabled"}</dd></dl>}/>;
 }
 interface Unresolved { id:string; item_id:number; region:string; market_presence:string; blizzard_status:string; supplemental_status:string; checked_at:string|null; retry_after:string|null; icon_available:boolean; icon_url:string|null }

@@ -21,6 +21,14 @@ class MetadataOperationGuards(unittest.TestCase):
     def test_migration_rejects_non_test_postgresql_without_connecting(self):
         self.rejected('verify-metadata-migration.py','postgresql+psycopg://invalid.invalid/market')
 
+    def test_provider_rate_tools_reject_production_without_connecting(self):
+        for script in ('verify-provider-rate-migration.py','benchmark-provider-rates.py'):
+            self.rejected(script,'postgresql+psycopg://invalid.invalid/market')
+
+    def test_provider_rate_tools_require_postgresql(self):
+        for script in ('verify-provider-rate-migration.py','benchmark-provider-rates.py'):
+            self.rejected(script,'sqlite:////tmp/market_test')
+
     def test_migration_rejects_sqlite_even_with_test_name(self):
         self.rejected('verify-metadata-migration.py','sqlite:////tmp/market_test')
 

@@ -1,8 +1,10 @@
 """Independent bounded icon resolution; never forwards OAuth to artwork hosts."""
 import hashlib,json,re,struct,time
 from datetime import timedelta
+from time import monotonic
 from urllib.parse import urlsplit
 from urllib.request import Request
+from urllib.error import HTTPError
 from sqlalchemy import func,or_,select,text
 from .db import Session,now
 from .models import ItemMedia,ItemMetadata,MetadataSource,Market,Observation,SnapshotStatistic
@@ -46,15 +48,26 @@ def image_type(data):
     raise ValueError('Unsupported/corrupt icon')
 
 
-def fetch_icon(url,*,community=False):
+def fetch_icon(url,*,community=False,factory=Session):
     if not icon_url(url,community=community):raise ValueError('Untrusted icon destination')
-    # No token, credentials, cookies or redirects; separate bounded public-image request.
-    with opener.open(Request(url,headers={'User-Agent':'TwichUI-Market/0.1','Accept':'image/jpeg,image/png'}),timeout=5) as response:
-        if response.status!=200:raise ValueError('Icon HTTP status')
-        data=response.read(MAX_ICON_BYTES+1)
-        mime=image_type(data)
-        if response.headers.get_content_type()!=mime:raise ValueError('Icon type mismatch')
-        return data,mime
+    def download():
+        # No token, credentials, cookies or redirects, including on artwork hosts.
+        try:response=opener.open(Request(url,headers={'User-Agent':'TwichUI-Market/0.1','Accept':'image/jpeg,image/png'}),timeout=5)
+        except HTTPError as error:response=error
+        with response:
+            meta={'status':response.status,'mime':response.headers.get_content_type(),
+                'headers':{k:response.headers.get(k) for k in ('Retry-After','Date','X-RateLimit-Remaining','RateLimit-Remaining','RateLimit-Reset','RateLimit-Limit')}}
+            return meta,response.read(MAX_ICON_BYTES+1) if response.status==200 else b''
+    if urlsplit(url).hostname=='thewowdb.com':
+        from .provider_rates import reserved_request
+        meta,data=reserved_request(factory,'thewowdb',download)
+    else:
+        # Public Blizzard artwork CDN is separate from its authenticated API pool.
+        meta,data=download()
+    if meta['status']!=200:raise ValueError('Icon HTTP status')
+    mime=image_type(data)
+    if meta['mime']!=mime:raise ValueError('Icon type mismatch')
+    return data,mime
 
 
 def resolve_media_once(factory=Session,client=None,*,at=None,image_fetch=fetch_icon,budget_guard=None,failure_guard=None):
@@ -75,7 +88,17 @@ def resolve_media_once(factory=Session,client=None,*,at=None,image_fetch=fetch_i
             if item is not None:candidate=(market.region,item);break
         if candidate is None:return False
         region,item=candidate
-        if budget_guard and not budget_guard(db,at):return False
+        if budget_guard:
+            if not budget_guard(db,at):return False
+        else:
+            from .metadata_recovery import ensure_providers
+            from .models import MetadataProvider
+            from .provider_rates import reserve_budget
+            ensure_providers(db)
+            provider=db.get(MetadataProvider,'blizzard',with_for_update=True)
+            if not provider.enabled or reserve_budget(provider,at):return False
+    # Quota is committed before any I/O, including artwork. Crashes remain charged.
+    with factory.begin() as db:
         row=db.get(ItemMedia,(region,item))
         if row is None:row=ItemMedia(region=region,item_id=item);db.add(row)
         row.checked_at=at
@@ -83,7 +106,15 @@ def resolve_media_once(factory=Session,client=None,*,at=None,image_fetch=fetch_i
             used=db.scalar(select(func.coalesce(func.sum(ItemMedia.byte_count),0)))
             if used>=MAX_CACHE_BYTES:
                 row.status='budget';row.retry_after=at+timedelta(hours=1);return True
+            started=monotonic()
             meta,body=client.fetch_item_media(region,item)
+            from .models import MetadataProvider
+            from .provider_rates import observe,cooldown
+            provider=db.get(MetadataProvider,'blizzard',with_for_update=True)
+            if provider:
+                received=at+timedelta(seconds=max(0,monotonic()-started))
+                observe(provider,meta['status'],meta.get('headers',{}),received,reserved_at=at)
+                if meta['status'] in (401,402,403,429,503):cooldown(provider,meta['status'],meta.get('headers',{}),received)
             row.http_status=meta['status']
             if meta['status']!=200:
                 if failure_guard:failure_guard(db,meta['status'],meta['headers'],at)
@@ -98,7 +129,7 @@ def resolve_media_once(factory=Session,client=None,*,at=None,image_fetch=fetch_i
                     from .models import MetadataProvider
                     settings=db.get(MetadataProvider,'thewowdb')
                     if fallback and (settings is None or settings.enabled) and icon_url(url,community=True):
-                        data,mime=fetch_icon(url,community=True)
+                        data,mime=fetch_icon(url,community=True,factory=factory)
                         if used-(row.byte_count or 0)+len(data)>MAX_CACHE_BYTES:raise ValueError('Icon budget')
                         row.status,row.source,row.namespace='available','thewowdb',fallback['source']['build']
                         row.source_url,row.metadata_hash=url,fallback['source']['payload_hash']

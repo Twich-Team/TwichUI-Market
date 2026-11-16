@@ -1,6 +1,6 @@
 """Additive catalog, provider controls and durable recovery queue models."""
 from datetime import datetime
-from sqlalchemy import Boolean, DateTime, ForeignKey, Index, Integer, LargeBinary, String, Text, UniqueConstraint
+from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Index, Integer, LargeBinary, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 from .db import Base, now
 
@@ -31,6 +31,26 @@ class MetadataProvider(Base):
     validation_requested: Mapped[bool] = mapped_column(Boolean, default=False)
     validation_revision: Mapped[int] = mapped_column(Integer, default=0)
     validation_error: Mapped[str | None] = mapped_column(String(40))
+    # Separate from credential envelopes; changing these never resets usage.
+    rate_config: Mapped[str | None] = mapped_column(Text)
+    rate_tokens: Mapped[float | None] = mapped_column(Float)
+    rate_token_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    rate_inflight_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    rate_streak: Mapped[int] = mapped_column(Integer, default=0)
+    adaptive_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    last_rate_limit: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    last_http_success: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    last_recovery: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    rate_observation: Mapped[str | None] = mapped_column(Text)
+
+
+class MetadataQuotaBucket(Base):
+    """At most 1,441 minute buckets/provider, plus minute-window second buckets."""
+    __tablename__ = 'metadata_quota_buckets'
+    provider: Mapped[str] = mapped_column(ForeignKey('metadata_providers.provider'), primary_key=True)
+    resolution: Mapped[int] = mapped_column(Integer, primary_key=True)
+    started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), primary_key=True)
+    used: Mapped[int] = mapped_column(Integer, default=0)
 
 
 class MetadataSource(Base):

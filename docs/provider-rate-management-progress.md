@@ -16,3 +16,15 @@ Current ceilings are application choices, not key entitlements: ForeverDB 60/hou
 ## Next
 
 Implement scheduler/schema and independent limits API; research findings and test evidence follow in dedicated review documents. No live-provider verification is authorized or performed.
+
+## Implementation checkpoint
+
+The existing reservation entry point now uses row-locked, committed rolling buckets plus preserved legacy guards. Per-provider configuration, TheWoWDB refill/burst state, concurrency leases, numeric quota observations and 429 adaptive cooldown are persisted separately from secrets. Validation, automatic/manual/bulk/stale recovery, legacy name/media/community calls and operator diagnostics share accounting. Public Blizzard artwork CDN is independent of the authenticated API; TheWoWDB-hosted artwork shares that provider's pool. No collector code, pricing, desktop/addon contracts or deployment configuration changes.
+
+Rate editing is independent from connection settings and credential replacement. The UI distinguishes documented limits, configured maxima, observed quota and estimates; expired windows display zero current usage. Jobs retain queued work across cooldown and do not count it as permanently failed. An exhausted finite campaign pauses for explicit retry allowance rather than silently overspending or discarding a 429 item. The metadata worker wakes for configured pace, capped at four ticks/second and sleeping normally when idle; existing resource limits remain unchanged.
+
+Verified locally: full baseline-plus-feature PostgreSQL suite **543 passed** (238.85s); subsequent scheduler refinement suite **106 passed**; artwork/community and quota follow-up **57 passed**; API/accounting follow-up **50 passed**. Frontend **119 unit tests**, TypeScript/Vite build and **34 operational checks** pass. Provider, legacy metadata and Companion migration preservation/downgrade/re-upgrade rehearsals pass at `rates_20261115` descending from `bridge_20261115`. Additional cross-process/wakeup/hot-reload checks and actual browser verification are in progress.
+
+Synthetic full-day bucket benchmark improved from 56.265 ms median / 9 SQL statements to **18.000 ms / 6 statements** after using scalar rows and a bounded atomic bucket upsert. Status view: 10.208 ms / 1 statement; quota relation 237,568 bytes for 1,441 minute buckets. These are local warm handler measurements, not production p95 or real provider throughput.
+
+The browser review uses a separately named rootless `provider-rate-review` Compose project, uniquely tagged images, temporary `market_test`, localhost port 19482, bounded memory/CPU/logs, and only db/migrate/api/proxy. No collector, enrichment worker, live credentials, production networks or volumes are used. Synthetic quota fixtures are applied after ordinary browser workflows to keep those tests independent.

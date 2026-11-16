@@ -1,3 +1,4 @@
+import { ProviderRateLimits, type RateStatus } from "./provider-rate-limits";
 import { useState } from "react";
 import { DataTable } from "./data-table";
 import { LocalTime, ProviderEmblem, Status, useRecordPage } from "./admin-table";
@@ -9,6 +10,7 @@ import { Market } from "./types";
 import { MarketSelect } from "./research";
 
 export interface MetadataProvider {
+  rate_limits?: RateStatus;
   provider: string; name: string; enabled: boolean; automatic: boolean; configured: boolean;
   key_required: boolean; credential_status: string; validation_pending: boolean; validation_error: string | null;
   last_validated_at: string | null; expires_at: string | null; expiration_warning: string | null;
@@ -19,7 +21,7 @@ interface Providers { credential_storage_ready: boolean; providers: MetadataProv
 interface Result { provider: string; item_id?: number; status: string; recovered_fields?: string[]; imported_items?: number; source?: { provider?: string; build?: string; confidence?: string; attribution?: { text: string; url: string } } }
 interface Job {
   recovered: number; failed: number; created_at: string; updated_at: string; id: number; mode: string; state: string; total: number; counts: Record<string, number>;
-  requests_used: number; request_budget: number; providers: string[];
+  requests_used: number; request_budget: number; providers: string[]; waiting?: {provider:string;resumes_at:string}[]; retry_allowance_needed?: boolean;
   results?: { id: number; item_id: number; provider: string; state: string; available_at: string; result: Result | null }[];
   next_after?: number | null;
 }
@@ -60,16 +62,15 @@ export function DataSources({ readOnly = false }: { readOnly?: boolean }) {
     {data.data && !data.data.credential_storage_ready && <p className="notice">API key storage needs an owner-managed encryption key file. Keyless recovery remains available.</p>}
     <ProviderHealth providers={data.data?.providers || []} />
     <h3>Provider settings and credentials</h3><div className="metadata-provider-grid">{data.data?.providers.map(provider => <section className="panel padded metadata-provider" key={provider.provider} aria-label={`${provider.name} connection`}>
-      <div className="title-row"><h3>{provider.name}</h3><span className="tag">{provider.configured ? "Connected" : provider.key_required ? "Not configured" : "Keyless access"}</span></div>
+      <div className="title-row"><h3>{provider.name}</h3><span className="tag">{provider.expiration_warning === "expired" ? "Key expired" : provider.validation_error || provider.recent_error ? "Needs attention" : provider.last_validated_at ? "Validated" : provider.configured ? "Key configured" : provider.key_required ? "Not configured" : "Keyless access"}</span></div>
       <p className="small muted">{provider.note}</p>
       {provider.expiration_warning && <p className="notice" role="status">{metadataStatus(provider.expiration_warning)}. Replace this key before it expires.</p>}
       <form className="metadata-config" key={`${provider.provider}-${provider.enabled}-${provider.automatic}-${provider.hourly_budget}-${provider.daily_budget}`} onSubmit={event => {
         event.preventDefault(); const form = new FormData(event.currentTarget);
-        action(() => api(`/admin/metadata-providers/${provider.provider}`, "PATCH", { enabled: form.has("enabled"), automatic: form.has("automatic"), hourly_budget: Number(form.get("hourly")), daily_budget: Number(form.get("daily")) }), `${provider.name} settings saved.`);
+        action(() => api(`/admin/metadata-providers/${provider.provider}`, "PATCH", { enabled: form.has("enabled"), automatic: form.has("automatic") }), `${provider.name} settings saved.`);
       }}>
         <label className="check"><input name="enabled" type="checkbox" defaultChecked={provider.enabled} disabled={busy || readOnly} />Enabled</label>
         <label className="check"><input name="automatic" type="checkbox" defaultChecked={provider.automatic} disabled={busy || readOnly} />Automatic recovery</label>
-        <div className="metadata-form-row"><label>Hourly budget<input name="hourly" type="number" min="1" max="240" defaultValue={provider.hourly_budget} required /></label><label>Daily budget<input name="daily" type="number" min="1" max="2000" defaultValue={provider.daily_budget} required /></label></div>
         <button disabled={busy || readOnly}>Save settings</button>
       </form>
       <div className="metadata-actions"><button disabled={busy || readOnly} onClick={() => action(() => api(`/admin/metadata-providers/${provider.provider}/test`, "POST"), "Connection test queued. Provider limits still apply.")}>Test Connection</button>
@@ -85,6 +86,7 @@ export function DataSources({ readOnly = false }: { readOnly?: boolean }) {
         <p className="small muted">The key is encrypted at rest and cannot be retrieved through this website.</p>
         <div className="metadata-actions"><button className="primary" disabled={busy || readOnly}>Validate &amp; replace</button><button type="button" onClick={() => setEditing(null)}>Cancel</button></div>
       </form>}
+      {provider.rate_limits && <ProviderRateLimits key={JSON.stringify(provider.rate_limits.configured)} provider={provider} disabled={busy || readOnly} save={config => action(() => api(`/admin/metadata-providers/${provider.provider}/rate-limits`, "PATCH", config), `${provider.name} rate limits saved. Usage and cooldowns are preserved.`)}/>}
       <a href={provider.url} target="_blank" rel="noopener noreferrer" className="small">Provider documentation &amp; attribution</a>
     </section>)}</div>
   </section>;
@@ -133,14 +135,14 @@ export function ItemMetadataAdmin({ markets, readOnly = false }: { markets: Mark
         {accessorKey:"id",header:"Job",enableHiding:false,cell:({row})=><button className="text-button" onClick={()=>{setJobId(row.original.id);setResultAfter(0);}}>Job #{row.original.id} · {row.original.mode}</button>},
         {accessorKey:"mode",header:"Recovery type"},
         {id:"providers",header:"Providers",enableSorting:false,cell:({row})=>row.original.providers.map(provider=><ProviderEmblem key={provider} provider={provider}/>)},
-        {accessorKey:"state",header:"Status",cell:({row})=><Status>{row.original.state}</Status>},
+        {accessorKey:"state",header:"Status",cell:({row})=><><Status>{row.original.state}</Status><JobWaiting job={row.original}/></>},
         {id:"progress",header:"Progress",enableSorting:false,cell:({row})=>`${["completed","failed","skipped","cancelled"].reduce((n,key)=>n+(row.original.counts[key]||0),0)} / ${row.original.total}`},
         {id:"recovered",header:"Recovered / failed / skipped",enableSorting:false,cell:({row})=>`${row.original.recovered||0} / ${row.original.failed||0} / ${row.original.counts.skipped||0}`},
         {accessorKey:"created_at",header:"Started",cell:({row})=><LocalTime value={row.original.created_at}/>},
         {accessorKey:"updated_at",header:"Updated",cell:({row})=><LocalTime value={row.original.updated_at}/>},
-        {id:"actions",header:"Actions",enableSorting:false,cell:({row})=><div className="metadata-actions">{["queued","running","paused"].includes(row.original.state) && <><button disabled={busy||readOnly} onClick={()=>action(async()=>{await api(`/admin/item-metadata/jobs/${row.original.id}/${row.original.state==="paused"?"resume":"pause"}`,"POST");})}>{row.original.state==="paused"?"Resume":"Pause"}</button><button disabled={busy||readOnly} onClick={()=>action(async()=>{await api(`/admin/item-metadata/jobs/${row.original.id}/cancel`,"POST");})}>Cancel</button></>}</div>},
-      ]} renderDetails={row=><p>Job #{row.id} · {row.requests_used}/{row.request_budget} requests. Completed tasks include missing or empty responses; see provider results for actual recovery.</p>}/>
-      {detail.data && <div className="metadata-job-detail"><h4>Job #{detail.data.id} results</h4><progress aria-label="Recovery progress" max={Math.max(1, detail.data.total)} value={["completed", "failed", "skipped", "cancelled"].reduce((n, key) => n + (detail.data!.counts[key] || 0), 0)} />
+        {id:"actions",header:"Actions",enableSorting:false,cell:({row})=><div className="metadata-actions">{row.original.retry_allowance_needed && <button disabled={busy||readOnly} onClick={()=>action(async()=>{await api(`/admin/item-metadata/jobs/${row.original.id}/retry-allowance`,"POST",{additional_requests:1});})}>Allow one retry</button>}{["queued","running","paused"].includes(row.original.state) && <><button disabled={busy||readOnly} onClick={()=>action(async()=>{await api(`/admin/item-metadata/jobs/${row.original.id}/${row.original.state==="paused"?"resume":"pause"}`,"POST");})}>{row.original.state==="paused"?"Resume":"Pause"}</button><button disabled={busy||readOnly} onClick={()=>action(async()=>{await api(`/admin/item-metadata/jobs/${row.original.id}/cancel`,"POST");})}>Cancel</button></>}</div>},
+      ]} renderDetails={row=><p>Job #{row.id} · {row.requests_used}/{row.request_budget} requests. Completed tasks include missing or empty responses; see provider results for actual recovery.{row.retry_allowance_needed && " Rate-limited work is preserved. The campaign request budget is spent; allow another retry to continue."}</p>}/>
+      {detail.data && <div className="metadata-job-detail"><h4>Job #{detail.data.id} results</h4><JobWaiting job={detail.data}/><progress aria-label="Recovery progress" max={Math.max(1, detail.data.total)} value={["completed", "failed", "skipped", "cancelled"].reduce((n, key) => n + (detail.data!.counts[key] || 0), 0)} />
         <p className="small muted">Search and sorting apply to this bounded result batch. Use Next results for the next batch.</p>
         <DataTable label="job results" data={detail.data.results || []} getRowId={row=>String(row.id)} columns={[
           {accessorKey:"item_id",header:"Item ID",cell:({row})=>`Item #${row.original.item_id}`},
@@ -156,3 +158,5 @@ export function ItemMetadataAdmin({ markets, readOnly = false }: { markets: Mark
     <UnresolvedNames key={`unresolved-${market}`} market={market} chooseItem={id=>{setMode("single");setInput({...input,item_id:String(id)});resetPreview();document.querySelector<HTMLInputElement>('input[type="number"]')?.focus();}}/>
   </section>;
 }
+
+export function JobWaiting({job}:{job:Pick<Job,"waiting">}) { return <>{job.waiting?.map(wait => <p className="small" key={wait.provider}>Waiting for {wait.provider === "foreverdb" ? "ForeverDB" : wait.provider === "thewowdb" ? "TheWoWDB" : wait.provider === "everloot" ? "Everloot" : "Blizzard"} rate limit — resumes at <LocalTime value={wait.resumes_at}/></p>)}</>; }

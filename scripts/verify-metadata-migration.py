@@ -56,9 +56,9 @@ with Session(engine) as db,db.begin():
 rejected=migrate('downgrade','0013',success=False)
 assert rejected.returncode and 'Export metadata and provider credentials' in rejected.stderr
 with engine.begin() as db:
-    assert db.scalar(text('select version_num from alembic_version'))=='bridge_20261115'
+    assert db.scalar(text('select version_num from alembic_version'))=='rates_20261115'
     db.execute(text('delete from metadata_providers'))
 migrate('downgrade','0013');assert originals()==before
 migrate('upgrade','head');migrate('check');assert originals()==before
-print(json.dumps({'database':'market_test','revision':'bridge_20261115','existing_rows_preserved':True,
+print(json.dumps({'database':'market_test','revision':'rates_20261115','existing_rows_preserved':True,
     'populated_downgrade_refused':True,'empty_downgrade_reupgrade':True,'synthetic_only':True}))

@@ -3,6 +3,7 @@ import hashlib
 import json
 import time
 from datetime import timedelta
+from time import monotonic
 from urllib.error import URLError
 from sqlalchemy import and_,or_,select,text
 from .db import Session,now
@@ -60,12 +61,26 @@ def resolve_once(factory=Session,client=None,*,at=None):
                 break
         if candidate is None: return False
         region,item=candidate
+        from .metadata_recovery import ensure_providers
+        from .models import MetadataProvider
+        from .provider_rates import reserve_budget
+        ensure_providers(db)
+        provider=db.get(MetadataProvider,'blizzard',with_for_update=True)
+        if not provider.enabled or reserve_budget(provider,at):return False
+    # Legacy entry point uses the same committed quota as recovery and artwork.
+    with factory.begin() as db:
         row=db.get(ItemMetadata,(region,item))
         if row is None:
             row=ItemMetadata(region=region,item_id=item,namespace=f'static-forever-{region}')
             db.add(row)
         try:
+            started=monotonic()
             metadata,body=client.fetch_item(region,item)
+            from .provider_rates import observe,cooldown
+            provider=db.get(MetadataProvider,'blizzard',with_for_update=True)
+            received=at+timedelta(seconds=max(0,monotonic()-started))
+            observe(provider,metadata['status'],metadata.get('headers',{}),received,reserved_at=at)
+            if metadata['status'] in (401,402,403,429,503):cooldown(provider,metadata['status'],metadata.get('headers',{}),received)
             row.http_status=metadata['status']
             if metadata['status']==200:
                 store_metadata(db,region,item,body,at=at,synthetic=metadata.get('synthetic',False),resolved_namespace=metadata['headers'].get('Battlenet-Namespace'))

@@ -13,6 +13,7 @@ from .metadata_providers import PROVIDERS
 from .metadata_recovery import ACTIVE, candidates, enqueue, ensure_providers, job_counts, observed_query, provider_limits
 from .provider_secrets import SecretUnavailable, encrypt, keyring, rotate
 from .security import admin, audit, aware
+from .provider_rates import RateLimits, rate_view, validate_configuration
 
 router = APIRouter(prefix='/api/v1/admin')
 
@@ -21,14 +22,19 @@ class ProviderUpdate(BaseModel):
     model_config = ConfigDict(extra='forbid')
     enabled: bool
     automatic: bool
-    hourly_budget: int = Field(ge=1, le=240)
-    daily_budget: int = Field(ge=1, le=2000)
+    hourly_budget: int | None = Field(default=None, ge=1, le=240)
+    daily_budget: int | None = Field(default=None, ge=1, le=2000)
 
 
 class KeyReplacement(BaseModel):
     model_config = ConfigDict(extra='forbid')
     key: SecretStr
     expires_at: datetime | None = None
+
+
+class RetryAllowance(BaseModel):
+    model_config = ConfigDict(extra='forbid', strict=True)
+    additional_requests: int = Field(ge=1, le=1000)
 
 
 class RecoveryInput(BaseModel):
@@ -58,7 +64,7 @@ def provider_view(row):
         'expiration_warning':warning, 'last_success':row.last_success, 'recent_error':row.last_error,
         'cooldown_until':row.cooldown_until, 'next_request_at':row.next_request_at,
         'hourly_budget':row.hourly_budget, 'daily_budget':row.daily_budget, 'hour_used':row.hour_used,
-        'day_used':row.day_used, 'note':spec.note, 'url':spec.url}
+        'day_used':row.day_used, 'note':spec.note, 'url':spec.url, 'rate_limits':rate_view(row)}
 
 
 @router.get('/metadata-providers')
@@ -75,10 +81,33 @@ def providers(user: User = Depends(admin), db: Session = Depends(session)):
 def configure(ident: str, body: ProviderUpdate, user: User = Depends(admin), db: Session = Depends(session)):
     row = provider_row(db, ident)
     hourly_ceiling,daily_ceiling,_=provider_limits(row)
-    if body.hourly_budget > hourly_ceiling or body.daily_budget > daily_ceiling:
+    if (body.hourly_budget is not None and body.hourly_budget > hourly_ceiling) or (body.daily_budget is not None and body.daily_budget > daily_ceiling):
         raise HTTPException(422, f'Current provider ceiling is {hourly_ceiling} requests/hour and {daily_ceiling}/day')
-    for field in ('enabled', 'automatic', 'hourly_budget', 'daily_budget'): setattr(row, field, getattr(body, field))
+    for field in ('enabled', 'automatic', 'hourly_budget', 'daily_budget'):
+        if getattr(body, field) is not None:setattr(row, field, getattr(body, field))
+    if row.rate_config:
+        config=json.loads(row.rate_config)
+        config.update(hourly_budget=row.hourly_budget,daily_budget=row.daily_budget)
+        row.rate_config=json.dumps(config)
     audit(db, user.id, 'metadata.provider.configured', f'provider={ident}; enabled={body.enabled}; automatic={body.automatic}')
+    db.commit()
+    return provider_view(row)
+
+
+@router.patch('/metadata-providers/{ident}/rate-limits')
+def configure_rates(ident: str, body: RateLimits, user: User = Depends(admin), db: Session = Depends(session)):
+    row = provider_row(db, ident)
+    try: config = validate_configuration(row, body, now())
+    except ValueError as error: raise HTTPException(422, str(error)) from None
+    row.rate_config = json.dumps(config)
+    row.hourly_budget, row.daily_budget = config['hourly_budget'], config['daily_budget']
+    # Deliberately retain counters, bucket balances, next eligibility, cooldowns,
+    # active/pending secrets, enablement and all existing jobs.
+    # Reconsider prior local quota waits. Source retry times and provider cooldowns
+    # are rechecked by the scheduler before it can reserve another request.
+    db.execute(update(MetadataTask).where(MetadataTask.provider == ident,
+        MetadataTask.state == 'queued', MetadataTask.available_at > now()).values(available_at=rate_view(row)['next_eligible_at']))
+    audit(db, user.id, 'metadata.provider.limits_configured', f'provider={ident}; entitlement_acknowledged={body.entitlement_acknowledged}')
     db.commit()
     return provider_view(row)
 
@@ -146,8 +175,12 @@ def start(body: RecoveryInput, user: User = Depends(admin), db: Session = Depend
 def job_view(db, job):
     outcome=cast(MetadataTask.result_json, JSON)['outcome'].as_string()
     status=cast(MetadataTask.result_json, JSON)['status'].as_string()
-    recovered,failed=db.execute(select(func.count().filter(outcome.in_(('name_recovered','attributes_recovered'))),func.count().filter(or_(MetadataTask.state=='failed',outcome.in_(('no_usable_data','missing','wrong_identity','invalid_response','credentials_invalid','access_blocked','rate_limited','unavailable')),status.in_(('metadata_unavailable','forbidden','authorization','transport_or_schema','wrong_identity','rate_limited'))))).where(MetadataTask.job_id==job.id)).one()
+    recovered,failed=db.execute(select(func.count().filter(outcome.in_(('name_recovered','attributes_recovered'))),func.count().filter(MetadataTask.state.in_(('completed','failed')),or_(MetadataTask.state=='failed',outcome.in_(('no_usable_data','missing','wrong_identity','invalid_response','credentials_invalid','access_blocked','rate_limited','unavailable')),status.in_(('metadata_unavailable','forbidden','authorization','transport_or_schema','wrong_identity','rate_limited'))))).where(MetadataTask.job_id==job.id)).one()
+    waits = list(db.execute(select(MetadataTask.provider, func.min(MetadataTask.available_at)).where(
+        MetadataTask.job_id == job.id, MetadataTask.state == 'queued', MetadataTask.available_at > now()).group_by(MetadataTask.provider))) if job.state in ('queued','running') else []
     return {'id':job.id, 'market_id':job.market_id, 'mode':job.mode, 'state':job.state, 'providers':json.loads(job.providers_json),
+        'waiting': [{'provider':p, 'resumes_at':stamp} for p, stamp in waits],
+        'retry_allowance_needed':job.state == 'paused' and job.requests_used >= job.request_budget,
         'total':job.total, 'counts':job_counts(db, job.id), 'recovered':recovered, 'failed':failed, 'requests_used':job.requests_used, 'request_budget':job.request_budget,
         'created_at':job.created_at, 'updated_at':job.updated_at}
 
@@ -155,6 +188,21 @@ def job_view(db, job):
 @router.get('/item-metadata/jobs')
 def jobs(user: User = Depends(admin), db: Session = Depends(session)):
     return {'jobs':[job_view(db, job) for job in db.scalars(select(MetadataJob).order_by(MetadataJob.id.desc()).limit(30))]}
+
+
+@router.post('/item-metadata/jobs/{job_id}/retry-allowance')
+def retry_allowance(job_id: int, body: RetryAllowance, user: User = Depends(admin), db: Session = Depends(session)):
+    job = db.get(MetadataJob, job_id, with_for_update=True)
+    if job is None: raise HTTPException(404, 'Recovery job not found')
+    if job.state != 'paused' or job.requests_used < job.request_budget:
+        raise HTTPException(409, 'Only a paused job with an exhausted request budget needs retry allowance')
+    if job.request_budget + body.additional_requests > 1000:
+        raise HTTPException(422, 'A campaign is limited to 1000 requests; create a separately authorized campaign')
+    job.request_budget += body.additional_requests
+    job.state, job.updated_at = 'queued', now()
+    audit(db, user.id, 'metadata.job.retry_allowance', f'job={job_id}; additional={body.additional_requests}')
+    db.commit()
+    return job_view(db, job)
 
 
 @router.get('/item-metadata/jobs/{job_id}')
