@@ -109,6 +109,30 @@ def test_name_search_on_a_new_snapshot_with_stale_planner_statistics(database):
         page=catalogue(ident,q='haystack',sort='name',direction='asc',page=0,page_size=25,user=None,db=db)
         assert page['total_items']==5900
         assert [r['item_id'] for r in page['items']]==[50000+i for i in expected]
+        page=catalogue(ident,q='',sort='market_value',direction='desc',page=0,page_size=25,user=None,db=db)
+        assert page['items'][0]['item_id']==50000
+        assert page['items'][0]['price_ranges']['market_value']=={'minimum':'150','maximum':'150'}
+
+
+def test_catalogue_ranges_exclude_vanished_variants_and_items(owner,database):
+    ident=seed(database)
+    with database.begin() as db:
+        ingest(db,ident,json.dumps({'auctions':[
+            {'id':2,'item':{'id':25,'bonus_lists':[2]},'quantity':3,'buyout':2100},
+            {'id':3,'item':{'id':26},'quantity':1,'bid':50}
+        ]}).encode(),request_key='only-one-current-variant',retrieved_at=now()+timedelta(seconds=1),synthetic=True)
+    result=owner.get(f'/api/v1/markets/{ident}/catalogue?q=sword').json()
+    assert result['total_items']==1
+    item=result['items'][0]
+    assert item['variant_count']==1 and item['supply']==3 and item['listing_count']==1
+    assert item['price_ranges']['recent_price']=={'minimum':'700','maximum':'700'}
+    # Reference pricing is independently computed by the existing pricing API.
+    with database() as db:
+        expected=values(db,ident,25,item['sole_variant_key'])
+    for field in ('market_value','historical_value'):
+        assert item['price_ranges'][field]=={'minimum':str(expected[field]),'maximum':str(expected[field])}
+    assert owner.get(f'/api/v1/markets/{ident}/catalogue?q=27').json()['items']==[]
+    assert [row['item_id'] for row in owner.get(f'/api/v1/markets/{ident}/catalogue').json()['items']]==[25,26]
 
 
 def test_database_search_timeout_returns_an_actionable_error(owner,database,monkeypatch):
