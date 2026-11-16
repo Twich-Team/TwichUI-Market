@@ -1,0 +1,40 @@
+{
+  "result": "PASS",
+  "evidence_class": "offline unit-tested and measured synthetic sizing; no real-client acceptance",
+  "market_base": "73617a9e2ce6b32f539700c72caab4592a443a2f",
+  "addon_base": "732ccf87b825c7f93d7dbb73cae9fa9bfb001fd8",
+  "research_pr_12": {
+    "status": "open draft unmerged at inspection",
+    "commit": "49cfa2bc5701657c054d01ee44817ad4a3662aa3"
+  },
+  "market_conformance_methods": 16,
+  "negative_mutation_cases": 18,
+  "addon_new_methods": 4,
+  "addon_existing_bridge_methods": 6,
+  "authoritative_hashed_payload_files": 15,
+  "deterministic_example_documents": 11,
+  "hash_manifest_sha256": "c5a465e323005735444f3e5fe2ec48241f50942ebdfb7e7078049849206ec2a7",
+  "targeted_capacity_cases": 8,
+  "capacity_exact_serialized_length_crosschecks": 6,
+  "capacity_hard_manifest_refusals": 2,
+  "checks": [
+    "Python conformance",
+    "actual Lua parser/shared validator proof",
+    "existing bridge regression",
+    "Lua 5.1 syntax",
+    "Python compilation",
+    "cross-repository payload bytes and hashes",
+    "documentation local links",
+    "git diff --check"
+  ],
+  "not_run": [
+    "production access",
+    "runtime integration",
+    "Rust native tests",
+    "full simulator suite",
+    "Forever/Windows acceptance",
+    "M1.5 paired capacity matrix"
+  ],
+  "production_code_changed": false,
+  "original_v1_contract_changed": false
+}
