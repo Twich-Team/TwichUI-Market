@@ -1,0 +1,126 @@
+{
+  "milestone": "M1.5",
+  "evidence_origin": "synthetic / offline / CI",
+  "baseline": {
+    "market": "68c075138d5f50608c741b0e51b7013d9bf8769d",
+    "addon": "c0c9de1ef3242d5ca50c2c514cd481e81dfaf13b"
+  },
+  "measured_runtime": {
+    "market": "d012c32513b4205eee4167db85aac065cbfdc84f",
+    "addon": "a779e227d32d65c90871c00c347f5dd9ce91ce31"
+  },
+  "addon_code_test_freeze": "febed289d7db429d00d02fcff73cdbf262d541c2",
+  "addon_full_result_authority": "https://github.com/Twich-Team/TwichUI/blob/feature/bridge-performance-m15/docs/workshop/market-bridge-m15.md",
+  "contract": {
+    "version": 1,
+    "transport": 1,
+    "schemas": [
+      1,
+      2
+    ],
+    "authoritative_pin": "1f76f8468722f07430acb3a10d26d6ad2d20e9cd",
+    "unchanged": true,
+    "fixture_sha256": {
+      "generation.schema.json": "93ca43106041ce73bf7dafb234fdab57d083a37d338df96e9e24817d95ae3a26",
+      "canonical-generation.json": "fa9184e37c789cc1f3fc6f68c23254ce7673de5017be1faea9201edd97ae2f14",
+      "provisional-generation.json": "3b03e5b2636dc83c4c7f6a49f435c041ce8c8834047358368dc5e823a454e445",
+      "SHA256SUMS.json": "a6f03e07ee18e6add02be7299587ec731bd77c80220cfa62a10a2dfaadda6f32",
+      "generation-schema2.schema.json": "da57e252913b68f9e60d0b7787e6975ba525176834bb40ef0adcfd6054864653",
+      "source-canonical-generation.json": "7c06b8923d8419fa67162bfcfe6b581d1dd391986690cda5f30e790d28b99615",
+      "source-provisional-generation.json": "26dc75a2eea02b0399dc0a93a3b8b5b5de16feaa28700ee7f981dc2d79627320",
+      "SCHEMA2-SHA256SUMS.json": "f260cb5362e9ecf8953a21bea5fb1eb5a3341886036c42b63c96a950ea443450",
+      "AMENDMENT-001.md": "3ce94d70b6f9926a5baba7d6b75deec9b131689b4433c01c009cf990fda7fc36",
+      "fractional-close-generation.json": "a2306bbbcedc6f53ea583f058f9caf2ab555412a57c6d3ef809b62aed5657a3f",
+      "partial-unknown-generation.json": "074c5be5431f92e828af7efd2d174e115d0f309867cb1b96281c8c69c4acb462",
+      "e2e-observations.json": "5eccb4625fb69c9dab8eed326075b7a7932a99e12cdf174a67d9f6a7e4c2bcfa",
+      "e2e-expected.json": "a5b9f94832cdbc296a0232df509efd15326bb58b8b0beabe8b93c0e91454ce65",
+      "E2E-SHA256SUMS.json": "dd6668f2dd52c65148b39fcf2ffbf5d7e56161d6d823c853a433e3a93fd7c5aa"
+    },
+    "canonical_max_bytes": 33554432,
+    "expanded_lua_max_bytes": 136314880
+  },
+  "completed_checks": {
+    "rust_workspace_locked": {
+      "passed": 80,
+      "failed": 0,
+      "ignored": 1,
+      "ignored_reason": "new explicitly opt-in benchmark; executed by capacity harness"
+    },
+    "workload_unit": {
+      "passed": 3,
+      "failed": 0
+    },
+    "independent_lua_reader_python": {
+      "passed": 6,
+      "failed": 0
+    },
+    "addon_fast_market": {
+      "modules_passed": 18,
+      "failed": 0,
+      "seconds": 90.108
+    },
+    "addon_feature_market_cloud": {
+      "modules_passed": 42,
+      "simulator_suites": 1,
+      "failed": 0,
+      "seconds": 182.263
+    },
+    "bridge_targeted_mutations": {
+      "selected": 16,
+      "killed": 16,
+      "survived": 0,
+      "invalid": 0,
+      "timeout": 0,
+      "infrastructure": 0
+    },
+    "market_mutation_campaign": {
+      "killed": 234,
+      "survived": 0,
+      "invalid": 0,
+      "timeout": 0,
+      "infra": 0
+    },
+    "mutation_catalog": {
+      "valid": 351,
+      "market": 234,
+      "craft": 117
+    },
+    "cross_component_http": {
+      "result": "PASS",
+      "report": "e2e.json",
+      "production_access": false
+    },
+    "legacy_compact_compatibility": {
+      "result": "PASS",
+      "report": "compatibility.json"
+    },
+    "checkpoint_github_ci": {
+      "commit": "d012c32513b4205eee4167db85aac065cbfdc84f",
+      "backend": {
+        "run": 43781208200,
+        "conclusion": "success",
+        "postgres_pytest_passed": 503,
+        "script_unit_passed": 37,
+        "migrations": "disposable CI database only"
+      },
+      "windows": {
+        "run": 43781208254,
+        "conclusion": "success",
+        "scope": "CI Rust/Tauri/build/installer; not owner bridge staging or Forever acceptance"
+      },
+      "private_website": {
+        "run": 43781208299,
+        "conclusion": "success"
+      }
+    }
+  },
+  "scheduling_target_met": false,
+  "real_client_acceptance": false,
+  "genuine_history_accessed": false,
+  "hard_stops": {
+    "production_deployed": false,
+    "pricing_activated": false,
+    "game_installed": false,
+    "m2_started": false
+  }
+}

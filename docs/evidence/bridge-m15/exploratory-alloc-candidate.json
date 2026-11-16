@@ -1,0 +1,46 @@
+{
+  "origin": "synthetic",
+  "scope": "Offline Lua 5.1 CPU, no game assets, two dates per variant; not full capacity or real-client acceptance",
+  "records": 1000,
+  "generation_id": "1996d16bbb05699f9af12c418188067741e748c3076b37bc41b84e78db9f5cf8",
+  "payload_bytes": 1517404,
+  "lua_bytes": 6070374,
+  "runs": [
+    {
+      "cache_entries": 24,
+      "first_lookup_us": 240,
+      "history_us": 13,
+      "largest_slice_us": 4186,
+      "load_us": 9111,
+      "navigation_200_us": 49763,
+      "navigation_growth_bytes": 109736,
+      "retained_heap_bytes": 2020899,
+      "slices": 7994,
+      "validation_us": 4067268
+    },
+    {
+      "cache_entries": 24,
+      "first_lookup_us": 243,
+      "history_us": 13,
+      "largest_slice_us": 4163,
+      "load_us": 9543,
+      "navigation_200_us": 52261,
+      "navigation_growth_bytes": 109736,
+      "retained_heap_bytes": 2020899,
+      "slices": 7994,
+      "validation_us": 4013152
+    },
+    {
+      "cache_entries": 24,
+      "first_lookup_us": 272,
+      "history_us": 13,
+      "largest_slice_us": 3511,
+      "load_us": 9080,
+      "navigation_200_us": 51787,
+      "navigation_growth_bytes": 109736,
+      "retained_heap_bytes": 2020899,
+      "slices": 7994,
+      "validation_us": 4145904
+    }
+  ]
+}
