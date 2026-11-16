@@ -100,6 +100,15 @@ def test_name_search_on_a_new_snapshot_with_stale_planner_statistics(database):
         assert page['total_items']==100
         assert [r['item_id'] for r in page['items']]==list(range(51500,53000,60))
         assert page['items'][0]['price_ranges']['market_value']=={'minimum':'100','maximum':'100'}
+        # A saved name-sort preference must also load the complete unfiltered
+        # catalogue without joining every current variant to every matching ID.
+        page=catalogue(ident,q='',sort='name',direction='asc',page=0,page_size=25,user=None,db=db)
+        expected=sorted(range(count),key=lambda i:f'{"Needle" if i%60==0 else "Haystack"} fixture {i}'.lower())[:25]
+        assert page['total_items']==count
+        assert [r['item_id'] for r in page['items']]==[50000+i for i in expected]
+        page=catalogue(ident,q='haystack',sort='name',direction='asc',page=0,page_size=25,user=None,db=db)
+        assert page['total_items']==5900
+        assert [r['item_id'] for r in page['items']]==[50000+i for i in expected]
 
 
 def test_database_search_timeout_returns_an_actionable_error(owner,database,monkeypatch):
