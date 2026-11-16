@@ -44,9 +44,9 @@ const path=require('node:path');const fs=require('node:fs');const http=require('
  await page.locator('#scope-compatible').check();await page.locator('#scope-export').click();
  await expect(page.locator('#scope-status')).toContainText('Exported to C:\\Companion\\workshop-testing');
  await expect(page.locator('#scope-status')).toContainText('No game files were installed or loaded');await expect(page.locator('#message')).toBeHidden();
- await page.evaluate(()=>window.__refuse=true);await page.locator('#scope-preview').click();await expect(page.locator('#message')).toContainText('previous data is preserved');
+ await page.evaluate(()=>window.__refuse=true);await page.locator('#scope-preview').click();await expect(page.locator('#message')).toContainText('previous data is preserved');await expect(page.locator('#scope-status')).toContainText('Request refused');
  await page.evaluate(()=>window.__refuse=false);await page.locator('#scope-variants').fill('2589 incomplete-key');
- const before=await page.evaluate(()=>window.__calls.length);await page.locator('#scope-preview').click();await expect(page.locator('#message')).toContainText('full exact variant key');
+ const before=await page.evaluate(()=>window.__calls.length);await page.locator('#scope-preview').click();await expect(page.locator('#message')).toContainText('full exact variant key');await expect(page.locator('#scope-status')).toContainText('Selection not exported');
  expect(await page.evaluate(()=>window.__calls.length)).toBe(before);
  await page.locator('#scope-variants').fill('2589 '+ 'a'.repeat(64));
  const folder=process.env.MARKET_ARCHIVE_UI_EVIDENCE||path.resolve('artifacts/companion-v2');fs.mkdirSync(folder,{recursive:true});

@@ -162,7 +162,8 @@ async function historyAction(sync,publish){
   try{
     const selected=sync?null:scopeInput();
     const result=await action('archive_workshop',{algorithm:$('workshop-pricing').value,diskBudgetMib:Number($('archive-budget').value),selected,publish,compatible:$('scope-compatible').checked});
-    if(!result?.ok||archiveContext!==requestedContext)return;
+    if(archiveContext!==requestedContext)return;
+    if(!result?.ok){text('scope-status',sync?'Download incomplete. Committed progress and the previous completed archive are preserved.':'Request refused. The previous completed archive and export are preserved.');return;}
     if(!view?.error&&!view?.sync?.error)message('');
     const r=result.value,h=r.header;
     text('archive-status',`${h.market.region.toUpperCase()} · house ${h.market.house_id} · ${h.pricing_algorithm} · ${h.total_observations.toLocaleString()} retained observations · ${(r.archive_bytes/1048576).toFixed(2)} MiB SQLite. Checkpoint ${h.checkpoint_id}`);
@@ -176,7 +177,7 @@ async function historyAction(sync,publish){
       const s=r.sizes;
       text('scope-status',`${s.records} exact variants · ${selected.history_from_day} through ${selected.history_through_day} · exact data ${s.canonical_bytes.toLocaleString()} bytes · Lua ${s.lua_bytes.toLocaleString()} bytes · manifest ${s.manifest_bytes.toLocaleString()} bytes. Generation ${r.generation_id}.${r.path?' Exported to '+r.path+'.':''} Current Workshop scoped compatibility: unavailable. No game files were installed or loaded.`);
     }
-  }catch(e){message(String(e?.message||e),true);}
+  }catch(e){if(archiveContext===requestedContext){text('scope-status','Selection not exported. Previous completed data is preserved.');message(String(e?.message||e),true);}}
   finally{archiveBusy=false;render(view);}
 }
 $('archive-sync').onclick=()=>historyAction(true,false);
