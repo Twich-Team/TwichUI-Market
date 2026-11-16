@@ -1,0 +1,152 @@
+{
+  "data": {
+    "build": "1.60.1.70938",
+    "previousBuild": "1.60.1.70888",
+    "date": "2026-11-13",
+    "counts": {
+      "ability": {
+        "added": 0,
+        "removed": 0,
+        "changed": 2
+      },
+      "talent": {
+        "added": 0,
+        "removed": 0,
+        "changed": 4
+      },
+      "spell": {
+        "added": 0,
+        "removed": 0,
+        "changed": 11
+      },
+      "item": {
+        "added": 52,
+        "removed": 0,
+        "changed": 83
+      }
+    },
+    "totals": {
+      "spells": 32121,
+      "items": 23686,
+      "sets": 545,
+      "abilities": 553,
+      "talents": 467
+    },
+    "article": {
+      "slug": "build-1-60-1-70938-what-changed-in-the-game-files",
+      "title": "Build 1.60.1.70938: Enhancement Shaman tooltips reworked and classic epics added",
+      "url": "https://foreverdb.net/article/build-1-60-1-70938-what-changed-in-the-game-files"
+    },
+    "url": "https://foreverdb.net/changelog/1.60.1.70938",
+    "changes": [
+      {
+        "type": "ability",
+        "id": 16342,
+        "name": "Flametongue Weapon",
+        "rank": null,
+        "change": "changed",
+        "classId": 7,
+        "class": "Shaman",
+        "about": "Enhancement · trainer, level 10 · 6 ranks",
+        "icon": "https://foreverdb.net/icons/135814.webp",
+        "changes": [
+          {
+            "field": "Tooltip",
+            "rank": "Rank 1",
+            "before": "Imbue the Shaman's weapon with fire. Each hit causes 3 to 13 additional Fire damage, based on the speed of the weapon. Slower weapons cause more fire damage per swing. When applied to main hand, disables any benefit you personally receive from Flametongue Totem. Lasts for 60 minutes.",
+            "after": "Imbue the Shaman's weapon with fire. Each hit causes 3 to 13 additional Fire damage, based on the speed of the weapon. Slower weapons cause more fire damage per swing. Lasts for 60 minutes.",
+            "dataOnly": false
+          },
+          {
+            "field": "Tooltip",
+            "rank": "Rank 2",
+            "before": "Imbue the Shaman's weapon with fire. Each hit causes 5 to 19 additional Fire damage, based on the speed of the weapon. Slower weapons cause more fire damage per swing. When applied to main hand, disables any benefit you personally receive from Flametongue Totem. Lasts for 60 minutes.",
+            "after": "Imbue the Shaman's weapon with fire. Each hit causes 5 to 19 additional Fire damage, based on the speed of the weapon. Slower weapons cause more fire damage per swing. Lasts for 60 minutes.",
+            "dataOnly": false
+          },
+          {
+            "field": "Tooltip",
+            "rank": "Rank 3",
+            "before": "Imbue the Shaman's weapon with fire. Each hit causes 8 to 28 additional Fire damage, based on the speed of the weapon. Slower weapons cause more fire damage per swing. When applied to main hand, disables any benefit you personally receive from Flametongue Totem. Lasts for 60 minutes.",
+            "after": "Imbue the Shaman's weapon with fire. Each hit causes 8 to 28 additional Fire damage, based on the speed of the weapon. Slower weapons cause more fire damage per swing. Lasts for 60 minutes.",
+            "dataOnly": false
+          },
+          {
+            "field": "Tooltip",
+            "rank": "Rank 4",
+            "before": "Imbue the Shaman's weapon with fire. Each hit causes 13 to 45 additional Fire damage, based on the speed of the weapon. Slower weapons cause more fire damage per swing. When applied to main hand, disables any benefit you personally receive from Flametongue Totem. Lasts for 60 minutes.",
+            "after": "Imbue the Shaman's weapon with fire. Each hit causes 13 to 45 additional Fire damage, based on the speed of the weapon. Slower weapons cause more fire damage per swing. Lasts for 60 minutes.",
+            "dataOnly": false
+          },
+          {
+            "field": "Tooltip",
+            "rank": "Rank 5",
+            "before": "Imbue the Shaman's weapon with fire. Each hit causes 23 to 75 additional Fire damage, based on the speed of the weapon. Slower weapons cause more fire damage per swing. When applied to main hand, disables any benefit you personally receive from Flametongue Totem. Lasts for 60 minutes.",
+            "after": "Imbue the Shaman's weapon with fire. Each hit causes 23 to 75 additional Fire damage, based on the speed of the weapon. Slower weapons cause more fire damage per swing. Lasts for 60 minutes.",
+            "dataOnly": false
+          },
+          {
+            "field": "Tooltip",
+            "rank": "Rank 6",
+            "before": "Imbue the Shaman's weapon with fire.  Each hit causes 35 to 112 additional Fire damage, based on the speed of the weapon. Slower weapons cause more fire damage per swing. When applied to main hand, disables any benefit you personally receive from Flametongue Totem. Lasts for 60 minutes. (Numbers at level 60; they grow with your level.)",
+            "after": "Imbue the Shaman's weapon with fire.  Each hit causes 35 to 112 additional Fire damage, based on the speed of the weapon. Slower weapons cause more fire damage per swing. Lasts for 60 minutes. (Numbers at level 60; they grow with your level.)",
+            "dataOnly": false
+          }
+        ],
+        "url": "https://foreverdb.net/spell/16342"
+      },
+      {
+        "type": "ability",
+        "id": 16362,
+        "name": "Windfury Weapon",
+        "rank": null,
+        "change": "changed",
+        "classId": 7,
+        "class": "Shaman",
+        "about": "Enhancement · trainer, level 30 · 4 ranks",
+        "icon": "https://foreverdb.net/icons/136018.webp",
+        "changes": [
+          {
+            "field": "Tooltip",
+            "rank": "Rank 1",
+            "before": "Imbue the Shaman's weapon with wind.  Each hit has a 20% chance of granting you 2 extra attacks with 46 extra melee attack power. When applied to main hand, disables any benefit you personally receive from Windfury Totem. Lasts for 60 minutes.",
+            "after": "Imbue the Shaman's weapon with wind.  Each hit has a 20% chance of granting you 2 extra attacks with 46 extra melee attack power. Lasts for 60 minutes.",
+            "dataOnly": false
+          },
+          {
+            "field": "Tooltip",
+            "rank": "Rank 2",
+            "before": "Imbue the Shaman's weapon with wind.  Each hit has a 20% chance of granting you 2 extra attacks with 119 extra melee attack power. When appied to main hand, disables any benefit you personally receive from Windfury Totem. Lasts for 60 minutes.",
+            "after": "Imbue the Shaman's weapon with wind.  Each hit has a 20% chance of granting you 2 extra attacks with 119 extra melee attack power. Lasts for 60 minutes.",
+            "dataOnly": false
+          },
+          {
+            "field": "Tooltip",
+            "rank": "Rank 3",
+            "before": "Imbue the Shaman's weapon with wind.  Each hit has a 20% chance of granting you 2 extra attacks with 249 extra melee attack power. When applied to main hand, disables any benefit you personally receive from Windfury Totem. Lasts for 60 minutes.",
+            "after": "Imbue the Shaman's weapon with wind.  Each hit has a 20% chance of granting you 2 extra attacks with 249 extra melee attack power. Lasts for 60 minutes.",
+            "dataOnly": false
+          },
+          {
+            "field": "Tooltip",
+            "rank": "Rank 4",
+            "before": "Imbue the Shaman's weapon with wind.  Each hit has a 20% chance of granting you 2 extra attacks with 333 extra melee attack power. When applied to main hand, disables any benefit you personally receive from Windfury Totem. Lasts for 60 minutes.",
+            "after": "Imbue the Shaman's weapon with wind.  Each hit has a 20% chance of granting you 2 extra attacks with 333 extra melee attack power. Lasts for 60 minutes.",
+            "dataOnly": false
+          }
+        ],
+        "url": "https://foreverdb.net/spell/16362"
+      }
+    ]
+  },
+  "meta": {
+    "build": "1.60.1.70938",
+    "total": 152,
+    "limit": 2,
+    "offset": 0,
+    "next": "/api/v1/builds/latest?limit=2&offset=2",
+    "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+    "attributionRequired": true,
+    "client": "dev-0255"
+  }
+}

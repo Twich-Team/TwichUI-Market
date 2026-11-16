@@ -37,6 +37,14 @@ class RetryAllowance(BaseModel):
     additional_requests: int = Field(ge=1, le=1000)
 
 
+class RelatedInput(BaseModel):
+    model_config=ConfigDict(extra='forbid')
+    market_id:int=Field(ge=1,le=2**31-1)
+    resource:str=Field(min_length=1,max_length=80)
+    pages:int=Field(default=1,ge=1,le=10)
+    offset:int=Field(default=0,ge=0,le=100000)
+
+
 class RecoveryInput(BaseModel):
     model_config = ConfigDict(extra='forbid')
     market_id: int = Field(ge=1, le=2**31-1)
@@ -73,6 +81,13 @@ def providers(user: User = Depends(admin), db: Session = Depends(session)):
     try: keyring(); ready = True
     except SecretUnavailable: ready = False
     result = {'credential_storage_ready':ready, 'providers':[provider_view(db.get(MetadataProvider, ident)) for ident in PROVIDERS]}
+    # Local evidence only: a connected key cannot establish its remote scope or
+    # website verification. Never synthesize those states from a successful GET.
+    for item in result['providers']:
+        if item['provider'] == 'foreverdb':
+            item['website_verification'] = {'status':'unknown', 'method':'manual_provider_account',
+                'proof_url':'https://market.twich.gg/.well-known/foreverdb.txt', 'developer_id':'dev-0255'}
+            item['key_scope'] = 'unknown'
     db.commit()
     return result
 
@@ -172,6 +187,17 @@ def start(body: RecoveryInput, user: User = Depends(admin), db: Session = Depend
     return {'job_id':job.id, 'created':created, 'state':job.state}
 
 
+@router.post('/item-metadata/related-jobs',status_code=202)
+def start_related(body:RelatedInput,user:User=Depends(admin),db:Session=Depends(session)):
+    from .metadata_recovery import enqueue_related
+    try:
+        ensure_providers(db)
+        job,created=enqueue_related(db,body.market_id,body.resource,actor_id=user.id,pages=body.pages,offset=body.offset)
+    except ValueError as error:raise HTTPException(422,str(error)) from None
+    db.commit()
+    return {'job_id':job.id,'created':created,'state':job.state}
+
+
 def job_view(db, job):
     outcome=cast(MetadataTask.result_json, JSON)['outcome'].as_string()
     status=cast(MetadataTask.result_json, JSON)['status'].as_string()
@@ -244,6 +270,29 @@ def overview(market_id: int | None = Query(None, ge=1), user: User = Depends(adm
     source_name=cast(MetadataSource.fields_json,JSON)['name'].as_string()
     sources = list(db.execute(select(MetadataSource.provider, func.count(), func.count(source_name)).join(ids,
         (ids.c.region == MetadataSource.region) & (ids.c.item_id == MetadataSource.item_id)).group_by(MetadataSource.provider)))
+    # Coverage counts describe locally retained fields, including good data from
+    # a failed refresh. They are not claims about remote API availability.
+    from .metadata_catalog import FIELDS
+    detail_fields = sorted(FIELDS - {'name', 'icon_reference'})
+    source_fields = cast(MetadataSource.fields_json, JSON)
+    populated = {field: source_fields[field].as_string().is_not(None) &
+        source_fields[field].as_string().not_in(('', '[]', '{}', 'null')) for field in detail_fields}
+    detailed = or_(*populated.values())
+    coverage = {}
+    for ident in PROVIDERS:
+        counts = db.execute(select(func.count().filter(source_name.is_not(None), ~detailed),
+            func.count().filter(detailed),
+            *[func.count().filter(condition) for condition in populated.values()]).join(ids,
+            (ids.c.region == MetadataSource.region) & (ids.c.item_id == MetadataSource.item_id))
+            .where(MetadataSource.provider == ident)).one()
+        coverage[ident] = {'name_only':counts[0], 'detailed_records':counts[1],
+            'fields_available':dict(zip(detail_fields, counts[2:]))}
+    source_build = cast(MetadataSource.source_json, JSON)['build'].as_string()
+    build_counts = list(db.execute(select(MetadataSource.provider,
+        source_build, func.count())
+        .join(ids, (ids.c.region == MetadataSource.region) & (ids.c.item_id == MetadataSource.item_id))
+        .where(MetadataSource.source_json.is_not(None)).group_by(MetadataSource.provider,
+            source_build)))
     overlaps=select(MetadataSource.region,MetadataSource.item_id,func.count(source_name).label('names'),func.count(func.distinct(source_name)).label('distinct_names')).join(ids,(ids.c.region==MetadataSource.region)&(ids.c.item_id==MetadataSource.item_id)).group_by(MetadataSource.region,MetadataSource.item_id).subquery()
     overlap_count=db.scalar(select(func.count()).select_from(overlaps).where(overlaps.c.names>1))
     conflicting_count=db.scalar(select(func.count()).select_from(overlaps).where(overlaps.c.distinct_names>1))
@@ -257,5 +306,9 @@ def overview(market_id: int | None = Query(None, ge=1), user: User = Depends(adm
         'last_enrichment':db.scalar(select(func.max(MetadataProvider.last_success))),
         'pending_queue':db.scalar(select(func.count()).select_from(MetadataTask).where(MetadataTask.state == 'queued')),
         'active_jobs':db.scalar(select(func.count()).select_from(MetadataJob).where(MetadataJob.state.in_(ACTIVE))),
-        'provider_records':[{'provider':r[0], 'checked':r[1], 'names_available':r[2]} for r in sources],
+        'provider_records':[{'provider':r[0], 'checked':r[1], 'names_available':r[2], **coverage[r[0]],
+            'builds':[{'build':build, 'records':count} for provider,build,count in build_counts if provider==r[0]]} for r in sources],
+        'queue_status':dict(db.execute(select(MetadataTask.state, func.count()).group_by(MetadataTask.state)).all()),
+        'rate_limited_queue':db.scalar(select(func.count()).select_from(MetadataTask).where(MetadataTask.state=='queued',
+            cast(MetadataTask.result_json, JSON)['status'].as_string()=='rate_limited')),
         'recent_results':[{'item_id':r.item_id, 'provider':r.provider, 'at':r.updated_at, 'result':json.loads(r.result_json)} for r in recent]}

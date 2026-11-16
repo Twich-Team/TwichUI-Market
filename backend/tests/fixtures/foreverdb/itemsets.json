@@ -1,0 +1,42 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "The Gladiator",
+      "items": [
+        11729,
+        11726,
+        11728,
+        11731,
+        11730,
+        277117
+      ],
+      "url": "https://foreverdb.net/set/1",
+      "betaEvent": false,
+      "speculation": false,
+      "speculationReasons": []
+    },
+    {
+      "id": 41,
+      "name": "Dal'Rend's Arms",
+      "items": [
+        12940,
+        12939
+      ],
+      "url": "https://foreverdb.net/set/41",
+      "betaEvent": false,
+      "speculation": false,
+      "speculationReasons": []
+    }
+  ],
+  "meta": {
+    "build": "1.60.1.70938",
+    "total": 545,
+    "limit": 2,
+    "offset": 0,
+    "next": "/api/v1/itemsets?limit=2&offset=2",
+    "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+    "attributionRequired": true,
+    "client": "dev-0255"
+  }
+}

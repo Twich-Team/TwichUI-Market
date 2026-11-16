@@ -1,0 +1,1803 @@
+{
+  "data": {
+    "profession": "mining",
+    "url": "https://foreverdb.net/profession/mining/nodes",
+    "note": "The skill each node needs comes from the Forever client; where nodes spawn is Classic data (CMaNGOS) until players' addons record them in Forever (spotsSeenInForever).",
+    "nodes": [
+      {
+        "name": "Copper Vein",
+        "skill": 1,
+        "item": {
+          "itemId": 2770,
+          "name": "Copper Ore"
+        },
+        "alsoGives": [
+          {
+            "itemId": 2835,
+            "name": "Rough Stone"
+          },
+          {
+            "itemId": 774,
+            "name": "Malachite"
+          },
+          {
+            "itemId": 818,
+            "name": "Tigerseye"
+          },
+          {
+            "itemId": 1210,
+            "name": "Shadowgem"
+          }
+        ],
+        "objectIds": [
+          1731,
+          2055,
+          3763,
+          103713,
+          181248
+        ],
+        "spawnPoints": 1550,
+        "spotsSeenInForever": 99,
+        "newInForever": false,
+        "topZones": [
+          {
+            "mapId": 1436,
+            "name": "Westfall",
+            "spawnPoints": 143
+          },
+          {
+            "mapId": 1433,
+            "name": "Redridge Mountains",
+            "spawnPoints": 103
+          },
+          {
+            "mapId": 1432,
+            "name": "Loch Modan",
+            "spawnPoints": 110
+          },
+          {
+            "mapId": 1421,
+            "name": "Silverpine Forest",
+            "spawnPoints": 105
+          },
+          {
+            "mapId": 1411,
+            "name": "Durotar",
+            "spawnPoints": 159
+          },
+          {
+            "mapId": 1426,
+            "name": "Dun Morogh",
+            "spawnPoints": 90
+          },
+          {
+            "mapId": 1439,
+            "name": "Darkshore",
+            "spawnPoints": 90
+          },
+          {
+            "mapId": 1412,
+            "name": "Mulgore",
+            "spawnPoints": 67
+          }
+        ]
+      },
+      {
+        "name": "Tin Vein",
+        "skill": 65,
+        "item": {
+          "itemId": 2771,
+          "name": "Tin Ore"
+        },
+        "alsoGives": [
+          {
+            "itemId": 2836,
+            "name": "Coarse Stone"
+          },
+          {
+            "itemId": 1206,
+            "name": "Moss Agate"
+          },
+          {
+            "itemId": 1210,
+            "name": "Shadowgem"
+          },
+          {
+            "itemId": 1529,
+            "name": "Jade"
+          }
+        ],
+        "objectIds": [
+          1732,
+          2054,
+          3764,
+          103711,
+          181249
+        ],
+        "spawnPoints": 826,
+        "spotsSeenInForever": 50,
+        "newInForever": false,
+        "topZones": [
+          {
+            "mapId": 1437,
+            "name": "Wetlands",
+            "spawnPoints": 130
+          },
+          {
+            "mapId": 1433,
+            "name": "Redridge Mountains",
+            "spawnPoints": 103
+          },
+          {
+            "mapId": 1432,
+            "name": "Loch Modan",
+            "spawnPoints": 110
+          },
+          {
+            "mapId": 1421,
+            "name": "Silverpine Forest",
+            "spawnPoints": 105
+          },
+          {
+            "mapId": 1424,
+            "name": "Hillsbrad Foothills",
+            "spawnPoints": 65
+          },
+          {
+            "mapId": 1431,
+            "name": "Duskwood",
+            "spawnPoints": 106
+          },
+          {
+            "mapId": 1440,
+            "name": "Ashenvale",
+            "spawnPoints": 33
+          },
+          {
+            "mapId": 1413,
+            "name": "The Barrens",
+            "spawnPoints": 23
+          }
+        ]
+      },
+      {
+        "name": "Silver Vein",
+        "skill": 75,
+        "item": {
+          "itemId": 2775,
+          "name": "Silver Ore"
+        },
+        "alsoGives": [
+          {
+            "itemId": 1206,
+            "name": "Moss Agate"
+          },
+          {
+            "itemId": 1210,
+            "name": "Shadowgem"
+          },
+          {
+            "itemId": 1705,
+            "name": "Lesser Moonstone"
+          }
+        ],
+        "objectIds": [
+          1733,
+          105569
+        ],
+        "spawnPoints": 1306,
+        "spotsSeenInForever": 30,
+        "newInForever": false,
+        "topZones": [
+          {
+            "mapId": 1416,
+            "name": "Alterac Mountains",
+            "spawnPoints": 175
+          },
+          {
+            "mapId": 1417,
+            "name": "Arathi Highlands",
+            "spawnPoints": 259
+          },
+          {
+            "mapId": 1432,
+            "name": "Loch Modan",
+            "spawnPoints": 110
+          },
+          {
+            "mapId": 1421,
+            "name": "Silverpine Forest",
+            "spawnPoints": 105
+          },
+          {
+            "mapId": 1433,
+            "name": "Redridge Mountains",
+            "spawnPoints": 82
+          },
+          {
+            "mapId": 1437,
+            "name": "Wetlands",
+            "spawnPoints": 134
+          },
+          {
+            "mapId": 1434,
+            "name": "Stranglethorn Vale",
+            "spawnPoints": 130
+          },
+          {
+            "mapId": 1424,
+            "name": "Hillsbrad Foothills",
+            "spawnPoints": 68
+          }
+        ]
+      },
+      {
+        "name": "Iron Deposit",
+        "skill": 125,
+        "item": {
+          "itemId": 2772,
+          "name": "Iron Ore"
+        },
+        "alsoGives": [
+          {
+            "itemId": 2838,
+            "name": "Heavy Stone"
+          },
+          {
+            "itemId": 1529,
+            "name": "Jade"
+          },
+          {
+            "itemId": 1705,
+            "name": "Lesser Moonstone"
+          },
+          {
+            "itemId": 3864,
+            "name": "Citrine"
+          }
+        ],
+        "objectIds": [
+          1735
+        ],
+        "spawnPoints": 953,
+        "spotsSeenInForever": 34,
+        "newInForever": false,
+        "topZones": [
+          {
+            "mapId": 1416,
+            "name": "Alterac Mountains",
+            "spawnPoints": 168
+          },
+          {
+            "mapId": 1417,
+            "name": "Arathi Highlands",
+            "spawnPoints": 244
+          },
+          {
+            "mapId": 1431,
+            "name": "Duskwood",
+            "spawnPoints": 106
+          },
+          {
+            "mapId": 1434,
+            "name": "Stranglethorn Vale",
+            "spawnPoints": 130
+          },
+          {
+            "mapId": 1443,
+            "name": "Desolace",
+            "spawnPoints": 92
+          },
+          {
+            "mapId": 1441,
+            "name": "Thousand Needles",
+            "spawnPoints": 110
+          },
+          {
+            "mapId": 1440,
+            "name": "Ashenvale",
+            "spawnPoints": 55
+          },
+          {
+            "mapId": 1445,
+            "name": "Dustwallow Marsh",
+            "spawnPoints": 14
+          }
+        ]
+      },
+      {
+        "name": "Gold Vein",
+        "skill": 155,
+        "item": {
+          "itemId": 2776,
+          "name": "Gold Ore"
+        },
+        "alsoGives": [
+          {
+            "itemId": 1529,
+            "name": "Jade"
+          },
+          {
+            "itemId": 3864,
+            "name": "Citrine"
+          },
+          {
+            "itemId": 1705,
+            "name": "Lesser Moonstone"
+          }
+        ],
+        "objectIds": [
+          1734,
+          150080,
+          181109
+        ],
+        "spawnPoints": 1115,
+        "spotsSeenInForever": 0,
+        "newInForever": false,
+        "topZones": [
+          {
+            "mapId": 1416,
+            "name": "Alterac Mountains",
+            "spawnPoints": 168
+          },
+          {
+            "mapId": 1417,
+            "name": "Arathi Highlands",
+            "spawnPoints": 258
+          },
+          {
+            "mapId": 1418,
+            "name": "Badlands",
+            "spawnPoints": 109
+          },
+          {
+            "mapId": 1434,
+            "name": "Stranglethorn Vale",
+            "spawnPoints": 130
+          },
+          {
+            "mapId": 1446,
+            "name": "Tanaris",
+            "spawnPoints": 61
+          },
+          {
+            "mapId": 1425,
+            "name": "The Hinterlands",
+            "spawnPoints": 118
+          },
+          {
+            "mapId": 1431,
+            "name": "Duskwood",
+            "spawnPoints": 106
+          },
+          {
+            "mapId": 1427,
+            "name": "Searing Gorge",
+            "spawnPoints": 80
+          }
+        ]
+      },
+      {
+        "name": "Mithril Deposit",
+        "skill": 175,
+        "item": {
+          "itemId": 3858,
+          "name": "Mithril Ore"
+        },
+        "alsoGives": [
+          {
+            "itemId": 7912,
+            "name": "Solid Stone"
+          },
+          {
+            "itemId": 9262,
+            "name": "Black Vitriol"
+          },
+          {
+            "itemId": 3864,
+            "name": "Citrine"
+          },
+          {
+            "itemId": 7909,
+            "name": "Aquamarine"
+          }
+        ],
+        "objectIds": [
+          2040,
+          150079,
+          176645
+        ],
+        "spawnPoints": 542,
+        "spotsSeenInForever": 0,
+        "newInForever": false,
+        "topZones": [
+          {
+            "mapId": 1418,
+            "name": "Badlands",
+            "spawnPoints": 109
+          },
+          {
+            "mapId": 1447,
+            "name": "Azshara",
+            "spawnPoints": 39
+          },
+          {
+            "mapId": 1446,
+            "name": "Tanaris",
+            "spawnPoints": 51
+          },
+          {
+            "mapId": 1416,
+            "name": "Alterac Mountains",
+            "spawnPoints": 86
+          },
+          {
+            "mapId": 1425,
+            "name": "The Hinterlands",
+            "spawnPoints": 111
+          },
+          {
+            "mapId": 1427,
+            "name": "Searing Gorge",
+            "spawnPoints": 80
+          },
+          {
+            "mapId": 1444,
+            "name": "Feralas",
+            "spawnPoints": 20
+          },
+          {
+            "mapId": 1443,
+            "name": "Desolace",
+            "spawnPoints": 30
+          }
+        ]
+      },
+      {
+        "name": "Dark Iron Deposit",
+        "skill": 230,
+        "item": {
+          "itemId": 11370,
+          "name": "Dark Iron Ore"
+        },
+        "alsoGives": [
+          {
+            "itemId": 9262,
+            "name": "Black Vitriol"
+          },
+          {
+            "itemId": 11382,
+            "name": "Blood of the Mountain"
+          }
+        ],
+        "objectIds": [
+          165658
+        ],
+        "spawnPoints": 79,
+        "spotsSeenInForever": 0,
+        "newInForever": false,
+        "topZones": [
+          {
+            "mapId": 1427,
+            "name": "Searing Gorge",
+            "spawnPoints": 79
+          }
+        ]
+      },
+      {
+        "name": "Truesilver Deposit",
+        "skill": 230,
+        "item": {
+          "itemId": 7911,
+          "name": "Truesilver Ore"
+        },
+        "alsoGives": [
+          {
+            "itemId": 7909,
+            "name": "Aquamarine"
+          },
+          {
+            "itemId": 3864,
+            "name": "Citrine"
+          },
+          {
+            "itemId": 7910,
+            "name": "Star Ruby"
+          }
+        ],
+        "objectIds": [
+          2047,
+          150081,
+          181108
+        ],
+        "spawnPoints": 439,
+        "spotsSeenInForever": 0,
+        "newInForever": false,
+        "topZones": [
+          {
+            "mapId": 1418,
+            "name": "Badlands",
+            "spawnPoints": 109
+          },
+          {
+            "mapId": 1416,
+            "name": "Alterac Mountains",
+            "spawnPoints": 86
+          },
+          {
+            "mapId": 1425,
+            "name": "The Hinterlands",
+            "spawnPoints": 111
+          },
+          {
+            "mapId": 1427,
+            "name": "Searing Gorge",
+            "spawnPoints": 48
+          },
+          {
+            "mapId": 1446,
+            "name": "Tanaris",
+            "spawnPoints": 23
+          },
+          {
+            "mapId": 1452,
+            "name": "Winterspring",
+            "spawnPoints": 13
+          },
+          {
+            "mapId": 1447,
+            "name": "Azshara",
+            "spawnPoints": 14
+          },
+          {
+            "mapId": 1448,
+            "name": "Felwood",
+            "spawnPoints": 4
+          }
+        ]
+      },
+      {
+        "name": "Small Thorium Vein",
+        "skill": 245,
+        "item": {
+          "itemId": 10620,
+          "name": "Thorium Ore"
+        },
+        "alsoGives": [
+          {
+            "itemId": 12365,
+            "name": "Dense Stone"
+          },
+          {
+            "itemId": 12363,
+            "name": "Arcane Crystal"
+          },
+          {
+            "itemId": 9262,
+            "name": "Black Vitriol"
+          },
+          {
+            "itemId": 7910,
+            "name": "Star Ruby"
+          }
+        ],
+        "objectIds": [
+          324,
+          150082,
+          176643
+        ],
+        "spawnPoints": 42,
+        "spotsSeenInForever": 0,
+        "newInForever": false,
+        "topZones": [
+          {
+            "mapId": 1452,
+            "name": "Winterspring",
+            "spawnPoints": 28
+          },
+          {
+            "mapId": 1435,
+            "name": "Swamp of Sorrows",
+            "spawnPoints": 9
+          },
+          {
+            "mapId": 1448,
+            "name": "Felwood",
+            "spawnPoints": 2
+          },
+          {
+            "mapId": 1419,
+            "name": "Blasted Lands",
+            "spawnPoints": 3
+          }
+        ]
+      },
+      {
+        "name": "Rich Thorium Vein",
+        "skill": 275,
+        "item": {
+          "itemId": 10620,
+          "name": "Thorium Ore"
+        },
+        "alsoGives": [
+          {
+            "itemId": 12365,
+            "name": "Dense Stone"
+          },
+          {
+            "itemId": 12363,
+            "name": "Arcane Crystal"
+          },
+          {
+            "itemId": 7910,
+            "name": "Star Ruby"
+          },
+          {
+            "itemId": 12361,
+            "name": "Blue Sapphire"
+          }
+        ],
+        "objectIds": [
+          175404
+        ],
+        "spawnPoints": 72,
+        "spotsSeenInForever": 0,
+        "newInForever": false,
+        "topZones": [
+          {
+            "mapId": 1447,
+            "name": "Azshara",
+            "spawnPoints": 25
+          },
+          {
+            "mapId": 1452,
+            "name": "Winterspring",
+            "spawnPoints": 47
+          }
+        ]
+      }
+    ],
+    "zones": [
+      {
+        "mapId": 1416,
+        "name": "Alterac Mountains",
+        "spawnPoints": 721,
+        "spotsSeenInForever": 3,
+        "nodes": [
+          {
+            "name": "Copper Vein",
+            "skill": 1,
+            "spawnPoints": 19
+          },
+          {
+            "name": "Tin Vein",
+            "skill": 65,
+            "spawnPoints": 19
+          },
+          {
+            "name": "Silver Vein",
+            "skill": 75,
+            "spawnPoints": 175
+          },
+          {
+            "name": "Iron Deposit",
+            "skill": 125,
+            "spawnPoints": 168
+          },
+          {
+            "name": "Gold Vein",
+            "skill": 155,
+            "spawnPoints": 168
+          },
+          {
+            "name": "Mithril Deposit",
+            "skill": 175,
+            "spawnPoints": 86
+          },
+          {
+            "name": "Truesilver Deposit",
+            "skill": 230,
+            "spawnPoints": 86
+          }
+        ]
+      },
+      {
+        "mapId": 1417,
+        "name": "Arathi Highlands",
+        "spawnPoints": 765,
+        "spotsSeenInForever": 0,
+        "nodes": [
+          {
+            "name": "Copper Vein",
+            "skill": 1,
+            "spawnPoints": 2
+          },
+          {
+            "name": "Tin Vein",
+            "skill": 65,
+            "spawnPoints": 2
+          },
+          {
+            "name": "Silver Vein",
+            "skill": 75,
+            "spawnPoints": 259
+          },
+          {
+            "name": "Iron Deposit",
+            "skill": 125,
+            "spawnPoints": 244
+          },
+          {
+            "name": "Gold Vein",
+            "skill": 155,
+            "spawnPoints": 258
+          }
+        ]
+      },
+      {
+        "mapId": 1440,
+        "name": "Ashenvale",
+        "spawnPoints": 203,
+        "spotsSeenInForever": 0,
+        "nodes": [
+          {
+            "name": "Copper Vein",
+            "skill": 1,
+            "spawnPoints": 55
+          },
+          {
+            "name": "Tin Vein",
+            "skill": 65,
+            "spawnPoints": 33
+          },
+          {
+            "name": "Silver Vein",
+            "skill": 75,
+            "spawnPoints": 57
+          },
+          {
+            "name": "Iron Deposit",
+            "skill": 125,
+            "spawnPoints": 55
+          },
+          {
+            "name": "Gold Vein",
+            "skill": 155,
+            "spawnPoints": 3
+          }
+        ]
+      },
+      {
+        "mapId": 1447,
+        "name": "Azshara",
+        "spawnPoints": 80,
+        "spotsSeenInForever": 0,
+        "nodes": [
+          {
+            "name": "Tin Vein",
+            "skill": 65,
+            "spawnPoints": 1
+          },
+          {
+            "name": "Gold Vein",
+            "skill": 155,
+            "spawnPoints": 1
+          },
+          {
+            "name": "Mithril Deposit",
+            "skill": 175,
+            "spawnPoints": 39
+          },
+          {
+            "name": "Truesilver Deposit",
+            "skill": 230,
+            "spawnPoints": 14
+          },
+          {
+            "name": "Rich Thorium Vein",
+            "skill": 275,
+            "spawnPoints": 25
+          }
+        ]
+      },
+      {
+        "mapId": 1418,
+        "name": "Badlands",
+        "spawnPoints": 330,
+        "spotsSeenInForever": 1,
+        "nodes": [
+          {
+            "name": "Copper Vein",
+            "skill": 1,
+            "spawnPoints": 1
+          },
+          {
+            "name": "Tin Vein",
+            "skill": 65,
+            "spawnPoints": 1
+          },
+          {
+            "name": "Silver Vein",
+            "skill": 75,
+            "spawnPoints": 1
+          },
+          {
+            "name": "Gold Vein",
+            "skill": 155,
+            "spawnPoints": 109
+          },
+          {
+            "name": "Mithril Deposit",
+            "skill": 175,
+            "spawnPoints": 109
+          },
+          {
+            "name": "Truesilver Deposit",
+            "skill": 230,
+            "spawnPoints": 109
+          }
+        ]
+      },
+      {
+        "mapId": 1419,
+        "name": "Blasted Lands",
+        "spawnPoints": 12,
+        "spotsSeenInForever": 0,
+        "nodes": [
+          {
+            "name": "Gold Vein",
+            "skill": 155,
+            "spawnPoints": 3
+          },
+          {
+            "name": "Mithril Deposit",
+            "skill": 175,
+            "spawnPoints": 3
+          },
+          {
+            "name": "Truesilver Deposit",
+            "skill": 230,
+            "spawnPoints": 3
+          },
+          {
+            "name": "Small Thorium Vein",
+            "skill": 245,
+            "spawnPoints": 3
+          }
+        ]
+      },
+      {
+        "mapId": 1428,
+        "name": "Burning Steppes",
+        "spawnPoints": 3,
+        "spotsSeenInForever": 0,
+        "nodes": [
+          {
+            "name": "Gold Vein",
+            "skill": 155,
+            "spawnPoints": 1
+          },
+          {
+            "name": "Mithril Deposit",
+            "skill": 175,
+            "spawnPoints": 1
+          },
+          {
+            "name": "Truesilver Deposit",
+            "skill": 230,
+            "spawnPoints": 1
+          }
+        ]
+      },
+      {
+        "mapId": 1439,
+        "name": "Darkshore",
+        "spawnPoints": 120,
+        "spotsSeenInForever": 0,
+        "nodes": [
+          {
+            "name": "Copper Vein",
+            "skill": 1,
+            "spawnPoints": 90
+          },
+          {
+            "name": "Tin Vein",
+            "skill": 65,
+            "spawnPoints": 25
+          },
+          {
+            "name": "Silver Vein",
+            "skill": 75,
+            "spawnPoints": 5
+          }
+        ]
+      },
+      {
+        "mapId": 1443,
+        "name": "Desolace",
+        "spawnPoints": 168,
+        "spotsSeenInForever": 1,
+        "nodes": [
+          {
+            "name": "Copper Vein",
+            "skill": 1,
+            "spawnPoints": 9
+          },
+          {
+            "name": "Tin Vein",
+            "skill": 65,
+            "spawnPoints": 20
+          },
+          {
+            "name": "Silver Vein",
+            "skill": 75,
+            "spawnPoints": 4
+          },
+          {
+            "name": "Iron Deposit",
+            "skill": 125,
+            "spawnPoints": 92
+          },
+          {
+            "name": "Gold Vein",
+            "skill": 155,
+            "spawnPoints": 5
+          },
+          {
+            "name": "Mithril Deposit",
+            "skill": 175,
+            "spawnPoints": 30
+          },
+          {
+            "name": "Truesilver Deposit",
+            "skill": 230,
+            "spawnPoints": 8
+          }
+        ]
+      },
+      {
+        "mapId": 1426,
+        "name": "Dun Morogh",
+        "spawnPoints": 90,
+        "spotsSeenInForever": 9,
+        "nodes": [
+          {
+            "name": "Copper Vein",
+            "skill": 1,
+            "spawnPoints": 90
+          }
+        ]
+      },
+      {
+        "mapId": 1411,
+        "name": "Durotar",
+        "spawnPoints": 159,
+        "spotsSeenInForever": 17,
+        "nodes": [
+          {
+            "name": "Copper Vein",
+            "skill": 1,
+            "spawnPoints": 159
+          }
+        ]
+      },
+      {
+        "mapId": 1431,
+        "name": "Duskwood",
+        "spawnPoints": 530,
+        "spotsSeenInForever": 5,
+        "nodes": [
+          {
+            "name": "Copper Vein",
+            "skill": 1,
+            "spawnPoints": 106
+          },
+          {
+            "name": "Tin Vein",
+            "skill": 65,
+            "spawnPoints": 106
+          },
+          {
+            "name": "Silver Vein",
+            "skill": 75,
+            "spawnPoints": 106
+          },
+          {
+            "name": "Iron Deposit",
+            "skill": 125,
+            "spawnPoints": 106
+          },
+          {
+            "name": "Gold Vein",
+            "skill": 155,
+            "spawnPoints": 106
+          }
+        ]
+      },
+      {
+        "mapId": 1445,
+        "name": "Dustwallow Marsh",
+        "spawnPoints": 16,
+        "spotsSeenInForever": 2,
+        "nodes": [
+          {
+            "name": "Silver Vein",
+            "skill": 75,
+            "spawnPoints": 1
+          },
+          {
+            "name": "Iron Deposit",
+            "skill": 125,
+            "spawnPoints": 14
+          },
+          {
+            "name": "Gold Vein",
+            "skill": 155,
+            "spawnPoints": 1
+          }
+        ]
+      },
+      {
+        "mapId": 1429,
+        "name": "Elwynn Forest",
+        "spawnPoints": 112,
+        "spotsSeenInForever": 20,
+        "nodes": [
+          {
+            "name": "Copper Vein",
+            "skill": 1,
+            "spawnPoints": 110
+          },
+          {
+            "name": "Tin Vein",
+            "skill": 65,
+            "spawnPoints": 1
+          },
+          {
+            "name": "Silver Vein",
+            "skill": 75,
+            "spawnPoints": 1
+          }
+        ]
+      },
+      {
+        "mapId": 1448,
+        "name": "Felwood",
+        "spawnPoints": 6,
+        "spotsSeenInForever": 0,
+        "nodes": [
+          {
+            "name": "Truesilver Deposit",
+            "skill": 230,
+            "spawnPoints": 4
+          },
+          {
+            "name": "Small Thorium Vein",
+            "skill": 245,
+            "spawnPoints": 2
+          }
+        ]
+      },
+      {
+        "mapId": 1444,
+        "name": "Feralas",
+        "spawnPoints": 35,
+        "spotsSeenInForever": 0,
+        "nodes": [
+          {
+            "name": "Copper Vein",
+            "skill": 1,
+            "spawnPoints": 3
+          },
+          {
+            "name": "Tin Vein",
+            "skill": 65,
+            "spawnPoints": 1
+          },
+          {
+            "name": "Iron Deposit",
+            "skill": 125,
+            "spawnPoints": 1
+          },
+          {
+            "name": "Gold Vein",
+            "skill": 155,
+            "spawnPoints": 2
+          },
+          {
+            "name": "Mithril Deposit",
+            "skill": 175,
+            "spawnPoints": 20
+          },
+          {
+            "name": "Truesilver Deposit",
+            "skill": 230,
+            "spawnPoints": 8
+          }
+        ]
+      },
+      {
+        "mapId": 1424,
+        "name": "Hillsbrad Foothills",
+        "spawnPoints": 224,
+        "spotsSeenInForever": 14,
+        "nodes": [
+          {
+            "name": "Copper Vein",
+            "skill": 1,
+            "spawnPoints": 55
+          },
+          {
+            "name": "Tin Vein",
+            "skill": 65,
+            "spawnPoints": 65
+          },
+          {
+            "name": "Silver Vein",
+            "skill": 75,
+            "spawnPoints": 68
+          },
+          {
+            "name": "Iron Deposit",
+            "skill": 125,
+            "spawnPoints": 18
+          },
+          {
+            "name": "Gold Vein",
+            "skill": 155,
+            "spawnPoints": 18
+          }
+        ]
+      },
+      {
+        "mapId": 1432,
+        "name": "Loch Modan",
+        "spawnPoints": 330,
+        "spotsSeenInForever": 0,
+        "nodes": [
+          {
+            "name": "Copper Vein",
+            "skill": 1,
+            "spawnPoints": 110
+          },
+          {
+            "name": "Tin Vein",
+            "skill": 65,
+            "spawnPoints": 110
+          },
+          {
+            "name": "Silver Vein",
+            "skill": 75,
+            "spawnPoints": 110
+          }
+        ]
+      },
+      {
+        "mapId": 1412,
+        "name": "Mulgore",
+        "spawnPoints": 68,
+        "spotsSeenInForever": 0,
+        "nodes": [
+          {
+            "name": "Copper Vein",
+            "skill": 1,
+            "spawnPoints": 67
+          },
+          {
+            "name": "Tin Vein",
+            "skill": 65,
+            "spawnPoints": 1
+          }
+        ]
+      },
+      {
+        "mapId": 1454,
+        "name": "Orgrimmar",
+        "spawnPoints": 4,
+        "spotsSeenInForever": 0,
+        "nodes": [
+          {
+            "name": "Copper Vein",
+            "skill": 1,
+            "spawnPoints": 4
+          }
+        ]
+      },
+      {
+        "mapId": 1433,
+        "name": "Redridge Mountains",
+        "spawnPoints": 288,
+        "spotsSeenInForever": 9,
+        "nodes": [
+          {
+            "name": "Copper Vein",
+            "skill": 1,
+            "spawnPoints": 103
+          },
+          {
+            "name": "Tin Vein",
+            "skill": 65,
+            "spawnPoints": 103
+          },
+          {
+            "name": "Silver Vein",
+            "skill": 75,
+            "spawnPoints": 82
+          }
+        ]
+      },
+      {
+        "mapId": 2548,
+        "name": "Riverglades",
+        "spawnPoints": 15,
+        "spotsSeenInForever": 14,
+        "nodes": [
+          {
+            "name": "Copper Vein",
+            "skill": 1,
+            "spawnPoints": 3
+          },
+          {
+            "name": "Tin Vein",
+            "skill": 65,
+            "spawnPoints": 3
+          },
+          {
+            "name": "Silver Vein",
+            "skill": 75,
+            "spawnPoints": 3
+          },
+          {
+            "name": "Gold Vein",
+            "skill": 155,
+            "spawnPoints": 2
+          },
+          {
+            "name": "Mithril Deposit",
+            "skill": 175,
+            "spawnPoints": 2
+          },
+          {
+            "name": "Truesilver Deposit",
+            "skill": 230,
+            "spawnPoints": 2
+          }
+        ]
+      },
+      {
+        "mapId": 1427,
+        "name": "Searing Gorge",
+        "spawnPoints": 287,
+        "spotsSeenInForever": 0,
+        "nodes": [
+          {
+            "name": "Gold Vein",
+            "skill": 155,
+            "spawnPoints": 80
+          },
+          {
+            "name": "Mithril Deposit",
+            "skill": 175,
+            "spawnPoints": 80
+          },
+          {
+            "name": "Dark Iron Deposit",
+            "skill": 230,
+            "spawnPoints": 79
+          },
+          {
+            "name": "Truesilver Deposit",
+            "skill": 230,
+            "spawnPoints": 48
+          }
+        ]
+      },
+      {
+        "mapId": 2652,
+        "name": "Shen'dralas",
+        "spawnPoints": 3,
+        "spotsSeenInForever": 0,
+        "nodes": [
+          {
+            "name": "Iron Deposit",
+            "skill": 125,
+            "spawnPoints": 2
+          },
+          {
+            "name": "Mithril Deposit",
+            "skill": 175,
+            "spawnPoints": 1
+          }
+        ]
+      },
+      {
+        "mapId": 1421,
+        "name": "Silverpine Forest",
+        "spawnPoints": 315,
+        "spotsSeenInForever": 17,
+        "nodes": [
+          {
+            "name": "Copper Vein",
+            "skill": 1,
+            "spawnPoints": 105
+          },
+          {
+            "name": "Tin Vein",
+            "skill": 65,
+            "spawnPoints": 105
+          },
+          {
+            "name": "Silver Vein",
+            "skill": 75,
+            "spawnPoints": 105
+          }
+        ]
+      },
+      {
+        "mapId": 1442,
+        "name": "Stonetalon Mountains",
+        "spawnPoints": 67,
+        "spotsSeenInForever": 14,
+        "nodes": [
+          {
+            "name": "Copper Vein",
+            "skill": 1,
+            "spawnPoints": 47
+          },
+          {
+            "name": "Tin Vein",
+            "skill": 65,
+            "spawnPoints": 19
+          },
+          {
+            "name": "Silver Vein",
+            "skill": 75,
+            "spawnPoints": 1
+          }
+        ]
+      },
+      {
+        "mapId": 1434,
+        "name": "Stranglethorn Vale",
+        "spawnPoints": 398,
+        "spotsSeenInForever": 3,
+        "nodes": [
+          {
+            "name": "Copper Vein",
+            "skill": 1,
+            "spawnPoints": 4
+          },
+          {
+            "name": "Tin Vein",
+            "skill": 65,
+            "spawnPoints": 4
+          },
+          {
+            "name": "Silver Vein",
+            "skill": 75,
+            "spawnPoints": 130
+          },
+          {
+            "name": "Iron Deposit",
+            "skill": 125,
+            "spawnPoints": 130
+          },
+          {
+            "name": "Gold Vein",
+            "skill": 155,
+            "spawnPoints": 130
+          }
+        ]
+      },
+      {
+        "mapId": 1435,
+        "name": "Swamp of Sorrows",
+        "spawnPoints": 36,
+        "spotsSeenInForever": 0,
+        "nodes": [
+          {
+            "name": "Gold Vein",
+            "skill": 155,
+            "spawnPoints": 9
+          },
+          {
+            "name": "Mithril Deposit",
+            "skill": 175,
+            "spawnPoints": 9
+          },
+          {
+            "name": "Truesilver Deposit",
+            "skill": 230,
+            "spawnPoints": 9
+          },
+          {
+            "name": "Small Thorium Vein",
+            "skill": 245,
+            "spawnPoints": 9
+          }
+        ]
+      },
+      {
+        "mapId": 1446,
+        "name": "Tanaris",
+        "spawnPoints": 135,
+        "spotsSeenInForever": 0,
+        "nodes": [
+          {
+            "name": "Gold Vein",
+            "skill": 155,
+            "spawnPoints": 61
+          },
+          {
+            "name": "Mithril Deposit",
+            "skill": 175,
+            "spawnPoints": 51
+          },
+          {
+            "name": "Truesilver Deposit",
+            "skill": 230,
+            "spawnPoints": 23
+          }
+        ]
+      },
+      {
+        "mapId": 1438,
+        "name": "Teldrassil",
+        "spawnPoints": 0,
+        "spotsSeenInForever": 8,
+        "nodes": []
+      },
+      {
+        "mapId": 1413,
+        "name": "The Barrens",
+        "spawnPoints": 93,
+        "spotsSeenInForever": 40,
+        "nodes": [
+          {
+            "name": "Copper Vein",
+            "skill": 1,
+            "spawnPoints": 38
+          },
+          {
+            "name": "Tin Vein",
+            "skill": 65,
+            "spawnPoints": 23
+          },
+          {
+            "name": "Silver Vein",
+            "skill": 75,
+            "spawnPoints": 20
+          },
+          {
+            "name": "Iron Deposit",
+            "skill": 125,
+            "spawnPoints": 10
+          },
+          {
+            "name": "Gold Vein",
+            "skill": 155,
+            "spawnPoints": 2
+          }
+        ]
+      },
+      {
+        "mapId": 1425,
+        "name": "The Hinterlands",
+        "spawnPoints": 347,
+        "spotsSeenInForever": 0,
+        "nodes": [
+          {
+            "name": "Silver Vein",
+            "skill": 75,
+            "spawnPoints": 7
+          },
+          {
+            "name": "Gold Vein",
+            "skill": 155,
+            "spawnPoints": 118
+          },
+          {
+            "name": "Mithril Deposit",
+            "skill": 175,
+            "spawnPoints": 111
+          },
+          {
+            "name": "Truesilver Deposit",
+            "skill": 230,
+            "spawnPoints": 111
+          }
+        ]
+      },
+      {
+        "mapId": 1441,
+        "name": "Thousand Needles",
+        "spawnPoints": 221,
+        "spotsSeenInForever": 1,
+        "nodes": [
+          {
+            "name": "Copper Vein",
+            "skill": 1,
+            "spawnPoints": 45
+          },
+          {
+            "name": "Tin Vein",
+            "skill": 65,
+            "spawnPoints": 24
+          },
+          {
+            "name": "Silver Vein",
+            "skill": 75,
+            "spawnPoints": 7
+          },
+          {
+            "name": "Iron Deposit",
+            "skill": 125,
+            "spawnPoints": 110
+          },
+          {
+            "name": "Gold Vein",
+            "skill": 155,
+            "spawnPoints": 35
+          }
+        ]
+      },
+      {
+        "mapId": 1456,
+        "name": "Thunder Bluff",
+        "spawnPoints": 3,
+        "spotsSeenInForever": 0,
+        "nodes": [
+          {
+            "name": "Copper Vein",
+            "skill": 1,
+            "spawnPoints": 3
+          }
+        ]
+      },
+      {
+        "mapId": 1420,
+        "name": "Tirisfal Glades",
+        "spawnPoints": 76,
+        "spotsSeenInForever": 3,
+        "nodes": [
+          {
+            "name": "Copper Vein",
+            "skill": 1,
+            "spawnPoints": 64
+          },
+          {
+            "name": "Tin Vein",
+            "skill": 65,
+            "spawnPoints": 6
+          },
+          {
+            "name": "Silver Vein",
+            "skill": 75,
+            "spawnPoints": 6
+          }
+        ]
+      },
+      {
+        "mapId": 1458,
+        "name": "Undercity",
+        "spawnPoints": 3,
+        "spotsSeenInForever": 0,
+        "nodes": [
+          {
+            "name": "Copper Vein",
+            "skill": 1,
+            "spawnPoints": 1
+          },
+          {
+            "name": "Tin Vein",
+            "skill": 65,
+            "spawnPoints": 1
+          },
+          {
+            "name": "Silver Vein",
+            "skill": 75,
+            "spawnPoints": 1
+          }
+        ]
+      },
+      {
+        "mapId": 1422,
+        "name": "Western Plaguelands",
+        "spawnPoints": 4,
+        "spotsSeenInForever": 0,
+        "nodes": [
+          {
+            "name": "Copper Vein",
+            "skill": 1,
+            "spawnPoints": 4
+          }
+        ]
+      },
+      {
+        "mapId": 1436,
+        "name": "Westfall",
+        "spawnPoints": 189,
+        "spotsSeenInForever": 5,
+        "nodes": [
+          {
+            "name": "Copper Vein",
+            "skill": 1,
+            "spawnPoints": 143
+          },
+          {
+            "name": "Tin Vein",
+            "skill": 65,
+            "spawnPoints": 23
+          },
+          {
+            "name": "Silver Vein",
+            "skill": 75,
+            "spawnPoints": 23
+          }
+        ]
+      },
+      {
+        "mapId": 1437,
+        "name": "Wetlands",
+        "spawnPoints": 380,
+        "spotsSeenInForever": 1,
+        "nodes": [
+          {
+            "name": "Copper Vein",
+            "skill": 1,
+            "spawnPoints": 110
+          },
+          {
+            "name": "Tin Vein",
+            "skill": 65,
+            "spawnPoints": 130
+          },
+          {
+            "name": "Silver Vein",
+            "skill": 75,
+            "spawnPoints": 134
+          },
+          {
+            "name": "Iron Deposit",
+            "skill": 125,
+            "spawnPoints": 3
+          },
+          {
+            "name": "Gold Vein",
+            "skill": 155,
+            "spawnPoints": 3
+          }
+        ]
+      },
+      {
+        "mapId": 1452,
+        "name": "Winterspring",
+        "spawnPoints": 88,
+        "spotsSeenInForever": 0,
+        "nodes": [
+          {
+            "name": "Truesilver Deposit",
+            "skill": 230,
+            "spawnPoints": 13
+          },
+          {
+            "name": "Small Thorium Vein",
+            "skill": 245,
+            "spawnPoints": 28
+          },
+          {
+            "name": "Rich Thorium Vein",
+            "skill": 275,
+            "spawnPoints": 47
+          }
+        ]
+      },
+      {
+        "mapId": 2521,
+        "name": "Zephras Isle",
+        "spawnPoints": 0,
+        "spotsSeenInForever": 26,
+        "nodes": []
+      }
+    ],
+    "spotsSeenInForever": 213,
+    "bestZones": [
+      {
+        "fromSkill": 1,
+        "toSkill": 66,
+        "zones": [
+          {
+            "mapId": 1436,
+            "name": "Westfall"
+          },
+          {
+            "mapId": 1433,
+            "name": "Redridge Mountains"
+          },
+          {
+            "mapId": 1432,
+            "name": "Loch Modan"
+          }
+        ]
+      },
+      {
+        "fromSkill": 66,
+        "toSkill": 126,
+        "zones": [
+          {
+            "mapId": 1437,
+            "name": "Wetlands"
+          },
+          {
+            "mapId": 1433,
+            "name": "Redridge Mountains"
+          },
+          {
+            "mapId": 1432,
+            "name": "Loch Modan"
+          }
+        ]
+      },
+      {
+        "fromSkill": 126,
+        "toSkill": 181,
+        "zones": [
+          {
+            "mapId": 1416,
+            "name": "Alterac Mountains"
+          },
+          {
+            "mapId": 1437,
+            "name": "Wetlands"
+          },
+          {
+            "mapId": 1417,
+            "name": "Arathi Highlands"
+          }
+        ]
+      },
+      {
+        "fromSkill": 181,
+        "toSkill": 236,
+        "zones": [
+          {
+            "mapId": 1418,
+            "name": "Badlands"
+          },
+          {
+            "mapId": 1416,
+            "name": "Alterac Mountains"
+          },
+          {
+            "mapId": 1417,
+            "name": "Arathi Highlands"
+          }
+        ]
+      },
+      {
+        "fromSkill": 236,
+        "toSkill": 300,
+        "zones": [
+          {
+            "mapId": 1427,
+            "name": "Searing Gorge"
+          },
+          {
+            "mapId": 1418,
+            "name": "Badlands"
+          },
+          {
+            "mapId": 1416,
+            "name": "Alterac Mountains"
+          }
+        ]
+      }
+    ]
+  },
+  "meta": {
+    "build": "1.60.1.70938",
+    "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+    "attributionRequired": true,
+    "client": "dev-0255"
+  }
+}

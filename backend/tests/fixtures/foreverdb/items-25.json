@@ -1,0 +1,40 @@
+{
+  "data": {
+    "id": 25,
+    "name": "Worn Shortsword",
+    "quality": "Common",
+    "qualityId": 1,
+    "itemLevel": 2,
+    "requiredLevel": 1,
+    "classId": 2,
+    "class": "Weapon",
+    "subclassId": 7,
+    "subclass": "Sword",
+    "inventoryTypeId": 21,
+    "inventoryType": "Main Hand",
+    "icon": "https://foreverdb.net/icons/135274.webp",
+    "url": "https://foreverdb.net/item/25",
+    "betaEvent": false,
+    "speculation": false,
+    "speculationReasons": [],
+    "stats": [],
+    "damage": {
+      "min": 1,
+      "max": 3,
+      "school": "Physical"
+    },
+    "speed": 1.9,
+    "bonding": null,
+    "sellPrice": 7,
+    "unique": false,
+    "effects": [],
+    "disenchantable": false,
+    "disenchant": null
+  },
+  "meta": {
+    "build": "1.60.1.70938",
+    "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+    "attributionRequired": true,
+    "client": "dev-0255"
+  }
+}
