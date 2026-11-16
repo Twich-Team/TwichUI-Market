@@ -51,6 +51,7 @@ def main():
    rows +=[{'id':20,'item':{'id':2589,'bonus_lists':[9]},'quantity':1,'buyout':999},{'id':21,'item':{'id':123},'quantity':2,'bid':50}]
    rows +=[{'id':1000+i,'item':{'id':10000+i},'quantity':1,'buyout':price} for i in range(args.variants-4)]
    return json.dumps({'auctions':rows}).encode()
+  seed_started=time.perf_counter()
   with Session.begin() as db:
    u=User(username='synthetic_archive',password_hash='not-a-login',role='member');db.add(u);db.flush();token,_,_=issue(db,u,'device');account=u.id
    m=Market(region='us',ruleset_id=1,house_id=114,source_kind='auctions',label='Synthetic archive only',verified=True,enabled=True);db.add(m);db.flush();mid=m.id
@@ -58,16 +59,20 @@ def main():
    db.add(PlayerMarketMapping(region='us',ruleset='Normal',faction='Horde',house_id=114,source_kind='auctions',transport_ruleset_id=1,confidence='verified',evidence=evidence,evidence_hash=hashlib.sha256(evidence.encode()).hexdigest(),verified_at=at))
    ingest(db,mid,book(100,True),request_key='archive-first',retrieved_at=at-timedelta(days=2),synthetic=True)
    ingest(db,mid,book(120,False),request_key='archive-current',retrieved_at=at,synthetic=True)
+  seed_seconds=time.perf_counter()-seed_started
   gc.collect();sql=[0];request_stats=[]
   @event.listens_for(engine,'before_cursor_execute')
   def count_sql(*_):sql[0]+=1
   @app.middleware('http')
   async def measure(request,call_next):
-   before=sql[0];start=time.perf_counter();response=await call_next(request)
-   request_stats.append({'path':request.url.path,'status':response.status_code,'sql':sql[0]-before,'ms':(time.perf_counter()-start)*1000,'sampled_rss_bytes':rss()})
+   before=sql[0];start=time.perf_counter();cpu=time.process_time();response=await call_next(request)
+   request_stats.append({'path':request.url.path,'status':response.status_code,'sql':sql[0]-before,'ms':(time.perf_counter()-start)*1000,'process_cpu_ms':(time.process_time()-cpu)*1000,'sampled_rss_bytes':rss()})
    return response
   sock=socket.socket();sock.bind(('127.0.0.1',0));port=sock.getsockname()[1]
   server=uvicorn.Server(uvicorn.Config(app,host='127.0.0.1',port=port,log_level='error',access_log=False));thread=threading.Thread(target=server.run,kwargs={'sockets':[sock]},daemon=True);thread.start()
+  measured_files=[ROOT/'backend/market/archive_api.py',ROOT/'backend/market/bridge_api.py',ROOT/'backend/market/models.py',ROOT/'desktop/core/src/client.rs',ROOT/'desktop/core/src/bridge/export.rs',ROOT/'contracts/archive/v1/archive.schema.json',ROOT/'contracts/bridge/scoped-l1/SHA256SUMS.json',*sorted((ROOT/'desktop/core/src/archive').glob('*.rs'))]
+  fingerprints={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in measured_files}
+  native_sha=hashlib.sha256(args.rust_client.read_bytes()).hexdigest()
   origin=f'http://127.0.0.1:{port}';stage=temp/'staging';stage.mkdir(mode=0o700);cache=temp/'history.sqlite'
   env=os.environ.copy();env['TWICHUI_ARCHIVE_TEST_TOKEN']=token
   def native(action,request=None,expected=True,account_override=None):
@@ -107,7 +112,7 @@ def main():
      'variants':[{'item_id':i,'variant_key':v} for i,v in sorted(pairs)],'history_from_day':(at.date()-timedelta(days=59)).isoformat(),'history_through_day':at.date().isoformat(),
      'pricing_algorithm':header['pricing_algorithm'],'history_basis':header['history_basis'],'profile':'daily_research_v1'}
    def export(header,count):
-    request=selection(header,count);path=temp/'request.json';path.write_text(json.dumps(request));result=native('export',path);g=json.loads(Path(result['generation_path']).read_text());archive_api.scoped_contract().validate(g,request)
+    request=selection(header,count);path=temp/'request.json';path.write_text(json.dumps(request));result=native('export',path);g=json.loads(Path(result['generation_path']).read_text());archive_api.scoped_contract().validate(g,request);archive_api.scoped_contract().validate_receipt(g,result["receipt"])
     exact=http(f'/api/v1/archive/markets/{mid}/scoped?checkpoint='+header['checkpoint_id'],request)
     assert exact==g,'actual Rust and server scoped generation bytes differ'
     return result,g,request,path
@@ -155,8 +160,11 @@ def main():
     import resource
     peak=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024
    except ImportError:peak=None
-   report={'result':'PASS','origin':'synthetic','variants':args.variants,'python':platform.python_version(),'production_access':False,'real_client_acceptance':False,
+   assert all(hashlib.sha256((ROOT/p).read_bytes()).hexdigest()==h for p,h in fingerprints.items()),'measured implementation changed during acceptance'
+   assert hashlib.sha256(args.rust_client.read_bytes()).hexdigest()==native_sha,'native binary changed during acceptance'
+   report={'result':'PASS','source_revision':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),'source_sha256':fingerprints,'native_binary_sha256':native_sha,'synthetic_seed_seconds':seed_seconds,'server_sqlite_bytes':(temp/'market_test.sqlite').stat().st_size,'origin':'synthetic','variants':args.variants,'python':platform.python_version(),'production_access':False,'real_client_acceptance':False,
     'initial_step':partial,'initial_resume':initial,'incremental_step':partial_update,'incremental_resume':updated,'ten_variant_export':ten,'hundred_variant_export':hundred,'updated_export':final,
+    'server_request_process_cpu_ms_total':sum(s['process_cpu_ms'] for s in request_stats),'page_process_cpu_ms_total':sum(s['process_cpu_ms'] for s in page_stats),'cpu_measurement':'Python server process CPU across each request; includes small coordinator polling overhead, excludes seed and native Rust subprocess',
     'server_sql_total':sql[0],'archive_page_requests':len(page_stats),'page_sql_max':max(s['sql'] for s in page_stats),'page_sql_total':sum(s['sql'] for s in page_stats),
     'server_process_peak_rss_bytes_including_seed':peak,'server_request_sampled_rss_bytes':max((s['sampled_rss_bytes'] or 0) for s in request_stats),'page_response_ms_max':max(s['ms'] for s in page_stats),
     'independent_expected':{'initial_recent':['100','120'],'updated_recent':['100','140'],'market_value':'100','historical_value':None,'historical_current_state':'absent','bid_supply':2,'missing_days':58},

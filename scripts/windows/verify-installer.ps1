@@ -67,7 +67,7 @@ try {
     }
 }
 $retained=@{}
-foreach ($file in @('market-v1.sqlite','settings.json')) {
+foreach ($file in @('market-v1.sqlite','settings.json','history-archive-v1.sqlite')) {
     $path=Join-Path $env:MARKET_TEST_APP_DATA $file
     if (-not(Test-Path $path)) { throw 'Expected retained companion data before uninstall' }
     $retained[$path]=(Get-FileHash $path -Algorithm SHA256).Hash

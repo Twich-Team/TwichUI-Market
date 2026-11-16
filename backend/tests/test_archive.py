@@ -4,6 +4,10 @@ import json
 from datetime import timedelta
 from pathlib import Path
 import pytest
+import jsonschema
+
+ARCHIVE_SCHEMA = json.loads((Path(__file__).resolve().parents[2]/'contracts/archive/v1/archive.schema.json').read_bytes())
+ARCHIVE_VALIDATOR = jsonschema.Draft202012Validator(ARCHIVE_SCHEMA, format_checker=jsonschema.FormatChecker())
 from sqlalchemy import delete, select
 from market import archive_api as archive
 from market.db import now
@@ -18,13 +22,17 @@ def start(client, mid, **query):
         r = client.get(f'/api/v1/archive/markets/{mid}/checkpoint', params=query)
         if r.status_code != 202:
             assert r.status_code == 200, r.text
+            ARCHIVE_VALIDATOR.validate(r.json())
             return r.json()
     pytest.fail('preparation never completed')
 
 
 def page(client, mid, e, cursor=None, limit=2):
-    return client.get(f'/api/v1/archive/markets/{mid}/pages', params={
+    response = client.get(f'/api/v1/archive/markets/{mid}/pages', params={
         'checkpoint': e['header']['checkpoint_id'], 'cursor': cursor or e['cursor'], 'limit': limit})
+    if response.status_code == 200:
+        ARCHIVE_VALIDATOR.validate(response.json())
+    return response
 
 
 def download(client, mid, e):
@@ -217,7 +225,7 @@ def test_equivalent_checkpoint_reuse_and_capacity_never_evicts_pending_peer(brid
 
 
 def test_retention_change_requires_full_bootstrap_and_old_exact_descriptor_is_preserved(bridge, database):
-    from market.models import Observation
+    from market.models import Observation, DailyObservation
     client, mid, oids, _ = bridge
     with database.begin() as db:
         ingest(db, mid, b'{"auctions":[{"id":1,"item":{"id":77},"quantity":1,"buyout":700}]}', request_key='archive-old-only', retrieved_at=now()-timedelta(days=90), synthetic=True)
@@ -228,6 +236,7 @@ def test_retention_change_requires_full_bootstrap_and_old_exact_descriptor_is_pr
     assert response.json()['records'][0]['variant_json'] == '{"id":77}'
     assert response.json()['records'][0]['current']['state'] == 'absent'
     with database.begin() as db:
+        db.execute(delete(DailyObservation).where(DailyObservation.observation_id == oids[0]))
         db.execute(delete(Observation).where(Observation.id == oids[0]))
     assert client.get(f'/api/v1/archive/markets/{mid}/checkpoint', params={'base':envelope['header']['checkpoint_id']}).status_code == 409
     # Genuine retained-source changes need a new pinned full checkpoint. The old

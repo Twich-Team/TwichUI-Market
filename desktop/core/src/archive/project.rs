@@ -20,6 +20,17 @@ pub fn project(
     budget: &DeliveryBudget,
 ) -> Result<(Value, Value, Sizes)> {
     let r = scoped::selection(request)?;
+    need(
+        budget.records > 0 && budget.canonical_bytes > 0 && budget.lua_bytes > 0,
+        "delivery policy",
+    )?;
+    if r.variants.len() as u64 > budget.records.min(1000) {
+        return Err(Error::Capacity {
+            limit: "records",
+            actual: r.variants.len() as u64,
+            maximum: budget.records.min(1000),
+        });
+    }
     let h = store.active(scope)?.ok_or(Error::Invalid(
         "complete a history archive before projection",
     ))?;
@@ -243,8 +254,10 @@ pub fn project(
            "date_coverage":scoped::date_coverage(&observations,&r)?,"record_sha256":records.iter().map(hash).collect::<Result<Vec<_>>>()?}});
     let g = scoped::seal(g)?;
     let receipt = scoped::receipt(&g);
-    let sizes = scoped::preflight(&g, &receipt, budget)?;
+    scoped::preflight(&g, &receipt, budget)?;
     scoped::validate(&g, Some(request))?;
+    let receipt = scoped::receipt(&g); // Mint the published receipt after validation.
+    let sizes = scoped::preflight(&g, &receipt, budget)?;
     Ok((g, receipt, sizes))
 }
 fn read_one(store: &ArchiveStore, key: &str, checkpoint: &str) -> Result<Value> {

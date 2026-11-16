@@ -24,7 +24,8 @@ const state={version:'2.0.0-beta.1',settings,mode:'disconnected',connected:false
  },state);
  await page.goto('file:///repo/desktop/ui/index.html');await expect(page.locator('#welcome')).toBeVisible();await expect(page.locator('#sign-in')).toBeVisible();
  await expect(page.locator('#message')).toBeHidden();
- await expect(page.locator('#token')).toHaveCount(0);await expect(page.locator('input[type=number]')).toHaveCount(0);
+ await expect(page.locator('#token')).toHaveCount(0);await expect(page.locator('input[type=number]:visible')).toHaveCount(0); // Archive budget stays inside the collapsed testing panel.
+ await expect(page.locator('#sync-interval')).toHaveJSProperty('tagName','SELECT');await expect(page.locator('#archive-budget')).toHaveAttribute('min','64');await expect(page.locator('#archive-budget')).toHaveAttribute('max','65536');
  const folder=path.resolve('artifacts/companion-v2');fs.mkdirSync(folder,{recursive:true});await page.screenshot({path:path.join(folder,'layout-welcome.png')});
  let audit=await new AxeBuilder({page}).analyze();expect(audit.violations.filter(v=>['critical','serious'].includes(v.impact))).toEqual([]);
  await page.evaluate(()=>{const next=structuredClone(window.__layoutState);next.connected=true;next.sync.sync.phase='offline';window.__layoutState=next;window.__layoutEmit('companion-state',next);});

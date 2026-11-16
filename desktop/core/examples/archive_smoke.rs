@@ -58,7 +58,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             std::fs::write(&generation_path, bridge::canonical(&g)?)?;
             println!(
                 "{}",
-                serde_json::json!({"generation_id":g["generation_id"],"checkpoint_id":store.active(&scope)?.unwrap().checkpoint_id,"sizes":s,"lua_path":path,"generation_path":generation_path,"archive_bytes":store.allocated_bytes()?,"metrics":store.metrics(),"elapsed_ms":start.elapsed().as_secs_f64()*1000.})
+                serde_json::json!({"generation_id":g["generation_id"],"checkpoint_id":store.active(&scope)?.unwrap().checkpoint_id,"sizes":s,"receipt":r,"lua_path":path,"generation_path":generation_path,"archive_bytes":store.allocated_bytes()?,"metrics":store.metrics(),"elapsed_ms":start.elapsed().as_secs_f64()*1000.})
             );
         }
         _ => return Err("unsupported acceptance action".into()),

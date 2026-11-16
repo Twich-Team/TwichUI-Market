@@ -26,7 +26,9 @@ fn source() -> Value {
     .unwrap()
 }
 fn fixture(cp: &str) -> (Value, Vec<Value>, Value) {
-    let g = source();
+    from_source(source(), cp)
+}
+fn from_source(g: Value, cp: &str) -> (Value, Vec<Value>, Value) {
     let obs = g["observations"]
         .as_array()
         .unwrap()
@@ -82,12 +84,16 @@ fn fixture(cp: &str) -> (Value, Vec<Value>, Value) {
         "watermark_observation_id":g["watermark_observation_id"],"base_checkpoint_id":null,"base_watermark_observation_id":"0",
         "generated_at":g["generated_at"],"expires_at":"2026-11-16T12:02:00Z","server_checked_at":g["server_checked_at"],"server_build":"synthetic-archive",
         "retention_basis":"all_retained_observations_and_snapshot_summaries","archive_complete":true,
+        "retained_from_day":obs.iter().map(|o|o["observation"]["utc_day"].as_str().unwrap()).min().unwrap(),"retained_through_day":obs.iter().map(|o|o["observation"]["utc_day"].as_str().unwrap()).max().unwrap(),
         "total_observations":obs.len(),"total_snapshots":snapshots.len(),"total_records":variants.len(),"transfer_observations":obs.len(),"transfer_snapshots":snapshots.len(),"transfer_records":variants.len(),
         "transfer_bytes":entries.iter().map(|v|encoded(v).len()+1).sum::<usize>(),"metadata_sha256":format!("{:x}",Sha256::digest(meta))});
     let mut pages = Vec::new();
     let mut chain = vec![0u8; 32];
     let mut offset = 0;
-    for (i, part) in entries.chunks(2).enumerate() {
+    for (i, part) in entries
+        .chunks(if variants.len() > 100 { 100 } else { 2 })
+        .enumerate()
+    {
         let value = Value::Array(part.to_vec());
         let prev = format!("{:x}", Hex(&chain));
         let mut h = Sha256::new();
@@ -192,6 +198,20 @@ fn interrupted_bootstrap_resume_exact_projection_and_publication() {
         Err(Error::Capacity { .. })
     ));
     assert_eq!(std::fs::read(out).unwrap(), before);
+    let mut bad_receipt = r.clone();
+    bad_receipt["completed_at"] = "2000-01-01T00:00:00Z".into();
+    assert!(bridge::export_generation(
+        &scope(),
+        &root,
+        &g,
+        &bad_receipt,
+        &DeliveryBudget::default()
+    )
+    .is_err());
+    assert_eq!(
+        std::fs::read(root.join("TwichUI_MarketData/Data.lua")).unwrap(),
+        before
+    );
     s.save_selection(&scope(), &request).unwrap();
     assert_eq!(s.selection(&scope()).unwrap().unwrap(), request);
 }
@@ -270,6 +290,20 @@ fn repack(mut envelope: Value, entries: Vec<Value>) -> (Value, Vec<Value>) {
         h[total] = n.into();
         h[transfer] = n.into();
     }
+    h["retained_from_day"] = entries
+        .iter()
+        .filter(|e| e["kind"] == "observation")
+        .map(|e| e["observation"]["utc_day"].as_str().unwrap())
+        .min()
+        .unwrap()
+        .into();
+    h["retained_through_day"] = entries
+        .iter()
+        .filter(|e| e["kind"] == "observation")
+        .map(|e| e["observation"]["utc_day"].as_str().unwrap())
+        .max()
+        .unwrap()
+        .into();
     h["transfer_bytes"] = entries
         .iter()
         .map(|v| encoded(v).len() + 1)
@@ -386,4 +420,86 @@ fn incomplete_observation_stays_unknown_and_deleted_cache_row_is_not_absence() {
     )
     .unwrap();
     assert!(project(&s, &scope(), &request, &DeliveryBudget::default()).is_err());
+}
+
+#[test]
+fn dense_history_is_refused_by_actual_bytes_without_changing_scope_or_last_good() {
+    use chrono::{Duration, NaiveDate};
+    let mut g = source();
+    let template = g["observations"][0].clone();
+    let today = NaiveDate::from_ymd_opt(2026, 11, 15).unwrap();
+    g["observations"] = (0..60)
+        .map(|i| {
+            let mut o = template.clone();
+            let day = (today - Duration::days(59 - i)).to_string();
+            o["observation_id"] = (i + 1).to_string().into();
+            o["snapshot_id"] = (i + 1).to_string().into();
+            o["utc_day"] = day.clone().into();
+            o["observed_at"] = format!("{day}T12:00:00Z").into();
+            o["upstream_updated_at"] = Value::Null;
+            o["snapshot_content_sha256"] = sha(&json!({"snapshot":i+1})).into();
+            o
+        })
+        .collect();
+    g["watermark_observation_id"] = "60".into();
+    g["records"]=(0..200).map(|i|{
+        let item=10000+i;let descriptor=json!({"id":item});let raw=String::from_utf8(encoded(&descriptor)).unwrap();
+        json!({"item_id":item,"variant_key":sha(&descriptor),"variant_json":raw,
+            "daily":(0..60).map(|n|json!({"observation_ref":n,"state":"listed","minimum_copper":"100","recent_copper":"100","supply":1,"priced_supply":1,"listing_count":1})).collect::<Vec<_>>()})
+    }).collect();
+    let (e, pages, mut request) = from_source(g, "2");
+    request["history_from_day"] = (today - Duration::days(59)).to_string().into();
+    let mut s = ArchiveStore::memory(128 * 1024 * 1024).unwrap();
+    let (old, op, _) = fixture("1");
+    accept(&mut s, &old, &op);
+    accept(&mut s, &e, &pages);
+    let start = std::time::Instant::now();
+    let open = DeliveryBudget {
+        records: 1000,
+        canonical_bytes: 32 * 1024 * 1024,
+        lua_bytes: 130 * 1024 * 1024,
+    };
+    let (full, receipt, sizes) = project(&s, &scope(), &request, &open).unwrap();
+    assert_eq!(full["records"][0]["daily"].as_array().unwrap().len(), 60);
+    let limited = DeliveryBudget {
+        records: 1000,
+        ..DeliveryBudget::default()
+    };
+    assert!(
+        matches!(project(&s,&scope(),&request,&limited),Err(Error::Capacity{limit:"canonical_bytes",actual,maximum:2097152}) if actual==sizes.canonical_bytes)
+    );
+    assert_eq!(
+        s.active(&scope()).unwrap().unwrap().checkpoint_id,
+        "2".repeat(64)
+    );
+    assert_eq!(
+        s.previous(&scope()).unwrap().unwrap().checkpoint_id,
+        "1".repeat(64)
+    );
+    assert_eq!(
+        twichui_market_core::archive::preflight(&full, &receipt, &open)
+            .unwrap()
+            .canonical_bytes,
+        sizes.canonical_bytes
+    );
+    println!(
+        "DENSE_CAPACITY {}",
+        json!({"origin":"synthetic","variants":200,"daily_closes":60,"sizes":sizes,"projection_and_refusal_ms":start.elapsed().as_secs_f64()*1000.,"refused":"canonical_bytes","policy_records":1000,"policy_canonical_bytes":2097152,"no_pruning":true})
+    );
+}
+#[test]
+fn future_sqlite_version_and_structural_corruption_do_not_reinitialize() {
+    let d = tempfile::tempdir().unwrap();
+    let path = d.path().join("archive.sqlite");
+    {
+        let db = rusqlite::Connection::open(&path).unwrap();
+        db.pragma_update(None, "user_version", 99).unwrap();
+    }
+    let before = std::fs::read(&path).unwrap();
+    assert!(ArchiveStore::open(&path, 64 * 1024 * 1024).is_err());
+    assert_eq!(std::fs::read(&path).unwrap(), before);
+    let bad = d.path().join("corrupt.sqlite");
+    std::fs::write(&bad, b"invalid sqlite bytes").unwrap();
+    assert!(ArchiveStore::open(&bad, 64 * 1024 * 1024).is_err());
+    assert_eq!(std::fs::read(bad).unwrap(), b"invalid sqlite bytes");
 }

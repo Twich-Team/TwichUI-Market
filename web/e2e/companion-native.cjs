@@ -138,11 +138,29 @@ const {createHash}=require('node:crypto');const fs=require('node:fs');const path
     const folder=path.join(process.env.MARKET_TEST_APP_DATA,'exports');const exports=fs.readdirSync(folder).filter(file=>file.endsWith('.json')&&!file.startsWith('diagnostics'));
     expect(exports.length).toBeGreaterThan(0);const data=JSON.parse(fs.readFileSync(path.join(folder,exports[exports.length-1]),'utf8'));
     expect(data.format).toBe('twichui-market-addon-data');expect(data.synthetic).toBe(true);expect(data.items).toHaveLength(2);expect(data.items[0].value.recent_price).toBe('100');
+    // Actual installed WebView -> Rust command -> authenticated archive server ->
+    // transactional SQLite -> schema-3 publisher, confined to test AppData.
+    await page.locator('#history-panel summary').click();await page.locator('#archive-sync').click();
+    await expect(page.locator('#scope-status')).toContainText('Archive complete',{timeout:30000});
+    const variant=createHash('sha256').update(JSON.stringify({id:12363})).digest('hex');
+    await page.locator('#scope-variants').fill('12363 '+variant);await page.locator('#scope-preview').click();
+    await expect(page.locator('#scope-status')).toContainText('1 exact variants',{timeout:30000});
+    await page.locator('#scope-export').click();await expect(page.locator('#message')).toContainText('Acknowledge');
+    await page.locator('#scope-compatible').check();await page.locator('#scope-export').click();
+    await expect(page.locator('#scope-status')).toContainText('Exported to',{timeout:30000});
+    const selected={variants:[{item_id:12363,variant_key:variant}],history_from_day:await page.locator('#scope-from').inputValue(),history_through_day:await page.locator('#scope-through').inputValue()};
+    const scoped=await invoke('archive_workshop',{algorithm:'twichui-pricing-v1',diskBudgetMib:4096,selected,publish:true,compatible:true});
+    expect(scoped.schema3_workshop_runtime_available).toBe(false);expect(scoped.sizes.records).toBe(1);
+    expect(path.relative(process.env.MARKET_TEST_APP_DATA,scoped.path).startsWith('workshop-testing'+path.sep)).toBe(true);
+    const lua=fs.readFileSync(scoped.path);expect(lua.length).toBe(scoped.sizes.lua_bytes);expect(lua.toString().startsWith('TwichUIMarketData = { transport_version = 1')).toBe(true);
+    expect(fs.readFileSync(path.join(path.dirname(scoped.path),'TwichUI_MarketData.toc'),'utf8')).not.toContain('SavedVariables');
+    expect(fs.existsSync(path.join(process.env.MARKET_TEST_APP_DATA,'history-archive-v1.sqlite'))).toBe(true);
+    fs.writeFileSync(path.join(shots,'installed-archive-smoke.json'),JSON.stringify({fixture:true,source_commit:sourceCommit,header:scoped.header,sizes:scoped.sizes,generation_id:scoped.generation_id,native_archive_command:true,manual_schema3_staging:true,no_game_installation:true},null,2));
     await page.locator('#disconnect').click();await expect.poll(async()=>(await invoke('app_state')).mode,{timeout:20000}).toBe('disconnected');
     expect((await invoke('app_state')).cache.item_count).toBe(2);
     const revoked=(await(await api.get('/api/v1/companion/devices')).json()).devices.find(row=>row.id===device.id);expect(revoked.revoked).toBe(true);
     fs.writeFileSync(path.join(shots,'installed-smoke.json'),JSON.stringify({fixture:true,source_commit:sourceCommit,installed_executable_sha256:installedExecutableHash,acceptance_scope:'Installed non-tray workflows; tray actions are a separate explicit gate',version:(await invoke('app_state')).version,native_browser_approval_api:true,native_browser_approval_ui:true,
-      native_thread_hidden_sync:true,single_instance_restore:true,preferences_saved:true,credential_and_cache_restart:true,hidden_startup:true,current_user_autostart_enable_disable:true,actual_tray_menu:trayVerified,tray_settings_sync_pause_open_quit:trayVerified,native_minimize_close_to_tray:true,export_valid:true,server_revocation:true,offline_cache_preserved:true,updater_disabled:false,updater_public_key_sha256:updaterKeyHash,update_checks_blocked_for_custom_server:true,
+      native_thread_hidden_sync:true,single_instance_restore:true,preferences_saved:true,credential_and_cache_restart:true,hidden_startup:true,current_user_autostart_enable_disable:true,actual_tray_menu:trayVerified,tray_settings_sync_pause_open_quit:trayVerified,native_minimize_close_to_tray:true,export_valid:true,history_archive_sync:true,scoped_manual_export:true,server_revocation:true,offline_cache_preserved:true,updater_disabled:false,updater_public_key_sha256:updaterKeyHash,update_checks_blocked_for_custom_server:true,
       website_approval_ui_verified:true,tray_rendering_evidence:{run_id:43647891422,real_menu_rendering_verified:true,actions_verified:false},tray_acceptance:trayVerified?'verified':'unverified',
       tray_limitation:trayVerified?null:'Focused runner attempt opened the real notification menu; UIA exposed no menu items. Owner manual acceptance required.',
       full_tray_autostart_upgrade_acceptance_complete:false},null,2));

@@ -40,9 +40,12 @@ jobs:
       - run: cargo test --manifest-path desktop/src-tauri/Cargo.toml --locked
       - run: cargo build --manifest-path desktop/Cargo.toml --example http_smoke --locked
       - run: cargo build --manifest-path desktop/Cargo.toml --example authorization_smoke --locked
+      - run: cargo build --manifest-path desktop/Cargo.toml --example archive_smoke --locked
       - run: pip install -r backend/requirements.lock
       - run: python scripts/verify-companion-http.py
       - run: python scripts/verify-companion-authorization.py
+      - name: Verify authenticated native archive and scoped manual publisher
+        run: python scripts/verify-archive-e2e.py --rust-client desktop/target/debug/examples/archive_smoke.exe --skip-lua --report artifacts/companion-v2/archive-e2e.json
       - run: npm ci --prefix desktop
       - run: npm --prefix desktop run tauri build -- --ci
         id: bundle

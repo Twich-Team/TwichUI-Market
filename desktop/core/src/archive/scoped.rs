@@ -310,6 +310,7 @@ pub fn preflight(g: &Value, receipt: &Value, budget: &DeliveryBudget) -> Result<
         budget.canonical_bytes > 0 && budget.lua_bytes > 0 && budget.records > 0,
         "delivery policy",
     )?;
+    validate_receipt(g, receipt)?;
     let s = sizes(g, receipt)?;
     for (kind, actual, maximum) in [
         (
@@ -334,6 +335,32 @@ pub fn preflight(g: &Value, receipt: &Value, budget: &DeliveryBudget) -> Result<
         }
     }
     Ok(s)
+}
+pub fn validate_receipt(g: &Value, r: &Value) -> Result<()> {
+    need(
+        r.as_object().is_some_and(|o| o.len() == 4)
+            && r["schema_version"] == 1
+            && r["generation_id"] == g["generation_id"]
+            && r["desktop_build"]
+                .as_str()
+                .is_some_and(|s| !s.is_empty() && s.len() <= 80),
+        "scoped delivery receipt",
+    )?;
+    let stamp = r["completed_at"]
+        .as_str()
+        .ok_or(Error::Invalid("scoped receipt time"))?;
+    let fraction = stamp.get(19..stamp.len().saturating_sub(1)).unwrap_or("");
+    need(
+        stamp.len() == 20
+            || ((2..=7).contains(&fraction.len())
+                && fraction.starts_with('.')
+                && fraction[1..].bytes().all(|b| b.is_ascii_digit())),
+        "scoped receipt precision",
+    )?;
+    need(
+        time_value(&r["completed_at"])? >= time_value(&g["generated_at"])?,
+        "scoped receipt predates generation",
+    )
 }
 pub fn receipt(g: &Value) -> Value {
     json!({"schema_version":1,"generation_id":g["generation_id"],"desktop_build":env!("CARGO_PKG_VERSION"),"completed_at":chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Micros,true)})

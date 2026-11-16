@@ -68,6 +68,8 @@ pub struct Header {
     pub server_build: String,
     pub retention_basis: String,
     pub archive_complete: bool,
+    pub retained_from_day: String,
+    pub retained_through_day: String,
     pub total_observations: u64,
     pub total_snapshots: u64,
     pub total_records: u64,
@@ -129,6 +131,14 @@ impl Header {
                     .is_none_or(|s| time(&s.clone().into()).is_ok_and(|t| t <= at)),
             "archive timestamps",
         )?;
+        let first = chrono::NaiveDate::parse_from_str(&self.retained_from_day, "%Y-%m-%d")
+            .map_err(|_| Error::Invalid("archive retained date"))?;
+        let last = chrono::NaiveDate::parse_from_str(&self.retained_through_day, "%Y-%m-%d")
+            .map_err(|_| Error::Invalid("archive retained date"))?;
+        need(
+            first <= last && last <= at.date_naive(),
+            "archive retained date range",
+        )?;
         need(
             !self.server_build.is_empty()
                 && self.server_build.len() <= 80
@@ -140,7 +150,7 @@ impl Header {
                 && self.total_observations <= 100_000
                 && self.total_snapshots > 0
                 && self.total_snapshots <= 4096
-                && self.total_records <= 10_000_000
+                && self.total_records <= 100_000_000
                 && self.transfer_observations <= self.total_observations
                 && self.transfer_snapshots <= self.total_snapshots
                 && self.transfer_records <= self.total_records

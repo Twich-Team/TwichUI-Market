@@ -33,7 +33,7 @@ REVISION = 1
 MAX_PAGE = 1024 * 1024
 MAX_OBSERVATIONS = 100_000
 MAX_SNAPSHOTS = 4096
-MAX_RECORDS = 10_000_000
+MAX_RECORDS = 100_000_000  # Normalized archive evidence, never a WoW generation.
 MAX_METADATA = 64 * 1024 * 1024
 MAX_CHECKPOINTS = 512
 MAX_CHECKPOINT_METADATA = 256 * 1024 * 1024
@@ -163,7 +163,7 @@ def checkpoint(market_id: MarketId, request: Request, algorithm: str = Query(cp.
     if watermark is None:
         raise HTTPException(409, 'No retained observations')
     obs_query = select(Observation).where(Observation.market_id == market_id, Observation.id <= watermark, Observation.retrieved_at <= at)
-    count = db.scalar(select(func.count()).select_from(obs_query.subquery()))
+    count, earliest, latest = db.execute(obs_query.with_only_columns(func.count(), func.min(Observation.retrieved_at), func.max(Observation.retrieved_at))).one()
     if count > MAX_OBSERVATIONS:
         raise HTTPException(413, 'Archive observation bound')
     if old and db.scalar(select(func.count()).select_from(obs_query.where(Observation.id <= base_watermark).subquery())) != old['total_observations']:
@@ -256,6 +256,8 @@ def checkpoint(market_id: MarketId, request: Request, algorithm: str = Query(cp.
         db.add(ArchiveMember(checkpoint_id=checkpoint_id, phase=1, source_id=sid, value_json=raw.decode(), transmit=send))
     if total_records > MAX_RECORDS:
         raise HTTPException(413, 'Archive record bound')
+    if transfer_bytes > 1024**4:
+        raise HTTPException(413, 'Archive transfer byte bound')
     header = {'format': 'twichui-history-archive', 'protocol_version': 1, 'checkpoint_id': checkpoint_id,
               'account_id': user.id, 'issuer_id': str(uuid.uuid5(uuid.NAMESPACE_URL, environment.SESSION_ORIGIN)),
               'market': identity, 'pricing_algorithm': algorithm,
@@ -266,6 +268,7 @@ def checkpoint(market_id: MarketId, request: Request, algorithm: str = Query(cp.
               'server_checked_at': bridge.stamp(market.last_success) if market.last_success and aware(market.last_success) <= at else None,
               'server_build': (os.environ.get('APP_COMMIT') or 'development-archive-l2')[:80],
               'retention_basis': 'all_retained_observations_and_snapshot_summaries', 'archive_complete': True,
+              'retained_from_day': aware(earliest).date().isoformat(), 'retained_through_day': aware(latest).date().isoformat(),
               'total_observations': count, 'total_snapshots': len(ids), 'total_records': total_records,
               'transfer_observations': sent_observations, 'transfer_snapshots': sent_snapshots, 'transfer_records': sent_records,
               'transfer_bytes': transfer_bytes,
@@ -353,6 +356,9 @@ def scoped_generation(db, row, requested):
     if (request['market'] != h['market'] or request['issuer_id'] != h['issuer_id']
             or request['pricing_algorithm'] != h['pricing_algorithm'] or request['history_basis'] != h['history_basis']):
         raise HTTPException(409, 'Selection differs from authenticated checkpoint')
+    if len(request['variants']) > 100:
+        raise c.Refusal('capacity', {'sizes': {'records': len(request['variants'])},
+            'exceeded': {'records': {'actual': len(request['variants']), 'limit': 100}}})
     at = c.v1.timestamp(h['generated_at'])
     today = at.date()
     if request['history_through_day'] > today.isoformat() or not 0 <= (today - date.fromisoformat(request['history_from_day'])).days < 60:

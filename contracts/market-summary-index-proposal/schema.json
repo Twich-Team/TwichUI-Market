@@ -1,0 +1,290 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.twich.gg/market-summary-index/proposal-v1",
+  "title": "Experimental L2 feasibility interface; no production capability",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "schema_version",
+    "experimental",
+    "market",
+    "issuer_id",
+    "pricing_algorithm",
+    "history_basis",
+    "source_kind",
+    "confidence_ceiling",
+    "can_satisfy_local_competition",
+    "source_watermark",
+    "generated_at",
+    "identity_basis",
+    "columns",
+    "states",
+    "confidence_states",
+    "coverage",
+    "record_count",
+    "generation_id",
+    "records_sha256",
+    "records",
+    "source_observation"
+  ],
+  "properties": {
+    "format": {
+      "const": "twichui-market-summary-index"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "experimental": {
+      "const": true
+    },
+    "market": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "game": {
+          "const": "wow-forever"
+        },
+        "region": {
+          "enum": [
+            "us",
+            "eu",
+            "kr",
+            "tw"
+          ]
+        },
+        "player_ruleset": {
+          "anyOf": [
+            {
+              "enum": [
+                "Normal",
+                "PvP",
+                "Roleplay",
+                "Roleplay PvP"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "house_id": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "source_kind": {
+          "enum": [
+            "auctions",
+            "commodities"
+          ]
+        },
+        "server_market_id": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "transport_ruleset_id": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "mapping_verified": {
+          "type": "boolean"
+        },
+        "mapping_evidence_sha256": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "realm_scope": {
+          "const": "ruleset_house"
+        }
+      },
+      "required": [
+        "game",
+        "region",
+        "player_ruleset",
+        "house_id",
+        "source_kind",
+        "server_market_id",
+        "transport_ruleset_id",
+        "mapping_verified",
+        "mapping_evidence_sha256",
+        "realm_scope"
+      ]
+    },
+    "issuer_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "pricing_algorithm": {
+      "const": "twichui-pricing-v1"
+    },
+    "history_basis": {
+      "const": "canonical_complete_scope_close"
+    },
+    "source_kind": {
+      "const": "market_server_asking_summary"
+    },
+    "confidence_ceiling": {
+      "const": "limited"
+    },
+    "can_satisfy_local_competition": {
+      "const": false
+    },
+    "source_watermark": {
+      "type": "string",
+      "pattern": "^[1-9][0-9]{0,18}$"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "identity_basis": {
+      "const": "exact_variant_hash"
+    },
+    "columns": {
+      "const": [
+        "item_id",
+        "variant_key",
+        "state",
+        "recent_copper",
+        "market_value_copper",
+        "minimum_copper",
+        "supply",
+        "age_seconds",
+        "confidence"
+      ]
+    },
+    "states": {
+      "const": [
+        "priced",
+        "supply_only",
+        "absent",
+        "unknown",
+        "unsupported"
+      ]
+    },
+    "confidence_states": {
+      "const": [
+        "limited",
+        "unavailable"
+      ]
+    },
+    "coverage": {
+      "const": {
+        "type": "all_retained_exact_identity_summaries",
+        "complete": true,
+        "missing": "unavailable",
+        "detailed_history": "independent"
+      }
+    },
+    "record_count": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 150000
+    },
+    "generation_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "records_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "records": {
+      "type": "array",
+      "maxItems": 150000,
+      "items": {
+        "type": "array",
+        "minItems": 9,
+        "maxItems": 9,
+        "prefixItems": [
+          {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4
+          },
+          {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[1-9][0-9]{0,10}$"
+          },
+          {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[1-9][0-9]{0,10}$"
+          },
+          {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[1-9][0-9]{0,10}$"
+          },
+          {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483647
+          },
+          {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1
+          }
+        ],
+        "items": false
+      }
+    },
+    "source_observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "observation_id",
+        "observed_at",
+        "scope_complete"
+      ],
+      "properties": {
+        "observation_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "scope_complete": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

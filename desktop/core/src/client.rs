@@ -296,7 +296,7 @@ impl MarketClient {
         scope: &crate::bridge::Scope,
         cancelled: impl Fn() -> bool,
     ) -> Result<()> {
-        if self.download_archive_pages(store, scope, cancelled, 300_000)? {
+        if self.download_archive_pages(store, scope, cancelled, 1_100_000)? {
             Ok(())
         } else {
             Err(Error::Invalid("archive page safety bound"))

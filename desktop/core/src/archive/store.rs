@@ -438,6 +438,7 @@ fn complete(db: &Connection, key: &str, h: &Header) -> Result<()> {
     let mut snapshots = BTreeMap::new();
     let mut observed_snapshots = std::collections::BTreeSet::new();
     let mut maximum_observation = 0;
+    let mut days = std::collections::BTreeSet::new();
     while let Some(r) = rows.next()? {
         let phase = r.get::<_, u8>(0)? as usize;
         let source: u64 = unsigned(r, 1)?;
@@ -449,6 +450,7 @@ fn complete(db: &Connection, key: &str, h: &Header) -> Result<()> {
             snapshots.insert(source, value);
         } else {
             maximum_observation = maximum_observation.max(source);
+            days.insert(value["observation"]["utc_day"].as_str().unwrap().to_owned());
             observed_snapshots.insert((
                 unsigned(r, 4)?,
                 value["observation"]["snapshot_content_sha256"]
@@ -471,6 +473,10 @@ fn complete(db: &Connection, key: &str, h: &Header) -> Result<()> {
         }) && observed_snapshots.len() == snapshots.len()
             && maximum_observation == id(&h.watermark_observation_id)?,
         "archive missing snapshot reference",
+    )?;
+    need(
+        days.first() == Some(&h.retained_from_day) && days.last() == Some(&h.retained_through_day),
+        "archive retained date coverage",
     )?;
     // Verify each transferred snapshot in a single ordered row stream.
     let mut digests: BTreeMap<u64, (u64, u64, Sha256)> = BTreeMap::new();

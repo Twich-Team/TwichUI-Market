@@ -49,7 +49,7 @@ fn read_literal(bytes:&[u8],i:&mut usize,max:usize)->Result<Vec<u8>>{
  }
 }
 pub(crate) fn artifact(g:&Value,receipt:&Value)->Result<Vec<u8>>{
- validate_export(g)?;let h:serde_json::Map<String,Value>=g.as_object().unwrap().iter().filter(|(k,_)|k.as_str()!="records").map(|(k,v)|(k.clone(),v.clone())).collect();
+ validate_export(g)?;if g["schema_version"]==3{crate::archive::scoped::validate_receipt(g,receipt)?;}let h:serde_json::Map<String,Value>=g.as_object().unwrap().iter().filter(|(k,_)|k.as_str()!="records").map(|(k,v)|(k.clone(),v.clone())).collect();
  let records=g["records"].as_array().unwrap();let header=canonical(&Value::Object(h))?;if header.len()>manifest_limit(g){return refuse()}
  let mut out=PREFIX.as_bytes().to_vec();literal(&header,&mut out);out.extend_from_slice(b", records = {\n");
  for r in records{let raw=canonical(r)?;if raw.len()>65536{return refuse()}literal(&raw,&mut out);out.extend_from_slice(b",\n")}
@@ -63,7 +63,7 @@ pub fn inspect_artifact(bytes:&[u8])->Result<(Value,Value)>{
  let mut r=Reader{b:bytes,i:0};r.exact(PREFIX.as_bytes())?;let mut g=parse(&r.string(256*1024)?,256*1024)?;r.exact(b", records = {\n")?;let mut records=Vec::new();let mut size=0;
  while r.b.get(r.i)==Some(&b'"'){let raw=r.string(65536)?;size+=raw.len()+1;if size>MAX_BYTES||records.len()>=150000{return refuse()}records.push(parse(&raw,65536)?);r.exact(b",\n")?}
  r.exact(b"}, receipt = ")?;let receipt=parse(&r.string(4096)?,4096)?;r.exact(b" }\n")?;if r.i!=bytes.len(){return refuse()}g.as_object_mut().ok_or(Error::Invalid("bridge Lua manifest"))?.insert("records".into(),records.into());validate_export(&g)?;
- if receipt["schema_version"]!=1||receipt["generation_id"]!=g["generation_id"]||receipt.as_object().is_none_or(|o|o.len()!=4)||receipt["desktop_build"].as_str().is_none_or(|s|s.is_empty()||s.len()>80)||super::validation::time(&receipt["completed_at"]).is_err(){return refuse()}Ok((g,receipt))
+ if receipt["schema_version"]!=1||receipt["generation_id"]!=g["generation_id"]||receipt.as_object().is_none_or(|o|o.len()!=4)||receipt["desktop_build"].as_str().is_none_or(|s|s.is_empty()||s.len()>80)||super::validation::time(&receipt["completed_at"]).is_err(){return refuse()}if g["schema_version"]==3{crate::archive::scoped::validate_receipt(&g,&receipt)?;}Ok((g,receipt))
 }
 fn read(path:&Path,maximum:usize)->Result<Vec<u8>>{no_links(path)?;let mut data=Vec::new();fs::File::open(path)?.take(maximum as u64+1).read_to_end(&mut data)?;if data.len()>maximum{return refuse()}Ok(data)}
 fn atomic(path:&Path,bytes:&[u8])->Result<()>{let parent=path.parent().ok_or(Error::Invalid("bridge staging parent"))?;no_links(parent)?;no_links(path)?;let mut f=tempfile::NamedTempFile::new_in(parent)?;f.write_all(bytes)?;f.flush()?;f.as_file().sync_all()?;
