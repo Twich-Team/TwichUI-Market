@@ -31,13 +31,14 @@ def fingerprint():
         return {t:hashlib.sha256(repr(db.execute(text('SELECT '+','.join('"'+c+'"' for c in cols)+' FROM '+t+' ORDER BY 1,2')).all()).encode()).hexdigest() for t,cols in columns.items()}
 before=fingerprint();migrate('upgrade','head');migrate('check');assert fingerprint()==before
 with engine.begin() as db:
+    upgraded_revision=db.scalar(text('SELECT version_num FROM alembic_version'))
     db.execute(text("""INSERT INTO metadata_resources(region,resource,"offset",status) VALUES('us','professions/alchemy',0,'pending')"""))
     db.execute(text("UPDATE metadata_tasks SET resource='professions/alchemy'"))
 r=migrate('downgrade','rates_20261115',success=False)
 assert r.returncode and 'Retain ForeverDB resource data' in r.stderr
 with engine.begin() as db:
-    assert db.scalar(text('SELECT version_num FROM alembic_version'))=='fdb_20261116'
+    assert db.scalar(text('SELECT version_num FROM alembic_version'))==upgraded_revision
     db.execute(text('DELETE FROM metadata_resources'));db.execute(text('UPDATE metadata_tasks SET resource=NULL'))
 migrate('downgrade','rates_20261115');assert fingerprint()==before
 migrate('upgrade','head');migrate('check');assert fingerprint()==before
-print(json.dumps({'database':'market_test','baseline':'rates_20261115','head':'fdb_20261116','original_metadata_credentials_counters_and_jobs_preserved':True,'populated_resource_downgrade_refused':True,'upgrade_check_downgrade_reupgrade':True}))
+print(json.dumps({'database':'market_test','baseline':'rates_20261115','head':upgraded_revision,'original_metadata_credentials_counters_and_jobs_preserved':True,'populated_resource_downgrade_refused':True,'upgrade_check_downgrade_reupgrade':True}))

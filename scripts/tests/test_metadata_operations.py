@@ -29,6 +29,10 @@ class MetadataOperationGuards(unittest.TestCase):
         for script in ('verify-provider-rate-migration.py','verify-foreverdb-migration.py','benchmark-provider-rates.py'):
             self.rejected(script,'sqlite:////tmp/market_test')
 
+    def test_archive_migration_rejects_non_test_database_before_connecting(self):
+        self.rejected('verify-archive-migration.py','postgresql+psycopg://invalid.invalid/market')
+        self.rejected('verify-archive-migration.py','sqlite:////tmp/market_test')
+
     def test_migration_rejects_sqlite_even_with_test_name(self):
         self.rejected('verify-metadata-migration.py','sqlite:////tmp/market_test')
 

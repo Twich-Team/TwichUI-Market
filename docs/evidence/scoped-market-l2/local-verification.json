@@ -1,0 +1,41 @@
+{
+  "origin": "synthetic/offline",
+  "runtime_source": "2487360bb004e28ad14b6987ffbd8604c3495118",
+  "rust_workspace": {
+    "passed": 89,
+    "ignored": 1,
+    "ignored_reason": "explicit M1.5 profiling workload not invoked"
+  },
+  "focused_final_postgresql_archive": {
+    "passed": 9
+  },
+  "full_postgresql_before_retention_fixture_correction": {
+    "passed": 583,
+    "failed": 1,
+    "failure": "synthetic deletion omitted the existing DailyObservation foreign-key reference; fixture corrected and all nine archive cases pass on PostgreSQL; full CI remains required"
+  },
+  "l1_python": {
+    "passed": 16
+  },
+  "l1_lua_consumer": {
+    "passed": 4,
+    "addon_commit": "5133a43477237bf7cd97a429a680a751a9533f7c"
+  },
+  "operational_python": {
+    "passed": 43
+  },
+  "mocked_ipc_ui": {
+    "passed": true,
+    "native_evidence": false,
+    "accessibility": "no serious/critical axe violations"
+  },
+  "fixture_mirror": {
+    "payload_count": 15,
+    "manifest_sha256": "c5a465e323005735444f3e5fe2ec48241f50942ebdfb7e7078049849206ec2a7",
+    "upstream_fixture_commit": "74686fefacb5e43d6ad9d02c827a859859d09082",
+    "byte_identical": true
+  },
+  "production_access": false,
+  "real_forever_acceptance": false,
+  "ci": "See PR #15 checks; final exact-source results are recorded separately."
+}

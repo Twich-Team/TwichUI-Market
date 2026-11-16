@@ -34,6 +34,7 @@ with engine.begin() as db:
 migrate('upgrade','head')
 migrate('check')
 with engine.begin() as db:
+    upgraded_revision=db.scalar(text('SELECT version_num FROM alembic_version'))
     after = dict(db.execute(text('SELECT * FROM metadata_providers')).mappings().one())
     assert {key:after[key] for key in original} == original
     assert after['rate_config'] is None and after['rate_streak'] == 0
@@ -42,7 +43,7 @@ with engine.begin() as db:
 rejected=migrate('downgrade','bridge_20261115',success=False)
 assert rejected.returncode and 'Export provider rate settings and accounting' in rejected.stderr
 with engine.begin() as db:
-    assert db.scalar(text('SELECT version_num FROM alembic_version')) == 'fdb_20261116'
+    assert db.scalar(text('SELECT version_num FROM alembic_version')) == upgraded_revision
     assert db.scalar(text('SELECT used FROM metadata_quota_buckets')) == 1
     db.execute(text('DELETE FROM metadata_quota_buckets'))
     db.execute(text('UPDATE metadata_providers SET rate_config=NULL'))
@@ -52,5 +53,5 @@ with engine.connect() as db:
 migrate('upgrade','head')
 migrate('check')
 print(json.dumps({'origin':'synthetic','database':'market_test','baseline_revision':'bridge_20261115',
-    'head_revision':'fdb_20261116','settings_credentials_usage_cooldown_preserved':True,
+    'head_revision':upgraded_revision,'settings_credentials_usage_cooldown_preserved':True,
     'populated_downgrade_refused':True,'empty_rate_state_downgrade_reupgrade':True}))

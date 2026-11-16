@@ -52,13 +52,14 @@ def originals():
 before=originals();migrate('upgrade','head');migrate('check');assert originals()==before
 from market.models import MetadataProvider
 with Session(engine) as db,db.begin():
+    upgraded_revision=db.scalar(text('SELECT version_num FROM alembic_version'))
     db.add(MetadataProvider(provider='everloot',credential=b'synthetic-envelope',credential_key_id='fixture'))
 rejected=migrate('downgrade','0013',success=False)
 assert rejected.returncode and 'Export metadata and provider credentials' in rejected.stderr
 with engine.begin() as db:
-    assert db.scalar(text('select version_num from alembic_version'))=='fdb_20261116'
+    assert db.scalar(text('select version_num from alembic_version'))==upgraded_revision
     db.execute(text('delete from metadata_providers'))
 migrate('downgrade','0013');assert originals()==before
 migrate('upgrade','head');migrate('check');assert originals()==before
-print(json.dumps({'database':'market_test','revision':'fdb_20261116','existing_rows_preserved':True,
+print(json.dumps({'database':'market_test','revision':upgraded_revision,'existing_rows_preserved':True,
     'populated_downgrade_refused':True,'empty_downgrade_reupgrade':True,'synthetic_only':True}))

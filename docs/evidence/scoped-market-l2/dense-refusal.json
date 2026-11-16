@@ -1,0 +1,17 @@
+{
+  "daily_closes": 60,
+  "no_pruning": true,
+  "origin": "synthetic",
+  "policy_canonical_bytes": 2097152,
+  "policy_records": 1000,
+  "projection_and_refusal_ms": 8312.261306,
+  "refused": "canonical_bytes",
+  "sizes": {
+    "canonical_bytes": 2537415,
+    "lua_bytes": 3615344,
+    "manifest_bytes": 84003,
+    "records": 200
+  },
+  "variants": 200,
+  "method": "actual Rust ArchiveStore and scoped projector; 200 variants/60 closes, explicit 1000-record test policy to isolate byte refusal; not default operating count or client performance"
+}

@@ -28,7 +28,7 @@ def rss():
  except (OSError,StopIteration):return None
 
 def main():
- p=argparse.ArgumentParser(description=__doc__);p.add_argument('--rust-client',type=Path,required=True);p.add_argument('--addon-root',type=Path);p.add_argument('--skip-lua',action='store_true',help='CI-only: explicitly leave the independent Lua gate untested');p.add_argument('--variants',type=int,default=129);p.add_argument('--report',type=Path);args=p.parse_args()
+ p=argparse.ArgumentParser(description=__doc__);p.add_argument('--rust-client',type=Path,required=True);p.add_argument('--addon-root',type=Path);p.add_argument('--skip-lua',action='store_true',help='CI-only: explicitly leave the independent Lua gate untested');p.add_argument('--algorithm',choices=['twichui-pricing-v1','asking-v1-provisional'],default='twichui-pricing-v1');p.add_argument('--variants',type=int,default=129);p.add_argument('--report',type=Path);args=p.parse_args()
  if not args.skip_lua and not args.addon_root:p.error('--addon-root is required unless --skip-lua is explicit')
  if not 105<=args.variants<=45125:raise ValueError('bounded synthetic archive count 105..45125 required')
  with tempfile.TemporaryDirectory(prefix='twichui-archive-e2e-') as directory:
@@ -74,7 +74,14 @@ def main():
   fingerprints={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in measured_files}
   native_sha=hashlib.sha256(args.rust_client.read_bytes()).hexdigest()
   origin=f'http://127.0.0.1:{port}';stage=temp/'staging';stage.mkdir(mode=0o700);cache=temp/'history.sqlite'
-  env=os.environ.copy();env['TWICHUI_ARCHIVE_TEST_TOKEN']=token
+  if os.name=='nt':
+   # Python's temporary-directory ACL is not guaranteed private on every runner.
+   # Configure only this newly created empty fixture directory; production
+   # ownership/reparse checks stay strict and are independently negative-tested.
+   sid=subprocess.check_output(['powershell','-NoProfile','-Command','[System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value'],text=True).strip()
+   subprocess.run(['icacls',str(stage),'/reset'],check=True,capture_output=True)
+   subprocess.run(['icacls',str(stage),'/inheritance:r','/grant:r',f'*{sid}:(OI)(CI)F','*S-1-5-18:(OI)(CI)F','*S-1-5-32-544:(OI)(CI)F'],check=True,capture_output=True)
+  env=os.environ.copy();env['TWICHUI_ARCHIVE_TEST_TOKEN']=token;env['TWICHUI_ARCHIVE_TEST_ALGORITHM']=args.algorithm
   def native(action,request=None,expected=True,account_override=None):
    command=[str(args.rust_client.resolve()),origin,str(account_override or account),str(mid),str(cache),str(stage),action]
    if request:command.append(str(request))
@@ -117,8 +124,10 @@ def main():
     assert exact==g,'actual Rust and server scoped generation bytes differ'
     return result,g,request,path
    ten,g,request,request_path=export(h,10)
+   expected_mv='100' if args.algorithm=='twichui-pricing-v1' else '110'
+   expected_updated_mv='100' if args.algorithm=='twichui-pricing-v1' else '120'
    priced=next(r for r in g['records'] if r['item_id']==2589)
-   assert [d['recent_copper'] for d in priced['daily']]==['100','120'] and priced['current']['metrics']['market_value_copper']=='100'
+   assert [d['recent_copper'] for d in priced['daily']]==['100','120'] and priced['current']['metrics']['market_value_copper']==expected_mv
    assert g['records'][0]['current']['state']=='absent' and g['records'][1]['current']['metrics']['recent_copper'] is None and g['records'][1]['current']['supply']==2
    assert len([d for d in g['scope']['date_coverage'] if d['state']=='no_observation'])==58
    hundred,g,request,request_path=export(h,100)
@@ -131,6 +140,7 @@ def main():
    final,final_g,final_request,_=export(nh,100)
    priced=next(r for r in final_g['records'] if r['item_id']==2589)
    assert [d['recent_copper'] for d in priced['daily']]==['100','140']
+   assert priced['current']['metrics']['market_value_copper']==expected_updated_mv
    # Schema-3 output passes the L1 test-only consumer, never a production L3 reader.
    lua_proof='NOT RUN (explicit --skip-lua)'
    if not args.skip_lua:
@@ -162,12 +172,12 @@ def main():
    except ImportError:peak=None
    assert all(hashlib.sha256((ROOT/p).read_bytes()).hexdigest()==h for p,h in fingerprints.items()),'measured implementation changed during acceptance'
    assert hashlib.sha256(args.rust_client.read_bytes()).hexdigest()==native_sha,'native binary changed during acceptance'
-   report={'result':'PASS','source_revision':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),'source_sha256':fingerprints,'native_binary_sha256':native_sha,'synthetic_seed_seconds':seed_seconds,'server_sqlite_bytes':(temp/'market_test.sqlite').stat().st_size,'origin':'synthetic','variants':args.variants,'python':platform.python_version(),'production_access':False,'real_client_acceptance':False,
+   report={'result':'PASS','source_revision':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),'source_sha256':fingerprints,'native_binary_sha256':native_sha,'synthetic_seed_seconds':seed_seconds,'server_sqlite_bytes':(temp/'market_test.sqlite').stat().st_size,'origin':'synthetic','variants':args.variants,'algorithm':args.algorithm,'python':platform.python_version(),'production_access':False,'real_client_acceptance':False,
     'initial_step':partial,'initial_resume':initial,'incremental_step':partial_update,'incremental_resume':updated,'ten_variant_export':ten,'hundred_variant_export':hundred,'updated_export':final,
     'server_request_process_cpu_ms_total':sum(s['process_cpu_ms'] for s in request_stats),'page_process_cpu_ms_total':sum(s['process_cpu_ms'] for s in page_stats),'cpu_measurement':'Python server process CPU across each request; includes small coordinator polling overhead, excludes seed and native Rust subprocess',
     'server_sql_total':sql[0],'archive_page_requests':len(page_stats),'page_sql_max':max(s['sql'] for s in page_stats),'page_sql_total':sum(s['sql'] for s in page_stats),
     'server_process_peak_rss_bytes_including_seed':peak,'server_request_sampled_rss_bytes':max((s['sampled_rss_bytes'] or 0) for s in request_stats),'page_response_ms_max':max(s['ms'] for s in page_stats),
-    'independent_expected':{'initial_recent':['100','120'],'updated_recent':['100','140'],'market_value':'100','historical_value':None,'historical_current_state':'absent','bid_supply':2,'missing_days':58},
+    'independent_expected':{'initial_recent':['100','120'],'updated_recent':['100','140'],'market_value':expected_mv,'updated_market_value':expected_updated_mv,'historical_value':None if args.algorithm=='twichui-pricing-v1' else '110','historical_current_state':'absent','bid_supply':2,'missing_days':58},
     'lua_proof':lua_proof,'same_day_noop_retains_checkpoint':True,'corrupt_existing_artifact_refused':True,'over_budget_preserves_artifact':True,'wrong_account_refused':True}
    # Temporary artifact paths are not reusable evidence and never identify game files.
    for name in ('ten_variant_export','hundred_variant_export','updated_export'):

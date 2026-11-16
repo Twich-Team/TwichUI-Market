@@ -15,7 +15,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         server: twichui_market_core::client::server_url(&a[0])?.to_string(),
         account_id: a[1].parse()?,
         market_id: a[2].parse()?,
-        algorithm: "twichui-pricing-v1".into(),
+        algorithm: std::env::var("TWICHUI_ARCHIVE_TEST_ALGORITHM")
+            .unwrap_or_else(|_| "twichui-pricing-v1".into()),
     };
     let mut store = ArchiveStore::open(&PathBuf::from(&a[3]), DEFAULT_DISK_BUDGET)?;
     let start = Instant::now();
