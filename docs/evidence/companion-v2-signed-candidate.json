@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
-  "version": "2.0.0-beta.2",
-  "payload_source_commit": "c7bad2f5e84213e1c69e3eb66e8daa6540f05bc9",
-  "windows_run_id": 43664574901,
-  "backend_run_id": 43664574952,
-  "website_run_id": 43664574886,
-  "installer_artifact_id": 14141637538,
-  "installer_sha256": "0fbc53603c218ffa85c8ee7b4e54f25e53c52a6fc3b2330ae914337714d41869",
-  "installer_bytes": 4426483,
-  "executable_sha256": "fc11b4428f712779e8ac0f954847c8089f869a30567e71c67a422b1ce057d46f",
+  "version": "2.0.0-beta.3",
+  "payload_source_commit": "bd656f19b68f10418e966c8a6418fb3aeaff045e",
+  "windows_run_id": 43794191014,
+  "backend_run_id": 43794190925,
+  "website_run_id": 43794191023,
+  "installer_artifact_id": 14194540087,
+  "installer_sha256": "d31efbb8a6611cad107f8b368eb8c16585125e269fae180bfabdd9ae6c287183",
+  "installer_bytes": 4515855,
+  "executable_sha256": "0b1f7a661064d74233423f48270ce22bb3b9776d5850faf4e6fd0262ecbc6b82",
   "updater_public_key_sha256": "5794736c840c7c09a49396e60cd569ff6b5f24f872eb0318ed95d55c16616ecf",
-  "updater_signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTSTBwUk5ybTY3SmNZa3E3ZnRueXRLWlFjY3F6VzBRcmN0NWpTTENzRGNFcjZYUy9sMVlxMnFYRElORm1rcjVMaVBlUUVvQlBxK0N6S0lwRzJCM0J1dWdHUFN5RngrMUFnPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzk0NzA3NjUyCWZpbGU6VHdpY2hVSS1NYXJrZXQtQ29tcGFuaW9uLTIuMC4wLWJldGEuMi13aW5kb3dzLXg2NC5leGUJdmVyc2lvbjoyLjAuMC1iZXRhLjIKUThCUWxIM2thNjk4d0dHSklUemFSSGV1bDRkMTgvSkNaeHJQTXBSUWp4emNnVmthbU9oYVErWDV3OW5BRFVOTm5pa045K2k4eUdvdXpMd3o1eVJ4QUE9PQo="
+  "updater_signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTSTBwUk5ybTY3SmZrdkxhYVpsd1RFV2JYOGREOXdVUTlLTkMyYUZtamdpc09NMm1rQzJXY3RFM01wN1RQMHloaDhDc2FEaXVLdFhkanJMV21wV2p2cDFsM09NeXBkaFFnPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzk0Nzk4MDIyCWZpbGU6VHdpY2hVSS1NYXJrZXQtQ29tcGFuaW9uLTIuMC4wLWJldGEuMy13aW5kb3dzLXg2NC5leGUJdmVyc2lvbjoyLjAuMC1iZXRhLjMKbWVLM21RRXdCc0paN1pHenF1YVoxd3kzWElETExrNkp3NjAzeUpuUzBDRkJsdHVJeFMyYmVjaktPWUpMbHRqN0VuZHZNaHczdFNFTnVVZVBNanFhRGc9PQo="
 }
