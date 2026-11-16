@@ -447,5 +447,29 @@
     "plaintext_written": false,
     "secrets_rotated": false,
     "off_host_copy_verified": false
+  },
+  "bridge_validation": {
+    "sources_unchanged": true,
+    "browser_access_guard_http": 403,
+    "full_native_generation_repeated": false,
+    "existing_delivery_hold_preserved": true
+  },
+  "bounded_runtime_log_check": {
+    "api": {
+      "traceback_lines": 0,
+      "error_lines": 0
+    },
+    "local-api": {
+      "traceback_lines": 0,
+      "error_lines": 0
+    },
+    "proxy": {
+      "traceback_lines": 0,
+      "error_lines": 0
+    },
+    "enrichment": {
+      "traceback_lines": 0,
+      "error_lines": 0
+    }
   }
 }
