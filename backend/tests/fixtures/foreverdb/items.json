@@ -1,0 +1,52 @@
+{
+  "data": [
+    {
+      "id": 25,
+      "name": "Worn Shortsword",
+      "quality": "Common",
+      "qualityId": 1,
+      "itemLevel": 2,
+      "requiredLevel": 1,
+      "classId": 2,
+      "class": "Weapon",
+      "subclassId": 7,
+      "subclass": "Sword",
+      "inventoryTypeId": 21,
+      "inventoryType": "Main Hand",
+      "icon": "https://foreverdb.net/icons/135274.webp",
+      "url": "https://foreverdb.net/item/25",
+      "betaEvent": false,
+      "speculation": false,
+      "speculationReasons": []
+    },
+    {
+      "id": 35,
+      "name": "Bent Staff",
+      "quality": "Common",
+      "qualityId": 1,
+      "itemLevel": 2,
+      "requiredLevel": 1,
+      "classId": 2,
+      "class": "Weapon",
+      "subclassId": 10,
+      "subclass": "Staff",
+      "inventoryTypeId": 17,
+      "inventoryType": "Two-Hand",
+      "icon": "https://foreverdb.net/icons/135145.webp",
+      "url": "https://foreverdb.net/item/35",
+      "betaEvent": false,
+      "speculation": false,
+      "speculationReasons": []
+    }
+  ],
+  "meta": {
+    "build": "1.60.1.70938",
+    "total": 23696,
+    "limit": 2,
+    "offset": 0,
+    "next": "/api/v1/items?limit=2&offset=2",
+    "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+    "attributionRequired": true,
+    "client": "dev-0255"
+  }
+}

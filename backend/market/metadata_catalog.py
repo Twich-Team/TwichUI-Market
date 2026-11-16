@@ -7,7 +7,7 @@ from .models import ItemMetadata, MetadataSource, MetadataVersion
 from .metadata_providers import PROVIDERS
 
 PRECEDENCE = {'blizzard': 0, 'everloot': 1, 'foreverdb': 2, 'thewowdb': 3}
-FIELDS = {'name', 'quality', 'class', 'subclass', 'slot', 'level', 'required_level', 'binding', 'vendor_sell', 'lines', 'icon_reference'}
+FIELDS = {'name', 'quality', 'class', 'subclass', 'slot', 'level', 'required_level', 'binding', 'vendor_sell', 'lines', 'icon_reference', 'category_ids', 'stats', 'weapon', 'effects', 'unique', 'disenchantable', 'disenchant', 'availability', 'crafting', 'vendors', 'item_sets'}
 
 
 def get_source(db, region, item_id, provider, locale='en_US'):
@@ -47,6 +47,10 @@ def store_source(db, region, item_id, provider, fields, source, *, at=None, etag
                 # Validate their plain text without changing the stored layout;
                 # HTML and every other control character remain rejected.
                 plain(line.replace('\n', ' ').replace('\t', ' '),512)
+        elif key in ('category_ids','stats','weapon','effects','unique','disenchantable','disenchant','availability','crafting','vendors','item_sets'):
+            from .foreverdb import safe_json
+            safe_json(value)
+            if len(json.dumps(value)) > 262144: raise ValueError('Detailed metadata limit')
         elif key == 'icon_reference':
             if not isinstance(value,str) or not value.startswith('/api/v1/items/'): raise ValueError('Only locally served artwork references')
     row = get_source(db, region, item_id, provider)
@@ -54,8 +58,10 @@ def store_source(db, region, item_id, provider, fields, source, *, at=None, etag
     previous = json.loads(row.fields_json) if row.fields_json else {}
     merged = {**previous, **{k: v for k, v in fields.items() if v is not None and v != []}}
     field_sources = json.loads(row.source_json).get('field_sources', {}) if row.source_json else {}
-    field_sources.update({k: source for k, v in fields.items() if v is not None and v != []})
-    provenance = {**source, 'field_sources': field_sources}
+    field_origin = {k:v for k,v in source.items() if k != 'record'}
+    field_sources.update({k: field_origin for k, v in fields.items() if v is not None and v != []})
+    previous_origin = json.loads(row.source_json) if row.source_json else {}
+    provenance = {**previous_origin, **source, 'field_sources': field_sources}
     fields_json, source_json = json.dumps(merged, sort_keys=True), json.dumps(provenance, sort_keys=True)
     if row.fields_json != fields_json or not row.source_json or json.loads(row.source_json).get('payload_hash') != source.get('payload_hash'):
         row.revision += 1
@@ -154,3 +160,21 @@ def backfill_legacy(db, *, limit=25):
                 store_source(db,row.region,row.item_id,'thewowdb',fields,origin,at=row.checked_at)
         project(db,row.region,row.item_id)
     return len(rows)
+
+
+def import_foreverdb_resource(db, region, resource, body, *, at=None):
+    from .foreverdb import related
+    records, origin = related(body, resource, at=at)
+    for ident, fields in records.items():
+        old = db.get(MetadataSource, (region, ident, 'en_US', 'foreverdb'))
+        previous = json.loads(old.fields_json) if old and old.fields_json else {}
+        for field, entries in fields.items():
+            def key(entry):
+                if field == 'crafting': return (entry['profession'],entry['recipe']['spellId'])
+                return entry['vendor']['id'] if field == 'vendors' else entry['set']['id']
+            merged = {key(entry):entry for entry in previous.get(field, [])}
+            merged.update({key(entry):entry for entry in entries})
+            if len(merged)>100: raise ValueError('Bounded item relationship limit')
+            fields[field] = list(merged.values())
+        store_source(db, region, ident, 'foreverdb', fields, origin, at=at)
+    return len(records), origin

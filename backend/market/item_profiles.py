@@ -19,8 +19,8 @@ def profile(market_id: MarketId,item_id: MarketId,user: User=Depends(identity),d
     media=db.get(ItemMedia,(market.region,item_id))
     fallback=json.loads(row.fallback) if row and row.fallback else None
     media_credit=fallback['source'].get('attribution') if fallback and media and media.source=='thewowdb' else None
-    if media and media.source=='thewowdb':
-        supplemental=db.get(MetadataSource,(market.region,item_id,'en_US','thewowdb'))
+    if media and media.source in ('thewowdb','foreverdb'):
+        supplemental=db.get(MetadataSource,(market.region,item_id,'en_US',media.source))
         if supplemental and supplemental.source_json:media_credit=json.loads(supplemental.source_json).get('attribution')
     primary=bool(row and row.details)
     attributes=json.loads(row.details) if primary else (fallback.get('attributes') if fallback else None)

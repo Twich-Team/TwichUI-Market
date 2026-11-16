@@ -389,3 +389,33 @@ def test_dashboard_pending_does_not_subtract_preserved_names_twice(owner,databas
             row.http_status=404;row.status='missing'
     stats=owner.get('/api/v1/admin/item-metadata',params={'market_id':market}).json()
     assert stats['primary_names']==2 and stats['primary_missing_responses']==2 and stats['primary_pending']==0
+
+
+def test_foreverdb_coverage_and_verification_are_local_evidence(database, owner):
+    from market.metadata_catalog import store_source
+    from market.metadata_recovery import ensure_providers
+    with database.begin() as db:
+        ensure_providers(db)
+        market = Market(region='us', ruleset_id=1, house_id=114, source_kind='auctions', label='Test', enabled=True)
+        db.add(market);db.flush()
+        market_id = market.id
+        origin = {'provider':'foreverdb','edition':'forever','locale':'en_US','build':'1.60.1.70938',
+            'confidence':'client_record_unverified','payload_hash':'test','retrieved_at':now().isoformat()}
+        store_source(db,'us',25,'foreverdb',{'name':'Name only'},origin)
+        store_source(db,'us',26,'foreverdb',{'name':'Detailed','quality':'RARE','level':0},origin)
+    # Isolate the observation selector; persisted provider/source records and HTTP
+    # serialization remain real. No auction observations or live calls are invented.
+    from unittest.mock import patch
+    from sqlalchemy import literal, union_all
+    ids = union_all(select(literal('us').label('region'),literal(25).label('item_id')),
+                    select(literal('us').label('region'),literal(26).label('item_id')))
+    with patch('market.metadata_admin.observed_query',return_value=ids):
+        overview = owner.get(f'/api/v1/admin/item-metadata?market_id={market_id}')
+    assert overview.status_code == 200
+    source = next(r for r in overview.json()['provider_records'] if r['provider']=='foreverdb')
+    assert source['name_only']==1 and source['detailed_records']==1
+    assert source['fields_available']['quality']==1 and source['fields_available']['level']==1
+    assert source['builds']==[{'build':'1.60.1.70938','records':2}]
+    provider = next(r for r in owner.get('/api/v1/admin/metadata-providers').json()['providers'] if r['provider']=='foreverdb')
+    assert provider['website_verification']['status']=='unknown'
+    assert provider['key_scope']=='unknown'

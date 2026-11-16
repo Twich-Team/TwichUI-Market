@@ -13,7 +13,7 @@ import secrets
 from sqlalchemy import JSON, and_, cast, func, or_, select, text
 from .db import Session, now
 from .provider_rates import reserve_budget, retry_delay, cooldown, observe, effective
-from .models import ItemMetadata, Market, MetadataJob, MetadataProvider, MetadataSource, MetadataTask, Observation, SnapshotStatistic
+from .models import ItemMetadata, Market, MetadataJob, MetadataProvider, MetadataSource, MetadataTask, MetadataResource, Observation, SnapshotStatistic
 from .metadata_catalog import get_source, import_everloot_page, store_source
 from .metadata_providers import IdentityMismatch, PARSERS, PROVIDERS, decode, fetch
 from .provider_secrets import SecretUnavailable, decrypt
@@ -87,6 +87,36 @@ def enqueue(db, market_id, mode, providers, *, actor_id=None, item_id=None, limi
     audit(db, actor_id, 'metadata.job.created', f'job={job.id}; mode={mode}; tasks={job.total}')
     return job, True
 
+
+
+def enqueue_related(db, market_id, resource, *, actor_id=None, pages=1, offset=0, at=None):
+    from .foreverdb import RELATED
+    if not RELATED.fullmatch(resource) or not 1 <= pages <= 10 or not 0 <= offset <= 100000:
+        raise ValueError('Select a documented bounded profession, vendor or item set resource')
+    market = db.get(Market, market_id)
+    if market is None: raise ValueError('Market not found')
+    if not resource.startswith('professions/') and (pages != 1 or offset != 0): raise ValueError('Only professions are paginated')
+    at=at or now()
+    if db.bind.dialect.name=='postgresql':db.execute(text('SELECT pg_advisory_xact_lock(7140241)'))
+    key=hashlib.sha256(json.dumps(['related',market_id,resource,pages,offset]).encode()).hexdigest()
+    existing=db.scalar(select(MetadataJob).where(MetadataJob.dedupe_key==key,MetadataJob.state.in_(ACTIVE)).limit(1))
+    if existing:return existing,False
+    job=MetadataJob(actor_id=actor_id,market_id=market_id,mode='related',state='queued',dedupe_key=key,
+        providers_json='["foreverdb"]',total=pages,request_budget=pages,created_at=at,updated_at=at)
+    db.add(job);db.flush()
+    for page in range(pages):
+        db.add(MetadataTask(job_id=job.id,provider='foreverdb',region=market.region,item_id=offset+20*page+1,resource=resource,available_at=at))
+    audit(db,actor_id,'metadata.related.created',f'job={job.id}; resource={resource}; pages={pages}')
+    return job,True
+
+
+def task_source(db,task,job):
+    if job.mode!='related':return get_source(db,task.region,task.item_id,task.provider)
+    key=(task.region,task.resource,task.item_id-1)
+    row=db.get(MetadataResource,key)
+    if row is None:
+        row=MetadataResource(region=key[0],resource=key[1],offset=key[2]);db.add(row);db.flush()
+    return row
 
 def job_counts(db, job_id):
     return dict(db.execute(select(MetadataTask.state, func.count()).where(MetadataTask.job_id == job_id).group_by(MetadataTask.state)).all())
@@ -208,6 +238,13 @@ def worker_lock(factory):
                 connection.execute(text('SELECT pg_advisory_unlock(7140240)')); connection.commit()
 
 
+
+def latest_foreverdb_build(db):
+    return db.scalar(select(cast(MetadataSource.source_json,JSON)['current_build'].as_string()).where(
+        MetadataSource.provider=='foreverdb',MetadataSource.fields_json.is_not(None),
+        cast(MetadataSource.source_json,JSON)['current_build'].as_string().is_not(None))
+        .order_by(MetadataSource.retrieved_at.desc().nulls_last()).limit(1))
+
 def schedule_automatic(db, at, *, allow_mock=False):
     # At most one automatic job per provider; a blocked provider cannot stall others.
     for market in db.scalars(select(Market).where(Market.enabled.is_(True), Market.verified.is_(True)).order_by(Market.id)):
@@ -215,16 +252,23 @@ def schedule_automatic(db, at, *, allow_mock=False):
             if db.scalar(select(MetadataTask.id).join(MetadataJob).where(MetadataJob.actor_id.is_(None),MetadataJob.state.in_(ACTIVE),MetadataTask.provider==provider.provider,MetadataTask.state.in_(('queued','running'))).limit(1)):continue
             if provider.provider=='blizzard' and not allow_mock and not (os.environ.get('BLIZZARD_CLIENT_ID') and os.environ.get('BLIZZARD_CLIENT_SECRET')):continue
             if provider.provider=='foreverdb' and not provider.credential:continue
+            if provider.last_error in ('authorization','subscription_required','forbidden','credential_unavailable','secret_unavailable'):continue
             if provider.expires_at and aware(provider.expires_at)<=at:continue
             if provider.cooldown_until and aware(provider.cooldown_until)>at:continue
             if provider.next_request_at and aware(provider.next_request_at)>at:continue
-            for current,phase in ((True,'missing'),(True,'priority'),(False,'missing'),(True,'stale'),(False,'stale')):
+            current_build=latest_foreverdb_build(db) if provider.provider=='foreverdb' else None
+            phases = ((True,'detail'),(True,'priority'),(True,'missing'),(False,'missing'),(True,'stale'),(False,'stale')) if provider.provider=='foreverdb' else ((True,'missing'),(True,'priority'),(False,'missing'),(True,'stale'),(False,'stale'))
+            for current,phase in phases:
                 ids = observed_query(market.id,current=current).subquery()
                 query = select(ids.c.item_id).outerjoin(ItemMetadata, (ItemMetadata.region == ids.c.region) & (ItemMetadata.item_id == ids.c.item_id)).outerjoin(MetadataSource,
                     (MetadataSource.region == ids.c.region) & (MetadataSource.item_id == ids.c.item_id) & (MetadataSource.provider == provider.provider) & (MetadataSource.locale == 'en_US'))
                 if phase=='missing':query=query.where(func.coalesce(ItemMetadata.name,ItemMetadata.fallback_name).is_(None))
                 if phase=='priority':query=query.where(ItemMetadata.requested_at>=at-timedelta(days=7))
-                query = query.where(or_(MetadataSource.item_id.is_(None), MetadataSource.retry_at <= at)).order_by(
+                outdated = (MetadataSource.status=='available') & MetadataSource.fields_json.is_not(None) & or_(func.coalesce(cast(MetadataSource.source_json,JSON)['item_mapping_version'].as_integer(),0)<2, cast(MetadataSource.source_json,JSON)['current_build'].as_string()!=current_build if current_build else False)
+                if phase=='detail':
+                    query=query.where(func.coalesce(ItemMetadata.name,ItemMetadata.fallback_name).is_not(None),
+                        or_(MetadataSource.item_id.is_(None),outdated))
+                query = query.where(or_(MetadataSource.item_id.is_(None), MetadataSource.retry_at <= at, outdated if provider.provider=='foreverdb' else False)).order_by(
                     func.coalesce(ItemMetadata.name, ItemMetadata.fallback_name).is_not(None), ItemMetadata.requested_at.desc().nulls_last(), ids.c.item_id)
                 ident = db.scalar(query.limit(1))
                 if ident:
@@ -261,8 +305,10 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_cl
                 if not provider.enabled:
                     task.state, task.result_json = 'skipped', json.dumps({'status':'provider_disabled','provider':task.provider})
                     finalize(db, job, at); continue
-                src = get_source(db, task.region, task.item_id, task.provider)
-                if job.mode != 'bulk' and src.retry_at and aware(src.retry_at) > at:
+                src = task_source(db, task, job)
+                from .foreverdb import needs_detail
+                upgrade_detail = job.mode!='related' and needs_detail(src,latest_foreverdb_build(db) if task.provider=='foreverdb' else None)
+                if job.mode != 'bulk' and src.retry_at and aware(src.retry_at) > at and not upgrade_detail:
                     if src.status in ('rate_limited', 'upstream_error', 'transport_or_schema'):
                         task.available_at = src.retry_at
                     else:
@@ -292,20 +338,21 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_cl
                     task.available_at = waiting; continue
                 task.state, task.lease_token, task.lease_until = 'running', secrets.token_urlsafe(24), at + timedelta(seconds=LEASE_SECONDS)
                 task.attempts += 1; job.requests_used += 1; job.state = 'running'; job.updated_at = at
-                chosen = (task.id, task.lease_token, task.provider, task.region, task.item_id, job.mode, key, src.etag, effective(provider, at)['page_size'])
+                chosen = (task.id, task.lease_token, task.provider, task.region, task.item_id, job.mode, key, None if upgrade_detail else src.etag, effective(provider, at)['page_size'], task.resource)
                 break
         if chosen is None: return bool(tasks or expired)
-        task_id, token, ident, region, item_id, mode, key, etag, page_size = chosen
+        task_id, token, ident, region, item_id, mode, key, etag, page_size, resource = chosen
         parsed, raw, status, headers, category = None, None, None, {}, None
         started = monotonic()
         try:
-            kwargs={'credential':key,'etag':etag,'offset':item_id-1 if mode=='bulk' else None,'region':region}
+            kwargs={'credential':key,'etag':etag,'offset':item_id-1 if mode in ('bulk','related') else None,'region':region}
+            if mode=='related':kwargs['resource']=resource
             if fetcher is fetch:
                 kwargs['page_size'] = page_size
                 if ident=='blizzard':kwargs['client']=provider_client
             meta, raw = fetcher(ident, item_id, **kwargs)
             status, headers = meta['status'], meta.get('headers', {})
-            if status == 200 and ident != 'blizzard' and mode != 'bulk': parsed = PARSERS[ident](raw, item_id, at=at)
+            if status == 200 and ident != 'blizzard' and mode not in ('bulk','related'): parsed = PARSERS[ident](raw, item_id, at=at)
             if status not in (200, 304): category = error_category(status)
         except IdentityMismatch: category = 'wrong_identity'
         except Exception: category = 'transport_or_schema'
@@ -315,17 +362,27 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_cl
             job, provider = db.get(MetadataJob, task.job_id), db.get(MetadataProvider, ident, with_for_update=True)
             received = at + timedelta(seconds=max(0,monotonic()-started))
             observe(provider, status, headers, received, reserved_at=at)
-            src = get_source(db, region, item_id, ident)
+            src = task_source(db, task, job)
             src.checked_at, src.http_status = at, status
             result = {'provider':ident, 'item_id':item_id, 'http_status':status, 'status':category or 'available', 'recovered_fields':[]}
-            before_row = db.get(ItemMetadata, (region, item_id))
+            if mode=='related':result.update(resource=resource,record_scope='catalog')
+            before_row = db.get(ItemMetadata, (region, item_id)) if mode!='related' else None
             before_fields = json.loads(before_row.catalog_json).get('fields', {}) if before_row and before_row.catalog_json else {}
             if before_row and before_row.name: before_fields['name'] = before_row.name
             elif before_row and before_row.fallback_name: before_fields['name'] = before_row.fallback_name
             try:
                 if category is None and status == 200:
                     with db.begin_nested():
-                        if mode == 'bulk':
+                        if mode == 'related':
+                            from .metadata_catalog import import_foreverdb_resource
+                            payload=decode(raw);metadata=payload.get('meta',{})
+                            if resource.startswith('professions/') and metadata.get('offset')!=item_id-1:raise ValueError('Resource page offset mismatch')
+                            count,origin=import_foreverdb_resource(db,region,resource,raw,at=at)
+                            src.fields_json=json.dumps(payload['data']);src.source_json=json.dumps(origin)
+                            src.status='available';src.etag=headers.get('ETag')
+                            src.refresh_at=src.retry_at=at+timedelta(days=1)
+                            result.update(imported_items=count,recovered_fields=['relationships'],source=origin)
+                        elif mode == 'bulk':
                             if decode(raw).get('offset')!=item_id-1:raise ValueError('Bulk response offset mismatch')
                             changes = {}
                             count, next_offset = import_everloot_page(db, region, raw, at=at, changes=changes)
@@ -340,10 +397,10 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_cl
                         else:
                             fields, origin = parsed
                             store_source(db, region, item_id, ident, fields, origin, at=at, etag=headers.get('ETag'))
-                            result.update(recovered_fields=list(fields), source=origin)
-                        after_row = db.get(ItemMetadata, (region, item_id))
+                            result.update(recovered_fields=list(fields), source={k:v for k,v in origin.items() if k!='record'})
+                        after_row = db.get(ItemMetadata, (region, item_id)) if mode!='related' else None
                         after_fields = json.loads(after_row.catalog_json).get('fields', {}) if after_row and after_row.catalog_json else {}
-                        result['new_fields'] = list(changes) if mode == 'bulk' else [field for field, value in after_fields.items() if value is not None and value != [] and before_fields.get(field) in (None, [])]
+                        result['new_fields'] = ['relationships'] if mode=='related' and count else list(changes) if mode == 'bulk' else [field for field, value in after_fields.items() if value is not None and value != [] and before_fields.get(field) in (None, [])]
                         result['outcome'] = ('name_recovered' if 'name' in result['new_fields'] else 'attributes_recovered' if result['new_fields']
                             else 'already_known' if result['recovered_fields'] else 'no_usable_data')
                         provider.last_success, provider.last_error = at, None

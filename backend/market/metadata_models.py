@@ -111,6 +111,7 @@ class MetadataTask(Base):
     item_id: Mapped[int] = mapped_column(Integer)
     locale: Mapped[str] = mapped_column(String(8), default='en_US')
     state: Mapped[str] = mapped_column(String(16), default='queued')
+    resource: Mapped[str | None] = mapped_column(String(80))
     attempts: Mapped[int] = mapped_column(Integer, default=0)
     available_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
     lease_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
@@ -119,3 +120,19 @@ class MetadataTask(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
     __table_args__ = (UniqueConstraint('job_id', 'provider', 'region', 'item_id', 'locale', name='uq_metadata_job_item'),
         Index('ix_metadata_tasks_queue', 'state', 'available_at'), Index('ix_metadata_tasks_identity', 'provider', 'region', 'item_id', 'locale', 'state'))
+
+
+class MetadataResource(Base):
+    """Bounded ForeverDB related-response cache in the existing metadata system."""
+    __tablename__ = 'metadata_resources'
+    region: Mapped[str] = mapped_column(String(2), primary_key=True)
+    resource: Mapped[str] = mapped_column(String(80), primary_key=True)
+    offset: Mapped[int] = mapped_column(Integer, primary_key=True)
+    status: Mapped[str] = mapped_column(String(32), default='pending')
+    fields_json: Mapped[str | None] = mapped_column(Text)
+    source_json: Mapped[str | None] = mapped_column(Text)
+    etag: Mapped[str | None] = mapped_column(String(255))
+    checked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    refresh_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    retry_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    http_status: Mapped[int | None] = mapped_column(Integer)

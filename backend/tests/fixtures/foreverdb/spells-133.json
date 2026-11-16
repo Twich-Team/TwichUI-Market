@@ -1,0 +1,32 @@
+{
+  "data": {
+    "id": 133,
+    "name": "Fireball",
+    "rank": "Rank 1",
+    "description": "Hurls ⁣​​​​​​​​​​​​​​​​‌‌‌‌‌‌‌​‌‌‌​‌‌⁣a fiery ball that causes 14 to 22 Fire damage and an additional 2 Fire damage over 4 sec.",
+    "icon": "https://foreverdb.net/icons/135812.webp",
+    "school": "Fire",
+    "castTimeMs": 1500,
+    "rangeYards": {
+      "min": 0,
+      "max": 35
+    },
+    "cooldownMs": null,
+    "requiredLevel": 1,
+    "costs": [
+      {
+        "amount": 30,
+        "resource": "Mana",
+        "percentOfBase": false,
+        "text": "30 Mana"
+      }
+    ],
+    "url": "https://foreverdb.net/spell/133"
+  },
+  "meta": {
+    "build": "1.60.1.70938",
+    "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+    "attributionRequired": true,
+    "client": "dev-0255"
+  }
+}

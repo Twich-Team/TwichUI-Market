@@ -1,0 +1,77 @@
+{
+  "data": {
+    "id": 2235,
+    "name": "Brackclaw",
+    "quality": "Uncommon",
+    "qualityId": 2,
+    "itemLevel": 21,
+    "requiredLevel": 16,
+    "classId": 2,
+    "class": "Weapon",
+    "subclassId": 15,
+    "subclass": "Dagger",
+    "inventoryTypeId": 13,
+    "inventoryType": "One-Hand",
+    "icon": "https://foreverdb.net/icons/135651.webp",
+    "url": "https://foreverdb.net/item/2235",
+    "betaEvent": false,
+    "speculation": false,
+    "speculationReasons": [],
+    "stats": [
+      {
+        "statId": 4,
+        "stat": "Strength",
+        "value": 2
+      },
+      {
+        "statId": 3,
+        "stat": "Agility",
+        "value": 2
+      }
+    ],
+    "damage": {
+      "min": 11,
+      "max": 22,
+      "school": "Physical"
+    },
+    "speed": 1.6,
+    "bonding": "Binds when equipped",
+    "sellPrice": 1281,
+    "unique": false,
+    "effects": [],
+    "disenchantable": true,
+    "disenchant": {
+      "source": "Classic data (CMaNGOS), not confirmed in Forever",
+      "skill": null,
+      "results": [
+        {
+          "itemId": 10939,
+          "name": "Greater Magic Essence",
+          "chancePercent": 75,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "itemId": 10940,
+          "name": "Strange Dust",
+          "chancePercent": 20,
+          "min": 2,
+          "max": 3
+        },
+        {
+          "itemId": 10978,
+          "name": "Small Glimmering Shard",
+          "chancePercent": 5.0,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    }
+  },
+  "meta": {
+    "build": "1.60.1.70938",
+    "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+    "attributionRequired": true,
+    "client": "dev-0255"
+  }
+}

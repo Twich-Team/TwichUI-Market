@@ -15,12 +15,13 @@ MAX_ICON_BYTES=32768
 MAX_CACHE_BYTES=32*1024*1024
 
 
-def icon_url(value,*,community=False):
+def icon_url(value,*,community=False,foreverdb=False):
     if not isinstance(value,str) or len(value)>512:return False
     url=urlsplit(value)
     if url.scheme!='https' or url.username or url.password or url.port not in (None,443) or url.query or url.fragment:return False
     if url.hostname=='render.worldofwarcraft.com':
         return re.fullmatch(r'/(?:forever-)?(?:us|eu|kr|tw)/icons/56/[A-Za-z0-9_-]+\.(?:jpg|png)',url.path) is not None
+    if foreverdb and url.hostname=='foreverdb.net':return re.fullmatch(r'/icons/[0-9]+\.webp',url.path) is not None
     return community and url.hostname=='thewowdb.com' and re.fullmatch(r'/assets/icons/[A-Za-z0-9_-]+\.(?:jpg|png)',url.path) is not None
 
 
@@ -31,6 +32,17 @@ def image_type(data):
         width,height=struct.unpack('>II',data[16:24])
         if not 1<=width<=256 or not 1<=height<=256:raise ValueError('Icon dimensions')
         return 'image/png'
+    if len(data)>=30 and data[:4]==b'RIFF' and data[8:12]==b'WEBP' and int.from_bytes(data[4:8],'little')==len(data)-8:
+        chunk=data[12:16]
+        if chunk==b'VP8L' and data[20]==0x2f:
+            bits=int.from_bytes(data[21:25],'little');width=1+(bits&0x3fff);height=1+((bits>>14)&0x3fff)
+        elif chunk==b'VP8 ' and data[23:26]==b'\x9d\x01\x2a':
+            width=int.from_bytes(data[26:28],'little')&0x3fff;height=int.from_bytes(data[28:30],'little')&0x3fff
+        elif chunk==b'VP8X' and not data[20]&2:
+            width=1+int.from_bytes(data[24:27],'little');height=1+int.from_bytes(data[27:30],'little')
+        else:raise ValueError('Unsupported animated/corrupt WebP')
+        if not 1<=width<=256 or not 1<=height<=256:raise ValueError('Icon dimensions')
+        return 'image/webp'
     if data.startswith(b'\xff\xd8') and data.endswith(b'\xff\xd9'):
         position=2
         while position+4<len(data):
@@ -48,19 +60,19 @@ def image_type(data):
     raise ValueError('Unsupported/corrupt icon')
 
 
-def fetch_icon(url,*,community=False,factory=Session):
-    if not icon_url(url,community=community):raise ValueError('Untrusted icon destination')
+def fetch_icon(url,*,community=False,foreverdb=False,factory=Session):
+    if not icon_url(url,community=community,foreverdb=foreverdb):raise ValueError('Untrusted icon destination')
     def download():
         # No token, credentials, cookies or redirects, including on artwork hosts.
-        try:response=opener.open(Request(url,headers={'User-Agent':'TwichUI-Market/0.1','Accept':'image/jpeg,image/png'}),timeout=5)
+        try:response=opener.open(Request(url,headers={'User-Agent':'TwichUI-Market/0.1','Accept':'image/jpeg,image/png,image/webp'}),timeout=5)
         except HTTPError as error:response=error
         with response:
             meta={'status':response.status,'mime':response.headers.get_content_type(),
                 'headers':{k:response.headers.get(k) for k in ('Retry-After','Date','X-RateLimit-Remaining','RateLimit-Remaining','RateLimit-Reset','RateLimit-Limit')}}
             return meta,response.read(MAX_ICON_BYTES+1) if response.status==200 else b''
-    if urlsplit(url).hostname=='thewowdb.com':
+    if urlsplit(url).hostname in ('thewowdb.com','foreverdb.net'):
         from .provider_rates import reserved_request
-        meta,data=reserved_request(factory,'thewowdb',download)
+        meta,data=reserved_request(factory,'foreverdb' if foreverdb else 'thewowdb',download)
     else:
         # Public Blizzard artwork CDN is separate from its authenticated API pool.
         meta,data=download()
@@ -133,6 +145,19 @@ def resolve_media_once(factory=Session,client=None,*,at=None,image_fetch=fetch_i
                         if used-(row.byte_count or 0)+len(data)>MAX_CACHE_BYTES:raise ValueError('Icon budget')
                         row.status,row.source,row.namespace='available','thewowdb',fallback['source']['build']
                         row.source_url,row.metadata_hash=url,fallback['source']['payload_hash']
+                        row.asset_hash,row.data,row.byte_count=hashlib.sha256(data).hexdigest(),data,len(data)
+                        row.content_type,row.http_status,row.resolved_at=mime,200,at
+                        row.retry_after=at+timedelta(days=7)
+                        return True
+                if meta['status']==404:
+                    supplemental=db.get(MetadataSource,(region,item,'en_US','foreverdb'))
+                    origin=json.loads(supplemental.source_json) if supplemental and supplemental.source_json else {}
+                    url=origin.get('icon_url')
+                    if icon_url(url,foreverdb=True):
+                        data,mime=fetch_icon(url,foreverdb=True,factory=factory)
+                        if used-(row.byte_count or 0)+len(data)>MAX_CACHE_BYTES:raise ValueError('Icon budget')
+                        row.status,row.source,row.namespace='available','foreverdb',origin['build']
+                        row.source_url,row.metadata_hash=url,origin['payload_hash']
                         row.asset_hash,row.data,row.byte_count=hashlib.sha256(data).hexdigest(),data,len(data)
                         row.content_type,row.http_status,row.resolved_at=mime,200,at
                         row.retry_after=at+timedelta(days=7)

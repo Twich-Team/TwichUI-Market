@@ -10,6 +10,12 @@ request_body {
 handle /api/* {
     reverse_proxy local-api:8000
 }
+# Ownership proofs must never fall through to the SPA or authentication.
+handle /.well-known/foreverdb.txt {
+    root * /srv
+    header Content-Type "text/plain; charset=utf-8"
+    file_server
+}
 handle_path /design/* {
     encode zstd gzip
     root * /srv/design

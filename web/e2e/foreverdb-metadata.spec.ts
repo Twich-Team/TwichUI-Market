@@ -1,0 +1,23 @@
+import {test,expect} from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+import fs from 'node:fs';
+const output='../artifacts/foreverdb-browser';
+test('ForeverDB metadata: enriched Explorer, qualified details, related metadata and administration',async({page})=>{
+ test.setTimeout(60000);fs.mkdirSync(output,{recursive:true});
+ const external:string[]=[];page.on('request',request=>{if(/foreverdb\.net|thewowdb\.com/.test(request.url()))external.push(request.url());});
+ await page.goto('/?market=1&q=8188');await page.getByLabel('Username',{exact:true}).fill('owner');await page.getByLabel('Password',{exact:true}).fill('synthetic browser owner password');await page.getByRole('button',{name:'Sign in',exact:true}).click();
+ await page.getByLabel('Search items',{exact:true}).fill('8188');await page.getByRole('button',{name:'Search',exact:true}).click();
+ await expect(page.getByRole('link',{name:'Research Explosive Shotgun',exact:true})).toBeVisible();await page.screenshot({path:`${output}/explorer.png`,fullPage:true});
+ await page.getByRole('link',{name:'Research Explosive Shotgun',exact:true}).click();
+ const metadata=page.getByRole('region',{name:'Item metadata',exact:true});
+ await expect(metadata).toContainText('+5 Strength');await expect(metadata).toContainText('Speed 2.1 seconds');await expect(metadata).toContainText('Vendor sell:');
+ await metadata.getByText('Disenchant reference',{exact:true}).click();await expect(metadata).toContainText('Classic data (CMaNGOS), not confirmed in Forever');
+ await expect(metadata.getByRole('link',{name:'Data from ForeverDB.net',exact:true})).toBeVisible();await page.screenshot({path:`${output}/item-details.png`,fullPage:true});
+ await page.setViewportSize({width:390,height:844});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:`${output}/item-mobile.png`,fullPage:true});
+ const axe=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze();fs.writeFileSync(`${output}/accessibility.json`,JSON.stringify(axe.violations));expect(axe.violations).toEqual([]);
+ await page.goto('/markets/1/items/765');await page.getByText('Crafting relationships (1)',{exact:true}).click();await expect(page.getByRole('region',{name:'Item metadata',exact:true})).toContainText('1 × Elixir of Minor Force');await page.screenshot({path:`${output}/crafting.png`,fullPage:true});
+ await page.goto('/markets/1/items/2488');await page.getByText('Vendor acquisition (1)',{exact:true}).click();await expect(page.getByRole('region',{name:'Item metadata',exact:true})).toContainText('Corina Steele');
+ await page.goto('/markets/1/items/11729');await page.getByText('Item sets (1)',{exact:true}).click();await expect(page.getByRole('region',{name:'Item metadata',exact:true})).toContainText('The Gladiator');
+ await page.setViewportSize({width:1440,height:1000});await page.getByRole('button',{name:'Administration',exact:true}).click();await page.getByRole('tab',{name:'Data Sources',exact:true}).click();await expect(page.getByRole('region',{name:'ForeverDB connection',exact:true})).toContainText('Website verification: unknown');await page.screenshot({path:`${output}/administration.png`,fullPage:true});
+ expect(external).toEqual([]);
+});

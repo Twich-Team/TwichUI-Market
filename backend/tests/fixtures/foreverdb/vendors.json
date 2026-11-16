@@ -1,0 +1,46 @@
+{
+  "data": [
+    {
+      "id": 54,
+      "name": "Corina Steele",
+      "title": "Weaponsmith",
+      "side": "Alliance",
+      "zone": "Elwynn Forest",
+      "mapId": 1429,
+      "x": 41.6,
+      "y": 65.8,
+      "seenInForever": true,
+      "source": "Seen in WoW Forever by ForeverDB players",
+      "reputationFaction": {
+        "id": 72,
+        "name": "Stormwind"
+      }
+    },
+    {
+      "id": 66,
+      "name": "Tharynn Bouden",
+      "title": "Trade Supplies",
+      "side": "Alliance",
+      "zone": "Elwynn Forest",
+      "mapId": 1429,
+      "x": 41.7,
+      "y": 67,
+      "seenInForever": true,
+      "source": "Seen in WoW Forever by ForeverDB players",
+      "reputationFaction": {
+        "id": 72,
+        "name": "Stormwind"
+      }
+    }
+  ],
+  "meta": {
+    "build": "1.60.1.70938",
+    "total": 1018,
+    "limit": 2,
+    "offset": 0,
+    "next": "/api/v1/vendors?limit=2&offset=2",
+    "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+    "attributionRequired": true,
+    "client": "dev-0255"
+  }
+}

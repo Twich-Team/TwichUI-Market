@@ -1,0 +1,72 @@
+{
+  "data": {
+    "id": 8188,
+    "name": "Explosive Shotgun",
+    "quality": "Uncommon",
+    "qualityId": 2,
+    "itemLevel": 37,
+    "requiredLevel": 32,
+    "classId": 2,
+    "class": "Weapon",
+    "subclassId": 3,
+    "subclass": "Gun",
+    "inventoryTypeId": 26,
+    "inventoryType": "Ranged",
+    "icon": "https://foreverdb.net/icons/135617.webp",
+    "url": "https://foreverdb.net/item/8188",
+    "betaEvent": false,
+    "speculation": false,
+    "speculationReasons": [],
+    "stats": [
+      {
+        "statId": 4,
+        "stat": "Strength",
+        "value": 5
+      }
+    ],
+    "damage": {
+      "min": 22,
+      "max": 42,
+      "school": "Physical"
+    },
+    "speed": 2.1,
+    "bonding": "Binds when equipped",
+    "sellPrice": 6414,
+    "unique": false,
+    "effects": [],
+    "disenchantable": true,
+    "disenchant": {
+      "source": "Classic data (CMaNGOS), not confirmed in Forever",
+      "skill": null,
+      "results": [
+        {
+          "itemId": 11135,
+          "name": "Greater Mystic Essence",
+          "chancePercent": 75,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "itemId": 11137,
+          "name": "Vision Dust",
+          "chancePercent": 20,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "itemId": 11139,
+          "name": "Large Glowing Shard",
+          "chancePercent": 5.0,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    }
+  },
+  "meta": {
+    "build": "1.60.1.70938",
+    "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+    "attributionRequired": true,
+    "client": "dev-0255"
+  }
+}

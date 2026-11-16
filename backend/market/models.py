@@ -326,7 +326,7 @@ class CompanionRefreshHistory(Base):
     consumed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
 
 # Register additive metadata tables with the same migration/test metadata.
-from .metadata_models import MetadataProvider, MetadataSource, MetadataVersion, MetadataJob, MetadataTask
+from .metadata_models import MetadataProvider, MetadataSource, MetadataVersion, MetadataJob, MetadataTask, MetadataResource
 
 
 # M1b derived/export evidence only. Originals, legacy statistics and caches are not rewritten.
