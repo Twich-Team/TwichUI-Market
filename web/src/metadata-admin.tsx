@@ -11,6 +11,8 @@ import { MarketSelect } from "./research";
 
 export interface MetadataProvider {
   rate_limits?: RateStatus;
+  website_verification?: {status: string; proof_url: string; developer_id: string};
+  key_scope?: string;
   provider: string; name: string; enabled: boolean; automatic: boolean; configured: boolean;
   key_required: boolean; credential_status: string; validation_pending: boolean; validation_error: string | null;
   last_validated_at: string | null; expires_at: string | null; expiration_warning: string | null;
@@ -29,7 +31,7 @@ interface Overview {
   observed: number; resolved_names: number; missing_names: number; name_percent: number | null;
   primary_names: number; supplemental_names: number; primary_pending: number; primary_missing_responses: number;
   icons_available: number; icons_missing: number; last_enrichment: string | null; pending_queue: number; active_jobs: number;
-  provider_name_overlap: number; conflicting_names: number; provider_records: { provider: string; checked: number; names_available: number }[];
+  provider_name_overlap: number; conflicting_names: number; provider_records: { provider: string; checked: number; names_available: number; name_only?: number; detailed_records?: number; fields_available?: Record<string, number>; builds?: {build: string | null; records: number}[] }[];
   recent_results: { item_id: number; provider: string; at: string; result: Result }[];
 }
 const labels: Record<string, string> = {
@@ -64,6 +66,7 @@ export function DataSources({ readOnly = false }: { readOnly?: boolean }) {
     <h3>Provider settings and credentials</h3><div className="metadata-provider-grid">{data.data?.providers.map(provider => <section className="panel padded metadata-provider" key={provider.provider} aria-label={`${provider.name} connection`}>
       <div className="title-row"><h3>{provider.name}</h3><span className="tag">{provider.expiration_warning === "expired" ? "Key expired" : provider.validation_error || provider.recent_error ? "Needs attention" : provider.last_validated_at ? "Validated" : provider.configured ? "Key configured" : provider.key_required ? "Not configured" : "Keyless access"}</span></div>
       <p className="small muted">{provider.note}</p>
+      {provider.website_verification && <p className="small muted">Website verification: unknown — confirm in your <a href="https://foreverdb.net/developers" target="_blank" rel="noopener noreferrer">ForeverDB account</a>. <a href={provider.website_verification.proof_url} target="_blank" rel="noopener noreferrer">Ownership proof</a> · {provider.website_verification.developer_id}. API connectivity does not confirm verification or website key scope.</p>}
       {provider.expiration_warning && <p className="notice" role="status">{metadataStatus(provider.expiration_warning)}. Replace this key before it expires.</p>}
       <form className="metadata-config" key={`${provider.provider}-${provider.enabled}-${provider.automatic}-${provider.hourly_budget}-${provider.daily_budget}`} onSubmit={event => {
         event.preventDefault(); const form = new FormData(event.currentTarget);
@@ -98,6 +101,7 @@ export function ItemMetadataAdmin({ markets, readOnly = false }: { markets: Mark
   const [input, setInput] = useState({ item_id: "", limit: 100, request_budget: 100 });
   const providers = useProviders();
   const stats = useQuery({ queryKey: ["private", "metadata-overview", market], enabled: !!market, queryFn: ({ signal }) => api<Overview>(`/admin/item-metadata?market_id=${market}`, "GET", undefined, signal), refetchInterval: 5000 });
+  const [relatedResource,setRelatedResource] = useState("professions/alchemy"), [relatedPages,setRelatedPages] = useState(1);
   const [jobState, setJobState] = useState(""), [jobSearch,setJobSearch]=useState("");
   const jobPage = useRecordPage<Job>("jobs", { q:jobSearch, market_id: String(market), ...(jobState ? {state:jobState}: {}) }, "id");
   const jobs = jobPage.query;
@@ -112,6 +116,7 @@ export function ItemMetadataAdmin({ markets, readOnly = false }: { markets: Mark
     <ErrorNotice error={error || stats.error?.message || jobs.error?.message || detail.error?.message || providers.error?.message || ""} />
     {message && <p className="notice success" role="status">{message}</p>}
     {stats.isPending && <p role="status">Loading catalog measurements…</p>}
+    {state?.provider_records.some(record=>record.name_only !== undefined) && <details><summary>Provider metadata coverage</summary><p className="small muted">Retained fields for observed items in this market. A missing field is unknown, not proof that the provider does not offer it.</p>{state.provider_records.map(record=><div key={record.provider}><strong>{record.provider}</strong><p className="small">{record.name_only ?? "Unknown"} name only · {record.detailed_records ?? "Unknown"} with details</p><p className="small">{Object.entries(record.fields_available || {}).map(([field,count])=>`${field.replaceAll("_", " ")}: ${count} available / ${Math.max(0,state.observed-count)} missing`).join(" · ")}</p><p className="small">{record.builds?.map(build=>`${build.build || "Unknown build"}: ${build.records} records`).join(" · ")}</p></div>)}</details>}
     {state && <><div className="metadata-stats">
       {[["Observed item IDs", state.observed], ["Resolved names", state.resolved_names], ["Name coverage", state.name_percent === null ? "No observations" : `${state.name_percent}%`], ["Missing names", state.missing_names], ["Icons available", state.icons_available], ["Icons missing", state.icons_missing]].map(([label, value]) => <div className="panel padded" key={label}><span className="small muted">{label}</span><strong>{value}</strong></div>)}
     </div><p className="small muted">Latest recorded market snapshot · Blizzard names {state.primary_names} · supplemental names {state.supplemental_names} · Blizzard pending {state.primary_pending} · Blizzard 404 responses {state.primary_missing_responses}</p><p className="small muted">Multiple name sources: {state.provider_name_overlap} · conflicting names: {state.conflicting_names}{state.provider_records.map(p => ` · ${p.provider}: ${p.names_available} source names`).join("")}</p>
@@ -129,6 +134,7 @@ export function ItemMetadataAdmin({ markets, readOnly = false }: { markets: Mark
       {preview && <div className="metadata-preview" role="status"><h4>Recovery preview</h4><p>{preview.item_count} item{preview.item_count === 1 ? "" : "s"} · up to {preview.estimated_requests} requests · budget {preview.request_budget}</p><p className="small muted">{preview.note}</p>
         <button className="primary" disabled={busy || readOnly || !preview.item_count} onClick={() => action(async () => { const job = await api<{ job_id: number }>("/admin/item-metadata/jobs", "POST", body); setJobId(job.job_id); setResultAfter(0); setPreview(null); setMessage(`Recovery job #${job.job_id} queued. You can leave this page while it runs.`); })}>Start recovery</button></div>}
     </section>
+    <section className="panel padded"><h3>Import ForeverDB relationships</h3><p className="small muted">Import a bounded profession page, vendor inventory or item set into related item details. Each page shares existing provider quotas. Trainer, vendor and Classic evidence stays labelled.</p><form onSubmit={event=>{event.preventDefault();action(async()=>{const job=await api<{job_id:number}>("/admin/item-metadata/related-jobs","POST",{market_id:market,resource:relatedResource,pages:relatedPages});setJobId(job.job_id);setResultAfter(0);setMessage(`Related metadata job #${job.job_id} queued.`);});}}><label>Documented resource<input value={relatedResource} maxLength={80} onChange={event=>setRelatedResource(event.target.value)} placeholder="professions/alchemy, vendors/54, itemsets/1" required/></label><label>Maximum requests (20 recipes per page)<input type="number" min="1" max="10" value={relatedPages} onChange={event=>setRelatedPages(Number(event.target.value))}/></label><button disabled={busy||readOnly||!market}>Queue bounded import</button></form></section>
     <section className="panel padded"><h3>Recovery jobs</h3>
       <div className="toolbar"><label>Search job reference<input type="search" value={jobSearch} maxLength={64} onChange={e=>{setJobSearch(e.target.value);jobPage.reset();}}/></label><label>Job status<select value={jobState} onChange={e=>{setJobState(e.target.value);jobPage.reset();}}><option value="">All statuses</option>{["queued","running","paused","completed","cancelled"].map(value=><option key={value}>{value}</option>)}</select></label></div>
       <DataTable<Job> label="recovery jobs" data={jobs.data?.rows || []} server={jobPage.server} loading={jobs.isPending} error={jobs.error?.message} getRowId={row=>String(row.id)} columns={[

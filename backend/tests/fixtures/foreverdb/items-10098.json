@@ -1,0 +1,62 @@
+{
+  "data": {
+    "id": 10098,
+    "name": "Councillor's Cloak",
+    "quality": "Uncommon",
+    "qualityId": 2,
+    "itemLevel": 53,
+    "requiredLevel": 48,
+    "classId": 4,
+    "class": "Armor",
+    "subclassId": 1,
+    "subclass": "Cloth",
+    "inventoryTypeId": 16,
+    "inventoryType": "Back",
+    "icon": "https://foreverdb.net/icons/133769.webp",
+    "url": "https://foreverdb.net/item/10098",
+    "betaEvent": false,
+    "speculation": false,
+    "speculationReasons": [],
+    "stats": [],
+    "damage": null,
+    "speed": null,
+    "bonding": "Binds when equipped",
+    "sellPrice": 8736,
+    "unique": false,
+    "effects": [],
+    "disenchantable": true,
+    "disenchant": {
+      "source": "Classic data (CMaNGOS), not confirmed in Forever",
+      "skill": null,
+      "results": [
+        {
+          "itemId": 11176,
+          "name": "Dream Dust",
+          "chancePercent": 75,
+          "min": 2,
+          "max": 5
+        },
+        {
+          "itemId": 16202,
+          "name": "Lesser Eternal Essence",
+          "chancePercent": 20,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "itemId": 14343,
+          "name": "Small Brilliant Shard",
+          "chancePercent": 5.0,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    }
+  },
+  "meta": {
+    "build": "1.60.1.70938",
+    "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+    "attributionRequired": true,
+    "client": "dev-0255"
+  }
+}

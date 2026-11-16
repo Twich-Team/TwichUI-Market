@@ -71,9 +71,9 @@ def retry_permission(db, task, provider, src, active_identities=None):
 def safe_attempt(db, task, metadata, provider, src, outcome, job, active_identities=None):
     value = json.loads(task.result_json) if task.result_json else {}
     origin = value.get('source') or {}
-    scope = 'catalog' if job.mode=='bulk' or value.get('kind') in ('attributes','corpus','corpus_page') else 'item'
+    scope = 'catalog' if job.mode in ('bulk','related') or value.get('kind') in ('attributes','corpus','corpus_page') else 'item'
     permitted, reason, eligible = retry_permission(db, task, provider, src, active_identities)
-    if job and job.mode in ('bulk','diagnostic'): permitted,reason=False,'Preview a bounded recovery job'
+    if job and job.mode in ('bulk','related','diagnostic'): permitted,reason=False,'Preview a bounded recovery job'
     # Explicit allowlist. No payload, URLs, headers, exception text or credentials.
     return {'id':task.id,'job_id':task.job_id,'item_id':task.item_id,'region':task.region,'provider':task.provider,
         'record_scope':scope,'item_name':(metadata.name or metadata.fallback_name) if metadata and scope=='item' else None,'quality':metadata_name(metadata,task.item_id)['quality'] if scope=='item' else None,'state':task.state,
@@ -130,7 +130,7 @@ def retry(task_id: int, user: User = Depends(admin), db: Session = Depends(sessi
     if not allowed: raise HTTPException(409,reason)
     original=db.get(MetadataJob,task.job_id)
     if original.mode=='diagnostic': raise HTTPException(409,'Diagnostic attempts require an explicit operator window')
-    if original.mode=='bulk': raise HTTPException(409,'Preview a bounded bulk job instead')
+    if original.mode in ('bulk','related'): raise HTTPException(409,'Preview a bounded bulk job instead')
     job,_=enqueue(db,original.market_id,'single',[task.provider],actor_id=user.id,item_id=task.item_id,limit=1,budget=1)
     db.commit()
     return {'job_id':job.id,'state':job.state}

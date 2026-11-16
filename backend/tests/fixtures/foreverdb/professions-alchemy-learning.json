@@ -1,0 +1,622 @@
+{
+  "data": {
+    "slug": "alchemy",
+    "name": "Alchemy",
+    "kind": "primary",
+    "icon": "https://foreverdb.net/icons/136240.webp",
+    "recipeCount": 196,
+    "newInForever": 68,
+    "changedFromClassic": 14,
+    "trainerCount": 27,
+    "trainersSeenInForever": 24,
+    "description": "Higher ⁣​​​​​​​​​​​​​​​​‌‌‌‌‌‌‌​‌‌‌​‌‌⁣alchemy skill allows you to learn higher level alchemy recipes. Alchemy recipes can be found on trainers around the world as well as from quests and monsters.",
+    "url": "https://foreverdb.net/profession/alchemy",
+    "ranks": [
+      {
+        "rank": "Apprentice",
+        "maxSkill": 75,
+        "spellId": 1240943
+      },
+      {
+        "rank": "Journeyman",
+        "maxSkill": 150,
+        "spellId": 1240954
+      },
+      {
+        "rank": "Expert",
+        "maxSkill": 225,
+        "spellId": 1240965
+      },
+      {
+        "rank": "Artisan",
+        "maxSkill": 300,
+        "spellId": 1240977
+      }
+    ],
+    "trainers": [
+      {
+        "npcId": 2837,
+        "name": "Jaxin Chong",
+        "title": "Expert Alchemist",
+        "side": "both",
+        "zone": "Stranglethorn Vale",
+        "mapId": 1434,
+        "x": 28.1,
+        "y": 78.0,
+        "trainsUpToSkill": 140,
+        "seenInForever": true,
+        "placeSeenInForever": true,
+        "source": "Seen in WoW Forever by ForeverDB players"
+      },
+      {
+        "npcId": 257019,
+        "name": "Nyassa Swiftdraught",
+        "title": "Alchemist",
+        "side": "both",
+        "zone": "Zephras Isle",
+        "mapId": 2521,
+        "x": 43.7,
+        "y": 43.5,
+        "trainsUpToSkill": 0,
+        "seenInForever": true,
+        "placeSeenInForever": true,
+        "source": "Seen in WoW Forever by ForeverDB players"
+      },
+      {
+        "npcId": 257005,
+        "name": "Valiena Swiftgale",
+        "title": "Alchemist",
+        "side": "both",
+        "zone": "Zephras Isle",
+        "mapId": 2521,
+        "x": 59.2,
+        "y": 76.3,
+        "trainsUpToSkill": 0,
+        "seenInForever": true,
+        "placeSeenInForever": true,
+        "source": "Seen in WoW Forever by ForeverDB players"
+      },
+      {
+        "npcId": 3964,
+        "name": "Kylanna",
+        "title": "Expert Alchemist",
+        "side": "alliance",
+        "zone": "Ashenvale",
+        "mapId": 1440,
+        "x": 50.9,
+        "y": 67.1,
+        "trainsUpToSkill": 140,
+        "seenInForever": true,
+        "placeSeenInForever": true,
+        "source": "Seen in WoW Forever by ForeverDB players"
+      },
+      {
+        "npcId": 4160,
+        "name": "Ainethil",
+        "title": "Artisan Alchemist",
+        "side": "alliance",
+        "zone": "Darnassus",
+        "mapId": 1457,
+        "x": 55.0,
+        "y": 24.0,
+        "trainsUpToSkill": 200,
+        "seenInForever": true,
+        "placeSeenInForever": true,
+        "source": "Seen in WoW Forever by ForeverDB players"
+      },
+      {
+        "npcId": 11041,
+        "name": "Milla Fairancora",
+        "title": "Journeyman Alchemist",
+        "side": "alliance",
+        "zone": "Darnassus",
+        "mapId": 1457,
+        "x": 55.2,
+        "y": 23.0,
+        "trainsUpToSkill": 140,
+        "seenInForever": true,
+        "placeSeenInForever": true,
+        "source": "Seen in WoW Forever by ForeverDB players"
+      },
+      {
+        "npcId": 11042,
+        "name": "Sylvanna Forestmoon",
+        "title": "Expert Alchemist",
+        "side": "alliance",
+        "zone": "Darnassus",
+        "mapId": 1457,
+        "x": 56.3,
+        "y": 24.1,
+        "trainsUpToSkill": 140,
+        "seenInForever": true,
+        "placeSeenInForever": true,
+        "source": "Seen in WoW Forever by ForeverDB players"
+      },
+      {
+        "npcId": 4900,
+        "name": "Alchemist Narett",
+        "title": "Expert Alchemist",
+        "side": "alliance",
+        "zone": "Dustwallow Marsh",
+        "mapId": 1445,
+        "x": 63.9,
+        "y": 47.6,
+        "trainsUpToSkill": 140,
+        "seenInForever": false,
+        "placeSeenInForever": false,
+        "source": "Classic data (CMaNGOS), not confirmed in Forever"
+      },
+      {
+        "npcId": 1215,
+        "name": "Alchemist Mallory",
+        "title": "Journeyman Alchemist",
+        "side": "alliance",
+        "zone": "Elwynn Forest",
+        "mapId": 1429,
+        "x": 39.8,
+        "y": 48.5,
+        "trainsUpToSkill": 140,
+        "seenInForever": true,
+        "placeSeenInForever": true,
+        "source": "Seen in WoW Forever by ForeverDB players"
+      },
+      {
+        "npcId": 7948,
+        "name": "Kylanna Windwhisper",
+        "title": "Master Alchemist",
+        "side": "alliance",
+        "zone": "Feralas",
+        "mapId": 1444,
+        "x": 32.6,
+        "y": 43.8,
+        "trainsUpToSkill": 250,
+        "seenInForever": false,
+        "placeSeenInForever": false,
+        "source": "Classic data (CMaNGOS), not confirmed in Forever"
+      },
+      {
+        "npcId": 5177,
+        "name": "Tally Berryfizz",
+        "title": "Expert Alchemist",
+        "side": "alliance",
+        "zone": "Ironforge",
+        "mapId": 1455,
+        "x": 66.5,
+        "y": 55.3,
+        "trainsUpToSkill": 140,
+        "seenInForever": true,
+        "placeSeenInForever": true,
+        "source": "Seen in WoW Forever by ForeverDB players"
+      },
+      {
+        "npcId": 1246,
+        "name": "Vosur Brakthel",
+        "title": "Journeyman Alchemist",
+        "side": "alliance",
+        "zone": "Ironforge",
+        "mapId": 1455,
+        "x": 66.3,
+        "y": 55.5,
+        "trainsUpToSkill": 140,
+        "seenInForever": true,
+        "placeSeenInForever": true,
+        "source": "Seen in WoW Forever by ForeverDB players"
+      },
+      {
+        "npcId": 1470,
+        "name": "Ghak Healtouch",
+        "title": "Journeyman Alchemist",
+        "side": "alliance",
+        "zone": "Loch Modan",
+        "mapId": 1432,
+        "x": 37.1,
+        "y": 49.3,
+        "trainsUpToSkill": 140,
+        "seenInForever": true,
+        "placeSeenInForever": true,
+        "source": "Seen in WoW Forever by ForeverDB players"
+      },
+      {
+        "npcId": 5499,
+        "name": "Lilyssia Nightbreeze",
+        "title": "Expert Alchemist",
+        "side": "alliance",
+        "zone": "Stormwind City",
+        "mapId": 1453,
+        "x": 55.6,
+        "y": 85.8,
+        "trainsUpToSkill": 140,
+        "seenInForever": true,
+        "placeSeenInForever": true,
+        "source": "Seen in WoW Forever by ForeverDB players"
+      },
+      {
+        "npcId": 5500,
+        "name": "Tel'Athir",
+        "title": "Journeyman Alchemist",
+        "side": "alliance",
+        "zone": "Stormwind City",
+        "mapId": 1453,
+        "x": 55.6,
+        "y": 85.7,
+        "trainsUpToSkill": 140,
+        "seenInForever": true,
+        "placeSeenInForever": true,
+        "source": "Seen in WoW Forever by ForeverDB players"
+      },
+      {
+        "npcId": 3603,
+        "name": "Cyndra Kindwhisper",
+        "title": "Journeyman Alchemist",
+        "side": "alliance",
+        "zone": "Teldrassil",
+        "mapId": 1438,
+        "x": 57.6,
+        "y": 60.8,
+        "trainsUpToSkill": 140,
+        "seenInForever": true,
+        "placeSeenInForever": true,
+        "source": "Seen in WoW Forever by ForeverDB players"
+      },
+      {
+        "npcId": 3184,
+        "name": "Miao'zan",
+        "title": "Journeyman Alchemist",
+        "side": "horde",
+        "zone": "Durotar",
+        "mapId": 1411,
+        "x": 55.4,
+        "y": 73.9,
+        "trainsUpToSkill": 140,
+        "seenInForever": true,
+        "placeSeenInForever": false,
+        "source": "Seen in WoW Forever by ForeverDB players"
+      },
+      {
+        "npcId": 2391,
+        "name": "Serge Hinott",
+        "title": "Expert Alchemist",
+        "side": "horde",
+        "zone": "Hillsbrad Foothills",
+        "mapId": 1424,
+        "x": 61.6,
+        "y": 19.2,
+        "trainsUpToSkill": 140,
+        "seenInForever": true,
+        "placeSeenInForever": false,
+        "source": "Seen in WoW Forever by ForeverDB players"
+      },
+      {
+        "npcId": 11046,
+        "name": "Whuut",
+        "title": "Journeyman Alchemist",
+        "side": "horde",
+        "zone": "Orgrimmar",
+        "mapId": 1454,
+        "x": 56.1,
+        "y": 33.0,
+        "trainsUpToSkill": 140,
+        "seenInForever": true,
+        "placeSeenInForever": true,
+        "source": "Seen in WoW Forever by ForeverDB players"
+      },
+      {
+        "npcId": 3347,
+        "name": "Yelmak",
+        "title": "Expert Alchemist",
+        "side": "horde",
+        "zone": "Orgrimmar",
+        "mapId": 1454,
+        "x": 56.7,
+        "y": 33.5,
+        "trainsUpToSkill": 180,
+        "seenInForever": true,
+        "placeSeenInForever": true,
+        "source": "Seen in WoW Forever by ForeverDB players"
+      },
+      {
+        "npcId": 1386,
+        "name": "Rogvar",
+        "title": "Master Alchemist",
+        "side": "horde",
+        "zone": "Swamp of Sorrows",
+        "mapId": 1435,
+        "x": 48.5,
+        "y": 55.8,
+        "trainsUpToSkill": 250,
+        "seenInForever": false,
+        "placeSeenInForever": false,
+        "source": "Classic data (CMaNGOS), not confirmed in Forever"
+      },
+      {
+        "npcId": 3009,
+        "name": "Bena Winterhoof",
+        "title": "Expert Alchemist",
+        "side": "horde",
+        "zone": "Thunder Bluff",
+        "mapId": 1456,
+        "x": 46.7,
+        "y": 33.6,
+        "trainsUpToSkill": 55,
+        "seenInForever": true,
+        "placeSeenInForever": true,
+        "source": "Seen in WoW Forever by ForeverDB players"
+      },
+      {
+        "npcId": 11047,
+        "name": "Kray",
+        "title": "Journeyman Alchemist",
+        "side": "horde",
+        "zone": "Thunder Bluff",
+        "mapId": 1456,
+        "x": 46.9,
+        "y": 34.1,
+        "trainsUpToSkill": 140,
+        "seenInForever": true,
+        "placeSeenInForever": true,
+        "source": "Seen in WoW Forever by ForeverDB players"
+      },
+      {
+        "npcId": 2132,
+        "name": "Carolai Anise",
+        "title": "Journeyman Alchemist",
+        "side": "horde",
+        "zone": "Tirisfal Glades",
+        "mapId": 1420,
+        "x": 59.4,
+        "y": 52.2,
+        "trainsUpToSkill": 140,
+        "seenInForever": true,
+        "placeSeenInForever": true,
+        "source": "Seen in WoW Forever by ForeverDB players"
+      },
+      {
+        "npcId": 4611,
+        "name": "Doctor Herbert Halsey",
+        "title": "Artisan Alchemist",
+        "side": "horde",
+        "zone": "Undercity",
+        "mapId": 1458,
+        "x": 47.9,
+        "y": 73.0,
+        "trainsUpToSkill": 200,
+        "seenInForever": true,
+        "placeSeenInForever": true,
+        "source": "Seen in WoW Forever by ForeverDB players"
+      },
+      {
+        "npcId": 4609,
+        "name": "Doctor Marsh",
+        "title": "Expert Alchemist",
+        "side": "horde",
+        "zone": "Undercity",
+        "mapId": 1458,
+        "x": 51.5,
+        "y": 74.3,
+        "trainsUpToSkill": 140,
+        "seenInForever": true,
+        "placeSeenInForever": true,
+        "source": "Seen in WoW Forever by ForeverDB players"
+      },
+      {
+        "npcId": 11044,
+        "name": "Doctor Martin Felben",
+        "title": "Journeyman Alchemist Trainer",
+        "side": "horde",
+        "zone": "Undercity",
+        "mapId": 1458,
+        "x": 46.7,
+        "y": 74.5,
+        "trainsUpToSkill": 140,
+        "seenInForever": true,
+        "placeSeenInForever": true,
+        "source": "Seen in WoW Forever by ForeverDB players"
+      }
+    ],
+    "trainersNote": "Where trainers stand and what they teach is Classic data (CMaNGOS) unless seenInForever.",
+    "recipes": [
+      {
+        "spellId": 1251742,
+        "name": "Lesser Mender's Potion",
+        "icon": "https://foreverdb.net/icons/463547.webp",
+        "category": {
+          "id": 2449,
+          "name": "Potions",
+          "order": 25,
+          "parent": {
+            "id": 2424,
+            "name": "Alchemy"
+          }
+        },
+        "skill": {
+          "orange": 80,
+          "orangeSource": "client",
+          "yellow": 85,
+          "green": 87,
+          "grey": 90
+        },
+        "requiredLevel": 15,
+        "makes": {
+          "itemId": 250945,
+          "name": "Lesser Mender's Potion",
+          "count": 1,
+          "quality": "Common",
+          "url": "https://foreverdb.net/item/250945"
+        },
+        "effect": null,
+        "reagents": [
+          {
+            "itemId": 3356,
+            "name": "Kingsblood",
+            "count": 2
+          },
+          {
+            "itemId": 3357,
+            "name": "Liferoot",
+            "count": 2
+          },
+          {
+            "itemId": 3372,
+            "name": "Leaded Vial",
+            "count": 1
+          }
+        ],
+        "tools": [],
+        "needsNearby": null,
+        "learnedFrom": {
+          "automatic": false,
+          "trainer": null,
+          "recipeItems": [
+            {
+              "itemId": 250989,
+              "name": "Recipe: Lesser Mender's Potion"
+            }
+          ],
+          "recipeItemsHidden": [],
+          "recipeItemsNotInClient": [],
+          "classicVendors": 0,
+          "seenAtForeverTrainers": [],
+          "sources": {
+            "ways": [
+              "drop"
+            ],
+            "learnAtSkill": 80,
+            "recipeItem": {
+              "itemId": 250989,
+              "name": "Recipe: Lesser Mender's Potion"
+            },
+            "dropsInAll": 2,
+            "drops": [
+              {
+                "kind": "drop",
+                "from": "Stormscale Siren",
+                "chancePercent": null,
+                "npcId": 2180
+              },
+              {
+                "kind": "drop",
+                "from": "Theramore Preserver",
+                "chancePercent": null,
+                "npcId": 3386
+              }
+            ],
+            "note": "Prices are in copper: price buys one purchase of stack items (pricePerItem: one item's share); costs are what the vendor asks besides gold (Merchant's Favor and other currencies, or items), as players' addons saw them. Vendors and trainers are Classic data (CMaNGOS) unless seenInForever; notOnListPlayersSaw: Classic's limited-supply line that wasn't on the list players saw at that vendor (the game leaves sold-out items off). A trainer that players saw teach the recipe in Forever is listed even when Classic has no record of it, and trainerCostSource says whether the price is what players saw (the full price: the game shows each player a reputation discount, which is taken off) or Classic's. Trainers marked inferred weren't seen with this recipe, but a trainer with the same title was (Forever's trainers with one title teach one list). drops is every drop (dropsInAll). Quests and drops come from players' ForeverDB addon where seen, else Classic data."
+          },
+          "known": true
+        },
+        "newInForever": true,
+        "changedFromClassic": [],
+        "sameNameRecipes": [],
+        "leftoverOf": null,
+        "classic": null,
+        "campTier": null,
+        "speculation": false,
+        "speculationReasons": [],
+        "url": "https://foreverdb.net/spell/1251742"
+      },
+      {
+        "spellId": 1251730,
+        "name": "Lesser Spellblasting Potion",
+        "icon": "https://foreverdb.net/icons/463545.webp",
+        "category": {
+          "id": 2449,
+          "name": "Potions",
+          "order": 25,
+          "parent": {
+            "id": 2424,
+            "name": "Alchemy"
+          }
+        },
+        "skill": {
+          "orange": 85,
+          "orangeSource": "client",
+          "yellow": 90,
+          "green": 92,
+          "grey": 95
+        },
+        "requiredLevel": 15,
+        "makes": {
+          "itemId": 250933,
+          "name": "Lesser Spellblasting Potion",
+          "count": 1,
+          "quality": "Common",
+          "url": "https://foreverdb.net/item/250933"
+        },
+        "effect": null,
+        "reagents": [
+          {
+            "itemId": 785,
+            "name": "Mageroyal",
+            "count": 1
+          },
+          {
+            "itemId": 765,
+            "name": "Silverleaf",
+            "count": 2
+          },
+          {
+            "itemId": 3371,
+            "name": "Empty Vial",
+            "count": 1
+          }
+        ],
+        "tools": [],
+        "needsNearby": null,
+        "learnedFrom": {
+          "automatic": false,
+          "trainer": null,
+          "recipeItems": [
+            {
+              "itemId": 250977,
+              "name": "Recipe: Lesser Spellblasting Potion"
+            }
+          ],
+          "recipeItemsHidden": [],
+          "recipeItemsNotInClient": [],
+          "classicVendors": 0,
+          "seenAtForeverTrainers": [],
+          "sources": {
+            "ways": [
+              "drop"
+            ],
+            "learnAtSkill": 85,
+            "recipeItem": {
+              "itemId": 250977,
+              "name": "Recipe: Lesser Spellblasting Potion"
+            },
+            "dropsInAll": 1,
+            "drops": [
+              {
+                "kind": "drop",
+                "from": "Witchwing Windcaller",
+                "chancePercent": null,
+                "npcId": 3280
+              }
+            ],
+            "note": "Prices are in copper: price buys one purchase of stack items (pricePerItem: one item's share); costs are what the vendor asks besides gold (Merchant's Favor and other currencies, or items), as players' addons saw them. Vendors and trainers are Classic data (CMaNGOS) unless seenInForever; notOnListPlayersSaw: Classic's limited-supply line that wasn't on the list players saw at that vendor (the game leaves sold-out items off). A trainer that players saw teach the recipe in Forever is listed even when Classic has no record of it, and trainerCostSource says whether the price is what players saw (the full price: the game shows each player a reputation discount, which is taken off) or Classic's. Trainers marked inferred weren't seen with this recipe, but a trainer with the same title was (Forever's trainers with one title teach one list). drops is every drop (dropsInAll). Quests and drops come from players' ForeverDB addon where seen, else Classic data."
+          },
+          "known": true
+        },
+        "newInForever": true,
+        "changedFromClassic": [],
+        "sameNameRecipes": [],
+        "leftoverOf": null,
+        "classic": null,
+        "campTier": null,
+        "speculation": false,
+        "speculationReasons": [],
+        "url": "https://foreverdb.net/spell/1251730"
+      }
+    ]
+  },
+  "meta": {
+    "build": "1.60.1.70938",
+    "total": 196,
+    "limit": 2,
+    "offset": 20,
+    "next": "/api/v1/professions/alchemy?limit=2&offset=22",
+    "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+    "attributionRequired": true,
+    "client": "dev-0255"
+  }
+}

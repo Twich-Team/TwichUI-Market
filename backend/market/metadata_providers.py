@@ -31,7 +31,7 @@ PROVIDERS = {
     'everloot': ProviderSpec('Everloot', False, 20, 100, 180, 3600,
         'https://everloot.app', 'Forever consensus names with attribution. Bulk client attributes are unconfirmed and do not supply names.'),
     'foreverdb': ProviderSpec('ForeverDB', True, 60, 500, 3, 86400,
-        'https://foreverdb.net', 'Approval required. Only minimal documented identity/name envelope; authorized fixture verification pending.'),
+        'https://foreverdb.net', 'Authenticated Forever client item details and source-qualified recipes, vendors and sets. Key scope and website verification require account confirmation.'),
     'thewowdb': ProviderSpec('TheWoWDB', False, 60, 500, 60, 3600,
         'https://thewowdb.com', 'Optional Forever beta data. Access restrictions are never bypassed.'),
 }
@@ -141,17 +141,8 @@ def parse_everloot_page(body, *, at=None):
 
 
 def parse_foreverdb(body, item_id, *, at=None):
-    # Public documentation verifies the envelope, route, name and build concepts.
-    # Conservative minimal fields only; unsupported response shapes fail closed.
-    value = decode(body)
-    row, meta = value.get('data'), value.get('meta')
-    if not isinstance(row, dict) or not isinstance(meta, dict) or type(row.get('id')) is not int or row['id'] != item_id:
-        raise ValueError('ForeverDB documented envelope mismatch; authorized fixture required')
-    if meta.get('edition', 'forever') != 'forever': raise IdentityMismatch('Wrong game edition')
-    build = build_identity(meta.get('build'))
-    fields = {'name': plain(row.get('name'))}
-    return fields, source('foreverdb', body, build=build, confidence='client_record_unverified', at=at,
-        attribution={'text': 'Data from ForeverDB.net', 'url': 'https://foreverdb.net'})
+    from .foreverdb import item
+    return item(body, item_id, at=at)
 
 
 def parse_thewowdb(body, item_id, *, at=None):
@@ -171,7 +162,7 @@ def parse_thewowdb(body, item_id, *, at=None):
     return fields,origin
 
 
-def fetch(provider, item_id, *, credential=None, etag=None, offset=None, validate=False, transport=request, client=None, region='us', page_size=500):
+def fetch(provider, item_id, *, credential=None, etag=None, offset=None, validate=False, transport=request, client=None, region='us', page_size=500, resource=None):
     if provider not in PROVIDERS or type(item_id) is not int or not 1 <= item_id <= 2**31-1: raise ValueError('Invalid provider identity')
     if provider == 'blizzard':
         from .worker import BlizzardClient
@@ -181,7 +172,13 @@ def fetch(provider, item_id, *, credential=None, etag=None, offset=None, validat
         url = 'https://everloot.app/api/items?' + urlencode({'offset': offset or 0, 'limit': 1 if validate else page_size}) if validate or offset is not None else f'https://everloot.app/api/tooltip/item/{item_id}'
     elif provider == 'foreverdb':
         if not credential: raise ValueError('Provider key required')
-        url = 'https://foreverdb.net/api/v1/meta' if validate else f'https://foreverdb.net/api/v1/items/{item_id}'
+        if resource is not None:
+            from .foreverdb import RELATED
+            if validate or not RELATED.fullmatch(resource): raise ValueError('Invalid ForeverDB resource')
+            if type(offset) is not int or not 0 <= offset <= 100000: raise ValueError('Invalid resource offset')
+            url = 'https://foreverdb.net/api/v1/' + resource + '?' + urlencode({'limit':20,'offset':offset})
+        else:
+            url = 'https://foreverdb.net/api/v1/meta' if validate else f'https://foreverdb.net/api/v1/items/{item_id}'
     else:
         url = f'https://thewowdb.com/api/v1/forever/item/{item_id}'
     return transport(url, authorization=f'Bearer {credential}' if credential else None,

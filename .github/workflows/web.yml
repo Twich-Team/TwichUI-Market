@@ -36,7 +36,17 @@ jobs:
       - run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml exec -T api python - < web/e2e/seed-admin.py
       - run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml exec -T api python - < web/e2e/seed-quality.py
       - run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml exec -T api python - < web/e2e/seed-private-beta.py
-      - run: docker run --rm --network twichui-market-browser_default -v "$PWD:/work" -w /work/web mcr.microsoft.com/playwright:v1.65.1-noble npm run test:e2e -- --grep-invert 'provider rate limits:'
+      - run: docker run --rm --network twichui-market-browser_default -v "$PWD:/work" -w /work/web mcr.microsoft.com/playwright:v1.65.1-noble npm run test:e2e -- --grep-invert 'provider rate limits:|ForeverDB metadata:'
+      - name: Verify authentic ForeverDB metadata with isolated synthetic auctions
+        run: |
+          docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml exec -T api python - < web/e2e/seed-foreverdb.py
+          docker run --rm --network twichui-market-browser_default -v "$PWD:/work" -w /work/web mcr.microsoft.com/playwright:v1.65.1-noble npm run test:e2e -- foreverdb-metadata.spec.ts
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: foreverdb-metadata-review
+          path: artifacts/foreverdb-browser
+          if-no-files-found: ignore
       - name: Seed synthetic provider quota review after ordinary workflows
         run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml exec -T api python - < web/e2e/seed-provider-rates.py
       - run: docker run --rm --network twichui-market-browser_default -v "$PWD:/work" -w /work/web mcr.microsoft.com/playwright:v1.65.1-noble npm run test:e2e -- provider-rates.spec.ts

@@ -1,0 +1,99 @@
+{
+  "data": [
+    {
+      "build": "1.60.1.70938",
+      "previousBuild": "1.60.1.70888",
+      "date": "2026-11-13",
+      "counts": {
+        "ability": {
+          "added": 0,
+          "removed": 0,
+          "changed": 2
+        },
+        "talent": {
+          "added": 0,
+          "removed": 0,
+          "changed": 4
+        },
+        "spell": {
+          "added": 0,
+          "removed": 0,
+          "changed": 11
+        },
+        "item": {
+          "added": 52,
+          "removed": 0,
+          "changed": 83
+        }
+      },
+      "totals": {
+        "spells": 32121,
+        "items": 23686,
+        "sets": 545,
+        "abilities": 553,
+        "talents": 467
+      },
+      "article": {
+        "slug": "build-1-60-1-70938-what-changed-in-the-game-files",
+        "title": "Build 1.60.1.70938: Enhancement Shaman tooltips reworked and classic epics added",
+        "url": "https://foreverdb.net/article/build-1-60-1-70938-what-changed-in-the-game-files"
+      },
+      "url": "https://foreverdb.net/changelog/1.60.1.70938"
+    },
+    {
+      "build": "1.60.1.70888",
+      "previousBuild": "1.60.1.70862",
+      "date": "2026-11-11",
+      "counts": {
+        "ability": {
+          "added": 0,
+          "removed": 0,
+          "changed": 4
+        },
+        "talent": {
+          "added": 0,
+          "removed": 0,
+          "changed": 4
+        },
+        "spell": {
+          "added": 11,
+          "removed": 0,
+          "changed": 41
+        },
+        "item": {
+          "added": 295,
+          "removed": 0,
+          "changed": 244
+        },
+        "set": {
+          "added": 0,
+          "removed": 0,
+          "changed": 2
+        }
+      },
+      "totals": {
+        "spells": 32121,
+        "items": 23634,
+        "sets": 545,
+        "abilities": 553,
+        "talents": 467
+      },
+      "article": {
+        "slug": "build-1-60-1-70888-items-added-mounts-bind-on-pickup",
+        "title": "Build 1.60.1.70888: 295 items added and mounts now bind when picked up",
+        "url": "https://foreverdb.net/article/build-1-60-1-70888-items-added-mounts-bind-on-pickup"
+      },
+      "url": "https://foreverdb.net/changelog/1.60.1.70888"
+    }
+  ],
+  "meta": {
+    "build": "1.60.1.70938",
+    "total": 18,
+    "limit": 2,
+    "offset": 0,
+    "next": "/api/v1/builds?limit=2&offset=2",
+    "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+    "attributionRequired": true,
+    "client": "dev-0255"
+  }
+}

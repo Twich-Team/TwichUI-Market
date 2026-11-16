@@ -1,0 +1,3148 @@
+{
+  "observed_date": "2026-11-16",
+  "provider": "ForeverDB",
+  "developer": "dev-0255",
+  "sample_count": 23,
+  "not_account_verification": true,
+  "responses": [
+    {
+      "fixture": "meta.json",
+      "authenticated": true,
+      "http_status": 200,
+      "meta": {
+        "build": "1.60.1.70938",
+        "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+        "attributionRequired": true,
+        "client": "dev-0255"
+      },
+      "fields": {
+        "$": [
+          "dict"
+        ],
+        "data": [
+          "dict"
+        ],
+        "data.articles": [
+          "int"
+        ],
+        "data.attribution": [
+          "str"
+        ],
+        "data.build": [
+          "str"
+        ],
+        "data.dungeons": [
+          "int"
+        ],
+        "data.itemSets": [
+          "int"
+        ],
+        "data.items": [
+          "int"
+        ],
+        "data.levelCap": [
+          "int"
+        ],
+        "data.notAffiliated": [
+          "str"
+        ],
+        "data.quests": [
+          "int"
+        ],
+        "data.sources": [
+          "str"
+        ],
+        "data.spells": [
+          "int"
+        ],
+        "data.vendors": [
+          "int"
+        ],
+        "meta": [
+          "dict"
+        ],
+        "meta.attribution": [
+          "str"
+        ],
+        "meta.attributionRequired": [
+          "bool"
+        ],
+        "meta.build": [
+          "str"
+        ],
+        "meta.client": [
+          "str"
+        ]
+      }
+    },
+    {
+      "fixture": "items.json",
+      "authenticated": true,
+      "http_status": 200,
+      "meta": {
+        "build": "1.60.1.70938",
+        "total": 23696,
+        "limit": 2,
+        "offset": 0,
+        "next": "/api/v1/items?limit=2&offset=2",
+        "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+        "attributionRequired": true,
+        "client": "dev-0255"
+      },
+      "fields": {
+        "$": [
+          "dict"
+        ],
+        "data": [
+          "list"
+        ],
+        "data[]": [
+          "dict"
+        ],
+        "data[].betaEvent": [
+          "bool"
+        ],
+        "data[].class": [
+          "str"
+        ],
+        "data[].classId": [
+          "int"
+        ],
+        "data[].icon": [
+          "str"
+        ],
+        "data[].id": [
+          "int"
+        ],
+        "data[].inventoryType": [
+          "str"
+        ],
+        "data[].inventoryTypeId": [
+          "int"
+        ],
+        "data[].itemLevel": [
+          "int"
+        ],
+        "data[].name": [
+          "str"
+        ],
+        "data[].quality": [
+          "str"
+        ],
+        "data[].qualityId": [
+          "int"
+        ],
+        "data[].requiredLevel": [
+          "int"
+        ],
+        "data[].speculation": [
+          "bool"
+        ],
+        "data[].speculationReasons": [
+          "list"
+        ],
+        "data[].subclass": [
+          "str"
+        ],
+        "data[].subclassId": [
+          "int"
+        ],
+        "data[].url": [
+          "str"
+        ],
+        "meta": [
+          "dict"
+        ],
+        "meta.attribution": [
+          "str"
+        ],
+        "meta.attributionRequired": [
+          "bool"
+        ],
+        "meta.build": [
+          "str"
+        ],
+        "meta.client": [
+          "str"
+        ],
+        "meta.limit": [
+          "int"
+        ],
+        "meta.next": [
+          "str"
+        ],
+        "meta.offset": [
+          "int"
+        ],
+        "meta.total": [
+          "int"
+        ]
+      }
+    },
+    {
+      "fixture": "items-25.json",
+      "authenticated": true,
+      "http_status": 200,
+      "meta": {
+        "build": "1.60.1.70938",
+        "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+        "attributionRequired": true,
+        "client": "dev-0255"
+      },
+      "fields": {
+        "$": [
+          "dict"
+        ],
+        "data": [
+          "dict"
+        ],
+        "data.betaEvent": [
+          "bool"
+        ],
+        "data.bonding": [
+          "null"
+        ],
+        "data.class": [
+          "str"
+        ],
+        "data.classId": [
+          "int"
+        ],
+        "data.damage": [
+          "dict"
+        ],
+        "data.damage.max": [
+          "int"
+        ],
+        "data.damage.min": [
+          "int"
+        ],
+        "data.damage.school": [
+          "str"
+        ],
+        "data.disenchant": [
+          "null"
+        ],
+        "data.disenchantable": [
+          "bool"
+        ],
+        "data.effects": [
+          "list"
+        ],
+        "data.icon": [
+          "str"
+        ],
+        "data.id": [
+          "int"
+        ],
+        "data.inventoryType": [
+          "str"
+        ],
+        "data.inventoryTypeId": [
+          "int"
+        ],
+        "data.itemLevel": [
+          "int"
+        ],
+        "data.name": [
+          "str"
+        ],
+        "data.quality": [
+          "str"
+        ],
+        "data.qualityId": [
+          "int"
+        ],
+        "data.requiredLevel": [
+          "int"
+        ],
+        "data.sellPrice": [
+          "int"
+        ],
+        "data.speculation": [
+          "bool"
+        ],
+        "data.speculationReasons": [
+          "list"
+        ],
+        "data.speed": [
+          "float"
+        ],
+        "data.stats": [
+          "list"
+        ],
+        "data.subclass": [
+          "str"
+        ],
+        "data.subclassId": [
+          "int"
+        ],
+        "data.unique": [
+          "bool"
+        ],
+        "data.url": [
+          "str"
+        ],
+        "meta": [
+          "dict"
+        ],
+        "meta.attribution": [
+          "str"
+        ],
+        "meta.attributionRequired": [
+          "bool"
+        ],
+        "meta.build": [
+          "str"
+        ],
+        "meta.client": [
+          "str"
+        ]
+      }
+    },
+    {
+      "fixture": "items-19019.json",
+      "authenticated": true,
+      "http_status": 200,
+      "meta": {
+        "build": "1.60.1.70938",
+        "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+        "attributionRequired": true,
+        "client": "dev-0255"
+      },
+      "fields": {
+        "$": [
+          "dict"
+        ],
+        "data": [
+          "dict"
+        ],
+        "data.betaEvent": [
+          "bool"
+        ],
+        "data.bonding": [
+          "str"
+        ],
+        "data.class": [
+          "str"
+        ],
+        "data.classId": [
+          "int"
+        ],
+        "data.damage": [
+          "dict"
+        ],
+        "data.damage.max": [
+          "int"
+        ],
+        "data.damage.min": [
+          "int"
+        ],
+        "data.damage.school": [
+          "str"
+        ],
+        "data.disenchant": [
+          "null"
+        ],
+        "data.disenchantable": [
+          "bool"
+        ],
+        "data.effects": [
+          "list"
+        ],
+        "data.effects[]": [
+          "dict"
+        ],
+        "data.effects[].spellId": [
+          "int"
+        ],
+        "data.effects[].text": [
+          "str"
+        ],
+        "data.effects[].trigger": [
+          "str"
+        ],
+        "data.effects[].triggerId": [
+          "int"
+        ],
+        "data.icon": [
+          "str"
+        ],
+        "data.id": [
+          "int"
+        ],
+        "data.inventoryType": [
+          "str"
+        ],
+        "data.inventoryTypeId": [
+          "int"
+        ],
+        "data.itemLevel": [
+          "int"
+        ],
+        "data.name": [
+          "str"
+        ],
+        "data.quality": [
+          "str"
+        ],
+        "data.qualityId": [
+          "int"
+        ],
+        "data.requiredLevel": [
+          "int"
+        ],
+        "data.sellPrice": [
+          "int"
+        ],
+        "data.speculation": [
+          "bool"
+        ],
+        "data.speculationReasons": [
+          "list"
+        ],
+        "data.speed": [
+          "float"
+        ],
+        "data.stats": [
+          "list"
+        ],
+        "data.stats[]": [
+          "dict"
+        ],
+        "data.stats[].stat": [
+          "str"
+        ],
+        "data.stats[].statId": [
+          "int"
+        ],
+        "data.stats[].value": [
+          "int"
+        ],
+        "data.subclass": [
+          "str"
+        ],
+        "data.subclassId": [
+          "int"
+        ],
+        "data.unique": [
+          "bool"
+        ],
+        "data.url": [
+          "str"
+        ],
+        "meta": [
+          "dict"
+        ],
+        "meta.attribution": [
+          "str"
+        ],
+        "meta.attributionRequired": [
+          "bool"
+        ],
+        "meta.build": [
+          "str"
+        ],
+        "meta.client": [
+          "str"
+        ]
+      }
+    },
+    {
+      "fixture": "items-2589.json",
+      "authenticated": true,
+      "http_status": 200,
+      "meta": {
+        "build": "1.60.1.70938",
+        "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+        "attributionRequired": true,
+        "client": "dev-0255"
+      },
+      "fields": {
+        "$": [
+          "dict"
+        ],
+        "data": [
+          "dict"
+        ],
+        "data.betaEvent": [
+          "bool"
+        ],
+        "data.bonding": [
+          "null"
+        ],
+        "data.class": [
+          "str"
+        ],
+        "data.classId": [
+          "int"
+        ],
+        "data.damage": [
+          "null"
+        ],
+        "data.disenchant": [
+          "null"
+        ],
+        "data.disenchantable": [
+          "bool"
+        ],
+        "data.effects": [
+          "list"
+        ],
+        "data.icon": [
+          "str"
+        ],
+        "data.id": [
+          "int"
+        ],
+        "data.inventoryType": [
+          "str"
+        ],
+        "data.inventoryTypeId": [
+          "int"
+        ],
+        "data.itemLevel": [
+          "int"
+        ],
+        "data.name": [
+          "str"
+        ],
+        "data.quality": [
+          "str"
+        ],
+        "data.qualityId": [
+          "int"
+        ],
+        "data.requiredLevel": [
+          "int"
+        ],
+        "data.sellPrice": [
+          "int"
+        ],
+        "data.speculation": [
+          "bool"
+        ],
+        "data.speculationReasons": [
+          "list"
+        ],
+        "data.speed": [
+          "null"
+        ],
+        "data.stats": [
+          "list"
+        ],
+        "data.subclass": [
+          "str"
+        ],
+        "data.subclassId": [
+          "int"
+        ],
+        "data.unique": [
+          "bool"
+        ],
+        "data.url": [
+          "str"
+        ],
+        "meta": [
+          "dict"
+        ],
+        "meta.attribution": [
+          "str"
+        ],
+        "meta.attributionRequired": [
+          "bool"
+        ],
+        "meta.build": [
+          "str"
+        ],
+        "meta.client": [
+          "str"
+        ]
+      }
+    },
+    {
+      "fixture": "items-8188.json",
+      "authenticated": true,
+      "http_status": 200,
+      "meta": {
+        "build": "1.60.1.70938",
+        "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+        "attributionRequired": true,
+        "client": "dev-0255"
+      },
+      "fields": {
+        "$": [
+          "dict"
+        ],
+        "data": [
+          "dict"
+        ],
+        "data.betaEvent": [
+          "bool"
+        ],
+        "data.bonding": [
+          "str"
+        ],
+        "data.class": [
+          "str"
+        ],
+        "data.classId": [
+          "int"
+        ],
+        "data.damage": [
+          "dict"
+        ],
+        "data.damage.max": [
+          "int"
+        ],
+        "data.damage.min": [
+          "int"
+        ],
+        "data.damage.school": [
+          "str"
+        ],
+        "data.disenchant": [
+          "dict"
+        ],
+        "data.disenchant.results": [
+          "list"
+        ],
+        "data.disenchant.results[]": [
+          "dict"
+        ],
+        "data.disenchant.results[].chancePercent": [
+          "float",
+          "int"
+        ],
+        "data.disenchant.results[].itemId": [
+          "int"
+        ],
+        "data.disenchant.results[].max": [
+          "int"
+        ],
+        "data.disenchant.results[].min": [
+          "int"
+        ],
+        "data.disenchant.results[].name": [
+          "str"
+        ],
+        "data.disenchant.skill": [
+          "null"
+        ],
+        "data.disenchant.source": [
+          "str"
+        ],
+        "data.disenchantable": [
+          "bool"
+        ],
+        "data.effects": [
+          "list"
+        ],
+        "data.icon": [
+          "str"
+        ],
+        "data.id": [
+          "int"
+        ],
+        "data.inventoryType": [
+          "str"
+        ],
+        "data.inventoryTypeId": [
+          "int"
+        ],
+        "data.itemLevel": [
+          "int"
+        ],
+        "data.name": [
+          "str"
+        ],
+        "data.quality": [
+          "str"
+        ],
+        "data.qualityId": [
+          "int"
+        ],
+        "data.requiredLevel": [
+          "int"
+        ],
+        "data.sellPrice": [
+          "int"
+        ],
+        "data.speculation": [
+          "bool"
+        ],
+        "data.speculationReasons": [
+          "list"
+        ],
+        "data.speed": [
+          "float"
+        ],
+        "data.stats": [
+          "list"
+        ],
+        "data.stats[]": [
+          "dict"
+        ],
+        "data.stats[].stat": [
+          "str"
+        ],
+        "data.stats[].statId": [
+          "int"
+        ],
+        "data.stats[].value": [
+          "int"
+        ],
+        "data.subclass": [
+          "str"
+        ],
+        "data.subclassId": [
+          "int"
+        ],
+        "data.unique": [
+          "bool"
+        ],
+        "data.url": [
+          "str"
+        ],
+        "meta": [
+          "dict"
+        ],
+        "meta.attribution": [
+          "str"
+        ],
+        "meta.attributionRequired": [
+          "bool"
+        ],
+        "meta.build": [
+          "str"
+        ],
+        "meta.client": [
+          "str"
+        ]
+      }
+    },
+    {
+      "fixture": "items-2235.json",
+      "authenticated": true,
+      "http_status": 200,
+      "meta": {
+        "build": "1.60.1.70938",
+        "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+        "attributionRequired": true,
+        "client": "dev-0255"
+      },
+      "fields": {
+        "$": [
+          "dict"
+        ],
+        "data": [
+          "dict"
+        ],
+        "data.betaEvent": [
+          "bool"
+        ],
+        "data.bonding": [
+          "str"
+        ],
+        "data.class": [
+          "str"
+        ],
+        "data.classId": [
+          "int"
+        ],
+        "data.damage": [
+          "dict"
+        ],
+        "data.damage.max": [
+          "int"
+        ],
+        "data.damage.min": [
+          "int"
+        ],
+        "data.damage.school": [
+          "str"
+        ],
+        "data.disenchant": [
+          "dict"
+        ],
+        "data.disenchant.results": [
+          "list"
+        ],
+        "data.disenchant.results[]": [
+          "dict"
+        ],
+        "data.disenchant.results[].chancePercent": [
+          "float",
+          "int"
+        ],
+        "data.disenchant.results[].itemId": [
+          "int"
+        ],
+        "data.disenchant.results[].max": [
+          "int"
+        ],
+        "data.disenchant.results[].min": [
+          "int"
+        ],
+        "data.disenchant.results[].name": [
+          "str"
+        ],
+        "data.disenchant.skill": [
+          "null"
+        ],
+        "data.disenchant.source": [
+          "str"
+        ],
+        "data.disenchantable": [
+          "bool"
+        ],
+        "data.effects": [
+          "list"
+        ],
+        "data.icon": [
+          "str"
+        ],
+        "data.id": [
+          "int"
+        ],
+        "data.inventoryType": [
+          "str"
+        ],
+        "data.inventoryTypeId": [
+          "int"
+        ],
+        "data.itemLevel": [
+          "int"
+        ],
+        "data.name": [
+          "str"
+        ],
+        "data.quality": [
+          "str"
+        ],
+        "data.qualityId": [
+          "int"
+        ],
+        "data.requiredLevel": [
+          "int"
+        ],
+        "data.sellPrice": [
+          "int"
+        ],
+        "data.speculation": [
+          "bool"
+        ],
+        "data.speculationReasons": [
+          "list"
+        ],
+        "data.speed": [
+          "float"
+        ],
+        "data.stats": [
+          "list"
+        ],
+        "data.stats[]": [
+          "dict"
+        ],
+        "data.stats[].stat": [
+          "str"
+        ],
+        "data.stats[].statId": [
+          "int"
+        ],
+        "data.stats[].value": [
+          "int"
+        ],
+        "data.subclass": [
+          "str"
+        ],
+        "data.subclassId": [
+          "int"
+        ],
+        "data.unique": [
+          "bool"
+        ],
+        "data.url": [
+          "str"
+        ],
+        "meta": [
+          "dict"
+        ],
+        "meta.attribution": [
+          "str"
+        ],
+        "meta.attributionRequired": [
+          "bool"
+        ],
+        "meta.build": [
+          "str"
+        ],
+        "meta.client": [
+          "str"
+        ]
+      }
+    },
+    {
+      "fixture": "items-10098.json",
+      "authenticated": true,
+      "http_status": 200,
+      "meta": {
+        "build": "1.60.1.70938",
+        "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+        "attributionRequired": true,
+        "client": "dev-0255"
+      },
+      "fields": {
+        "$": [
+          "dict"
+        ],
+        "data": [
+          "dict"
+        ],
+        "data.betaEvent": [
+          "bool"
+        ],
+        "data.bonding": [
+          "str"
+        ],
+        "data.class": [
+          "str"
+        ],
+        "data.classId": [
+          "int"
+        ],
+        "data.damage": [
+          "null"
+        ],
+        "data.disenchant": [
+          "dict"
+        ],
+        "data.disenchant.results": [
+          "list"
+        ],
+        "data.disenchant.results[]": [
+          "dict"
+        ],
+        "data.disenchant.results[].chancePercent": [
+          "float",
+          "int"
+        ],
+        "data.disenchant.results[].itemId": [
+          "int"
+        ],
+        "data.disenchant.results[].max": [
+          "int"
+        ],
+        "data.disenchant.results[].min": [
+          "int"
+        ],
+        "data.disenchant.results[].name": [
+          "str"
+        ],
+        "data.disenchant.skill": [
+          "null"
+        ],
+        "data.disenchant.source": [
+          "str"
+        ],
+        "data.disenchantable": [
+          "bool"
+        ],
+        "data.effects": [
+          "list"
+        ],
+        "data.icon": [
+          "str"
+        ],
+        "data.id": [
+          "int"
+        ],
+        "data.inventoryType": [
+          "str"
+        ],
+        "data.inventoryTypeId": [
+          "int"
+        ],
+        "data.itemLevel": [
+          "int"
+        ],
+        "data.name": [
+          "str"
+        ],
+        "data.quality": [
+          "str"
+        ],
+        "data.qualityId": [
+          "int"
+        ],
+        "data.requiredLevel": [
+          "int"
+        ],
+        "data.sellPrice": [
+          "int"
+        ],
+        "data.speculation": [
+          "bool"
+        ],
+        "data.speculationReasons": [
+          "list"
+        ],
+        "data.speed": [
+          "null"
+        ],
+        "data.stats": [
+          "list"
+        ],
+        "data.subclass": [
+          "str"
+        ],
+        "data.subclassId": [
+          "int"
+        ],
+        "data.unique": [
+          "bool"
+        ],
+        "data.url": [
+          "str"
+        ],
+        "meta": [
+          "dict"
+        ],
+        "meta.attribution": [
+          "str"
+        ],
+        "meta.attributionRequired": [
+          "bool"
+        ],
+        "meta.build": [
+          "str"
+        ],
+        "meta.client": [
+          "str"
+        ]
+      }
+    },
+    {
+      "fixture": "items-2553.json",
+      "authenticated": true,
+      "http_status": 200,
+      "meta": {
+        "build": "1.60.1.70938",
+        "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+        "attributionRequired": true,
+        "client": "dev-0255"
+      },
+      "fields": {
+        "$": [
+          "dict"
+        ],
+        "data": [
+          "dict"
+        ],
+        "data.betaEvent": [
+          "bool"
+        ],
+        "data.bonding": [
+          "null"
+        ],
+        "data.class": [
+          "str"
+        ],
+        "data.classId": [
+          "int"
+        ],
+        "data.damage": [
+          "null"
+        ],
+        "data.disenchant": [
+          "null"
+        ],
+        "data.disenchantable": [
+          "bool"
+        ],
+        "data.effects": [
+          "list"
+        ],
+        "data.effects[]": [
+          "dict"
+        ],
+        "data.effects[].spellId": [
+          "int"
+        ],
+        "data.effects[].text": [
+          "str"
+        ],
+        "data.effects[].trigger": [
+          "str"
+        ],
+        "data.effects[].triggerId": [
+          "int"
+        ],
+        "data.icon": [
+          "str"
+        ],
+        "data.id": [
+          "int"
+        ],
+        "data.inventoryType": [
+          "str"
+        ],
+        "data.inventoryTypeId": [
+          "int"
+        ],
+        "data.itemLevel": [
+          "int"
+        ],
+        "data.name": [
+          "str"
+        ],
+        "data.quality": [
+          "str"
+        ],
+        "data.qualityId": [
+          "int"
+        ],
+        "data.requiredLevel": [
+          "int"
+        ],
+        "data.sellPrice": [
+          "int"
+        ],
+        "data.speculation": [
+          "bool"
+        ],
+        "data.speculationReasons": [
+          "list"
+        ],
+        "data.speed": [
+          "null"
+        ],
+        "data.stats": [
+          "list"
+        ],
+        "data.subclass": [
+          "str"
+        ],
+        "data.subclassId": [
+          "int"
+        ],
+        "data.unique": [
+          "bool"
+        ],
+        "data.url": [
+          "str"
+        ],
+        "meta": [
+          "dict"
+        ],
+        "meta.attribution": [
+          "str"
+        ],
+        "meta.attributionRequired": [
+          "bool"
+        ],
+        "meta.build": [
+          "str"
+        ],
+        "meta.client": [
+          "str"
+        ]
+      }
+    },
+    {
+      "fixture": "spells.json",
+      "authenticated": true,
+      "http_status": 200,
+      "meta": {
+        "build": "1.60.1.70938",
+        "total": 32121,
+        "limit": 2,
+        "offset": 0,
+        "next": "/api/v1/spells?limit=2&offset=2",
+        "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+        "attributionRequired": true,
+        "client": "dev-0255"
+      },
+      "fields": {
+        "$": [
+          "dict"
+        ],
+        "data": [
+          "list"
+        ],
+        "data[]": [
+          "dict"
+        ],
+        "data[].castTimeMs": [
+          "int"
+        ],
+        "data[].cooldownMs": [
+          "null"
+        ],
+        "data[].costs": [
+          "list"
+        ],
+        "data[].costs[]": [
+          "dict"
+        ],
+        "data[].costs[].amount": [
+          "int"
+        ],
+        "data[].costs[].percentOfBase": [
+          "bool"
+        ],
+        "data[].costs[].resource": [
+          "str"
+        ],
+        "data[].costs[].text": [
+          "str"
+        ],
+        "data[].description": [
+          "str"
+        ],
+        "data[].icon": [
+          "str"
+        ],
+        "data[].id": [
+          "int"
+        ],
+        "data[].name": [
+          "str"
+        ],
+        "data[].rangeYards": [
+          "null"
+        ],
+        "data[].rank": [
+          "str"
+        ],
+        "data[].requiredLevel": [
+          "null"
+        ],
+        "data[].school": [
+          "str"
+        ],
+        "data[].url": [
+          "str"
+        ],
+        "meta": [
+          "dict"
+        ],
+        "meta.attribution": [
+          "str"
+        ],
+        "meta.attributionRequired": [
+          "bool"
+        ],
+        "meta.build": [
+          "str"
+        ],
+        "meta.client": [
+          "str"
+        ],
+        "meta.limit": [
+          "int"
+        ],
+        "meta.next": [
+          "str"
+        ],
+        "meta.offset": [
+          "int"
+        ],
+        "meta.total": [
+          "int"
+        ]
+      }
+    },
+    {
+      "fixture": "spells-133.json",
+      "authenticated": true,
+      "http_status": 200,
+      "meta": {
+        "build": "1.60.1.70938",
+        "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+        "attributionRequired": true,
+        "client": "dev-0255"
+      },
+      "fields": {
+        "$": [
+          "dict"
+        ],
+        "data": [
+          "dict"
+        ],
+        "data.castTimeMs": [
+          "int"
+        ],
+        "data.cooldownMs": [
+          "null"
+        ],
+        "data.costs": [
+          "list"
+        ],
+        "data.costs[]": [
+          "dict"
+        ],
+        "data.costs[].amount": [
+          "int"
+        ],
+        "data.costs[].percentOfBase": [
+          "bool"
+        ],
+        "data.costs[].resource": [
+          "str"
+        ],
+        "data.costs[].text": [
+          "str"
+        ],
+        "data.description": [
+          "str"
+        ],
+        "data.icon": [
+          "str"
+        ],
+        "data.id": [
+          "int"
+        ],
+        "data.name": [
+          "str"
+        ],
+        "data.rangeYards": [
+          "dict"
+        ],
+        "data.rangeYards.max": [
+          "int"
+        ],
+        "data.rangeYards.min": [
+          "int"
+        ],
+        "data.rank": [
+          "str"
+        ],
+        "data.requiredLevel": [
+          "int"
+        ],
+        "data.school": [
+          "str"
+        ],
+        "data.url": [
+          "str"
+        ],
+        "meta": [
+          "dict"
+        ],
+        "meta.attribution": [
+          "str"
+        ],
+        "meta.attributionRequired": [
+          "bool"
+        ],
+        "meta.build": [
+          "str"
+        ],
+        "meta.client": [
+          "str"
+        ]
+      }
+    },
+    {
+      "fixture": "professions.json",
+      "authenticated": true,
+      "http_status": 200,
+      "meta": {
+        "build": "1.60.1.70938",
+        "total": 12,
+        "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+        "attributionRequired": true,
+        "client": "dev-0255"
+      },
+      "fields": {
+        "$": [
+          "dict"
+        ],
+        "data": [
+          "list"
+        ],
+        "data[]": [
+          "dict"
+        ],
+        "data[].changedFromClassic": [
+          "int"
+        ],
+        "data[].description": [
+          "str"
+        ],
+        "data[].icon": [
+          "str"
+        ],
+        "data[].kind": [
+          "str"
+        ],
+        "data[].name": [
+          "str"
+        ],
+        "data[].newInForever": [
+          "int"
+        ],
+        "data[].recipeCount": [
+          "int"
+        ],
+        "data[].slug": [
+          "str"
+        ],
+        "data[].trainerCount": [
+          "int"
+        ],
+        "data[].trainersSeenInForever": [
+          "int"
+        ],
+        "data[].url": [
+          "str"
+        ],
+        "meta": [
+          "dict"
+        ],
+        "meta.attribution": [
+          "str"
+        ],
+        "meta.attributionRequired": [
+          "bool"
+        ],
+        "meta.build": [
+          "str"
+        ],
+        "meta.client": [
+          "str"
+        ],
+        "meta.total": [
+          "int"
+        ]
+      }
+    },
+    {
+      "fixture": "professions-alchemy.json",
+      "authenticated": true,
+      "http_status": 200,
+      "meta": {
+        "build": "1.60.1.70938",
+        "total": 196,
+        "limit": 2,
+        "offset": 0,
+        "next": "/api/v1/professions/alchemy?limit=2&offset=2",
+        "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+        "attributionRequired": true,
+        "client": "dev-0255"
+      },
+      "fields": {
+        "$": [
+          "dict"
+        ],
+        "data": [
+          "dict"
+        ],
+        "data.changedFromClassic": [
+          "int"
+        ],
+        "data.description": [
+          "str"
+        ],
+        "data.icon": [
+          "str"
+        ],
+        "data.kind": [
+          "str"
+        ],
+        "data.name": [
+          "str"
+        ],
+        "data.newInForever": [
+          "int"
+        ],
+        "data.ranks": [
+          "list"
+        ],
+        "data.ranks[]": [
+          "dict"
+        ],
+        "data.ranks[].maxSkill": [
+          "int"
+        ],
+        "data.ranks[].rank": [
+          "str"
+        ],
+        "data.ranks[].spellId": [
+          "int"
+        ],
+        "data.recipeCount": [
+          "int"
+        ],
+        "data.recipes": [
+          "list"
+        ],
+        "data.recipes[]": [
+          "dict"
+        ],
+        "data.recipes[].campTier": [
+          "null"
+        ],
+        "data.recipes[].category": [
+          "dict"
+        ],
+        "data.recipes[].category.id": [
+          "int"
+        ],
+        "data.recipes[].category.name": [
+          "str"
+        ],
+        "data.recipes[].category.order": [
+          "int"
+        ],
+        "data.recipes[].category.parent": [
+          "dict"
+        ],
+        "data.recipes[].category.parent.id": [
+          "int"
+        ],
+        "data.recipes[].category.parent.name": [
+          "str"
+        ],
+        "data.recipes[].changedFromClassic": [
+          "list"
+        ],
+        "data.recipes[].classic": [
+          "null"
+        ],
+        "data.recipes[].effect": [
+          "null"
+        ],
+        "data.recipes[].icon": [
+          "str"
+        ],
+        "data.recipes[].learnedFrom": [
+          "dict"
+        ],
+        "data.recipes[].learnedFrom.automatic": [
+          "bool"
+        ],
+        "data.recipes[].learnedFrom.classicVendors": [
+          "int"
+        ],
+        "data.recipes[].learnedFrom.known": [
+          "bool"
+        ],
+        "data.recipes[].learnedFrom.recipeItems": [
+          "list"
+        ],
+        "data.recipes[].learnedFrom.recipeItemsHidden": [
+          "list"
+        ],
+        "data.recipes[].learnedFrom.recipeItemsNotInClient": [
+          "list"
+        ],
+        "data.recipes[].learnedFrom.seenAtForeverTrainers": [
+          "list"
+        ],
+        "data.recipes[].learnedFrom.sources": [
+          "dict"
+        ],
+        "data.recipes[].learnedFrom.sources.learnAtSkill": [
+          "int"
+        ],
+        "data.recipes[].learnedFrom.sources.note": [
+          "str"
+        ],
+        "data.recipes[].learnedFrom.sources.recipeItem": [
+          "null"
+        ],
+        "data.recipes[].learnedFrom.sources.ways": [
+          "list"
+        ],
+        "data.recipes[].learnedFrom.sources.ways[]": [
+          "str"
+        ],
+        "data.recipes[].learnedFrom.trainer": [
+          "null"
+        ],
+        "data.recipes[].leftoverOf": [
+          "null"
+        ],
+        "data.recipes[].makes": [
+          "dict"
+        ],
+        "data.recipes[].makes.count": [
+          "int"
+        ],
+        "data.recipes[].makes.itemId": [
+          "int"
+        ],
+        "data.recipes[].makes.name": [
+          "str"
+        ],
+        "data.recipes[].makes.quality": [
+          "str"
+        ],
+        "data.recipes[].makes.url": [
+          "str"
+        ],
+        "data.recipes[].name": [
+          "str"
+        ],
+        "data.recipes[].needsNearby": [
+          "null"
+        ],
+        "data.recipes[].newInForever": [
+          "bool"
+        ],
+        "data.recipes[].reagents": [
+          "list"
+        ],
+        "data.recipes[].reagents[]": [
+          "dict"
+        ],
+        "data.recipes[].reagents[].count": [
+          "int"
+        ],
+        "data.recipes[].reagents[].itemId": [
+          "int"
+        ],
+        "data.recipes[].reagents[].name": [
+          "str"
+        ],
+        "data.recipes[].requiredLevel": [
+          "null"
+        ],
+        "data.recipes[].sameNameRecipes": [
+          "list"
+        ],
+        "data.recipes[].skill": [
+          "dict"
+        ],
+        "data.recipes[].skill.green": [
+          "int"
+        ],
+        "data.recipes[].skill.grey": [
+          "int"
+        ],
+        "data.recipes[].skill.orange": [
+          "int"
+        ],
+        "data.recipes[].skill.orangeSource": [
+          "str"
+        ],
+        "data.recipes[].skill.yellow": [
+          "int"
+        ],
+        "data.recipes[].speculation": [
+          "bool"
+        ],
+        "data.recipes[].speculationReasons": [
+          "list"
+        ],
+        "data.recipes[].spellId": [
+          "int"
+        ],
+        "data.recipes[].tools": [
+          "list"
+        ],
+        "data.recipes[].url": [
+          "str"
+        ],
+        "data.slug": [
+          "str"
+        ],
+        "data.trainerCount": [
+          "int"
+        ],
+        "data.trainers": [
+          "list"
+        ],
+        "data.trainersNote": [
+          "str"
+        ],
+        "data.trainersSeenInForever": [
+          "int"
+        ],
+        "data.trainers[]": [
+          "dict"
+        ],
+        "data.trainers[].mapId": [
+          "int"
+        ],
+        "data.trainers[].name": [
+          "str"
+        ],
+        "data.trainers[].npcId": [
+          "int"
+        ],
+        "data.trainers[].placeSeenInForever": [
+          "bool"
+        ],
+        "data.trainers[].seenInForever": [
+          "bool"
+        ],
+        "data.trainers[].side": [
+          "str"
+        ],
+        "data.trainers[].source": [
+          "str"
+        ],
+        "data.trainers[].title": [
+          "str"
+        ],
+        "data.trainers[].trainsUpToSkill": [
+          "int"
+        ],
+        "data.trainers[].x": [
+          "float"
+        ],
+        "data.trainers[].y": [
+          "float"
+        ],
+        "data.trainers[].zone": [
+          "str"
+        ],
+        "data.url": [
+          "str"
+        ],
+        "meta": [
+          "dict"
+        ],
+        "meta.attribution": [
+          "str"
+        ],
+        "meta.attributionRequired": [
+          "bool"
+        ],
+        "meta.build": [
+          "str"
+        ],
+        "meta.client": [
+          "str"
+        ],
+        "meta.limit": [
+          "int"
+        ],
+        "meta.next": [
+          "str"
+        ],
+        "meta.offset": [
+          "int"
+        ],
+        "meta.total": [
+          "int"
+        ]
+      }
+    },
+    {
+      "fixture": "vendors.json",
+      "authenticated": true,
+      "http_status": 200,
+      "meta": {
+        "build": "1.60.1.70938",
+        "total": 1018,
+        "limit": 2,
+        "offset": 0,
+        "next": "/api/v1/vendors?limit=2&offset=2",
+        "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+        "attributionRequired": true,
+        "client": "dev-0255"
+      },
+      "fields": {
+        "$": [
+          "dict"
+        ],
+        "data": [
+          "list"
+        ],
+        "data[]": [
+          "dict"
+        ],
+        "data[].id": [
+          "int"
+        ],
+        "data[].mapId": [
+          "int"
+        ],
+        "data[].name": [
+          "str"
+        ],
+        "data[].reputationFaction": [
+          "dict"
+        ],
+        "data[].reputationFaction.id": [
+          "int"
+        ],
+        "data[].reputationFaction.name": [
+          "str"
+        ],
+        "data[].seenInForever": [
+          "bool"
+        ],
+        "data[].side": [
+          "str"
+        ],
+        "data[].source": [
+          "str"
+        ],
+        "data[].title": [
+          "str"
+        ],
+        "data[].x": [
+          "float"
+        ],
+        "data[].y": [
+          "float",
+          "int"
+        ],
+        "data[].zone": [
+          "str"
+        ],
+        "meta": [
+          "dict"
+        ],
+        "meta.attribution": [
+          "str"
+        ],
+        "meta.attributionRequired": [
+          "bool"
+        ],
+        "meta.build": [
+          "str"
+        ],
+        "meta.client": [
+          "str"
+        ],
+        "meta.limit": [
+          "int"
+        ],
+        "meta.next": [
+          "str"
+        ],
+        "meta.offset": [
+          "int"
+        ],
+        "meta.total": [
+          "int"
+        ]
+      }
+    },
+    {
+      "fixture": "vendors-54.json",
+      "authenticated": true,
+      "http_status": 200,
+      "meta": {
+        "build": "1.60.1.70938",
+        "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+        "attributionRequired": true,
+        "client": "dev-0255"
+      },
+      "fields": {
+        "$": [
+          "dict"
+        ],
+        "data": [
+          "dict"
+        ],
+        "data.id": [
+          "int"
+        ],
+        "data.mapId": [
+          "int"
+        ],
+        "data.name": [
+          "str"
+        ],
+        "data.reputationFaction": [
+          "dict"
+        ],
+        "data.reputationFaction.id": [
+          "int"
+        ],
+        "data.reputationFaction.name": [
+          "str"
+        ],
+        "data.seenInForever": [
+          "bool"
+        ],
+        "data.sells": [
+          "list"
+        ],
+        "data.sells[]": [
+          "dict"
+        ],
+        "data.sells[].classicData": [
+          "bool"
+        ],
+        "data.sells[].itemId": [
+          "int"
+        ],
+        "data.sells[].limited": [
+          "bool"
+        ],
+        "data.sells[].limitedStockCount": [
+          "null"
+        ],
+        "data.sells[].name": [
+          "str"
+        ],
+        "data.sells[].price": [
+          "int"
+        ],
+        "data.sells[].pricePerItem": [
+          "float"
+        ],
+        "data.sells[].seenInForever": [
+          "bool"
+        ],
+        "data.sells[].stack": [
+          "int"
+        ],
+        "data.side": [
+          "str"
+        ],
+        "data.source": [
+          "str"
+        ],
+        "data.title": [
+          "str"
+        ],
+        "data.x": [
+          "float"
+        ],
+        "data.y": [
+          "float"
+        ],
+        "data.zone": [
+          "str"
+        ],
+        "meta": [
+          "dict"
+        ],
+        "meta.attribution": [
+          "str"
+        ],
+        "meta.attributionRequired": [
+          "bool"
+        ],
+        "meta.build": [
+          "str"
+        ],
+        "meta.client": [
+          "str"
+        ]
+      }
+    },
+    {
+      "fixture": "itemsets.json",
+      "authenticated": true,
+      "http_status": 200,
+      "meta": {
+        "build": "1.60.1.70938",
+        "total": 545,
+        "limit": 2,
+        "offset": 0,
+        "next": "/api/v1/itemsets?limit=2&offset=2",
+        "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+        "attributionRequired": true,
+        "client": "dev-0255"
+      },
+      "fields": {
+        "$": [
+          "dict"
+        ],
+        "data": [
+          "list"
+        ],
+        "data[]": [
+          "dict"
+        ],
+        "data[].betaEvent": [
+          "bool"
+        ],
+        "data[].id": [
+          "int"
+        ],
+        "data[].items": [
+          "list"
+        ],
+        "data[].items[]": [
+          "int"
+        ],
+        "data[].name": [
+          "str"
+        ],
+        "data[].speculation": [
+          "bool"
+        ],
+        "data[].speculationReasons": [
+          "list"
+        ],
+        "data[].url": [
+          "str"
+        ],
+        "meta": [
+          "dict"
+        ],
+        "meta.attribution": [
+          "str"
+        ],
+        "meta.attributionRequired": [
+          "bool"
+        ],
+        "meta.build": [
+          "str"
+        ],
+        "meta.client": [
+          "str"
+        ],
+        "meta.limit": [
+          "int"
+        ],
+        "meta.next": [
+          "str"
+        ],
+        "meta.offset": [
+          "int"
+        ],
+        "meta.total": [
+          "int"
+        ]
+      }
+    },
+    {
+      "fixture": "itemsets-1.json",
+      "authenticated": true,
+      "http_status": 200,
+      "meta": {
+        "build": "1.60.1.70938",
+        "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+        "attributionRequired": true,
+        "client": "dev-0255"
+      },
+      "fields": {
+        "$": [
+          "dict"
+        ],
+        "data": [
+          "dict"
+        ],
+        "data.betaEvent": [
+          "bool"
+        ],
+        "data.bonuses": [
+          "list"
+        ],
+        "data.bonuses[]": [
+          "dict"
+        ],
+        "data.bonuses[].pieces": [
+          "int"
+        ],
+        "data.bonuses[].spellId": [
+          "int"
+        ],
+        "data.bonuses[].text": [
+          "str"
+        ],
+        "data.id": [
+          "int"
+        ],
+        "data.items": [
+          "list"
+        ],
+        "data.items[]": [
+          "int"
+        ],
+        "data.name": [
+          "str"
+        ],
+        "data.speculation": [
+          "bool"
+        ],
+        "data.speculationReasons": [
+          "list"
+        ],
+        "data.url": [
+          "str"
+        ],
+        "meta": [
+          "dict"
+        ],
+        "meta.attribution": [
+          "str"
+        ],
+        "meta.attributionRequired": [
+          "bool"
+        ],
+        "meta.build": [
+          "str"
+        ],
+        "meta.client": [
+          "str"
+        ]
+      }
+    },
+    {
+      "fixture": "disenchant.json",
+      "authenticated": true,
+      "http_status": 200,
+      "meta": {
+        "build": "1.60.1.70938",
+        "total": 52,
+        "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+        "attributionRequired": true,
+        "client": "dev-0255"
+      },
+      "fields": {
+        "$": [
+          "dict"
+        ],
+        "data": [
+          "list"
+        ],
+        "data[]": [
+          "dict"
+        ],
+        "data[].classic": [
+          "dict"
+        ],
+        "data[].classic.results": [
+          "list"
+        ],
+        "data[].classic.results[]": [
+          "dict"
+        ],
+        "data[].classic.results[].chancePercent": [
+          "float",
+          "int"
+        ],
+        "data[].classic.results[].itemId": [
+          "int"
+        ],
+        "data[].classic.results[].max": [
+          "int"
+        ],
+        "data[].classic.results[].min": [
+          "int"
+        ],
+        "data[].classic.results[].name": [
+          "str"
+        ],
+        "data[].classic.source": [
+          "str"
+        ],
+        "data[].id": [
+          "str"
+        ],
+        "data[].itemLevelMax": [
+          "int"
+        ],
+        "data[].itemLevelMin": [
+          "int"
+        ],
+        "data[].kind": [
+          "str"
+        ],
+        "data[].quality": [
+          "str"
+        ],
+        "data[].qualityId": [
+          "int"
+        ],
+        "data[].seenInForever": [
+          "null"
+        ],
+        "data[].skill": [
+          "null"
+        ],
+        "meta": [
+          "dict"
+        ],
+        "meta.attribution": [
+          "str"
+        ],
+        "meta.attributionRequired": [
+          "bool"
+        ],
+        "meta.build": [
+          "str"
+        ],
+        "meta.client": [
+          "str"
+        ],
+        "meta.total": [
+          "int"
+        ]
+      }
+    },
+    {
+      "fixture": "builds.json",
+      "authenticated": true,
+      "http_status": 200,
+      "meta": {
+        "build": "1.60.1.70938",
+        "total": 18,
+        "limit": 2,
+        "offset": 0,
+        "next": "/api/v1/builds?limit=2&offset=2",
+        "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+        "attributionRequired": true,
+        "client": "dev-0255"
+      },
+      "fields": {
+        "$": [
+          "dict"
+        ],
+        "data": [
+          "list"
+        ],
+        "data[]": [
+          "dict"
+        ],
+        "data[].article": [
+          "dict"
+        ],
+        "data[].article.slug": [
+          "str"
+        ],
+        "data[].article.title": [
+          "str"
+        ],
+        "data[].article.url": [
+          "str"
+        ],
+        "data[].build": [
+          "str"
+        ],
+        "data[].counts": [
+          "dict"
+        ],
+        "data[].counts.ability": [
+          "dict"
+        ],
+        "data[].counts.ability.added": [
+          "int"
+        ],
+        "data[].counts.ability.changed": [
+          "int"
+        ],
+        "data[].counts.ability.removed": [
+          "int"
+        ],
+        "data[].counts.item": [
+          "dict"
+        ],
+        "data[].counts.item.added": [
+          "int"
+        ],
+        "data[].counts.item.changed": [
+          "int"
+        ],
+        "data[].counts.item.removed": [
+          "int"
+        ],
+        "data[].counts.set": [
+          "dict"
+        ],
+        "data[].counts.set.added": [
+          "int"
+        ],
+        "data[].counts.set.changed": [
+          "int"
+        ],
+        "data[].counts.set.removed": [
+          "int"
+        ],
+        "data[].counts.spell": [
+          "dict"
+        ],
+        "data[].counts.spell.added": [
+          "int"
+        ],
+        "data[].counts.spell.changed": [
+          "int"
+        ],
+        "data[].counts.spell.removed": [
+          "int"
+        ],
+        "data[].counts.talent": [
+          "dict"
+        ],
+        "data[].counts.talent.added": [
+          "int"
+        ],
+        "data[].counts.talent.changed": [
+          "int"
+        ],
+        "data[].counts.talent.removed": [
+          "int"
+        ],
+        "data[].date": [
+          "str"
+        ],
+        "data[].previousBuild": [
+          "str"
+        ],
+        "data[].totals": [
+          "dict"
+        ],
+        "data[].totals.abilities": [
+          "int"
+        ],
+        "data[].totals.items": [
+          "int"
+        ],
+        "data[].totals.sets": [
+          "int"
+        ],
+        "data[].totals.spells": [
+          "int"
+        ],
+        "data[].totals.talents": [
+          "int"
+        ],
+        "data[].url": [
+          "str"
+        ],
+        "meta": [
+          "dict"
+        ],
+        "meta.attribution": [
+          "str"
+        ],
+        "meta.attributionRequired": [
+          "bool"
+        ],
+        "meta.build": [
+          "str"
+        ],
+        "meta.client": [
+          "str"
+        ],
+        "meta.limit": [
+          "int"
+        ],
+        "meta.next": [
+          "str"
+        ],
+        "meta.offset": [
+          "int"
+        ],
+        "meta.total": [
+          "int"
+        ]
+      }
+    },
+    {
+      "fixture": "builds-latest.json",
+      "authenticated": true,
+      "http_status": 200,
+      "meta": {
+        "build": "1.60.1.70938",
+        "total": 152,
+        "limit": 2,
+        "offset": 0,
+        "next": "/api/v1/builds/latest?limit=2&offset=2",
+        "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+        "attributionRequired": true,
+        "client": "dev-0255"
+      },
+      "fields": {
+        "$": [
+          "dict"
+        ],
+        "data": [
+          "dict"
+        ],
+        "data.article": [
+          "dict"
+        ],
+        "data.article.slug": [
+          "str"
+        ],
+        "data.article.title": [
+          "str"
+        ],
+        "data.article.url": [
+          "str"
+        ],
+        "data.build": [
+          "str"
+        ],
+        "data.changes": [
+          "list"
+        ],
+        "data.changes[]": [
+          "dict"
+        ],
+        "data.changes[].about": [
+          "str"
+        ],
+        "data.changes[].change": [
+          "str"
+        ],
+        "data.changes[].changes": [
+          "list"
+        ],
+        "data.changes[].changes[]": [
+          "dict"
+        ],
+        "data.changes[].changes[].after": [
+          "str"
+        ],
+        "data.changes[].changes[].before": [
+          "str"
+        ],
+        "data.changes[].changes[].dataOnly": [
+          "bool"
+        ],
+        "data.changes[].changes[].field": [
+          "str"
+        ],
+        "data.changes[].changes[].rank": [
+          "str"
+        ],
+        "data.changes[].class": [
+          "str"
+        ],
+        "data.changes[].classId": [
+          "int"
+        ],
+        "data.changes[].icon": [
+          "str"
+        ],
+        "data.changes[].id": [
+          "int"
+        ],
+        "data.changes[].name": [
+          "str"
+        ],
+        "data.changes[].rank": [
+          "null"
+        ],
+        "data.changes[].type": [
+          "str"
+        ],
+        "data.changes[].url": [
+          "str"
+        ],
+        "data.counts": [
+          "dict"
+        ],
+        "data.counts.ability": [
+          "dict"
+        ],
+        "data.counts.ability.added": [
+          "int"
+        ],
+        "data.counts.ability.changed": [
+          "int"
+        ],
+        "data.counts.ability.removed": [
+          "int"
+        ],
+        "data.counts.item": [
+          "dict"
+        ],
+        "data.counts.item.added": [
+          "int"
+        ],
+        "data.counts.item.changed": [
+          "int"
+        ],
+        "data.counts.item.removed": [
+          "int"
+        ],
+        "data.counts.spell": [
+          "dict"
+        ],
+        "data.counts.spell.added": [
+          "int"
+        ],
+        "data.counts.spell.changed": [
+          "int"
+        ],
+        "data.counts.spell.removed": [
+          "int"
+        ],
+        "data.counts.talent": [
+          "dict"
+        ],
+        "data.counts.talent.added": [
+          "int"
+        ],
+        "data.counts.talent.changed": [
+          "int"
+        ],
+        "data.counts.talent.removed": [
+          "int"
+        ],
+        "data.date": [
+          "str"
+        ],
+        "data.previousBuild": [
+          "str"
+        ],
+        "data.totals": [
+          "dict"
+        ],
+        "data.totals.abilities": [
+          "int"
+        ],
+        "data.totals.items": [
+          "int"
+        ],
+        "data.totals.sets": [
+          "int"
+        ],
+        "data.totals.spells": [
+          "int"
+        ],
+        "data.totals.talents": [
+          "int"
+        ],
+        "data.url": [
+          "str"
+        ],
+        "meta": [
+          "dict"
+        ],
+        "meta.attribution": [
+          "str"
+        ],
+        "meta.attributionRequired": [
+          "bool"
+        ],
+        "meta.build": [
+          "str"
+        ],
+        "meta.client": [
+          "str"
+        ],
+        "meta.limit": [
+          "int"
+        ],
+        "meta.next": [
+          "str"
+        ],
+        "meta.offset": [
+          "int"
+        ],
+        "meta.total": [
+          "int"
+        ]
+      }
+    },
+    {
+      "fixture": "gathering-mining.json",
+      "authenticated": true,
+      "http_status": 200,
+      "meta": {
+        "build": "1.60.1.70938",
+        "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+        "attributionRequired": true,
+        "client": "dev-0255"
+      },
+      "fields": {
+        "$": [
+          "dict"
+        ],
+        "data": [
+          "dict"
+        ],
+        "data.bestZones": [
+          "list"
+        ],
+        "data.bestZones[]": [
+          "dict"
+        ],
+        "data.bestZones[].fromSkill": [
+          "int"
+        ],
+        "data.bestZones[].toSkill": [
+          "int"
+        ],
+        "data.bestZones[].zones": [
+          "list"
+        ],
+        "data.bestZones[].zones[]": [
+          "dict"
+        ],
+        "data.bestZones[].zones[].mapId": [
+          "int"
+        ],
+        "data.bestZones[].zones[].name": [
+          "str"
+        ],
+        "data.nodes": [
+          "list"
+        ],
+        "data.nodes[]": [
+          "dict"
+        ],
+        "data.nodes[].alsoGives": [
+          "list"
+        ],
+        "data.nodes[].alsoGives[]": [
+          "dict"
+        ],
+        "data.nodes[].alsoGives[].itemId": [
+          "int"
+        ],
+        "data.nodes[].alsoGives[].name": [
+          "str"
+        ],
+        "data.nodes[].item": [
+          "dict"
+        ],
+        "data.nodes[].item.itemId": [
+          "int"
+        ],
+        "data.nodes[].item.name": [
+          "str"
+        ],
+        "data.nodes[].name": [
+          "str"
+        ],
+        "data.nodes[].newInForever": [
+          "bool"
+        ],
+        "data.nodes[].objectIds": [
+          "list"
+        ],
+        "data.nodes[].objectIds[]": [
+          "int"
+        ],
+        "data.nodes[].skill": [
+          "int"
+        ],
+        "data.nodes[].spawnPoints": [
+          "int"
+        ],
+        "data.nodes[].spotsSeenInForever": [
+          "int"
+        ],
+        "data.nodes[].topZones": [
+          "list"
+        ],
+        "data.nodes[].topZones[]": [
+          "dict"
+        ],
+        "data.nodes[].topZones[].mapId": [
+          "int"
+        ],
+        "data.nodes[].topZones[].name": [
+          "str"
+        ],
+        "data.nodes[].topZones[].spawnPoints": [
+          "int"
+        ],
+        "data.note": [
+          "str"
+        ],
+        "data.profession": [
+          "str"
+        ],
+        "data.spotsSeenInForever": [
+          "int"
+        ],
+        "data.url": [
+          "str"
+        ],
+        "data.zones": [
+          "list"
+        ],
+        "data.zones[]": [
+          "dict"
+        ],
+        "data.zones[].mapId": [
+          "int"
+        ],
+        "data.zones[].name": [
+          "str"
+        ],
+        "data.zones[].nodes": [
+          "list"
+        ],
+        "data.zones[].nodes[]": [
+          "dict"
+        ],
+        "data.zones[].nodes[].name": [
+          "str"
+        ],
+        "data.zones[].nodes[].skill": [
+          "int"
+        ],
+        "data.zones[].nodes[].spawnPoints": [
+          "int"
+        ],
+        "data.zones[].spawnPoints": [
+          "int"
+        ],
+        "data.zones[].spotsSeenInForever": [
+          "int"
+        ],
+        "meta": [
+          "dict"
+        ],
+        "meta.attribution": [
+          "str"
+        ],
+        "meta.attributionRequired": [
+          "bool"
+        ],
+        "meta.build": [
+          "str"
+        ],
+        "meta.client": [
+          "str"
+        ]
+      }
+    },
+    {
+      "fixture": "changes-seen.json",
+      "authenticated": true,
+      "http_status": 200,
+      "meta": {
+        "build": "1.60.1.70938",
+        "total": 400,
+        "limit": 2,
+        "offset": 0,
+        "next": "/api/v1/changes-seen?limit=2&offset=2",
+        "updated": "2026-11-16",
+        "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+        "attributionRequired": true,
+        "client": "dev-0255"
+      },
+      "fields": {
+        "$": [
+          "dict"
+        ],
+        "data": [
+          "list"
+        ],
+        "data[]": [
+          "dict"
+        ],
+        "data[].before": [
+          "str"
+        ],
+        "data[].comparedWith": [
+          "str"
+        ],
+        "data[].firstSeen": [
+          "str"
+        ],
+        "data[].id": [
+          "int"
+        ],
+        "data[].kind": [
+          "str"
+        ],
+        "data[].lastSeen": [
+          "str"
+        ],
+        "data[].name": [
+          "str"
+        ],
+        "data[].players": [
+          "int"
+        ],
+        "data[].seen": [
+          "str"
+        ],
+        "data[].status": [
+          "str"
+        ],
+        "data[].url": [
+          "str"
+        ],
+        "data[].verified": [
+          "bool"
+        ],
+        "data[].what": [
+          "str"
+        ],
+        "meta": [
+          "dict"
+        ],
+        "meta.attribution": [
+          "str"
+        ],
+        "meta.attributionRequired": [
+          "bool"
+        ],
+        "meta.build": [
+          "str"
+        ],
+        "meta.client": [
+          "str"
+        ],
+        "meta.limit": [
+          "int"
+        ],
+        "meta.next": [
+          "str"
+        ],
+        "meta.offset": [
+          "int"
+        ],
+        "meta.total": [
+          "int"
+        ],
+        "meta.updated": [
+          "str"
+        ]
+      }
+    },
+    {
+      "fixture": "professions-alchemy.json",
+      "authenticated": true,
+      "http_status": 200,
+      "meta": {
+        "build": "1.60.1.70938",
+        "total": 196,
+        "limit": 2,
+        "offset": 20,
+        "next": "/api/v1/professions/alchemy?limit=2&offset=22",
+        "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+        "attributionRequired": true,
+        "client": "dev-0255"
+      },
+      "fields": {
+        "$": [
+          "dict"
+        ],
+        "data": [
+          "dict"
+        ],
+        "data.changedFromClassic": [
+          "int"
+        ],
+        "data.description": [
+          "str"
+        ],
+        "data.icon": [
+          "str"
+        ],
+        "data.kind": [
+          "str"
+        ],
+        "data.name": [
+          "str"
+        ],
+        "data.newInForever": [
+          "int"
+        ],
+        "data.ranks": [
+          "list"
+        ],
+        "data.ranks[]": [
+          "dict"
+        ],
+        "data.ranks[].maxSkill": [
+          "int"
+        ],
+        "data.ranks[].rank": [
+          "str"
+        ],
+        "data.ranks[].spellId": [
+          "int"
+        ],
+        "data.recipeCount": [
+          "int"
+        ],
+        "data.recipes": [
+          "list"
+        ],
+        "data.recipes[]": [
+          "dict"
+        ],
+        "data.recipes[].campTier": [
+          "null"
+        ],
+        "data.recipes[].category": [
+          "dict"
+        ],
+        "data.recipes[].category.id": [
+          "int"
+        ],
+        "data.recipes[].category.name": [
+          "str"
+        ],
+        "data.recipes[].category.order": [
+          "int"
+        ],
+        "data.recipes[].category.parent": [
+          "dict"
+        ],
+        "data.recipes[].category.parent.id": [
+          "int"
+        ],
+        "data.recipes[].category.parent.name": [
+          "str"
+        ],
+        "data.recipes[].changedFromClassic": [
+          "list"
+        ],
+        "data.recipes[].classic": [
+          "null"
+        ],
+        "data.recipes[].effect": [
+          "null"
+        ],
+        "data.recipes[].icon": [
+          "str"
+        ],
+        "data.recipes[].learnedFrom": [
+          "dict"
+        ],
+        "data.recipes[].learnedFrom.automatic": [
+          "bool"
+        ],
+        "data.recipes[].learnedFrom.classicVendors": [
+          "int"
+        ],
+        "data.recipes[].learnedFrom.known": [
+          "bool"
+        ],
+        "data.recipes[].learnedFrom.recipeItems": [
+          "list"
+        ],
+        "data.recipes[].learnedFrom.recipeItemsHidden": [
+          "list"
+        ],
+        "data.recipes[].learnedFrom.recipeItemsNotInClient": [
+          "list"
+        ],
+        "data.recipes[].learnedFrom.recipeItems[]": [
+          "dict"
+        ],
+        "data.recipes[].learnedFrom.recipeItems[].itemId": [
+          "int"
+        ],
+        "data.recipes[].learnedFrom.recipeItems[].name": [
+          "str"
+        ],
+        "data.recipes[].learnedFrom.seenAtForeverTrainers": [
+          "list"
+        ],
+        "data.recipes[].learnedFrom.sources": [
+          "dict"
+        ],
+        "data.recipes[].learnedFrom.sources.drops": [
+          "list"
+        ],
+        "data.recipes[].learnedFrom.sources.dropsInAll": [
+          "int"
+        ],
+        "data.recipes[].learnedFrom.sources.drops[]": [
+          "dict"
+        ],
+        "data.recipes[].learnedFrom.sources.drops[].chancePercent": [
+          "null"
+        ],
+        "data.recipes[].learnedFrom.sources.drops[].from": [
+          "str"
+        ],
+        "data.recipes[].learnedFrom.sources.drops[].kind": [
+          "str"
+        ],
+        "data.recipes[].learnedFrom.sources.drops[].npcId": [
+          "int"
+        ],
+        "data.recipes[].learnedFrom.sources.learnAtSkill": [
+          "int"
+        ],
+        "data.recipes[].learnedFrom.sources.note": [
+          "str"
+        ],
+        "data.recipes[].learnedFrom.sources.recipeItem": [
+          "dict"
+        ],
+        "data.recipes[].learnedFrom.sources.recipeItem.itemId": [
+          "int"
+        ],
+        "data.recipes[].learnedFrom.sources.recipeItem.name": [
+          "str"
+        ],
+        "data.recipes[].learnedFrom.sources.ways": [
+          "list"
+        ],
+        "data.recipes[].learnedFrom.sources.ways[]": [
+          "str"
+        ],
+        "data.recipes[].learnedFrom.trainer": [
+          "null"
+        ],
+        "data.recipes[].leftoverOf": [
+          "null"
+        ],
+        "data.recipes[].makes": [
+          "dict"
+        ],
+        "data.recipes[].makes.count": [
+          "int"
+        ],
+        "data.recipes[].makes.itemId": [
+          "int"
+        ],
+        "data.recipes[].makes.name": [
+          "str"
+        ],
+        "data.recipes[].makes.quality": [
+          "str"
+        ],
+        "data.recipes[].makes.url": [
+          "str"
+        ],
+        "data.recipes[].name": [
+          "str"
+        ],
+        "data.recipes[].needsNearby": [
+          "null"
+        ],
+        "data.recipes[].newInForever": [
+          "bool"
+        ],
+        "data.recipes[].reagents": [
+          "list"
+        ],
+        "data.recipes[].reagents[]": [
+          "dict"
+        ],
+        "data.recipes[].reagents[].count": [
+          "int"
+        ],
+        "data.recipes[].reagents[].itemId": [
+          "int"
+        ],
+        "data.recipes[].reagents[].name": [
+          "str"
+        ],
+        "data.recipes[].requiredLevel": [
+          "int"
+        ],
+        "data.recipes[].sameNameRecipes": [
+          "list"
+        ],
+        "data.recipes[].skill": [
+          "dict"
+        ],
+        "data.recipes[].skill.green": [
+          "int"
+        ],
+        "data.recipes[].skill.grey": [
+          "int"
+        ],
+        "data.recipes[].skill.orange": [
+          "int"
+        ],
+        "data.recipes[].skill.orangeSource": [
+          "str"
+        ],
+        "data.recipes[].skill.yellow": [
+          "int"
+        ],
+        "data.recipes[].speculation": [
+          "bool"
+        ],
+        "data.recipes[].speculationReasons": [
+          "list"
+        ],
+        "data.recipes[].spellId": [
+          "int"
+        ],
+        "data.recipes[].tools": [
+          "list"
+        ],
+        "data.recipes[].url": [
+          "str"
+        ],
+        "data.slug": [
+          "str"
+        ],
+        "data.trainerCount": [
+          "int"
+        ],
+        "data.trainers": [
+          "list"
+        ],
+        "data.trainersNote": [
+          "str"
+        ],
+        "data.trainersSeenInForever": [
+          "int"
+        ],
+        "data.trainers[]": [
+          "dict"
+        ],
+        "data.trainers[].mapId": [
+          "int"
+        ],
+        "data.trainers[].name": [
+          "str"
+        ],
+        "data.trainers[].npcId": [
+          "int"
+        ],
+        "data.trainers[].placeSeenInForever": [
+          "bool"
+        ],
+        "data.trainers[].seenInForever": [
+          "bool"
+        ],
+        "data.trainers[].side": [
+          "str"
+        ],
+        "data.trainers[].source": [
+          "str"
+        ],
+        "data.trainers[].title": [
+          "str"
+        ],
+        "data.trainers[].trainsUpToSkill": [
+          "int"
+        ],
+        "data.trainers[].x": [
+          "float"
+        ],
+        "data.trainers[].y": [
+          "float"
+        ],
+        "data.trainers[].zone": [
+          "str"
+        ],
+        "data.url": [
+          "str"
+        ],
+        "meta": [
+          "dict"
+        ],
+        "meta.attribution": [
+          "str"
+        ],
+        "meta.attributionRequired": [
+          "bool"
+        ],
+        "meta.build": [
+          "str"
+        ],
+        "meta.client": [
+          "str"
+        ],
+        "meta.limit": [
+          "int"
+        ],
+        "meta.next": [
+          "str"
+        ],
+        "meta.offset": [
+          "int"
+        ],
+        "meta.total": [
+          "int"
+        ]
+      }
+    }
+  ]
+}
