@@ -1,0 +1,157 @@
+{
+  "origin": "synthetic",
+  "runtime": "Python offline sizing, not Lua or Forever timing",
+  "budgets": {
+    "canonical_bytes": 2097152,
+    "lua_bytes": 3145728,
+    "records": 1000
+  },
+  "cases": [
+    {
+      "variants": 10,
+      "profile": "sixty",
+      "result": "eligible_policy",
+      "exceeded_policy": [],
+      "sizes": {
+        "canonical_bytes": 159303,
+        "lua_bytes": 222391,
+        "records": 10,
+        "manifest_bytes": 35410,
+        "scope_bytes": 7615,
+        "observation_bytes": 26221
+      },
+      "selection_hash_cpu_us_mean_20": 103.403,
+      "preflight_exact_length_crosscheck": true
+    },
+    {
+      "variants": 100,
+      "profile": "sixty",
+      "result": "eligible_policy",
+      "exceeded_policy": [],
+      "sizes": {
+        "canonical_bytes": 1298121,
+        "lua_bytes": 1841929,
+        "records": 100,
+        "manifest_bytes": 59263,
+        "scope_bytes": 31466,
+        "observation_bytes": 26221
+      },
+      "selection_hash_cpu_us_mean_20": 644.22,
+      "preflight_exact_length_crosscheck": true
+    },
+    {
+      "variants": 500,
+      "profile": "sixty",
+      "result": "refused_policy",
+      "exceeded_policy": [
+        "canonical_bytes",
+        "lua_bytes"
+      ],
+      "sizes": {
+        "canonical_bytes": 6359505,
+        "lua_bytes": 9039793,
+        "records": 500,
+        "manifest_bytes": 165263,
+        "scope_bytes": 137466,
+        "observation_bytes": 26221
+      },
+      "selection_hash_cpu_us_mean_20": 3147.824,
+      "preflight_exact_length_crosscheck": true
+    },
+    {
+      "variants": 1000,
+      "profile": "sixty",
+      "result": "refused_hard_bound",
+      "sizes": {
+        "canonical_bytes": 12686247,
+        "lua_bytes": 18037165,
+        "records": 1000,
+        "manifest_bytes": 297766,
+        "scope_bytes": 269967,
+        "observation_bytes": 26221
+      },
+      "exceeded": {
+        "manifest_bytes": {
+          "actual": 297766,
+          "limit": 262144
+        }
+      },
+      "selection_hash_cpu_us_mean_20": 7107.321
+    },
+    {
+      "variants": 10,
+      "profile": "sparse-sixty",
+      "result": "eligible_policy",
+      "exceeded_policy": [],
+      "sizes": {
+        "canonical_bytes": 25765,
+        "lua_bytes": 35429,
+        "records": 10,
+        "manifest_bytes": 11052,
+        "scope_bytes": 7733,
+        "observation_bytes": 1749
+      },
+      "selection_hash_cpu_us_mean_20": 107.846,
+      "preflight_exact_length_crosscheck": true
+    },
+    {
+      "variants": 100,
+      "profile": "sparse-sixty",
+      "result": "eligible_policy",
+      "exceeded_policy": [],
+      "sizes": {
+        "canonical_bytes": 181963,
+        "lua_bytes": 248987,
+        "records": 100,
+        "manifest_bytes": 34905,
+        "scope_bytes": 31584,
+        "observation_bytes": 1749
+      },
+      "selection_hash_cpu_us_mean_20": 662.894,
+      "preflight_exact_length_crosscheck": true
+    },
+    {
+      "variants": 500,
+      "profile": "sparse-sixty",
+      "result": "eligible_policy",
+      "exceeded_policy": [],
+      "sizes": {
+        "canonical_bytes": 876147,
+        "lua_bytes": 1198051,
+        "records": 500,
+        "manifest_bytes": 140905,
+        "scope_bytes": 137584,
+        "observation_bytes": 1749
+      },
+      "selection_hash_cpu_us_mean_20": 3155.893,
+      "preflight_exact_length_crosscheck": true
+    },
+    {
+      "variants": 1000,
+      "profile": "sparse-sixty",
+      "result": "refused_hard_bound",
+      "sizes": {
+        "canonical_bytes": 1743889,
+        "lua_bytes": 2384423,
+        "records": 1000,
+        "manifest_bytes": 273408,
+        "scope_bytes": 270085,
+        "observation_bytes": 1749
+      },
+      "exceeded": {
+        "manifest_bytes": {
+          "actual": 273408,
+          "limit": 262144
+        }
+      },
+      "selection_hash_cpu_us_mean_20": 6920.958
+    }
+  ],
+  "python": "3.12.14",
+  "sources_sha256": {
+    "contracts/bridge/scoped-l1/reference.py": "0878853b18371ceaa6c880a2919319516df6b3d9b3019a576c4bfd19577ed63d",
+    "contracts/bridge/scoped-l1/selection.schema.json": "782ae4bc85767be11cc15f6b1f6beaa73351382035021bee3f2c505a3442bf8b",
+    "contracts/bridge/scoped-l1/generation-schema3.schema.json": "3f678267038bf0977d9477fb89aa8ca7940ffb30b443d727a733343bfc6e45f4",
+    "scripts/bridge_workloads.py": "c085f3a723b38b13e264b054c4c7342b54c35fc4e184a8ebe0da29fc2ee9a1c5"
+  }
+}
