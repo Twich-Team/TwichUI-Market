@@ -1,0 +1,60 @@
+{
+  "origin": "synthetic",
+  "backend": "disposable SQLite; actual authenticated ASGI requests",
+  "records": 1000,
+  "observed_days": 2,
+  "production_acceptance": false,
+  "generation_id": "9d62fb3df1bdebfb3010da3cf91eaaa4ff0a4d830ec177b4d2bb46b8bf360d1d",
+  "import_us": 696692,
+  "seed_us": 102339,
+  "cold_manifest_attempts": [
+    {
+      "status": 200,
+      "us": 1570901,
+      "sql": 60
+    }
+  ],
+  "samples": [
+    {
+      "warm_manifest_us": 8203,
+      "warm_manifest_sql": 9,
+      "page_total_us": 193002,
+      "page_sql": 80,
+      "pages": 20,
+      "wire_bytes": 1526815
+    },
+    {
+      "warm_manifest_us": 4261,
+      "warm_manifest_sql": 9,
+      "page_total_us": 186177,
+      "page_sql": 80,
+      "pages": 20,
+      "wire_bytes": 1526815
+    },
+    {
+      "warm_manifest_us": 3820,
+      "warm_manifest_sql": 9,
+      "page_total_us": 179248,
+      "page_sql": 80,
+      "pages": 20,
+      "wire_bytes": 1526815
+    },
+    {
+      "warm_manifest_us": 4236,
+      "warm_manifest_sql": 9,
+      "page_total_us": 186290,
+      "page_sql": 80,
+      "pages": 20,
+      "wire_bytes": 1526815
+    },
+    {
+      "warm_manifest_us": 3999,
+      "warm_manifest_sql": 9,
+      "page_total_us": 174103,
+      "page_sql": 80,
+      "pages": 20,
+      "wire_bytes": 1526815
+    }
+  ],
+  "process_peak_rss_bytes": 105418752
+}

@@ -1,0 +1,25 @@
+{
+  "calls": {
+    "hash_finish": 1003,
+    "hash_update": 4008,
+    "json_encode": 146326,
+    "json_parse": 2002,
+    "manifest_semantics": 1,
+    "record_semantics": 1000
+  },
+  "phase_exclusive_us": {
+    "hash_finish": 9752,
+    "hash_update": 3170308,
+    "json_encode": 1022527,
+    "json_parse": 270679,
+    "manifest_semantics": 316,
+    "reader_and_scheduler": 6241,
+    "record_semantics": 125956
+  },
+  "retained": 455180,
+  "stats": {
+    "largest_slice_us": 3076,
+    "slices": 7993,
+    "validation_us": 4602122
+  }
+}
