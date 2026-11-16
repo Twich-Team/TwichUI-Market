@@ -1,0 +1,2304 @@
+{
+  "origin": "synthetic",
+  "context": {
+    "os": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "python": "3.12.14",
+    "cpus": 5,
+    "cpu_quota": "400000 100000",
+    "memory_limit": "17179869184",
+    "lua": "Lua 5.1.5  Copyright (C) 1994-2012 Lua.org, PUC-Rio",
+    "child_address_limit_bytes": 2147483648,
+    "timing": "CPU plus monotonic child wall; no client frame-time claim"
+  },
+  "contract_max_bytes": 33554432,
+  "repetitions": 5,
+  "method": "interleaved baseline then candidate, fresh processes, default GC, identical generation",
+  "cases": [
+    {
+      "workload": {
+        "origin": "synthetic",
+        "eligible_records": 1000,
+        "profile": "two-gap",
+        "observation_dates": [
+          "2026-11-13",
+          "2026-11-15"
+        ],
+        "daily_dates_per_listed_variant": 2,
+        "canonical_bytes": 1491161,
+        "materialized_export_records": 1000,
+        "status": "eligible",
+        "generation_id": "08d6248c9b7c17e1c4f15f430a83d95ceb0b22ae2fde0d1a106e2f12dfdb9400"
+      },
+      "result": "PASS",
+      "runs": {
+        "baseline": [
+          {
+            "desktop": {
+              "artifact_us": 123522,
+              "cache_us": 119299,
+              "canonical_bytes": 1491161,
+              "canonical_us": 3605,
+              "export_us": 321668,
+              "generation_id": "08d6248c9b7c17e1c4f15f430a83d95ceb0b22ae2fde0d1a106e2f12dfdb9400",
+              "inspect_us": 83504,
+              "lua_bytes": 5965402,
+              "pages": 10,
+              "parse_us": 25524,
+              "records": 1000,
+              "repeat_export_us": 396588,
+              "validation_us": 62494
+            },
+            "lua": {
+              "assignment_us": 7,
+              "cache_entries": 24,
+              "cache_growth_bytes": 99854,
+              "compile_us": 8294,
+              "corruption_rejected": true,
+              "explicit_gc_us": 471,
+              "generation_id": "08d6248c9b7c17e1c4f15f430a83d95ceb0b22ae2fde0d1a106e2f12dfdb9400",
+              "history_us": [
+                14,
+                12,
+                10
+              ],
+              "indexed_items": 1000,
+              "indexed_records": 1000,
+              "local_data_unchanged": true,
+              "lookup_us": [
+                161,
+                229,
+                230
+              ],
+              "module_load_us": 1416,
+              "navigation_reads_us": 96069,
+              "observed_heap_decreases": 561,
+              "payload_heap_bytes": 1540217,
+              "peak_heap_bytes": 4723185,
+              "repeat_retained_heap_bytes": 2036033,
+              "repeat_validation_us": 4442606,
+              "resumes": 0,
+              "retained_heap_bytes": 1995169,
+              "steps": 7878,
+              "validation_total_us": 4486883,
+              "worst_step_us": 4331
+            },
+            "desktop_process": {
+              "wall_us": 1171692,
+              "user_us": 906970,
+              "system_us": 239150,
+              "peak_rss_bytes": 80777216
+            },
+            "lua_process": {
+              "wall_us": 9088059,
+              "user_us": 8992599,
+              "system_us": 68262,
+              "peak_rss_bytes": 14393344
+            }
+          },
+          {
+            "desktop": {
+              "artifact_us": 116411,
+              "cache_us": 104051,
+              "canonical_bytes": 1491161,
+              "canonical_us": 3079,
+              "export_us": 306630,
+              "generation_id": "08d6248c9b7c17e1c4f15f430a83d95ceb0b22ae2fde0d1a106e2f12dfdb9400",
+              "inspect_us": 62929,
+              "lua_bytes": 5965402,
+              "pages": 10,
+              "parse_us": 14618,
+              "records": 1000,
+              "repeat_export_us": 380866,
+              "validation_us": 40082
+            },
+            "lua": {
+              "assignment_us": 7,
+              "cache_entries": 24,
+              "cache_growth_bytes": 99854,
+              "compile_us": 8068,
+              "corruption_rejected": true,
+              "explicit_gc_us": 455,
+              "generation_id": "08d6248c9b7c17e1c4f15f430a83d95ceb0b22ae2fde0d1a106e2f12dfdb9400",
+              "history_us": [
+                14,
+                12,
+                11
+              ],
+              "indexed_items": 1000,
+              "indexed_records": 1000,
+              "local_data_unchanged": true,
+              "lookup_us": [
+                161,
+                234,
+                290
+              ],
+              "module_load_us": 1344,
+              "navigation_reads_us": 95764,
+              "observed_heap_decreases": 568,
+              "payload_heap_bytes": 1540217,
+              "peak_heap_bytes": 4743486,
+              "repeat_retained_heap_bytes": 2036033,
+              "repeat_validation_us": 4431567,
+              "resumes": 0,
+              "retained_heap_bytes": 1995169,
+              "steps": 7878,
+              "validation_total_us": 4388689,
+              "worst_step_us": 4250
+            },
+            "desktop_process": {
+              "wall_us": 1051789,
+              "user_us": 898023,
+              "system_us": 136677,
+              "peak_rss_bytes": 80674816
+            },
+            "lua_process": {
+              "wall_us": 8973679,
+              "user_us": 8907434,
+              "system_us": 43961,
+              "peak_rss_bytes": 14409728
+            }
+          },
+          {
+            "desktop": {
+              "artifact_us": 104994,
+              "cache_us": 104621,
+              "canonical_bytes": 1491161,
+              "canonical_us": 3268,
+              "export_us": 268570,
+              "generation_id": "08d6248c9b7c17e1c4f15f430a83d95ceb0b22ae2fde0d1a106e2f12dfdb9400",
+              "inspect_us": 61394,
+              "lua_bytes": 5965402,
+              "pages": 10,
+              "parse_us": 14482,
+              "records": 1000,
+              "repeat_export_us": 422762,
+              "validation_us": 37944
+            },
+            "lua": {
+              "assignment_us": 9,
+              "cache_entries": 24,
+              "cache_growth_bytes": 99854,
+              "compile_us": 9187,
+              "corruption_rejected": true,
+              "explicit_gc_us": 459,
+              "generation_id": "08d6248c9b7c17e1c4f15f430a83d95ceb0b22ae2fde0d1a106e2f12dfdb9400",
+              "history_us": [
+                13,
+                12,
+                10
+              ],
+              "indexed_items": 1000,
+              "indexed_records": 1000,
+              "local_data_unchanged": true,
+              "lookup_us": [
+                158,
+                230,
+                245
+              ],
+              "module_load_us": 1607,
+              "navigation_reads_us": 96380,
+              "observed_heap_decreases": 585,
+              "payload_heap_bytes": 1540217,
+              "peak_heap_bytes": 4747549,
+              "repeat_retained_heap_bytes": 2036033,
+              "repeat_validation_us": 4437608,
+              "resumes": 0,
+              "retained_heap_bytes": 1995169,
+              "steps": 7879,
+              "validation_total_us": 4404447,
+              "worst_step_us": 4198
+            },
+            "desktop_process": {
+              "wall_us": 1047860,
+              "user_us": 941275,
+              "system_us": 74907,
+              "peak_rss_bytes": 80551936
+            },
+            "lua_process": {
+              "wall_us": 9000193,
+              "user_us": 8929475,
+              "system_us": 48036,
+              "peak_rss_bytes": 14422016
+            }
+          },
+          {
+            "desktop": {
+              "artifact_us": 116015,
+              "cache_us": 107128,
+              "canonical_bytes": 1491161,
+              "canonical_us": 3047,
+              "export_us": 300190,
+              "generation_id": "08d6248c9b7c17e1c4f15f430a83d95ceb0b22ae2fde0d1a106e2f12dfdb9400",
+              "inspect_us": 56447,
+              "lua_bytes": 5965402,
+              "pages": 10,
+              "parse_us": 12951,
+              "records": 1000,
+              "repeat_export_us": 386118,
+              "validation_us": 38063
+            },
+            "lua": {
+              "assignment_us": 6,
+              "cache_entries": 24,
+              "cache_growth_bytes": 99854,
+              "compile_us": 8150,
+              "corruption_rejected": true,
+              "explicit_gc_us": 542,
+              "generation_id": "08d6248c9b7c17e1c4f15f430a83d95ceb0b22ae2fde0d1a106e2f12dfdb9400",
+              "history_us": [
+                14,
+                12,
+                11
+              ],
+              "indexed_items": 1000,
+              "indexed_records": 1000,
+              "local_data_unchanged": true,
+              "lookup_us": [
+                222,
+                225,
+                226
+              ],
+              "module_load_us": 1482,
+              "navigation_reads_us": 94749,
+              "observed_heap_decreases": 557,
+              "payload_heap_bytes": 1540217,
+              "peak_heap_bytes": 4723155,
+              "repeat_retained_heap_bytes": 2036033,
+              "repeat_validation_us": 4404931,
+              "resumes": 0,
+              "retained_heap_bytes": 1995169,
+              "steps": 7877,
+              "validation_total_us": 4398416,
+              "worst_step_us": 4802
+            },
+            "desktop_process": {
+              "wall_us": 1040992,
+              "user_us": 879554,
+              "system_us": 147379,
+              "peak_rss_bytes": 80785408
+            },
+            "lua_process": {
+              "wall_us": 8958710,
+              "user_us": 8874799,
+              "system_us": 59567,
+              "peak_rss_bytes": 14434304
+            }
+          },
+          {
+            "desktop": {
+              "artifact_us": 105705,
+              "cache_us": 112241,
+              "canonical_bytes": 1491161,
+              "canonical_us": 3237,
+              "export_us": 284820,
+              "generation_id": "08d6248c9b7c17e1c4f15f430a83d95ceb0b22ae2fde0d1a106e2f12dfdb9400",
+              "inspect_us": 55385,
+              "lua_bytes": 5965402,
+              "pages": 10,
+              "parse_us": 13460,
+              "records": 1000,
+              "repeat_export_us": 404351,
+              "validation_us": 36080
+            },
+            "lua": {
+              "assignment_us": 7,
+              "cache_entries": 24,
+              "cache_growth_bytes": 99854,
+              "compile_us": 8657,
+              "corruption_rejected": true,
+              "explicit_gc_us": 504,
+              "generation_id": "08d6248c9b7c17e1c4f15f430a83d95ceb0b22ae2fde0d1a106e2f12dfdb9400",
+              "history_us": [
+                14,
+                12,
+                11
+              ],
+              "indexed_items": 1000,
+              "indexed_records": 1000,
+              "local_data_unchanged": true,
+              "lookup_us": [
+                160,
+                228,
+                226
+              ],
+              "module_load_us": 1360,
+              "navigation_reads_us": 95437,
+              "observed_heap_decreases": 593,
+              "payload_heap_bytes": 1540217,
+              "peak_heap_bytes": 4728753,
+              "repeat_retained_heap_bytes": 2036033,
+              "repeat_validation_us": 4527876,
+              "resumes": 0,
+              "retained_heap_bytes": 1995169,
+              "steps": 7884,
+              "validation_total_us": 4464286,
+              "worst_step_us": 4281
+            },
+            "desktop_process": {
+              "wall_us": 1045326,
+              "user_us": 926635,
+              "system_us": 93367,
+              "peak_rss_bytes": 80740352
+            },
+            "lua_process": {
+              "wall_us": 9142481,
+              "user_us": 9056189,
+              "system_us": 68294,
+              "peak_rss_bytes": 14446592
+            }
+          }
+        ],
+        "candidate": [
+          {
+            "desktop": {
+              "artifact_us": 39482,
+              "cache_us": 122801,
+              "canonical_bytes": 1491161,
+              "canonical_us": 3246,
+              "export_us": 222316,
+              "generation_id": "08d6248c9b7c17e1c4f15f430a83d95ceb0b22ae2fde0d1a106e2f12dfdb9400",
+              "inspect_us": 73316,
+              "lua_bytes": 2082736,
+              "pages": 10,
+              "parse_us": 13925,
+              "records": 1000,
+              "repeat_export_us": 294642,
+              "validation_us": 56989
+            },
+            "lua": {
+              "assignment_us": 8,
+              "cache_entries": 24,
+              "cache_growth_bytes": 100136,
+              "compile_us": 5300,
+              "corruption_rejected": true,
+              "explicit_gc_us": 386,
+              "generation_id": "08d6248c9b7c17e1c4f15f430a83d95ceb0b22ae2fde0d1a106e2f12dfdb9400",
+              "history_us": [
+                14,
+                11,
+                11
+              ],
+              "indexed_items": 1000,
+              "indexed_records": 1000,
+              "local_data_unchanged": true,
+              "lookup_us": [
+                80,
+                116,
+                114
+              ],
+              "module_load_us": 1393,
+              "navigation_reads_us": 46989,
+              "observed_heap_decreases": 83,
+              "payload_heap_bytes": 1540230,
+              "peak_heap_bytes": 4213747,
+              "repeat_retained_heap_bytes": 1827470,
+              "repeat_validation_us": 3156605,
+              "resumes": 528726,
+              "retained_heap_bytes": 1786606,
+              "steps": 1587,
+              "validation_total_us": 3189964,
+              "worst_step_us": 3837
+            },
+            "desktop_process": {
+              "wall_us": 852050,
+              "user_us": 689154,
+              "system_us": 143146,
+              "peak_rss_bytes": 59334656
+            },
+            "lua_process": {
+              "wall_us": 6445597,
+              "user_us": 6290300,
+              "system_us": 128579,
+              "peak_rss_bytes": 14405632
+            }
+          },
+          {
+            "desktop": {
+              "artifact_us": 39006,
+              "cache_us": 101093,
+              "canonical_bytes": 1491161,
+              "canonical_us": 3160,
+              "export_us": 203294,
+              "generation_id": "08d6248c9b7c17e1c4f15f430a83d95ceb0b22ae2fde0d1a106e2f12dfdb9400",
+              "inspect_us": 63544,
+              "lua_bytes": 2082736,
+              "pages": 10,
+              "parse_us": 12955,
+              "records": 1000,
+              "repeat_export_us": 277905,
+              "validation_us": 37405
+            },
+            "lua": {
+              "assignment_us": 8,
+              "cache_entries": 24,
+              "cache_growth_bytes": 100136,
+              "compile_us": 5238,
+              "corruption_rejected": true,
+              "explicit_gc_us": 10600,
+              "generation_id": "08d6248c9b7c17e1c4f15f430a83d95ceb0b22ae2fde0d1a106e2f12dfdb9400",
+              "history_us": [
+                40,
+                12,
+                11
+              ],
+              "indexed_items": 1000,
+              "indexed_records": 1000,
+              "local_data_unchanged": true,
+              "lookup_us": [
+                149,
+                144,
+                115
+              ],
+              "module_load_us": 1392,
+              "navigation_reads_us": 45789,
+              "observed_heap_decreases": 81,
+              "payload_heap_bytes": 1540230,
+              "peak_heap_bytes": 4248999,
+              "repeat_retained_heap_bytes": 1827470,
+              "repeat_validation_us": 3185141,
+              "resumes": 528726,
+              "retained_heap_bytes": 1786606,
+              "steps": 1585,
+              "validation_total_us": 3182779,
+              "worst_step_us": 2382
+            },
+            "desktop_process": {
+              "wall_us": 758157,
+              "user_us": 679882,
+              "system_us": 64698,
+              "peak_rss_bytes": 59506688
+            },
+            "lua_process": {
+              "wall_us": 6463497,
+              "user_us": 6337736,
+              "system_us": 113548,
+              "peak_rss_bytes": 14417920
+            }
+          },
+          {
+            "desktop": {
+              "artifact_us": 46085,
+              "cache_us": 110967,
+              "canonical_bytes": 1491161,
+              "canonical_us": 3247,
+              "export_us": 190488,
+              "generation_id": "08d6248c9b7c17e1c4f15f430a83d95ceb0b22ae2fde0d1a106e2f12dfdb9400",
+              "inspect_us": 83426,
+              "lua_bytes": 2082736,
+              "pages": 10,
+              "parse_us": 18782,
+              "records": 1000,
+              "repeat_export_us": 282850,
+              "validation_us": 41317
+            },
+            "lua": {
+              "assignment_us": 8,
+              "cache_entries": 24,
+              "cache_growth_bytes": 100136,
+              "compile_us": 5364,
+              "corruption_rejected": true,
+              "explicit_gc_us": 307,
+              "generation_id": "08d6248c9b7c17e1c4f15f430a83d95ceb0b22ae2fde0d1a106e2f12dfdb9400",
+              "history_us": [
+                14,
+                25,
+                10
+              ],
+              "indexed_items": 1000,
+              "indexed_records": 1000,
+              "local_data_unchanged": true,
+              "lookup_us": [
+                81,
+                115,
+                113
+              ],
+              "module_load_us": 1480,
+              "navigation_reads_us": 47034,
+              "observed_heap_decreases": 91,
+              "payload_heap_bytes": 1540230,
+              "peak_heap_bytes": 4202325,
+              "repeat_retained_heap_bytes": 1827470,
+              "repeat_validation_us": 3198199,
+              "resumes": 528726,
+              "retained_heap_bytes": 1786606,
+              "steps": 1594,
+              "validation_total_us": 3201887,
+              "worst_step_us": 2326
+            },
+            "desktop_process": {
+              "wall_us": 799169,
+              "user_us": 678722,
+              "system_us": 105431,
+              "peak_rss_bytes": 59498496
+            },
+            "lua_process": {
+              "wall_us": 6495398,
+              "user_us": 6394445,
+              "system_us": 77120,
+              "peak_rss_bytes": 14426112
+            }
+          },
+          {
+            "desktop": {
+              "artifact_us": 40953,
+              "cache_us": 109309,
+              "canonical_bytes": 1491161,
+              "canonical_us": 3550,
+              "export_us": 191186,
+              "generation_id": "08d6248c9b7c17e1c4f15f430a83d95ceb0b22ae2fde0d1a106e2f12dfdb9400",
+              "inspect_us": 57375,
+              "lua_bytes": 2082736,
+              "pages": 10,
+              "parse_us": 13486,
+              "records": 1000,
+              "repeat_export_us": 290309,
+              "validation_us": 44925
+            },
+            "lua": {
+              "assignment_us": 6,
+              "cache_entries": 24,
+              "cache_growth_bytes": 100136,
+              "compile_us": 5379,
+              "corruption_rejected": true,
+              "explicit_gc_us": 669,
+              "generation_id": "08d6248c9b7c17e1c4f15f430a83d95ceb0b22ae2fde0d1a106e2f12dfdb9400",
+              "history_us": [
+                15,
+                27,
+                11
+              ],
+              "indexed_items": 1000,
+              "indexed_records": 1000,
+              "local_data_unchanged": true,
+              "lookup_us": [
+                80,
+                114,
+                113
+              ],
+              "module_load_us": 1441,
+              "navigation_reads_us": 45301,
+              "observed_heap_decreases": 79,
+              "payload_heap_bytes": 1540230,
+              "peak_heap_bytes": 4218420,
+              "repeat_retained_heap_bytes": 1827470,
+              "repeat_validation_us": 3258507,
+              "resumes": 528726,
+              "retained_heap_bytes": 1786606,
+              "steps": 1567,
+              "validation_total_us": 3143869,
+              "worst_step_us": 2102
+            },
+            "desktop_process": {
+              "wall_us": 779030,
+              "user_us": 704859,
+              "system_us": 51507,
+              "peak_rss_bytes": 59498496
+            },
+            "lua_process": {
+              "wall_us": 6487577,
+              "user_us": 6387357,
+              "system_us": 85525,
+              "peak_rss_bytes": 14438400
+            }
+          },
+          {
+            "desktop": {
+              "artifact_us": 45737,
+              "cache_us": 124729,
+              "canonical_bytes": 1491161,
+              "canonical_us": 3894,
+              "export_us": 245725,
+              "generation_id": "08d6248c9b7c17e1c4f15f430a83d95ceb0b22ae2fde0d1a106e2f12dfdb9400",
+              "inspect_us": 82817,
+              "lua_bytes": 2082736,
+              "pages": 10,
+              "parse_us": 19137,
+              "records": 1000,
+              "repeat_export_us": 327813,
+              "validation_us": 51771
+            },
+            "lua": {
+              "assignment_us": 7,
+              "cache_entries": 24,
+              "cache_growth_bytes": 100136,
+              "compile_us": 5249,
+              "corruption_rejected": true,
+              "explicit_gc_us": 650,
+              "generation_id": "08d6248c9b7c17e1c4f15f430a83d95ceb0b22ae2fde0d1a106e2f12dfdb9400",
+              "history_us": [
+                14,
+                11,
+                10
+              ],
+              "indexed_items": 1000,
+              "indexed_records": 1000,
+              "local_data_unchanged": true,
+              "lookup_us": [
+                95,
+                114,
+                113
+              ],
+              "module_load_us": 1388,
+              "navigation_reads_us": 47825,
+              "observed_heap_decreases": 87,
+              "payload_heap_bytes": 1540230,
+              "peak_heap_bytes": 4226233,
+              "repeat_retained_heap_bytes": 1827470,
+              "repeat_validation_us": 3617375,
+              "resumes": 528726,
+              "retained_heap_bytes": 1786606,
+              "steps": 1616,
+              "validation_total_us": 3248502,
+              "worst_step_us": 2569
+            },
+            "desktop_process": {
+              "wall_us": 931275,
+              "user_us": 780099,
+              "system_us": 122615,
+              "peak_rss_bytes": 59457536
+            },
+            "lua_process": {
+              "wall_us": 6943354,
+              "user_us": 6844226,
+              "system_us": 94948,
+              "peak_rss_bytes": 14450688
+            }
+          }
+        ]
+      },
+      "summary": {
+        "baseline": {
+          "desktop": {
+            "artifact_us": {
+              "median": 116015,
+              "minimum": 104994,
+              "maximum": 123522,
+              "mad": 7507
+            },
+            "cache_us": {
+              "median": 107128,
+              "minimum": 104051,
+              "maximum": 119299,
+              "mad": 3077
+            },
+            "canonical_bytes": {
+              "median": 1491161,
+              "minimum": 1491161,
+              "maximum": 1491161,
+              "mad": 0
+            },
+            "canonical_us": {
+              "median": 3237,
+              "minimum": 3047,
+              "maximum": 3605,
+              "mad": 158
+            },
+            "export_us": {
+              "median": 300190,
+              "minimum": 268570,
+              "maximum": 321668,
+              "mad": 15370
+            },
+            "inspect_us": {
+              "median": 61394,
+              "minimum": 55385,
+              "maximum": 83504,
+              "mad": 4947
+            },
+            "lua_bytes": {
+              "median": 5965402,
+              "minimum": 5965402,
+              "maximum": 5965402,
+              "mad": 0
+            },
+            "pages": {
+              "median": 10,
+              "minimum": 10,
+              "maximum": 10,
+              "mad": 0
+            },
+            "parse_us": {
+              "median": 14482,
+              "minimum": 12951,
+              "maximum": 25524,
+              "mad": 1022
+            },
+            "records": {
+              "median": 1000,
+              "minimum": 1000,
+              "maximum": 1000,
+              "mad": 0
+            },
+            "repeat_export_us": {
+              "median": 396588,
+              "minimum": 380866,
+              "maximum": 422762,
+              "mad": 10470
+            },
+            "validation_us": {
+              "median": 38063,
+              "minimum": 36080,
+              "maximum": 62494,
+              "mad": 1983
+            }
+          },
+          "lua": {
+            "assignment_us": {
+              "median": 7,
+              "minimum": 6,
+              "maximum": 9,
+              "mad": 0
+            },
+            "cache_entries": {
+              "median": 24,
+              "minimum": 24,
+              "maximum": 24,
+              "mad": 0
+            },
+            "cache_growth_bytes": {
+              "median": 99854,
+              "minimum": 99854,
+              "maximum": 99854,
+              "mad": 0
+            },
+            "compile_us": {
+              "median": 8294,
+              "minimum": 8068,
+              "maximum": 9187,
+              "mad": 226
+            },
+            "explicit_gc_us": {
+              "median": 471,
+              "minimum": 455,
+              "maximum": 542,
+              "mad": 16
+            },
+            "indexed_items": {
+              "median": 1000,
+              "minimum": 1000,
+              "maximum": 1000,
+              "mad": 0
+            },
+            "indexed_records": {
+              "median": 1000,
+              "minimum": 1000,
+              "maximum": 1000,
+              "mad": 0
+            },
+            "module_load_us": {
+              "median": 1416,
+              "minimum": 1344,
+              "maximum": 1607,
+              "mad": 66
+            },
+            "navigation_reads_us": {
+              "median": 95764,
+              "minimum": 94749,
+              "maximum": 96380,
+              "mad": 327
+            },
+            "observed_heap_decreases": {
+              "median": 568,
+              "minimum": 557,
+              "maximum": 593,
+              "mad": 11
+            },
+            "payload_heap_bytes": {
+              "median": 1540217,
+              "minimum": 1540217,
+              "maximum": 1540217,
+              "mad": 0
+            },
+            "peak_heap_bytes": {
+              "median": 4728753,
+              "minimum": 4723155,
+              "maximum": 4747549,
+              "mad": 5598
+            },
+            "repeat_retained_heap_bytes": {
+              "median": 2036033,
+              "minimum": 2036033,
+              "maximum": 2036033,
+              "mad": 0
+            },
+            "repeat_validation_us": {
+              "median": 4437608,
+              "minimum": 4404931,
+              "maximum": 4527876,
+              "mad": 6041
+            },
+            "resumes": {
+              "median": 0,
+              "minimum": 0,
+              "maximum": 0,
+              "mad": 0
+            },
+            "retained_heap_bytes": {
+              "median": 1995169,
+              "minimum": 1995169,
+              "maximum": 1995169,
+              "mad": 0
+            },
+            "steps": {
+              "median": 7878,
+              "minimum": 7877,
+              "maximum": 7884,
+              "mad": 1
+            },
+            "validation_total_us": {
+              "median": 4404447,
+              "minimum": 4388689,
+              "maximum": 4486883,
+              "mad": 15758
+            },
+            "worst_step_us": {
+              "median": 4281,
+              "minimum": 4198,
+              "maximum": 4802,
+              "mad": 50
+            }
+          },
+          "desktop_process": {
+            "peak_rss_bytes": {
+              "median": 80740352,
+              "minimum": 80551936,
+              "maximum": 80785408,
+              "mad": 45056
+            },
+            "system_us": {
+              "median": 136677,
+              "minimum": 74907,
+              "maximum": 239150,
+              "mad": 43310
+            },
+            "user_us": {
+              "median": 906970,
+              "minimum": 879554,
+              "maximum": 941275,
+              "mad": 19665
+            },
+            "wall_us": {
+              "median": 1047860,
+              "minimum": 1040992,
+              "maximum": 1171692,
+              "mad": 3929
+            }
+          },
+          "lua_process": {
+            "peak_rss_bytes": {
+              "median": 14422016,
+              "minimum": 14393344,
+              "maximum": 14446592,
+              "mad": 12288
+            },
+            "system_us": {
+              "median": 59567,
+              "minimum": 43961,
+              "maximum": 68294,
+              "mad": 8727
+            },
+            "user_us": {
+              "median": 8929475,
+              "minimum": 8874799,
+              "maximum": 9056189,
+              "mad": 54676
+            },
+            "wall_us": {
+              "median": 9000193,
+              "minimum": 8958710,
+              "maximum": 9142481,
+              "mad": 41483
+            }
+          }
+        },
+        "candidate": {
+          "desktop": {
+            "artifact_us": {
+              "median": 40953,
+              "minimum": 39006,
+              "maximum": 46085,
+              "mad": 1947
+            },
+            "cache_us": {
+              "median": 110967,
+              "minimum": 101093,
+              "maximum": 124729,
+              "mad": 9874
+            },
+            "canonical_bytes": {
+              "median": 1491161,
+              "minimum": 1491161,
+              "maximum": 1491161,
+              "mad": 0
+            },
+            "canonical_us": {
+              "median": 3247,
+              "minimum": 3160,
+              "maximum": 3894,
+              "mad": 87
+            },
+            "export_us": {
+              "median": 203294,
+              "minimum": 190488,
+              "maximum": 245725,
+              "mad": 12806
+            },
+            "inspect_us": {
+              "median": 73316,
+              "minimum": 57375,
+              "maximum": 83426,
+              "mad": 9772
+            },
+            "lua_bytes": {
+              "median": 2082736,
+              "minimum": 2082736,
+              "maximum": 2082736,
+              "mad": 0
+            },
+            "pages": {
+              "median": 10,
+              "minimum": 10,
+              "maximum": 10,
+              "mad": 0
+            },
+            "parse_us": {
+              "median": 13925,
+              "minimum": 12955,
+              "maximum": 19137,
+              "mad": 970
+            },
+            "records": {
+              "median": 1000,
+              "minimum": 1000,
+              "maximum": 1000,
+              "mad": 0
+            },
+            "repeat_export_us": {
+              "median": 290309,
+              "minimum": 277905,
+              "maximum": 327813,
+              "mad": 7459
+            },
+            "validation_us": {
+              "median": 44925,
+              "minimum": 37405,
+              "maximum": 56989,
+              "mad": 6846
+            }
+          },
+          "lua": {
+            "assignment_us": {
+              "median": 8,
+              "minimum": 6,
+              "maximum": 8,
+              "mad": 0
+            },
+            "cache_entries": {
+              "median": 24,
+              "minimum": 24,
+              "maximum": 24,
+              "mad": 0
+            },
+            "cache_growth_bytes": {
+              "median": 100136,
+              "minimum": 100136,
+              "maximum": 100136,
+              "mad": 0
+            },
+            "compile_us": {
+              "median": 5300,
+              "minimum": 5238,
+              "maximum": 5379,
+              "mad": 62
+            },
+            "explicit_gc_us": {
+              "median": 650,
+              "minimum": 307,
+              "maximum": 10600,
+              "mad": 264
+            },
+            "indexed_items": {
+              "median": 1000,
+              "minimum": 1000,
+              "maximum": 1000,
+              "mad": 0
+            },
+            "indexed_records": {
+              "median": 1000,
+              "minimum": 1000,
+              "maximum": 1000,
+              "mad": 0
+            },
+            "module_load_us": {
+              "median": 1393,
+              "minimum": 1388,
+              "maximum": 1480,
+              "mad": 5
+            },
+            "navigation_reads_us": {
+              "median": 46989,
+              "minimum": 45301,
+              "maximum": 47825,
+              "mad": 836
+            },
+            "observed_heap_decreases": {
+              "median": 83,
+              "minimum": 79,
+              "maximum": 91,
+              "mad": 4
+            },
+            "payload_heap_bytes": {
+              "median": 1540230,
+              "minimum": 1540230,
+              "maximum": 1540230,
+              "mad": 0
+            },
+            "peak_heap_bytes": {
+              "median": 4218420,
+              "minimum": 4202325,
+              "maximum": 4248999,
+              "mad": 7813
+            },
+            "repeat_retained_heap_bytes": {
+              "median": 1827470,
+              "minimum": 1827470,
+              "maximum": 1827470,
+              "mad": 0
+            },
+            "repeat_validation_us": {
+              "median": 3198199,
+              "minimum": 3156605,
+              "maximum": 3617375,
+              "mad": 41594
+            },
+            "resumes": {
+              "median": 528726,
+              "minimum": 528726,
+              "maximum": 528726,
+              "mad": 0
+            },
+            "retained_heap_bytes": {
+              "median": 1786606,
+              "minimum": 1786606,
+              "maximum": 1786606,
+              "mad": 0
+            },
+            "steps": {
+              "median": 1587,
+              "minimum": 1567,
+              "maximum": 1616,
+              "mad": 7
+            },
+            "validation_total_us": {
+              "median": 3189964,
+              "minimum": 3143869,
+              "maximum": 3248502,
+              "mad": 11923
+            },
+            "worst_step_us": {
+              "median": 2382,
+              "minimum": 2102,
+              "maximum": 3837,
+              "mad": 187
+            }
+          },
+          "desktop_process": {
+            "peak_rss_bytes": {
+              "median": 59498496,
+              "minimum": 59334656,
+              "maximum": 59506688,
+              "mad": 8192
+            },
+            "system_us": {
+              "median": 105431,
+              "minimum": 51507,
+              "maximum": 143146,
+              "mad": 37715
+            },
+            "user_us": {
+              "median": 689154,
+              "minimum": 678722,
+              "maximum": 780099,
+              "mad": 10432
+            },
+            "wall_us": {
+              "median": 799169,
+              "minimum": 758157,
+              "maximum": 931275,
+              "mad": 41012
+            }
+          },
+          "lua_process": {
+            "peak_rss_bytes": {
+              "median": 14426112,
+              "minimum": 14405632,
+              "maximum": 14450688,
+              "mad": 12288
+            },
+            "system_us": {
+              "median": 94948,
+              "minimum": 77120,
+              "maximum": 128579,
+              "mad": 17828
+            },
+            "user_us": {
+              "median": 6387357,
+              "minimum": 6290300,
+              "maximum": 6844226,
+              "mad": 49621
+            },
+            "wall_us": {
+              "median": 6487577,
+              "minimum": 6445597,
+              "maximum": 6943354,
+              "mad": 24080
+            }
+          }
+        }
+      }
+    },
+    {
+      "workload": {
+        "origin": "synthetic",
+        "eligible_records": 100,
+        "profile": "injection",
+        "observation_dates": [
+          "2026-11-13",
+          "2026-11-15"
+        ],
+        "daily_dates_per_listed_variant": 2,
+        "canonical_bytes": 160644,
+        "materialized_export_records": 100,
+        "status": "eligible",
+        "generation_id": "97c41be370a72e465d570dc6175fd19b8ac50d63dfce3b294801e538160b6a74"
+      },
+      "result": "PASS",
+      "runs": {
+        "baseline": [
+          {
+            "desktop": {
+              "artifact_us": 11300,
+              "cache_us": 10215,
+              "canonical_bytes": 160644,
+              "canonical_us": 291,
+              "export_us": 27305,
+              "generation_id": "97c41be370a72e465d570dc6175fd19b8ac50d63dfce3b294801e538160b6a74",
+              "inspect_us": 5154,
+              "lua_bytes": 643334,
+              "pages": 1,
+              "parse_us": 1693,
+              "records": 100,
+              "repeat_export_us": 39416,
+              "validation_us": 4338
+            },
+            "lua": {
+              "assignment_us": 1,
+              "cache_entries": 24,
+              "cache_growth_bytes": 100127,
+              "compile_us": 790,
+              "corruption_rejected": true,
+              "explicit_gc_us": 90,
+              "generation_id": "97c41be370a72e465d570dc6175fd19b8ac50d63dfce3b294801e538160b6a74",
+              "history_us": [
+                15,
+                13,
+                12
+              ],
+              "indexed_items": 100,
+              "indexed_records": 100,
+              "local_data_unchanged": true,
+              "lookup_us": [
+                172,
+                261,
+                260
+              ],
+              "module_load_us": 1355,
+              "navigation_reads_us": 102777,
+              "observed_heap_decreases": 208,
+              "payload_heap_bytes": 165188,
+              "peak_heap_bytes": 1101409,
+              "repeat_retained_heap_bytes": 236819,
+              "repeat_validation_us": 505571,
+              "resumes": 0,
+              "retained_heap_bytes": 229864,
+              "steps": 816,
+              "validation_total_us": 490754,
+              "worst_step_us": 3053
+            },
+            "desktop_process": {
+              "wall_us": 113061,
+              "user_us": 98164,
+              "system_us": 3948,
+              "peak_rss_bytes": 14778368
+            },
+            "lua_process": {
+              "wall_us": 1131059,
+              "user_us": 1118144,
+              "system_us": 0,
+              "peak_rss_bytes": 14778368
+            }
+          },
+          {
+            "desktop": {
+              "artifact_us": 10772,
+              "cache_us": 10112,
+              "canonical_bytes": 160644,
+              "canonical_us": 274,
+              "export_us": 27490,
+              "generation_id": "97c41be370a72e465d570dc6175fd19b8ac50d63dfce3b294801e538160b6a74",
+              "inspect_us": 5113,
+              "lua_bytes": 643334,
+              "pages": 1,
+              "parse_us": 1156,
+              "records": 100,
+              "repeat_export_us": 41072,
+              "validation_us": 3875
+            },
+            "lua": {
+              "assignment_us": 2,
+              "cache_entries": 24,
+              "cache_growth_bytes": 100127,
+              "compile_us": 788,
+              "corruption_rejected": true,
+              "explicit_gc_us": 85,
+              "generation_id": "97c41be370a72e465d570dc6175fd19b8ac50d63dfce3b294801e538160b6a74",
+              "history_us": [
+                14,
+                13,
+                13
+              ],
+              "indexed_items": 100,
+              "indexed_records": 100,
+              "local_data_unchanged": true,
+              "lookup_us": [
+                176,
+                267,
+                282
+              ],
+              "module_load_us": 1390,
+              "navigation_reads_us": 100564,
+              "observed_heap_decreases": 214,
+              "payload_heap_bytes": 165188,
+              "peak_heap_bytes": 1101156,
+              "repeat_retained_heap_bytes": 236819,
+              "repeat_validation_us": 505405,
+              "resumes": 0,
+              "retained_heap_bytes": 229864,
+              "steps": 814,
+              "validation_total_us": 495137,
+              "worst_step_us": 3058
+            },
+            "desktop_process": {
+              "wall_us": 112912,
+              "user_us": 97182,
+              "system_us": 3886,
+              "peak_rss_bytes": 14782464
+            },
+            "lua_process": {
+              "wall_us": 1131324,
+              "user_us": 1109673,
+              "system_us": 9598,
+              "peak_rss_bytes": 14782464
+            }
+          },
+          {
+            "desktop": {
+              "artifact_us": 11094,
+              "cache_us": 11450,
+              "canonical_bytes": 160644,
+              "canonical_us": 295,
+              "export_us": 27478,
+              "generation_id": "97c41be370a72e465d570dc6175fd19b8ac50d63dfce3b294801e538160b6a74",
+              "inspect_us": 5194,
+              "lua_bytes": 643334,
+              "pages": 1,
+              "parse_us": 1300,
+              "records": 100,
+              "repeat_export_us": 38594,
+              "validation_us": 3918
+            },
+            "lua": {
+              "assignment_us": 1,
+              "cache_entries": 24,
+              "cache_growth_bytes": 100127,
+              "compile_us": 796,
+              "corruption_rejected": true,
+              "explicit_gc_us": 122,
+              "generation_id": "97c41be370a72e465d570dc6175fd19b8ac50d63dfce3b294801e538160b6a74",
+              "history_us": [
+                14,
+                12,
+                11
+              ],
+              "indexed_items": 100,
+              "indexed_records": 100,
+              "local_data_unchanged": true,
+              "lookup_us": [
+                187,
+                260,
+                257
+              ],
+              "module_load_us": 1412,
+              "navigation_reads_us": 99515,
+              "observed_heap_decreases": 206,
+              "payload_heap_bytes": 165188,
+              "peak_heap_bytes": 1102800,
+              "repeat_retained_heap_bytes": 236819,
+              "repeat_validation_us": 487954,
+              "resumes": 0,
+              "retained_heap_bytes": 230067,
+              "steps": 814,
+              "validation_total_us": 480512,
+              "worst_step_us": 2160
+            },
+            "desktop_process": {
+              "wall_us": 112892,
+              "user_us": 100942,
+              "system_us": 0,
+              "peak_rss_bytes": 14782464
+            },
+            "lua_process": {
+              "wall_us": 1101124,
+              "user_us": 1070281,
+              "system_us": 16042,
+              "peak_rss_bytes": 14782464
+            }
+          },
+          {
+            "desktop": {
+              "artifact_us": 11066,
+              "cache_us": 10599,
+              "canonical_bytes": 160644,
+              "canonical_us": 271,
+              "export_us": 27691,
+              "generation_id": "97c41be370a72e465d570dc6175fd19b8ac50d63dfce3b294801e538160b6a74",
+              "inspect_us": 5242,
+              "lua_bytes": 643334,
+              "pages": 1,
+              "parse_us": 1416,
+              "records": 100,
+              "repeat_export_us": 41389,
+              "validation_us": 4015
+            },
+            "lua": {
+              "assignment_us": 1,
+              "cache_entries": 24,
+              "cache_growth_bytes": 100127,
+              "compile_us": 843,
+              "corruption_rejected": true,
+              "explicit_gc_us": 119,
+              "generation_id": "97c41be370a72e465d570dc6175fd19b8ac50d63dfce3b294801e538160b6a74",
+              "history_us": [
+                14,
+                13,
+                12
+              ],
+              "indexed_items": 100,
+              "indexed_records": 100,
+              "local_data_unchanged": true,
+              "lookup_us": [
+                188,
+                263,
+                260
+              ],
+              "module_load_us": 1326,
+              "navigation_reads_us": 98596,
+              "observed_heap_decreases": 206,
+              "payload_heap_bytes": 165188,
+              "peak_heap_bytes": 1102800,
+              "repeat_retained_heap_bytes": 236819,
+              "repeat_validation_us": 499075,
+              "resumes": 0,
+              "retained_heap_bytes": 230067,
+              "steps": 814,
+              "validation_total_us": 479880,
+              "worst_step_us": 2401
+            },
+            "desktop_process": {
+              "wall_us": 112878,
+              "user_us": 91221,
+              "system_us": 11937,
+              "peak_rss_bytes": 14782464
+            },
+            "lua_process": {
+              "wall_us": 1101849,
+              "user_us": 1098550,
+              "system_us": 0,
+              "peak_rss_bytes": 14782464
+            }
+          },
+          {
+            "desktop": {
+              "artifact_us": 11208,
+              "cache_us": 13966,
+              "canonical_bytes": 160644,
+              "canonical_us": 270,
+              "export_us": 28490,
+              "generation_id": "97c41be370a72e465d570dc6175fd19b8ac50d63dfce3b294801e538160b6a74",
+              "inspect_us": 5298,
+              "lua_bytes": 643334,
+              "pages": 1,
+              "parse_us": 1227,
+              "records": 100,
+              "repeat_export_us": 41608,
+              "validation_us": 4226
+            },
+            "lua": {
+              "assignment_us": 1,
+              "cache_entries": 24,
+              "cache_growth_bytes": 100127,
+              "compile_us": 837,
+              "corruption_rejected": true,
+              "explicit_gc_us": 140,
+              "generation_id": "97c41be370a72e465d570dc6175fd19b8ac50d63dfce3b294801e538160b6a74",
+              "history_us": [
+                14,
+                13,
+                12
+              ],
+              "indexed_items": 100,
+              "indexed_records": 100,
+              "local_data_unchanged": true,
+              "lookup_us": [
+                174,
+                280,
+                307
+              ],
+              "module_load_us": 1343,
+              "navigation_reads_us": 99921,
+              "observed_heap_decreases": 206,
+              "payload_heap_bytes": 165188,
+              "peak_heap_bytes": 1102800,
+              "repeat_retained_heap_bytes": 236819,
+              "repeat_validation_us": 496977,
+              "resumes": 0,
+              "retained_heap_bytes": 230067,
+              "steps": 814,
+              "validation_total_us": 483030,
+              "worst_step_us": 2326
+            },
+            "desktop_process": {
+              "wall_us": 123307,
+              "user_us": 101903,
+              "system_us": 4401,
+              "peak_rss_bytes": 14782464
+            },
+            "lua_process": {
+              "wall_us": 1111390,
+              "user_us": 1086413,
+              "system_us": 12030,
+              "peak_rss_bytes": 14782464
+            }
+          }
+        ],
+        "candidate": [
+          {
+            "desktop": {
+              "artifact_us": 4023,
+              "cache_us": 10554,
+              "canonical_bytes": 160644,
+              "canonical_us": 286,
+              "export_us": 20522,
+              "generation_id": "97c41be370a72e465d570dc6175fd19b8ac50d63dfce3b294801e538160b6a74",
+              "inspect_us": 5235,
+              "lua_bytes": 230249,
+              "pages": 1,
+              "parse_us": 1567,
+              "records": 100,
+              "repeat_export_us": 30414,
+              "validation_us": 4084
+            },
+            "lua": {
+              "assignment_us": 1,
+              "cache_entries": 24,
+              "cache_growth_bytes": 101771,
+              "compile_us": 474,
+              "corruption_rejected": true,
+              "explicit_gc_us": 169,
+              "generation_id": "97c41be370a72e465d570dc6175fd19b8ac50d63dfce3b294801e538160b6a74",
+              "history_us": [
+                13,
+                11,
+                10
+              ],
+              "indexed_items": 100,
+              "indexed_records": 100,
+              "local_data_unchanged": true,
+              "lookup_us": [
+                86,
+                120,
+                117
+              ],
+              "module_load_us": 1371,
+              "navigation_reads_us": 47927,
+              "observed_heap_decreases": 13,
+              "payload_heap_bytes": 165201,
+              "peak_heap_bytes": 1086486,
+              "repeat_retained_heap_bytes": 216717,
+              "repeat_validation_us": 352804,
+              "resumes": 56418,
+              "retained_heap_bytes": 208621,
+              "steps": 172,
+              "validation_total_us": 345137,
+              "worst_step_us": 2066
+            },
+            "desktop_process": {
+              "wall_us": 93671,
+              "user_us": 67191,
+              "system_us": 11894,
+              "peak_rss_bytes": 14778368
+            },
+            "lua_process": {
+              "wall_us": 767277,
+              "user_us": 754529,
+              "system_us": 4004,
+              "peak_rss_bytes": 14782464
+            }
+          },
+          {
+            "desktop": {
+              "artifact_us": 4958,
+              "cache_us": 10566,
+              "canonical_bytes": 160644,
+              "canonical_us": 307,
+              "export_us": 22531,
+              "generation_id": "97c41be370a72e465d570dc6175fd19b8ac50d63dfce3b294801e538160b6a74",
+              "inspect_us": 6720,
+              "lua_bytes": 230249,
+              "pages": 1,
+              "parse_us": 2011,
+              "records": 100,
+              "repeat_export_us": 33352,
+              "validation_us": 5278
+            },
+            "lua": {
+              "assignment_us": 1,
+              "cache_entries": 24,
+              "cache_growth_bytes": 101771,
+              "compile_us": 563,
+              "corruption_rejected": true,
+              "explicit_gc_us": 147,
+              "generation_id": "97c41be370a72e465d570dc6175fd19b8ac50d63dfce3b294801e538160b6a74",
+              "history_us": [
+                14,
+                11,
+                10
+              ],
+              "indexed_items": 100,
+              "indexed_records": 100,
+              "local_data_unchanged": true,
+              "lookup_us": [
+                84,
+                119,
+                118
+              ],
+              "module_load_us": 1529,
+              "navigation_reads_us": 48065,
+              "observed_heap_decreases": 14,
+              "payload_heap_bytes": 165201,
+              "peak_heap_bytes": 1094630,
+              "repeat_retained_heap_bytes": 216717,
+              "repeat_validation_us": 340647,
+              "resumes": 56418,
+              "retained_heap_bytes": 208621,
+              "steps": 175,
+              "validation_total_us": 350678,
+              "worst_step_us": 2222
+            },
+            "desktop_process": {
+              "wall_us": 103836,
+              "user_us": 76949,
+              "system_us": 12035,
+              "peak_rss_bytes": 14782464
+            },
+            "lua_process": {
+              "wall_us": 757582,
+              "user_us": 748784,
+              "system_us": 3682,
+              "peak_rss_bytes": 14782464
+            }
+          },
+          {
+            "desktop": {
+              "artifact_us": 3912,
+              "cache_us": 10324,
+              "canonical_bytes": 160644,
+              "canonical_us": 283,
+              "export_us": 20235,
+              "generation_id": "97c41be370a72e465d570dc6175fd19b8ac50d63dfce3b294801e538160b6a74",
+              "inspect_us": 5453,
+              "lua_bytes": 230249,
+              "pages": 1,
+              "parse_us": 1491,
+              "records": 100,
+              "repeat_export_us": 29830,
+              "validation_us": 3878
+            },
+            "lua": {
+              "assignment_us": 1,
+              "cache_entries": 24,
+              "cache_growth_bytes": 101771,
+              "compile_us": 493,
+              "corruption_rejected": true,
+              "explicit_gc_us": 169,
+              "generation_id": "97c41be370a72e465d570dc6175fd19b8ac50d63dfce3b294801e538160b6a74",
+              "history_us": [
+                14,
+                11,
+                10
+              ],
+              "indexed_items": 100,
+              "indexed_records": 100,
+              "local_data_unchanged": true,
+              "lookup_us": [
+                85,
+                122,
+                142
+              ],
+              "module_load_us": 1473,
+              "navigation_reads_us": 48917,
+              "observed_heap_decreases": 14,
+              "payload_heap_bytes": 165201,
+              "peak_heap_bytes": 1078345,
+              "repeat_retained_heap_bytes": 216717,
+              "repeat_validation_us": 346881,
+              "resumes": 56418,
+              "retained_heap_bytes": 208621,
+              "steps": 173,
+              "validation_total_us": 346100,
+              "worst_step_us": 2125
+            },
+            "desktop_process": {
+              "wall_us": 93362,
+              "user_us": 69240,
+              "system_us": 8689,
+              "peak_rss_bytes": 14782464
+            },
+            "lua_process": {
+              "wall_us": 758315,
+              "user_us": 750918,
+              "system_us": 4033,
+              "peak_rss_bytes": 14782464
+            }
+          },
+          {
+            "desktop": {
+              "artifact_us": 3992,
+              "cache_us": 11038,
+              "canonical_bytes": 160644,
+              "canonical_us": 286,
+              "export_us": 21333,
+              "generation_id": "97c41be370a72e465d570dc6175fd19b8ac50d63dfce3b294801e538160b6a74",
+              "inspect_us": 5411,
+              "lua_bytes": 230249,
+              "pages": 1,
+              "parse_us": 1572,
+              "records": 100,
+              "repeat_export_us": 31561,
+              "validation_us": 4038
+            },
+            "lua": {
+              "assignment_us": 1,
+              "cache_entries": 24,
+              "cache_growth_bytes": 101771,
+              "compile_us": 509,
+              "corruption_rejected": true,
+              "explicit_gc_us": 226,
+              "generation_id": "97c41be370a72e465d570dc6175fd19b8ac50d63dfce3b294801e538160b6a74",
+              "history_us": [
+                14,
+                11,
+                10
+              ],
+              "indexed_items": 100,
+              "indexed_records": 100,
+              "local_data_unchanged": true,
+              "lookup_us": [
+                85,
+                119,
+                117
+              ],
+              "module_load_us": 1678,
+              "navigation_reads_us": 48562,
+              "observed_heap_decreases": 15,
+              "payload_heap_bytes": 165201,
+              "peak_heap_bytes": 1081609,
+              "repeat_retained_heap_bytes": 216717,
+              "repeat_validation_us": 355522,
+              "resumes": 56418,
+              "retained_heap_bytes": 208621,
+              "steps": 179,
+              "validation_total_us": 358347,
+              "worst_step_us": 2080
+            },
+            "desktop_process": {
+              "wall_us": 93733,
+              "user_us": 73567,
+              "system_us": 8310,
+              "peak_rss_bytes": 14782464
+            },
+            "lua_process": {
+              "wall_us": 778506,
+              "user_us": 759994,
+              "system_us": 16046,
+              "peak_rss_bytes": 14782464
+            }
+          },
+          {
+            "desktop": {
+              "artifact_us": 4016,
+              "cache_us": 11327,
+              "canonical_bytes": 160644,
+              "canonical_us": 281,
+              "export_us": 21456,
+              "generation_id": "97c41be370a72e465d570dc6175fd19b8ac50d63dfce3b294801e538160b6a74",
+              "inspect_us": 5913,
+              "lua_bytes": 230249,
+              "pages": 1,
+              "parse_us": 1786,
+              "records": 100,
+              "repeat_export_us": 30529,
+              "validation_us": 4104
+            },
+            "lua": {
+              "assignment_us": 2,
+              "cache_entries": 24,
+              "cache_growth_bytes": 101771,
+              "compile_us": 486,
+              "corruption_rejected": true,
+              "explicit_gc_us": 161,
+              "generation_id": "97c41be370a72e465d570dc6175fd19b8ac50d63dfce3b294801e538160b6a74",
+              "history_us": [
+                14,
+                12,
+                10
+              ],
+              "indexed_items": 100,
+              "indexed_records": 100,
+              "local_data_unchanged": true,
+              "lookup_us": [
+                86,
+                133,
+                119
+              ],
+              "module_load_us": 1408,
+              "navigation_reads_us": 48226,
+              "observed_heap_decreases": 14,
+              "payload_heap_bytes": 165201,
+              "peak_heap_bytes": 1083038,
+              "repeat_retained_heap_bytes": 216717,
+              "repeat_validation_us": 341491,
+              "resumes": 56418,
+              "retained_heap_bytes": 208621,
+              "steps": 172,
+              "validation_total_us": 346437,
+              "worst_step_us": 2989
+            },
+            "desktop_process": {
+              "wall_us": 93348,
+              "user_us": 73916,
+              "system_us": 7530,
+              "peak_rss_bytes": 14782464
+            },
+            "lua_process": {
+              "wall_us": 758474,
+              "user_us": 745201,
+              "system_us": 4019,
+              "peak_rss_bytes": 14782464
+            }
+          }
+        ]
+      },
+      "summary": {
+        "baseline": {
+          "desktop": {
+            "artifact_us": {
+              "median": 11094,
+              "minimum": 10772,
+              "maximum": 11300,
+              "mad": 114
+            },
+            "cache_us": {
+              "median": 10599,
+              "minimum": 10112,
+              "maximum": 13966,
+              "mad": 487
+            },
+            "canonical_bytes": {
+              "median": 160644,
+              "minimum": 160644,
+              "maximum": 160644,
+              "mad": 0
+            },
+            "canonical_us": {
+              "median": 274,
+              "minimum": 270,
+              "maximum": 295,
+              "mad": 4
+            },
+            "export_us": {
+              "median": 27490,
+              "minimum": 27305,
+              "maximum": 28490,
+              "mad": 185
+            },
+            "inspect_us": {
+              "median": 5194,
+              "minimum": 5113,
+              "maximum": 5298,
+              "mad": 48
+            },
+            "lua_bytes": {
+              "median": 643334,
+              "minimum": 643334,
+              "maximum": 643334,
+              "mad": 0
+            },
+            "pages": {
+              "median": 1,
+              "minimum": 1,
+              "maximum": 1,
+              "mad": 0
+            },
+            "parse_us": {
+              "median": 1300,
+              "minimum": 1156,
+              "maximum": 1693,
+              "mad": 116
+            },
+            "records": {
+              "median": 100,
+              "minimum": 100,
+              "maximum": 100,
+              "mad": 0
+            },
+            "repeat_export_us": {
+              "median": 41072,
+              "minimum": 38594,
+              "maximum": 41608,
+              "mad": 536
+            },
+            "validation_us": {
+              "median": 4015,
+              "minimum": 3875,
+              "maximum": 4338,
+              "mad": 140
+            }
+          },
+          "lua": {
+            "assignment_us": {
+              "median": 1,
+              "minimum": 1,
+              "maximum": 2,
+              "mad": 0
+            },
+            "cache_entries": {
+              "median": 24,
+              "minimum": 24,
+              "maximum": 24,
+              "mad": 0
+            },
+            "cache_growth_bytes": {
+              "median": 100127,
+              "minimum": 100127,
+              "maximum": 100127,
+              "mad": 0
+            },
+            "compile_us": {
+              "median": 796,
+              "minimum": 788,
+              "maximum": 843,
+              "mad": 8
+            },
+            "explicit_gc_us": {
+              "median": 119,
+              "minimum": 85,
+              "maximum": 140,
+              "mad": 21
+            },
+            "indexed_items": {
+              "median": 100,
+              "minimum": 100,
+              "maximum": 100,
+              "mad": 0
+            },
+            "indexed_records": {
+              "median": 100,
+              "minimum": 100,
+              "maximum": 100,
+              "mad": 0
+            },
+            "module_load_us": {
+              "median": 1355,
+              "minimum": 1326,
+              "maximum": 1412,
+              "mad": 29
+            },
+            "navigation_reads_us": {
+              "median": 99921,
+              "minimum": 98596,
+              "maximum": 102777,
+              "mad": 643
+            },
+            "observed_heap_decreases": {
+              "median": 206,
+              "minimum": 206,
+              "maximum": 214,
+              "mad": 0
+            },
+            "payload_heap_bytes": {
+              "median": 165188,
+              "minimum": 165188,
+              "maximum": 165188,
+              "mad": 0
+            },
+            "peak_heap_bytes": {
+              "median": 1102800,
+              "minimum": 1101156,
+              "maximum": 1102800,
+              "mad": 0
+            },
+            "repeat_retained_heap_bytes": {
+              "median": 236819,
+              "minimum": 236819,
+              "maximum": 236819,
+              "mad": 0
+            },
+            "repeat_validation_us": {
+              "median": 499075,
+              "minimum": 487954,
+              "maximum": 505571,
+              "mad": 6330
+            },
+            "resumes": {
+              "median": 0,
+              "minimum": 0,
+              "maximum": 0,
+              "mad": 0
+            },
+            "retained_heap_bytes": {
+              "median": 230067,
+              "minimum": 229864,
+              "maximum": 230067,
+              "mad": 0
+            },
+            "steps": {
+              "median": 814,
+              "minimum": 814,
+              "maximum": 816,
+              "mad": 0
+            },
+            "validation_total_us": {
+              "median": 483030,
+              "minimum": 479880,
+              "maximum": 495137,
+              "mad": 3150
+            },
+            "worst_step_us": {
+              "median": 2401,
+              "minimum": 2160,
+              "maximum": 3058,
+              "mad": 241
+            }
+          },
+          "desktop_process": {
+            "peak_rss_bytes": {
+              "median": 14782464,
+              "minimum": 14778368,
+              "maximum": 14782464,
+              "mad": 0
+            },
+            "system_us": {
+              "median": 3948,
+              "minimum": 0,
+              "maximum": 11937,
+              "mad": 453
+            },
+            "user_us": {
+              "median": 98164,
+              "minimum": 91221,
+              "maximum": 101903,
+              "mad": 2778
+            },
+            "wall_us": {
+              "median": 112912,
+              "minimum": 112878,
+              "maximum": 123307,
+              "mad": 34
+            }
+          },
+          "lua_process": {
+            "peak_rss_bytes": {
+              "median": 14782464,
+              "minimum": 14778368,
+              "maximum": 14782464,
+              "mad": 0
+            },
+            "system_us": {
+              "median": 9598,
+              "minimum": 0,
+              "maximum": 16042,
+              "mad": 6444
+            },
+            "user_us": {
+              "median": 1098550,
+              "minimum": 1070281,
+              "maximum": 1118144,
+              "mad": 12137
+            },
+            "wall_us": {
+              "median": 1111390,
+              "minimum": 1101124,
+              "maximum": 1131324,
+              "mad": 10266
+            }
+          }
+        },
+        "candidate": {
+          "desktop": {
+            "artifact_us": {
+              "median": 4016,
+              "minimum": 3912,
+              "maximum": 4958,
+              "mad": 24
+            },
+            "cache_us": {
+              "median": 10566,
+              "minimum": 10324,
+              "maximum": 11327,
+              "mad": 242
+            },
+            "canonical_bytes": {
+              "median": 160644,
+              "minimum": 160644,
+              "maximum": 160644,
+              "mad": 0
+            },
+            "canonical_us": {
+              "median": 286,
+              "minimum": 281,
+              "maximum": 307,
+              "mad": 3
+            },
+            "export_us": {
+              "median": 21333,
+              "minimum": 20235,
+              "maximum": 22531,
+              "mad": 811
+            },
+            "inspect_us": {
+              "median": 5453,
+              "minimum": 5235,
+              "maximum": 6720,
+              "mad": 218
+            },
+            "lua_bytes": {
+              "median": 230249,
+              "minimum": 230249,
+              "maximum": 230249,
+              "mad": 0
+            },
+            "pages": {
+              "median": 1,
+              "minimum": 1,
+              "maximum": 1,
+              "mad": 0
+            },
+            "parse_us": {
+              "median": 1572,
+              "minimum": 1491,
+              "maximum": 2011,
+              "mad": 81
+            },
+            "records": {
+              "median": 100,
+              "minimum": 100,
+              "maximum": 100,
+              "mad": 0
+            },
+            "repeat_export_us": {
+              "median": 30529,
+              "minimum": 29830,
+              "maximum": 33352,
+              "mad": 699
+            },
+            "validation_us": {
+              "median": 4084,
+              "minimum": 3878,
+              "maximum": 5278,
+              "mad": 46
+            }
+          },
+          "lua": {
+            "assignment_us": {
+              "median": 1,
+              "minimum": 1,
+              "maximum": 2,
+              "mad": 0
+            },
+            "cache_entries": {
+              "median": 24,
+              "minimum": 24,
+              "maximum": 24,
+              "mad": 0
+            },
+            "cache_growth_bytes": {
+              "median": 101771,
+              "minimum": 101771,
+              "maximum": 101771,
+              "mad": 0
+            },
+            "compile_us": {
+              "median": 493,
+              "minimum": 474,
+              "maximum": 563,
+              "mad": 16
+            },
+            "explicit_gc_us": {
+              "median": 169,
+              "minimum": 147,
+              "maximum": 226,
+              "mad": 8
+            },
+            "indexed_items": {
+              "median": 100,
+              "minimum": 100,
+              "maximum": 100,
+              "mad": 0
+            },
+            "indexed_records": {
+              "median": 100,
+              "minimum": 100,
+              "maximum": 100,
+              "mad": 0
+            },
+            "module_load_us": {
+              "median": 1473,
+              "minimum": 1371,
+              "maximum": 1678,
+              "mad": 65
+            },
+            "navigation_reads_us": {
+              "median": 48226,
+              "minimum": 47927,
+              "maximum": 48917,
+              "mad": 299
+            },
+            "observed_heap_decreases": {
+              "median": 14,
+              "minimum": 13,
+              "maximum": 15,
+              "mad": 0
+            },
+            "payload_heap_bytes": {
+              "median": 165201,
+              "minimum": 165201,
+              "maximum": 165201,
+              "mad": 0
+            },
+            "peak_heap_bytes": {
+              "median": 1083038,
+              "minimum": 1078345,
+              "maximum": 1094630,
+              "mad": 3448
+            },
+            "repeat_retained_heap_bytes": {
+              "median": 216717,
+              "minimum": 216717,
+              "maximum": 216717,
+              "mad": 0
+            },
+            "repeat_validation_us": {
+              "median": 346881,
+              "minimum": 340647,
+              "maximum": 355522,
+              "mad": 5923
+            },
+            "resumes": {
+              "median": 56418,
+              "minimum": 56418,
+              "maximum": 56418,
+              "mad": 0
+            },
+            "retained_heap_bytes": {
+              "median": 208621,
+              "minimum": 208621,
+              "maximum": 208621,
+              "mad": 0
+            },
+            "steps": {
+              "median": 173,
+              "minimum": 172,
+              "maximum": 179,
+              "mad": 1
+            },
+            "validation_total_us": {
+              "median": 346437,
+              "minimum": 345137,
+              "maximum": 358347,
+              "mad": 1300
+            },
+            "worst_step_us": {
+              "median": 2125,
+              "minimum": 2066,
+              "maximum": 2989,
+              "mad": 59
+            }
+          },
+          "desktop_process": {
+            "peak_rss_bytes": {
+              "median": 14782464,
+              "minimum": 14778368,
+              "maximum": 14782464,
+              "mad": 0
+            },
+            "system_us": {
+              "median": 8689,
+              "minimum": 7530,
+              "maximum": 12035,
+              "mad": 1159
+            },
+            "user_us": {
+              "median": 73567,
+              "minimum": 67191,
+              "maximum": 76949,
+              "mad": 3382
+            },
+            "wall_us": {
+              "median": 93671,
+              "minimum": 93348,
+              "maximum": 103836,
+              "mad": 309
+            }
+          },
+          "lua_process": {
+            "peak_rss_bytes": {
+              "median": 14782464,
+              "minimum": 14782464,
+              "maximum": 14782464,
+              "mad": 0
+            },
+            "system_us": {
+              "median": 4019,
+              "minimum": 3682,
+              "maximum": 16046,
+              "mad": 15
+            },
+            "user_us": {
+              "median": 750918,
+              "minimum": 745201,
+              "maximum": 759994,
+              "mad": 3611
+            },
+            "wall_us": {
+              "median": 758474,
+              "minimum": 757582,
+              "maximum": 778506,
+              "mad": 892
+            }
+          }
+        }
+      }
+    }
+  ]
+}

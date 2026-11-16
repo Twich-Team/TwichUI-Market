@@ -1,0 +1,25 @@
+{
+  "result": "PASS",
+  "origin": "synthetic",
+  "records": 20,
+  "generation_id": "f9e08702d8c6b02c4173716ba56a6fac687d7bbbcf55f485089d2797d8d95ca5",
+  "cases": [
+    {
+      "case": "old_reader_compact_source",
+      "passed": true,
+      "generation_id": "f9e08702d8c6b02c4173716ba56a6fac687d7bbbcf55f485089d2797d8d95ca5"
+    },
+    {
+      "case": "new_reader_legacy_source",
+      "passed": true,
+      "generation_id": "f9e08702d8c6b02c4173716ba56a6fac687d7bbbcf55f485089d2797d8d95ca5"
+    }
+  ],
+  "legacy_lua_bytes": 135566,
+  "compact_lua_bytes": 48227,
+  "candidate_readback_accepts_legacy": true,
+  "compiled_lua_injection_sentinels_untouched": true,
+  "contract_changed": false,
+  "installed_into_game": false,
+  "limitation": "An older desktop narrow readback parser may refuse compact source on downgrade; it fails closed. Both Lua readers consume identical decoded v1 content."
+}
