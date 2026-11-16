@@ -1,0 +1,451 @@
+{
+  "production_commit": "6bb71a61fa3493da3f418288c3af1841fabfb0fc",
+  "implementation_pr": "https://github.com/Twich-Team/TwichUI-Market/pull/14",
+  "schema": "fdb_20261116",
+  "exact_merge_ci": [
+    {
+      "id": 43812904734,
+      "name": "Windows companion",
+      "event": "push",
+      "head_sha": "6bb71a61fa3493da3f418288c3af1841fabfb0fc",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/43812904734"
+    },
+    {
+      "id": 43812904753,
+      "name": "Backend",
+      "event": "push",
+      "head_sha": "6bb71a61fa3493da3f418288c3af1841fabfb0fc",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/43812904753"
+    },
+    {
+      "id": 43812904735,
+      "name": "Private website",
+      "event": "push",
+      "head_sha": "6bb71a61fa3493da3f418288c3af1841fabfb0fc",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/43812904735"
+    }
+  ],
+  "verification": {
+    "backend_tests": 575,
+    "frontend_tests": 123,
+    "ordinary_browser_workflows": 41,
+    "foreverdb_browser_workflows": 1,
+    "quota_browser_workflows": 1,
+    "operational_checks": 39,
+    "windows_ci": "passed",
+    "production_browser": "passed",
+    "api_restart_metadata_persistence": "passed"
+  },
+  "authenticated_campaign": {
+    "item_details": [
+      {
+        "item_id": 25,
+        "status": "available",
+        "fields": [
+          "availability",
+          "category_ids",
+          "class",
+          "disenchantable",
+          "level",
+          "name",
+          "quality",
+          "required_level",
+          "slot",
+          "subclass",
+          "unique",
+          "vendor_sell",
+          "weapon"
+        ],
+        "build": "1.60.1.70938",
+        "item_build": "1.60.1.70938",
+        "mapping_version": 2,
+        "revision": 1
+      },
+      {
+        "item_id": 19019,
+        "status": "available",
+        "fields": [
+          "availability",
+          "binding",
+          "category_ids",
+          "class",
+          "disenchantable",
+          "effects",
+          "level",
+          "name",
+          "quality",
+          "required_level",
+          "slot",
+          "stats",
+          "subclass",
+          "unique",
+          "vendor_sell",
+          "weapon"
+        ],
+        "build": "1.60.1.70938",
+        "item_build": "1.60.1.70938",
+        "mapping_version": 2,
+        "revision": 1
+      },
+      {
+        "item_id": 2589,
+        "status": "available",
+        "fields": [
+          "availability",
+          "category_ids",
+          "class",
+          "disenchantable",
+          "level",
+          "name",
+          "quality",
+          "required_level",
+          "slot",
+          "subclass",
+          "unique",
+          "vendor_sell"
+        ],
+        "build": "1.60.1.70938",
+        "item_build": "1.60.1.70938",
+        "mapping_version": 2,
+        "revision": 1
+      },
+      {
+        "item_id": 8188,
+        "status": "available",
+        "fields": [
+          "availability",
+          "binding",
+          "category_ids",
+          "class",
+          "disenchant",
+          "disenchantable",
+          "level",
+          "name",
+          "quality",
+          "required_level",
+          "slot",
+          "stats",
+          "subclass",
+          "unique",
+          "vendor_sell",
+          "weapon"
+        ],
+        "build": "1.60.1.70938",
+        "item_build": "1.60.1.70938",
+        "mapping_version": 2,
+        "revision": 2
+      },
+      {
+        "item_id": 2235,
+        "status": "available",
+        "fields": [
+          "availability",
+          "binding",
+          "category_ids",
+          "class",
+          "disenchant",
+          "disenchantable",
+          "level",
+          "name",
+          "quality",
+          "required_level",
+          "slot",
+          "stats",
+          "subclass",
+          "unique",
+          "vendor_sell",
+          "weapon"
+        ],
+        "build": "1.60.1.70938",
+        "item_build": "1.60.1.70938",
+        "mapping_version": 2,
+        "revision": 2
+      },
+      {
+        "item_id": 10098,
+        "status": "available",
+        "fields": [
+          "availability",
+          "binding",
+          "category_ids",
+          "class",
+          "disenchant",
+          "disenchantable",
+          "level",
+          "name",
+          "quality",
+          "required_level",
+          "slot",
+          "subclass",
+          "unique",
+          "vendor_sell"
+        ],
+        "build": "1.60.1.70938",
+        "item_build": "1.60.1.70938",
+        "mapping_version": 2,
+        "revision": 1
+      },
+      {
+        "item_id": 2553,
+        "status": "available",
+        "fields": [
+          "availability",
+          "category_ids",
+          "class",
+          "crafting",
+          "disenchantable",
+          "effects",
+          "level",
+          "name",
+          "quality",
+          "required_level",
+          "slot",
+          "subclass",
+          "unique",
+          "vendor_sell"
+        ],
+        "build": "1.60.1.70938",
+        "item_build": "1.60.1.70938",
+        "mapping_version": 2,
+        "revision": 2
+      },
+      {
+        "item_id": 4306,
+        "status": "available",
+        "fields": [
+          "availability",
+          "category_ids",
+          "class",
+          "disenchantable",
+          "level",
+          "name",
+          "quality",
+          "required_level",
+          "slot",
+          "subclass",
+          "unique",
+          "vendor_sell"
+        ],
+        "build": "1.60.1.70938",
+        "item_build": "1.60.1.70938",
+        "mapping_version": 2,
+        "revision": 1
+      }
+    ],
+    "related_resources": [
+      {
+        "resource": "professions/alchemy",
+        "http_status": 200,
+        "related_item_records": 45
+      },
+      {
+        "resource": "vendors/54",
+        "http_status": 200,
+        "related_item_records": 8
+      },
+      {
+        "resource": "itemsets/1",
+        "http_status": 200,
+        "related_item_records": 6
+      }
+    ],
+    "foreverdb_reserved_attempts": 35,
+    "foreverdb_authenticated_api_calls": 34,
+    "foreverdb_public_icon_calls": 1,
+    "bounded_icon": {
+      "status": 200,
+      "bytes": 1400,
+      "content_type": "image/webp",
+      "credential_forwarded": false
+    },
+    "thewowdb_live": {
+      "status": 200,
+      "fields": [
+        "level",
+        "lines",
+        "name",
+        "quality",
+        "vendor_sell"
+      ],
+      "build": "wow_classic_beta-1.60.1.70532"
+    }
+  },
+  "fixed_population_coverage": {
+    "snapshot_id": 53,
+    "items": 5076,
+    "same_ids_before_after": true,
+    "foreverdb_fields_before": {
+      "name": 486
+    },
+    "foreverdb_fields_after": {
+      "name": 488,
+      "crafting": 8,
+      "availability": 4,
+      "binding": 3,
+      "category_ids": 4,
+      "class": 4,
+      "disenchant": 3,
+      "disenchantable": 4,
+      "level": 4,
+      "quality": 4,
+      "required_level": 4,
+      "slot": 4,
+      "stats": 2,
+      "subclass": 4,
+      "unique": 4,
+      "vendor_sell": 4,
+      "weapon": 2,
+      "effects": 1,
+      "vendors": 5
+    }
+  },
+  "preservation": {
+    "all_original_rows_identical": true,
+    "original_cutoffs": {
+      "snapshot": 53,
+      "observation": 593,
+      "user": 97,
+      "credential": 237
+    },
+    "collector_database_monitor_backup_containers_unchanged": true,
+    "provider_credentials_and_configurations_unchanged": true,
+    "retention_disabled": true,
+    "original_listing_rows": 6238090
+  },
+  "collector": {
+    "revision": "fdb_20261116",
+    "synthetic_observations": 0,
+    "observations": 600,
+    "listings": 6238090,
+    "database_bytes": 2089735859,
+    "markets": [
+      {
+        "id": 1,
+        "house_id": 110,
+        "enabled": false,
+        "interval_seconds": 300,
+        "failures": 0,
+        "last_success": "2026-11-14T15:14:21.190053+00:00"
+      },
+      {
+        "id": 2,
+        "house_id": 114,
+        "enabled": true,
+        "interval_seconds": 300,
+        "failures": 0,
+        "last_success": "2026-11-16T06:08:36.164711+00:00"
+      }
+    ],
+    "collection_runs": [
+      {
+        "checked_at": "2026-11-16T06:08:36.164711+00:00",
+        "status": "unchanged",
+        "http_status": 304,
+        "error": null
+      },
+      {
+        "checked_at": "2026-11-16T06:03:33.740972+00:00",
+        "status": "unchanged",
+        "http_status": 304,
+        "error": null
+      },
+      {
+        "checked_at": "2026-11-16T05:58:31.356223+00:00",
+        "status": "unchanged",
+        "http_status": 304,
+        "error": null
+      },
+      {
+        "checked_at": "2026-11-16T05:53:28.862629+00:00",
+        "status": "unchanged",
+        "http_status": 304,
+        "error": null
+      },
+      {
+        "checked_at": "2026-11-16T05:48:26.448002+00:00",
+        "status": "unchanged",
+        "http_status": 304,
+        "error": null
+      },
+      {
+        "checked_at": "2026-11-16T05:43:24.107822+00:00",
+        "status": "unchanged",
+        "http_status": 304,
+        "error": null
+      }
+    ],
+    "retention_batches": 0
+  },
+  "website_proof": {
+    "url": "https://market.twich.gg/.well-known/foreverdb.txt",
+    "status": 200,
+    "body": "dev-0255",
+    "bytes": 8,
+    "content_type": "text/plain; charset=utf-8",
+    "unauthenticated": true
+  },
+  "provider_account_verification": "not_confirmed_owner_Verify_action_required",
+  "configured_key_type": "unknown_owner_website_key_confirmation_required",
+  "actual_provider_plan": "unknown",
+  "application_limits": {
+    "hour": 150,
+    "day": 500,
+    "minute": 30,
+    "minimum_interval_seconds": 3,
+    "concurrency": 1,
+    "reserved_day_used": 535,
+    "next_eligible_at": "2026-11-16T21:51:43.401674+00:00"
+  },
+  "backup": {
+    "filename": "market-development-20261116T053407650838Z.dump",
+    "bytes": 329130127,
+    "sha256": "0cde5d55eb4596d7d33bcd5ea284b31030ebfb49200a19cc723c8b52c4a3d254",
+    "restoration_verified_at": "2026-11-16T05:38:06.150830+00:00",
+    "restored": {
+      "migration": "rates_20261115",
+      "users": 97,
+      "markets": 2,
+      "observations": 593,
+      "listings": 6238090,
+      "synthetic_observations": 0,
+      "buyout_total": "909136620425",
+      "snapshot_statistics": 1331235,
+      "daily_observations": 4,
+      "market_verifications": 2,
+      "user_preferences": 22
+    }
+  },
+  "restart_and_desktop": {
+    "legacy_cursor_survives_release": true,
+    "target_observation_id": "595",
+    "private_beta_distribution_identical": true,
+    "desktop_version": "2.0.0-beta.3",
+    "installer_sha256": "d31efbb8a6611cad107f8b368eb8c16585125e269fae180bfabdd9ae6c287183",
+    "profile_survives_api_restart": true,
+    "public_https_validated": true
+  },
+  "temporary_acceptance_session": {
+    "revoked": true,
+    "revoked_session_returns_401": true,
+    "private_auth_file_removed": true,
+    "original_credentials_unchanged": true
+  },
+  "portable_compose": {
+    "all_service_configurations_identical": true,
+    "rollback_matches_previous_production": true,
+    "redundant_untracked_predecessor_overlays_required": false
+  },
+  "keyring_recovery": {
+    "encrypted_keyring_backup_decrypts": true,
+    "matches_current_runtime_keyring": true,
+    "plaintext_written": false,
+    "secrets_rotated": false,
+    "off_host_copy_verified": false
+  }
+}
