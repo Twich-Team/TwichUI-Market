@@ -64,11 +64,61 @@ def test_catalogue_and_legacy_queries_do_not_scale_with_variant_count(owner,data
     event.listen(engine,'before_cursor_execute',count)
     try:
         assert owner.get(f'/api/v1/markets/{ident}/catalogue').status_code==200
-        assert len(statements)<=8 # Includes authenticated credential/user lookups.
+        assert len(statements)<=9 # Includes auth and the PostgreSQL request-local deadline.
         statements.clear()
         assert owner.get(f'/api/v1/markets/{ident}/items').status_code==200
         assert len(statements)<=7
     finally:event.remove(engine,'before_cursor_execute',count)
+
+
+def test_name_search_on_a_new_snapshot_with_stale_planner_statistics(database):
+    """Production's unseen snapshot was estimated as one row, repeating the search.
+
+    Exercise the real PostgreSQL planner under a short statement deadline rather
+    than requiring an operator ANALYZE after every collected snapshot.
+    """
+    import pytest
+    from sqlalchemy import text
+    from market.catalogue import catalogue
+    from market.models import ItemMetadata
+    if database.kw['bind'].dialect.name!='postgresql':pytest.skip('PostgreSQL planner regression')
+    count=6000
+    payload=json.dumps({'auctions':[{'id':i+1,'item':{'id':50000+i},'quantity':2,'buyout':200} for i in range(count)]}).encode()
+    with database.begin() as db:
+        db.execute(text('ALTER TABLE snapshot_statistics SET (autovacuum_enabled=false)'))
+        market=Market(region='us',ruleset_id=2,house_id=110,source_kind='auctions',label='Synthetic stale planner regression')
+        db.add(market);db.flush();ident=market.id
+        db.add_all([ItemMetadata(region='us',item_id=50000+i,name=f'{"Needle" if i%60==0 else "Haystack"} fixture {i}',namespace='synthetic',synthetic=True) for i in range(count)])
+        ingest(db,ident,payload,request_key='old-statistics',retrieved_at=now()-timedelta(days=1),synthetic=True)
+        db.execute(text('ANALYZE snapshot_statistics, item_metadata'))
+        # A changed book creates a snapshot absent from the sampled distribution.
+        changed=json.loads(payload);changed['auctions'][0]['buyout']=400
+        ingest(db,ident,json.dumps(changed).encode(),request_key='unseen-snapshot',synthetic=True)
+    with database() as db:
+        db.execute(text("SET LOCAL statement_timeout='2s'"))
+        page=catalogue(ident,q='needle',sort='item_id',direction='asc',page=1,page_size=25,user=None,db=db)
+        assert page['total_items']==100
+        assert [r['item_id'] for r in page['items']]==list(range(51500,53000,60))
+        assert page['items'][0]['price_ranges']['market_value']=={'minimum':'100','maximum':'100'}
+
+
+def test_database_search_timeout_returns_an_actionable_error(owner,database,monkeypatch):
+    import pytest
+    from sqlalchemy import text
+    import market.catalogue as module
+    if database.kw['bind'].dialect.name!='postgresql':pytest.skip('PostgreSQL timeout handling')
+    ident=seed(database);original=module.context
+    def slow(db,*args,**kwargs):
+        result=original(db,*args,**kwargs)
+        db.execute(text("SET LOCAL statement_timeout='1ms'"))
+        db.execute(text('SELECT pg_sleep(0.05)'))
+        return result
+    monkeypatch.setattr(module,'context',slow)
+    response=owner.get(f'/api/v1/markets/{ident}/catalogue?q=sword')
+    assert response.status_code==503
+    assert 'Try an item ID or a narrower search' in response.json()['detail']
+    monkeypatch.setattr(module,'context',original)
+    assert owner.get(f'/api/v1/markets/{ident}/catalogue?q=sword').status_code==200
 
 
 def test_private_catalogue_requires_authentication(client,database):

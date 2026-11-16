@@ -3,7 +3,8 @@ import json
 from datetime import timedelta
 from typing import Literal
 from fastapi import APIRouter,Depends,HTTPException,Query
-from sqlalchemy import Integer,case,cast,func,select
+from sqlalchemy import Integer,case,cast,func,select,text
+from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm import Session
 from .db import now,session
 from .models import DailyObservation,ItemMedia,ItemMetadata,Listing,Observation,SnapshotStatistic,User
@@ -14,17 +15,30 @@ router=APIRouter(prefix='/api/v1')
 Sort=Literal['item_id','name','recent_price','market_value','historical_value','supply','listing_count']
 
 
-def references(market_id,at):
+def bounded_search(db:Session=Depends(session)):
+    # Request-local only; never change collector/worker database settings.
+    if db.bind.dialect.name=='postgresql':db.execute(text("SET LOCAL statement_timeout='8s'"))
+    try:
+        yield db
+    except DBAPIError as error:
+        if getattr(error.orig,'sqlstate',None)!='57014':raise
+        db.rollback()
+        raise HTTPException(503,'Catalogue search took too long. Try an item ID or a narrower search, then retry.') from None
+
+
+def references(market_id,at,item_ids=None):
     stat=SnapshotStatistic
     bad=func.sum(case((stat.algorithm!=ALGORITHM,1),else_=0))
-    return select(stat.item_id,stat.variant_key,
+    query=select(stat.item_id,stat.variant_key,
         case((bad>0,None),else_=func.round(func.avg(stat.recent_price).filter(Observation.retrieved_at>=at-timedelta(days=14)))).label('market_value'),
         case((bad>0,None),else_=func.round(func.avg(stat.recent_price))).label('historical_value'),
         func.count(stat.recent_price).filter(Observation.retrieved_at>=at-timedelta(days=14)).label('coverage_days'),
         func.max(cast(Observation.synthetic,Integer)).label('synthetic')).join(
         Observation,Observation.snapshot_id==stat.snapshot_id).join(DailyObservation,DailyObservation.observation_id==Observation.id).where(
         DailyObservation.market_id==market_id,Observation.retrieved_at>=at-timedelta(days=60),Observation.retrieved_at<=at
-        ).group_by(stat.item_id,stat.variant_key).cte('catalogue_references')
+        ).group_by(stat.item_id,stat.variant_key)
+    if item_ids is not None:query=query.where(stat.item_id.in_(select(item_ids.c.item_id)))
+    return query.cte('catalogue_references')
 
 
 def cash(value):return str(int(value)) if value is not None else None
@@ -44,7 +58,7 @@ def context(db,market_id,expected_snapshot=None):
 @router.get('/markets/{market_id}/catalogue')
 def catalogue(market_id: MarketId,q: str=Query('',max_length=64),sort: Sort='item_id',
               direction: Literal['asc','desc']='asc',page: int=Query(0,ge=0,le=100000),
-              page_size: int=Query(50,ge=1,le=100),user: User=Depends(identity),db: Session=Depends(session)):
+              page_size: int=Query(50,ge=1,le=100),user: User=Depends(identity),db: Session=Depends(bounded_search)):
     market,latest=context(db,market_id)
     envelope={'contract_version':1,'market':market_view(market),'algorithm':ALGORITHM,
               'snapshot_id':str(latest.snapshot_id) if latest else None,'observed_at':latest.retrieved_at if latest else None,
@@ -59,9 +73,12 @@ def catalogue(market_id: MarketId,q: str=Query('',max_length=64),sort: Sort='ite
             if int(term)>2**31-1:return envelope
             base=base.where(stat.item_id==int(term))
         else:base=base.where(func.lower(func.coalesce(ItemMetadata.name,ItemMetadata.fallback_name)).contains(term.lower(),autoescape=True))
-    ids=base.distinct().subquery('matching_items')
+    # A just-ingested snapshot can be absent from PostgreSQL's sampled statistics.
+    # Materialize once: an underestimated outer scan must not rerun the complete
+    # name/variant search for each current variant. Scope history to these IDs too.
+    ids=base.distinct().cte('matching_items').prefix_with('MATERIALIZED',dialect='postgresql')
     envelope['total_items']=db.scalar(select(func.count()).select_from(ids))
-    refs=references(market_id,now())
+    refs=references(market_id,now(),ids)
     joined=select(stat.item_id,func.count().label('variant_count'),case((func.count()==1,func.min(stat.variant_key)),else_=None).label('sole_variant_key'),func.sum(stat.supply).label('supply'),
         func.sum(stat.listing_count).label('listing_count'),func.min(stat.recent_price).label('recent_min'),
         func.max(stat.recent_price).label('recent_max'),func.min(refs.c.market_value).label('market_min'),

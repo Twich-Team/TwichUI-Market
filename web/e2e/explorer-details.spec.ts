@@ -8,6 +8,30 @@ async function signIn(page:Page,path='/?market=1'){
 async function capture(page:Page,name:string){fs.mkdirSync(output,{recursive:true});await page.screenshot({path:`${output}/${name}.png`,fullPage:true});}
 async function accessible(page:Page,name:string){const a=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze();fs.mkdirSync('../artifacts/explorer-details/accessibility',{recursive:true});fs.writeFileSync(`../artifacts/explorer-details/accessibility/${name}.json`,JSON.stringify(a.violations,null,2));expect(a.violations).toEqual([]);}
 async function exact(page:Page,item=12363,market=1){const r=await page.request.get(`/api/v1/markets/${market}/catalogue/${item}/variants`);expect(r.status()).toBe(200);return (await r.json()).variants[0].variant_key as string;}
+test('a stalled search ends with an actionable error and Retry can reach an empty result',async({page})=>{
+ await signIn(page);
+ const table=page.getByRole('region',{name:'Item catalogue',exact:true});
+ await expect(table.getByRole('link',{name:/^Research /}).first()).toBeVisible();
+ let release!:()=>void;const gate=new Promise<void>(resolve=>{release=resolve;});let attempts=0;
+ await page.route('**/api/v1/markets/*/catalogue?**',async route=>{
+  if(new URL(route.request().url()).searchParams.get('q')==='timeout-query'){
+   attempts++;await gate;await route.abort();
+  }else await route.continue();
+ });
+ await page.clock.install();
+ await page.getByLabel('Search items',{exact:true}).fill('timeout-query');
+ await page.getByRole('button',{name:'Search',exact:true}).click();
+ await expect.poll(()=>attempts).toBe(1);
+ await page.clock.fastForward(15_100);
+ await expect(page.getByRole('alert')).toContainText('Try an item ID or a narrower search');
+ await expect(table.locator('.catalogue-scroll')).not.toHaveClass(/catalogue-loading/);
+ await expect(table.getByRole('link',{name:/^Research /})).toHaveCount(0);
+ await expect(page.getByRole('button',{name:'Sign out',exact:true})).toBeVisible();
+ expect(attempts).toBe(1);release();await page.unrouteAll({behavior:'wait'});
+ await table.getByRole('button',{name:'Retry catalogue',exact:true}).click();
+ await expect(table.getByText('No matching current items. Try an item ID or another search.',{exact:true})).toBeVisible();
+ await expect(page.getByRole('alert')).toHaveCount(0);
+});
 test('Explorer stays browse-only and Back restores URL controls, expansion, focus and page clamping',async({page,context})=>{
  test.setTimeout(60000);const researchRequests:string[]=[];page.on('request',r=>{if(/\/items\/\d+\/[a-f0-9]{64}|\/distribution\//.test(r.url()))researchRequests.push(r.url());});
  await page.setViewportSize({width:1440,height:1000});await signIn(page,'/?market=1&sort=item_id&direction=asc&page=1&page_size=25');
