@@ -3,3 +3,5 @@
 #history-panel textarea{width:100%;resize:vertical;min-height:90px;background:#191410;color:#eee2d4;border:1px solid #554738;border-radius:6px;padding:9px;font:12px monospace}#history-panel button{margin-top:10px}.scope-dates{display:flex;gap:12px}.scope-dates label{flex:1;min-width:0}#archive-status,#scope-status{overflow-wrap:anywhere}#history-panel textarea:focus-visible{outline:2px solid #e3bb8a;outline-offset:3px}
 
 #history-panel{margin-top:18px;border-top:1px solid var(--line);padding-top:14px}#history-panel summary{cursor:pointer;font-size:12px;color:var(--muted)}#history-panel[open] summary{margin-bottom:14px}
+
+.update-available-notice{border-color:#a98b54;margin:0 0 1rem;padding:1rem}.update-available-notice strong{color:#ead3a0}.update-available-notice p{font-size:.875rem;margin:.5rem 0}

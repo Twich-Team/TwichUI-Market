@@ -43,6 +43,15 @@ const state={version:'2.0.0-beta.1',settings,mode:'disconnected',connected:false
  next.sync.revision=2;Object.assign(next.sync.sync,{phase:'ready',running:false,selected_market:2,last_sync_ms:1794666000000,last_server_check_ms:1794665700000,upstream_update_ms:1794665400000,next_sync_ms:1794667800000});
  next.cache={market_id:2,item_count:12345,has_completed_cache:true,downloading:false,synthetic:true};window.__layoutState=next;window.__layoutEmit('companion-state',next);});
  await expect(page.locator('#market-name')).toHaveText('US — Normal — Horde');await expect(page.locator('#cache-count')).toContainText('12,345');
+ await page.evaluate(()=>window.__layoutEmit('companion-update',{status:'available',version:'2.0.0',available_version:'2.0.0',message:'Synthetic verified update available',restart_required:false}));
+ await expect(page.locator('#settings-panel')).toBeHidden();await expect(page.locator('#update-available-notice')).toContainText('Companion 2.0.0 is available');
+ expect(await page.evaluate(()=>window.__layoutCalls.filter(call=>call.command==='install_update').length)).toBe(0);
+ fs.mkdirSync(path.resolve('artifacts/usability-reliability'),{recursive:true});await page.screenshot({path:path.resolve('artifacts/usability-reliability/companion-update-notice.png')});
+ await page.evaluate(()=>window.__layoutEmit('companion-update',{status:'error',available_version:'2.0.0',message:'Synthetic offline retry',restart_required:false}));
+ await expect(page.locator('#update-available-notice')).toBeVisible();
+ await page.locator('#update-available-review').click();await expect(page.locator('#settings-panel')).toBeVisible();
+ await page.keyboard.press('Escape');await page.evaluate(()=>window.__layoutEmit('open-updates',null));await expect(page.locator('#settings-panel')).toBeVisible();
+ await page.keyboard.press('Escape');
  await page.screenshot({path:path.join(folder,'layout-dashboard.png')});await page.locator('#settings-open').click();await page.screenshot({path:path.join(folder,'layout-settings.png'),fullPage:true});
  await page.setViewportSize({width:440,height:560});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
  await page.locator('#update-check').click();await expect(page.locator('#update-install')).toBeVisible();

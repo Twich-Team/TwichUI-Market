@@ -21,6 +21,7 @@ type Result<T> = std::result::Result<T, String>;
 pub struct View {
     pub status: &'static str,
     pub version: Option<String>,
+    pub available_version: Option<String>,
     pub message: String,
     pub notes: Option<String>,
     pub restart_required: bool,
@@ -31,6 +32,7 @@ impl View {
         Self {
             status,
             version: None,
+            available_version: None,
             message: message.into(),
             notes: None,
             restart_required: false,
@@ -81,12 +83,30 @@ impl Updates {
         }
         Ok(Busy(&self.busy))
     }
-    fn set(&self, app: &AppHandle, view: View) -> Result<View> {
-        *self
-            .view
-            .lock()
-            .map_err(|_| "Update status is unavailable")? = view.clone();
-        let _ = app.emit("companion-update", &view);
+    fn set(&self, app: &AppHandle, mut view: View) -> Result<View> {
+        {
+            let mut previous=self.view.lock().map_err(|_|"Update status is unavailable")?;
+            view.available_version=match view.status {
+                "available"=>view.version.clone(),
+                "current"=>None,
+                _=>previous.available_version.clone(),
+            };
+            *previous=view.clone();
+        }
+        let _=app.emit("companion-update",&view);
+        crate::shell::update_notice(app,&view);
+        if view.status=="available" {
+            if let Some(version)=view.version.as_deref() {
+                let background=app.get_webview_window("main").is_some_and(|window|
+                    window.is_visible().ok()==Some(false)||window.is_minimized().ok()==Some(true));
+                if app.state::<Arc<Runtime>>().claim_update_notice(version,background).unwrap_or(false) {
+                    use tauri_plugin_notification::NotificationExt;
+                    let _=app.notification().builder().title("Companion update available")
+                        .body(format!("Companion {version} is available. Open the Companion to review it; installation requires your confirmation."))
+                        .show();
+                }
+            }
+        }
         Ok(view)
     }
 }
@@ -236,6 +256,7 @@ pub fn check(app: AppHandle) -> Result<View> {
             let view = View {
                 status: "available",
                 version: Some(pending.package.version.clone()),
+                available_version: Some(pending.package.version.clone()),
                 message: format!("Companion {} is available.", pending.package.version),
                 notes: Some(pending.package.notes.clone()),
                 restart_required: false,
