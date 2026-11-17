@@ -175,7 +175,7 @@ const {createHash}=require('node:crypto');const fs=require('node:fs');const path
     expect(fs.statSync(delivered).mtimeMs).toBe(mtime);expect(createHash('sha256').update(fs.readFileSync(delivered)).digest('hex')).toBe(deliveredHash);
     await page.screenshot({path:path.join(shots,'installed-m2-delivery.png'),fullPage:true});
     await expect.poll(async()=>(await invoke('app_state')).sync.sync.running).toBe(false);await page.locator('#delivery-disable').click();
-    expect((await invoke('app_state')).delivery.configuration.enabled).toBe(false);
+    await expect.poll(async()=>(await invoke('app_state')).delivery.configuration.enabled).toBe(false);
     fs.writeFileSync(path.join(shots,'installed-m2-delivery.json'),JSON.stringify({fixture:true,source_commit:sourceCommit,status:automatic.status,no_op_mtime_preserved:true,delivery_disabled:true,real_game:false},null,2));
     await page.locator('#disconnect').click();await expect.poll(async()=>(await invoke('app_state')).mode,{timeout:20000}).toBe('disconnected');
     expect((await invoke('app_state')).cache.item_count).toBe(2);
