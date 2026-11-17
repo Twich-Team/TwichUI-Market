@@ -1,0 +1,66 @@
+{
+  "origin": "synthetic-only Python; not Forever acceptance",
+  "python": "3.12.14",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "shape": {
+    "item_ids": 1,
+    "candidates": 128,
+    "trusted_synthetic_equivalences": 1,
+    "iterations_per_run": 10000,
+    "timing_runs": 3
+  },
+  "candidate_bundle_bytes": 26704,
+  "trusted_equivalence_bytes": 678,
+  "runs": [
+    {
+      "construction": {
+        "wall_seconds": 0.005432879000181856,
+        "cpu_seconds": 0.005421430000000005
+      },
+      "lookup_10000": {
+        "wall_seconds": 0.23384496200014837,
+        "cpu_seconds": 0.23375395999999998
+      }
+    },
+    {
+      "construction": {
+        "wall_seconds": 0.005296222000197304,
+        "cpu_seconds": 0.005297845999999995
+      },
+      "lookup_10000": {
+        "wall_seconds": 0.23430775800034098,
+        "cpu_seconds": 0.23407907800000005
+      }
+    },
+    {
+      "construction": {
+        "wall_seconds": 0.0050648730002649245,
+        "cpu_seconds": 0.005066101000000045
+      },
+      "lookup_10000": {
+        "wall_seconds": 0.24531544499996016,
+        "cpu_seconds": 0.24519241599999997
+      }
+    }
+  ],
+  "allocations": {
+    "method": "tracemalloc; separate pass; excludes pre-existing caller inputs, imports and native allocator/RSS",
+    "construction_retained_bytes": 61158,
+    "construction_peak_bytes": 110265,
+    "after_10000_lookups_retained_bytes": 61254,
+    "lookup_pass_peak_bytes": 62986
+  },
+  "lookup_model": "One prevalidated per-item hash table and exact game-signature table; no partition or cross-market scan. Each call bounds/copies the <=4 KiB identity, serializes it and allocates a small result.",
+  "source_sha256": {
+    "scripts/advisor_identity.py": "defb591df296fbf2696f62ecb39fb99ea58737ca348fdc742569b114e683fe2e",
+    "scripts/measure_advisor_identity.py": "3b52456bb01f38104cfd8d446c64d5a26c5b97fe9156bd426adac55c75eebe31",
+    "scripts/tests/advisor_identity_support.py": "9ec4e9cadb0ca855aef2adf4c2b580c4089d6f4bc4b70e3b45c5199f3b11339a",
+    "contracts/market-summary-index-proposal/u2/corpus.json": "0ad73bf12c0c318b1ddcc89b9cd972fc6114ffe00564b179cfb48f719069cda8"
+  },
+  "limitations": [
+    "Synthetic equivalence proves mechanics only; no production/native mapping is authorized.",
+    "Allocation figures exclude the original input objects and process memory; not a client heap budget.",
+    "Lookup timing includes identity validation/serialization/result allocation, excludes file loading and candidate construction.",
+    "All candidates are for one item; construction is bounded by 128 records / 64 KiB and 32 proofs / 64 KiB."
+  ]
+}
