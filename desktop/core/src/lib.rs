@@ -4,6 +4,7 @@ pub mod bridge;
 pub mod cache;
 pub mod client;
 pub mod connection;
+pub mod delivery;
 pub mod pricing;
 pub mod profile;
 pub mod protocol;

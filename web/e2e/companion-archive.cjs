@@ -19,6 +19,10 @@ const path=require('node:path');const fs=require('node:fs');const http=require('
    window.__calls.push({command,args});
    if(command==='app_state')return window.__state;
    if(command==='update_state')return {status:'idle',message:'Synthetic updates disabled'};
+   if(command==='configure_delivery'){
+    if(args.operation==='inspect')return {destination:'C:\\Forever\\Interface\\AddOns\\TwichUI_MarketData',market:{region:'us',player_ruleset:'Normal',house_id:114,transport_ruleset_id:1},existing_generation:null,schema:3};
+    return {enabled:args.operation==='enable'};
+   }
    if(command==='archive_workshop'){
     if(args.publish&&!args.compatible)throw new Error('Acknowledge schema-3 testing compatibility before publication');
     if(window.__refuse)throw new Error('Delivery exceeds canonical_bytes: 2500000 exceeds 2097152; previous data is preserved');
@@ -43,12 +47,20 @@ const path=require('node:path');const fs=require('node:fs');const http=require('
  await page.locator('#scope-export').click();await expect(page.locator('#message')).toContainText('Acknowledge schema-3');
  await page.locator('#scope-compatible').check();await page.locator('#scope-export').click();
  await expect(page.locator('#scope-status')).toContainText('Exported to C:\\Companion\\workshop-testing');
- await expect(page.locator('#scope-status')).toContainText('No game files were installed or loaded');await expect(page.locator('#message')).toBeHidden();
+ await expect(page.locator('#scope-status')).toContainText('Automatic delivery requires a compatible installed Workshop');await expect(page.locator('#message')).toBeHidden();
  await page.evaluate(()=>window.__refuse=true);await page.locator('#scope-preview').click();await expect(page.locator('#message')).toContainText('previous data is preserved');await expect(page.locator('#scope-status')).toContainText('Request refused');
  await page.evaluate(()=>window.__refuse=false);await page.locator('#scope-variants').fill('2589 incomplete-key');
  const before=await page.evaluate(()=>window.__calls.length);await page.locator('#scope-preview').click();await expect(page.locator('#message')).toContainText('full exact variant key');await expect(page.locator('#scope-status')).toContainText('Selection not exported');
  expect(await page.evaluate(()=>window.__calls.length)).toBe(before);
  await page.locator('#scope-variants').fill('2589 '+ 'a'.repeat(64));
+ await page.locator('#delivery-installation').fill('C:\\Forever');
+ await page.locator('#delivery-enable').click();await expect(page.locator('#message')).toContainText('Review this exact installation');
+ expect(await page.evaluate(()=>window.__calls.filter(c=>c.command==='configure_delivery').length)).toBe(0);
+ await page.locator('#delivery-review').click();await expect(page.locator('#delivery-destination')).toContainText('house 114');
+ await page.locator('#delivery-confirm').check();await page.locator('#delivery-enable').click();
+ await expect(page.locator('#message')).toContainText('Delivery enabled for this installation');
+ const enabled=await page.evaluate(()=>window.__calls.filter(c=>c.command==='configure_delivery').at(-1));expect(enabled.args.confirmed).toBe(true);expect(enabled.args.operation).toBe('enable');
+ await page.locator('#delivery-installation').fill('C:\\Other');await page.locator('#delivery-enable').click();await expect(page.locator('#message')).toContainText('Review this exact installation');
  const folder=process.env.MARKET_ARCHIVE_UI_EVIDENCE||path.resolve('artifacts/companion-v2');fs.mkdirSync(folder,{recursive:true});
  await page.screenshot({path:path.join(folder,'archive-manual-controls.png'),fullPage:true});
  const audit=await new AxeBuilder({page}).analyze();expect(audit.violations.filter(v=>['critical','serious'].includes(v.impact))).toEqual([]);

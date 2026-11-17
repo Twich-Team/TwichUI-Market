@@ -3,6 +3,7 @@ const invoke = window.__TAURI__?.core.invoke;
 const listen = window.__TAURI__?.event.listen;
 const $ = id => document.getElementById(id);
 let view = null, editing = false, latestRevision = -1, nativeErrorShown = false, workshopExporting = false, archiveBusy = false, archiveContext = null;
+let deliveryBusy=false, reviewedDelivery=null;
 const text = (id, value) => { $(id).textContent = value; };
 function message(value, error=false) { $('message').hidden=!value; text('message', value||''); $('message').classList.toggle('error',error); }
 const datetime = value => value ? new Date(value).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}) : 'Unknown';
@@ -53,8 +54,12 @@ function render(next) {
   $('workshop-export').disabled=workshopExporting||!view.connected||view.refreshing||s.running;
   $('workshop-pricing').disabled=workshopExporting||archiveBusy;
   const historyContext=`${view.settings.server}|${view.bootstrap?.account?.id}|${view.settings.selected_market||s.selected_market}`;
-  if(archiveContext!==historyContext){archiveContext=historyContext;text('archive-status','No completed archive selected.');text('scope-status','Choose exact variants after downloading retained history.');$('scope-variants').value='';$('scope-compatible').checked=false;}
+  if(archiveContext!==historyContext){archiveContext=historyContext;reviewedDelivery=null;delete $('delivery-installation').dataset.initialized;$('delivery-installation').value='';$('delivery-confirm').checked=false;text('archive-status','No completed archive selected.');text('scope-status','Choose exact variants after downloading retained history.');$('scope-variants').value='';$('scope-compatible').checked=false;}
   for(const id of ['archive-sync','scope-preview','scope-export'])$(id).disabled=archiveBusy||workshopExporting;
+  const dc=view.delivery?.configuration,ds=view.delivery?.status;
+  if(dc&&!$('delivery-installation').dataset.initialized){$('delivery-installation').value=dc.installation;$('delivery-days').value=String(dc.history_days);$('delivery-installation').dataset.initialized='true';}
+  for(const id of ['delivery-review','delivery-enable','delivery-disable','delivery-rollback'])$(id).disabled=deliveryBusy||archiveBusy||s.running;
+  text('delivery-status',dc?`${dc.enabled?'Automatic delivery enabled':'Delivery disabled'} · ${ds?.result||'Waiting for next sync'}. Archive: ${ds?.archive_checkpoint||'not downloaded'}. Validated: ${ds?.validated_generation||'none'}. Published: ${ds?.published_generation||'none'}. Last file write: ${datetime(ds?.last_successful_write)}. ${ds?.lua_bytes==null?'':`Lua: ${ds.lua_bytes.toLocaleString()} bytes.`} ${ds?.error||''} Loaded game generation: unknown; inspect Workshop in WoW.`:view.delivery?.notice||'Automatic delivery is off.');
 
   $('disconnect').disabled=view.approving||view.refreshing;
   if(view.error||view.sync.error) {message(view.error||view.sync.error,true);nativeErrorShown=true;}
@@ -154,7 +159,7 @@ function scopeInput(){
   const variants=rows.map(line=>{const m=line.match(/^(\d{1,10})[\s,:]+([0-9a-fA-F]{64})$/);if(!m)throw new Error('Each line needs an item ID and its full exact variant key.');return {item_id:Number(m[1]),variant_key:m[2].toLowerCase()};});
   return {variants,history_from_day:$('scope-from').value,history_through_day:$('scope-through').value};
 }
-$('scope-variants').oninput=()=>{text('scope-count',`${$('scope-variants').value.split(/\r?\n/).filter(s=>s.trim()).length} selected · initial operating budget: 100 variants, 2 MiB data, 3 MiB Lua.`);};
+$('scope-variants').oninput=()=>{reviewedDelivery=null;$('delivery-confirm').checked=false;text('scope-count',`${$('scope-variants').value.split(/\r?\n/).filter(s=>s.trim()).length} selected · automatic pilot: up to 10 variants, 2 MiB data, 3 MiB Lua.`);};
 async function historyAction(sync,publish){
   if(archiveBusy)return;
   const requestedContext=archiveContext;
@@ -172,10 +177,10 @@ async function historyAction(sync,publish){
       const through=h.generated_at.slice(0,10),from=new Date(through+'T00:00:00Z');from.setUTCDate(from.getUTCDate()-59);
       $('scope-through').value=saved?.history_through_day||through;$('scope-from').value=saved?.history_from_day||from.toISOString().slice(0,10);
       if(saved)$('scope-variants').value=saved.variants.map(v=>`${v.item_id} ${v.variant_key}`).join('\n');
-      $('scope-variants').oninput();text('scope-status','Archive complete. Current Workshop has no scoped reader yet; testing exports stay outside game files.');
+      $('scope-variants').oninput();text('scope-status','Archive complete. Choose up to ten exact variants, check sizes, then review automatic delivery below.');
     }else{
       const s=r.sizes;
-      text('scope-status',`${s.records} exact variants · ${selected.history_from_day} through ${selected.history_through_day} · exact data ${s.canonical_bytes.toLocaleString()} bytes · Lua ${s.lua_bytes.toLocaleString()} bytes · manifest ${s.manifest_bytes.toLocaleString()} bytes. Generation ${r.generation_id}.${r.path?' Exported to '+r.path+'.':''} Current Workshop scoped compatibility: unavailable. No game files were installed or loaded.`);
+      text('scope-status',`${s.records} exact variants · ${selected.history_from_day} through ${selected.history_through_day} · exact data ${s.canonical_bytes.toLocaleString()} bytes · Lua ${s.lua_bytes.toLocaleString()} bytes · manifest ${s.manifest_bytes.toLocaleString()} bytes. Generation ${r.generation_id}.${r.path?' Exported to '+r.path+'.':''} Manual exports remain in companion staging. Automatic delivery requires a compatible installed Workshop and confirmed destination.`);
     }
   }catch(e){if(archiveContext===requestedContext){text('scope-status','Selection not exported. Previous completed data is preserved.');message(String(e?.message||e),true);}}
   finally{archiveBusy=false;render(view);}
@@ -183,3 +188,23 @@ async function historyAction(sync,publish){
 $('archive-sync').onclick=()=>historyAction(true,false);
 $('scope-preview').onclick=()=>historyAction(false,false);
 $('scope-export').onclick=()=>historyAction(false,true);
+
+function deliveryKey(){return JSON.stringify([archiveContext,$('delivery-installation').value,$('delivery-days').value,$('workshop-pricing').value,$('scope-variants').value]);}
+for(const id of ['delivery-installation','delivery-days','workshop-pricing'])$(id).addEventListener('change',()=>{reviewedDelivery=null;$('delivery-confirm').checked=false;});
+async function deliveryAction(operation){
+  if(deliveryBusy)return;
+  if(operation==='enable'&&(reviewedDelivery!==deliveryKey()||!$('delivery-confirm').checked)){message('Review this exact installation and market, then confirm the destination.',true);return;}
+  if(operation==='rollback'&&!$('delivery-confirm').checked){message('Confirm restoring the previous generation with WoW closed. Delivery will be disabled.',true);return;}
+  const context=archiveContext;
+  deliveryBusy=true;render(view);
+  try{
+    const result=await action('configure_delivery',{installation:$('delivery-installation').value,algorithm:$('workshop-pricing').value,historyDays:Number($('delivery-days').value),operation,confirmed:$('delivery-confirm').checked});
+    if(!result?.ok||context!==archiveContext)return;
+    const r=result.value;
+    if(operation==='inspect'){
+      reviewedDelivery=deliveryKey();$('delivery-confirm').checked=false;
+      text('delivery-destination',`Destination: ${r.destination}. Market: ${r.market.region.toUpperCase()} · ${r.market.player_ruleset||'unknown ruleset'} · house ${r.market.house_id} · transport ruleset ${r.market.transport_ruleset_id}. Existing generation: ${r.existing_generation||'none'}. Schema ${r.schema}. Confirm below to enable.`);
+    }else{message(operation==='enable'?'Delivery enabled for this installation. Close WoW, then use Sync now or wait for the next scheduled sync.':operation==='rollback'?'Delivery disabled and previous files restored. Log in to use them.':'Automatic delivery disabled. Existing game files are kept.');}
+  }finally{deliveryBusy=false;render(view);}
+}
+for(const [id,op] of [['delivery-review','inspect'],['delivery-enable','enable'],['delivery-disable','disable'],['delivery-rollback','rollback']])$(id).onclick=()=>deliveryAction(op);

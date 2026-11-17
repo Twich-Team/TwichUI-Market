@@ -21,6 +21,44 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut store = ArchiveStore::open(&PathBuf::from(&a[3]), DEFAULT_DISK_BUDGET)?;
     let start = Instant::now();
     match a[5].as_str() {
+        "auto" => {
+            // Only this synthetic acceptance executable constructs a fake game.
+            let request = bridge::parse(
+                &std::fs::read(a.get(6).ok_or("selection path required")?)?,
+                128 * 1024,
+            )?;
+            let root = PathBuf::from(&a[4]);
+            let base = root.join("automatic-fixture");
+            std::fs::create_dir_all(&base)?;
+            let installation = base.join("Forever");
+            let consumer = installation.join("Interface/AddOns/TwichUI_Workshop");
+            std::fs::create_dir_all(&consumer)?;
+            std::fs::write(
+                installation.join("Wow.exe"),
+                b"synthetic fixture, not a game executable",
+            )?;
+            std::fs::write(consumer.join("MarketDelivery.json"),br#"{"format":"twichui-market-consumer","capability_version":1,"contract_version":1,"transport_version":1,"schema_versions":[3],"canonical_bytes":2097152,"lua_bytes":3145728}"#)?;
+            let config = twichui_market_core::delivery::Configuration {
+                version: 1,
+                enabled: true,
+                scope: scope.clone(),
+                installation: installation.clone(),
+                selection: request,
+                history_days: 60,
+            };
+            config.save_confirmed(&base, true)?;
+            let c = MarketClient::new(&scope.server, std::env::var("TWICHUI_ARCHIVE_TEST_TOKEN")?)?;
+            let status = twichui_market_core::delivery::synchronize(&base, &c, &config, || false)?;
+            let path = installation.join("Interface/AddOns/TwichUI_MarketData/Data.lua");
+            let (g, _) = bridge::inspect_artifact(&std::fs::read(&path)?)?;
+            if g["synthetic"] != true {
+                return Err("acceptance requires synthetic observations".into());
+            }
+            println!(
+                "{}",
+                serde_json::json!({"status":status,"lua_path":path,"synthetic":true})
+            );
+        }
         "step" | "sync" => {
             let c = MarketClient::new(&scope.server, std::env::var("TWICHUI_ARCHIVE_TEST_TOKEN")?)?;
             let complete = if a[5] == "step" {
