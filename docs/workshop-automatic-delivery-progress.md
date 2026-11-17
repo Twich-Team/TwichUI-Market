@@ -1,0 +1,13 @@
+# Automatic Workshop delivery candidate
+
+## Starting state and boundaries
+
+Market `927f17626cf2ddb13cfec5f746f29c555cac1978`; addon main `36697b14f2283303a926e5a068330916a3ec6381`, including the newer advanced Market charts. Existing unrelated worktrees and open navigation PR #51 are untouched. U1 #21 and U2 #22 remain open/draft, with their complete histories preserved by candidate-only merge `9f0e585`. No production activation or native link/upstream identity equivalence is inferred. Production schema read-only verification returns `recovery_20261117`; current production images and the signed beta.5 store are unchanged.
+
+## Checkpoint A/B
+
+[Decision](workshop-automatic-delivery-plan.md) and [versioned summary contract](../contracts/workshop-summary/v1/README.md). New native-authenticated summary/part routes reuse existing canonical derivations, reference assembly and disposable export tables. The selected current observed universe is explicit; historical-only records are not called current-market coverage. Historical reference support remains genuine, but no daily series is delivered. ETags/content pins support no-change downloads. Whole-generation caps refuse rather than prune. Export/per-snapshot cache reservations do not own the collector ingest lock. No migration, collector, economic formula or pricing-default changes.
+
+**Unit-tested:** 32 PostgreSQL tests (20 new summary/refusal cases plus 12 existing bridge export checks), PostgreSQL 17 in an isolated internal-network `market_test`, mocked/synthetic sources only. Includes canonical independent fixture values, exact variant separation, bid-only supply, explicit current universe, source/market/native authorization, source clocks, cache/304/expiry, bounded cold preparation, strict schema/tuple refusal and concurrency against held ingest/export/derivation locks. Existing U1/U2/proposal tests: 60 passing; complete historical conformance/CI remains pending. No production summary requests or provider campaign.
+
+Local tool setup is isolated: existing rootless images, disposable bounded PostgreSQL and Rust containers, temporary compiler storage in RAM, and checksum-recorded repository-local Lua 5.1/bitop binaries from Debian. No host package installation or root/sudo. An initially fetched wrong PostgreSQL major was retired and its task-only image removed; tests use the existing production-major image. Incomplete offline Cargo cache and no-exec compiler tmpfs were diagnosed; the corrected executable task tmpfs is compiling. Source delivery/Windows/addon implementation and complete end-to-end acceptance remain in progress.

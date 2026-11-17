@@ -105,6 +105,11 @@ def legacy_distribution(rows):
 
 def prepare_snapshot(db,snapshot,algorithm,source):
     """At most 150k original rows, streamed/grouped by exact variant; atomically cached."""
+    # Summary and detailed exports share derived rows. This independent cache
+    # reservation never acquires or blocks the collector's ingest lock here.
+    if db.bind.dialect.name=='postgresql' and not db.scalar(
+            text('SELECT pg_try_advisory_xact_lock(7140289, :snapshot)'),{'snapshot':snapshot.id}):
+        raise HTTPException(409,'Snapshot derivation is preparing; retry export')
     if derivation(db,snapshot,algorithm):return
     if not snapshot.raw_retained:
         raise HTTPException(409,'Canonical originals unavailable; request asking-v1-provisional explicitly')
