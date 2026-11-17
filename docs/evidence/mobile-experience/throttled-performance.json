@@ -1,0 +1,14 @@
+{
+  "synthetic": true,
+  "physicalDevice": false,
+  "emulation": {
+    "cpuSlowdown": 4,
+    "latencyMs": 150,
+    "downloadBytesPerSecond": 250000,
+    "uploadBytesPerSecond": 100000
+  },
+  "catalogueReadyMs": 2222,
+  "searchResponseMs": 262,
+  "itemNavigationAndLazyChartReadyMs": 2428,
+  "overflow": false
+}

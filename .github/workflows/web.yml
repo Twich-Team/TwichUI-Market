@@ -37,6 +37,16 @@ jobs:
       - run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml exec -T api python - < web/e2e/seed-quality.py
       - run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml exec -T api python - < web/e2e/seed-private-beta.py
       - run: docker run --rm --network twichui-market-browser_default -v "$PWD:/work" -w /work/web mcr.microsoft.com/playwright:v1.65.1-noble npm run test:e2e -- --grep-invert 'provider rate limits:|ForeverDB metadata:|usability M[1-4]:'
+      - name: Verify mobile geometry and navigation in WebKit
+        run: docker run --rm --network twichui-market-browser_default -e MOBILE_SCREENSHOT_DIR=../artifacts/mobile-webkit -v "$PWD:/work" -w /work/web mcr.microsoft.com/playwright:v1.65.1-noble npm run test:e2e -- --config playwright.webkit.config.ts
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mobile-webkit-review
+          path: |
+            artifacts/mobile-webkit
+            artifacts/mobile-webkit-tests
+          if-no-files-found: ignore
       - name: Verify Companion dashboard update notices and confirmation with mocked IPC
         run: docker run --rm -v "$PWD:/repo" -w /repo mcr.microsoft.com/playwright:v1.65.1-noble node web/e2e/companion-layout.cjs
       - name: Verify manual archive UI intents with mocked IPC

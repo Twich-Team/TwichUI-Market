@@ -141,6 +141,7 @@ export function DataTable<T>({
         </label>)}
         <ColumnMenu table={table}/>
       </div>
+      <p className="table-scroll-hint">Scroll the table sideways to see all columns and actions.</p>
       <div
         className="table-scroll"
         role="region"

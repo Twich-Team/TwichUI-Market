@@ -1,0 +1,96 @@
+{
+  "synthetic": true,
+  "desktopGeometryEqual": true,
+  "views": {
+    "before": {
+      "sidebar": {
+        "width": 236,
+        "x": 0
+      },
+      "navigation": [
+        {
+          "text": "Market Explorer",
+          "y": 171.28125,
+          "height": 49.6875
+        },
+        {
+          "text": "Deal Finder",
+          "y": 228.96875,
+          "height": 49.6875
+        },
+        {
+          "text": "Administration",
+          "y": 286.65625,
+          "height": 49.6875
+        },
+        {
+          "text": "Account & devices",
+          "y": 344.34375,
+          "height": 49.6875
+        },
+        {
+          "text": "Get Desktop Companion",
+          "y": 402.03125,
+          "height": 49.6875
+        }
+      ],
+      "columns": [
+        "Item ↕",
+        "Recent price / unit ↕",
+        "14-day reference ↕",
+        "Supply ↕",
+        "Listings ↕",
+        "ID ↑",
+        "Variants"
+      ],
+      "tableWidth": 1126,
+      "documentWidth": 1440
+    },
+    "after": {
+      "sidebar": {
+        "width": 236,
+        "x": 0
+      },
+      "navigation": [
+        {
+          "text": "Market Explorer",
+          "y": 171.28125,
+          "height": 49.6875
+        },
+        {
+          "text": "Deal Finder",
+          "y": 228.96875,
+          "height": 49.6875
+        },
+        {
+          "text": "Administration",
+          "y": 286.65625,
+          "height": 49.6875
+        },
+        {
+          "text": "Account & devices",
+          "y": 344.34375,
+          "height": 49.6875
+        },
+        {
+          "text": "Get Desktop Companion",
+          "y": 402.03125,
+          "height": 49.6875
+        }
+      ],
+      "columns": [
+        "Item ↕",
+        "Recent price / unit ↕",
+        "14-day reference ↕",
+        "Supply ↕",
+        "Listings ↕",
+        "ID ↑",
+        "Variants"
+      ],
+      "tableWidth": 1126,
+      "documentWidth": 1440
+    }
+  },
+  "mobileBackForward": true,
+  "restoredPageSize": 25
+}

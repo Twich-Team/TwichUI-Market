@@ -3,7 +3,7 @@ import {parseRoute,useLocation,navigate,restoration} from "./navigation";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient, clearPrivateCache, setQueryIdentity } from "./query";
 import { announceSessionChange, onSessionChange } from "./auth-channel";
-import React, { lazy, Suspense, useEffect, useState } from "react";
+import React, { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { api, ApiError, BrowserSession, setCsrf, User } from "./api";
 const Explorer = lazy(() =>
@@ -180,7 +180,19 @@ function App() {
 }
 
 function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:()=>Promise<void>;signedOut:()=>void;authError:string}) {
-  const url=useLocation();const route=parseRoute(location.pathname,location.search);const page=route.kind;
+  const [menuOpen,setMenuOpen]=useState(false);
+  const menuButton=useRef<HTMLButtonElement>(null);
+  const shellNav=useRef<HTMLElement>(null);
+  useEffect(()=>{
+    if(!menuOpen)return;
+    const close=(event:KeyboardEvent)=>{if(event.key==='Escape'){setMenuOpen(false);menuButton.current?.focus();}};
+    const outside=(event:PointerEvent)=>{if(!shellNav.current?.contains(event.target as Node))setMenuOpen(false);};
+    document.addEventListener('keydown',close);document.addEventListener('pointerdown',outside);
+    return()=>{document.removeEventListener('keydown',close);document.removeEventListener('pointerdown',outside);};
+  },[menuOpen]);
+  const url=useLocation();
+  useEffect(()=>setMenuOpen(false),[url]);
+  const route=parseRoute(location.pathname,location.search);const page=route.kind;
   const setPage=(page:string)=>navigate(({explorer:'/',deals:'/deals',admin:'/administration',account:'/account',companion:'/companion'} as Record<string,string>)[page]||'/');
   useEffect(()=>{
     if(restoration()?.focus)return;
@@ -191,6 +203,7 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
   const [markets,setMarkets]=useState<Market[]>([]);
   const [error,setError]=useState("");
   const [readOnly,setReadOnly]=useState(true);
+  const [environmentReady,setEnvironmentReady]=useState(false);
   const [marketsReady,setMarketsReady]=useState(false);
   const preferences=usePreferences();
   const market=preferredMarket(markets,preferences.values.market_id);
@@ -202,7 +215,7 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
   useEffect(()=>{
     loadMarkets().catch(error=>{setError(error.message);setMarketsReady(true);});
     api<{read_only:boolean}>("/environment").then(result=>{
-      queryClient.setQueryData(["private","environment"],result);setReadOnly(result.read_only);
+      queryClient.setQueryData(["private","environment"],result);setReadOnly(result.read_only);setEnvironmentReady(true);
     }).catch(error=>setError(error.message));
   },[]);
   async function logout() { await preferences.flush(); await signOut(); }
@@ -216,19 +229,21 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
   };
   return (
     <>
-      <aside>
+      <aside className={`app-navigation ${menuOpen ? "navigation-open" : ""}`} ref={shellNav}>
         <a
           href="#explorer"
           className="brand"
-          onClick={event => {event.preventDefault();setPage("explorer");}}
+          onClick={event => {event.preventDefault();setMenuOpen(false);setPage("explorer");}}
         >
           <span className="sigil">T</span>
           <span>
             TWICHUI<small>MARKET INTELLIGENCE</small>
           </span>
         </a>
+        <button ref={menuButton} className="mobile-menu-button secondary" aria-expanded={menuOpen} aria-controls="app-menu" onClick={()=>setMenuOpen(open=>!open)}>{menuOpen ? "Close" : "Menu"}</button>
         <div className="eyebrow private">PRIVATE GUILD RESEARCH</div>
-        <nav>
+        <div id="app-menu" className="app-menu">
+        <nav aria-label="Main navigation">
           {[
             "explorer",
             "deals",
@@ -239,7 +254,8 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
             <button
               key={key}
               className={page === key || (page === "item" && key === "explorer") ? "active" : ""}
-              onClick={() => setPage(key)}
+              aria-current={page === key || (page === "item" && key === "explorer") ? "page" : undefined}
+              onClick={() => {setMenuOpen(false);if(page===key)menuButton.current?.focus();setPage(key);}}
             >
               {names[key]}
             </button>
@@ -252,6 +268,7 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
             Sign out
           </button>
         </div>
+        </div>
       </aside>
       <div className="workspace">
         <header>
@@ -261,7 +278,7 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
           <span className="badge">PRIVATE</span>
         </header>
         <main>
-          {readOnly && <p className="notice" role="status">Interactive preview · Your preferences save automatically. Collection and account administration are read-only.</p>}
+          {environmentReady && readOnly && <p className="notice" role="status">Interactive preview · Your preferences save automatically. Collection and account administration are read-only.</p>}
           <PreferenceStatus />
           {page!=="item" && preferences.values.market_id !== null && !markets.some(m => m.id === preferences.values.market_id) && markets.length > 0 && <p className="notice">Your preferred market is unavailable. Your saved choice is retained.</p>}
           {(error || authError) && (

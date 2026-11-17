@@ -413,6 +413,7 @@ export function Administration({
         <Loading label="Loading administration…" />
       )}
       {(working || data.refreshing) && <Loading inline label="Updating administration…"/>}
+      <label className="mobile-admin-section">Administration section<select value={tab} onChange={event=>setTab(event.target.value)}>{Object.entries(titles).map(([key,title])=><option key={key} value={key}>{title}</option>)}</select></label>
       <div className="admin-tabs" role="tablist">
         {Object.entries(titles).map(([key, title]) => (
           <button
