@@ -250,9 +250,9 @@ def worker_lock(factory):
 
 def latest_foreverdb_build(db):
     return db.scalar(select(cast(MetadataSource.source_json,JSON)['current_build'].as_string()).where(
-        MetadataSource.provider=='foreverdb',MetadataSource.fields_json.is_not(None),
+        MetadataSource.provider=='foreverdb',MetadataSource.fields_json.is_not(None),MetadataSource.retrieved_at.is_not(None),
         cast(MetadataSource.source_json,JSON)['current_build'].as_string().is_not(None))
-        .order_by(MetadataSource.retrieved_at.desc().nulls_last()).limit(1))
+        .order_by(MetadataSource.retrieved_at.desc()).limit(1))
 
 def schedule_automatic(db, at, *, allow_mock=False):
     from .recovery_planner import provider_context, load_items, plan_item, phase_sql, source_due_sql, essential_missing_sql, remember_decision
