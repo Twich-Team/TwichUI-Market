@@ -21,12 +21,12 @@ Dedicated branch `feature/market-usability-admin-reliability`, worktree `.worktr
 | 3 | 1 | Test members | Completed candidate: typed-confirmation archive/reversible listing restoration, revoke all access, self/last-admin guards; 96 production identities with creation+closure receipts, none modified |
 | 4 | 1 | Stale Companion entries | Completed candidate: owned/admin typed archive requires prior revocation, retains security history; isolated cleanup, API ownership/revocation and actual browser controls verified |
 | 5 | 1 | Retention/compaction | Completed candidate: deliberate production gates verified; fixed credential-FK cleanup failure and legacy ungated compaction path, actual 5,000+1,201 batch/replay/resume/price-preservation fixture |
-| 6 | 2 | Metadata summaries | Pending |
-| 7 | 2 | Coverage charts | Pending |
-| 8 | 2 | Provider coverage | Pending |
-| 9 | 2 | Database growth | Pending; hourly measurements already exist |
-| 10 | 2 | Storage units | Pending; formatter stops at MiB |
-| 11 | 2 | Overview | Pending |
+| 6 | 2 | Metadata summaries | Completed candidate: Metadata summaries: stored names/icons/useful fields and pending item counts; explicit regional base-ID denominator |
+| 7 | 2 | Coverage charts | Completed candidate: ECharts available/missing, primary/supplemental selection and partitioned recovery evidence; no historical measurements invented |
+| 8 | 2 | Provider coverage | Completed candidate: Four source cards/emblems, expandable TanStack field tables, overlap/conflict counts and build/source qualifications |
+| 9 | 2 | Database growth | Completed candidate: Existing hourly allocation samples plotted with period choices, actual gaps and signed period/daily changes |
+| 10 | 2 | Storage units | Completed candidate: Shared IEC byte formatter through TiB across database, retention, cache, backups and Companion downloads |
+| 11 | 2 | Overview | Completed candidate: Compact operational cards and links for collection/freshness, database/backup, logical devices and metadata/recovery |
 | 12 | 3 | Loading system | Pending |
 | 13 | 3 | Explorer notices | Pending |
 | 14 | 3 | Metric tooltips | Pending |
@@ -51,3 +51,13 @@ Verification so far: PostgreSQL migration upgrade/check/downgrade/re-upgrade pas
 Milestone 1 final expanded check: **40/40 PostgreSQL tests** across cleanup, auth, opportunities, retention, maintenance, long history and sync. Application TypeScript/build and 123 frontend tests passed. Two actual synthetic browser flows passed; gallery at `evidence/usability-reliability/review.html`. Diff reviewed, no production user/device/account changes, no live deletions, no collector/provider or bridge changes.
 
 M1 pushed checkpoint **bdd6e4c456e1e393a8631e8eeae00dbc2e017125**, [draft PR #17](https://github.com/Twich-Team/TwichUI-Market/pull/17). Remote website 43994382008 and Windows 43994382049 passed. Backend 43994382010 passed migrations/pytest but its older metadata-preservation harness incorrectly compared new schema columns to old rows. Corrected to compare original columns; the integrated archive-migration harness now also inserts baseline-compatible fields and hashes original columns. All five populated preservation/downgrade/re-upgrade rehearsals pass locally at usability_20261117. Added a dedicated archive-column preservation rehearsal with separate populated user/device downgrade refusal; no production migration occurred.
+
+### Milestone 2 — administration dashboard
+
+Coverage counts distinct (region,base item ID) identities in the latest recorded snapshot per chosen market; variants count once and the site locale is en_US. Useful attributes mean at least one nonempty stored field beyond name/icon, including qualified relationships; this does not imply complete facts. Unknown/not tried, tried/404 unavailable, error/access-blocked, checked/unresolved and named partition the population. Pending items are separate and may already have names. Provider records overlap and are never summed for overall coverage. Failed refreshes retain known names/fields. New tests cover empty scope, variants/locales, retained failures, missing icon bytes, zero levels, overlaps, conflict and recovery partitions.
+
+Production evidence is read-only and separate from synthetic screenshots. At capture: snapshot 73 / market 2, **5,147 IDs, 4,860 named (94.42%), 4,858 with stored attributes, 287 tried/unavailable unnamed IDs, two pending items**. These are observed stored facts, not a provider campaign or recoverability guarantee. Storage has **73 actual samples, 2026-11-14 01:00 through 2026-11-17 01:00 UTC**, actual allocation at capture **2,842,375,859 bytes**. Signed period change is 2,794,446,848 bytes; observed average is 931,482,283 bytes/day, with no forecast or filesystem-shrink claim. See production-coverage-growth.json.
+
+Initial read-only candidate measurement was ~7 seconds; query timing identified repeated source parsing and correlated recovery probes. Materialized scoped JSON fields and set-based recovery states preserve all shared counts. The final same-transaction sequential probe measured existing handler **2.406s** and candidate **1.383s** on 5,147 real IDs. This is not a statistical speedup guarantee; cache/load/order affect it. Coverage refresh is now 60 seconds, with explicit refresh after actions; progress polling is unchanged. See production-coverage-performance.json.
+
+Verification: 47 focused PostgreSQL coverage/recovery/storage tests, then 44 after query optimization; 125 frontend unit tests, TypeScript and Vite passed. Three synthetic browser workflows passed, plus the affected dashboard flow again after layout/query refinements, with axe checks and 390px no-overflow. Inspected Overview, coverage graphs, provider field/provenance tables, Database Growth and narrow screenshots. Field-table expansion now spans the source grid so its counts stay readable. M1 follow-up **2a502c5** is independently green in all remote workflows: Backend 43996010526, website 43996010518, Windows 43996010638.

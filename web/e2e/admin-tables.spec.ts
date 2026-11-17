@@ -15,7 +15,8 @@ test("administration tables support real server pages, readable outcomes, action
     if(tab==="Members & invitations") {await page.getByRole("combobox",{name:"Filter member role",exact:true}).selectOption("admin");await expect(page.getByRole("table",{name:"members",exact:true}).getByRole("row")).toHaveCount(2);await page.getByRole("combobox",{name:"Filter member role",exact:true}).selectOption("");}
     if(tab==="Collection") {const collection=page.getByRole("table",{name:"collection checks",exact:true});await page.getByRole("combobox",{name:"Collection outcome",exact:true}).selectOption("collected");await expect(collection.getByRole("row")).toHaveCount(3);await page.getByRole("combobox",{name:"Collection outcome",exact:true}).selectOption("failures");await expect(collection.locator("..").locator("..").getByText("No matching records.",{exact:true})).toBeVisible();await page.getByRole("combobox",{name:"Collection outcome",exact:true}).selectOption("");}
     if(tab==="Storage & backups") await page.getByText("Recent storage measurements",{exact:true}).click();
-    await expect(page.locator('.managed-table:visible').first()).toBeVisible();
+    if(tab==='Overview') await expect(page.getByRole('region',{name:'Operational overview',exact:true})).toBeVisible();
+    else await expect(page.locator('.managed-table:visible').first()).toBeVisible();
     expect((await new AxeBuilder({page}).withTags(["wcag2a","wcag2aa"]).analyze()).violations).toEqual([]);
     await page.screenshot({path:`${output}/${tab.replaceAll(/[^a-zA-Z]/g,"-").toLowerCase()}.png`,fullPage:true});
   }

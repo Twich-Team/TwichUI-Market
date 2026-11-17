@@ -15,7 +15,7 @@ async function axe(page:Page){expect((await new AxeBuilder({page}).withTags(['wc
 test('usability M1: reversible account and device archives and honest status',async({page})=>{
   await login(page); await page.goto('/administration');
   await expect(page.getByText(/authorized devices/)).toBeVisible();
-  await expect(page.getByText(/recent requests do not prove online/)).toBeVisible();
+  await expect(page.getByText('Online status unavailable',{exact:true})).toBeVisible();
   await shot(page,'m1-overview');
   await page.getByRole('tab',{name:'Members & invitations',exact:true}).click();
   const row=page.getByRole('row').filter({hasText:'obsolete_fixture'});
@@ -53,7 +53,7 @@ test('usability M1: local deal icons load without hover through delays filters s
   await expect(first).toBeVisible();
   await expect.poll(()=>first.evaluate((img:HTMLImageElement)=>img.complete&&img.naturalWidth>0)).toBe(true);
   expect(await page.locator('.item-tooltip:visible').count()).toBe(0);
-  await shot(page,'deal-icons-no-hover'); await axe(page);
+  await shot(page,'deal-icons-no-hover',false); await axe(page);
   const last=page.locator('.deal').last();await last.scrollIntoViewIfNeeded();
   await expect.poll(()=>last.locator('.wow-icon img').evaluate((img:HTMLImageElement)=>img.complete&&img.naturalWidth>0)).toBe(true);
   await page.setViewportSize({width:390,height:844}); await first.scrollIntoViewIfNeeded();
@@ -67,4 +67,33 @@ test('usability M1: local deal icons load without hover through delays filters s
   await expect.poll(()=>first.evaluate((img:HTMLImageElement)=>img.complete&&img.naturalWidth>0)).toBe(true);
   await page.reload();await page.locator('.deal').first().scrollIntoViewIfNeeded();await expect(first).toBeVisible();
   expect(external).toEqual([]);
+});
+
+test('usability M2: operational overview, measured coverage tables and allocation history',async({page})=>{
+  test.setTimeout(60000);
+  await login(page);await page.goto('/administration');
+  await expect(page.getByRole('region',{name:'Operational overview',exact:true})).toBeVisible();
+  await expect(page.getByText('ITEM NAMES',{exact:true})).toBeVisible();
+  await page.getByRole('region',{name:'Operational overview',exact:true}).screenshot({path:`${output}/administration-overview.png`});await axe(page);
+  await page.getByRole('button',{name:'Metadata coverage ↗',exact:true}).click();
+  await expect(page.getByRole('region',{name:'Item metadata summary',exact:true})).toBeVisible();
+  await expect(page.getByText('Useful attributes',{exact:true})).toBeVisible();
+  await page.getByRole('heading',{name:'Stored field coverage',exact:true}).scrollIntoViewIfNeeded();
+  await expect(page.getByRole('img',{name:'Stored names, icons and attributes; available versus missing',exact:true})).toBeVisible();
+  await page.getByRole('region',{name:'Item metadata summary',exact:true}).screenshot({path:`${output}/metadata-summary.png`});await axe(page);
+  await page.getByRole('heading',{name:'Provider metadata coverage',exact:true}).scrollIntoViewIfNeeded();
+  const provider=page.getByRole('article',{name:'Everloot coverage',exact:true});
+  await provider.getByText('Field breakdown',{exact:true}).click();
+  await expect(page.getByRole('table',{name:'Everloot field coverage',exact:true})).toBeVisible();
+  await provider.getByText('Build & source qualifications',{exact:true}).click();
+  await page.getByRole('region',{name:'Provider metadata coverage',exact:true}).screenshot({path:`${output}/provider-coverage.png`});await axe(page);
+  await page.getByRole('tab',{name:'Storage & backups',exact:true}).click();
+  await page.getByRole('heading',{name:'Database Growth',exact:true}).scrollIntoViewIfNeeded();
+  await expect(page.getByRole('img',{name:'Database allocated size over time; gaps have no measurements',exact:true})).toBeVisible();
+  await expect(page.getByText(/1 measurement gaps/)).toBeVisible();
+  await page.getByRole('region',{name:'Database Growth',exact:true}).screenshot({path:`${output}/database-growth.png`});await axe(page);
+  await page.getByRole('combobox',{name:'Measurement range',exact:true}).selectOption('1');
+  await expect(page.getByText(/1 measurement gaps/)).toBeVisible();
+  await page.setViewportSize({width:390,height:844});await shot(page,'storage-mobile',false);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await axe(page);
 });

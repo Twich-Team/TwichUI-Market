@@ -1,10 +1,15 @@
 {
   "source": "Actual Chromium against disposable synthetic market_test; never production observations",
   "sha256": {
-    "member-archive-confirmation.png": "b163203131ec5f5dc70e2abff4afb3400d2ee5b670049b458e7b2a8ef2912253",
-    "deal-icons-mobile.png": "ed52ab8f5c0993f971c05a17e14c4a5e81a19b0e9cdfedf40dce420d39fa493d",
-    "m1-overview.png": "01d22878a5a051723c1957d7c286f66ec13661146246f66519cfcd871e09f52a",
-    "deal-icons-no-hover.png": "04b5c922e497ad1b71ba58120931e5adae01582d3655dd21578bf12bd5b08437",
-    "device-archive-confirmation.png": "b43b86ee638e356196f868348e75a2bccae565b384437824fd6b9e8fee99591c"
+    "administration-overview.png": "2a40f72449ce911ff4e5c42ac1123e27c712e6369c0fe50d2e4871278131ac56",
+    "database-growth.png": "a7090e892bc0843669f3390a21a7ecb1c97e1640c9bbaaddb46599dc356cc8fd",
+    "deal-icons-mobile.png": "51a356cc9ce2b93d80c1196b960dd3fabc96ce653575addb54a3dbf0f7005b3a",
+    "deal-icons-no-hover.png": "7c8a0bbe03d9476d465bb615f24cc91798f24bdff64f7f95866862e2c22dc8fa",
+    "device-archive-confirmation.png": "a4057e22287a457e4b62f50b4b00bd772819d8faafb75c9e55c6da623905a1db",
+    "m1-overview.png": "369271f3284c6a84915cf366f8de7f2b12e769d5e5fee0ac59e21b2b2c07dae1",
+    "member-archive-confirmation.png": "8a5539f360b803cbc8dcfa9aa582f93afbb80ffbf109fa596ceb14e972edcd62",
+    "metadata-summary.png": "e81e7987f0ed74236f952b447b373aeed8ded3b69a2cedce87f4b8a5400afa7c",
+    "provider-coverage.png": "969dc3b5617b485240fbeecd0c18b9f4697acefacfeb3b18c038490c13f471f6",
+    "storage-mobile.png": "5cb540c26be05bdef3960097b014ba0c31a4b00b31c59ab7e55119f24a6331b8"
   }
 }

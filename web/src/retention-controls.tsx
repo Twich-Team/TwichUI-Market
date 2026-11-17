@@ -1,3 +1,4 @@
+import { formatBytes as size } from "./size";
 import { useState } from "react";
 import { useLoad } from "./research";
 import { api } from "./api";
@@ -35,8 +36,7 @@ const fields = [
   ["operational_days", "Collection logs"],
   ["security_days", "Security logs"],
 ] as const;
-const size = (v: number | null) =>
-  v === null ? "Unknown" : `${(v / 1048576).toFixed(2)} MiB`;
+
 export function RetentionControls({ readOnly }: { readOnly: boolean }) {
   const state = useLoad(
     "retention-policy",

@@ -1,3 +1,4 @@
+import { MetadataSummary, ProviderCoverage } from "./metadata-coverage";
 import { ProviderRateLimits, type RateStatus } from "./provider-rate-limits";
 import { useState } from "react";
 import { DataTable } from "./data-table";
@@ -27,11 +28,13 @@ interface Job {
   results?: { id: number; item_id: number; provider: string; state: string; available_at: string; result: Result | null }[];
   next_after?: number | null;
 }
-interface Overview {
+export interface MetadataOverview {
+  measured_at:string;
+  attributes_available:number; scoped_pending_items:number; unknown_not_tried:number; tried_unavailable:number; failed_or_blocked:number; checked_unresolved:number; coverage_identity:string; attributes_definition:string; recovery_notice:string;
   observed: number; resolved_names: number; missing_names: number; name_percent: number | null;
   primary_names: number; supplemental_names: number; primary_pending: number; primary_missing_responses: number;
   icons_available: number; icons_missing: number; last_enrichment: string | null; pending_queue: number; active_jobs: number;
-  provider_name_overlap: number; conflicting_names: number; provider_records: { provider: string; checked: number; names_available: number; name_only?: number; detailed_records?: number; fields_available?: Record<string, number>; builds?: {build: string | null; records: number}[] }[];
+  provider_name_overlap: number; conflicting_names: number; provider_records: { provider: string; checked: number; names_available: number; name_only?: number; detailed_records?: number; fields_available?: Record<string, number>; overlapping_names?:number; conflicting_names?:number; builds?: {build: string | null; records: number}[] }[];
   recent_results: { item_id: number; provider: string; at: string; result: Result }[];
 }
 const labels: Record<string, string> = {
@@ -100,7 +103,7 @@ export function ItemMetadataAdmin({ markets, readOnly = false }: { markets: Mark
   const [error, setError] = useState(""), [message, setMessage] = useState(""), [busy, setBusy] = useState(false), [jobId, setJobId] = useState<number | null>(null), [resultAfter, setResultAfter] = useState(0);
   const [input, setInput] = useState({ item_id: "", limit: 100, request_budget: 100 });
   const providers = useProviders();
-  const stats = useQuery({ queryKey: ["private", "metadata-overview", market], enabled: !!market, queryFn: ({ signal }) => api<Overview>(`/admin/item-metadata?market_id=${market}`, "GET", undefined, signal), refetchInterval: 5000 });
+  const stats = useQuery({ queryKey: ["private", "metadata-overview", market], enabled: !!market, queryFn: ({ signal }) => api<MetadataOverview>(`/admin/item-metadata?market_id=${market}`, "GET", undefined, signal), refetchInterval: 60_000 });
   const [relatedResource,setRelatedResource] = useState("professions/alchemy"), [relatedPages,setRelatedPages] = useState(1);
   const [jobState, setJobState] = useState(""), [jobSearch,setJobSearch]=useState("");
   const jobPage = useRecordPage<Job>("jobs", { q:jobSearch, market_id: String(market), ...(jobState ? {state:jobState}: {}) }, "id");
@@ -116,11 +119,7 @@ export function ItemMetadataAdmin({ markets, readOnly = false }: { markets: Mark
     <ErrorNotice error={error || stats.error?.message || jobs.error?.message || detail.error?.message || providers.error?.message || ""} />
     {message && <p className="notice success" role="status">{message}</p>}
     {stats.isPending && <p role="status">Loading catalog measurements…</p>}
-    {state?.provider_records.some(record=>record.name_only !== undefined) && <details><summary>Provider metadata coverage</summary><p className="small muted">Retained fields for observed items in this market. A missing field is unknown, not proof that the provider does not offer it.</p>{state.provider_records.map(record=><div key={record.provider}><strong>{record.provider}</strong><p className="small">{record.name_only ?? "Unknown"} name only · {record.detailed_records ?? "Unknown"} with details</p><p className="small">{Object.entries(record.fields_available || {}).map(([field,count])=>`${field.replaceAll("_", " ")}: ${count} available / ${Math.max(0,state.observed-count)} missing`).join(" · ")}</p><p className="small">{record.builds?.map(build=>`${build.build || "Unknown build"}: ${build.records} records`).join(" · ")}</p></div>)}</details>}
-    {state && <><div className="metadata-stats">
-      {[["Observed item IDs", state.observed], ["Resolved names", state.resolved_names], ["Name coverage", state.name_percent === null ? "No observations" : `${state.name_percent}%`], ["Missing names", state.missing_names], ["Icons available", state.icons_available], ["Icons missing", state.icons_missing]].map(([label, value]) => <div className="panel padded" key={label}><span className="small muted">{label}</span><strong>{value}</strong></div>)}
-    </div><p className="small muted">Latest recorded market snapshot · Blizzard names {state.primary_names} · supplemental names {state.supplemental_names} · Blizzard pending {state.primary_pending} · Blizzard 404 responses {state.primary_missing_responses}</p><p className="small muted">Multiple name sources: {state.provider_name_overlap} · conflicting names: {state.conflicting_names}{state.provider_records.map(p => ` · ${p.provider}: ${p.names_available} source names`).join("")}</p>
-    <p className="small">Last successful enrichment: {when(state.last_enrichment)} · Pending queue: {state.pending_queue} · Active jobs: {state.active_jobs}</p></>}
+    {state && <><MetadataSummary state={state}/><ProviderCoverage state={state}/></>}
     <section className="panel padded"><h3>Recover item metadata</h3>
       <form onSubmit={event => { event.preventDefault(); action(async () => setPreview(await api("/admin/item-metadata/preview", "POST", body))); }} onChange={resetPreview}>
         <div className="metadata-form-row"><label>Recovery action<select value={mode} onChange={e => { setMode(e.target.value); if (e.target.value === "bulk") setSelected(["everloot"]); }}>

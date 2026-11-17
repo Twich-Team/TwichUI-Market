@@ -25,3 +25,12 @@ with Session.begin() as db:
         rows=[{'id':i,'item':{'id':i},'quantity':2,'buyout':1000 if day==0 else 2000} for i in range(31000,31032)]
         ingest(db,market.id,json.dumps({'auctions':rows}).encode(),request_key=f'usability-{day}',retrieved_at=now()-timedelta(days=day),synthetic=True)
 print('Usability fixtures seeded in disposable market_test; no providers or collector')
+# Real stored fixture measurements: an explicit 3-hour gap, never filled by UI.
+from market.models import StorageMeasurement
+from sqlalchemy import delete
+with Session.begin() as db:
+    db.execute(delete(StorageMeasurement))
+    hour=now().replace(minute=0,second=0,microsecond=0)
+    for ago in range(48,-1,-1):
+        if ago in (15,16,17): continue
+        db.add(StorageMeasurement(sampled_at=hour-timedelta(hours=ago),database_bytes=2684354560+(48-ago)*1048576))
