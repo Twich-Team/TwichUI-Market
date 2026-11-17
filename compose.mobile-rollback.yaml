@@ -1,0 +1,3 @@
+services:
+  proxy:
+    image: sha256:197b01f4f4b9e7cf35d574e4c3e6f60f94a462e3dd5b9dccd488fb128d3743d9

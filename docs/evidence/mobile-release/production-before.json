@@ -1,0 +1,49 @@
+{
+  "enabled_collectors": [
+    {
+      "id": 2,
+      "house_id": 114,
+      "interval_seconds": 300
+    }
+  ],
+  "failed_runs": 2,
+  "recent_runs": [
+    {
+      "id": 986,
+      "checked_at": "2026-11-17T16:48:49.163889+00:00",
+      "status": "unchanged",
+      "http_status": 304,
+      "error": null
+    },
+    {
+      "id": 985,
+      "checked_at": "2026-11-17T16:43:46.454247+00:00",
+      "status": "unchanged",
+      "http_status": 304,
+      "error": null
+    },
+    {
+      "id": 984,
+      "checked_at": "2026-11-17T16:38:43.960151+00:00",
+      "status": "unchanged",
+      "http_status": 304,
+      "error": null
+    },
+    {
+      "id": 983,
+      "checked_at": "2026-11-17T16:33:41.555085+00:00",
+      "status": "unchanged",
+      "http_status": 304,
+      "error": null
+    }
+  ],
+  "revision": "usability_20261117",
+  "retention_batches": 0,
+  "retention_approved": 0,
+  "metadata_job_count": 15015,
+  "metadata_job_states": {
+    "completed": 15012,
+    "cancelled": 2,
+    "running": 1
+  }
+}

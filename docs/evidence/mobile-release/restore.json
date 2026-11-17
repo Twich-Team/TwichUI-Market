@@ -1,0 +1,18 @@
+{
+  "database": "isolated market_test",
+  "network": "none",
+  "memory_limit_bytes": 6442450944,
+  "tmpfs_limit_bytes": 5368709120,
+  "cpus": 1,
+  "archive_sha256": "02484c55eea3c72d1a2ae3cc8670944b87c3fb73f1187f4ae9928b39db3c5346",
+  "restored": {
+    "revision": "usability_20261117",
+    "observations": 982,
+    "snapshots": 87,
+    "listings": 10163661,
+    "users": 97,
+    "credentials": 259,
+    "preferences": 22,
+    "destructive_batches": 0
+  }
+}
