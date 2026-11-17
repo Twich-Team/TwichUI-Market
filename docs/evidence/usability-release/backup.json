@@ -1,0 +1,10 @@
+{
+  "filename": "market-usability-20261117T030531Z.dump",
+  "created_at": "2026-11-17T03:07:41.102783+00:00",
+  "bytes": 453697171,
+  "sha256": "1f431684d4b1a3e52b14ed186e29fa3b35ed546e29b04d5d3ef4b08aca52a7ea",
+  "isolated_restore_verified": true,
+  "source": "production market",
+  "separate_release_budget_bytes": 805306368,
+  "previous_archives_preserved": 29
+}

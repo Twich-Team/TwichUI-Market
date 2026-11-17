@@ -1,0 +1,1395 @@
+{
+  "source": "Actual public HTTPS production; no synthetic fixtures or mocked API responses",
+  "origin": "https://market.twich.gg",
+  "screens": [
+    "explorer.png",
+    "item-metric-explanation.png",
+    "history-24.png",
+    "history-48.png",
+    "current-listings.png",
+    "item-mobile.png",
+    "deal-finder.png",
+    "administration-overview.png",
+    "metadata-summary.png",
+    "provider-coverage.png",
+    "database-growth.png",
+    "storage-retention.png",
+    "member-management.png",
+    "device-management.png",
+    "security-events.png",
+    "companion-beta4.png",
+    "deal-finder-loaded-icons.png",
+    "deals-mobile.png"
+  ],
+  "requests": [
+    {
+      "path": "/auth/session",
+      "status": 200
+    },
+    {
+      "path": "/me/preferences",
+      "status": 200
+    },
+    {
+      "path": "/markets",
+      "status": 200
+    },
+    {
+      "path": "/markets/2/catalogue?page_size=25",
+      "status": 200
+    },
+    {
+      "path": "/markets/2/catalogue/36/variants",
+      "status": 200
+    },
+    {
+      "path": "/markets/2/items/36/3953c33fc3d1cd5ad3e493a20fb5c14baf88a37294cd8dc9e5ee1a3912052051/intraday-history?hours=24",
+      "status": 200
+    },
+    {
+      "path": "/markets/2/items/36/3953c33fc3d1cd5ad3e493a20fb5c14baf88a37294cd8dc9e5ee1a3912052051/intraday-history?hours=48",
+      "status": 200
+    },
+    {
+      "path": "/markets/2/items/36/3953c33fc3d1cd5ad3e493a20fb5c14baf88a37294cd8dc9e5ee1a3912052051/listings",
+      "status": 200
+    },
+    {
+      "path": "/companion/admin/device-summary",
+      "status": 200
+    },
+    {
+      "path": "/admin/item-metadata?market_id=2",
+      "status": 200
+    },
+    {
+      "path": "/admin/storage",
+      "status": 200
+    },
+    {
+      "path": "/admin/retention",
+      "status": 200
+    }
+  ],
+  "external": [],
+  "javascript_errors": [],
+  "timezone": "America/Denver",
+  "mutations_performed": "No destructive controls used. Repeated 7D selection wrote revision-only preference updates; exact pre-release row restored with backup/CAS guards and audit.",
+  "market_id": 2,
+  "item": {
+    "item_id": 36,
+    "name": "Worn Mace",
+    "variant_key": "3953c33fc3d1cd5ad3e493a20fb5c14baf88a37294cd8dc9e5ee1a3912052051"
+  },
+  "history_24": {
+    "points": 25,
+    "headers": 262,
+    "first": "2026-11-16T03:57:36.779304+00:00",
+    "last": "2026-11-17T03:23:26.668416+00:00",
+    "status_counts": {
+      "not_listed": 1,
+      "available": 24
+    },
+    "provenance": "observed_asking_prices_only"
+  },
+  "history_48": {
+    "points": 49,
+    "headers": 539,
+    "first": "2026-11-15T03:58:35.786915+00:00",
+    "last": "2026-11-17T03:23:26.668416+00:00",
+    "status_counts": {
+      "available": 37,
+      "not_listed": 12
+    },
+    "provenance": "observed_asking_prices_only"
+  },
+  "listings_as_of": "2026-11-17T03:23:26.668416+00:00",
+  "details_accessibility_violations": [],
+  "deal_icons_visible_loaded": 2,
+  "device_summary": {
+    "authorized": 1,
+    "revoked": 35,
+    "expired": 0,
+    "companion": {
+      "authorized": 1,
+      "revoked": 4,
+      "expired": 0
+    },
+    "legacy": {
+      "authorized": 0,
+      "revoked": 31,
+      "expired": 0
+    },
+    "recently_connected": 0,
+    "recent_window_minutes": 15,
+    "currently_connected": null,
+    "live_status": "No continuous heartbeat; recent requests do not prove online status.",
+    "authorized_names": [
+      "Windows PC"
+    ],
+    "as_of": "2026-11-17T03:24:08.708605+00:00"
+  },
+  "overview_accessibility_violations": [],
+  "metadata": {
+    "attributes_available": 5028,
+    "scoped_pending_items": 1,
+    "unknown_not_tried": 0,
+    "tried_unavailable": 172,
+    "failed_or_blocked": 0,
+    "checked_unresolved": 0,
+    "coverage_identity": "Distinct regional base-item IDs in latest recorded snapshots; variants count once. Locale en_US.",
+    "attributes_definition": "At least one nonempty stored base-item or relationship field beyond name and icon; presence does not imply complete attributes.",
+    "recovery_notice": "Unknown is not failed. Pending items may already have names. Missing fields are not guaranteed recoverable; provider access, quotas and retry windows still apply.",
+    "snapshot_scope": "Latest recorded observation per selected market",
+    "measured_at": "2026-11-17T03:24:20.247089+00:00",
+    "observed": 5203,
+    "resolved_names": 5031,
+    "missing_names": 172,
+    "name_percent": 96.69,
+    "primary_names": 2419,
+    "supplemental_names": 2612,
+    "primary_missing_responses": 2784,
+    "primary_pending": 0,
+    "icons_available": 5203,
+    "icons_missing": 0,
+    "primary_attributes": 2419,
+    "catalog_records": 5203,
+    "provider_name_overlap": 3489,
+    "conflicting_names": 6,
+    "last_enrichment": "2026-11-17T03:24:03.653245+00:00",
+    "pending_queue": 1,
+    "active_jobs": 1,
+    "provider_records": [
+      {
+        "provider": "blizzard",
+        "checked": 5203,
+        "names_available": 2419,
+        "name_only": 0,
+        "detailed_records": 2419,
+        "fields_available": {
+          "availability": 0,
+          "binding": 75,
+          "category_ids": 0,
+          "class": 157,
+          "crafting": 0,
+          "disenchant": 0,
+          "disenchantable": 0,
+          "effects": 0,
+          "item_sets": 0,
+          "level": 2419,
+          "lines": 2419,
+          "quality": 2419,
+          "required_level": 2419,
+          "slot": 157,
+          "stats": 0,
+          "subclass": 157,
+          "unique": 0,
+          "vendor_sell": 2419,
+          "vendors": 0,
+          "weapon": 0
+        },
+        "overlapping_names": 1646,
+        "conflicting_names": 0,
+        "builds": [
+          {
+            "build": "static-1.60.1_70399-forever-us",
+            "records": 2419
+          }
+        ]
+      },
+      {
+        "provider": "everloot",
+        "checked": 1293,
+        "names_available": 3,
+        "name_only": 3,
+        "detailed_records": 0,
+        "fields_available": {
+          "availability": 0,
+          "binding": 0,
+          "category_ids": 0,
+          "class": 0,
+          "crafting": 0,
+          "disenchant": 0,
+          "disenchantable": 0,
+          "effects": 0,
+          "item_sets": 0,
+          "level": 0,
+          "lines": 0,
+          "quality": 0,
+          "required_level": 0,
+          "slot": 0,
+          "stats": 0,
+          "subclass": 0,
+          "unique": 0,
+          "vendor_sell": 0,
+          "vendors": 0,
+          "weapon": 0
+        },
+        "overlapping_names": 3,
+        "conflicting_names": 0,
+        "builds": [
+          {
+            "build": null,
+            "records": 102
+          }
+        ]
+      },
+      {
+        "provider": "foreverdb",
+        "checked": 3970,
+        "names_available": 3947,
+        "name_only": 3,
+        "detailed_records": 3951,
+        "fields_available": {
+          "availability": 3944,
+          "binding": 2790,
+          "category_ids": 3944,
+          "class": 3944,
+          "crafting": 9,
+          "disenchant": 2778,
+          "disenchantable": 3944,
+          "effects": 583,
+          "item_sets": 0,
+          "level": 3944,
+          "lines": 0,
+          "quality": 3944,
+          "required_level": 3944,
+          "slot": 3944,
+          "stats": 1466,
+          "subclass": 3944,
+          "unique": 3944,
+          "vendor_sell": 3919,
+          "vendors": 6,
+          "weapon": 600
+        },
+        "overlapping_names": 3478,
+        "conflicting_names": 6,
+        "builds": [
+          {
+            "build": "1.60.1.70938",
+            "records": 3954
+          }
+        ]
+      },
+      {
+        "provider": "thewowdb",
+        "checked": 2590,
+        "names_available": 2396,
+        "name_only": 0,
+        "detailed_records": 2396,
+        "fields_available": {
+          "availability": 0,
+          "binding": 0,
+          "category_ids": 0,
+          "class": 0,
+          "crafting": 0,
+          "disenchant": 0,
+          "disenchantable": 0,
+          "effects": 0,
+          "item_sets": 0,
+          "level": 2396,
+          "lines": 2340,
+          "quality": 2396,
+          "required_level": 2280,
+          "slot": 0,
+          "stats": 0,
+          "subclass": 0,
+          "unique": 0,
+          "vendor_sell": 1293,
+          "vendors": 0,
+          "weapon": 0
+        },
+        "overlapping_names": 2096,
+        "conflicting_names": 6,
+        "builds": [
+          {
+            "build": "wow_classic_beta-1.60.1.70532",
+            "records": 2396
+          }
+        ]
+      }
+    ],
+    "queue_status": {
+      "cancelled": 2,
+      "completed": 10015,
+      "queued": 1,
+      "skipped": 265
+    },
+    "rate_limited_queue": 0,
+    "recent_results": [
+      {
+        "item_id": 7943,
+        "provider": "thewowdb",
+        "at": "2026-11-17T03:24:03.653245+00:00",
+        "result": {
+          "provider": "thewowdb",
+          "item_id": 7943,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "quality",
+            "lines",
+            "level",
+            "required_level",
+            "vendor_sell",
+            "name"
+          ],
+          "source": {
+            "provider": "thewowdb",
+            "edition": "forever",
+            "build": "wow_classic_beta-1.60.1.70532",
+            "locale": "en_US",
+            "confidence": "community_beta",
+            "attribution": {
+              "text": "Data from TheWoWDB (thewowdb.com)",
+              "url": "https://thewowdb.com/wow-forever/item/wicked-mithril-blade-7943/"
+            },
+            "url": "https://thewowdb.com/api/v1/forever/item/7943",
+            "retrieved_at": "2026-11-17T03:24:03.653245+00:00",
+            "payload_hash": "a1f6cabee41b9ba654eca28eb11226283b1ea98c1df443b8580943475cf354f5",
+            "icon_url": "https://render.worldofwarcraft.com/forever-eu/icons/56/135280.jpg"
+          },
+          "new_fields": [],
+          "outcome": "already_known"
+        }
+      },
+      {
+        "item_id": 7554,
+        "provider": "thewowdb",
+        "at": "2026-11-17T03:23:51.937563+00:00",
+        "result": {
+          "provider": "thewowdb",
+          "item_id": 7554,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "quality",
+            "lines",
+            "level",
+            "required_level",
+            "vendor_sell",
+            "name"
+          ],
+          "source": {
+            "provider": "thewowdb",
+            "edition": "forever",
+            "build": "wow_classic_beta-1.60.1.70532",
+            "locale": "en_US",
+            "confidence": "community_beta",
+            "attribution": {
+              "text": "Data from TheWoWDB (thewowdb.com)",
+              "url": "https://thewowdb.com/wow-forever/item/willow-branch-7554/"
+            },
+            "url": "https://thewowdb.com/api/v1/forever/item/7554",
+            "retrieved_at": "2026-11-17T03:23:51.937563+00:00",
+            "payload_hash": "3e9fc86c910809a6f5150b0ab704cec5e3c9843334fb3bf3838b7a775b046521",
+            "icon_url": "https://render.worldofwarcraft.com/us/icons/56/inv_staff_02.jpg"
+          },
+          "new_fields": [],
+          "outcome": "already_known"
+        }
+      },
+      {
+        "item_id": 4827,
+        "provider": "thewowdb",
+        "at": "2026-11-17T03:23:39.358070+00:00",
+        "result": {
+          "provider": "thewowdb",
+          "item_id": 4827,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "quality",
+            "lines",
+            "level",
+            "required_level",
+            "vendor_sell",
+            "name"
+          ],
+          "source": {
+            "provider": "thewowdb",
+            "edition": "forever",
+            "build": "wow_classic_beta-1.60.1.70532",
+            "locale": "en_US",
+            "confidence": "community_beta",
+            "attribution": {
+              "text": "Data from TheWoWDB (thewowdb.com)",
+              "url": "https://thewowdb.com/wow-forever/item/wizard-s-belt-4827/"
+            },
+            "url": "https://thewowdb.com/api/v1/forever/item/4827",
+            "retrieved_at": "2026-11-17T03:23:39.358070+00:00",
+            "payload_hash": "82e65457c2babda53a8ba3a9a2cf2b7343405dc79463c27516c746fc629be049",
+            "icon_url": "https://thewowdb.com/assets/icons/inv_belt_29.jpg"
+          },
+          "new_fields": [],
+          "outcome": "already_known"
+        }
+      },
+      {
+        "item_id": 4794,
+        "provider": "thewowdb",
+        "at": "2026-11-17T03:23:32.469771+00:00",
+        "result": {
+          "provider": "thewowdb",
+          "item_id": 4794,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "quality",
+            "lines",
+            "level",
+            "required_level",
+            "vendor_sell",
+            "name"
+          ],
+          "source": {
+            "provider": "thewowdb",
+            "edition": "forever",
+            "build": "wow_classic_beta-1.60.1.70532",
+            "locale": "en_US",
+            "confidence": "community_beta",
+            "attribution": {
+              "text": "Data from TheWoWDB (thewowdb.com)",
+              "url": "https://thewowdb.com/wow-forever/item/wolf-bracers-4794/"
+            },
+            "url": "https://thewowdb.com/api/v1/forever/item/4794",
+            "retrieved_at": "2026-11-17T03:23:32.469771+00:00",
+            "payload_hash": "c46fb40d768e7588aee6301fae54732a6120c0c193fde6d1f63624d3f04e4171",
+            "icon_url": "https://render.worldofwarcraft.com/us/icons/56/inv_bracer_04.jpg"
+          },
+          "new_fields": [],
+          "outcome": "already_known"
+        }
+      },
+      {
+        "item_id": 4786,
+        "provider": "thewowdb",
+        "at": "2026-11-17T03:23:27.057072+00:00",
+        "result": {
+          "provider": "thewowdb",
+          "item_id": 4786,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "quality",
+            "lines",
+            "level",
+            "required_level",
+            "vendor_sell",
+            "name"
+          ],
+          "source": {
+            "provider": "thewowdb",
+            "edition": "forever",
+            "build": "wow_classic_beta-1.60.1.70532",
+            "locale": "en_US",
+            "confidence": "community_beta",
+            "attribution": {
+              "text": "Data from TheWoWDB (thewowdb.com)",
+              "url": "https://thewowdb.com/wow-forever/item/wise-man-s-belt-4786/"
+            },
+            "url": "https://thewowdb.com/api/v1/forever/item/4786",
+            "retrieved_at": "2026-11-17T03:23:27.057072+00:00",
+            "payload_hash": "6b6c0cf3f332e361d3243a139b613fc0c7f0980daae15d446a5c01c4d0d4b3a0",
+            "icon_url": "https://render.worldofwarcraft.com/us/icons/56/inv_belt_02.jpg"
+          },
+          "new_fields": [],
+          "outcome": "already_known"
+        }
+      },
+      {
+        "item_id": 4240,
+        "provider": "thewowdb",
+        "at": "2026-11-17T03:23:21.684381+00:00",
+        "result": {
+          "provider": "thewowdb",
+          "item_id": 4240,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "quality",
+            "lines",
+            "level",
+            "vendor_sell",
+            "name"
+          ],
+          "source": {
+            "provider": "thewowdb",
+            "edition": "forever",
+            "build": "wow_classic_beta-1.60.1.70532",
+            "locale": "en_US",
+            "confidence": "community_beta",
+            "attribution": {
+              "text": "Data from TheWoWDB (thewowdb.com)",
+              "url": "https://thewowdb.com/wow-forever/item/woolen-bag-4240/"
+            },
+            "url": "https://thewowdb.com/api/v1/forever/item/4240",
+            "retrieved_at": "2026-11-17T03:23:21.684381+00:00",
+            "payload_hash": "dbdf43a1fbc8a82a22adcd5c8c308f3be03ae32a6c4d9530bf09309165aaddc8",
+            "icon_url": "https://render.worldofwarcraft.com/us/icons/56/inv_misc_bag_10.jpg"
+          },
+          "new_fields": [],
+          "outcome": "already_known"
+        }
+      },
+      {
+        "item_id": 3322,
+        "provider": "thewowdb",
+        "at": "2026-11-17T03:23:16.383715+00:00",
+        "result": {
+          "provider": "thewowdb",
+          "item_id": 3322,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "quality",
+            "lines",
+            "level",
+            "required_level",
+            "vendor_sell",
+            "name"
+          ],
+          "source": {
+            "provider": "thewowdb",
+            "edition": "forever",
+            "build": "wow_classic_beta-1.60.1.70532",
+            "locale": "en_US",
+            "confidence": "community_beta",
+            "attribution": {
+              "text": "Data from TheWoWDB (thewowdb.com)",
+              "url": "https://thewowdb.com/wow-forever/item/wispy-cloak-3322/"
+            },
+            "url": "https://thewowdb.com/api/v1/forever/item/3322",
+            "retrieved_at": "2026-11-17T03:23:16.383715+00:00",
+            "payload_hash": "c3e81aa185ac68eb93744881114b066004257f93cdab8f4cb665458c95e364b9",
+            "icon_url": "https://thewowdb.com/assets/icons/inv_misc_cape_11.jpg"
+          },
+          "new_fields": [],
+          "outcome": "already_known"
+        }
+      },
+      {
+        "item_id": 3189,
+        "provider": "thewowdb",
+        "at": "2026-11-17T03:23:10.956551+00:00",
+        "result": {
+          "provider": "thewowdb",
+          "item_id": 3189,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "quality",
+            "lines",
+            "level",
+            "required_level",
+            "vendor_sell",
+            "name"
+          ],
+          "source": {
+            "provider": "thewowdb",
+            "edition": "forever",
+            "build": "wow_classic_beta-1.60.1.70532",
+            "locale": "en_US",
+            "confidence": "community_beta",
+            "attribution": {
+              "text": "Data from TheWoWDB (thewowdb.com)",
+              "url": "https://thewowdb.com/wow-forever/item/wood-chopper-3189/"
+            },
+            "url": "https://thewowdb.com/api/v1/forever/item/3189",
+            "retrieved_at": "2026-11-17T03:23:10.956551+00:00",
+            "payload_hash": "1a9490408812a6ee2787b671fb1eea0ec7d3e77745bd93cb8779e42cecedb7b3",
+            "icon_url": "https://render.worldofwarcraft.com/us/icons/56/inv_axe_11.jpg"
+          },
+          "new_fields": [],
+          "outcome": "already_known"
+        }
+      },
+      {
+        "item_id": 2584,
+        "provider": "thewowdb",
+        "at": "2026-11-17T03:23:05.595037+00:00",
+        "result": {
+          "provider": "thewowdb",
+          "item_id": 2584,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "quality",
+            "lines",
+            "level",
+            "required_level",
+            "vendor_sell",
+            "name"
+          ],
+          "source": {
+            "provider": "thewowdb",
+            "edition": "forever",
+            "build": "wow_classic_beta-1.60.1.70532",
+            "locale": "en_US",
+            "confidence": "community_beta",
+            "attribution": {
+              "text": "Data from TheWoWDB (thewowdb.com)",
+              "url": "https://thewowdb.com/wow-forever/item/woolen-cape-2584/"
+            },
+            "url": "https://thewowdb.com/api/v1/forever/item/2584",
+            "retrieved_at": "2026-11-17T03:23:05.595037+00:00",
+            "payload_hash": "efddce538a00314dbec66f008b226e579f5e6eda4f847a7f3113ec24710b0b73",
+            "icon_url": "https://render.worldofwarcraft.com/us/icons/56/inv_misc_cape_10.jpg"
+          },
+          "new_fields": [],
+          "outcome": "already_known"
+        }
+      },
+      {
+        "item_id": 2583,
+        "provider": "thewowdb",
+        "at": "2026-11-17T03:23:00.155434+00:00",
+        "result": {
+          "provider": "thewowdb",
+          "item_id": 2583,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "quality",
+            "lines",
+            "level",
+            "required_level",
+            "vendor_sell",
+            "name"
+          ],
+          "source": {
+            "provider": "thewowdb",
+            "edition": "forever",
+            "build": "wow_classic_beta-1.60.1.70532",
+            "locale": "en_US",
+            "confidence": "community_beta",
+            "attribution": {
+              "text": "Data from TheWoWDB (thewowdb.com)",
+              "url": "https://thewowdb.com/wow-forever/item/woolen-boots-2583/"
+            },
+            "url": "https://thewowdb.com/api/v1/forever/item/2583",
+            "retrieved_at": "2026-11-17T03:23:00.155434+00:00",
+            "payload_hash": "24fd560f3460e96863df01fcb03e0ffbdaed5ad9a7f98bd0482d9991c200c5a2",
+            "icon_url": "https://render.worldofwarcraft.com/us/icons/56/inv_boots_09.jpg"
+          },
+          "new_fields": [],
+          "outcome": "already_known"
+        }
+      },
+      {
+        "item_id": 2376,
+        "provider": "thewowdb",
+        "at": "2026-11-17T03:22:54.344594+00:00",
+        "result": {
+          "provider": "thewowdb",
+          "item_id": 2376,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "quality",
+            "lines",
+            "level",
+            "required_level",
+            "vendor_sell",
+            "name"
+          ],
+          "source": {
+            "provider": "thewowdb",
+            "edition": "forever",
+            "build": "wow_classic_beta-1.60.1.70532",
+            "locale": "en_US",
+            "confidence": "community_beta",
+            "attribution": {
+              "text": "Data from TheWoWDB (thewowdb.com)",
+              "url": "https://thewowdb.com/wow-forever/item/worn-heater-shield-2376/"
+            },
+            "url": "https://thewowdb.com/api/v1/forever/item/2376",
+            "retrieved_at": "2026-11-17T03:22:54.344594+00:00",
+            "payload_hash": "98f9a7be282e7d76149987801826d7dbaf26198dcdad1d64a91d763492623291",
+            "icon_url": "https://thewowdb.com/assets/icons/inv_shield_04.jpg"
+          },
+          "new_fields": [],
+          "outcome": "already_known"
+        }
+      },
+      {
+        "item_id": 2369,
+        "provider": "thewowdb",
+        "at": "2026-11-17T03:22:48.027068+00:00",
+        "result": {
+          "provider": "thewowdb",
+          "item_id": 2369,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "quality",
+            "lines",
+            "level",
+            "required_level",
+            "vendor_sell",
+            "name"
+          ],
+          "source": {
+            "provider": "thewowdb",
+            "edition": "forever",
+            "build": "wow_classic_beta-1.60.1.70532",
+            "locale": "en_US",
+            "confidence": "community_beta",
+            "attribution": {
+              "text": "Data from TheWoWDB (thewowdb.com)",
+              "url": "https://thewowdb.com/wow-forever/item/woven-gloves-2369/"
+            },
+            "url": "https://thewowdb.com/api/v1/forever/item/2369",
+            "retrieved_at": "2026-11-17T03:22:48.027068+00:00",
+            "payload_hash": "059e9679e345e6385380563b6f55166c739c335fa8f3c397f5e9975b42a6fd2f",
+            "icon_url": "https://thewowdb.com/assets/icons/inv_gauntlets_23.jpg"
+          },
+          "new_fields": [],
+          "outcome": "already_known"
+        }
+      },
+      {
+        "item_id": 2366,
+        "provider": "thewowdb",
+        "at": "2026-11-17T03:22:42.263643+00:00",
+        "result": {
+          "provider": "thewowdb",
+          "item_id": 2366,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "quality",
+            "lines",
+            "level",
+            "required_level",
+            "vendor_sell",
+            "name"
+          ],
+          "source": {
+            "provider": "thewowdb",
+            "edition": "forever",
+            "build": "wow_classic_beta-1.60.1.70532",
+            "locale": "en_US",
+            "confidence": "community_beta",
+            "attribution": {
+              "text": "Data from TheWoWDB (thewowdb.com)",
+              "url": "https://thewowdb.com/wow-forever/item/woven-pants-2366/"
+            },
+            "url": "https://thewowdb.com/api/v1/forever/item/2366",
+            "retrieved_at": "2026-11-17T03:22:42.263643+00:00",
+            "payload_hash": "b3b9ae599b00b463cd98f7b14fbfd58e965011529bd7ec48148d837320766a76",
+            "icon_url": "https://thewowdb.com/assets/icons/inv_pants_06.jpg"
+          },
+          "new_fields": [],
+          "outcome": "already_known"
+        }
+      },
+      {
+        "item_id": 2364,
+        "provider": "thewowdb",
+        "at": "2026-11-17T03:22:35.931751+00:00",
+        "result": {
+          "provider": "thewowdb",
+          "item_id": 2364,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "quality",
+            "lines",
+            "level",
+            "required_level",
+            "vendor_sell",
+            "name"
+          ],
+          "source": {
+            "provider": "thewowdb",
+            "edition": "forever",
+            "build": "wow_classic_beta-1.60.1.70532",
+            "locale": "en_US",
+            "confidence": "community_beta",
+            "attribution": {
+              "text": "Data from TheWoWDB (thewowdb.com)",
+              "url": "https://thewowdb.com/wow-forever/item/woven-vest-2364/"
+            },
+            "url": "https://thewowdb.com/api/v1/forever/item/2364",
+            "retrieved_at": "2026-11-17T03:22:35.931751+00:00",
+            "payload_hash": "269c7f9a3d171f20800bd042fbbf38e519103712d36234436505f281e2f35e23",
+            "icon_url": "https://thewowdb.com/assets/icons/inv_shirt_07.jpg"
+          },
+          "new_fields": [],
+          "outcome": "already_known"
+        }
+      },
+      {
+        "item_id": 2215,
+        "provider": "thewowdb",
+        "at": "2026-11-17T03:22:30.485019+00:00",
+        "result": {
+          "provider": "thewowdb",
+          "item_id": 2215,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "quality",
+            "lines",
+            "level",
+            "required_level",
+            "vendor_sell",
+            "name"
+          ],
+          "source": {
+            "provider": "thewowdb",
+            "edition": "forever",
+            "build": "wow_classic_beta-1.60.1.70532",
+            "locale": "en_US",
+            "confidence": "community_beta",
+            "attribution": {
+              "text": "Data from TheWoWDB (thewowdb.com)",
+              "url": "https://thewowdb.com/wow-forever/item/wooden-shield-2215/"
+            },
+            "url": "https://thewowdb.com/api/v1/forever/item/2215",
+            "retrieved_at": "2026-11-17T03:22:30.485019+00:00",
+            "payload_hash": "30a0c49e070b94a34fbdbf944c2dc9a67f9b86a661b6bf6409b8e7410d0668ae",
+            "icon_url": "https://render.worldofwarcraft.com/us/icons/56/inv_shield_09.jpg"
+          },
+          "new_fields": [],
+          "outcome": "already_known"
+        }
+      },
+      {
+        "item_id": 2214,
+        "provider": "thewowdb",
+        "at": "2026-11-17T03:22:25.161858+00:00",
+        "result": {
+          "provider": "thewowdb",
+          "item_id": 2214,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "quality",
+            "lines",
+            "level",
+            "required_level",
+            "vendor_sell",
+            "name"
+          ],
+          "source": {
+            "provider": "thewowdb",
+            "edition": "forever",
+            "build": "wow_classic_beta-1.60.1.70532",
+            "locale": "en_US",
+            "confidence": "community_beta",
+            "attribution": {
+              "text": "Data from TheWoWDB (thewowdb.com)",
+              "url": "https://thewowdb.com/wow-forever/item/wooden-buckler-2214/"
+            },
+            "url": "https://thewowdb.com/api/v1/forever/item/2214",
+            "retrieved_at": "2026-11-17T03:22:25.161858+00:00",
+            "payload_hash": "eff67c811adfdc2581d9d5d005d9869da42b01f36b2548c8590a3cc122c7e05e",
+            "icon_url": "https://render.worldofwarcraft.com/us/icons/56/inv_shield_09.jpg"
+          },
+          "new_fields": [],
+          "outcome": "already_known"
+        }
+      },
+      {
+        "item_id": 2092,
+        "provider": "thewowdb",
+        "at": "2026-11-17T03:22:19.709071+00:00",
+        "result": {
+          "provider": "thewowdb",
+          "item_id": 2092,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "quality",
+            "lines",
+            "level",
+            "vendor_sell",
+            "name"
+          ],
+          "source": {
+            "provider": "thewowdb",
+            "edition": "forever",
+            "build": "wow_classic_beta-1.60.1.70532",
+            "locale": "en_US",
+            "confidence": "community_beta",
+            "attribution": {
+              "text": "Data from TheWoWDB (thewowdb.com)",
+              "url": "https://thewowdb.com/wow-forever/item/worn-dagger-2092/"
+            },
+            "url": "https://thewowdb.com/api/v1/forever/item/2092",
+            "retrieved_at": "2026-11-17T03:22:19.709071+00:00",
+            "payload_hash": "229b3b72337f55d6c8365c8974eabadffb0b4adfeedd4ccbb2cd2092a0c258c4",
+            "icon_url": "https://render.worldofwarcraft.com/us/icons/56/inv_weapon_shortblade_05.jpg"
+          },
+          "new_fields": [],
+          "outcome": "already_known"
+        }
+      },
+      {
+        "item_id": 1820,
+        "provider": "thewowdb",
+        "at": "2026-11-17T03:22:14.334941+00:00",
+        "result": {
+          "provider": "thewowdb",
+          "item_id": 1820,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "quality",
+            "lines",
+            "level",
+            "required_level",
+            "vendor_sell",
+            "name"
+          ],
+          "source": {
+            "provider": "thewowdb",
+            "edition": "forever",
+            "build": "wow_classic_beta-1.60.1.70532",
+            "locale": "en_US",
+            "confidence": "community_beta",
+            "attribution": {
+              "text": "Data from TheWoWDB (thewowdb.com)",
+              "url": "https://thewowdb.com/wow-forever/item/wooden-maul-1820/"
+            },
+            "url": "https://thewowdb.com/api/v1/forever/item/1820",
+            "retrieved_at": "2026-11-17T03:22:14.334941+00:00",
+            "payload_hash": "5f0c4256b816831f9091038400c99dcd3cf4e7e0195a71c3fab30073f042c6ee",
+            "icon_url": "https://thewowdb.com/assets/icons/inv_hammer_15.jpg"
+          },
+          "new_fields": [],
+          "outcome": "already_known"
+        }
+      },
+      {
+        "item_id": 1737,
+        "provider": "thewowdb",
+        "at": "2026-11-17T03:22:08.913115+00:00",
+        "result": {
+          "provider": "thewowdb",
+          "item_id": 1737,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "quality",
+            "lines",
+            "level",
+            "required_level",
+            "vendor_sell",
+            "name"
+          ],
+          "source": {
+            "provider": "thewowdb",
+            "edition": "forever",
+            "build": "wow_classic_beta-1.60.1.70532",
+            "locale": "en_US",
+            "confidence": "community_beta",
+            "attribution": {
+              "text": "Data from TheWoWDB (thewowdb.com)",
+              "url": "https://thewowdb.com/wow-forever/item/worn-mail-vest-1737/"
+            },
+            "url": "https://thewowdb.com/api/v1/forever/item/1737",
+            "retrieved_at": "2026-11-17T03:22:08.913115+00:00",
+            "payload_hash": "71fe31a4524949439cfe0d50c370e5931818ff90bef9f4c39261d0db1924a000",
+            "icon_url": "https://render.worldofwarcraft.com/us/icons/56/inv_chest_chain.jpg"
+          },
+          "new_fields": [],
+          "outcome": "already_known"
+        }
+      },
+      {
+        "item_id": 1735,
+        "provider": "thewowdb",
+        "at": "2026-11-17T03:22:03.531704+00:00",
+        "result": {
+          "provider": "thewowdb",
+          "item_id": 1735,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "quality",
+            "lines",
+            "level",
+            "required_level",
+            "vendor_sell",
+            "name"
+          ],
+          "source": {
+            "provider": "thewowdb",
+            "edition": "forever",
+            "build": "wow_classic_beta-1.60.1.70532",
+            "locale": "en_US",
+            "confidence": "community_beta",
+            "attribution": {
+              "text": "Data from TheWoWDB (thewowdb.com)",
+              "url": "https://thewowdb.com/wow-forever/item/worn-mail-pants-1735/"
+            },
+            "url": "https://thewowdb.com/api/v1/forever/item/1735",
+            "retrieved_at": "2026-11-17T03:22:03.531704+00:00",
+            "payload_hash": "0ea09f194f2331e97c1765485ed1258f35c40bad84e0a70ee84c398517332580",
+            "icon_url": "https://render.worldofwarcraft.com/us/icons/56/inv_pants_03.jpg"
+          },
+          "new_fields": [],
+          "outcome": "already_known"
+        }
+      }
+    ]
+  },
+  "storage": {
+    "growth": {
+      "samples": [
+        {
+          "sampled_at": "2026-11-14T01:00:00+00:00",
+          "database_bytes": 8484531
+        },
+        {
+          "sampled_at": "2026-11-14T02:00:00+00:00",
+          "database_bytes": 8517299
+        },
+        {
+          "sampled_at": "2026-11-14T03:00:00+00:00",
+          "database_bytes": 46593715
+        },
+        {
+          "sampled_at": "2026-11-14T04:00:00+00:00",
+          "database_bytes": 81409715
+        },
+        {
+          "sampled_at": "2026-11-14T05:00:00+00:00",
+          "database_bytes": 118372019
+        },
+        {
+          "sampled_at": "2026-11-14T06:00:00+00:00",
+          "database_bytes": 155883187
+        },
+        {
+          "sampled_at": "2026-11-14T07:00:00+00:00",
+          "database_bytes": 193877683
+        },
+        {
+          "sampled_at": "2026-11-14T08:00:00+00:00",
+          "database_bytes": 232355507
+        },
+        {
+          "sampled_at": "2026-11-14T09:00:00+00:00",
+          "database_bytes": 270464691
+        },
+        {
+          "sampled_at": "2026-11-14T10:00:00+00:00",
+          "database_bytes": 307721907
+        },
+        {
+          "sampled_at": "2026-11-14T11:00:00+00:00",
+          "database_bytes": 343070387
+        },
+        {
+          "sampled_at": "2026-11-14T12:00:00+00:00",
+          "database_bytes": 376526515
+        },
+        {
+          "sampled_at": "2026-11-14T13:00:00+00:00",
+          "database_bytes": 408614579
+        },
+        {
+          "sampled_at": "2026-11-14T14:00:00+00:00",
+          "database_bytes": 438949555
+        },
+        {
+          "sampled_at": "2026-11-14T15:00:00+00:00",
+          "database_bytes": 468342451
+        },
+        {
+          "sampled_at": "2026-11-14T16:00:00+00:00",
+          "database_bytes": 529880755
+        },
+        {
+          "sampled_at": "2026-11-14T17:00:00+00:00",
+          "database_bytes": 560756403
+        },
+        {
+          "sampled_at": "2026-11-14T18:00:00+00:00",
+          "database_bytes": 592828083
+        },
+        {
+          "sampled_at": "2026-11-14T19:00:00+00:00",
+          "database_bytes": 626702003
+        },
+        {
+          "sampled_at": "2026-11-14T20:00:00+00:00",
+          "database_bytes": 662615731
+        },
+        {
+          "sampled_at": "2026-11-14T21:00:00+00:00",
+          "database_bytes": 700176051
+        },
+        {
+          "sampled_at": "2026-11-14T22:00:00+00:00",
+          "database_bytes": 739735219
+        },
+        {
+          "sampled_at": "2026-11-14T23:00:00+00:00",
+          "database_bytes": 780777139
+        },
+        {
+          "sampled_at": "2026-11-15T00:00:00+00:00",
+          "database_bytes": 822875827
+        },
+        {
+          "sampled_at": "2026-11-15T01:00:00+00:00",
+          "database_bytes": 865539763
+        },
+        {
+          "sampled_at": "2026-11-15T02:00:00+00:00",
+          "database_bytes": 908539571
+        },
+        {
+          "sampled_at": "2026-11-15T03:00:00+00:00",
+          "database_bytes": 962057907
+        },
+        {
+          "sampled_at": "2026-11-15T04:00:00+00:00",
+          "database_bytes": 1006311091
+        },
+        {
+          "sampled_at": "2026-11-15T05:00:00+00:00",
+          "database_bytes": 1052219059
+        },
+        {
+          "sampled_at": "2026-11-15T06:00:00+00:00",
+          "database_bytes": 1097283251
+        },
+        {
+          "sampled_at": "2026-11-15T07:00:00+00:00",
+          "database_bytes": 1141905075
+        },
+        {
+          "sampled_at": "2026-11-15T08:00:00+00:00",
+          "database_bytes": 1186674355
+        },
+        {
+          "sampled_at": "2026-11-15T09:00:00+00:00",
+          "database_bytes": 1230247603
+        },
+        {
+          "sampled_at": "2026-11-15T10:00:00+00:00",
+          "database_bytes": 1272747699
+        },
+        {
+          "sampled_at": "2026-11-15T11:00:00+00:00",
+          "database_bytes": 1313003187
+        },
+        {
+          "sampled_at": "2026-11-15T12:00:00+00:00",
+          "database_bytes": 1350629043
+        },
+        {
+          "sampled_at": "2026-11-15T13:00:00+00:00",
+          "database_bytes": 1385846451
+        },
+        {
+          "sampled_at": "2026-11-15T14:00:00+00:00",
+          "database_bytes": 1419597491
+        },
+        {
+          "sampled_at": "2026-11-15T15:00:00+00:00",
+          "database_bytes": 1452889779
+        },
+        {
+          "sampled_at": "2026-11-15T16:00:00+00:00",
+          "database_bytes": 1485813427
+        },
+        {
+          "sampled_at": "2026-11-15T17:00:00+00:00",
+          "database_bytes": 1519146675
+        },
+        {
+          "sampled_at": "2026-11-15T18:00:00+00:00",
+          "database_bytes": 1553528499
+        },
+        {
+          "sampled_at": "2026-11-15T19:00:00+00:00",
+          "database_bytes": 1589278387
+        },
+        {
+          "sampled_at": "2026-11-15T20:00:00+00:00",
+          "database_bytes": 1627084467
+        },
+        {
+          "sampled_at": "2026-11-15T21:00:00+00:00",
+          "database_bytes": 1666373299
+        },
+        {
+          "sampled_at": "2026-11-15T22:00:00+00:00",
+          "database_bytes": 1707357875
+        },
+        {
+          "sampled_at": "2026-11-15T23:00:00+00:00",
+          "database_bytes": 1750431411
+        },
+        {
+          "sampled_at": "2026-11-16T00:00:00+00:00",
+          "database_bytes": 1794201267
+        },
+        {
+          "sampled_at": "2026-11-16T01:00:00+00:00",
+          "database_bytes": 1837840051
+        },
+        {
+          "sampled_at": "2026-11-16T02:00:00+00:00",
+          "database_bytes": 1882633907
+        },
+        {
+          "sampled_at": "2026-11-16T03:00:00+00:00",
+          "database_bytes": 1939003059
+        },
+        {
+          "sampled_at": "2026-11-16T04:00:00+00:00",
+          "database_bytes": 1996019379
+        },
+        {
+          "sampled_at": "2026-11-16T05:00:00+00:00",
+          "database_bytes": 2042631859
+        },
+        {
+          "sampled_at": "2026-11-16T06:00:00+00:00",
+          "database_bytes": 2089703091
+        },
+        {
+          "sampled_at": "2026-11-16T07:00:00+00:00",
+          "database_bytes": 2134578867
+        },
+        {
+          "sampled_at": "2026-11-16T08:00:00+00:00",
+          "database_bytes": 2178578099
+        },
+        {
+          "sampled_at": "2026-11-16T09:00:00+00:00",
+          "database_bytes": 2220512947
+        },
+        {
+          "sampled_at": "2026-11-16T10:00:00+00:00",
+          "database_bytes": 2260817587
+        },
+        {
+          "sampled_at": "2026-11-16T11:00:00+00:00",
+          "database_bytes": 2298853043
+        },
+        {
+          "sampled_at": "2026-11-16T12:00:00+00:00",
+          "database_bytes": 2334054067
+        },
+        {
+          "sampled_at": "2026-11-16T13:00:00+00:00",
+          "database_bytes": 2370434739
+        },
+        {
+          "sampled_at": "2026-11-16T14:00:00+00:00",
+          "database_bytes": 2407503539
+        },
+        {
+          "sampled_at": "2026-11-16T15:00:00+00:00",
+          "database_bytes": 2442466995
+        },
+        {
+          "sampled_at": "2026-11-16T16:00:00+00:00",
+          "database_bytes": 2478708403
+        },
+        {
+          "sampled_at": "2026-11-16T17:00:00+00:00",
+          "database_bytes": 2513942195
+        },
+        {
+          "sampled_at": "2026-11-16T18:00:00+00:00",
+          "database_bytes": 2549102259
+        },
+        {
+          "sampled_at": "2026-11-16T19:00:00+00:00",
+          "database_bytes": 2585097907
+        },
+        {
+          "sampled_at": "2026-11-16T20:00:00+00:00",
+          "database_bytes": 2621585075
+        },
+        {
+          "sampled_at": "2026-11-16T21:00:00+00:00",
+          "database_bytes": 2655442611
+        },
+        {
+          "sampled_at": "2026-11-16T22:00:00+00:00",
+          "database_bytes": 2689423027
+        },
+        {
+          "sampled_at": "2026-11-16T23:00:00+00:00",
+          "database_bytes": 2726786739
+        },
+        {
+          "sampled_at": "2026-11-17T00:00:00+00:00",
+          "database_bytes": 2764289715
+        },
+        {
+          "sampled_at": "2026-11-17T01:00:00+00:00",
+          "database_bytes": 2802931379
+        },
+        {
+          "sampled_at": "2026-11-17T02:00:00+00:00",
+          "database_bytes": 2842662579
+        },
+        {
+          "sampled_at": "2026-11-17T03:00:00+00:00",
+          "database_bytes": 2884728499
+        }
+      ],
+      "delta_bytes": 2876243968,
+      "elapsed_seconds": 266400,
+      "bytes_per_day": 932835882,
+      "retention_days": 90,
+      "interval_seconds": 3600
+    },
+    "database_bytes": 2929727155,
+    "snapshots": 75,
+    "observations": 829,
+    "retention": {
+      "historical_observations": "indefinite_private",
+      "guidance": "owner_provided_original_pending",
+      "raw_listing_days": 7,
+      "detailed_statistics_days": 90,
+      "daily_statistics": "indefinite_private",
+      "compaction_enabled": false
+    },
+    "backup": {
+      "status": "failed",
+      "last_restoration_verified_at": "2026-11-16T05:38:06.150830+00:00",
+      "last_success": "2026-11-16T05:35:54.118634+00:00",
+      "checked_at": "2026-11-17T03:12:34.858951+00:00",
+      "error": "Backup failed; check database health and disk budgets",
+      "restored_archive_filename": "market-development-20261116T053407650838Z.dump",
+      "restored_archive_sha256": "0cde5d55eb4596d7d33bcd5ea284b31030ebfb49200a19cc723c8b52c4a3d254",
+      "restored_archive_created_at": "2026-11-16T05:35:54.118634+00:00"
+    }
+  },
+  "retention": {
+    "raw_days": 7,
+    "intraday_days": 90,
+    "daily_days": 365,
+    "operational_days": 90,
+    "security_days": 365,
+    "revision": 0,
+    "policy_hash": "04b7502127253363247dbad25b0fe2fd594f997a7364b9d5ddaf2b3146c2756e",
+    "application_authorized": false,
+    "daily_support_days": 60,
+    "batch_row_limit": 5000,
+    "backup_restore_ready": false,
+    "policy_configured": false,
+    "scheduled": false,
+    "completed_batches": 0,
+    "last_completed_at": null,
+    "notice": "Proposal only. Current snapshot and 60-day valuation support are protected; live application requires separate owner/operator authorization."
+  },
+  "preferences_preserved": true,
+  "probe_preference_revision_restored": true,
+  "passed": true,
+  "deal_icons_verified_without_hover": true,
+  "deal_media_same_origin": true
+}

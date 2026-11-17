@@ -1,0 +1,81 @@
+{
+  "unchanged_container_identities": [
+    "twichui-market-db-1",
+    "twichui-market-enrichment-1",
+    "twichui-market-monitor-1",
+    "twichui-market-backup-1"
+  ],
+  "necessary_replacements": [
+    "api",
+    "local-api",
+    "proxy",
+    "worker"
+  ],
+  "collector_replacement_reason": "Daily maintenance imported old models lacking CompanionAuthorization; new maintenance retains referenced/native credentials. Worker loop and ingest bytes identical, default asking-v1-provisional unchanged. Persisted schedule/global single-collector lock retained.",
+  "deployed": {
+    "twichui-market-enrichment-1": {
+      "id": "4ee64ab0d37c1dc06320644b47711e5b0f7908b538ef14c2789f435d00d73c1f",
+      "image": "sha256:b25a1b319916a158107aba0d882cdb217861610e0012015193adf766d6955e94",
+      "revision": "6bb71a61fa3493da3f418288c3af1841fabfb0fc",
+      "started_at": "2026-11-16T06:01:00.085814284Z",
+      "oom_killed": false,
+      "restart_count": 0
+    },
+    "twichui-market-proxy-1": {
+      "id": "b1b03d9c799a417c4935012d15fa37e4be3a132e1ba5f451b05ff6bf6cedf69d",
+      "image": "sha256:197b01f4f4b9e7cf35d574e4c3e6f60f94a462e3dd5b9dccd488fb128d3743d9",
+      "revision": "2920f366f7b5cd32178ae06ae94cea84701ff87f",
+      "started_at": "2026-11-17T03:17:19.281884044Z",
+      "oom_killed": false,
+      "restart_count": 0
+    },
+    "twichui-market-api-1": {
+      "id": "d9da4b8e743000ac32b32e72fa50cfed4248b955b36a6058de45073eb561290e",
+      "image": "sha256:fa5d8f4c18e0421da98a9bd275789d022924000e8d513e2aa50157e000e39f5f",
+      "revision": "2920f366f7b5cd32178ae06ae94cea84701ff87f",
+      "started_at": "2026-11-17T03:17:03.075279063Z",
+      "oom_killed": false,
+      "restart_count": 0
+    },
+    "twichui-market-local-api-1": {
+      "id": "bbe130c1aa5dd7b9033089074f6f9070a933353973139b1edb660b23e5510b4d",
+      "image": "sha256:fa5d8f4c18e0421da98a9bd275789d022924000e8d513e2aa50157e000e39f5f",
+      "revision": "2920f366f7b5cd32178ae06ae94cea84701ff87f",
+      "started_at": "2026-11-17T03:17:03.277125821Z",
+      "oom_killed": false,
+      "restart_count": 0
+    },
+    "twichui-market-backup-1": {
+      "id": "1f1cbba535e2cd64cf900099a5fe92ee662fa9ced84f5f2ae4fa5b28b32d5f9c",
+      "image": "sha256:2669ec98d745fbb77942ed6696162436862334ebaebc71e884853226504b260b",
+      "revision": null,
+      "started_at": "2026-11-15T03:11:29.671470444Z",
+      "oom_killed": false,
+      "restart_count": 0
+    },
+    "twichui-market-worker-1": {
+      "id": "6b7b3e9d7c6c784f632fff5f6926e09ab8f9714a82174b73641bd4df547ab455",
+      "image": "sha256:fa5d8f4c18e0421da98a9bd275789d022924000e8d513e2aa50157e000e39f5f",
+      "revision": "2920f366f7b5cd32178ae06ae94cea84701ff87f",
+      "started_at": "2026-11-17T03:18:39.542347403Z",
+      "oom_killed": false,
+      "restart_count": 0
+    },
+    "twichui-market-monitor-1": {
+      "id": "295cc3e09e4927f38ffa1a221ef3f199f6e065561fb14fca859a8ce6de9228e2",
+      "image": "sha256:0323bca0334572b29d3e8d6c388b214b3c22891242b9e6eec35f4010595fd18a",
+      "revision": null,
+      "started_at": "2026-11-14T04:42:59.157272882Z",
+      "oom_killed": false,
+      "restart_count": 0
+    },
+    "twichui-market-db-1": {
+      "id": "1a138045d430554c64142f230fa1555e61d3414b2926ae9b2606f58fb8fb3642",
+      "image": "sha256:d3244e8ce3f165ee3c93d9c4a4b1d0fe48b3a89e2287b717fdcbbde92d405065",
+      "revision": null,
+      "started_at": "2026-11-14T01:46:45.864726511Z",
+      "oom_killed": false,
+      "restart_count": 0
+    }
+  }
+}

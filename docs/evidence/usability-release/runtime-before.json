@@ -1,0 +1,163 @@
+[
+  {
+    "name": "twichui-market-enrichment-1",
+    "id": "4ee64ab0d37c1dc06320644b47711e5b0f7908b538ef14c2789f435d00d73c1f",
+    "image": "sha256:b25a1b319916a158107aba0d882cdb217861610e0012015193adf766d6955e94",
+    "started_at": "2026-11-16T06:01:00.085814284Z",
+    "mounts": [
+      {
+        "destination": "/run/metadata/keyring.json",
+        "source": "/home/marketdev/.local/share/twichui-market-metadata/keyring.json",
+        "rw": false
+      }
+    ],
+    "environment_sha256": "96d6664879587022d0d408518105f471d0572977764cac761760cbbf8ff54788",
+    "memory_limit": 201326592,
+    "cpu_quota": 250000000
+  },
+  {
+    "name": "twichui-market-proxy-1",
+    "id": "469bfc827f994958f02dcb76dff9cabbafad1114e3552354d44e39a9aa1ae956",
+    "image": "sha256:83d808b1fb145433cbd6127fe3250053f883b71bcb14db9f59229cd1afc12af7",
+    "started_at": "2026-11-16T05:58:29.622078729Z",
+    "mounts": [
+      {
+        "destination": "/data",
+        "source": "/home/marketdev/.local/share/docker/volumes/twichui-market_caddy-data/_data",
+        "rw": true
+      },
+      {
+        "destination": "/etc/caddy/Caddyfile",
+        "source": "/home/marketdev/projects/TwichUI-Market/deploy/Caddyfile.production",
+        "rw": false
+      },
+      {
+        "destination": "/etc/caddy/routes.local.caddy",
+        "source": "/home/marketdev/projects/TwichUI-Market/deploy/routes.local.caddy",
+        "rw": false
+      },
+      {
+        "destination": "/etc/caddy/routes.production.caddy",
+        "source": "/home/marketdev/projects/TwichUI-Market/deploy/routes.production.caddy",
+        "rw": false
+      }
+    ],
+    "environment_sha256": "8400f1f81abe40863929dc136ac4b2217096ee4bca3d37a34ed535d597c8837b",
+    "memory_limit": 134217728,
+    "cpu_quota": 250000000
+  },
+  {
+    "name": "twichui-market-api-1",
+    "id": "9b361ce96ed2c33a728deb3c31671a50bfe935b4fa4af0de2adc0731bf3e190b",
+    "image": "sha256:b25a1b319916a158107aba0d882cdb217861610e0012015193adf766d6955e94",
+    "started_at": "2026-11-16T06:03:06.46600958Z",
+    "mounts": [
+      {
+        "destination": "/backup-status",
+        "source": "/home/marketdev/projects/TwichUI-Market/artifacts/backup-status",
+        "rw": false
+      },
+      {
+        "destination": "/private-beta",
+        "source": "/home/marketdev/.local/share/docker/volumes/twichui-market_companion-private-beta/_data",
+        "rw": false
+      },
+      {
+        "destination": "/run/metadata/keyring.json",
+        "source": "/home/marketdev/.local/share/twichui-market-metadata/keyring.json",
+        "rw": false
+      }
+    ],
+    "environment_sha256": "cb410db429931e35a7f7dc17dbeb1d42632e5f7a217d1a61e6bf5af6fc9f017f",
+    "memory_limit": 402653184,
+    "cpu_quota": 500000000
+  },
+  {
+    "name": "twichui-market-local-api-1",
+    "id": "e69210e0f72774bcfd74733a3aefbb5aa53a0ebf5f5d16a260dd6ed1000fab42",
+    "image": "sha256:b25a1b319916a158107aba0d882cdb217861610e0012015193adf766d6955e94",
+    "started_at": "2026-11-16T05:58:13.620510384Z",
+    "mounts": [
+      {
+        "destination": "/backup-status",
+        "source": "/home/marketdev/projects/TwichUI-Market/artifacts/backup-status",
+        "rw": false
+      },
+      {
+        "destination": "/private-beta",
+        "source": "/home/marketdev/.local/share/docker/volumes/twichui-market_companion-private-beta/_data",
+        "rw": false
+      },
+      {
+        "destination": "/run/metadata/keyring.json",
+        "source": "/home/marketdev/.local/share/twichui-market-metadata/keyring.json",
+        "rw": false
+      }
+    ],
+    "environment_sha256": "98bb1b65871c152d1618fed8fc4ecea2b04fbbc6954e73fa1ece05c68b552272",
+    "memory_limit": 268435456,
+    "cpu_quota": 250000000
+  },
+  {
+    "name": "twichui-market-backup-1",
+    "id": "1f1cbba535e2cd64cf900099a5fe92ee662fa9ced84f5f2ae4fa5b28b32d5f9c",
+    "image": "sha256:2669ec98d745fbb77942ed6696162436862334ebaebc71e884853226504b260b",
+    "started_at": "2026-11-15T03:11:29.671470444Z",
+    "mounts": [
+      {
+        "destination": "/backups",
+        "source": "/home/marketdev/projects/TwichUI-Market/backups",
+        "rw": true
+      },
+      {
+        "destination": "/status",
+        "source": "/home/marketdev/projects/TwichUI-Market/artifacts/backup-status",
+        "rw": true
+      },
+      {
+        "destination": "/var/lib/postgresql/data",
+        "source": "/home/marketdev/.local/share/docker/volumes/f0357311d282d678539ad27e670eda8d698b15e2c93af14392d1a99755b31a2a/_data",
+        "rw": true
+      }
+    ],
+    "environment_sha256": "7593f245811a6addf806e7d4b6e0a36033b12a9ac4b6139a9562d1dbe478b329",
+    "memory_limit": 268435456,
+    "cpu_quota": 250000000
+  },
+  {
+    "name": "twichui-market-worker-1",
+    "id": "dc270e9490b7ed737575b3d0cfd5840d9f13d6894cfef65e1fad1146352072bb",
+    "image": "sha256:d1ae733744b7328199f7926121c34d313027331301bcc60851451275f50a1294",
+    "started_at": "2026-11-14T14:24:43.267611827Z",
+    "mounts": [],
+    "environment_sha256": "42d39862ce66b647bb886715053c5fe0c8ade09ab5a89ab56561dcb66af34cb7",
+    "memory_limit": 402653184,
+    "cpu_quota": 500000000
+  },
+  {
+    "name": "twichui-market-monitor-1",
+    "id": "295cc3e09e4927f38ffa1a221ef3f199f6e065561fb14fca859a8ce6de9228e2",
+    "image": "sha256:0323bca0334572b29d3e8d6c388b214b3c22891242b9e6eec35f4010595fd18a",
+    "started_at": "2026-11-14T04:42:59.157272882Z",
+    "mounts": [],
+    "environment_sha256": "634d77ce7bd2dbbd317cbd211efc40e9c17aae442d6fdd269eb6cd714e6ae47d",
+    "memory_limit": 134217728,
+    "cpu_quota": 250000000
+  },
+  {
+    "name": "twichui-market-db-1",
+    "id": "1a138045d430554c64142f230fa1555e61d3414b2926ae9b2606f58fb8fb3642",
+    "image": "sha256:d3244e8ce3f165ee3c93d9c4a4b1d0fe48b3a89e2287b717fdcbbde92d405065",
+    "started_at": "2026-11-14T01:46:45.864726511Z",
+    "mounts": [
+      {
+        "destination": "/var/lib/postgresql/data",
+        "source": "/home/marketdev/.local/share/docker/volumes/twichui-market_market-data/_data",
+        "rw": true
+      }
+    ],
+    "environment_sha256": "1bce0bb693cd52410df12d4c4b4d19d0902caba28316784de71c28a5b9ea738f",
+    "memory_limit": 805306368,
+    "cpu_quota": 1000000000
+  }
+]

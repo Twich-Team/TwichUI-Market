@@ -1,0 +1,62 @@
+{
+  "source": "Actual authenticated production HTTPS read-only retention preview; fresh temporary owner session",
+  "preview": {
+    "status": "dry_run",
+    "policy": {
+      "raw_days": 7,
+      "intraday_days": 90,
+      "daily_days": 365,
+      "operational_days": 90,
+      "security_days": 365,
+      "revision": 2,
+      "policy_hash": "82fa0b1602b6326bf6d4cd3f0dae8ddfaefe8abe78d029c414d1b8e1570392c9",
+      "application_authorized": false,
+      "daily_support_days": 60,
+      "batch_row_limit": 5000
+    },
+    "stages": [
+      {
+        "stage": "daily_references",
+        "eligible_rows": 0,
+        "estimated_logical_bytes": 0
+      },
+      {
+        "stage": "observations",
+        "eligible_rows": 0,
+        "estimated_logical_bytes": 0
+      },
+      {
+        "stage": "raw_listings",
+        "eligible_rows": 0,
+        "estimated_logical_bytes": 0
+      },
+      {
+        "stage": "intraday_statistics",
+        "eligible_rows": 0,
+        "estimated_logical_bytes": 0
+      },
+      {
+        "stage": "collection_logs",
+        "eligible_rows": 0,
+        "estimated_logical_bytes": 0
+      },
+      {
+        "stage": "security_logs",
+        "eligible_rows": 0,
+        "estimated_logical_bytes": 0
+      }
+    ],
+    "next_stage": null,
+    "next_batch_rows": 0,
+    "database_allocated_bytes": 2930489011,
+    "estimated_logical_bytes": 0,
+    "filesystem_recoverable_bytes": null,
+    "estimate_notice": "Approximate proportional table/index allocation. DELETE permits database reuse; filesystem shrink is unknown. Daily history includes 60 days of supporting references.",
+    "backup_restore_ready": false
+  },
+  "logout_without_csrf_status": 403,
+  "logout_with_csrf_status": 204,
+  "session_after_logout_status": 401,
+  "temporary_grant_id": 256,
+  "destructive_apply_attempted": false
+}

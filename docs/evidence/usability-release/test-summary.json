@@ -1,0 +1,42 @@
+[
+  {
+    "run": 44007355463,
+    "job": "postgres",
+    "lines": [
+      "2026-11-17T03:08:25.4394481Z 605 passed in 260.32s (0:04:20)",
+      "2026-11-17T03:09:19.8375502Z Ran 44 tests in 6.826s",
+      "2026-11-17T03:09:21.0477068Z Ran 16 tests in 0.915s"
+    ]
+  },
+  {
+    "run": 44007355538,
+    "job": "browser",
+    "lines": [
+      "2026-11-17T03:03:34.2923111Z       Tests  129 passed (129)",
+      "2026-11-17T03:07:50.3337964Z   41 passed (2.6m)",
+      "2026-11-17T03:08:06.5422436Z   1 passed (7.3s)",
+      "2026-11-17T03:08:22.3916712Z   1 passed (10.2s)",
+      "2026-11-17T03:08:50.5760645Z   5 passed (23.9s)"
+    ]
+  },
+  {
+    "run": 44007355418,
+    "job": "windows",
+    "lines": [
+      "2026-11-17T03:04:55.3739086Z test result: ok. 29 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.50s\r",
+      "2026-11-17T03:05:08.9212913Z test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 13.53s\r",
+      "2026-11-17T03:05:09.3599912Z test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.42s\r",
+      "2026-11-17T03:05:10.1622894Z test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.79s\r",
+      "2026-11-17T03:05:10.3638617Z test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s\r",
+      "2026-11-17T03:05:10.3790752Z test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\r",
+      "2026-11-17T03:05:10.4398044Z test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s\r",
+      "2026-11-17T03:05:10.4554735Z test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\r",
+      "2026-11-17T03:05:10.5519323Z test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s\r",
+      "2026-11-17T03:05:10.6722635Z test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s\r",
+      "2026-11-17T03:05:11.0529215Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\r",
+      "2026-11-17T03:05:33.5155770Z test result: ok. 1 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.01s\r",
+      "2026-11-17T03:09:42.6096090Z Installed v2: actual Edge website approval, real Rust hidden-window sync, preference save, single-instance restore, export, revocation and offline cache passed.\r",
+      "2026-11-17T03:09:43.2542210Z NSIS per-user install, native-window launch and uninstall retention verified. See separate tray acceptance status.\r"
+    ]
+  }
+]
