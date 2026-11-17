@@ -105,6 +105,8 @@ def main():
                 else:raise RuntimeError('Isolated authorization API did not become healthy')
                 if '--ui' in sys.argv or '--upgrade' in sys.argv:
                     script='companion-upgrade.cjs' if '--upgrade' in sys.argv else 'companion-native.cjs'
+                    if '--upgrade' in sys.argv and env.get('MARKET_TEST_UPGRADE_FROM')=='2.0.0-beta.4':
+                        script='companion-beta-upgrade.cjs'
                     subprocess.run(['node',str(ROOT/'web'/'e2e'/script)],cwd=ROOT,env=env,check=True)
                     print('Installed v2 native UI/API authorization and background synchronization smoke passed.')
                     return

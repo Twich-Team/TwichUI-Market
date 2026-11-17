@@ -1,10 +1,17 @@
+param([switch]$Beta4)
 # Real compatibility upgrade, isolated to this disposable runner's fresh app data.
 $ErrorActionPreference='Stop'
 if ($env:GITHUB_ACTIONS -ne 'true' -or $env:RUNNER_OS -ne 'Windows') { throw 'Disposable Windows CI only' }
 $old=@(Get-Item 'desktop/test-fixtures/legacy-0.1.0-unsigned-setup.exe')
+$oldHash='16D1B2E10813A7692FA641EA6E23B6DB9A1386BAF448508A43C2A17C28CDCED4'
+if ($Beta4) {
+    $old=@(Get-ChildItem 'artifacts/beta4-original/*.exe')
+    $oldHash='6A64493B795577B23503AF86A1FF8D79181A157F233272A2247703C2059689AF'
+    $env:MARKET_TEST_UPGRADE_FROM='2.0.0-beta.4'
+}
 $current=@(Get-ChildItem 'desktop/src-tauri/target/release/bundle/nsis/*-setup.exe')
 if ($old.Count -ne 1 -or $current.Count -ne 1) { throw 'Expected one old and one current installer' }
-if ((Get-FileHash $old[0].FullName -Algorithm SHA256).Hash -ne '16D1B2E10813A7692FA641EA6E23B6DB9A1386BAF448508A43C2A17C28CDCED4') { throw 'Legacy installer differs from verified ab1c886 artifact' }
+if ((Get-FileHash $old[0].FullName -Algorithm SHA256).Hash -ne $oldHash) { throw 'Old installer differs from verified release artifact' }
 $data=Join-Path $env:APPDATA 'team.twich.market'
 if (Test-Path $data) { throw 'Upgrade acceptance must begin without existing app data' }
 $install=Join-Path $env:RUNNER_TEMP 'TwichMarket-Upgrade'
@@ -32,7 +39,9 @@ try {
         $null=$_.CloseMainWindow();if (-not $_.WaitForExit(10000)) {$_.Kill();$_.WaitForExit()}
     }
     $cache=Join-Path $data 'market-v1.sqlite';$connection=Join-Path $data 'connection.json'
-    $hashes=@{};foreach ($file in @($cache,$connection)) {if(Test-Path $file){$hashes[$file]=(Get-FileHash $file -Algorithm SHA256).Hash}}
+    $retainedFiles=@($cache,$connection)
+    if ($Beta4) { $retainedFiles=@(Get-ChildItem $data -File | Where-Object {$_.Name -match '^(market-v1.sqlite|history-archive-v1.sqlite|settings.json|connection-v2-.+\.json)$'} | ForEach-Object {$_.FullName}) }
+    $hashes=@{};foreach ($file in $retainedFiles) {if(Test-Path $file){$hashes[$file]=(Get-FileHash $file -Algorithm SHA256).Hash}}
     $uninstaller=Join-Path $install 'uninstall.exe'
     if (Test-Path $uninstaller) {
         $removed=Start-Process -FilePath $uninstaller -ArgumentList @('/S',"_?=$install") -Wait -PassThru
@@ -42,8 +51,9 @@ try {
         if (-not(Test-Path $file) -or (Get-FileHash $file -Algorithm SHA256).Hash -ne $hashes[$file]) { throw 'Uninstall changed retained upgrade data' }
     }
     $receipt=Join-Path (Get-Location) 'artifacts/companion-v2/legacy-upgrade.json'
+    if ($Beta4) { $receipt=Join-Path (Get-Location) 'artifacts/companion-signed-update-test/beta4-upgrade.json' }
     if (Test-Path $receipt) {
-        if ($hashes.Count -ne 2 -or (Test-Path $executable)) { throw 'Uninstall retention proof is incomplete' }
+        if ((-not $Beta4 -and $hashes.Count -ne 2) -or ($Beta4 -and $hashes.Count -lt 4) -or (Test-Path $executable)) { throw 'Uninstall retention proof is incomplete' }
         $accepted=Get-Content $receipt -Raw | ConvertFrom-Json
         $accepted.uninstall_data_preservation_verified_by_parent=$true
         $accepted | ConvertTo-Json -Depth 4 | Set-Content $receipt

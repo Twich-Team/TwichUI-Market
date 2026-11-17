@@ -1,0 +1,69 @@
+name: Companion beta.5 signed release acceptance
+on:
+  push:
+    branches: [release/companion-beta5-publication]
+    paths:
+      - '.github/workflows/companion-beta5-release.yml'
+      - 'docs/evidence/companion-beta5/signed-candidate.json'
+      - 'scripts/windows/verify-upgrade.ps1'
+      - 'scripts/verify-companion-authorization.py'
+      - 'web/e2e/companion-beta-upgrade.cjs'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-signed-byte-acceptance:
+    uses: ./.github/workflows/companion-release.yml
+    with:
+      harness_commit: ${{ github.sha }}
+      proof_path: docs/evidence/companion-beta5/signed-candidate.json
+      pending_only: false
+  beta4-upgrade:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.100.0
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            desktop -> target
+            desktop/src-tauri -> target
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: python scripts/verify-signed-update-candidate.py preflight --proof docs/evidence/companion-beta5/signed-candidate.json
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: 44015042019
+          artifact-ids: 14298178148
+          path: artifacts/original-signed-update-payload
+          merge-multiple: true
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: 44007355418
+          artifact-ids: 14294729360
+          path: artifacts/beta4-original
+          merge-multiple: true
+      - run: pip install -r backend/requirements.lock
+      - run: npm ci --prefix web
+      - run: npm --prefix web run build
+      - run: cargo build --manifest-path desktop/Cargo.toml --release --example verify_release --locked
+      - run: python scripts/verify-signed-update-candidate.py stage --proof docs/evidence/companion-beta5/signed-candidate.json --incoming artifacts/original-signed-update-payload
+      - name: Upgrade exact beta.4 installation through the signed SDK; retain archive, selection, credentials and settings
+        run: ./scripts/windows/verify-upgrade.ps1 -Beta4
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: companion-beta4-to-beta5-acceptance
+          path: artifacts/companion-signed-update-test/
+          if-no-files-found: error
