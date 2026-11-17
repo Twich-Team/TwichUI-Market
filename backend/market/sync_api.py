@@ -115,6 +115,10 @@ def synchronize(market_id: MarketId,request: Request,cursor: str | None = Query(
     if state['done']:
         latest=db.scalar(select(Observation).where(Observation.market_id==market_id).order_by(Observation.id.desc()).limit(1))
         state={'v':1,'market':market_id,'base':state['target'],'target':latest.id if latest else 0,'after':[0,''],'done':False}
+    # Ingest allocates observation IDs under the same lock. This prefix is
+    # now pinned; later inserts have higher IDs. Release before expensive page
+    # reads so continuous desktop downloads cannot starve scheduled collection.
+    db.commit()
     target=db.get(Observation,state['target']) if state['target'] else None
     base=db.get(Observation,state['base']) if state['base'] else None
     if ((state['target'] and (not target or target.market_id!=market_id))

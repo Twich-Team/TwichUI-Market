@@ -126,3 +126,45 @@ def test_compacted_non_daily_cursor_requires_full_reset(owner,database):
     maintain(database,apply=True,compact=True)
     assert owner.get(path,params={'cursor':initial['cursor']}).status_code==409
     assert owner.get(path).json()['changes']==[]
+
+
+def test_pinned_watermark_releases_ingest_lock_before_page_reads(owner,database,monkeypatch):
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Event
+    from sqlalchemy import select,func,text
+    from market.models import Observation
+    import market.sync_generation as generation
+    market=setup(database,count=3)
+    with database() as db:
+        if db.bind.dialect.name!='postgresql':pytest.skip('PostgreSQL competing ingest lock regression')
+        original=db.scalar(select(func.max(Observation.id)))
+    entered,release=Event(),Event();real_signature=generation.signature
+    def reading_page(*args,**kwargs):
+        if not entered.is_set():
+            entered.set()
+            assert release.wait(10),'Competing ingest did not complete'
+        return real_signature(*args,**kwargs)
+    monkeypatch.setattr(generation,'signature',reading_page)
+    path=f'/api/v1/sync/markets/{market}'
+    with ThreadPoolExecutor(max_workers=1) as pool:
+        future=pool.submit(owner.get,path+'?limit=1')
+        try:
+            assert entered.wait(10),'Sync did not reach pinned page reads'
+            with database.begin() as writer:
+                assert writer.scalar(text('SELECT pg_try_advisory_xact_lock(7140232)')), 'Page reads still own collector lock'
+                insert(writer,market,[2,3,4],'during-download',price=200)
+        finally:release.set()
+        first=future.result(timeout=15)
+    assert first.status_code==200,first.text
+    first=first.json();assert first['target_observation_id']==str(original)
+    page=first;download=list(first['changes'])
+    while page['has_more']:
+        page=owner.get(path,params={'cursor':page['cursor'],'limit':1}).json()
+        assert page['target_observation_id']==str(original)
+        download.extend(page['changes'])
+    assert [row['item_id'] for row in download]==[1,2,3]
+    assert all(row['value']['recent_price']=='100' for row in download)
+    newer=owner.get(path,params={'cursor':page['cursor']}).json()
+    assert int(newer['target_observation_id'])>original
+    assert {r['item_id']:r['operation'] for r in newer['changes']}=={1:'delete',2:'upsert',3:'upsert',4:'upsert'}
+    assert all(r['value']['recent_price']=='200' for r in newer['changes'] if r['operation']=='upsert')
