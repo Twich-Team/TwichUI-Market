@@ -3,6 +3,8 @@ import AxeBuilder from '@axe-core/playwright';
 import fs from 'node:fs';
 const output=process.env.MOBILE_SCREENSHOT_DIR || '../artifacts/mobile-experience';
 const widths=[320,344,360,375,390,430,600,768,1024,1440];
+// Keep intercepted fetch responses alive until their handlers finish.
+test.afterEach(async({page})=>{await page.unrouteAll({behavior:'wait'});});
 async function login(page:Page){await page.route('**/api/v1/markets',async route=>{const response=await route.fetch();const body=await response.json();body.markets=body.markets.map((market:object,index:number)=>index===0?{...market,label:'Synthetic market with an exceptionally long regional and faction description'}:market);await route.fulfill({response,json:body});});await page.goto('/?market=1');await page.getByLabel('Username',{exact:true}).fill('owner');await page.getByLabel('Password',{exact:true}).fill('synthetic browser owner password');await page.getByRole('button',{name:'Sign in',exact:true}).click();await expect(page.getByRole('heading',{name:'Market Explorer',exact:true})).toBeVisible();}
 async function overflow(page:Page){const wide=await page.evaluate(w=>[...document.querySelectorAll('main *')].filter(e=>e.getBoundingClientRect().right>w).slice(0,12).map(e=>({tag:e.tagName,cls:e.className,width:e.getBoundingClientRect().width})),page.viewportSize()!.width);expect(await page.evaluate(()=>({viewport:innerWidth,width:document.documentElement.scrollWidth})),JSON.stringify(wide)).toEqual({viewport:page.viewportSize()!.width,width:page.viewportSize()!.width});}
 async function shot(page:Page,name:string){fs.mkdirSync(output,{recursive:true});await page.screenshot({path:`${output}/${name}.png`,fullPage:true});}
