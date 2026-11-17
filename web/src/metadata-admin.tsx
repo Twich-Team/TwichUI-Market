@@ -1,7 +1,8 @@
+import { RecoveryTracker } from "./recovery-tracker";
 import { Loading } from "./loading";
 import { MetadataSummary, ProviderCoverage } from "./metadata-coverage";
 import { ProviderRateLimits, type RateStatus } from "./provider-rate-limits";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DataTable } from "./data-table";
 import { LocalTime, ProviderEmblem, Status, useRecordPage } from "./admin-table";
 import { MetadataAttempts } from "./metadata-attempts";
@@ -101,8 +102,10 @@ export function DataSources({ readOnly = false }: { readOnly?: boolean }) {
 }
 
 export function ItemMetadataAdmin({ markets, readOnly = false }: { markets: Market[]; readOnly?: boolean }) {
-  const [market, setMarket] = useState(markets[0]?.id || 0), [mode, setMode] = useState("single"), [selected, setSelected] = useState(["blizzard", "everloot"]), [preview, setPreview] = useState<{ item_count: number; estimated_requests: number; request_budget: number; note: string } | null>(null);
+  const [trackerOpen,setTrackerOpen]=useState(new URLSearchParams(location.search).get("metadata_view")==="tracker");
+  const [market, setMarket] = useState(markets.find(m=>m.enabled)?.id || markets[0]?.id || 0), [mode, setMode] = useState("single"), [selected, setSelected] = useState(["blizzard", "everloot"]), [preview, setPreview] = useState<{ item_count: number; estimated_requests: number; request_budget: number; note: string } | null>(null);
   const [error, setError] = useState(""), [message, setMessage] = useState(""), [busy, setBusy] = useState(false), [jobId, setJobId] = useState<number | null>(null), [resultAfter, setResultAfter] = useState(0);
+  useEffect(()=>{if(!market&&markets.length)setMarket(markets.find(m=>m.enabled)?.id||markets[0].id);},[market,markets]);
   const [input, setInput] = useState({ item_id: "", limit: 100, request_budget: 100 });
   const providers = useProviders();
   const stats = useQuery({ queryKey: ["private", "metadata-overview", market], enabled: !!market, queryFn: ({ signal }) => api<MetadataOverview>(`/admin/item-metadata?market_id=${market}`, "GET", undefined, signal), refetchInterval: 60_000 });
@@ -117,6 +120,8 @@ export function ItemMetadataAdmin({ markets, readOnly = false }: { markets: Mark
   const state = stats.data;
   return <section aria-labelledby="metadata-heading" className="metadata-admin">
     <div className="title-row"><div><div className="eyebrow">LOCAL ITEM CATALOG</div><h2 id="metadata-heading">Item Metadata</h2></div><MarketSelect markets={markets} market={market} setMarket={value => { setMarket(value); jobPage.reset(); resetPreview(); }} /></div>
+    <div className="metadata-actions"><button aria-pressed={trackerOpen} onClick={()=>{setTrackerOpen(value=>!value);const url=new URL(location.href);if(!trackerOpen)url.searchParams.set("metadata_view","tracker");else url.searchParams.delete("metadata_view");history.replaceState(null,"",url);}}>Recovery Tracker</button></div>
+    {trackerOpen&&<RecoveryTracker key={market} market={market} readOnly={readOnly}/>}
     <p className="muted">Recover observed item names and base attributes. Unavailable provider metadata never means an auction item does not exist.</p>
     <ErrorNotice error={error || stats.error?.message || jobs.error?.message || detail.error?.message || providers.error?.message || ""} />
     {message && <p className="notice success" role="status">{message}</p>}

@@ -32,10 +32,11 @@ def fingerprint():
 before=fingerprint();migrate('upgrade','head');migrate('check');assert fingerprint()==before
 for table in ('users','companion_devices'):
     with engine.begin() as db:db.execute(text('UPDATE '+table+' SET archived_at=now() WHERE id=1'))
+    with engine.connect() as db:protected_head=db.scalar(text('SELECT version_num FROM alembic_version'))
     rejected=migrate('downgrade','archive_20261116',success=False)
     assert rejected.returncode and 'Restore archived entries' in rejected.stderr
     with engine.begin() as db:
-        assert db.scalar(text('SELECT version_num FROM alembic_version'))=='usability_20261117'
+        assert db.scalar(text('SELECT version_num FROM alembic_version'))==protected_head
         db.execute(text('UPDATE '+table+' SET archived_at=NULL WHERE id=1'))
     assert fingerprint()==before
 migrate('downgrade','archive_20261116');assert fingerprint()==before

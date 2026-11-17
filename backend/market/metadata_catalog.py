@@ -162,7 +162,7 @@ def backfill_legacy(db, *, limit=25):
     return len(rows)
 
 
-def import_foreverdb_resource(db, region, resource, body, *, at=None):
+def import_foreverdb_resource(db, region, resource, body, *, at=None, changes=None):
     from .foreverdb import related
     records, origin = related(body, resource, at=at)
     for ident, fields in records.items():
@@ -176,5 +176,10 @@ def import_foreverdb_resource(db, region, resource, body, *, at=None):
             merged.update({key(entry):entry for entry in entries})
             if len(merged)>100: raise ValueError('Bounded item relationship limit')
             fields[field] = list(merged.values())
-        store_source(db, region, ident, 'foreverdb', fields, origin, at=at)
+        row=db.get(ItemMetadata,(region,ident))
+        before=json.loads(row.catalog_json).get('fields',{}) if row and row.catalog_json else {}
+        projected=store_source(db, region, ident, 'foreverdb', fields, origin, at=at)
+        if changes is not None:
+            for field,value in projected['fields'].items():
+                if value is not None and value != [] and before.get(field) in (None,[]):changes[field]=changes.get(field,0)+1
     return len(records), origin

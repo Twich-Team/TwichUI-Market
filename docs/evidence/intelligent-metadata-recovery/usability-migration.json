@@ -1,0 +1,7 @@
+{
+  "origin": "synthetic",
+  "database": "market_test",
+  "original_account_device_credential_preference_audit_rows_preserved": true,
+  "both_populated_archive_downgrades_refused": true,
+  "round_trip": true
+}

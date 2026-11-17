@@ -1,0 +1,43 @@
+{
+  "baseline_sha": "fa089a2660e745d6f77f5c2b0b7bbcb9109d6ae8",
+  "limitations": "Synthetic trade goods, 10 missing names/10 missing quality/20 complete. Secondary unchanged responses are deterministic. CPU excludes PostgreSQL server; wall includes SQL and mocks. No production efficiency claim. No artwork recovery in this replay.",
+  "population": 40,
+  "results": {
+    "item_centric": {
+      "already_known": 0,
+      "clock_span_seconds": 4819,
+      "external_requests": 20,
+      "first_name_request": 1,
+      "last_priority_request": 20,
+      "new_attribute_requests": 10,
+      "new_name_requests": 10,
+      "provider_distribution": {
+        "foreverdb": 20
+      },
+      "traced_peak_bytes": 11832215,
+      "traced_retained_bytes": 6919918,
+      "worker_cpu_seconds": 11.2956,
+      "worker_wall_seconds": 12.4908
+    },
+    "provider_first": {
+      "already_known": 60,
+      "clock_span_seconds": 4819,
+      "external_requests": 80,
+      "first_name_request": 31,
+      "last_priority_request": 40,
+      "new_attribute_requests": 10,
+      "new_name_requests": 10,
+      "provider_distribution": {
+        "foreverdb": 40,
+        "thewowdb": 40
+      },
+      "traced_peak_bytes": 3452798,
+      "traced_retained_bytes": 3071319,
+      "worker_cpu_seconds": 8.011,
+      "worker_wall_seconds": 9.8338
+    }
+  },
+  "synthetic_only": true,
+  "ticks": 80,
+  "container_memory_limit_bytes": 201326592
+}

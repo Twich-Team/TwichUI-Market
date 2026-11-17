@@ -141,7 +141,7 @@ def test_failures_preserve_names_and_correct_categories(database,status,category
     market=setup(database);at=now()
     with database.begin() as db:
         fields,src=parse_everloot(tooltip(),720,at=at-timedelta(days=1));store_source(db,'us',720,'everloot',fields,src,at=at-timedelta(days=1))
-        job,_=enqueue(db,market,'single',['everloot'],item_id=720,budget=3,at=at);job_id=job.id
+        job,_=enqueue(db,market,'single',['everloot'],item_id=720,budget=3,at=at,force_refresh=True);job_id=job.id
     assert tick(database,at=at,fetcher=lambda *a,**kw:response(status,headers={'Retry-After':'7200'}),automatic=False)
     with database() as db:
         assert db.get(MetadataSource,('us',720,'en_US','everloot')).status==category
@@ -154,7 +154,7 @@ def test_304_and_refresh_cache(database):
     market=setup(database);at=now()
     with database.begin() as db:
         fields,src=parse_everloot(tooltip(),720,at=at-timedelta(days=1));store_source(db,'us',720,'everloot',fields,src,at=at-timedelta(days=1),etag='"fixture"')
-        enqueue(db,market,'single',['everloot'],item_id=720,at=at)
+        enqueue(db,market,'stale',['everloot'],at=at)
     seen=[];tick(database,at=at,fetcher=lambda *a,**kw:(seen.append(kw['etag']),response(304,b''))[1],automatic=False)
     assert seen==['"fixture"']
     with database.begin() as db:enqueue(db,market,'single',['everloot'],item_id=720,at=at)
@@ -241,7 +241,7 @@ def test_malformed_refresh_and_timeout_retries_are_bounded(database):
     market=setup(database);at=now()
     with database.begin() as db:
         fields,src=parse_everloot(tooltip(),720);store_source(db,'us',720,'everloot',fields,src,at=at-timedelta(days=1))
-        job,_=enqueue(db,market,'single',['everloot'],item_id=720,budget=3,at=at);job_id=job.id
+        job,_=enqueue(db,market,'single',['everloot'],item_id=720,budget=3,at=at,force_refresh=True);job_id=job.id
     calls=[]
     def timeout(*a,**kw):calls.append(1);raise TimeoutError('fake secret must not be logged')
     for attempt in range(4):tick(database,at=at+timedelta(hours=attempt),fetcher=timeout,automatic=False)
@@ -376,9 +376,12 @@ def test_missing_batch_includes_named_items_without_basic_attributes(database):
     with database.begin() as db:
         fields,origin=parse_everloot(tooltip(),720)
         store_source(db,'us',720,'everloot',fields,origin)
-        assert 720 in [r[1] for r in candidates(db,market,'missing',100,['everloot'])]
+        assert 720 in [r[1] for r in candidates(db,market,'missing',100,['blizzard'])]
+        assert 720 not in [r[1] for r in candidates(db,market,'missing',100,['everloot'])]  # Name-card endpoint cannot supply attributes.
         import_everloot_page(db,'us',page())
-        assert [r[1] for r in candidates(db,market,'missing',100,['everloot'])]==[721]
+        assert 720 in [r[1] for r in candidates(db,market,'missing',100,['blizzard'])]  # Armor still lacks applicable level.
+        store_metadata(db,'us',720,b'{"id":720,"name":"Synthetic complete gloves","level":28}',synthetic=True)
+        assert [r[1] for r in candidates(db,market,'missing',100,['blizzard'])]==[721]
 
 
 def test_dashboard_pending_does_not_subtract_preserved_names_twice(owner,database):

@@ -414,3 +414,6 @@ app.include_router(bridge_router)
 
 from .archive_api import router as archive_router
 app.include_router(archive_router)
+
+from .recovery_tracker import router as recovery_tracker_router
+app.include_router(recovery_tracker_router)

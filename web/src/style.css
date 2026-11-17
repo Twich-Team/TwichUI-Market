@@ -1874,3 +1874,31 @@ a.secondary { display:inline-block; padding:10px 14px; border:1px solid var(--bo
   .metadata-admin > .title-row { display:grid; grid-template-columns:minmax(0,1fr); gap:12px; }
   .metadata-admin > .title-row .market-select { width:100%; }
 }
+
+/* Metadata recovery uses deliberate mobile records over the same server page. */
+.recovery-tracker {display:grid;grid-template-columns:minmax(0,1fr);gap:1rem;margin-block:1rem 2rem;min-width:0}
+.recovery-filters {flex-wrap:wrap;align-items:end}
+.recovery-item-button {display:flex;align-items:center;gap:.5rem;text-align:left;max-width:100%}
+.recovery-item-button small,.recovery-provider-list small,.recovery-desktop small,.recovery-field-value+small {display:block}
+.recovery-icon-placeholder {width:32px;height:32px;display:grid;place-items:center;background:var(--panel,#302419);border-radius:4px}
+.recovery-desktop .data-table {min-width:0}
+.recovery-desktop td {max-width:18rem;white-space:normal}
+.recovery-mobile {display:none}
+.recovery-card {margin-block:.75rem;overflow-wrap:anywhere}
+.recovery-provider-list {display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:.75rem;margin-block:1rem}
+.recovery-provider-list>div {display:grid;gap:.25rem}
+.recovery-journey {min-width:0;overflow-wrap:anywhere}
+.recovery-timeline {display:grid;gap:1rem;padding-left:1.5rem}
+.recovery-field-value {white-space:pre-wrap;overflow-wrap:anywhere}
+.recovery-journey .record-details>div {display:contents}
+@media(max-width:767px) {
+  .recovery-desktop {display:none}
+  .recovery-mobile {display:block;min-width:0}
+  .recovery-mobile nav {display:flex;flex-wrap:wrap;align-items:center;gap:.5rem}
+  .recovery-filters>label,.recovery-filters select,.recovery-filters input {width:100%;min-width:0}
+  .recovery-provider-list {grid-template-columns:1fr}
+}
+
+.recovery-tracker > *, .recovery-desktop {min-width:0;max-width:100%}
+
+.recovery-card small {display:block}
