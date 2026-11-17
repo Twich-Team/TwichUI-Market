@@ -16,7 +16,7 @@ from .security import admin, aware
 router = APIRouter(prefix='/api/v1/admin/records')
 Provider = Literal['blizzard', 'everloot', 'foreverdb', 'thewowdb']
 # Historical results did not distinguish returned data from actual gains.
-OUTCOMES = ('name_recovered', 'attributes_recovered', 'already_known', 'metadata_returned', 'no_usable_data',
+OUTCOMES = ('metadata_updated','name_recovered', 'attributes_recovered', 'already_known', 'metadata_returned', 'no_usable_data',
     'missing', 'wrong_identity', 'invalid_response', 'credentials_invalid', 'access_blocked', 'rate_limited',
     'unavailable', 'pending', 'skipped', 'attributes_returned', 'observations_returned', 'name_returned')
 RESULTS = cast(MetadataTask.result_json, JSON)
@@ -80,6 +80,7 @@ def safe_attempt(db, task, metadata, provider, src, outcome, job, active_identit
         'at':task.updated_at,'attempts':task.attempts,'http_status':value.get('http_status'),
         'outcome':outcome,'delta_recorded':'new_fields' in value,'fields_returned':[f for f in value.get('fields_returned',value.get('recovered_fields',[])) if f in FIELDS or f in ('base_attributes','client_attributes')],
         'fields_recovered':[f for f in value.get('new_fields',[]) if f in FIELDS],
+        'fields_updated':[f for f in value.get('updated_fields',[]) if f in FIELDS],
         'error_category':value.get('status') if value.get('status') in ('authorization','forbidden','rate_limited','metadata_unavailable','transport_or_schema','wrong_identity','upstream_error','invalid_not_modified') else None,
         'source':{'edition':'forever','build':origin.get('build'),'confidence':origin.get('confidence')},
         'next_retry':eligible or (src.retry_at if src else task.available_at if task.state=='queued' else None),

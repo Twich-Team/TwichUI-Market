@@ -3,13 +3,13 @@ from datetime import timedelta
 import json
 from typing import Literal
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import JSON, and_, cast, func, or_, select, String
+from sqlalchemy import JSON, and_, cast, func, or_, select, String, tuple_
 from sqlalchemy.orm import Session, aliased
 from .db import now, session
-from .models import ItemMetadata, ItemMedia, Market, MetadataAttempt, MetadataJob, MetadataProvider, MetadataSource, MetadataTask, User
+from .models import ItemMetadata, ItemMedia, Market, MetadataAttempt, MetadataJob, MetadataProvider, MetadataSource, MetadataTask, MetadataRecoveryItem, User
 from .metadata_recovery import observed_query, latest_foreverdb_build
 from .recovery_planner import provider_context, load_items, plan_item, essential_missing_sql, source_due_sql, fields_sql
-from .recovery_policy import known_fields
+from .recovery_policy import known_fields, CAPABILITIES
 from .security import admin
 
 router = APIRouter(prefix='/api/v1/admin/item-metadata/tracker')
@@ -30,9 +30,10 @@ def eligibility_sql(ids, context, at, build, provider=None):
         if not row.enabled or not row.automatic or not credentials or row.expires_at and row.expires_at <= at or row.last_error in ('authorization','forbidden','subscription_required','credential_unavailable','secret_unavailable') or due > at: continue
         s=aliased(MetadataSource)
         capable=func.coalesce(ItemMetadata.name,ItemMetadata.fallback_name).is_(None)
-        if ident != 'everloot': capable=or_(capable,essential_missing_sql())
+        if ident != 'everloot': capable=or_(capable,essential_missing_sql(CAPABILITIES[ident]))
         if ident in ('foreverdb','thewowdb'):
             capable=or_(capable,and_(ItemMedia.data.is_(None),or_(ItemMedia.retry_after.is_(None),ItemMedia.retry_after<=at)))
+        if ident=='foreverdb':capable=or_(capable,fields_sql()['class'].as_string().in_(('Weapon','Armor')))
         source=and_(s.region==ids.c.region,s.item_id==ids.c.item_id,s.locale=='en_US',s.provider==ident)
         untried=~select(s.item_id).where(source).exists()
         due_source=select(s.item_id).where(source,source_due_sql(s,at,build=build),or_(capable,s.fields_json.is_not(None))).exists()
@@ -40,7 +41,7 @@ def eligibility_sql(ids, context, at, build, provider=None):
     return or_(*choices) if choices else False
 
 
-def provider_status(row, source, action):
+def provider_status(row, source, action, attempt=None):
     reason=action.get('reason') if action else None
     if not row.enabled: status='provider_disabled'
     elif reason in ('credential_unavailable','access_blocked','provider_cooldown'): status=reason
@@ -52,13 +53,14 @@ def provider_status(row, source, action):
     else:
         evidence=json.loads(source.recovery_json) if source.recovery_json else {}
         fields=evidence.get('new_fields',[])
-        status='name_recovered' if 'name' in fields else 'attributes_recovered' if fields else 'already_known' if source.http_status==304 or evidence else 'historical_incomplete'
+        status='name_recovered' if 'name' in fields else 'attributes_recovered' if fields else 'metadata_updated' if evidence.get('updated_fields') else 'already_known' if source.http_status==304 or evidence else 'historical_incomplete'
+    if attempt and attempt.kind in ('media','artwork') and 'icon' in json.loads(attempt.new_json or '[]') and row.enabled:status='icon_recovered'
     return {'status':status,'checked_at':source.checked_at if source else None,
             'next_at':action.get('next_at') if action else source.retry_at if source else None,
             'waiting':reason if reason not in ('eligible','incapable') else None}
 
 
-def item_view(identity, metadata, media, sources, context, at, build):
+def item_view(identity, metadata, media, sources, context, at, build,attempts=None):
     plan=plan_item(metadata,media,sources,context,at,automatic=True,build=build)
     actions={a['provider']:a for a in plan['actions']}
     waiting=[a['next_at'] for a in plan['actions'] if a['next_at'] and not a['eligible']]
@@ -68,11 +70,21 @@ def item_view(identity, metadata, media, sources, context, at, build):
     chosen=plan['chosen']
     return {'region':identity[0],'item_id':identity[1], 'name':known_fields(metadata).get('name'),
         'icon':f'/api/v1/items/{identity[0]}/{identity[1]}/icon' if media and media.data else None,
-        'missing':missing,'providers':{ident:provider_status(row,sources.get(ident),actions.get(ident)) for ident,(row,_,_) in context.items()},
+        'missing':missing,'providers':{ident:provider_status(row,sources.get(ident),actions.get(ident),(attempts or {}).get(ident)) for ident,(row,_,_) in context.items()},
         'last_useful_at':max([u for u in useful if u],default=None),
         'next_provider':chosen['provider'] if chosen else None,'next_at':chosen['next_at'] if chosen else min(waiting,default=None),
-        'status':'eligible' if chosen else 'waiting' if waiting else 'no_eligible_provider' if missing else 'complete',
+        'status':'eligible' if chosen else 'complete' if not missing else 'waiting' if waiting else 'no_eligible_provider',
         'explanation':plan['explanation'],'decision':plan}
+
+
+def latest_attempts(db,identities):
+    if not identities:return {}
+    a=MetadataAttempt
+    ranked=select(a.id,func.row_number().over(partition_by=(a.region,a.item_id,a.provider),order_by=(a.started_at.desc(),a.id.desc())).label('position')).where(tuple_(a.region,a.item_id).in_(identities),a.kind.in_(('metadata','media','artwork'))).subquery()
+    result={}
+    for a in db.scalars(select(a).join(ranked,ranked.c.id==a.id).where(ranked.c.position==1)):
+        result.setdefault((a.region,a.item_id),{})[a.provider]=a
+    return result
 
 
 @router.get('')
@@ -113,36 +125,44 @@ def tracker(market_id:int=Query(ge=1),q:str=Query('',max_length=64),
     records=list(db.execute(query.order_by(column.desc().nulls_last() if desc else column.asc().nulls_last(),ids.c.item_id).offset(offset).limit(limit)))
     identities=[(r.region,r.item_id) for r in records]
     metadata,media,sources=load_items(db,identities)
-    rows=[item_view(i,metadata.get(i),media.get(i),sources.get(i,{}),context,at,build) for i in identities]
+    latest=latest_attempts(db,identities)
+    rows=[item_view(i,metadata.get(i),media.get(i),sources.get(i,{}),context,at,build,latest.get(i)) for i in identities]
+    useful=dict(( (region,item_id),stamp) for region,item_id,stamp in db.execute(select(MetadataAttempt.region,MetadataAttempt.item_id,func.max(MetadataAttempt.completed_at)).where(tuple_(MetadataAttempt.region,MetadataAttempt.item_id).in_(identities),MetadataAttempt.new_json.is_not(None),MetadataAttempt.new_json!='[]',MetadataAttempt.state=='finished').group_by(MetadataAttempt.region,MetadataAttempt.item_id))) if identities else {}
+    for r in rows:
+        if (r['region'],r['item_id']) in useful:r['last_useful_at']=useful[(r['region'],r['item_id'])]
     return {'rows':rows,'total':total,'summary':summary,'measured_at':at,
         'definition':'Distinct regional base items in the selected market’s latest recorded snapshot; en_US Forever. Essentials: quality/class, plus level/slot for known Weapon/Armor. Missing does not imply recoverable.'}
 
 
 @router.get('/efficiency')
-def efficiency(days:Literal[1,7,30]=7,user:User=Depends(admin),db:Session=Depends(session)):
+def efficiency(days:int=Query(7),user:User=Depends(admin),db:Session=Depends(session)):
+    if days not in (1,7,30):raise HTTPException(422,"Select 1, 7 or 30 days")
     since=now()-timedelta(days=days)
     # New evidence is per invocation, not per task. Reserved requests interrupted
     # by a crash remain unknown and are never silently counted as real requests.
     a=MetadataAttempt
     new=cast(a.new_json,String)
-    useful=and_(a.kind.in_(('metadata','media','bulk','related')),a.state=='finished',a.new_json.is_not(None),new!='[]')
+    from .metadata_catalog import FIELDS
+    attribute_gain=or_(*[or_(new.contains('\"'+field+'\"'),a.updated_json.contains('\"'+field+'\"')) for field in sorted(FIELDS-{'name','icon_reference'})])
+    useful=and_(a.kind.in_(('metadata','media','bulk','related')),a.state=='finished',or_(and_(a.new_json.is_not(None),new!='[]'),and_(a.updated_json.is_not(None),a.updated_json!='[]')))
     rows=db.execute(select(a.provider,func.count().filter(a.state=='finished'),func.count().filter(useful),
         func.count().filter(and_(useful,new.contains('"name"'))),
         func.count().filter(and_(a.kind.in_(('artwork','media')),a.new_json.is_not(None),new!='[]',a.state=='finished')),
-        func.count().filter(and_(useful,a.outcome=='attributes_recovered')),
+        func.count().filter(and_(useful,attribute_gain)),
         func.count().filter(a.outcome=='already_known'),func.count().filter(a.outcome.in_(('missing','no_usable_data'))),
         func.count().filter(a.outcome.in_(('invalid_response','unavailable','credentials_invalid','access_blocked','wrong_identity'))),
-        func.count().filter(a.outcome=='rate_limited'),func.count().filter(a.state=='reserved'))
+        func.count().filter(a.outcome=='rate_limited'),func.count().filter(a.state=='reserved'),func.count().filter(and_(a.state=='finished',a.kind.in_(('metadata','media','bulk','related')))))
         .where(a.started_at>=since).group_by(a.provider)).all()
-    keys=['provider','external_requests','useful_requests','names','icons','attributes','already_known','missing_no_data','errors','rate_limits','unknown_reservations']
+    keys=['provider','external_requests','useful_requests','names','icons','attributes','already_known','missing_no_data','errors','rate_limits','unknown_reservations','metadata_requests']
     providers=[dict(zip(keys,r)) for r in rows]
     # Metadata efficiency excludes image downloads/validation from denominator.
     metadata_requests=db.scalar(select(func.count()).select_from(a).where(a.started_at>=since,a.state=='finished',a.kind.in_(('metadata','media','bulk','related'))))
     recovered=sum(r['useful_requests'] for r in providers)
     historic=db.scalar(select(func.count()).select_from(MetadataTask).where(MetadataTask.updated_at>=since,MetadataTask.attempts>0,~select(a.id).where(a.task_id==MetadataTask.id).exists()))
-    return {'days':days,'providers':providers,'metadata_requests':metadata_requests,'useful_requests':recovered,
+    deferred=db.scalar(select(func.count()).select_from(MetadataTask).where(MetadataTask.state=='queued',cast(MetadataTask.result_json,JSON)['status'].as_string().in_(('provider_cooldown','quota_deferred','rate_limited'))))
+    return {'queued_quota_deferrals':deferred,'days':days,'providers':providers,'metadata_requests':metadata_requests,'useful_requests':recovered,
             'useful_rate':recovered/metadata_requests if metadata_requests else None,'historical_task_records':historic,
-            'notice':'Exact forward ledger counts completed network invocations. Crash reservations remain unknown. Historical task records have incomplete request/gain evidence and are excluded. Image requests are shown separately; validation cannot recover fields. Recoveries may include more than one field per request.'}
+            'notice':'Exact forward ledger counts completed network invocations. Crash reservations remain unknown. Historical task records have incomplete request/gain evidence and are excluded. Image requests are shown separately; validation cannot recover fields. Useful means a newly filled field or a verified changed value; returned unchanged fields are excluded. Recoveries may include more than one field per request.'}
 
 
 @router.get('/{item_id}')
@@ -151,15 +171,17 @@ def journey(item_id:int,market_id:int=Query(ge=1),before:int|None=Query(None,ge=
     if not market or not 1<=item_id<=2**31-1: raise HTTPException(404,'Item or market not found')
     identity=(market.region,item_id);at=now()
     metadata,media,sources=load_items(db,[identity]);row=metadata.get(identity)
-    result=item_view(identity,row,media.get(identity),sources.get(identity,{}),provider_context(db,at),at,latest_foreverdb_build(db))
+    result=item_view(identity,row,media.get(identity),sources.get(identity,{}),provider_context(db,at),at,latest_foreverdb_build(db),latest_attempts(db,[identity]).get(identity))
     catalog=json.loads(row.catalog_json) if row and row.catalog_json else {}
+    stored_decision=db.get(MetadataRecoveryItem,(*identity,'en_US'))
+    result['last_scheduler_decision']={'at':stored_decision.decided_at,'status':stored_decision.status,'next_at':stored_decision.next_at,'decision':json.loads(stored_decision.decision_json)} if stored_decision else None
     result['known_fields']=known_fields(row)
     result['provenance']={f:{k:v for k,v in src.items() if k in ('provider','edition','build','retrieved_at','confidence')} for f,src in catalog.get('provenance',{}).items()}
-    query=select(MetadataAttempt).where(MetadataAttempt.region==market.region,MetadataAttempt.item_id==item_id)
+    query=select(MetadataAttempt).where(MetadataAttempt.region==market.region,MetadataAttempt.item_id==item_id,MetadataAttempt.kind.not_in(('bulk','related')))
     if before: query=query.where(MetadataAttempt.id<before)
     attempts=list(db.scalars(query.order_by(MetadataAttempt.id.desc()).limit(51)))
     result['attempts']=[{'id':a.id,'provider':a.provider,'at':a.started_at,'completed_at':a.completed_at,'http_status':a.http_status,'outcome':a.outcome or 'reservation_unknown',
-        'kind':a.kind,'returned_fields':json.loads(a.returned_json or '[]'),'new_fields':json.loads(a.new_json or '[]'),'decision':json.loads(a.decision_json) if a.decision_json else None} for a in attempts[:50]]
+        'kind':a.kind,'returned_fields':json.loads(a.returned_json or '[]'),'new_fields':json.loads(a.new_json or '[]'),'updated_fields':json.loads(a.updated_json or '[]'),'decision':json.loads(a.decision_json) if a.decision_json else None} for a in attempts[:50]]
     result['next_before']=attempts[49].id if len(attempts)>50 else None
     history=db.execute(select(MetadataTask).join(MetadataJob).where(MetadataTask.region==market.region,MetadataTask.item_id==item_id,MetadataJob.mode.not_in(('bulk','related','diagnostic')),
         ~select(MetadataAttempt.id).where(MetadataAttempt.task_id==MetadataTask.id).exists()).order_by(MetadataTask.updated_at.desc(),MetadataTask.id.desc()).limit(50)).scalars()

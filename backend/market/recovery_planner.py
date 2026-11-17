@@ -11,12 +11,15 @@ def fields_sql():
     return cast(ItemMetadata.catalog_json, JSON)['fields']
 
 
-def essential_missing_sql():
+def essential_missing_sql(capabilities=None):
     f = fields_sql()
-    return or_(func.coalesce(f['quality'].as_string(), ItemMetadata.quality).is_(None),
-               f['class'].as_string().is_(None),
-               and_(f['class'].as_string().in_(('Weapon','Armor')),
-                    or_(f['slot'].as_string().is_(None), f['level'].as_integer().is_(None))))
+    capabilities=set(capabilities) if capabilities is not None else {'quality','class','slot','level'}
+    checks=[]
+    if 'quality' in capabilities: checks.append(func.coalesce(f['quality'].as_string(), ItemMetadata.quality).is_(None))
+    if 'class' in capabilities: checks.append(f['class'].as_string().is_(None))
+    equipment=[f[field].as_string().is_(None) for field in ('level','slot') if field in capabilities]
+    if equipment: checks.append(and_(f['class'].as_string().in_(('Weapon','Armor')),or_(*equipment)))
+    return or_(*checks) if checks else False
 
 
 def phase_sql(priority):
@@ -38,7 +41,7 @@ def source_due_sql(source, at, *, build=None):
     return or_(source.item_id.is_(None), upgrade,
         and_(or_(source.retry_at.is_(None), source.retry_at <= at),
              or_(source.recovery_json.is_(None), source.http_status.not_in((200,304)),
-                 evidence['new_fields'].as_string().not_in(('[]','null')), source.checked_at <= at-timedelta(days=7))))
+                 evidence['new_fields'].as_string().not_in(('[]','null')),evidence['updated_fields'].as_string().not_in(('[]','null')), source.checked_at <= at-timedelta(days=7))))
 
 
 def provider_context(db, at, *, execution=False, allow_mock=False):
@@ -84,3 +87,18 @@ def plan_item(row, media, sources, context, at, *, automatic=False, force=False,
             return plan
     # Explain the highest missing priority if nothing is currently eligible.
     return plans[0] if plans else {'policy_version':1,'missing':gap,'actions':[], 'chosen':None, 'explanation':'Applicable metadata is complete; no refresh is due.'}
+
+
+def remember_decision(db, identity, plan, at):
+    from datetime import datetime
+    from .models import MetadataRecoveryItem
+    encoded=json.dumps(plan,sort_keys=True)
+    row=db.get(MetadataRecoveryItem,(*identity,'en_US'))
+    if row and row.decision_json==encoded:
+        row.decided_at=at
+        return
+    times=[a['next_at'] for a in plan.get('actions',[]) if a['next_at']]
+    status='eligible' if plan['chosen'] else 'waiting' if times else 'no_eligible_provider'
+    if row is None:
+        row=MetadataRecoveryItem(region=identity[0],item_id=identity[1],locale='en_US');db.add(row)
+    row.status,row.decided_at,row.next_at,row.decision_json=status,at,datetime.fromisoformat(min(times)) if times else None,encoded

@@ -397,4 +397,4 @@ class ArchiveMember(Base):
     value_json: Mapped[str] = mapped_column(Text)
     transmit: Mapped[bool] = mapped_column(Boolean)
 
-from .metadata_models import MetadataAttempt
+from .metadata_models import MetadataAttempt, MetadataRecoveryState, MetadataRecoveryItem

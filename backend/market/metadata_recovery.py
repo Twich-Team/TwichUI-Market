@@ -10,10 +10,10 @@ import hashlib
 import json
 import os
 import secrets
-from sqlalchemy import JSON, and_, cast, func, or_, select, text
+from sqlalchemy import JSON, case, and_, cast, func, or_, select, text
 from .db import Session, now
 from .provider_rates import reserve_budget, retry_delay, cooldown, observe, effective
-from .models import ItemMetadata, Market, MetadataJob, MetadataProvider, MetadataSource, MetadataTask, MetadataResource, MetadataAttempt, ItemMedia, Observation, SnapshotStatistic
+from .models import ItemMetadata, Market, MetadataJob, MetadataProvider, MetadataSource, MetadataTask, MetadataResource, MetadataAttempt, MetadataRecoveryState, MetadataRecoveryItem, ItemMedia, Observation, SnapshotStatistic
 from .metadata_catalog import get_source, import_everloot_page, store_source
 from .metadata_providers import IdentityMismatch, PARSERS, PROVIDERS, decode, fetch
 from .provider_secrets import SecretUnavailable, decrypt
@@ -53,11 +53,15 @@ def candidates(db, market_id, mode, limit, providers, *, item_id=None, at=None):
     if mode == 'bulk': return [(market.region, 1)]
     ids = observed_query(market_id).subquery()
     query = select(ids.c.region, ids.c.item_id).outerjoin(ItemMetadata,
-        (ItemMetadata.region == ids.c.region) & (ItemMetadata.item_id == ids.c.item_id))
+        (ItemMetadata.region == ids.c.region) & (ItemMetadata.item_id == ids.c.item_id)).outerjoin(ItemMedia,(ItemMedia.region==ids.c.region)&(ItemMedia.item_id==ids.c.item_id))
     if mode == 'missing':
-        facts=cast(ItemMetadata.catalog_json,JSON)['fields']
-        basic_absent=and_(facts['quality'].as_string().is_(None),facts['class'].as_string().is_(None),facts['level'].as_integer().is_(None))
-        query = query.where(or_(ItemMetadata.item_id.is_(None), and_(ItemMetadata.name.is_(None), ItemMetadata.fallback_name.is_(None)), ItemMetadata.catalog_json.is_(None),basic_absent))
+        from .recovery_planner import essential_missing_sql
+        from .recovery_policy import CAPABILITIES
+        capabilities=set().union(*(CAPABILITIES[p] for p in providers))
+        unnamed=func.coalesce(ItemMetadata.name,ItemMetadata.fallback_name).is_(None) if 'name' in capabilities else False
+        no_icon=ItemMedia.data.is_(None) if 'artwork' in capabilities else False
+        essentials=essential_missing_sql(capabilities)
+        query=query.where(or_(unnamed,no_icon,essentials)).order_by(case((unnamed,1),(no_icon,2),else_=3))
     elif mode == 'stale':
         eligible = select(MetadataSource.item_id).where(MetadataSource.region == ids.c.region,
             MetadataSource.item_id == ids.c.item_id, MetadataSource.provider.in_(providers), MetadataSource.refresh_at <= at).exists()
@@ -167,7 +171,7 @@ def validate_credential_once(factory, *, at, fetcher):
             observe(row, None, {}, at)
             row.validation_requested = False; row.validation_error = 'secret_unavailable'
             return True
-        attempt=MetadataAttempt(provider=ident,region='us',item_id=25,kind='validation',started_at=at,state='reserved')
+        attempt=MetadataAttempt(provider=ident,region='us',item_id=25 if ident in ('blizzard','thewowdb') else None,kind='validation',started_at=at,state='reserved')
         db.add(attempt);db.flush();validation_attempt=attempt.id
     started = monotonic()
     status, headers = None, {}
@@ -251,31 +255,56 @@ def latest_foreverdb_build(db):
         .order_by(MetadataSource.retrieved_at.desc().nulls_last()).limit(1))
 
 def schedule_automatic(db, at, *, allow_mock=False):
-    from .recovery_planner import provider_context, load_items, plan_item, phase_sql, source_due_sql
+    from .recovery_planner import provider_context, load_items, plan_item, phase_sql, source_due_sql, essential_missing_sql, remember_decision
+    from .recovery_policy import CAPABILITIES
     from sqlalchemy.orm import aliased
     context = provider_context(db, at, execution=True, allow_mock=allow_mock)
     eligible = {ident: values for ident, values in context.items() if values[0].enabled and values[0].automatic and values[2] and values[1] <= at}
-    if not eligible: return
     build = latest_foreverdb_build(db)
-    last = db.scalar(select(MetadataJob.id).where(MetadataJob.actor_id.is_(None)).order_by(MetadataJob.id.desc()).limit(1)) or 0
-    # Four reserved maintenance turns per twenty automatic jobs; missing names
-    # otherwise lead. Fallback to the normal order when that tier has no work.
-    fair = {0:5, 4:4, 8:3, 12:2}.get(last % 20, 1) if last else 1
+    state=db.get(MetadataRecoveryState,1,with_for_update=True)
+    if state is None:
+        state=MetadataRecoveryState(id=1,turn=0);db.add(state);db.flush()
+    # Record actual unavailable/waiting decisions in bounded local batches even
+    # when every provider is disabled. Viewing the tracker never runs this step.
+    if not state.audit_after or aware(state.audit_after)<=at:
+        for market in db.scalars(select(Market).where(Market.enabled.is_(True),Market.verified.is_(True)).order_by(Market.id).limit(1)):
+            ids=observed_query(market.id).subquery()
+            r=MetadataRecoveryItem
+            identities=list(db.execute(select(ids.c.region,ids.c.item_id).outerjoin(r,(r.region==ids.c.region)&(r.item_id==ids.c.item_id)&(r.locale=='en_US')).where(or_(r.item_id.is_(None),r.next_at<=at,r.decided_at<=at-timedelta(minutes=15))).order_by(r.decided_at.asc().nulls_first(),ids.c.item_id).limit(32)))
+            metadata,media,sources=load_items(db,identities)
+            for identity in identities:
+                remember_decision(db,identity,plan_item(metadata.get(identity),media.get(identity),sources.get(identity,{}),context,at,automatic=True,build=build),at)
+        state.audit_after=at+timedelta(minutes=1)
+    if not eligible:return
+    # Persist fairness across restarts and manual jobs; never depend on unrelated
+    # job IDs. Four reserved maintenance turns per twenty automatic decisions.
+    fair={4:4,8:3,12:2,19:5}.get(state.turn%20,1)
     priorities = list(dict.fromkeys([fair,1,2,3,4,5]))
     for current in (True,False):
+        if not current:
+            if state.historical_after and aware(state.historical_after)>at:continue
+            state.historical_after=at+timedelta(minutes=15)
         for priority in priorities:
             if not current and priority in (2,4): continue
             for market in db.scalars(select(Market).where(Market.enabled.is_(True),Market.verified.is_(True)).order_by(Market.id)):
                 ids = observed_query(market.id,current=current).subquery()
-                src = aliased(MetadataSource)
-                possible = select(src.item_id).where(src.region==ids.c.region, src.item_id==ids.c.item_id,
-                    src.locale=='en_US', src.provider.in_(eligible), source_due_sql(src,at,build=build)).exists()
-                never = select(func.count()).select_from(src).where(src.region==ids.c.region,src.item_id==ids.c.item_id,src.locale=='en_US',src.provider.in_(eligible)).scalar_subquery() < len(eligible)
-                query = select(ids.c.region,ids.c.item_id).outerjoin(ItemMetadata,(ItemMetadata.region==ids.c.region)&(ItemMetadata.item_id==ids.c.item_id)).outerjoin(ItemMedia,(ItemMedia.region==ids.c.region)&(ItemMedia.item_id==ids.c.item_id)).where(phase_sql(priority),or_(possible,never)).order_by(ItemMetadata.requested_at.desc().nulls_last(),ids.c.item_id).limit(64)
+                possible=[]
+                for ident in eligible:
+                    src=aliased(MetadataSource)
+                    if priority==2 and 'artwork' not in CAPABILITIES[ident]:continue
+                    if priority==4 and ident!='foreverdb':continue
+                    identity=(src.region==ids.c.region)&(src.item_id==ids.c.item_id)&(src.locale=='en_US')&(src.provider==ident)
+                    capable=essential_missing_sql(CAPABILITIES[ident]) if priority==3 else True
+                    never=~select(src.item_id).where(identity).exists() if priority!=5 else False
+                    due=select(src.item_id).where(identity,source_due_sql(src,at,build=build),src.fields_json.is_not(None) if priority==5 else True).exists()
+                    possible.append(and_(capable,or_(never,due)))
+                if not possible:continue
+                query = select(ids.c.region,ids.c.item_id).outerjoin(ItemMetadata,(ItemMetadata.region==ids.c.region)&(ItemMetadata.item_id==ids.c.item_id)).outerjoin(ItemMedia,(ItemMedia.region==ids.c.region)&(ItemMedia.item_id==ids.c.item_id)).where(phase_sql(priority),or_(*possible)).order_by(ItemMetadata.requested_at.desc().nulls_last(),ids.c.item_id).limit(64)
                 identities = list(db.execute(query))
                 metadata, media, sources = load_items(db,identities)
                 for identity in identities:
                     plan = plan_item(metadata.get(identity),media.get(identity),sources.get(identity,{}),context,at,automatic=True,build=build,priority=priority)
+                    remember_decision(db,identity,plan,at)
                     chosen = plan['chosen']
                     if not chosen: continue
                     # A pending manual/automatic task in any market owns this
@@ -284,6 +313,7 @@ def schedule_automatic(db, at, *, allow_mock=False):
                     if db.scalar(select(MetadataTask.id).join(MetadataJob).where(MetadataJob.state.in_(ACTIVE),MetadataTask.state.in_(('queued','running')),
                         MetadataTask.region==identity[0],MetadataTask.item_id==identity[1],MetadataTask.provider==chosen['provider'],MetadataTask.locale=='en_US').limit(1)): continue
                     enqueue(db,market.id,'single',[chosen['provider']],item_id=identity[1],limit=1,budget=1,at=at,decision=plan)
+                    state.turn=(state.turn+1)%20
                     return
 
 
@@ -311,7 +341,7 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_cl
             tasks = list(db.scalars(select(MetadataTask).join(MetadataJob).where(MetadataJob.state.in_(('queued','running')),
                 MetadataTask.state == 'queued', MetadataTask.available_at <= at).order_by(MetadataJob.actor_id.is_(None), MetadataTask.id).limit(30)))
             chosen = None
-            from .recovery_planner import provider_context, load_items, plan_item
+            from .recovery_planner import provider_context, load_items, plan_item, remember_decision
             context=provider_context(db,at,execution=True,allow_mock=fetcher is not fetch) if tasks else {}
             batch=load_items(db,list({(t.region,t.item_id) for t in tasks}))
             build=latest_foreverdb_build(db) if tasks else None
@@ -331,18 +361,21 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_cl
                     plan = plan_item(metadata.get(identity),media.get(identity),sources.get(identity,{}),
                         context,at,
                         automatic=bool(previous and previous.get('automatic')),force=task.force_refresh,build=build,
-                        providers=[task.provider],priority=previous.get('priority') if previous else None,
-                        allow_refresh=job.mode=='stale' or task.force_refresh)
+                        providers=[task.provider],priority=None,
+                        allow_refresh=job.mode=='stale' or task.force_refresh or bool(previous and previous.get('priority')==5))
                     if previous and previous.get('automatic'):
                         plan['selection']=previous.get('selection',previous)
                         plan['revalidation_explanation']=plan['explanation']
-                        if plan['chosen']:plan['explanation']=plan['selection']['explanation']
+                        if plan['chosen']:plan['explanation']='Initial selection: '+plan['selection']['explanation']+' Rechecked before request: '+plan['revalidation_explanation']
                     task.decision_json=json.dumps(plan)
+                    remember_decision(db,identity,plan,at)
                     if not plan['chosen']:
                         action=next(iter(plan['actions']),{})
+                        if action.get('reason')=='credential_unavailable':provider.last_error='credential_unavailable'
                         if action.get('next_at') and action['reason'] in ('provider_cooldown','temporarily_unavailable'):
                             task.available_at=datetime.fromisoformat(action['next_at'])
                             task.result_json=json.dumps({'status':action['reason'],'provider':task.provider,'retry_at':action['next_at']})
+                            task.updated_at=at
                         else:
                             task.state,task.result_json='skipped',json.dumps({'status':action.get('reason') or 'no_remaining_goal','provider':task.provider})
                             finalize(db,job,at)
@@ -376,10 +409,12 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_cl
                     finalize(db, job, at); continue
                 waiting = reserve_budget(provider, at)
                 if waiting:
-                    task.available_at = waiting; continue
+                    task.available_at = waiting;task.updated_at=at
+                    task.result_json=json.dumps({'status':'quota_deferred','provider':task.provider,'retry_at':waiting.isoformat()})
+                    continue
                 task.state, task.lease_token, task.lease_until = 'running', secrets.token_urlsafe(24), at + timedelta(seconds=LEASE_SECONDS)
                 task.attempts += 1; job.requests_used += 1; job.state = 'running'; job.updated_at = at
-                attempt=MetadataAttempt(task_id=task.id,provider=task.provider,region=task.region,item_id=task.item_id,
+                attempt=MetadataAttempt(task_id=task.id,provider=task.provider,region=task.region,item_id=task.item_id if job.mode not in ('bulk','related') else None,
                     kind='bulk' if job.mode=='bulk' else 'related' if job.mode=='related' else 'metadata',
                     started_at=at,state='reserved',decision_json=task.decision_json)
                 db.add(attempt);db.flush()
@@ -449,10 +484,11 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_cl
                         after_row = db.get(ItemMetadata, (region, item_id)) if mode!='related' else None
                         after_fields = json.loads(after_row.catalog_json).get('fields', {}) if after_row and after_row.catalog_json else {}
                         result['new_fields'] = list(changes) if mode in ('related','bulk') else [field for field, value in after_fields.items() if value is not None and value != [] and before_fields.get(field) in (None, [])]
-                        result['outcome'] = ('name_recovered' if 'name' in result['new_fields'] else 'attributes_recovered' if result['new_fields']
+                        result['updated_fields'] = [] if mode in ('related','bulk') else [field for field,value in after_fields.items() if value is not None and value != [] and before_fields.get(field) not in (None,[]) and before_fields[field]!=value]
+                        result['outcome'] = ('metadata_updated' if result['updated_fields'] and not result['new_fields'] else 'name_recovered' if 'name' in result['new_fields'] else 'attributes_recovered' if result['new_fields']
                             else 'already_known' if result['recovered_fields'] else 'no_usable_data')
                         provider.last_success, provider.last_error = at, None
-                        if result.get('new_fields'): provider.last_recovery = at
+                        if result.get('new_fields') or result.get('updated_fields'): provider.last_recovery = at
                         task.state = 'completed'
                         audit(db, job.actor_id, 'metadata.item.recovered', f'job={job.id}; provider={ident}; item={item_id}')
                 elif category is None and status == 304 and src.fields_json:
@@ -470,7 +506,7 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_cl
                 result.pop('outcome',None)
             if category:
                 src.status = category
-                delay = 604800 if status == 404 else 900
+                delay = 604800 if status == 404 or category=='wrong_identity' else 86400 if status==200 and category=='transport_or_schema' else 900
                 src.retry_at = at + timedelta(seconds=max(delay,retry_delay(headers.get('Retry-After'),at)))
                 provider.last_error = category
                 if status is not None and status >= 500 and status != 503 and headers.get('Retry-After'):
@@ -500,10 +536,11 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_cl
             attempt.outcome=result.get('outcome',result['status'])
             attempt.returned_json=json.dumps(result.get('recovered_fields',[]))
             attempt.new_json=json.dumps(result.get('new_fields',[]))
+            attempt.updated_json=json.dumps(result.get('updated_fields',[]))
             if mode not in ('bulk','related'):
                 previous_evidence=json.loads(src.recovery_json) if src.recovery_json else {}
                 src.recovery_json=json.dumps({'policy_version':1,'returned_fields':result.get('recovered_fields',[]),
-                    'new_fields':result.get('new_fields',[]),'outcome':attempt.outcome,
-                    'last_useful_at':at.isoformat() if result.get('new_fields') else previous_evidence.get('last_useful_at')})
+                    'new_fields':result.get('new_fields',[]),'updated_fields':result.get('updated_fields',[]),'outcome':attempt.outcome,
+                    'last_useful_at':at.isoformat() if result.get('new_fields') or result.get('updated_fields') else previous_evidence.get('last_useful_at')})
             finalize(db, job, at)
         return True

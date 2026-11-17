@@ -14,7 +14,7 @@ CAPABILITIES = {
     'blizzard': {'name', 'quality', 'class', 'subclass', 'slot', 'level', 'required_level', 'binding', 'vendor_sell', 'lines'},
     'everloot': {'name'},
     'foreverdb': {'name', 'quality', 'class', 'subclass', 'slot', 'level', 'required_level', 'binding', 'vendor_sell', 'details', 'artwork'},
-    'thewowdb': {'name', 'quality', 'class', 'subclass', 'slot', 'level', 'required_level', 'binding', 'vendor_sell', 'lines', 'artwork'},
+    'thewowdb': {'name', 'quality', 'level', 'required_level', 'vendor_sell', 'lines', 'artwork'},
 }
 ORDER = {'blizzard': 0, 'foreverdb': 1, 'thewowdb': 2, 'everloot': 3}
 
@@ -97,7 +97,7 @@ def provider_action(provider, source, goals, at, *, provider_due=None, credentia
         if source.checked_at and source.http_status in (200,304) and not force and not upgrade:
             # Static base metadata is not usefully polled hourly when the last
             # response supplied no missing field. New mapping/build can override.
-            if evidence and not evidence.get('new_fields'):
+            if evidence and not ((set(evidence.get('new_fields',[]))|set(evidence.get('updated_fields',[]))) & set(goals)):
                 waits.append((aware(source.checked_at) + timedelta(days=7), 'recently_unproductive'))
     until, reason = max(waits, key=lambda pair: pair[0])
     result.update(next_at=until.isoformat(), eligible=until <= at, reason=reason)
@@ -114,10 +114,12 @@ def choose(actions, priority):
 
 
 def explain(actions, chosen):
+    from .metadata_providers import PROVIDERS
+    labels={key:value.label for key,value in PROVIDERS.items()}
     if chosen:
-        earlier = [a for a in actions if a['reason'] in ('recently_unproductive','waiting_for_refresh','negative_cache','provider_cooldown')]
-        prefix = '; '.join(f"{a['provider']} is waiting ({a['reason'].replace('_',' ')})" for a in earlier)
-        target = ', '.join(chosen['capable_fields']) or 'a justified refresh'
-        return (prefix + '. ' if prefix else '') + f"{chosen['provider']} is eligible for {target}."
-    timed = [a['next_at'] for a in actions if a['next_at']]
-    return 'No provider is currently eligible.' + (f' Next known eligibility: {min(timed)}.' if timed else ' Provider access or capabilities need attention.')
+        earlier=[a for a in actions if a['reason'] in ('recently_unproductive','waiting_for_refresh','negative_cache','provider_cooldown')]
+        prefix='; '.join(f"{labels[a['provider']]} is waiting ({a['reason'].replace('_',' ')})" for a in earlier)
+        target=', '.join(chosen['capable_fields']) or 'a justified refresh'
+        return (prefix+'. ' if prefix else '')+f"{labels[chosen['provider']]} is eligible and may provide {target}."
+    timed=[a['next_at'] for a in actions if a['next_at']]
+    return 'No provider is currently eligible.'+(f' Next known eligibility: {min(timed)}.' if timed else ' Provider access or capabilities need attention.')

@@ -376,9 +376,12 @@ def test_missing_batch_includes_named_items_without_basic_attributes(database):
     with database.begin() as db:
         fields,origin=parse_everloot(tooltip(),720)
         store_source(db,'us',720,'everloot',fields,origin)
-        assert 720 in [r[1] for r in candidates(db,market,'missing',100,['everloot'])]
+        assert 720 in [r[1] for r in candidates(db,market,'missing',100,['blizzard'])]
+        assert 720 not in [r[1] for r in candidates(db,market,'missing',100,['everloot'])]  # Name-card endpoint cannot supply attributes.
         import_everloot_page(db,'us',page())
-        assert [r[1] for r in candidates(db,market,'missing',100,['everloot'])]==[721]
+        assert 720 in [r[1] for r in candidates(db,market,'missing',100,['blizzard'])]  # Armor still lacks applicable level.
+        store_metadata(db,'us',720,b'{"id":720,"name":"Synthetic complete gloves","level":28}',synthetic=True)
+        assert [r[1] for r in candidates(db,market,'missing',100,['blizzard'])]==[721]
 
 
 def test_dashboard_pending_does_not_subtract_preserved_names_twice(owner,database):

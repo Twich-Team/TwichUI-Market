@@ -70,7 +70,8 @@ class MetadataSource(Base):
     retry_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     http_status: Mapped[int | None] = mapped_column(Integer)
     recovery_json: Mapped[str | None] = mapped_column(Text)
-    __table_args__ = (Index('ix_metadata_sources_due', 'provider', 'retry_at'),)
+    __table_args__ = (Index('ix_metadata_sources_due', 'provider', 'retry_at'),
+                     Index('ix_metadata_sources_recent', 'provider', 'retrieved_at'),)
 
 
 class MetadataVersion(Base):
@@ -158,5 +159,27 @@ class MetadataAttempt(Base):
     decision_json: Mapped[str | None] = mapped_column(Text)
     returned_json: Mapped[str | None] = mapped_column(Text)
     new_json: Mapped[str | None] = mapped_column(Text)
+    updated_json: Mapped[str | None] = mapped_column(Text)
     __table_args__ = (Index('ix_metadata_attempts_period', 'started_at', 'provider'),
                      Index('ix_metadata_attempts_item', 'region', 'item_id', 'started_at'))
+
+
+class MetadataRecoveryState(Base):
+    """One small cursor inside the existing worker, not another scheduler."""
+    __tablename__ = 'metadata_recovery_state'
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    turn: Mapped[int] = mapped_column(Integer, default=0)
+    historical_after: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    audit_after: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class MetadataRecoveryItem(Base):
+    """Latest actual bounded worker decision, including ineligible items."""
+    __tablename__ = 'metadata_recovery_items'
+    region: Mapped[str] = mapped_column(String(2), primary_key=True)
+    item_id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    locale: Mapped[str] = mapped_column(String(8), primary_key=True, default='en_US')
+    status: Mapped[str] = mapped_column(String(24))
+    decided_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    next_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    decision_json: Mapped[str] = mapped_column(Text)

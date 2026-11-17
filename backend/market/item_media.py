@@ -60,7 +60,7 @@ def image_type(data):
     raise ValueError('Unsupported/corrupt icon')
 
 
-def fetch_icon(url,*,community=False,foreverdb=False,factory=Session):
+def fetch_icon(url,*,community=False,foreverdb=False,factory=Session,region=None,item_id=None,attempt_id=None):
     if not icon_url(url,community=community,foreverdb=foreverdb):raise ValueError('Untrusted icon destination')
     def download():
         # No token, credentials, cookies or redirects, including on artwork hosts.
@@ -70,12 +70,32 @@ def fetch_icon(url,*,community=False,foreverdb=False,factory=Session):
             meta={'status':response.status,'mime':response.headers.get_content_type(),
                 'headers':{k:response.headers.get(k) for k in ('Retry-After','Date','X-RateLimit-Remaining','RateLimit-Remaining','RateLimit-Reset','RateLimit-Limit')}}
             return meta,response.read(MAX_ICON_BYTES+1) if response.status==200 else b''
-    if urlsplit(url).hostname in ('thewowdb.com','foreverdb.net'):
-        from .provider_rates import reserved_request
-        meta,data=reserved_request(factory,'foreverdb' if foreverdb else 'thewowdb',download)
-    else:
-        # Public Blizzard artwork CDN is separate from its authenticated API pool.
-        meta,data=download()
+    from .models import MetadataAttempt
+    from .provider_rates import ProviderWaiting,reserved_request
+    # Each image download is a separate invocation from media metadata. The
+    # caller may supply the already committed missing-artwork reservation.
+    if attempt_id is None:
+        with factory.begin() as db:
+            attempt=MetadataAttempt(provider='foreverdb' if foreverdb else 'thewowdb' if community else 'blizzard',
+                region=region or 'us',item_id=item_id,kind='artwork',state='reserved',started_at=now())
+            db.add(attempt);db.flush();attempt_id=attempt.id
+    status=None;deferred=False
+    try:
+        if urlsplit(url).hostname in ('thewowdb.com','foreverdb.net'):
+            meta,data=reserved_request(factory,'foreverdb' if foreverdb else 'thewowdb',download)
+        else:
+            # Public Blizzard artwork CDN is separate from its authenticated pool.
+            meta,data=download()
+        status=meta['status']
+    except ProviderWaiting:
+        deferred=True;raise
+    finally:
+        with factory.begin() as db:
+            attempt=db.get(MetadataAttempt,attempt_id)
+            attempt.state='deferred' if deferred else 'finished'
+            attempt.completed_at,attempt.http_status=now(),status
+            attempt.outcome='quota_deferred' if deferred else 'image_returned' if status==200 else 'missing' if status==404 else 'rate_limited' if status==429 else 'unavailable'
+            attempt.returned_json,attempt.new_json='["icon"]' if status==200 else '[]','[]'
     if meta['status']!=200:raise ValueError('Icon HTTP status')
     mime=image_type(data)
     if meta['mime']!=mime:raise ValueError('Icon type mismatch')
@@ -108,6 +128,11 @@ def resolve_media_once(factory=Session,client=None,*,at=None,image_fetch=fetch_i
         ensure_providers(db)
         row=db.get(ItemMedia,(region,item))
         had_icon=bool(row and row.data)
+        used=db.scalar(select(func.coalesce(func.sum(ItemMedia.byte_count),0)))
+        if not had_icon and used>=MAX_CACHE_BYTES:
+            if row is None:row=ItemMedia(region=region,item_id=item);db.add(row)
+            row.status='budget';row.retry_after=at+timedelta(hours=1)
+            return True
         cached=None
         # A valid primary icon is never replaced by a supplemental image.
         if not had_icon:
@@ -140,7 +165,7 @@ def resolve_media_once(factory=Session,client=None,*,at=None,image_fetch=fetch_i
             # fetch_icon owns the artwork provider's shared reservation. A quota
             # deferral is not an outbound request.
             sent=True
-            if image_fetch is fetch_icon:data,mime=fetch_icon(url,foreverdb=ident=='foreverdb',community=ident=='thewowdb',factory=factory)
+            if image_fetch is fetch_icon:data,mime=fetch_icon(url,foreverdb=ident=='foreverdb',community=ident=='thewowdb',factory=factory,region=region,item_id=item,attempt_id=attempt_id)
             else:data,mime=image_fetch(url)
             namespace=origin.get('build');metadata_hash=origin.get('payload_hash');status=200
         else:
@@ -156,7 +181,8 @@ def resolve_media_once(factory=Session,client=None,*,at=None,image_fetch=fetch_i
             if not isinstance(assets,list) or len(assets)>20:raise ValueError('Invalid media assets')
             url=next((a.get('value') for a in assets if isinstance(a,dict) and a.get('key')=='icon'),None)
             if not icon_url(url):raise ValueError('Untrusted icon URL')
-            data,mime=image_fetch(url)
+            if image_fetch is fetch_icon:data,mime=fetch_icon(url,factory=factory,region=region,item_id=item)
+            else:data,mime=image_fetch(url)
             ident,metadata_hash='blizzard',hashlib.sha256(body).hexdigest()
         if image_type(data)!=mime:raise ValueError('Icon cache/type limit')
     except ProviderWaiting as error:

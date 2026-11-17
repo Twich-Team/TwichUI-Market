@@ -1876,7 +1876,7 @@ a.secondary { display:inline-block; padding:10px 14px; border:1px solid var(--bo
 }
 
 /* Metadata recovery uses deliberate mobile records over the same server page. */
-.recovery-tracker {display:grid;gap:1rem;margin-block:1rem 2rem;min-width:0}
+.recovery-tracker {display:grid;grid-template-columns:minmax(0,1fr);gap:1rem;margin-block:1rem 2rem;min-width:0}
 .recovery-filters {flex-wrap:wrap;align-items:end}
 .recovery-item-button {display:flex;align-items:center;gap:.5rem;text-align:left;max-width:100%}
 .recovery-item-button small,.recovery-provider-list small,.recovery-desktop small,.recovery-field-value+small {display:block}
@@ -1898,3 +1898,7 @@ a.secondary { display:inline-block; padding:10px 14px; border:1px solid var(--bo
   .recovery-filters>label,.recovery-filters select,.recovery-filters input {width:100%;min-width:0}
   .recovery-provider-list {grid-template-columns:1fr}
 }
+
+.recovery-tracker > *, .recovery-desktop {min-width:0;max-width:100%}
+
+.recovery-card small {display:block}

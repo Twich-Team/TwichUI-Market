@@ -5,20 +5,20 @@ import { DataTable } from "./data-table";
 import { LocalTime, ProviderEmblem, providerNames, Status, useRecordPage } from "./admin-table";
 export interface Attempt {
   id: number; job_id: number; item_id: number; item_name: string | null; quality?:string|null; region: string; provider: string; state: string;
-  record_scope?: "item"|"catalog"; at: string; attempts: number; http_status: number | null; outcome: string; fields_returned: string[]; fields_recovered: string[];
+  record_scope?: "item"|"catalog"; at: string; attempts: number; http_status: number | null; outcome: string; fields_returned: string[]; fields_recovered: string[]; fields_updated?:string[];
   error_category: string | null; source: { edition: string; build: string | null; confidence: string | null };
   delta_recorded?: boolean;
   next_retry: string | null; retry_allowed: boolean; retry_reason: string | null;
 }
 export const outcomeLabels: Record<string, string> = {
   attributes_returned:"Attributes returned only", observations_returned:"Observations returned · no names imported", name_returned:"Name returned · not imported",
-  name_recovered: "Recovered name", attributes_recovered: "Recovered attributes only", already_known: "Data already known",
+  metadata_updated:"Verified known fields updated", name_recovered: "Recovered name", attributes_recovered: "Recovered attributes only", already_known: "Data already known",
   metadata_returned: "Data returned · historical gain unrecorded", no_usable_data: "No usable metadata returned", missing: "Item not found by provider",
   wrong_identity: "Wrong edition or item", invalid_response: "Invalid response", credentials_invalid: "Credentials invalid",
   access_blocked: "Access denied", rate_limited: "Rate limited", unavailable: "Temporarily unavailable", pending: "Pending", skipped: "Skipped",
 };
 export function AttemptStatus({ attempt }: { attempt: Attempt }) {
-  const tone = attempt.outcome === "name_recovered" ? "success" : ["attributes_recovered", "already_known", "metadata_returned", "attributes_returned", "name_returned", "observations_returned"].includes(attempt.outcome) ? "warning" : ["pending", "skipped"].includes(attempt.outcome) ? "neutral" : "error";
+  const tone = ["name_recovered","metadata_updated"].includes(attempt.outcome) ? "success" : ["attributes_recovered", "already_known", "metadata_returned", "attributes_returned", "name_returned", "observations_returned"].includes(attempt.outcome) ? "warning" : ["pending", "skipped"].includes(attempt.outcome) ? "neutral" : "error";
   const fields = attempt.fields_recovered.map(field => field.replaceAll("_", " "));
   const label = attempt.outcome === "name_recovered" && fields.length ? `Recovered ${fields.join(" and ")}` : outcomeLabels[attempt.outcome] || "Outcome unavailable";
   return <Status tone={tone}>{label}</Status>;
@@ -64,7 +64,7 @@ export function MetadataAttempts({ market, readOnly }: { market: number; readOnl
         {accessorKey:"at",header:"Last attempt",cell:({row})=><LocalTime value={row.original.at}/>},
         {id:"retry",header:"Retry",enableSorting:false,cell:({row})=>row.original.retry_allowed && !readOnly ? <button disabled={busy} onClick={()=>retry(row.original)}>Retry item #{row.original.item_id}</button> : <span className="small muted">{readOnly ? "Read-only access" : row.original.retry_reason || "Unavailable"}</span>},
       ]}
-      renderDetails={row=><dl className="record-details"><dt>Request</dt><dd>{row.http_status == null ? "No HTTP response recorded" : `HTTP ${row.http_status}`} · {row.attempts} attempt(s) · job #{row.job_id}</dd><dt>Returned fields</dt><dd>{row.fields_returned.join(", ") || "None"}</dd><dt>Newly recovered fields</dt><dd>{row.fields_recovered.join(", ") || "None recorded"}</dd><dt>Source / build</dt><dd>{providerNames[row.provider]} · {row.source.edition} · {row.source.build || "Build not recorded"} · {row.source.confidence || "Confidence not recorded"}</dd><dt>Rejection category</dt><dd>{row.error_category?.replaceAll("_"," ") || "None recorded"}</dd><dt>Next eligible retry</dt><dd><LocalTime value={row.next_retry}/>{row.retry_reason && ` · ${row.retry_reason}`}</dd></dl>}
+      renderDetails={row=><dl className="record-details"><dt>Request</dt><dd>{row.http_status == null ? "No HTTP response recorded" : `HTTP ${row.http_status}`} · {row.attempts} attempt(s) · job #{row.job_id}</dd><dt>Returned fields</dt><dd>{row.fields_returned.join(", ") || "None"}</dd><dt>Newly recovered fields</dt><dd>{row.fields_recovered.join(", ") || "None recorded"}</dd><dt>Updated known fields</dt><dd>{row.fields_updated?.join(", ")||"None recorded"}</dd><dt>Source / build</dt><dd>{providerNames[row.provider]} · {row.source.edition} · {row.source.build || "Build not recorded"} · {row.source.confidence || "Confidence not recorded"}</dd><dt>Rejection category</dt><dd>{row.error_category?.replaceAll("_"," ") || "None recorded"}</dd><dt>Next eligible retry</dt><dd><LocalTime value={row.next_retry}/>{row.retry_reason && ` · ${row.retry_reason}`}</dd></dl>}
     />
   </section>;
 }
