@@ -19,13 +19,13 @@ for(const [phase,port] of [['before',5176],['after',5173]].filter(([phase])=>!pr
  }
 }
 const metrics=[];
-for(let i=0;i<3;i++){
+for(const phase of ['before','after'])for(let i=0;i<3;i++){
  const ctx=await browser.newContext({storageState:await context.storageState(),viewport:{width:390,height:844}});const p=await ctx.newPage();let requests=0;
  p.on('request',r=>{if(/\/catalogue\?/.test(r.url()))requests++;});
  await p.addInitScript(()=>{window.mobileCLS=0;new PerformanceObserver(list=>{for(const e of list.getEntries())if(!e.hadRecentInput)window.mobileCLS+=e.value;}).observe({type:'layout-shift',buffered:true});});
- const start=Date.now();await p.goto('http://127.0.0.1:5173/?market=1');await p.locator('.mobile-item').first().waitFor();const first=Date.now()-start;
- const searchStart=Date.now();await p.getByLabel('Search items',{exact:true}).fill('Crystal');await p.getByRole('button',{name:'Search',exact:true}).click();await p.waitForResponse(r=>r.url().includes('/catalogue?')&&r.url().includes('Crystal'));
- metrics.push({catalogueReadyMs:first,searchResponseMs:Date.now()-searchStart,catalogueRequests:requests,...await p.evaluate(()=>({cls:window.mobileCLS,heapBytes:performance.memory?.usedJSHeapSize,domNodes:document.querySelectorAll('*').length}))});await ctx.close();
+ const start=Date.now();await p.goto(`http://127.0.0.1:${phase==='before'?5176:5173}/?market=1&q=`);await p.locator(phase==='before'?'.catalogue-table tbody > tr':'.mobile-item').first().waitFor();const first=Date.now()-start;
+ const searchStart=Date.now();await p.getByLabel('Search items',{exact:true}).fill('Crystal');const reply=p.waitForResponse(r=>r.url().includes('/catalogue?')&&r.url().includes('Crystal'));await p.getByRole('button',{name:'Search',exact:true}).click();await reply;
+ metrics.push({phase,catalogueReadyMs:first,searchResponseMs:Date.now()-searchStart,catalogueRequests:requests,...await p.evaluate(()=>({cls:window.mobileCLS,heapBytes:performance.memory?.usedJSHeapSize,domNodes:document.querySelectorAll('*').length}))});await ctx.close();
 }
 fs.writeFileSync(`${out}/performance.json`,JSON.stringify({fixture:true,network:'local loopback; not cellular or real device',samples:metrics},null,2));await browser.close();
 })();

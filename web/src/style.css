@@ -1863,3 +1863,4 @@ a.secondary { display:inline-block; padding:10px 14px; border:1px solid var(--bo
   .mobile-item-heading .select-item { min-height:44px; display:flex; align-items:center; }
   .catalogue-toolbar .icon-button { min-width:44px; min-height:44px; }
 }
+@media(max-width:700px) { .toolbar.preferences-fields { grid-template-columns:minmax(0,1fr); } }
