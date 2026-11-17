@@ -1,0 +1,24 @@
+{
+  "before": {
+    "all_js_bytes": 1269701,
+    "all_js_gzip_bytes": 405714,
+    "css_bytes": 35663,
+    "chart_engine_bytes": [
+      [
+        "chart-engine-Bzqihi_9.js",
+        573272
+      ]
+    ]
+  },
+  "after": {
+    "all_js_bytes": 1273726,
+    "all_js_gzip_bytes": 406669,
+    "css_bytes": 43593,
+    "chart_engine_bytes": [
+      [
+        "chart-engine-Bzqihi_9.js",
+        573272
+      ]
+    ]
+  }
+}

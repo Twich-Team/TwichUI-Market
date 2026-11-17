@@ -1,0 +1,10 @@
+{
+  "synthetic": true,
+  "totalItems": 5000,
+  "renderedRows": 25,
+  "catalogueRequests": 2,
+  "readyMs": 485,
+  "domNodes": 1207,
+  "firstItem": 800000,
+  "nextPageItem": 800025
+}
