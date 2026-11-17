@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "scope": "private-nsis-with-tauri-signed-updates",
+  "owner_approved_publication": true,
+  "owner_approved_deployment": true,
+  "owner_statement": "Owner request approves PR #17 implementation and visual design and authorizes its controlled integration, production deployment, and publication of the next compatible properly signed Windows Companion after successful release acceptance; routine approval is not required again. Actual Windows toast/tray remains subject to owner-PC acceptance. This exact beta.4 artifact fulfills that authorized scope.",
+  "visual_approval_commit": "ea90a98138221bc569d882577a1720fba1298457",
+  "source_commit": "2920f366f7b5cd32178ae06ae94cea84701ff87f",
+  "version": "2.0.0-beta.4",
+  "installer_sha256": "6a64493b795577b23503af86a1ff8d79181a157f233272a2247703c2059689af",
+  "windows_run_id": 44007355418,
+  "signed_update_run_id": 44008432442,
+  "updater_public_key_sha256": "5794736c840c7c09a49396e60cd569ff6b5f24f872eb0318ed95d55c16616ecf",
+  "tray_actions_verified": false,
+  "acknowledges_unverified_tray": true
+}

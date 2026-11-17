@@ -1,0 +1,22 @@
+{
+  "source": "Actual production HTTPS, America/Denver local timestamps; no synthetic fixtures",
+  "sha256": {
+    "explorer.png": "1fec0360053d1d5e9d3504ec110d74d2358b342195e36d1da18a06d687eb8e4a",
+    "item-metric-explanation.png": "fd8964edc700d91661ce47f5d54065e81019a464c7f6a03622b0e08604d95e30",
+    "history-24.png": "26565a3c62f7a5d6445ba5dbca0664934cd7683b6016bebf74602876cc440af7",
+    "history-48.png": "96baddeab73381417cf7fb6322d23b81b78640f3d3563bc9b6c42e68e3958a30",
+    "current-listings.png": "e7b06bf35fd4596a9a5b90018d5eddd881ef13003886b886144d28c05dc02d3f",
+    "item-mobile.png": "57895bf7ccb9b4a4045bbe6eb1851e7dd10a11d797d666eae68be232c4d7a1bd",
+    "administration-overview.png": "be33b27993d3eb5af1c041918320931430c175839c6788c4bcfbba79c24d5a23",
+    "metadata-summary.png": "00148c3abff704e29b618bc7517f0509126705d9fd5ea9f697287f7a2d79bce4",
+    "provider-coverage.png": "8bf1270d84615d07584c18ae8c24bac1f2b933080a40f43de3e3e114dc4824a7",
+    "database-growth.png": "08dcd6cc71db0a4afc9a2b1d03f7a0618da45e66263004e6eecfc5dcfacb07d0",
+    "storage-retention.png": "bc07949f7f5f1e21e35199e56c5441289596d91bbb0381cb785d1811501dc886",
+    "member-management.png": "64932fe38a022390f6c91af7ac873c6974628ee033a91daeb652e4352d019bf1",
+    "device-management.png": "aaeb94aa2d8ee0b3e68f3474187012d6d6842521df3d575585d8f77294c94cab",
+    "security-events.png": "44edcdd8d5aef153d66e549eeacdc0c94b7b2d835ebeea527c505f724b6fcd25",
+    "companion-beta4.png": "131f870fa2952486b17744992721f3db28a4c52cb8edb3d5ebc929b2219a7d9a",
+    "deal-finder-loaded-icons.png": "d14940c0329329c67f6a5e8d0bf32b96e2b4f80aaaf945b4c23742735920fd16",
+    "deals-mobile.png": "8cf9be899dbf531a83ebd95c0489471c12bbe9e9466a6e13f22139f938125191"
+  }
+}

@@ -1,0 +1,788 @@
+{
+  "source_archive": {
+    "filename": "market-usability-20261117T030531Z.dump",
+    "created_at": "2026-11-17T03:07:41.102783+00:00",
+    "bytes": 453697171,
+    "sha256": "1f431684d4b1a3e52b14ed186e29fa3b35ed546e29b04d5d3ef4b08aca52a7ea",
+    "isolated_restore_verified": false,
+    "source": "production market",
+    "separate_release_budget_bytes": 805306368,
+    "previous_archives_preserved": 29
+  },
+  "restored_database": "market_test",
+  "source_revision": "fdb_20261116",
+  "revision": "usability_20261117",
+  "migration_chain": [
+    "fdb_20261116",
+    "archive_20261116",
+    "usability_20261117"
+  ],
+  "round_trip_isolated_only": true,
+  "original_columns": {
+    "bridge_derivations": [
+      "snapshot_id",
+      "algorithm",
+      "revision",
+      "record_count"
+    ],
+    "bridge_derived_records": [
+      "snapshot_id",
+      "algorithm",
+      "revision",
+      "item_id",
+      "variant_key",
+      "record_json"
+    ],
+    "bridge_generations": [
+      "generation_id",
+      "market_id",
+      "algorithm",
+      "source_signature",
+      "manifest_json",
+      "created_at"
+    ],
+    "bridge_records": [
+      "generation_id",
+      "position",
+      "record_json"
+    ],
+    "collection_runs": [
+      "id",
+      "market_id",
+      "checked_at",
+      "status",
+      "http_status",
+      "duration_seconds",
+      "payload_bytes",
+      "error"
+    ],
+    "companion_authorizations": [
+      "id",
+      "user_id",
+      "device_id",
+      "approved_credential_id",
+      "device_name",
+      "platform",
+      "app_version",
+      "issuer_origin",
+      "redirect_uri",
+      "state_value",
+      "state_hash",
+      "code_challenge",
+      "code_hash",
+      "code_expires_at",
+      "created_at",
+      "expires_at",
+      "status",
+      "invalid_attempts"
+    ],
+    "companion_devices": [
+      "id",
+      "user_id",
+      "name",
+      "platform",
+      "app_version",
+      "issuer_origin",
+      "created_at",
+      "expires_at",
+      "refresh_expires_at",
+      "revoked",
+      "refresh_hash",
+      "previous_refresh_hash",
+      "rotation_nonce_hash",
+      "rotated_at",
+      "generation",
+      "access_credential_id",
+      "last_connection_at",
+      "last_sync_at",
+      "selected_market_id",
+      "last_observation_id"
+    ],
+    "companion_refresh_history": [
+      "token_hash",
+      "device_id",
+      "consumed_at"
+    ],
+    "credentials": [
+      "id",
+      "user_id",
+      "token_hash",
+      "kind",
+      "name",
+      "csrf_hash",
+      "created_at",
+      "expires_at",
+      "revoked",
+      "audience",
+      "companion_device_id"
+    ],
+    "daily_observations": [
+      "market_id",
+      "day",
+      "observation_id"
+    ],
+    "invitations": [
+      "id",
+      "token_hash",
+      "created_by",
+      "expires_at",
+      "used"
+    ],
+    "item_media": [
+      "region",
+      "item_id",
+      "status",
+      "source",
+      "source_url",
+      "namespace",
+      "metadata_hash",
+      "asset_hash",
+      "content_type",
+      "data",
+      "byte_count",
+      "checked_at",
+      "retry_after",
+      "http_status",
+      "resolved_at"
+    ],
+    "item_metadata": [
+      "region",
+      "item_id",
+      "name",
+      "status",
+      "namespace",
+      "checked_at",
+      "resolved_at",
+      "retry_after",
+      "http_status",
+      "payload_hash",
+      "synthetic",
+      "quality",
+      "details",
+      "resolved_namespace",
+      "requested_at",
+      "fallback",
+      "fallback_name",
+      "fallback_retry_after",
+      "catalog_json",
+      "catalog_revision"
+    ],
+    "listings": [
+      "id",
+      "snapshot_id",
+      "auction_id",
+      "item_id",
+      "variant",
+      "variant_key",
+      "quantity",
+      "buyout",
+      "unit_price",
+      "bid",
+      "time_left"
+    ],
+    "login_attempts": [
+      "key",
+      "count",
+      "window_start"
+    ],
+    "market_verifications": [
+      "id",
+      "market_id",
+      "actor_id",
+      "created_at",
+      "evidence",
+      "evidence_hash",
+      "notes"
+    ],
+    "markets": [
+      "id",
+      "region",
+      "ruleset_id",
+      "house_id",
+      "source_kind",
+      "label",
+      "enabled",
+      "verified",
+      "interval_seconds",
+      "next_check",
+      "last_success",
+      "last_modified",
+      "etag",
+      "failures",
+      "last_error"
+    ],
+    "metadata_jobs": [
+      "id",
+      "actor_id",
+      "market_id",
+      "mode",
+      "state",
+      "dedupe_key",
+      "providers_json",
+      "total",
+      "request_budget",
+      "requests_used",
+      "created_at",
+      "updated_at"
+    ],
+    "metadata_providers": [
+      "provider",
+      "enabled",
+      "automatic",
+      "hourly_budget",
+      "daily_budget",
+      "hour_start",
+      "day_start",
+      "hour_used",
+      "day_used",
+      "next_request_at",
+      "cooldown_until",
+      "last_success",
+      "last_error",
+      "credential",
+      "credential_key_id",
+      "expires_at",
+      "validated_at",
+      "credential_status",
+      "pending_credential",
+      "pending_key_id",
+      "pending_expires_at",
+      "validation_requested",
+      "validation_revision",
+      "validation_error",
+      "rate_config",
+      "rate_tokens",
+      "rate_token_at",
+      "rate_inflight_until",
+      "rate_streak",
+      "adaptive_until",
+      "last_rate_limit",
+      "last_http_success",
+      "last_recovery",
+      "rate_observation"
+    ],
+    "metadata_quota_buckets": [
+      "provider",
+      "resolution",
+      "started_at",
+      "used"
+    ],
+    "metadata_resources": [
+      "region",
+      "resource",
+      "offset",
+      "status",
+      "fields_json",
+      "source_json",
+      "etag",
+      "checked_at",
+      "refresh_at",
+      "retry_at",
+      "http_status"
+    ],
+    "metadata_sources": [
+      "region",
+      "item_id",
+      "locale",
+      "provider",
+      "status",
+      "fields_json",
+      "source_json",
+      "revision",
+      "etag",
+      "checked_at",
+      "retrieved_at",
+      "refresh_at",
+      "retry_at",
+      "http_status"
+    ],
+    "metadata_tasks": [
+      "id",
+      "job_id",
+      "provider",
+      "region",
+      "item_id",
+      "locale",
+      "state",
+      "attempts",
+      "available_at",
+      "lease_until",
+      "lease_token",
+      "result_json",
+      "updated_at",
+      "resource"
+    ],
+    "metadata_versions": [
+      "id",
+      "region",
+      "item_id",
+      "locale",
+      "provider",
+      "revision",
+      "fields_json",
+      "source_json",
+      "created_at"
+    ],
+    "observations": [
+      "id",
+      "market_id",
+      "snapshot_id",
+      "request_key",
+      "retrieved_at",
+      "upstream_modified",
+      "namespace",
+      "payload_hash",
+      "payload_bytes",
+      "synthetic"
+    ],
+    "player_market_mappings": [
+      "id",
+      "region",
+      "ruleset",
+      "faction",
+      "house_id",
+      "transport_ruleset_id",
+      "source_kind",
+      "confidence",
+      "evidence",
+      "evidence_hash",
+      "verified_at"
+    ],
+    "retention_batches": [
+      "id",
+      "actor_id",
+      "policy_hash",
+      "stage",
+      "rows_removed",
+      "cutoff",
+      "history_floor",
+      "created_at"
+    ],
+    "retention_policy": [
+      "id",
+      "revision",
+      "raw_days",
+      "intraday_days",
+      "daily_days",
+      "operational_days",
+      "security_days",
+      "approved_hash",
+      "approved_at",
+      "updated_at"
+    ],
+    "retention_policy_changes": [
+      "id",
+      "actor_id",
+      "before",
+      "after",
+      "created_at"
+    ],
+    "security_events": [
+      "id",
+      "actor_id",
+      "action",
+      "detail",
+      "created_at"
+    ],
+    "snapshot_statistics": [
+      "snapshot_id",
+      "item_id",
+      "variant_key",
+      "algorithm",
+      "recent_price",
+      "lowest_buyout",
+      "supply",
+      "priced_supply",
+      "listing_count"
+    ],
+    "snapshots": [
+      "id",
+      "market_id",
+      "content_hash",
+      "created_at",
+      "listing_count",
+      "raw_retained",
+      "statistics_retained"
+    ],
+    "storage_measurements": [
+      "sampled_at",
+      "database_bytes"
+    ],
+    "user_preferences": [
+      "user_id",
+      "schema_version",
+      "revision",
+      "values_json",
+      "updated_at"
+    ],
+    "users": [
+      "id",
+      "username",
+      "password_hash",
+      "role",
+      "active",
+      "created_at"
+    ]
+  },
+  "before": {
+    "bridge_derivations": {
+      "rows": 0,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "bridge_derived_records": {
+      "rows": 0,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "bridge_generations": {
+      "rows": 0,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "bridge_records": {
+      "rows": 0,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "collection_runs": {
+      "rows": 826,
+      "bytes": 47470,
+      "sha256": "ff109df8e3597a52298ee67dc5ff69a447c606b800df2e324f487a374359691a"
+    },
+    "companion_authorizations": {
+      "rows": 4,
+      "bytes": 1977,
+      "sha256": "807eeb74a5c7002722131a21bb44185e1e719b73b97030d3f6bbc90a54ac19fe"
+    },
+    "companion_devices": {
+      "rows": 5,
+      "bytes": 2000,
+      "sha256": "92ba6fcf43575adb343fb9cc5647a273a0619e0e2cfcff58af74e58e254284dd"
+    },
+    "companion_refresh_history": {
+      "rows": 28,
+      "bytes": 2709,
+      "sha256": "246a1dcff57912a0faff3990435f6e301917839931110921aaa82f964a22b9cb"
+    },
+    "credentials": {
+      "rows": 252,
+      "bytes": 56917,
+      "sha256": "bb23df262824fa9868c9213f419c5f98c9a87f5a955b65b435af74aab355aa3c"
+    },
+    "daily_observations": {
+      "rows": 5,
+      "bytes": 85,
+      "sha256": "ee5233e87fc45c18ee9e00e0c73d1fd5659ba056d1e616c2aa6e6483ea2d8dfb"
+    },
+    "invitations": {
+      "rows": 2,
+      "bytes": 202,
+      "sha256": "009b43589b93a398061c5edd6279a4917ad03d53146268c494ae3c7bb7063d37"
+    },
+    "item_media": {
+      "rows": 5787,
+      "bytes": 29628463,
+      "sha256": "46a59acfb8adcec113d31c402b802d79423ff093bc7224c94d62f82eebfead5c"
+    },
+    "item_metadata": {
+      "rows": 5847,
+      "bytes": 58832691,
+      "sha256": "020055113ac14dbad90225132b99f4f74d8878845c9d2b35de8a46c89e3010c1"
+    },
+    "listings": {
+      "rows": 8573753,
+      "bytes": 1167895198,
+      "sha256": "cbce6faa19326f9249b7c5dfae38a18c27fbbeacd1f98319e8e0b728a49b789d"
+    },
+    "login_attempts": {
+      "rows": 19,
+      "bytes": 1841,
+      "sha256": "b963fab8ffa82a8c2879002de3b8b7e39d9d55b62f936962046c527d237921d6"
+    },
+    "market_verifications": {
+      "rows": 2,
+      "bytes": 5028,
+      "sha256": "e7d6d471274fb9da263bf766a53941675224876ef60df832c1194ae61fa03d17"
+    },
+    "markets": {
+      "rows": 2,
+      "bytes": 326,
+      "sha256": "157ed4925da7477aa335e70601fd14c400c5b9591dcfd1fdf95036fd18e47ddf"
+    },
+    "metadata_jobs": {
+      "rows": 9683,
+      "bytes": 1654296,
+      "sha256": "fa84d10866cdf98c93731cfb104fb7482b841bfe69941b8a238d82ab7d2c23c9"
+    },
+    "metadata_providers": {
+      "rows": 4,
+      "bytes": 2156,
+      "sha256": "9b6d5115986b966bb0f5528f4ffdd7e59cd659dbd46d6f02b6cf059730b9a39f"
+    },
+    "metadata_quota_buckets": {
+      "rows": 1042,
+      "bytes": 39307,
+      "sha256": "d029ccd1da7806de67830a1ad327c013e1610974d95ce3ebe563348d24c4bfec"
+    },
+    "metadata_resources": {
+      "rows": 3,
+      "bytes": 101900,
+      "sha256": "3e5e6079fa69031e61f2d0bd8127df9b75ae99b73c1a2f77048e50afaec577f3"
+    },
+    "metadata_sources": {
+      "rows": 13869,
+      "bytes": 70572072,
+      "sha256": "580e66dd9b8538d476966a138757f232b9fd541ce1968e5212b1e8de2070302e"
+    },
+    "metadata_tasks": {
+      "rows": 10002,
+      "bytes": 9179428,
+      "sha256": "bd6661f8b2d881a078d1faf477f1f7754fa089ab41d4c640908f041eb9eddde5"
+    },
+    "metadata_versions": {
+      "rows": 9762,
+      "bytes": 69512899,
+      "sha256": "bc07d0a7941150f677cb721e0e848fa2bed067b44c638fd5848e1f1aec36b957"
+    },
+    "observations": {
+      "rows": 825,
+      "bytes": 156946,
+      "sha256": "5a2bd7ad86fc9b12f285a0e11b2666ec3042e823ef210366c6e361bc7070fbff"
+    },
+    "player_market_mappings": {
+      "rows": 1,
+      "bytes": 15546,
+      "sha256": "dde78a44cad988f6801006e0263f2bc09ae209428459ef17d26f9571c3c50cdd"
+    },
+    "retention_batches": {
+      "rows": 0,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "retention_policy": {
+      "rows": 0,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "retention_policy_changes": {
+      "rows": 0,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "security_events": {
+      "rows": 25340,
+      "bytes": 2456129,
+      "sha256": "2f0c052851a8f5ad8a9f53da619f0b6d73bc1d696f39193d4a8a20645389ad74"
+    },
+    "snapshot_statistics": {
+      "rows": 1845133,
+      "bytes": 206821821,
+      "sha256": "7382db23ca5cc8b2a53ba36c1aa87316bebd036f7ebaf608f24b1ff7cca08dda"
+    },
+    "snapshots": {
+      "rows": 74,
+      "bytes": 8182,
+      "sha256": "c3005109db2464dde1e0d0f30d27ea8471f89ee6e8322975284c01d98eea49b5"
+    },
+    "storage_measurements": {
+      "rows": 75,
+      "bytes": 2517,
+      "sha256": "79eb2dd9cce8ad1a7fd1f7b30d44186534fa2eabf99ea3f872ba1cf573dd128f"
+    },
+    "user_preferences": {
+      "rows": 22,
+      "bytes": 8212,
+      "sha256": "56af5176abd081ce579279aedfb4d30f26865f1ddc43984e6c0fe77944bcde59"
+    },
+    "users": {
+      "rows": 97,
+      "bytes": 16430,
+      "sha256": "c10ac65d1737c05fafbbbc6d790aaf6e61efaf3d539c07467323cbd1bf4e36f1"
+    }
+  },
+  "after": {
+    "bridge_derivations": {
+      "rows": 0,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "bridge_derived_records": {
+      "rows": 0,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "bridge_generations": {
+      "rows": 0,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "bridge_records": {
+      "rows": 0,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "collection_runs": {
+      "rows": 826,
+      "bytes": 47470,
+      "sha256": "ff109df8e3597a52298ee67dc5ff69a447c606b800df2e324f487a374359691a"
+    },
+    "companion_authorizations": {
+      "rows": 4,
+      "bytes": 1977,
+      "sha256": "807eeb74a5c7002722131a21bb44185e1e719b73b97030d3f6bbc90a54ac19fe"
+    },
+    "companion_devices": {
+      "rows": 5,
+      "bytes": 2000,
+      "sha256": "92ba6fcf43575adb343fb9cc5647a273a0619e0e2cfcff58af74e58e254284dd"
+    },
+    "companion_refresh_history": {
+      "rows": 28,
+      "bytes": 2709,
+      "sha256": "246a1dcff57912a0faff3990435f6e301917839931110921aaa82f964a22b9cb"
+    },
+    "credentials": {
+      "rows": 252,
+      "bytes": 56917,
+      "sha256": "bb23df262824fa9868c9213f419c5f98c9a87f5a955b65b435af74aab355aa3c"
+    },
+    "daily_observations": {
+      "rows": 5,
+      "bytes": 85,
+      "sha256": "ee5233e87fc45c18ee9e00e0c73d1fd5659ba056d1e616c2aa6e6483ea2d8dfb"
+    },
+    "invitations": {
+      "rows": 2,
+      "bytes": 202,
+      "sha256": "009b43589b93a398061c5edd6279a4917ad03d53146268c494ae3c7bb7063d37"
+    },
+    "item_media": {
+      "rows": 5787,
+      "bytes": 29628463,
+      "sha256": "46a59acfb8adcec113d31c402b802d79423ff093bc7224c94d62f82eebfead5c"
+    },
+    "item_metadata": {
+      "rows": 5847,
+      "bytes": 58832691,
+      "sha256": "020055113ac14dbad90225132b99f4f74d8878845c9d2b35de8a46c89e3010c1"
+    },
+    "listings": {
+      "rows": 8573753,
+      "bytes": 1167895198,
+      "sha256": "cbce6faa19326f9249b7c5dfae38a18c27fbbeacd1f98319e8e0b728a49b789d"
+    },
+    "login_attempts": {
+      "rows": 19,
+      "bytes": 1841,
+      "sha256": "b963fab8ffa82a8c2879002de3b8b7e39d9d55b62f936962046c527d237921d6"
+    },
+    "market_verifications": {
+      "rows": 2,
+      "bytes": 5028,
+      "sha256": "e7d6d471274fb9da263bf766a53941675224876ef60df832c1194ae61fa03d17"
+    },
+    "markets": {
+      "rows": 2,
+      "bytes": 326,
+      "sha256": "157ed4925da7477aa335e70601fd14c400c5b9591dcfd1fdf95036fd18e47ddf"
+    },
+    "metadata_jobs": {
+      "rows": 9683,
+      "bytes": 1654296,
+      "sha256": "fa84d10866cdf98c93731cfb104fb7482b841bfe69941b8a238d82ab7d2c23c9"
+    },
+    "metadata_providers": {
+      "rows": 4,
+      "bytes": 2156,
+      "sha256": "9b6d5115986b966bb0f5528f4ffdd7e59cd659dbd46d6f02b6cf059730b9a39f"
+    },
+    "metadata_quota_buckets": {
+      "rows": 1042,
+      "bytes": 39307,
+      "sha256": "d029ccd1da7806de67830a1ad327c013e1610974d95ce3ebe563348d24c4bfec"
+    },
+    "metadata_resources": {
+      "rows": 3,
+      "bytes": 101900,
+      "sha256": "3e5e6079fa69031e61f2d0bd8127df9b75ae99b73c1a2f77048e50afaec577f3"
+    },
+    "metadata_sources": {
+      "rows": 13869,
+      "bytes": 70572072,
+      "sha256": "580e66dd9b8538d476966a138757f232b9fd541ce1968e5212b1e8de2070302e"
+    },
+    "metadata_tasks": {
+      "rows": 10002,
+      "bytes": 9179428,
+      "sha256": "bd6661f8b2d881a078d1faf477f1f7754fa089ab41d4c640908f041eb9eddde5"
+    },
+    "metadata_versions": {
+      "rows": 9762,
+      "bytes": 69512899,
+      "sha256": "bc07d0a7941150f677cb721e0e848fa2bed067b44c638fd5848e1f1aec36b957"
+    },
+    "observations": {
+      "rows": 825,
+      "bytes": 156946,
+      "sha256": "5a2bd7ad86fc9b12f285a0e11b2666ec3042e823ef210366c6e361bc7070fbff"
+    },
+    "player_market_mappings": {
+      "rows": 1,
+      "bytes": 15546,
+      "sha256": "dde78a44cad988f6801006e0263f2bc09ae209428459ef17d26f9571c3c50cdd"
+    },
+    "retention_batches": {
+      "rows": 0,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "retention_policy": {
+      "rows": 0,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "retention_policy_changes": {
+      "rows": 0,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "security_events": {
+      "rows": 25340,
+      "bytes": 2456129,
+      "sha256": "2f0c052851a8f5ad8a9f53da619f0b6d73bc1d696f39193d4a8a20645389ad74"
+    },
+    "snapshot_statistics": {
+      "rows": 1845133,
+      "bytes": 206821821,
+      "sha256": "7382db23ca5cc8b2a53ba36c1aa87316bebd036f7ebaf608f24b1ff7cca08dda"
+    },
+    "snapshots": {
+      "rows": 74,
+      "bytes": 8182,
+      "sha256": "c3005109db2464dde1e0d0f30d27ea8471f89ee6e8322975284c01d98eea49b5"
+    },
+    "storage_measurements": {
+      "rows": 75,
+      "bytes": 2517,
+      "sha256": "79eb2dd9cce8ad1a7fd1f7b30d44186534fa2eabf99ea3f872ba1cf573dd128f"
+    },
+    "user_preferences": {
+      "rows": 22,
+      "bytes": 8212,
+      "sha256": "56af5176abd081ce579279aedfb4d30f26865f1ddc43984e6c0fe77944bcde59"
+    },
+    "users": {
+      "rows": 97,
+      "bytes": 16430,
+      "sha256": "c10ac65d1737c05fafbbbc6d790aaf6e61efaf3d539c07467323cbd1bf4e36f1"
+    }
+  },
+  "all_original_rows_preserved": true,
+  "pg_trgm": true,
+  "invalid_indexes": 0,
+  "old_application_reads_new_schema": true,
+  "encrypted_credentials_decrypt_with_original_keyring": true,
+  "migration_and_verification_seconds": 36.08,
+  "production_touched": false
+}
