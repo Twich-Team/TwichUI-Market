@@ -5,7 +5,7 @@ from time import monotonic
 from urllib.parse import urlsplit
 from urllib.request import Request
 from urllib.error import HTTPError
-from sqlalchemy import func,or_,select,text
+from sqlalchemy import JSON, cast, func,or_,select,text
 from .db import Session,now
 from .models import ItemMedia,ItemMetadata,MetadataSource,Market,Observation,SnapshotStatistic
 from .probe import opener
@@ -105,27 +105,31 @@ def fetch_icon(url,*,community=False,foreverdb=False,factory=Session,region=None
 def resolve_media_once(factory=Session,client=None,*,at=None,image_fetch=fetch_icon,budget_guard=None,failure_guard=None):
     from .worker import BlizzardClient,retry_seconds
     from .models import MetadataProvider, MetadataAttempt
-    from .provider_rates import reserve_budget,observe,cooldown,ProviderWaiting
+    from .provider_rates import reserve_budget,observe,cooldown,ProviderWaiting,rate_view
     at=at or now();client=client or BlizzardClient()
-    if getattr(client,'blocked_until',0)>time.monotonic():return False
     candidate=None
     with factory.begin() as db:
         if db.bind.dialect.name=='postgresql' and not db.scalar(text('SELECT pg_try_advisory_xact_lock(7140235)')):return False
+        from .metadata_recovery import ensure_providers
+        ensure_providers(db)
+        settings={p.provider:p for p in db.scalars(select(MetadataProvider))}
+        ready={ident for ident,p in settings.items() if p.enabled and p.automatic and rate_view(p,at)['next_eligible_at']<=at}
+        blizzard_ready='blizzard' in ready and getattr(client,'blocked_until',0)<=time.monotonic()
+        artwork_ready=ready & {'foreverdb','thewowdb'}
         for market in db.scalars(select(Market).where(Market.enabled.is_(True),Market.verified.is_(True)).order_by(Market.id)):
             latest=db.scalar(select(Observation).where(Observation.market_id==market.id).order_by(Observation.retrieved_at.desc(),Observation.id.desc()).limit(1))
             if not latest:continue
             stat=SnapshotStatistic
+            cached_reference=select(MetadataSource.item_id).where(MetadataSource.region==market.region,MetadataSource.item_id==stat.item_id,MetadataSource.locale=='en_US',MetadataSource.provider.in_(artwork_ready),cast(MetadataSource.source_json,JSON)['icon_url'].as_string().is_not(None)).exists()
             # Missing current artwork first; valid cached bytes refresh only when
             # their own interval is due. A committed short lease prevents races.
             item=db.scalar(select(stat.item_id).outerjoin(ItemMedia,(ItemMedia.region==market.region)&(ItemMedia.item_id==stat.item_id))
                 .outerjoin(ItemMetadata,(ItemMetadata.region==market.region)&(ItemMetadata.item_id==stat.item_id))
-                .where(stat.snapshot_id==latest.snapshot_id,or_(ItemMedia.item_id.is_(None),ItemMedia.retry_after.is_(None),ItemMedia.retry_after<=at))
+                .where(stat.snapshot_id==latest.snapshot_id,or_(ItemMedia.item_id.is_(None),ItemMedia.retry_after.is_(None),ItemMedia.retry_after<=at),True if blizzard_ready else ItemMedia.data.is_(None)&cached_reference)
                 .group_by(stat.item_id,ItemMetadata.requested_at,ItemMedia.asset_hash).order_by(ItemMedia.asset_hash.is_not(None),ItemMetadata.requested_at.desc().nulls_last(),stat.item_id).limit(1))
             if item is not None:candidate=(market.region,item);break
         if candidate is None:return False
         region,item=candidate
-        from .metadata_recovery import ensure_providers
-        ensure_providers(db)
         row=db.get(ItemMedia,(region,item))
         had_icon=bool(row and row.data)
         used=db.scalar(select(func.coalesce(func.sum(ItemMedia.byte_count),0)))
@@ -140,9 +144,10 @@ def resolve_media_once(factory=Session,client=None,*,at=None,image_fetch=fetch_i
                 provider=db.get(MetadataProvider,ident)
                 src=db.get(MetadataSource,(region,item,'en_US',ident))
                 origin=json.loads(src.source_json) if src and src.source_json else {}
-                if provider and provider.enabled and icon_url(origin.get('icon_url'),foreverdb=ident=='foreverdb',community=ident=='thewowdb'):
+                if provider and ident in artwork_ready and icon_url(origin.get('icon_url'),foreverdb=ident=='foreverdb',community=ident=='thewowdb'):
                     cached=(ident,origin);break
         if not cached:
+            if not blizzard_ready:return False
             if budget_guard:
                 if not budget_guard(db,at):return False
             else:

@@ -177,7 +177,7 @@ def test_image_refresh_failure_keeps_valid_bytes_and_local_url_skips_metadata(da
         # Make only one item media-eligible.
         db.add(ItemMedia(region='us',item_id=721,data=PNG,byte_count=len(PNG),retry_after=at+timedelta(days=30)))
         store_source(db,'us',720,'thewowdb',{'name':'Synthetic image'},{'provider':'thewowdb','edition':'forever','locale':'en_US','icon_url':'https://thewowdb.com/assets/icons/test.png','build':'1.60.1.70532'},at=at)
-        db.get(MetadataProvider,'thewowdb').enabled=True
+        db.get(MetadataProvider,'thewowdb').enabled=True;db.get(MetadataProvider,'thewowdb').automatic=True
     client=Client()
     assert resolve_media_once(database,client,at=at,image_fetch=lambda _: (PNG,'image/png'))
     assert client.calls==0
@@ -279,3 +279,19 @@ def test_ineligible_decision_is_persisted_without_inventing_request(database):
         assert row.status=='no_eligible_provider' and row.next_at is None
         assert db.scalar(select(func.count()).select_from(MetadataAttempt))==0
         assert json.loads(row.decision_json)['chosen'] is None
+
+
+def test_blizzard_cooldown_does_not_stall_other_cached_artwork(database):
+    import time
+    from market.item_media import resolve_media_once
+    from test_item_profiles import Client,PNG
+    market=setup(database);at=now()
+    with database.begin() as db:
+        p=db.get(MetadataProvider,'blizzard');p.cooldown_until=at+timedelta(hours=1)
+        p=db.get(MetadataProvider,'thewowdb');p.enabled=p.automatic=True
+        store_source(db,'us',721,'thewowdb',{'name':'Synthetic cached artwork'},
+            {'provider':'thewowdb','edition':'forever','locale':'en_US','build':'1.60.1.70532','icon_url':'https://thewowdb.com/assets/icons/test.png'},at=at)
+    client=Client();client.blocked_until=time.monotonic()+3600
+    assert resolve_media_once(database,client,at=at,image_fetch=lambda _: (PNG,'image/png'))
+    assert client.calls==0
+    with database() as db:assert db.get(ItemMedia,('us',721)).data==PNG
