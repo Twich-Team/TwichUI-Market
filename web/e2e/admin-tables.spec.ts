@@ -49,7 +49,7 @@ test("administration tables support real server pages, readable outcomes, action
   await page.setViewportSize({width:390,height:844});
   await page.screenshot({path:`${output}/item-metadata-mobile.png`,fullPage:true});
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
-  await page.getByRole("tab",{name:"Security events",exact:true}).click();
+  await page.getByRole("combobox",{name:"Administration section",exact:true}).selectOption("security");
   await page.getByLabel("Search account or event").fill("metadata");
   await page.screenshot({path:`${output}/security-mobile.png`,fullPage:true});
   expect(errors).toEqual([]);
