@@ -1,0 +1,57 @@
+{
+  "measured_at": "2026-11-17T21:53:30.353116+00:00",
+  "since_feature_migration": "2026-11-17T20:28:21.848302+00:00",
+  "production_observation_only": true,
+  "comparable_prior_policy_control": false,
+  "queued_quota_deferrals": 0,
+  "days": 1,
+  "providers": [
+    {
+      "provider": "blizzard",
+      "external_requests": 8,
+      "useful_requests": 4,
+      "names": 0,
+      "icons": 3,
+      "attributes": 1,
+      "already_known": 0,
+      "missing_no_data": 1,
+      "errors": 0,
+      "rate_limits": 0,
+      "unknown_reservations": 0,
+      "metadata_requests": 5
+    },
+    {
+      "provider": "foreverdb",
+      "external_requests": 45,
+      "useful_requests": 43,
+      "names": 19,
+      "icons": 1,
+      "attributes": 43,
+      "already_known": 0,
+      "missing_no_data": 0,
+      "errors": 1,
+      "rate_limits": 0,
+      "unknown_reservations": 0,
+      "metadata_requests": 44
+    },
+    {
+      "provider": "thewowdb",
+      "external_requests": 299,
+      "useful_requests": 1,
+      "names": 1,
+      "icons": 1,
+      "attributes": 1,
+      "already_known": 85,
+      "missing_no_data": 1,
+      "errors": 211,
+      "rate_limits": 0,
+      "unknown_reservations": 0,
+      "metadata_requests": 298
+    }
+  ],
+  "metadata_requests": 347,
+  "useful_requests": 48,
+  "useful_rate": 0.138328530259366,
+  "historical_task_records": 7260,
+  "notice": "Exact forward ledger counts completed network invocations. Crash reservations remain unknown. Historical task records have incomplete request/gain evidence and are excluded. Image requests are shown separately; validation cannot recover fields. Useful means a newly filled field or a verified changed value; returned unchanged fields are excluded. Recoveries may include more than one field per request."
+}

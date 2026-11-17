@@ -1,0 +1,14 @@
+{
+  "started": "2026-11-17T21:05:00.437767+00:00",
+  "completed": "2026-11-17T21:05:01.813582+00:00",
+  "frontend_commit": "5231af21b68731542b6c50d18a1805b8b2747052",
+  "frontend_image": "sha256:35546b89bcb231121ab77115de4410c9487dfcadd8d8da4d070a4fcbcebf0d7f",
+  "api_enrichment_commit": "bf8a04a0539fb4c3e2468c70a2e5155ba1150f95",
+  "backend_contracts_desktop_byte_identical_to_final_source": true,
+  "only_replaced": [
+    "proxy"
+  ],
+  "database_migration": false,
+  "metadata_worker_restarted": false,
+  "collector_replaced": false
+}

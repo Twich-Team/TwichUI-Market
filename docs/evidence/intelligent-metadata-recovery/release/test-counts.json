@@ -1,0 +1,14 @@
+{
+  "application_source": "6682b82fbb9bf644989e9fe64265ed2361062dfc",
+  "postgresql": 632,
+  "frontend_units": 132,
+  "frontend_files": 21,
+  "browser_workflows": 62,
+  "operational_unittests": 44,
+  "scoped_l1_python_contract_tests": 16,
+  "windows_build_installed_and_signed_sdk_acceptance": "passed",
+  "migration_verifiers": "all passed; one intended head",
+  "isolated_sync_related": 76,
+  "tracker_focused": 25,
+  "provider_routine_responses": "mocked; genuine restored data used only for safe query/migration/credential checks"
+}

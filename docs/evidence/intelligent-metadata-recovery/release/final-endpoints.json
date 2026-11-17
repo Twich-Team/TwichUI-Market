@@ -1,0 +1,59 @@
+{
+  "origin": "https://market.twich.gg",
+  "at": "2026-11-17T21:53:47.158417+00:00",
+  "results": [
+    {
+      "path": "/api/v1/health",
+      "status": 200,
+      "seconds": 0.043
+    },
+    {
+      "path": "/api/v1/admin/item-metadata/tracker?market_id=2&limit=2&offset=2&sort=name",
+      "status": 200,
+      "seconds": 7.256,
+      "total": 5197,
+      "summary": {
+        "observed": 5197,
+        "missing_names": 0,
+        "missing_icons": 0,
+        "missing_essential": 4,
+        "eligible": 3840,
+        "no_eligible": 2,
+        "waiting_cooldowns": 0
+      }
+    },
+    {
+      "path": "/api/v1/admin/item-metadata/tracker?market_id=2&missing=attributes&limit=5",
+      "status": 200,
+      "seconds": 20.409,
+      "total": 4,
+      "summary": {
+        "observed": 5197,
+        "missing_names": 0,
+        "missing_icons": 0,
+        "missing_essential": 4,
+        "eligible": 3840,
+        "no_eligible": 2,
+        "waiting_cooldowns": 0
+      }
+    },
+    {
+      "path": "/api/v1/admin/item-metadata/tracker/efficiency?days=1",
+      "status": 200,
+      "seconds": 0.094
+    },
+    {
+      "path": "/api/v1/companion/private-beta/current",
+      "status": 200,
+      "seconds": 0.026,
+      "retained_version": "2.0.0-beta.5"
+    },
+    {
+      "path": "/api/v1/markets/2/catalogue?q=Linen&limit=5",
+      "status": 200,
+      "seconds": 1.377
+    }
+  ],
+  "native_api_acceptance": "public-api-after.json; same API container/source, only frontend subsequently replaced",
+  "manual_jobs_created": 0
+}

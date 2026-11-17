@@ -1,0 +1,9 @@
+{
+  "collector_database_monitor_backup_identities_unchanged": true,
+  "all_cpu_memory_and_mounts_unchanged": true,
+  "target_environment_only_api_revision_labels_changed": true,
+  "restarts": 0,
+  "oom": false,
+  "enrichment_workers": 1,
+  "metadata_tick_failures_since_promotion": 0
+}

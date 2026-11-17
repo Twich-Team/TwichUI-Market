@@ -1,0 +1,97 @@
+{
+  "at": "2026-11-17T22:03:33.556829+00:00",
+  "schema": "recovery_20261117",
+  "active_markets": [
+    {
+      "id": 2,
+      "house": 114,
+      "interval": 300,
+      "failures": 0,
+      "last_success": "2026-11-17T22:02:16.94518+00:00"
+    }
+  ],
+  "new_collection_failures": 0,
+  "recent_collection": [
+    {
+      "id": 1038,
+      "market_id": 2,
+      "checked_at": "2026-11-17T22:02:16.94518+00:00",
+      "status": "unchanged",
+      "http_status": 304,
+      "duration_seconds": 0,
+      "error": null
+    },
+    {
+      "id": 1037,
+      "market_id": 2,
+      "checked_at": "2026-11-17T21:57:14.59191+00:00",
+      "status": "unchanged",
+      "http_status": 304,
+      "duration_seconds": 0,
+      "error": null
+    },
+    {
+      "id": 1036,
+      "market_id": 2,
+      "checked_at": "2026-11-17T21:52:12.151167+00:00",
+      "status": "unchanged",
+      "http_status": 304,
+      "duration_seconds": 0,
+      "error": null
+    },
+    {
+      "id": 1035,
+      "market_id": 2,
+      "checked_at": "2026-11-17T21:47:09.778843+00:00",
+      "status": "unchanged",
+      "http_status": 304,
+      "duration_seconds": 0,
+      "error": null
+    },
+    {
+      "id": 1034,
+      "market_id": 2,
+      "checked_at": "2026-11-17T21:30:54.046823+00:00",
+      "status": "collected",
+      "http_status": 200,
+      "duration_seconds": 13,
+      "error": null
+    },
+    {
+      "id": 1033,
+      "market_id": 2,
+      "checked_at": "2026-11-17T21:08:51.345511+00:00",
+      "status": "unchanged",
+      "http_status": 304,
+      "duration_seconds": 0,
+      "error": null
+    },
+    {
+      "id": 1032,
+      "market_id": 2,
+      "checked_at": "2026-11-17T21:03:33.847125+00:00",
+      "status": "unchanged",
+      "http_status": 304,
+      "duration_seconds": 0,
+      "error": null
+    }
+  ],
+  "retention_batches": 0,
+  "destructive_policy_enabled": 0,
+  "synthetic_observations": 0,
+  "users": 97,
+  "devices": 5,
+  "collector_database_monitor_backup_identities_unchanged": true,
+  "enrichment_identity_unchanged_since_initial_feature": true,
+  "all_cpu_memory_mounts_and_application_settings_preserved": true,
+  "api_environment_only_revision_labels_changed": true,
+  "enrichment_workers": 1,
+  "metadata_tick_failures": 0,
+  "restarts": 0,
+  "oom": false,
+  "preserved_active_quota_buckets": 943,
+  "frontend_commit": "5231af21b68731542b6c50d18a1805b8b2747052",
+  "api_commit": "6682b82fbb9bf644989e9fe64265ed2361062dfc",
+  "enrichment_commit": "bf8a04a0539fb4c3e2468c70a2e5155ba1150f95",
+  "collector_checks_after_api_lock_fix": 4
+}

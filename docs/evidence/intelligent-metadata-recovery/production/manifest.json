@@ -1,0 +1,84 @@
+{
+  "origin": "https://market.twich.gg",
+  "captured_at": "2026-11-17T21:51:16.805Z",
+  "frontend": "5231af21b68731542b6c50d18a1805b8b2747052",
+  "api": "6682b82fbb9bf644989e9fe64265ed2361062dfc",
+  "genuine_production_data": true,
+  "fixtures": false,
+  "external_provider_browser_requests": 0,
+  "manual_recovery_jobs_created": 0,
+  "scenes": [
+    {
+      "file": "01-live-tracker.png",
+      "title": "Current-market Recovery Tracker summary",
+      "bytes": 652310,
+      "sha256": "d1f232f2b23b58434f4a120231f67d5c9793e20921357bdbbeba1d1a89647846"
+    },
+    {
+      "file": "02-live-missing-names.png",
+      "title": "Actual missing-name filter and empty state",
+      "bytes": 622406,
+      "sha256": "061b4d277a8e0f4e4060801c1e93a24c4caba486fb2cd849cf8c66aa2fc933ae"
+    },
+    {
+      "file": "03-live-journey.png",
+      "title": "Item recovery journey and next action",
+      "bytes": 724441,
+      "sha256": "4e4a9248ed0d7371413046dcf6c1b3f50d28af8ec2a3cdf295ed5f7e0e39ab99"
+    },
+    {
+      "file": "04-live-provenance.png",
+      "title": "Known fields and source provenance",
+      "bytes": 549848,
+      "sha256": "e183a26118ce0980a16855c56a6c7275862608393c45041374ef893261d898f3"
+    },
+    {
+      "file": "05-live-mobile.png",
+      "title": "Phone cards and expanded provider states",
+      "bytes": 200677,
+      "sha256": "c83ee9d42f178648d2e8901521764335056d75cc61654243318e073bb412eb4d"
+    },
+    {
+      "file": "06-live-efficiency.png",
+      "title": "Persisted recovery efficiency with separate provider outcomes",
+      "bytes": 804326,
+      "sha256": "55d857b86f5954ee5cecb912ed67e3c2644e774e9d56a5a89680cdf1a91fa487"
+    },
+    {
+      "file": "07-live-administration.png",
+      "title": "Existing administration overview",
+      "bytes": 410259,
+      "sha256": "4d36701772fe44125cfc1e90edfc287877464fa589521b5d0ab540a755f6d667"
+    },
+    {
+      "file": "08-live-explorer.png",
+      "title": "Existing Explorer",
+      "bytes": 293457,
+      "sha256": "df5a77b4c0154fd052299de2fb5c78dcf322b8be2eddb84dc22b30d91389884d"
+    },
+    {
+      "file": "09-live-data-sources.png",
+      "title": "Unchanged Data Sources and quotas",
+      "bytes": 527663,
+      "sha256": "594341c1a345d5bbc5f769b7be63b4500800915263f32db7608c767b0aae2e21"
+    },
+    {
+      "file": "10-live-recovery-jobs.png",
+      "title": "Existing persistent Recovery Jobs",
+      "bytes": 500607,
+      "sha256": "0e8c7ebd17090849f6633a97f6d110f8e0e4dd93ffe1ec2cad73fd5c7bfc51b9"
+    },
+    {
+      "file": "12-live-provider-results.png",
+      "title": "Recent provider results",
+      "bytes": 689304,
+      "sha256": "97f68d8712715fda48462d41e56daa0f8d51851fd9be07dd377fd76dc6178771"
+    },
+    {
+      "file": "11-live-item-details.png",
+      "title": "Existing Item Details and attribution",
+      "bytes": 600530,
+      "sha256": "a14ef692c9133356da88363be1beb7cbed9fdcb557a896a63d1bc3b12b4fed8a"
+    }
+  ]
+}

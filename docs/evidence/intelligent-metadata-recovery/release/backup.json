@@ -1,0 +1,13 @@
+{
+  "filename": "market-metadata-20261117T213552Z.dump",
+  "bytes": 577150314,
+  "sha256": "699ff3e4a8588e771e9e52e0496ae840b8dbad319800f1a9a1e8c8438b6ee927",
+  "created_at": "2026-11-17T21:35:52.818852+00:00",
+  "seconds": 180.412,
+  "source": "production market",
+  "max_bytes": 921726976,
+  "retained_free_reserve_bytes": 2147483648,
+  "all_scheduled_archives_preserved": 29,
+  "scheduled_budget_and_settings_unchanged": true,
+  "isolated_restore_verified": true
+}

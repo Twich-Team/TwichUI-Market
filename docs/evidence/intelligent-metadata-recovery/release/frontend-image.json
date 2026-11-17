@@ -1,0 +1,9 @@
+{
+  "id": "sha256:35546b89bcb231121ab77115de4410c9487dfcadd8d8da4d070a4fcbcebf0d7f",
+  "tag": "twichui-market-web:metadata-recovery-chart-5231af2",
+  "base": "sha256:7bd3085484e4eaa4f61542678d98b703687ba2df4dd3bdf7a46d4ba2b1dae0d8",
+  "revision": "5231af21b68731542b6c50d18a1805b8b2747052",
+  "network": "none",
+  "memory_bytes": 402653184,
+  "cpu_limit": 0.5
+}

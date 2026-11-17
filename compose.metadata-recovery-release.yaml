@@ -1,0 +1,16 @@
+# Initial owner-authorized metadata release. Append chart and API overlays afterward.
+services:
+  migrate:
+    image: sha256:3ef6f57964546a425f4c2ebe2bc44be2d9a516340325074dfb0fb2f32d7c3667
+  api:
+    image: sha256:3ef6f57964546a425f4c2ebe2bc44be2d9a516340325074dfb0fb2f32d7c3667
+    environment:
+      APP_COMMIT: bf8a04a0539fb4c3e2468c70a2e5155ba1150f95
+  local-api:
+    image: sha256:3ef6f57964546a425f4c2ebe2bc44be2d9a516340325074dfb0fb2f32d7c3667
+    environment:
+      APP_COMMIT: bf8a04a0539fb4c3e2468c70a2e5155ba1150f95
+  enrichment:
+    image: sha256:3ef6f57964546a425f4c2ebe2bc44be2d9a516340325074dfb0fb2f32d7c3667
+  proxy:
+    image: sha256:7bd3085484e4eaa4f61542678d98b703687ba2df4dd3bdf7a46d4ba2b1dae0d8

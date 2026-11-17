@@ -1,0 +1,16 @@
+{
+  "started": "2026-11-17T21:46:54.992266+00:00",
+  "completed": "2026-11-17T21:47:18.028465+00:00",
+  "api_commit": "6682b82fbb9bf644989e9fe64265ed2361062dfc",
+  "api_image": "sha256:d7df98deb095a74c1c1b962d113d26e463d2f5e6de2abdf3fcb47b8339b45085",
+  "frontend_commit": "5231af21b68731542b6c50d18a1805b8b2747052",
+  "enrichment_commit": "bf8a04a0539fb4c3e2468c70a2e5155ba1150f95",
+  "replaced": [
+    "api",
+    "local-api"
+  ],
+  "migrate_or_dependency_started": false,
+  "schema_change": false,
+  "collector_or_worker_replaced": false,
+  "contract_and_prices_changed": false
+}

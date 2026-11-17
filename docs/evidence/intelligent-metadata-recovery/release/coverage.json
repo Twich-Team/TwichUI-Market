@@ -1,0 +1,15 @@
+{
+  "market_id": 2,
+  "snapshot_id": 92,
+  "observed": 5197,
+  "names": 5197,
+  "icons": 5197,
+  "quality": 5197,
+  "essential_definition": "Quality and class for all base items; level and slot only for verified Weapon/Armor classes. Unknown classification is not assumed equipment.",
+  "missing_applicable_essential": 4,
+  "measured_at": "2026-11-17T21:53:47.158031+00:00",
+  "name_rate": 1.0,
+  "icon_rate": 1.0,
+  "known_applicable_essentials": 5193,
+  "scope": "Current observed US Normal \u2014 Horde, house 114, market 2; usable primary or supplemental names, locally cached icons. Not all historical items or a universal completeness score."
+}

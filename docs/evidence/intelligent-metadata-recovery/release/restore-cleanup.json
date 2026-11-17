@@ -1,0 +1,10 @@
+{
+  "isolated_restore_retired": true,
+  "container_id": "7d64af3d3b37125ac1fa29727804ac57820d85849472ec3ce38354d24a3df5b8",
+  "database": "market_test",
+  "bounded_tmpfs_discarded": true,
+  "fresh_verified_archive_retained": true,
+  "all_prior_archives_retained": true,
+  "temporary_environment_removed": true,
+  "production_touched": false
+}
