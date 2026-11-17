@@ -127,6 +127,14 @@ def collect_once(factory=Session, client=None, *, at=None, max_database_bytes=No
             limit = max_database_bytes or int(os.environ.get('MAX_DATABASE_BYTES', str(5 * 1024**3)))
             if db.bind.dialect.name == 'postgresql' and db.scalar(text('SELECT pg_database_size(current_database())')) >= limit:
                 raise UpstreamFailure('Database disk budget reached; collection paused')
+            from .models import MarketFeed
+            if market.unified_coverage:
+                feeds = list(db.scalars(select(MarketFeed).where(MarketFeed.market_id == market.id,
+                    MarketFeed.enabled.is_(True)).order_by(MarketFeed.source_kind)))
+                from .feed_collection import collect_feeds
+                collect_feeds(db, market, feeds, client, at, run)
+                run.duration_seconds = int(time.monotonic() - started)
+                return True
             metadata, body = client.fetch(market)
             run.http_status = metadata['status']
             run.payload_bytes = len(body)

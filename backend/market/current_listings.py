@@ -29,5 +29,5 @@ def current_listings(market_id:MarketId,item_id:MarketId,variant_key:str,
     order=(field.desc() if direction=='desc' else field.asc()).nulls_last()
     count=db.scalar(select(func.count()).select_from(Listing).where(predicate))
     rows=db.scalars(select(Listing).where(predicate).order_by(order,Listing.auction_id).offset(page*page_size).limit(page_size))
-    return money_contract({'listings':[{'auction_id':str(r.auction_id),'quantity':r.quantity,'buyout':r.buyout,'unit_price':r.unit_price,'bid':r.bid,'time_left':r.time_left} for r in rows],
+    return money_contract({'listings':[{'auction_id':str(r.auction_id),'quantity':r.quantity,'buyout':r.buyout,'unit_price':r.unit_price,'bid':r.bid,'time_left':r.time_left,'source_kind':r.source_kind} for r in rows],
         'observed_at':aware(head.retrieved_at).isoformat(),'total':count,'snapshot_id':snapshot,'page':page,'page_size':page_size,'synthetic':head.synthetic,'provenance':'asking_listings_only'})

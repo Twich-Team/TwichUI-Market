@@ -120,7 +120,7 @@ impl ArchiveStore {
             .db
             .query_row(
                 "SELECT header FROM history_headers WHERE scope=?1 AND slot=?2",
-                params![scope.key()?, slot],
+                params![super::coverage_key(scope)?, slot],
                 |r| r.get(0),
             )
             .optional()?;
@@ -136,7 +136,7 @@ impl ArchiveStore {
             .db
             .query_row(
                 "SELECT cursor FROM history_headers WHERE scope=?1 AND slot='staging'",
-                [scope.key()?],
+                [super::coverage_key(scope)?],
                 |r| r.get(0),
             )
             .optional()?;
@@ -150,7 +150,7 @@ impl ArchiveStore {
         .transpose()
     }
     pub fn abandon_pending(&mut self, scope: &Scope) -> Result<()> {
-        let key = scope.key()?;
+        let key = super::coverage_key(scope)?;
         let tx = self.db.transaction()?;
         tx.execute("DELETE FROM history_stage WHERE scope=?1", [&key])?;
         tx.execute(
@@ -184,7 +184,7 @@ impl ArchiveStore {
             .saturating_mul(2)
             .saturating_add(h.transferred().saturating_mul(256));
         Self::storage(&self.db, self.path.as_deref(), self.budget, estimate)?;
-        let key = scope.key()?;
+        let key = super::coverage_key(scope)?;
         let tx = self.db.transaction()?;
         tx.execute("DELETE FROM history_stage WHERE scope=?1", [&key])?;
         tx.execute(
@@ -205,14 +205,14 @@ impl ArchiveStore {
     }
     pub fn apply(&mut self, scope: &Scope, requested: &str, raw: &[u8]) -> Result<bool> {
         let page: Page = serde_json::from_value(parse(raw, 1024 * 1024)?)?;
-        let key = scope.key()?;
+        let key = super::coverage_key(scope)?;
         let (header, cursor) = self
             .pending(scope)?
             .ok_or(Error::Invalid("archive pending download"))?;
         need(
             cursor == requested
                 && page.format == "twichui-history-archive-page"
-                && page.protocol_version == 1
+                && page.protocol_version == header.protocol_version
                 && page.checkpoint_id == header.checkpoint_id
                 && page.account_id == scope.account_id
                 && page.market_id == scope.market_id
@@ -376,7 +376,7 @@ impl ArchiveStore {
                 && request["pricing_algorithm"] == h.pricing_algorithm,
             "archive selection context",
         )?;
-        self.db.execute("INSERT INTO history_selections VALUES(?1,?2) ON CONFLICT(scope) DO UPDATE SET request=excluded.request",params![scope.key()?,String::from_utf8(canonical(request)?).unwrap()])?;
+        self.db.execute("INSERT INTO history_selections VALUES(?1,?2) ON CONFLICT(scope) DO UPDATE SET request=excluded.request",params![super::coverage_key(scope)?,String::from_utf8(canonical(request)?).unwrap()])?;
         Ok(())
     }
     pub fn selection(&self, scope: &Scope) -> Result<Option<Value>> {
@@ -384,7 +384,7 @@ impl ArchiveStore {
             .db
             .query_row(
                 "SELECT request FROM history_selections WHERE scope=?1",
-                [scope.key()?],
+                [super::coverage_key(scope)?],
                 |r| r.get(0),
             )
             .optional()?;

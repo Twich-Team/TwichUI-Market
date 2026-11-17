@@ -1,0 +1,15 @@
+SET
+   class_field   | count
+-----------------+-------
+ "Armor"         |  3447
+ "Weapon"        |   695
+ "Recipe"        |   668
+ "Consumable"    |   180
+ "Quest"         |    90
+ "Miscellaneous" |    83
+ "Container"     |    50
+ "Quiver"        |    11
+ "Trade Goods"   |    11
+                 |    10
+ "Key"           |     5
+(11 rows)

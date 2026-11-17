@@ -111,16 +111,18 @@ def prepare_snapshot(db,snapshot,algorithm,source):
     query=select(Listing).where(Listing.snapshot_id==snapshot.id).order_by(Listing.item_id,Listing.variant_key)
     count=records=0;pending=[]
     for (item,key),group in groupby(db.scalars(query.execution_options(yield_per=1000)),key=lambda x:(x.item_id,x.variant_key)):
-        rows=[];descriptor=None
+        rows=[];descriptor=None;kinds=set()
         for r in group:
             count+=1
-            if count>cp.MAX_LISTINGS:raise HTTPException(413,'Snapshot listing bound')
-            descriptor=r.variant
+            if count>2*cp.MAX_LISTINGS:raise HTTPException(413,'Snapshot listing bound')
+            descriptor=r.variant;kinds.add(r.source_kind)
             rows.append({'item_id':item,'variant_key':key,'quantity':r.quantity,
                          'total_copper':str(r.buyout) if r.buyout is not None else None,
                          'unit_copper':str(r.unit_price) if r.unit_price is not None else None,
                          'bid_copper':str(r.bid) if r.bid is not None else None})
-        result=cp.snapshot(rows,item_id=item,variant_key=key,source_kind=source)
+        # Composite markets retain transport semantics on every original row.
+        if len(kinds) != 1: raise HTTPException(409, 'Ambiguous listing source identity')
+        result=cp.snapshot(rows,item_id=item,variant_key=key,source_kind=next(iter(kinds)))
         if algorithm==LEGACY:
             old=legacy_summarize([SimpleNamespace(quantity=r['quantity'],buyout=int(r['total_copper']) if r['total_copper'] is not None else None,
                 unit_price=int(r['unit_copper']) if r['unit_copper'] is not None else None) for r in rows])
@@ -130,7 +132,7 @@ def prepare_snapshot(db,snapshot,algorithm,source):
                 state='priced' if old['recent_price'] is not None else 'unpriced',distribution=legacy_distribution(rows))
         value={'variant_json':descriptor,'summary':result}
         pending.append({'snapshot_id':snapshot.id,'algorithm':algorithm,'revision':REVISION,'item_id':item,
-                        'variant_key':key,'record_json':contract().canonical(value).decode()})
+                        'variant_key':key,'source_kind':next(iter(kinds)),'record_json':contract().canonical(value).decode()})
         records+=1
         if len(pending)==100:
             db.execute(insert(BridgeDerivedRecord),pending);pending=[]
@@ -185,21 +187,22 @@ def record_batch(db,keys,snapshots,algorithm):
     return out
 
 
-def assemble_record(key,values,current,daily,refs,algorithm,at,days):
+def assemble_record(key,values,current,daily,refs,algorithm,at,days,coverage_start=None):
     item,variant=key;current_value=values.get((current.snapshot_id,*key))
     descriptor=next((v['variant_json'] for o in [current,*daily] if (v:=values.get((o.snapshot_id,*key))) is not None and v['variant_json'] is not None),None)
     priced=[];recent=[];points=[]
     for o in daily:
-        value=values.get((o.snapshot_id,*key));s=value['summary'] if value else None
+        known = coverage_start is None or aware(o.retrieved_at) >= aware(coverage_start)
+        value=values.get((o.snapshot_id,*key));s=value['summary'] if value and known else None
         p=s['recent_copper'] if s else None;age=(at.date()-utc(o.retrieved_at).date()).days
         if p is not None:
             priced.append((int(p),1))
             if age<14:recent.append((int(p),4 if age<=2 else 2 if age<=6 else 1))
         if o.id in days:
-            points.append({'observation_ref':refs[o.id],'state':'listed' if s else 'absent','algorithm':algorithm,
+            points.append({'observation_ref':refs[o.id],'state':'unknown' if not known else 'listed' if s else 'absent','algorithm':algorithm,
                 'minimum_copper':s['minimum_listing_copper'] if s else None,'recent_copper':p,
-                'supply':s['supply'] if s else 0,'priced_supply':s['priced_supply'] if s else 0,
-                'listing_count':s['listing_count'] if s else 0,
+                'supply':s['supply'] if s else 0 if known else None,'priced_supply':s['priced_supply'] if s else 0 if known else None,
+                'listing_count':s['listing_count'] if s else 0 if known else None,
                 'arithmetic_status':'unsupported' if s and s['state']=='unsupported' else 'exact'})
     def median(rows):return str(cp.lower_median(rows)) if rows else None
     if algorithm==cp.ALGORITHM:
@@ -225,7 +228,7 @@ def assemble_record(key,values,current,daily,refs,algorithm,at,days):
        'supply':s['supply'] if s else 0,'priced_supply':s['priced_supply'] if s else 0,
        'listing_count':s['listing_count'] if s else 0,'complete':True,
        'arithmetic_status':'unsupported' if s and s['state']=='unsupported' else 'exact',
-       'coverage':{'priced_days_14':len(recent),'priced_days_60':len(priced),'observed_days_60':len(daily),'references_complete':True}}
+       'coverage':{'priced_days_14':len(recent),'priced_days_60':len(priced),'observed_days_60':sum(coverage_start is None or aware(o.retrieved_at)>=aware(coverage_start) for o in daily),'references_complete':True}}
     dist=None
     if s and s['distribution'] and algorithm==LEGACY:
         dist=s['distribution']
@@ -278,8 +281,11 @@ def build_generation(db,market,algorithm,at,history_days=60):
     records=[];record_bytes=0
     for start in range(0,len(keys),100):
         batch=[tuple(k) for k in keys[start:start+100]];values=record_batch(db,batch,list(snapshots),algorithm)
+        from .models import ItemSourceCoverage
+        starts = {(r.item_id, r.variant_key): r.first_observed_at for r in db.scalars(select(ItemSourceCoverage).where(
+            ItemSourceCoverage.market_id==market.id, tuple_(ItemSourceCoverage.item_id,ItemSourceCoverage.variant_key).in_(batch)))}
         for key in batch:
-            r=assemble_record(key,values,current,daily,refs,algorithm,at,{o.id for o in delivered})
+            r=assemble_record(key,values,current,daily,refs,algorithm,at,{o.id for o in delivered},starts.get(key))
             raw=contract().canonical(r)
             if len(raw)>contract().MAX_RECORD_BYTES:raise HTTPException(413,'Bridge record exceeds limit')
             record_bytes+=len(raw)

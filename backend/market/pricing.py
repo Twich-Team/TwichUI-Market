@@ -36,6 +36,9 @@ def values(db, market_id, item_id, variant_key, *, at=None, through_observation_
         Observation.retrieved_at >= at - timedelta(days=60))
     if through_observation_id is not None:
         query = query.where(Observation.id <= through_observation_id)
+    from .feed_collection import coverage_start
+    start = coverage_start(db, market_id, item_id, variant_key)
+    if start is not None: query = query.where(Observation.retrieved_at >= start)
     observations = list(db.scalars(query.order_by(Observation.retrieved_at, Observation.id)))
     if not observations:
         return {'algorithm': ALGORITHM, 'recent_price': None, 'market_value': None, 'historical_value': None,
@@ -77,6 +80,9 @@ def daily_history(db,market_id,item_id,variant_key,days=365,*,at=None,compact=Fa
         Observation.id==DailyObservation.observation_id).where(DailyObservation.market_id==market_id,
         DailyObservation.day>=(at-timedelta(days=days+60)).date(),DailyObservation.day<=at.date())
         .order_by(DailyObservation.day)))
+    from .feed_collection import coverage_start
+    start = coverage_start(db, market_id, item_id, variant_key)
+    if start is not None: observations = [(day, o) for day, o in observations if aware(o.retrieved_at) >= start]
     ids={observation.snapshot_id for _,observation in observations}
     statistics={row.snapshot_id:row for row in db.scalars(select(SnapshotStatistic).where(
         SnapshotStatistic.snapshot_id.in_(ids),SnapshotStatistic.item_id==item_id,SnapshotStatistic.variant_key==variant_key))}

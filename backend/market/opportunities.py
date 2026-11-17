@@ -1,9 +1,9 @@
 """Set-based, explainable asking-price and supply signals. Never infers sales."""
 from datetime import timedelta,timezone
-from sqlalchemy import Integer,Numeric,and_,case,cast,func,select,true
+from sqlalchemy import Integer,Numeric,and_,case,cast,func,select,true,or_
 from sqlalchemy.orm import aliased
 from .db import now
-from .models import DailyObservation,ItemMetadata,Listing,Observation,SnapshotStatistic
+from .models import DailyObservation,ItemMetadata,Listing,Observation,SnapshotStatistic,ItemSourceCoverage
 from .pricing import ALGORITHM
 
 
@@ -17,7 +17,7 @@ def admissible(freshness,verified,minimum):
 
 
 def daily_window(market_id,at,*,prior=False):
-    query=select(DailyObservation.day,Observation.snapshot_id,Observation.synthetic).join(
+    query=select(DailyObservation.day,Observation.snapshot_id,Observation.synthetic,Observation.retrieved_at).join(
         Observation,Observation.id==DailyObservation.observation_id).where(
         DailyObservation.market_id==market_id,Observation.retrieved_at>=at-timedelta(days=14),Observation.retrieved_at<=at)
     if prior: query=query.where(DailyObservation.day<at.astimezone(timezone.utc).date())
@@ -65,7 +65,10 @@ def change_signals(db,market,latest,*,kind,minimum_change,minimum_coverage,minim
         func.avg(cast(func.coalesce(old.supply,0),Numeric)).label('reference_supply'),
         func.count(old.recent_price).label('price_days'),func.count(old.supply).label('supply_days'),
         func.count(daily.c.day).label('market_days'),func.max(cast(daily.c.synthetic,Integer)).label('synthetic'))
-    baseline=baseline.select_from(keys).join(daily,true()).outerjoin(old,and_(old.snapshot_id==daily.c.snapshot_id,
+    baseline=baseline.select_from(keys).outerjoin(ItemSourceCoverage,and_(
+        ItemSourceCoverage.market_id==market.id,ItemSourceCoverage.item_id==keys.c.item_id,
+        ItemSourceCoverage.variant_key==keys.c.variant_key)).join(daily,or_(
+        ItemSourceCoverage.first_observed_at.is_(None), daily.c.retrieved_at>=ItemSourceCoverage.first_observed_at)).outerjoin(old,and_(old.snapshot_id==daily.c.snapshot_id,
         old.item_id==keys.c.item_id,old.variant_key==keys.c.variant_key,old.algorithm==ALGORITHM)).outerjoin(
         current,and_(current.c.item_id==keys.c.item_id,current.c.variant_key==keys.c.variant_key))
     baseline=baseline.group_by(keys.c.item_id,keys.c.variant_key).subquery()

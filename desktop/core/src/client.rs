@@ -349,10 +349,10 @@ impl MarketClient {
                     if cancelled() {
                         return Err(Error::Cancelled);
                     }
-                    let mut query = vec![("algorithm", scope.algorithm.as_str())];
+                    let mut query = vec![("algorithm", scope.algorithm.as_str()), ("protocol", "2")];
                     if !full {
                         if let Some(h) = &active {
-                            query.push(("base", h.checkpoint_id.as_str()));
+                            if h.protocol_version == 2 { query.push(("base", h.checkpoint_id.as_str())); }
                         }
                     }
                     let response = self.bridge_request(

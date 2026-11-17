@@ -28,6 +28,13 @@ function Diagnostics({ market }: { market: Market }) {
     [open],
   );
   return (
+    <div>
+      {market.feeds?.filter(feed => feed.enabled).map(feed => <p key={feed.source_kind}>
+        <strong>{feed.source_kind === 'commodities' ? 'Commodities' : 'Regular auctions'}: {feed.status}</strong><br/>
+        Last successful check: {when(feed.last_success)} · Listings: {feed.listing_count?.toLocaleString() ?? 'Unknown'} · Items: {feed.item_count?.toLocaleString() ?? 'Unknown'}<br/>
+        Source updated: {feed.upstream_modified ?? 'Unknown'} · Failures: {feed.failures}
+        {feed.last_error && <><br/>{feed.last_error}</>}
+      </p>)}
     <details onToggle={(event) => setOpen(event.currentTarget.open)}>
       <summary>Advanced market diagnostics</summary>
       <p>
@@ -40,6 +47,7 @@ function Diagnostics({ market }: { market: Market }) {
         {JSON.stringify(data.data, null, 2)}
       </pre>
     </details>
+    </div>
   );
 }
 export function MarketConfiguration({
