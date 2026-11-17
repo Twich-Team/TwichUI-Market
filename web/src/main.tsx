@@ -203,6 +203,7 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
   const [markets,setMarkets]=useState<Market[]>([]);
   const [error,setError]=useState("");
   const [readOnly,setReadOnly]=useState(true);
+  const [environmentReady,setEnvironmentReady]=useState(false);
   const [marketsReady,setMarketsReady]=useState(false);
   const preferences=usePreferences();
   const market=preferredMarket(markets,preferences.values.market_id);
@@ -214,7 +215,7 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
   useEffect(()=>{
     loadMarkets().catch(error=>{setError(error.message);setMarketsReady(true);});
     api<{read_only:boolean}>("/environment").then(result=>{
-      queryClient.setQueryData(["private","environment"],result);setReadOnly(result.read_only);
+      queryClient.setQueryData(["private","environment"],result);setReadOnly(result.read_only);setEnvironmentReady(true);
     }).catch(error=>setError(error.message));
   },[]);
   async function logout() { await preferences.flush(); await signOut(); }
@@ -277,7 +278,7 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
           <span className="badge">PRIVATE</span>
         </header>
         <main>
-          {readOnly && <p className="notice" role="status">Interactive preview · Your preferences save automatically. Collection and account administration are read-only.</p>}
+          {environmentReady && readOnly && <p className="notice" role="status">Interactive preview · Your preferences save automatically. Collection and account administration are read-only.</p>}
           <PreferenceStatus />
           {page!=="item" && preferences.values.market_id !== null && !markets.some(m => m.id === preferences.values.market_id) && markets.length > 0 && <p className="notice">Your preferred market is unavailable. Your saved choice is retained.</p>}
           {(error || authError) && (

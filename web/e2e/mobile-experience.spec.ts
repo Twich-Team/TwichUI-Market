@@ -46,3 +46,12 @@ test('landscape phone navigation remains reachable without a fixed short sidebar
   const logout=page.getByRole('button',{name:'Sign out',exact:true});await logout.scrollIntoViewIfNeeded();await expect(logout).toBeVisible();await overflow(page);await page.keyboard.press('Escape');await expect(page.getByRole('button',{name:'Menu',exact:true})).toBeFocused();
  }
 });
+test('pending environment discovery never flashes a large incorrect preview banner',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ let finish!:()=>void;const gate=new Promise<void>(resolve=>{finish=resolve;});
+ await page.route('**/api/v1/environment',async route=>{await gate;await route.continue();});
+ await login(page);const title=page.getByRole('heading',{name:'Market Explorer',exact:true});const before=await title.boundingBox();
+ await expect(page.getByText('Interactive preview · Your preferences save automatically. Collection and account administration are read-only.',{exact:true})).toHaveCount(0);
+ const response=page.waitForResponse(r=>r.url().endsWith('/api/v1/environment'));finish();await response;
+ await expect.poll(async()=>Math.round((await title.boundingBox())!.y)).toBe(Math.round(before!.y));
+});
