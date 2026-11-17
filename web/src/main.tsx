@@ -3,7 +3,7 @@ import {parseRoute,useLocation,navigate,restoration} from "./navigation";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient, clearPrivateCache, setQueryIdentity } from "./query";
 import { announceSessionChange, onSessionChange } from "./auth-channel";
-import React, { lazy, Suspense, useEffect, useState } from "react";
+import React, { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { api, ApiError, BrowserSession, setCsrf, User } from "./api";
 const Explorer = lazy(() =>
@@ -180,7 +180,19 @@ function App() {
 }
 
 function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:()=>Promise<void>;signedOut:()=>void;authError:string}) {
-  const url=useLocation();const route=parseRoute(location.pathname,location.search);const page=route.kind;
+  const [menuOpen,setMenuOpen]=useState(false);
+  const menuButton=useRef<HTMLButtonElement>(null);
+  const shellNav=useRef<HTMLElement>(null);
+  useEffect(()=>{
+    if(!menuOpen)return;
+    const close=(event:KeyboardEvent)=>{if(event.key==='Escape'){setMenuOpen(false);menuButton.current?.focus();}};
+    const outside=(event:PointerEvent)=>{if(!shellNav.current?.contains(event.target as Node))setMenuOpen(false);};
+    document.addEventListener('keydown',close);document.addEventListener('pointerdown',outside);
+    return()=>{document.removeEventListener('keydown',close);document.removeEventListener('pointerdown',outside);};
+  },[menuOpen]);
+  const url=useLocation();
+  useEffect(()=>setMenuOpen(false),[url]);
+  const route=parseRoute(location.pathname,location.search);const page=route.kind;
   const setPage=(page:string)=>navigate(({explorer:'/',deals:'/deals',admin:'/administration',account:'/account',companion:'/companion'} as Record<string,string>)[page]||'/');
   useEffect(()=>{
     if(restoration()?.focus)return;
@@ -216,7 +228,7 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
   };
   return (
     <>
-      <aside>
+      <aside className={`app-navigation ${menuOpen ? "navigation-open" : ""}`} ref={shellNav}>
         <a
           href="#explorer"
           className="brand"
@@ -227,8 +239,10 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
             TWICHUI<small>MARKET INTELLIGENCE</small>
           </span>
         </a>
+        <button ref={menuButton} className="mobile-menu-button secondary" aria-expanded={menuOpen} aria-controls="app-menu" onClick={()=>setMenuOpen(open=>!open)}>{menuOpen ? "Close" : "Menu"}</button>
         <div className="eyebrow private">PRIVATE GUILD RESEARCH</div>
-        <nav>
+        <div id="app-menu" className="app-menu">
+        <nav aria-label="Main navigation">
           {[
             "explorer",
             "deals",
@@ -239,7 +253,8 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
             <button
               key={key}
               className={page === key || (page === "item" && key === "explorer") ? "active" : ""}
-              onClick={() => setPage(key)}
+              aria-current={page === key || (page === "item" && key === "explorer") ? "page" : undefined}
+              onClick={() => {setMenuOpen(false);setPage(key);}}
             >
               {names[key]}
             </button>
@@ -251,6 +266,7 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
           <button className="text-button" onClick={logout}>
             Sign out
           </button>
+        </div>
         </div>
       </aside>
       <div className="workspace">

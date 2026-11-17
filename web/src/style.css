@@ -1725,3 +1725,29 @@ a.secondary { display:inline-block; padding:10px 14px; border:1px solid var(--bo
 .loading-state.compact {display:inline-flex;justify-content:center;min-height:1rem;padding:0;width:1rem;height:1rem;vertical-align:middle;}
 .intraday-history {padding:0 1rem 1rem;}
 .intraday-history .record-details code {overflow-wrap:anywhere;}
+
+/* Mobile shell: in-flow disclosure keeps content and keyboard focus unobscured. */
+.app-menu { display:flex; flex-direction:column; flex:1; min-height:0; }
+.mobile-menu-button { display:none; }
+@media(max-width:800px) {
+  aside.app-navigation { position:relative; display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; padding:10px max(12px,env(safe-area-inset-right)) 10px max(12px,env(safe-area-inset-left)); }
+  .mobile-menu-button { display:block; min-height:44px; }
+  .app-navigation .brand { font-size:17px; gap:9px; letter-spacing:2px; }
+  .app-navigation .brand small { font-size:7px; letter-spacing:1px; margin-top:3px; }
+  .app-menu { display:none; grid-column:1/-1; }
+  .navigation-open .app-menu { display:flex; }
+  .app-navigation nav { display:grid; overflow:visible; gap:4px; margin-top:12px; }
+  .app-navigation nav button { white-space:normal; min-height:44px; }
+  .app-navigation .account-info { flex-wrap:wrap; }
+  .workspace > header { display:none; }
+  .workspace main { padding:18px max(12px,env(safe-area-inset-right)) 24px max(12px,env(safe-area-inset-left)); }
+  input, select, textarea { font-size:16px; min-height:44px; }
+  .explorer-page > .toolbar { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:end; gap:10px; padding:10px; }
+  .explorer-page > .toolbar .grow { grid-column:1/-1; min-width:0; }
+  .explorer-page > .toolbar label { min-width:0; }
+  .explorer-page > .toolbar select { width:100%; min-width:0; }
+}
+@media(max-width:374px) {
+  .explorer-page > .toolbar { grid-template-columns:minmax(0,1fr); }
+  .explorer-page > .toolbar > * { grid-column:1; width:100%; }
+}
