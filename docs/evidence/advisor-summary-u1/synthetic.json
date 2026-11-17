@@ -1,0 +1,164 @@
+{
+  "origin": "synthetic; offline Python/Linux; not Forever or production data",
+  "python": "3.12.14",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "cpu": "not reported",
+  "samples_per_shape": 1,
+  "memory_method": "Fresh subprocess ru_maxrss, Linux KiB converted to bytes; baseline includes imports. Producer peak sampled before reader/rebuilds; delta is high-water growth, not allocation tracing.",
+  "shape": "all priced; 45,125 exact variants / 45,124 item IDs; three distinct 11-digit copper strings, supply 12, age 300",
+  "producer_bound": "64 buffered disk spools, one input record and at most one 256 KiB encoded partition; no whole-market input list",
+  "source_sha256": {
+    "scripts/advisor_summary.py": "31b60154ee49caf7fdc0cb28b7442dc11b8bab0ddcc09413fae7405e14e8f8c0",
+    "scripts/benchmark_advisor_summary.py": "3214c7983902bb9e5d357bb1104778e5e57e1221c469147831556fb55b76c4c2",
+    "scripts/advisor_index_feasibility.py": "94463269ef73f6773b25f61b6e2f956f0eac67fe179659643d8cbc6ee46a4003",
+    "contracts/market-summary-index-proposal/schema.json": "2beef514a087707d2c10efb1b6aa317e110f27ddd82682f799244784f6bc1584",
+    "contracts/market-summary-index-proposal/u1/manifest.schema.json": "3e9113bda7110d8af5bd2593107786db6ddc4b72799690c14726b290c8f6f74d"
+  },
+  "cases": [
+    {
+      "records": 0,
+      "scenario": "all_priced",
+      "generation_id": "fcf7cf9a3e27f8e386cfb7de2847ba246dce8859779a2a19986790e9109ea6d9",
+      "total_bytes": 1378,
+      "manifest_bytes": 1378,
+      "partition_count": 0,
+      "largest_partition_bytes": 0,
+      "generation": {
+        "wall_seconds": 0.0022249649999821486,
+        "cpu_seconds": 0.002218702000000003
+      },
+      "producer_baseline_peak_rss_bytes": 18481152,
+      "producer_peak_rss_bytes": 18612224,
+      "producer_peak_rss_increase_bytes": 131072,
+      "manifest_open": {
+        "wall_seconds": 0.0011925030000838888,
+        "cpu_seconds": 0.0011937270000000055
+      },
+      "full_integrity_verification": {
+        "wall_seconds": 1.102000055652752e-06,
+        "cpu_seconds": 1.1109999999980857e-06
+      },
+      "lookup": null,
+      "deterministic_rebuild": "all files byte-identical",
+      "one_price_change": {
+        "changed_partitions": 0,
+        "changed_partition_bytes": 0,
+        "manifest_changed": false
+      },
+      "generation_time_advanced_60_seconds": {
+        "changed_partitions": 0,
+        "reason": "Tuple age_seconds is relative to generated_at; freshness is never reset by delivery."
+      }
+    },
+    {
+      "records": 5,
+      "scenario": "all_priced",
+      "generation_id": "3d67360717089bb157427e992c5863b0f523b848244805bf03031cda178ab7be",
+      "total_bytes": 2825,
+      "manifest_bytes": 2181,
+      "partition_count": 4,
+      "largest_partition_bytes": 257,
+      "generation": {
+        "wall_seconds": 0.003988262000007126,
+        "cpu_seconds": 0.0039793330000000016
+      },
+      "producer_baseline_peak_rss_bytes": 18481152,
+      "producer_peak_rss_bytes": 18612224,
+      "producer_peak_rss_increase_bytes": 131072,
+      "manifest_open": {
+        "wall_seconds": 0.001400218000071618,
+        "cpu_seconds": 0.0014012549999999901
+      },
+      "full_integrity_verification": {
+        "wall_seconds": 0.0007749819999389729,
+        "cpu_seconds": 0.0007756750000000034
+      },
+      "lookup": {
+        "cold_partition_and_lookup": {
+          "wall_seconds": 0.0002129419999619131,
+          "cpu_seconds": 0.00021336800000000544
+        },
+        "warm_10000_lookups": {
+          "wall_seconds": 0.010686372000009214,
+          "cpu_seconds": 0.010676902000000002
+        },
+        "cached_records": 2,
+        "partitions_retained": 1
+      },
+      "deterministic_rebuild": "all files byte-identical",
+      "one_price_change": {
+        "changed_partitions": 1,
+        "changed_partition_bytes": 257,
+        "manifest_changed": true
+      },
+      "generation_time_advanced_60_seconds": {
+        "changed_partitions": 4,
+        "reason": "Tuple age_seconds is relative to generated_at; freshness is never reset by delivery."
+      }
+    },
+    {
+      "records": 45125,
+      "scenario": "all_priced",
+      "generation_id": "31c2d2fb5fc3954dd94da34f8185579084232ba52443cc05df65d5b6794c180b",
+      "total_bytes": 5790555,
+      "manifest_bytes": 14491,
+      "partition_count": 64,
+      "largest_partition_bytes": 90497,
+      "generation": {
+        "wall_seconds": 3.4131741390000343,
+        "cpu_seconds": 3.4113067119999996
+      },
+      "producer_baseline_peak_rss_bytes": 18481152,
+      "producer_peak_rss_bytes": 18874368,
+      "producer_peak_rss_increase_bytes": 393216,
+      "manifest_open": {
+        "wall_seconds": 0.0067125130000249555,
+        "cpu_seconds": 0.006706762999999949
+      },
+      "full_integrity_verification": {
+        "wall_seconds": 3.0337824040000214,
+        "cpu_seconds": 3.0328019729999998
+      },
+      "lookup": {
+        "cold_partition_and_lookup": {
+          "wall_seconds": 0.048279120999950464,
+          "cpu_seconds": 0.04827452500000007
+        },
+        "warm_10000_lookups": {
+          "wall_seconds": 0.013796626999919681,
+          "cpu_seconds": 0.013799749999999555
+        },
+        "cached_records": 707,
+        "partitions_retained": 1
+      },
+      "deterministic_rebuild": "all files byte-identical",
+      "one_price_change": {
+        "changed_partitions": 1,
+        "changed_partition_bytes": 90497,
+        "manifest_changed": true
+      },
+      "generation_time_advanced_60_seconds": {
+        "changed_partitions": 64,
+        "reason": "Tuple age_seconds is relative to generated_at; freshness is never reset by delivery."
+      }
+    },
+    {
+      "records": 5000,
+      "scenario": "same_item_skew",
+      "refused": "Bucket 16 exceeds 262144 bytes at item 10000; no variants published. Use a separately reviewed deterministic subdivision before retrying; never raise the hard cap or prune variants.",
+      "partial_generation_published": false,
+      "generation": {
+        "wall_seconds": 0.14513087699992866,
+        "cpu_seconds": 0.14511697099999998
+      },
+      "peak_rss_bytes": 18612224
+    }
+  ],
+  "limitations": [
+    "Single-host timings vary; exact bytes and IDs can be reproduced.",
+    "No Lua consumer, game addon loading, frame time, GC or Windows measurements.",
+    "A changed source observation or generated_at can change all age-bearing partitions.",
+    "Incremental result measures changed output content; producer still scans the full supplied stream.",
+    "SHA-256 integrity is not a trusted publisher signature."
+  ]
+}
