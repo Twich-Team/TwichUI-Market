@@ -1,0 +1,104 @@
+{
+  "application_commit": "fa089a2660e745d6f77f5c2b0b7bbcb9109d6ae8",
+  "backend": {
+    "tests": 605,
+    "summary": [
+      "2026-11-17T16:40:26.5507352Z No known vulnerabilities found",
+      "2026-11-17T16:40:27.9495114Z No new upgrade operations detected.",
+      "2026-11-17T16:43:24.8117824Z 605 passed in 173.16s (0:02:53)"
+    ]
+  },
+  "website": {
+    "frontend_tests": 129,
+    "ordinary_chromium_workflows": 47,
+    "new_chromium_mobile_workflows_included": 6,
+    "webkit_mobile_workflows": 6,
+    "foreverdb_workflows": 1,
+    "provider_rate_workflows": 1,
+    "usability_workflows": 5,
+    "total_browser_workflows": 60,
+    "summary": [
+      "2026-11-17T16:47:26.7282025Z found 0 vulnerabilities",
+      "2026-11-17T16:47:32.9226582Z \u001b[2m      Tests \u001b[22m \u001b[1m\u001b[32m129 passed\u001b[39m\u001b[22m\u001b[90m (129)\u001b[39m",
+      "2026-11-17T16:47:33.4296624Z found 0 vulnerabilities",
+      "2026-11-17T16:52:50.6136437Z   47 passed (3.7m)",
+      "2026-11-17T16:53:37.8637443Z   6 passed (46.1s)",
+      "2026-11-17T16:53:58.3874771Z   1 passed (8.3s)",
+      "2026-11-17T16:54:13.7568872Z   1 passed (10.4s)",
+      "2026-11-17T16:54:46.1077417Z   5 passed (27.7s)"
+    ],
+    "first_attempt": {
+      "job_id": 134198148071,
+      "failed": "Mobile test-side route.fetch response disposed during test teardown; 46 workflows passed; rerun unchanged",
+      "assertions_or_product_changes": false
+    }
+  },
+  "windows": {
+    "test_results": [
+      {
+        "passed": 33,
+        "failed": 0,
+        "ignored": 1
+      },
+      {
+        "passed": 9,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "passed": 6,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "passed": 13,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "passed": 5,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "passed": 13,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "passed": 8,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "passed": 0,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "passed": 1,
+        "failed": 0,
+        "ignored": 1
+      }
+    ],
+    "installed_legacy_upgrade": true,
+    "installed_native_UI": true,
+    "signed_sdk_verification": true,
+    "companion_published": false
+  }
+}

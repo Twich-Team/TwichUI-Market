@@ -1,3 +1,5 @@
+**Mobile Experience Modernization release complete (2026-11-17):** Owner-approved PR #23 is merged and frontend-only deployed at **fa089a2660e745d6f77f5c2b0b7bbcb9109d6ae8**. [Current acceptance, live gallery and rollback](docs/mobile-experience-release-acceptance.md). Exact Backend/website/Windows CI, fresh backup/isolated restore, real public HTTPS, original-data/provider/device preservation and no-unrelated-restart checks pass. Retained backend 2920f366/schema usability_20261117; house 114 alone/300 seconds/no new failures; existing signed beta.5 unchanged; destructive retention off. Physical phone and current-password entry are post-deployment owner checks; no physical-iPhone acceptance is claimed. Earlier mobile review-only holds are superseded for this explicit release. Stop here; no additional milestone, campaign, Companion release or infrastructure work is authorized.
+
 # TwichUI Market engineering instructions
 
 Read docs/implementation-plan.md and docs/progress.md before each cycle. Implement small complete tasks, verify behavior, inspect diffs, commit and push checkpoints on a development branch. Never claim live observations from fixtures.

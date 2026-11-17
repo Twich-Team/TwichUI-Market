@@ -1,0 +1,26 @@
+{
+  "origin": "https://market.twich.gg",
+  "https_verified": true,
+  "all_deployed_asset_hashes_match": true,
+  "assets": [
+    ".well-known/foreverdb.txt",
+    "assets/admin-table-fM_4ZzPB.js",
+    "assets/api-CDqlUsZS.js",
+    "assets/catalogue-vvhKuZV8.js",
+    "assets/chart-engine-Bzqihi_9.js",
+    "assets/companion-8QLUzQiz.js",
+    "assets/companion-approval-K1UYeIGi.js",
+    "assets/companion-devices-DD3L9YNg.js",
+    "assets/data-table-B6GbwmMj.js",
+    "assets/deals-BtTjLv3h.js",
+    "assets/deferred-chart-DDMwQbEa.js",
+    "assets/index-BCxkkxKy.css",
+    "assets/index-D6_ajh4j.js",
+    "assets/info-tooltip-BO8Z7gQ2.js",
+    "assets/item-details-DEAIJGYx.js",
+    "assets/jsx-runtime-Wy9s6hX0.js",
+    "assets/research-DJDZK95X.js",
+    "assets/settings-BcQg1t6h.js",
+    "index.html"
+  ]
+}

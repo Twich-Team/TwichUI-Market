@@ -1,0 +1,6 @@
+{
+  "temporary_grant_revoked_via_public_logout": true,
+  "public_revoked_session_status": 401,
+  "private_verification_files_removed": true,
+  "original_accounts_devices_and_credentials_untouched": true
+}

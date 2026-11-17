@@ -1,0 +1,5 @@
+{
+  "missing_csrf_rejected": 403,
+  "valid_ui_logout": true,
+  "revoked_session_http_status": 401
+}

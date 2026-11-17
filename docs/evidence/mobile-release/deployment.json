@@ -1,0 +1,9 @@
+{
+  "deployed_at": "2026-11-17T16:55:16.744609+00:00",
+  "application_commit": "fa089a2660e745d6f77f5c2b0b7bbcb9109d6ae8",
+  "services": [
+    "proxy"
+  ],
+  "migrations": false,
+  "companion_publication": false
+}
