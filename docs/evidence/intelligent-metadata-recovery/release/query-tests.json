@@ -1,0 +1,9 @@
+{
+  "postgresql_focused_passed": 25,
+  "rich_fixture_items": 2000,
+  "per_statement_deadline_ms": 5000,
+  "previous_tracker_negative_control": "failed with PostgreSQL statement_timeout as expected",
+  "old_source_commit": "f87ae6b36cbb7e5b4379895b97e62d66f6823b9d",
+  "synthetic_service_retired": true,
+  "genuine_restore_untouched": true
+}

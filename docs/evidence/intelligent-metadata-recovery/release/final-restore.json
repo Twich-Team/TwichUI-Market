@@ -1,0 +1,247 @@
+{
+  "source": "Genuine current production archive; isolated market_test, no workers",
+  "archive": "market-metadata-20261117T213552Z.dump",
+  "sha256": "699ff3e4a8588e771e9e52e0496ae840b8dbad319800f1a9a1e8c8438b6ee927",
+  "source_schema": "recovery_20261117",
+  "verified_head": "recovery_20261117",
+  "no_new_migration_required_for_sync_correction": true,
+  "all_tables_preserved": 41,
+  "all_column_fingerprints_equal": true,
+  "fingerprints": {
+    "archive_checkpoints": {
+      "rows": 0,
+      "bytes_hashed": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "archive_digests": {
+      "rows": 7,
+      "bytes_hashed": 721,
+      "sha256": "627fc20e8cf564511d7dd11b8ab64dc7a4fb7efd95b5ca690f2df624a5abf705"
+    },
+    "archive_members": {
+      "rows": 0,
+      "bytes_hashed": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "bridge_derivations": {
+      "rows": 7,
+      "bytes_hashed": 210,
+      "sha256": "7b7682064a433d264be0dcdbe03dab6ea53358b490f52c4c9610435021d24000"
+    },
+    "bridge_derived_records": {
+      "rows": 152194,
+      "bytes_hashed": 143178398,
+      "sha256": "4b6322bfef345f69c5b8f37dc69a63047ecba66b17d0a414b16dfe766506b294"
+    },
+    "bridge_generations": {
+      "rows": 0,
+      "bytes_hashed": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "bridge_records": {
+      "rows": 0,
+      "bytes_hashed": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "collection_runs": {
+      "rows": 1034,
+      "bytes_hashed": 59505,
+      "sha256": "bb6575dd1e3e0782c46984be9994dc15d7bb2322d521c45786bd4a2fd7303ce2"
+    },
+    "companion_authorizations": {
+      "rows": 2,
+      "bytes_hashed": 802,
+      "sha256": "c2d401aac3e18638e2cd5713c06807998f025ff2773ae1ed27608a751be90a93"
+    },
+    "companion_devices": {
+      "rows": 5,
+      "bytes_hashed": 2069,
+      "sha256": "3985bc4723ba84e0ec6073116456093080d16f6140cd9cd5c6afed6f1f6ea5d2"
+    },
+    "companion_refresh_history": {
+      "rows": 31,
+      "bytes_hashed": 3000,
+      "sha256": "353c65ea9e2bbd277f86279852d513d9b86573eba6343128e74c646c19e28d84"
+    },
+    "credentials": {
+      "rows": 267,
+      "bytes_hashed": 60331,
+      "sha256": "bfb4922d84e9dd31aa777b31dafe204156041853ada38e872341bc3a2a7abb81"
+    },
+    "daily_observations": {
+      "rows": 5,
+      "bytes_hashed": 86,
+      "sha256": "1058e7062d98ba9ece6106303cb3a94862f24c319716f3e12e9b8303174572f7"
+    },
+    "invitations": {
+      "rows": 2,
+      "bytes_hashed": 202,
+      "sha256": "009b43589b93a398061c5edd6279a4917ad03d53146268c494ae3c7bb7063d37"
+    },
+    "item_media": {
+      "rows": 5852,
+      "bytes_hashed": 29963092,
+      "sha256": "90a0cf2c7f85727d97d9d050df50050a82ade836724c2b32cb4681cbb8784c11"
+    },
+    "item_metadata": {
+      "rows": 5907,
+      "bytes_hashed": 72661331,
+      "sha256": "88de795ca9aac6168724c72d72defdc0fe2d6f16cc9f3dbf355886c1b2d34fd6"
+    },
+    "listings": {
+      "rows": 10674008,
+      "bytes_hashed": 1456507817,
+      "sha256": "22d107f5a5e6e690008b0caa33e13724f54fbfd1cd724ec77ab6273a2801bc5e"
+    },
+    "login_attempts": {
+      "rows": 7,
+      "bytes_hashed": 679,
+      "sha256": "e2b156ac809604222b74622b97273af80bd8c9ca288469a12f4848ea1b3714c6"
+    },
+    "market_verifications": {
+      "rows": 2,
+      "bytes_hashed": 5028,
+      "sha256": "e7d6d471274fb9da263bf766a53941675224876ef60df832c1194ae61fa03d17"
+    },
+    "markets": {
+      "rows": 2,
+      "bytes_hashed": 328,
+      "sha256": "7a2d7c95aeb99c330f1ac378f2cb02a72fced77f9717793138edc69bd5cf8bec"
+    },
+    "metadata_attempts": {
+      "rows": 286,
+      "bytes_hashed": 686134,
+      "sha256": "e7851caff1037a30feb2afb40ed4c2e442d397d102439226507968e543f67892"
+    },
+    "metadata_jobs": {
+      "rows": 16226,
+      "bytes_hashed": 2779782,
+      "sha256": "730bbd92341947c99d8e555c126031e95157341f5aedbda638c9d025b49d1a1a"
+    },
+    "metadata_providers": {
+      "rows": 4,
+      "bytes_hashed": 2156,
+      "sha256": "c469174217babac3e77b212ce35464d4cfacf1f320f8a9ac0968ac416a54e38a"
+    },
+    "metadata_quota_buckets": {
+      "rows": 1049,
+      "bytes_hashed": 39408,
+      "sha256": "afc83c7719029f1929d4bd5f8751ea3538e7db9108e27d6db7a63a385291d1a3"
+    },
+    "metadata_recovery_items": {
+      "rows": 2122,
+      "bytes_hashed": 3028229,
+      "sha256": "423d531033db2df24b5d62865856038fb9fe81c31043171742dfaf59edbdfc41"
+    },
+    "metadata_recovery_state": {
+      "rows": 1,
+      "bytes_hashed": 38,
+      "sha256": "dbef5fee7a920b4380862244ab85a621a87efe86c30139f810b64455e11cc562"
+    },
+    "metadata_resources": {
+      "rows": 3,
+      "bytes_hashed": 101900,
+      "sha256": "3e5e6079fa69031e61f2d0bd8127df9b75ae99b73c1a2f77048e50afaec577f3"
+    },
+    "metadata_sources": {
+      "rows": 15964,
+      "bytes_hashed": 90985834,
+      "sha256": "49226341f169c13e7c34d273145b59ae5fc63ba9e16beccced857a2e32dfd9c3"
+    },
+    "metadata_tasks": {
+      "rows": 16545,
+      "bytes_hashed": 16133762,
+      "sha256": "3d3f0b64384db481817567bb67ebbd315d744a1456c66d9b5f867d654d9fd028"
+    },
+    "metadata_versions": {
+      "rows": 15457,
+      "bytes_hashed": 103824178,
+      "sha256": "927a71c1ed2ca4ebfff6c514b48ff726cea5271a834cddebb2ecb27adfa5c1c7"
+    },
+    "observations": {
+      "rows": 1032,
+      "bytes_hashed": 196405,
+      "sha256": "222b192ebcc1b239fd067db60bae0d62b2018c0ed066283e5812213a97eb654c"
+    },
+    "player_market_mappings": {
+      "rows": 1,
+      "bytes_hashed": 15546,
+      "sha256": "dde78a44cad988f6801006e0263f2bc09ae209428459ef17d26f9571c3c50cdd"
+    },
+    "retention_batches": {
+      "rows": 0,
+      "bytes_hashed": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "retention_policy": {
+      "rows": 1,
+      "bytes_hashed": 56,
+      "sha256": "b13d69b12df05e5e409c8df5f3f387142f039e622f11aaf578f500c062ab03f2"
+    },
+    "retention_policy_changes": {
+      "rows": 2,
+      "bytes_hashed": 440,
+      "sha256": "f911953ccd587fefb82c7c38037046db393264b6be056bf43d46cceed2955b11"
+    },
+    "security_events": {
+      "rows": 39954,
+      "bytes_hashed": 3887610,
+      "sha256": "4e92cc26700a460ee1afd80bbc29b01bbf32176b7c35053942ab97fbacc1b21e"
+    },
+    "snapshot_statistics": {
+      "rows": 2297524,
+      "bytes_hashed": 257632003,
+      "sha256": "3f72a3b1c1a9ad0acbe4138558656de2843f07a2e4f026fe113df5162c9f197f"
+    },
+    "snapshots": {
+      "rows": 92,
+      "bytes_hashed": 10174,
+      "sha256": "3d2115b4d08cb859ba5f224d108b69ba3d33d45c77efd73e541cdeebae650a43"
+    },
+    "storage_measurements": {
+      "rows": 93,
+      "bytes_hashed": 3129,
+      "sha256": "33b466d0a00ab60c1ea42789743c5326014dee9a30445ff7f1bdff3f1241cb4a"
+    },
+    "user_preferences": {
+      "rows": 22,
+      "bytes_hashed": 8213,
+      "sha256": "b07f896adc8aeb0504ec68740f33ca550ce9637a0415d2dc4f5d912624216671"
+    },
+    "users": {
+      "rows": 97,
+      "bytes_hashed": 16721,
+      "sha256": "679095ee279b4bfbf3567beed7a644265932c20c83f4e82b26b1a1f67ffe5ff0"
+    }
+  },
+  "summary": {
+    "observations": 1032,
+    "listings": 10674008,
+    "users": 97,
+    "credentials": 267,
+    "devices": 5,
+    "metadata_attempts": 286,
+    "metadata_decisions": 2122,
+    "retention_batches": 0
+  },
+  "credentials": {
+    "pre_feature_api": {
+      "protected_envelopes_decrypted_in_memory": 2,
+      "owner_active": true,
+      "external_requests": 0
+    },
+    "final_api": {
+      "protected_envelopes_decrypted_in_memory": 2,
+      "owner_active": true,
+      "external_requests": 0
+    }
+  },
+  "elapsed_seconds": 159.148,
+  "cpu_limit": 1,
+  "memory_limit_bytes": 7516192768,
+  "tmpfs_limit_bytes": 6442450944,
+  "network_internal": true,
+  "production_writes": 0,
+  "temporary_restore_retired": true,
+  "temporary_environment_removed": true
+}

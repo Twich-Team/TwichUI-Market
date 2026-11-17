@@ -1,0 +1,15 @@
+{
+  "origin": "https://market.twich.gg",
+  "at": "2026-11-17T21:09:46.851Z",
+  "actual_production": true,
+  "results": [
+    {
+      "width": 1440,
+      "violations": []
+    },
+    {
+      "width": 390,
+      "violations": []
+    }
+  ]
+}

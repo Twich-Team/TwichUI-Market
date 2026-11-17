@@ -1,0 +1,12 @@
+# Final collector-safety integration; append after the metadata and chart overlays.
+services:
+  migrate:
+    image: sha256:d7df98deb095a74c1c1b962d113d26e463d2f5e6de2abdf3fcb47b8339b45085
+  api:
+    image: sha256:d7df98deb095a74c1c1b962d113d26e463d2f5e6de2abdf3fcb47b8339b45085
+    environment:
+      APP_COMMIT: 6682b82fbb9bf644989e9fe64265ed2361062dfc
+  local-api:
+    image: sha256:d7df98deb095a74c1c1b962d113d26e463d2f5e6de2abdf3fcb47b8339b45085
+    environment:
+      APP_COMMIT: 6682b82fbb9bf644989e9fe64265ed2361062dfc

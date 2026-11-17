@@ -1,0 +1,18 @@
+{
+  "saved_values_and_original_rows_unchanged": true,
+  "only_changed_fields": [
+    "revision",
+    "updated_at"
+  ],
+  "user_id": 1,
+  "changes": {
+    "revision": {
+      "before": "11",
+      "after": "13"
+    },
+    "updated_at": {
+      "before": "2026-11-17 18:38:50.402192+00",
+      "after": "2026-11-17 21:15:26.982632+00"
+    }
+  }
+}

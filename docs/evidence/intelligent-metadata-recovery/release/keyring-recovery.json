@@ -1,0 +1,8 @@
+{
+  "encrypted_recovery_archive_decrypted_in_memory": true,
+  "normalized_contents_match_runtime_keyring": true,
+  "archive_sha256": "80825278233dd190d59914645f359afd4428904c6cb365e6a1519100d4ff3337",
+  "plaintext_file_created": false,
+  "key_rotated": false,
+  "off_host_copy_verified": false
+}

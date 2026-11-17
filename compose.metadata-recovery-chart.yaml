@@ -1,0 +1,4 @@
+# Frontend correction; append after metadata release and before the final API overlay.
+services:
+  proxy:
+    image: sha256:35546b89bcb231121ab77115de4410c9487dfcadd8d8da4d070a4fcbcebf0d7f

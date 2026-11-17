@@ -1,0 +1,7 @@
+{
+  "synthetic_only": true,
+  "pending_route_drained_before_context_close": true,
+  "delayed_geometry_waits": true,
+  "persistent_overflow_negative_control_fails": true,
+  "external_provider_requests": 0
+}

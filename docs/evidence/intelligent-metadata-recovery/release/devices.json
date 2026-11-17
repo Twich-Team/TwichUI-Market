@@ -1,0 +1,53 @@
+{
+  "all_original_device_rows_retained": 5,
+  "original_identity_and_authorization_continuity_verified": true,
+  "independent_predeployment_archives": [
+    {
+      "device": 4,
+      "field": "archived_at",
+      "audit_event": 39463,
+      "at": "2026-11-17T20:19:21.63486+00:00",
+      "before_initial_deployment": true,
+      "release_changed_this_row": false
+    },
+    {
+      "device": 5,
+      "field": "archived_at",
+      "audit_event": 39459,
+      "at": "2026-11-17T20:19:12.686855+00:00",
+      "before_initial_deployment": true,
+      "release_changed_this_row": false
+    }
+  ],
+  "native_renewals": [
+    {
+      "device": 3,
+      "old_generation": 28,
+      "new_generation": 29,
+      "previous_hash_matches_prior_active_hash": true,
+      "new_canonical_credential": 267,
+      "audit_event": 39797,
+      "at": "2026-11-17T21:07:44.896543+00:00",
+      "auth_protocol_source_unchanged": true,
+      "release_rotated_device": false
+    }
+  ],
+  "normal_client_activity_fields": [
+    "app_version",
+    "last_activity_at",
+    "last_connection_at",
+    "last_observation_id",
+    "last_seen_at",
+    "last_sync_at",
+    "selected_market_id"
+  ],
+  "release_account_or_device_cleanup": false,
+  "reported_client_version_changes": [
+    {
+      "device": 3,
+      "before": "2.0.0-beta.4",
+      "after": "2.0.0-beta.5",
+      "meaning": "Authenticated activity metadata; not independent PC installation acceptance"
+    }
+  ]
+}

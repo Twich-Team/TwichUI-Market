@@ -1,0 +1,45 @@
+{
+  "source": "fresh genuine production archive restored only into isolated market_test",
+  "archive": "market-metadata-20261117T193818Z.dump",
+  "sha256": "9f480fce6fb0d8e9ccf98632e1ea30fd063da9097b2bb80825e29891f13175e0",
+  "head": "recovery_20261117",
+  "before_head": "usability_20261117",
+  "original_tables_preserved": 38,
+  "all_original_column_fingerprints_equal": true,
+  "round_trip_and_schema_check": true,
+  "summary": {
+    "observations": 1017,
+    "listings": 10457322,
+    "users": 97,
+    "credentials": 261,
+    "devices": 5,
+    "sources": 15833,
+    "versions": 15254,
+    "retention_batches": 0,
+    "active_markets": [
+      {
+        "id": 2,
+        "house": 114,
+        "interval": 300
+      }
+    ]
+  },
+  "credentials": {
+    "previous_api": {
+      "protected_envelopes_decrypted_in_memory": 2,
+      "owner_active": true,
+      "no_external_requests": true
+    },
+    "new_api": {
+      "protected_envelopes_decrypted_in_memory": 2,
+      "owner_active": true,
+      "no_external_requests": true
+    }
+  },
+  "seconds": 146.696,
+  "memory_limit_bytes": 7516192768,
+  "tmpfs_limit_bytes": 6442450944,
+  "cpu_limit": 1,
+  "network_internal": true,
+  "production_schema_or_rows_modified": false
+}

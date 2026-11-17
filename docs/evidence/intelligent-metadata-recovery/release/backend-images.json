@@ -1,0 +1,20 @@
+{
+  "api": {
+    "tag": "twichui-market-backend:metadata-recovery-bf8a04a",
+    "id": "sha256:3ef6f57964546a425f4c2ebe2bc44be2d9a516340325074dfb0fb2f32d7c3667",
+    "base": "sha256:fa5d8f4c18e0421da98a9bd275789d022924000e8d513e2aa50157e000e39f5f",
+    "revision": "bf8a04a0539fb4c3e2468c70a2e5155ba1150f95"
+  },
+  "web": {
+    "tag": "twichui-market-web:metadata-recovery-bf8a04a",
+    "id": "sha256:7bd3085484e4eaa4f61542678d98b703687ba2df4dd3bdf7a46d4ba2b1dae0d8",
+    "base": "sha256:f2c101081b74615f4220062d91975d80d1de2e53c269acfabbba57797e7f13bb",
+    "revision": "bf8a04a0539fb4c3e2468c70a2e5155ba1150f95"
+  },
+  "source_archive_sha256": "182214ed7a20ec18abad849bfdc6663e697c00ec845021a9fcc916644183c67c",
+  "dependency_lock_sha256": "65f63a38e5f5b82928274b3eff93dcd0715ebabd9375025e8313cd028a0ee407",
+  "application_commit": "bf8a04a0539fb4c3e2468c70a2e5155ba1150f95",
+  "network": "none",
+  "build_memory_bytes": 402653184,
+  "build_cpu_limit": 0.5
+}

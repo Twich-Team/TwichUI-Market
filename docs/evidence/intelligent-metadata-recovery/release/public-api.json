@@ -1,0 +1,202 @@
+{
+  "authorization_checks": [
+    {
+      "identity": "anonymous",
+      "status": 401
+    },
+    {
+      "identity": "native",
+      "status": 403
+    }
+  ],
+  "origin": "https://market.twich.gg",
+  "verified_at": "2026-11-17T21:49:31.389442+00:00",
+  "results": [
+    {
+      "path": "/api/v1/health",
+      "status": 200,
+      "seconds": 0.045,
+      "bytes": 36,
+      "sha256": "e514a922c469f46374854d3dc7b76b7ebcdbbc0440760d30e730a634c9805c65"
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "status": 200,
+      "seconds": 0.047,
+      "bytes": 56,
+      "sha256": "4806614c3f1be489199d33cc9eb8a114377c38dc1415abde5c39115c85dc93b7"
+    },
+    {
+      "path": "/api/v1/admin/item-metadata",
+      "status": 200,
+      "seconds": 2.73,
+      "bytes": 19869,
+      "sha256": "5e075645aa09b0d6583a957e2e089b1691579dd06dc6c51a4a07d78c242c3822"
+    },
+    {
+      "path": "/api/v1/admin/item-metadata/jobs",
+      "status": 200,
+      "seconds": 0.078,
+      "bytes": 10350,
+      "sha256": "58aabcf2800dd17f03c9ac8eb7813efcb9e81be2fb215e38aa021b75172f9d33"
+    },
+    {
+      "path": "/api/v1/admin/records/metadata-attempts",
+      "status": 200,
+      "seconds": 0.377,
+      "bytes": 15825,
+      "sha256": "edd755e703a95f9ee62fe738d3dc54a623e606706965023136961e056cde75d8"
+    },
+    {
+      "path": "/api/v1/admin/metadata-providers",
+      "status": 200,
+      "seconds": 0.04,
+      "bytes": 9575,
+      "sha256": "abf0be286b788a5f7fb4978dca002dfc0efae3517b41905aedddb5345a98a368"
+    },
+    {
+      "path": "/api/v1/markets/2/catalogue?q=Linen&limit=5",
+      "status": 200,
+      "seconds": 0.413,
+      "bytes": 27899,
+      "sha256": "05539adaeb1345a3d0cfe34b235f6d61339a8d96c139a40d2379e775508078ba"
+    },
+    {
+      "path": "/api/v1/markets/2/item-profiles/2589",
+      "status": 200,
+      "seconds": 0.031,
+      "bytes": 10202,
+      "sha256": "f7b5bee1f8c7b04b8759daa92b7e1d2d15368a4f90bda808b609f478716544cf"
+    },
+    {
+      "path": "/api/v1/companion/private-beta/current",
+      "status": 200,
+      "seconds": 0.04,
+      "bytes": 1115,
+      "sha256": "a3435af1828b68eeed8fb602d3605ba008dc293b0e05cadf5457ce4d5d30c616",
+      "version": "2.0.0-beta.5",
+      "download_verified": true,
+      "installer_sha256": "6124b9472b03c1ee53a83e3a8e7570a9f3621834c77624cd9aa48bc005465de1",
+      "installer_bytes": 4762861
+    },
+    {
+      "path": "/api/v1/admin/item-metadata/tracker?market_id=2&limit=25",
+      "status": 200,
+      "seconds": 2.113,
+      "bytes": 50150,
+      "sha256": "208dae1350b4ba4eee50296d9ac306452b219e42231514eb2113633eed15b2f4",
+      "summary": {
+        "observed": 5197,
+        "missing_names": 0,
+        "missing_icons": 0,
+        "missing_essential": 4,
+        "eligible": 3126,
+        "no_eligible": 4,
+        "waiting_cooldowns": 2
+      },
+      "total": 5197
+    },
+    {
+      "path": "/api/v1/admin/item-metadata/tracker?market_id=2&missing=name&limit=25",
+      "status": 200,
+      "seconds": 2.261,
+      "bytes": 425,
+      "sha256": "8d5034d539028ee2c353f318a2ef3b4acbd0181242ec31cd11793aa6da290dbf",
+      "summary": {
+        "observed": 5197,
+        "missing_names": 0,
+        "missing_icons": 0,
+        "missing_essential": 4,
+        "eligible": 3126,
+        "no_eligible": 4,
+        "waiting_cooldowns": 2
+      },
+      "total": 0
+    },
+    {
+      "path": "/api/v1/admin/item-metadata/tracker/2589?market_id=2",
+      "status": 200,
+      "seconds": 0.08,
+      "bytes": 4432,
+      "sha256": "4adeaea87e4731aa9bc66579a8a787059c7e6a0d38ce321118fab6fdb8694003"
+    },
+    {
+      "path": "/api/v1/admin/item-metadata/tracker/efficiency?days=1",
+      "status": 200,
+      "seconds": 0.046,
+      "bytes": 1228,
+      "sha256": "437ad0dc94caeaec8d421c0cc0bd561e97e4a7b43394e363811d6369cd4fcb32",
+      "measurement": {
+        "queued_quota_deferrals": 0,
+        "days": 1,
+        "providers": [
+          {
+            "provider": "blizzard",
+            "external_requests": 8,
+            "useful_requests": 4,
+            "names": 0,
+            "icons": 3,
+            "attributes": 1,
+            "already_known": 0,
+            "missing_no_data": 1,
+            "errors": 0,
+            "rate_limits": 0,
+            "unknown_reservations": 0,
+            "metadata_requests": 5
+          },
+          {
+            "provider": "foreverdb",
+            "external_requests": 45,
+            "useful_requests": 43,
+            "names": 19,
+            "icons": 1,
+            "attributes": 43,
+            "already_known": 0,
+            "missing_no_data": 0,
+            "errors": 1,
+            "rate_limits": 0,
+            "unknown_reservations": 0,
+            "metadata_requests": 44
+          },
+          {
+            "provider": "thewowdb",
+            "external_requests": 287,
+            "useful_requests": 1,
+            "names": 1,
+            "icons": 1,
+            "attributes": 1,
+            "already_known": 83,
+            "missing_no_data": 1,
+            "errors": 201,
+            "rate_limits": 0,
+            "unknown_reservations": 0,
+            "metadata_requests": 286
+          }
+        ],
+        "metadata_requests": 335,
+        "useful_requests": 48,
+        "useful_rate": 0.14328358208955225,
+        "historical_task_records": 7271,
+        "notice": "Exact forward ledger counts completed network invocations. Crash reservations remain unknown. Historical task records have incomplete request/gain evidence and are excluded. Image requests are shown separately; validation cannot recover fields. Useful means a newly filled field or a verified changed value; returned unchanged fields are excluded. Recoveries may include more than one field per request."
+      }
+    },
+    {
+      "path": "/api/v1/companion/bootstrap",
+      "status": 200,
+      "seconds": 0.071,
+      "bytes": 2433,
+      "sha256": "819c4a5fac77b14739d6fe7520837bfd4dda30d3cb29602a204ea45ef7ca8eed",
+      "contract_version": 1
+    },
+    {
+      "path": "/api/v1/sync/markets/2?limit=50",
+      "status": 200,
+      "seconds": 0.083,
+      "bytes": 16923,
+      "sha256": "333b7ce39cd061180cab2924670641f3e51dbe288fff02bce8b409573332709f",
+      "contract_version": 1
+    }
+  ],
+  "manual_recovery_jobs_created": 0,
+  "new_accounts_or_devices": 0
+}

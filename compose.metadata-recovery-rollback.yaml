@@ -3,8 +3,12 @@
 services:
   api:
     image: sha256:fa5d8f4c18e0421da98a9bd275789d022924000e8d513e2aa50157e000e39f5f
+    environment:
+      APP_COMMIT: 2920f366f7b5cd32178ae06ae94cea84701ff87f
   local-api:
     image: sha256:fa5d8f4c18e0421da98a9bd275789d022924000e8d513e2aa50157e000e39f5f
+    environment:
+      APP_COMMIT: 2920f366f7b5cd32178ae06ae94cea84701ff87f
   enrichment:
     image: sha256:b25a1b319916a158107aba0d882cdb217861610e0012015193adf766d6955e94
   proxy:
