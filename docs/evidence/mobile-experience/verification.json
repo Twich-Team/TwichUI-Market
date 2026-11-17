@@ -1,0 +1,93 @@
+{
+  "application_sha": "9fbd10efa3d747d322ddeefc5d21cd57465f4b14",
+  "baseline_sha": "8c52b70afe8db4d514a46daf7dd13f27cccc8014",
+  "fixture_database": "market_test; private Unix socket; no collector/provider worker",
+  "backend_tests": {
+    "passed": 605,
+    "duration_seconds": 145.39
+  },
+  "frontend_tests": {
+    "passed": 129
+  },
+  "existing_local_browser_workflows": {
+    "passed": 40,
+    "duration_minutes": 3,
+    "excluded": "One private-pilot test intentionally requires Docker hostname proxy; exercised by unmodified remote CI suite"
+  },
+  "mobile_chromium_workflows": {
+    "passed": 6,
+    "duration_seconds": 57.9,
+    "widths": [
+      320,
+      344,
+      360,
+      375,
+      390,
+      430,
+      600,
+      768,
+      1024,
+      1440
+    ],
+    "landscape": [
+      [
+        844,
+        390
+      ],
+      [
+        932,
+        430
+      ],
+      [
+        600,
+        320
+      ]
+    ],
+    "long_market_labels": true,
+    "long_item_names": true,
+    "missing_icons": true,
+    "delayed_queries": true,
+    "reduced_motion": true,
+    "root_text_200_percent": true,
+    "account_axe": true,
+    "environment_discovery_stability": true
+  },
+  "scale": {
+    "synthetic": true,
+    "totalItems": 5000,
+    "renderedRows": 25,
+    "catalogueRequests": 2,
+    "readyMs": 485,
+    "domNodes": 1207,
+    "firstItem": 800000,
+    "nextPageItem": 800025
+  },
+  "desktop_and_mobile_history": {
+    "exact_desktop_geometry": true,
+    "mobile_back_forward": true
+  },
+  "unchanged_trees": {
+    "backend": {
+      "8c52b70afe8db4d514a46daf7dd13f27cccc8014": "2ea9b8a29e131d266be1cfbf251426d5ddfa9cb9",
+      "9fbd10efa3d747d322ddeefc5d21cd57465f4b14": "2ea9b8a29e131d266be1cfbf251426d5ddfa9cb9"
+    },
+    "desktop": {
+      "8c52b70afe8db4d514a46daf7dd13f27cccc8014": "b579e2cdeda04f147ecff190b5d2dce90f8ff603",
+      "9fbd10efa3d747d322ddeefc5d21cd57465f4b14": "b579e2cdeda04f147ecff190b5d2dce90f8ff603"
+    },
+    "contracts": {
+      "8c52b70afe8db4d514a46daf7dd13f27cccc8014": "6def68b5b80154dce3ba849e2fb5ada6effbff89",
+      "9fbd10efa3d747d322ddeefc5d21cd57465f4b14": "6def68b5b80154dce3ba849e2fb5ada6effbff89"
+    }
+  },
+  "real_device_testing": false,
+  "local_webkit_download": "403 Domain forbidden; Linux WebKit added to isolated CI image",
+  "production": "No write access or deployment attempted; public health read blocked 403",
+  "webkit": {
+    "engine": "Linux WebKit in isolated Playwright CI image",
+    "mobile_workflows": 6,
+    "status": "passed",
+    "run_id": 44106328001,
+    "real_iOS_Safari": false
+  }
+}

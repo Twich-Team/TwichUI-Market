@@ -1,0 +1,35 @@
+{
+  "application_sha": "9fbd10efa3d747d322ddeefc5d21cd57465f4b14",
+  "workflow_runs": [
+    {
+      "id": 44106327889,
+      "name": "Backend",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 197,
+      "jobs_url": "https://api.github.com/repos/Twich-Team/TwichUI-Market/actions/runs/44106327889/jobs",
+      "logs_url": "https://api.github.com/repos/Twich-Team/TwichUI-Market/actions/runs/44106327889/logs",
+      "workflow_id": 417841759
+    },
+    {
+      "id": 44106328001,
+      "name": "Private website",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 185,
+      "jobs_url": "https://api.github.com/repos/Twich-Team/TwichUI-Market/actions/runs/44106328001/jobs",
+      "logs_url": "https://api.github.com/repos/Twich-Team/TwichUI-Market/actions/runs/44106328001/logs",
+      "workflow_id": 417881467
+    },
+    {
+      "id": 44106327882,
+      "name": "Windows companion",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 189,
+      "jobs_url": "https://api.github.com/repos/Twich-Team/TwichUI-Market/actions/runs/44106327882/jobs",
+      "logs_url": "https://api.github.com/repos/Twich-Team/TwichUI-Market/actions/runs/44106327882/logs",
+      "workflow_id": 417870542
+    }
+  ]
+}

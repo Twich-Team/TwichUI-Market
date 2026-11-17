@@ -16,7 +16,7 @@ Baseline: `8c52b70afe8db4d514a46daf7dd13f27cccc8014` on integration/companion-v2
 
 ## Verification and limits
 
-Local: 605 backend tests, 129 frontend tests, TypeScript/Vite build and six new responsive Chromium workflows pass. Matrix: 320,344,360,375,390,430,600,768,1024,1440. Populated administration passes at 320/390/768/1440; exact variants and browser return state pass. Geometry explicitly asserts selector/Search separation and document width, including 768px Deal Finder. Tests exercise long labels, missing icons, 300ms response delay, reduced motion, 200% root text, menu focus, and Account WCAG A/AA axe. Additional existing browser/remote CI results are recorded below when available.
+Local: 605 backend tests, 129 frontend tests, TypeScript/Vite build and six new responsive Chromium workflows pass. Matrix: 320,344,360,375,390,430,600,768,1024,1440. Populated administration passes at 320/390/768/1440; exact variants and browser return state pass. Geometry explicitly asserts selector/Search separation and document width, including 768px Deal Finder. Tests exercise long labels, missing icons, 300ms response delay, reduced motion, 200% root text, menu focus, and Account WCAG A/AA axe. Existing browser and remote CI results are recorded below.
 
 Local WebKit installation was attempted; both official download endpoints returned 403 Domain forbidden. Linux WebKit verification is now wired into the existing isolated CI image; see the final CI receipt below. No real iPhone, Android, foldable, software keyboard, physical safe-area or dynamic Safari toolbar acceptance is claimed. Enlarged root text and emulated viewports are distinct from real browser zoom/device acceptance. The owner's screenshot files were not attached to this conversation: the comparison below addresses the supplied written observations, not an image-to-image match.
 
@@ -57,3 +57,19 @@ Additional scale acceptance: [5,000-item fixture](evidence/mobile-experience/sca
 [Desktop/history receipt](evidence/mobile-experience/desktop-and-history.json): the frozen baseline and candidate have exactly equal sidebar width/position, navigation button positions/heights, catalogue column labels/order and table width at 1440px. A 344px real-API browser Back → Forward → Back sequence retains the exact item URL and 25-item page size.
 
 Reproduction uses only the prepared isolated Cloud database and localhost services, or the repository's separate `compose.browser.yaml` CI stack. Optional `seed-mobile-scale.py` refuses every database except market_test. `mobile-scale.cjs` and `mobile-regression.cjs` assert bounded rows, request counts, exact money/supply, wide geometry and mobile history. `playwright.mobile.config.ts` accepts BASE_URL/CHROMIUM_PATH; `playwright.webkit.config.ts` uses WebKit already bundled in the isolated CI image. Native source, contracts, pricing/backend and Compose deployment files have zero diff against the baseline. Spare verification servers were stopped; candidate/API and static gallery remain localhost-only, backed solely by synthetic market_test.
+
+[Constrained Chromium emulation](evidence/mobile-experience/throttled-performance.json): one synthetic 390px sample with 4× CPU slowdown, 150ms latency and 250,000/100,000 bytes/s down/up measured catalogue-ready 2,222ms, search response 262ms, and item navigation plus visible lazy-chart canvas 2,428ms, with no document overflow. This is deliberate browser throttling, not a physical-phone benchmark or mobile-network p95.
+
+## Final exact-application acceptance
+
+Application **9fbd10efa3d747d322ddeefc5d21cd57465f4b14** passes all three exact-source CI workflows:
+
+| Workflow | Result |
+|---|---|
+| [Backend 44106327889](https://github.com/Twich-Team/TwichUI-Market/actions/runs/44106327889) | Success: regression, migrations, preservation and existing operational/contracts checks |
+| [Private website 44106328001](https://github.com/Twich-Team/TwichUI-Market/actions/runs/44106328001) | Success: unit/build/audit, ordinary Chromium workflows including six new mobile cases, six Linux WebKit mobile cases, existing ForeverDB/provider-rate/usability/IPC checks |
+| [Windows 44106327882](https://github.com/Twich-Team/TwichUI-Market/actions/runs/44106327882) | Success: existing native/HTTP/auth/archive/Tauri, upgrade/installed and signed-update verification |
+
+[Machine CI receipt](evidence/mobile-experience/ci.json) and [local verification receipt](evidence/mobile-experience/verification.json). Linux WebKit screenshots are retained in the [CI artifact](https://github.com/Twich-Team/TwichUI-Market/actions/runs/44106328001/artifacts/14339291978); its local transfer is blocked by Cloud network policy. The 46 Chromium gallery images were captured locally, inspected and fingerprinted. Linux WebKit is engine coverage, not actual iOS Safari acceptance.
+
+Review/evidence-only closing commits use `[skip ci]` to preserve these exact-application runs without repeating native builds. Runtime source and CI configuration have zero diff from the tested application. The extra local comparison script is inert verification code. Original checkout is clean, the remote integration branch remains 8c52b70, and the feature branch alone was pushed. No merge or deployment occurred. Implementation is complete as an owner visual-review candidate; physical-phone acceptance remains with the owner checklist above.
