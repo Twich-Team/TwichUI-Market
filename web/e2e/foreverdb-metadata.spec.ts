@@ -13,7 +13,7 @@ test('ForeverDB metadata: enriched Explorer, qualified details, related metadata
  await expect(metadata).toContainText('+5 Strength');await expect(metadata).toContainText('Speed 2.1 seconds');await expect(metadata).toContainText('Vendor sell:');
  await metadata.getByText('Disenchant reference',{exact:true}).click();await expect(metadata).toContainText('Classic data (CMaNGOS), not confirmed in Forever');
  await expect(metadata.getByRole('link',{name:'Data from ForeverDB.net',exact:true})).toBeVisible();await page.screenshot({path:`${output}/item-details.png`,fullPage:true});
- await page.setViewportSize({width:390,height:844});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:`${output}/item-mobile.png`,fullPage:true});
+ await page.setViewportSize({width:390,height:844});await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:`${output}/item-mobile.png`,fullPage:true});
  const axe=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze();fs.writeFileSync(`${output}/accessibility.json`,JSON.stringify(axe.violations));expect(axe.violations).toEqual([]);
  await page.goto('/markets/1/items/765');await page.getByText('Crafting relationships (1)',{exact:true}).click();await expect(page.getByRole('region',{name:'Item metadata',exact:true})).toContainText('1 × Elixir of Minor Force');await page.screenshot({path:`${output}/crafting.png`,fullPage:true});
  await page.goto('/markets/1/items/2488');await page.getByText('Vendor acquisition (1)',{exact:true}).click();await expect(page.getByRole('region',{name:'Item metadata',exact:true})).toContainText('Corina Steele');
