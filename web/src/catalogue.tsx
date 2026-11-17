@@ -1,3 +1,4 @@
+import { useCompactLayout } from "./responsive";
 import { Loading } from "./loading";
 import { ColumnMenu } from "./data-table";
 import { ItemName } from "./item-name";
@@ -75,6 +76,7 @@ export function ItemCatalogue({market,query,state,onChange,onSummary}: {
   onChange:(state:ExplorerState)=>void;
   onSummary:(summary:{synthetic:boolean;empty:boolean})=>void;
 }) {
+  const compact=useCompactLayout();
   const preferences=usePreferences();
   const pagination:PaginationState={pageIndex:state.pageIndex,pageSize:state.pageSize};
   const sorting:SortingState=[state.sort];
@@ -236,14 +238,36 @@ export function ItemCatalogue({market,query,state,onChange,onSummary}: {
       <div className="catalogue-heading catalogue-toolbar">
         <strong>{(data?.total_items || 0).toLocaleString()} items</strong>
         <span className="small muted catalogue-updated" title={when(data?.observed_at)}>{data?.observed_at ? `Updated ${new Date(data.observed_at!).toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"})}` : ""}</span>
-        <ColumnMenu table={table} closeAfterChange/>
+        {!compact && <ColumnMenu table={table} closeAfterChange/>}
         <button className="icon-button" aria-label="Refresh catalogue" title="Refresh catalogue" disabled={response.isFetching} onClick={()=>response.refetch()}>{response.isFetching&&data?.items.length ? <Loading compact label="Refreshing item catalogue…"/> : <span aria-hidden="true">↻</span>}</button>
       </div>
       <p role="status" aria-live="polite" className="sr-only">{response.isFetching ? "Loading item catalogue…" : response.error ? "Catalogue update failed." : `Catalogue page ${data?.page != null ? data!.page+1 : 1} loaded.`}</p>
       {response.isFetching && !data?.items.length && <Loading label="Loading item catalogue…" skeleton/>}
       {clamped && <p role="status" className="notice">The live results changed. Your saved page was moved to the last available page.</p>}
       {response.error && <p role="alert" className="notice error">{response.error.message} <button onClick={()=>response.refetch()}>Retry catalogue</button></p>}
-      <div
+      {compact ? <>
+        <div className="mobile-sort">
+          <label>Sort items<select value={sort.id} onChange={e=>table.setSorting([{id:e.target.value,desc:sort.desc}])}>
+            {columns.filter(column=>column.id!=="expand").map(column=><option key={column.id} value={column.id}>{String(column.header)}</option>)}
+          </select></label>
+          <button className="secondary" aria-label={`Sort direction: ${sort.desc ? "descending" : "ascending"}`} onClick={()=>table.setSorting([{id:sort.id,desc:!sort.desc}])}>{sort.desc ? "Descending ↓" : "Ascending ↑"}</button>
+        </div>
+        <div className={`mobile-catalogue ${response.isFetching ? "catalogue-loading" : ""}`}>
+          {table.getRowModel().rows.map(({original:item})=><article className="mobile-item" key={item.item_id}>
+            <div className="mobile-item-heading">
+              <ItemInfo market={market} item={item} ranges={item.variant_count>1 ? item.price_ranges : undefined}/>
+              <div><a className="select-item" id={`catalogue-item-${item.item_id}`} href={itemUrl(market,item.item_id,item.variant_count===1 ? item.sole_variant_key ?? undefined : undefined)} onClick={followItem} aria-label={`Research ${item.name}`}><ItemName name={item.name} quality={item.quality}/></a><ItemAttribution item={item}/></div>
+            </div>
+            <dl className="mobile-item-prices">
+              <div><dt>Recent / unit{item.variant_count>1 ? " · range" : ""}</dt><dd>{range(item.price_ranges.recent_price)}</dd></div>
+              <div><dt>14-day reference{item.variant_count>1 ? " · range" : ""}</dt><dd>{range(item.price_ranges.market_value)}</dd></div>
+              <div><dt>Supply</dt><dd>{item.supply.toLocaleString()} <span className="muted">· {item.listing_count.toLocaleString()} listings</span></dd></div>
+            </dl>
+            {item.variant_count>1 && <button className="secondary mobile-variants-toggle" aria-expanded={!!expanded[item.item_id]} aria-controls={`variants-${item.item_id}`} onClick={()=>{const next={...expanded,[item.item_id]:!expanded[item.item_id]};setExpanded(next);saveRestoration({expanded:next});}}>{expanded[item.item_id] ? "Hide" : "Show"} {item.variant_count} exact variants {expanded[item.item_id] ? "−" : "+"}</button>}
+            {expanded[item.item_id] && <div id={`variants-${item.item_id}`}><Variants market={market} item={item} snapshot={data?.snapshot_id}/></div>}
+          </article>)}
+        </div>
+      </> :       <div
         className={`table-scroll catalogue-scroll ${response.isFetching ? "catalogue-loading" : ""}`}
         tabIndex={0}
         role="region"
@@ -325,6 +349,7 @@ export function ItemCatalogue({market,query,state,onChange,onSummary}: {
           </tbody>
         </table>
       </div>
+      }
       {data?.items.length === 0 && (
         <p className="empty">
           {query
@@ -413,7 +438,7 @@ export function Variants({
         <tbody>
           {result.data?.variants.map((variant) => (
             <tr key={variant.variant_key} className={selectedVariant===variant.variant_key?"item-selected":undefined}>
-              <td>
+              <td data-label="Variant">
                 <ItemInfo
                   market={market}
                   item={{ ...variant, icon_url: item.icon_url }}
@@ -421,15 +446,15 @@ export function Variants({
                 />
                 <span> Variant {page * 50 + (result.data?.variants.indexOf(variant) ?? 0) + 1}</span><details className="small"><summary>Variant properties</summary>{variantLabel(variant.variant)}<code className="variant-key">{variant.variant_key}</code></details>
               </td>
-              <td>
+              <td data-label="Recent / unit">
                 <Currency value={variant.recent_price} />
               </td>
-              <td>
+              <td data-label="14-day reference">
                 <Currency value={variant.market_value} />
                 <small>{variant.coverage_days} observed days</small>
               </td>
-              <td>{variant.supply.toLocaleString()}</td>
-              <td>{variant.listing_count.toLocaleString()}</td>
+              <td data-label="Supply">{variant.supply.toLocaleString()}</td>
+              <td data-label="Listings">{variant.listing_count.toLocaleString()}</td>
               <td>
                 <a className="secondary" id={`variant-${variant.variant_key}`} aria-current={selectedVariant===variant.variant_key?"page":undefined} href={destination(variant.variant_key)} onClick={event=>{
                     if(replaceSelection&&event.button===0&&!event.ctrlKey&&!event.metaKey&&!event.shiftKey&&!event.altKey){event.preventDefault();navigate(destination(variant.variant_key),true);}else followItem(event);

@@ -42,3 +42,6 @@ Widths 320,344,360,375,390,430,600,768,1024,1440; portrait and selected landscap
 - M4: administration, geometry/regression, gallery and acceptance report.
 
 Status: source audit complete before application edits; browser audit follows isolated fixture setup. Review-only candidate, not visual approval.
+
+M1 checkpoint abb13a4 pushed: build + 129 unit tests passed; subsequent production-build Chromium matrix passes search non-overlap, document overflow and Escape/focus at every requested width. Development StrictMode preference restore stalls on this baseline; tests use production assets as CI does.
+M2 implemented: compact presentation mounts instead of the desktop table under 701px; one catalogue query/state; visible provider credit retained; mobile sort routes through table.setSorting; variant records reuse bounded existing query and exact routes. Build passes; browser matrix passes. No new dependencies or API changes.
