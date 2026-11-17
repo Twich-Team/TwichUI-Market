@@ -237,10 +237,10 @@ export function ItemCatalogue({market,query,state,onChange,onSummary}: {
         <strong>{(data?.total_items || 0).toLocaleString()} items</strong>
         <span className="small muted catalogue-updated" title={when(data?.observed_at)}>{data?.observed_at ? `Updated ${new Date(data.observed_at!).toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"})}` : ""}</span>
         <ColumnMenu table={table} closeAfterChange/>
-        <button className="icon-button" aria-label="Refresh catalogue" title="Refresh catalogue" disabled={response.isFetching} onClick={()=>response.refetch()}><span aria-hidden="true">↻</span></button>
+        <button className="icon-button" aria-label="Refresh catalogue" title="Refresh catalogue" disabled={response.isFetching} onClick={()=>response.refetch()}>{response.isFetching&&data?.items.length ? <Loading compact label="Refreshing item catalogue…"/> : <span aria-hidden="true">↻</span>}</button>
       </div>
       <p role="status" aria-live="polite" className="sr-only">{response.isFetching ? "Loading item catalogue…" : response.error ? "Catalogue update failed." : `Catalogue page ${data?.page != null ? data!.page+1 : 1} loaded.`}</p>
-      {response.isFetching && <Loading inline label={data?.items.length ? "Refreshing item catalogue…" : "Loading item catalogue…"} skeleton={!data?.items.length}/>}
+      {response.isFetching && !data?.items.length && <Loading label="Loading item catalogue…" skeleton/>}
       {clamped && <p role="status" className="notice">The live results changed. Your saved page was moved to the last available page.</p>}
       {response.error && <p role="alert" className="notice error">{response.error.message} <button onClick={()=>response.refetch()}>Retry catalogue</button></p>}
       <div

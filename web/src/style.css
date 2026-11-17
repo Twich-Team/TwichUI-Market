@@ -1722,6 +1722,6 @@ a.secondary { display:inline-block; padding:10px 14px; border:1px solid var(--bo
 
 .chart-placeholder {min-height:360px;padding:1rem;}
 .managed-table[aria-busy="true"] .table-scroll {min-height:14rem;}
-.catalogue-panel[aria-busy="true"] .catalogue-scroll {min-height:22rem;}
+.loading-state.compact {display:inline-flex;justify-content:center;min-height:1rem;padding:0;width:1rem;height:1rem;vertical-align:middle;}
 .intraday-history {padding:0 1rem 1rem;}
 .intraday-history .record-details code {overflow-wrap:anywhere;}
