@@ -1,0 +1,913 @@
+{
+  "captured_at": "2026-11-17T01:04:51.291948+00:00",
+  "source": "read-only production; no cleanup performed",
+  "approval": "review candidates only; no permanent removal authorized",
+  "accounts": [
+    {
+      "id": 2,
+      "username": "market_live_check_c63b02b0",
+      "active": false,
+      "created_at": "2026-11-14T02:49:56.61433+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 3,
+      "username": "market_live_check_41567076",
+      "active": false,
+      "created_at": "2026-11-14T02:50:33.969936+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 4,
+      "username": "market_live_check_846e124d",
+      "active": false,
+      "created_at": "2026-11-14T02:53:20.722621+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 5,
+      "username": "market_live_check_259bd9a3",
+      "active": false,
+      "created_at": "2026-11-14T03:02:54.114051+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 6,
+      "username": "market_live_check_6e3998fe",
+      "active": false,
+      "created_at": "2026-11-14T03:22:22.657548+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 7,
+      "username": "market_live_check_aedc8469",
+      "active": false,
+      "created_at": "2026-11-14T04:40:33.618298+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 8,
+      "username": "market_live_check_9f9a7c21",
+      "active": false,
+      "created_at": "2026-11-14T04:43:16.789783+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 9,
+      "username": "market_live_check_94a8b675",
+      "active": false,
+      "created_at": "2026-11-14T04:44:03.568054+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 10,
+      "username": "market_live_check_02262da5",
+      "active": false,
+      "created_at": "2026-11-14T04:44:55.725546+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 11,
+      "username": "market_live_check_d10a7536",
+      "active": false,
+      "created_at": "2026-11-14T04:45:31.134194+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 12,
+      "username": "market_live_check_b42addb3",
+      "active": false,
+      "created_at": "2026-11-14T04:51:48.386652+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 13,
+      "username": "market_live_check_8319fa2b",
+      "active": false,
+      "created_at": "2026-11-14T04:51:59.763194+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 14,
+      "username": "market_live_check_b7ca036d",
+      "active": false,
+      "created_at": "2026-11-14T04:52:14.711433+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 15,
+      "username": "market_live_check_81799eb1",
+      "active": false,
+      "created_at": "2026-11-14T04:54:02.007938+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 16,
+      "username": "market_live_check_89653d50",
+      "active": false,
+      "created_at": "2026-11-14T04:54:16.238033+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 17,
+      "username": "market_live_check_8f4bfe3f",
+      "active": false,
+      "created_at": "2026-11-14T05:03:45.065512+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 18,
+      "username": "market_access_56f4b4e49c_admin",
+      "active": false,
+      "created_at": "2026-11-14T12:49:49.489557+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 19,
+      "username": "market_access_56f4b4e49c_member",
+      "active": false,
+      "created_at": "2026-11-14T12:49:49.59212+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 20,
+      "username": "market_access_541b821269_admin",
+      "active": false,
+      "created_at": "2026-11-14T12:51:41.697938+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 21,
+      "username": "market_access_541b821269_member",
+      "active": false,
+      "created_at": "2026-11-14T12:51:41.799346+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 22,
+      "username": "market_access_b2b845c8ee_admin",
+      "active": false,
+      "created_at": "2026-11-14T12:53:34.667238+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 23,
+      "username": "market_access_b2b845c8ee_member",
+      "active": false,
+      "created_at": "2026-11-14T12:53:34.770645+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 24,
+      "username": "market_access_b787fb16f8_admin",
+      "active": false,
+      "created_at": "2026-11-14T12:56:52.27015+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 25,
+      "username": "market_access_b787fb16f8_member",
+      "active": false,
+      "created_at": "2026-11-14T12:56:52.374167+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 26,
+      "username": "market_access_3e827cd20f_admin",
+      "active": false,
+      "created_at": "2026-11-14T12:58:08.148147+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 27,
+      "username": "market_access_3e827cd20f_member",
+      "active": false,
+      "created_at": "2026-11-14T12:58:08.253265+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 28,
+      "username": "market_access_b25955678c_admin",
+      "active": false,
+      "created_at": "2026-11-14T12:59:57.86722+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 29,
+      "username": "market_access_b25955678c_member",
+      "active": false,
+      "created_at": "2026-11-14T12:59:57.971095+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 30,
+      "username": "market_access_25d1c6f197_admin",
+      "active": false,
+      "created_at": "2026-11-14T13:04:11.605009+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 31,
+      "username": "market_access_25d1c6f197_member",
+      "active": false,
+      "created_at": "2026-11-14T13:04:11.707826+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 32,
+      "username": "market_access_d87b4b4127_admin",
+      "active": false,
+      "created_at": "2026-11-14T13:18:27.560424+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 33,
+      "username": "market_access_d87b4b4127_member",
+      "active": false,
+      "created_at": "2026-11-14T13:18:27.739737+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 34,
+      "username": "market_access_fe08ed1f4a_admin",
+      "active": false,
+      "created_at": "2026-11-14T13:33:25.197375+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 35,
+      "username": "market_access_fe08ed1f4a_member",
+      "active": false,
+      "created_at": "2026-11-14T13:33:25.375153+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 36,
+      "username": "market_access_3db97576b1_admin",
+      "active": false,
+      "created_at": "2026-11-14T14:23:36.097241+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 37,
+      "username": "market_access_3db97576b1_member",
+      "active": false,
+      "created_at": "2026-11-14T14:23:36.202117+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 38,
+      "username": "market_access_afff656c40_admin",
+      "active": false,
+      "created_at": "2026-11-14T14:25:01.46464+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 39,
+      "username": "market_access_afff656c40_member",
+      "active": false,
+      "created_at": "2026-11-14T14:25:01.566221+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 40,
+      "username": "market_access_19a566d4df_admin",
+      "active": false,
+      "created_at": "2026-11-14T14:32:01.641053+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 41,
+      "username": "market_access_19a566d4df_member",
+      "active": false,
+      "created_at": "2026-11-14T14:32:01.746193+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 42,
+      "username": "market_access_8aa4dc5912_admin",
+      "active": false,
+      "created_at": "2026-11-14T14:33:14.78486+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 43,
+      "username": "market_access_8aa4dc5912_member",
+      "active": false,
+      "created_at": "2026-11-14T14:33:14.886679+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 44,
+      "username": "market_access_982f4a4dcd_admin",
+      "active": false,
+      "created_at": "2026-11-14T14:35:52.636514+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 45,
+      "username": "market_access_982f4a4dcd_member",
+      "active": false,
+      "created_at": "2026-11-14T14:35:52.740418+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 46,
+      "username": "market_access_fae84b9c17_admin",
+      "active": false,
+      "created_at": "2026-11-14T14:38:35.050951+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 47,
+      "username": "market_access_fae84b9c17_member",
+      "active": false,
+      "created_at": "2026-11-14T14:38:35.157643+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 48,
+      "username": "market_live_check_f5528186",
+      "active": false,
+      "created_at": "2026-11-14T15:17:08.552601+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 49,
+      "username": "market_live_check_30a080c2",
+      "active": false,
+      "created_at": "2026-11-14T15:18:06.643088+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 50,
+      "username": "market_live_check_55002061",
+      "active": false,
+      "created_at": "2026-11-14T15:18:58.764498+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 51,
+      "username": "market_live_check_d502b616",
+      "active": false,
+      "created_at": "2026-11-14T15:19:32.553483+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 52,
+      "username": "market_live_check_6d77953f",
+      "active": false,
+      "created_at": "2026-11-14T15:20:14.272959+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 53,
+      "username": "market_live_check_dd97d830",
+      "active": false,
+      "created_at": "2026-11-14T15:21:16.296192+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 54,
+      "username": "market_live_check_5e5147f1",
+      "active": false,
+      "created_at": "2026-11-14T15:22:48.337174+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 55,
+      "username": "market_live_check_62bbd10f",
+      "active": false,
+      "created_at": "2026-11-14T16:11:08.327973+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 56,
+      "username": "market_live_check_911d9ad5",
+      "active": false,
+      "created_at": "2026-11-14T16:16:24.661299+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 57,
+      "username": "market_live_check_035a1603",
+      "active": false,
+      "created_at": "2026-11-14T16:23:18.405111+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 58,
+      "username": "market_live_check_69736105",
+      "active": false,
+      "created_at": "2026-11-14T16:26:34.381103+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 59,
+      "username": "market_live_check_447ea848",
+      "active": false,
+      "created_at": "2026-11-14T16:31:38.225873+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 60,
+      "username": "market_access_1080aca326_admin",
+      "active": false,
+      "created_at": "2026-11-14T16:58:22.22936+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 61,
+      "username": "market_access_1080aca326_member",
+      "active": false,
+      "created_at": "2026-11-14T16:58:22.332678+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 62,
+      "username": "market_access_32a6ef9c23_admin",
+      "active": false,
+      "created_at": "2026-11-14T16:59:17.74167+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 63,
+      "username": "market_access_32a6ef9c23_member",
+      "active": false,
+      "created_at": "2026-11-14T16:59:17.844952+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 64,
+      "username": "market_access_373107cd55_admin",
+      "active": false,
+      "created_at": "2026-11-14T17:00:01.655876+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 65,
+      "username": "market_access_373107cd55_member",
+      "active": false,
+      "created_at": "2026-11-14T17:00:01.757749+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 66,
+      "username": "market_access_d7715d4588_admin",
+      "active": false,
+      "created_at": "2026-11-15T02:38:32.778043+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 67,
+      "username": "market_access_d7715d4588_member",
+      "active": false,
+      "created_at": "2026-11-15T02:38:32.885379+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 68,
+      "username": "market_access_98c864bb5f_admin",
+      "active": false,
+      "created_at": "2026-11-15T02:50:09.068984+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 69,
+      "username": "market_access_98c864bb5f_member",
+      "active": false,
+      "created_at": "2026-11-15T02:50:09.173806+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 70,
+      "username": "market_access_09ccd1ad83_admin",
+      "active": false,
+      "created_at": "2026-11-15T02:58:08.769265+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 71,
+      "username": "market_access_09ccd1ad83_member",
+      "active": false,
+      "created_at": "2026-11-15T02:58:08.872163+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 72,
+      "username": "market_access_545a3a2428_admin",
+      "active": false,
+      "created_at": "2026-11-15T05:28:44.831332+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 73,
+      "username": "market_access_545a3a2428_member",
+      "active": false,
+      "created_at": "2026-11-15T05:28:44.941866+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 74,
+      "username": "market_access_bfd93206e2_admin",
+      "active": false,
+      "created_at": "2026-11-15T05:30:35.93855+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 75,
+      "username": "market_access_bfd93206e2_member",
+      "active": false,
+      "created_at": "2026-11-15T05:30:36.118581+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 76,
+      "username": "market_access_a8723cff1c_admin",
+      "active": false,
+      "created_at": "2026-11-15T05:34:04.017453+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 77,
+      "username": "market_access_a8723cff1c_member",
+      "active": false,
+      "created_at": "2026-11-15T05:34:04.120241+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 78,
+      "username": "market_access_a730c6490c_admin",
+      "active": false,
+      "created_at": "2026-11-15T09:37:05.120831+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 79,
+      "username": "market_access_a730c6490c_member",
+      "active": false,
+      "created_at": "2026-11-15T09:37:05.223039+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 80,
+      "username": "market_access_ef602e9ba1_admin",
+      "active": false,
+      "created_at": "2026-11-15T09:42:12.306036+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 81,
+      "username": "market_access_ef602e9ba1_member",
+      "active": false,
+      "created_at": "2026-11-15T09:42:12.409673+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 82,
+      "username": "market_access_71d0532677_admin",
+      "active": false,
+      "created_at": "2026-11-15T09:47:22.402439+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 83,
+      "username": "market_access_71d0532677_member",
+      "active": false,
+      "created_at": "2026-11-15T09:47:22.505625+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 84,
+      "username": "market_access_6aa7c66992_admin",
+      "active": false,
+      "created_at": "2026-11-15T09:48:59.020516+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 85,
+      "username": "market_access_6aa7c66992_member",
+      "active": false,
+      "created_at": "2026-11-15T09:48:59.200593+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 86,
+      "username": "market_access_0a14a612c9_admin",
+      "active": false,
+      "created_at": "2026-11-15T14:50:01.21294+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 87,
+      "username": "market_access_0a14a612c9_member",
+      "active": false,
+      "created_at": "2026-11-15T14:50:01.320649+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 88,
+      "username": "market_access_b28f7533f9_admin",
+      "active": false,
+      "created_at": "2026-11-15T14:56:54.194283+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 89,
+      "username": "market_access_b28f7533f9_member",
+      "active": false,
+      "created_at": "2026-11-15T14:56:54.298401+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 90,
+      "username": "market_access_b733ca2a00_admin",
+      "active": false,
+      "created_at": "2026-11-15T14:58:11.979772+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 91,
+      "username": "market_access_b733ca2a00_member",
+      "active": false,
+      "created_at": "2026-11-15T14:58:12.281141+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 92,
+      "username": "market_access_0228f79509_admin",
+      "active": false,
+      "created_at": "2026-11-15T15:02:03.699247+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 93,
+      "username": "market_access_0228f79509_member",
+      "active": false,
+      "created_at": "2026-11-15T15:02:03.879509+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 94,
+      "username": "market_access_df7c1036ed_admin",
+      "active": false,
+      "created_at": "2026-11-15T15:04:57.076062+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 95,
+      "username": "market_access_df7c1036ed_member",
+      "active": false,
+      "created_at": "2026-11-15T15:04:57.180497+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 96,
+      "username": "market_access_6a83117e9f_admin",
+      "active": false,
+      "created_at": "2026-11-15T15:13:11.977152+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    },
+    {
+      "id": 97,
+      "username": "market_access_6a83117e9f_member",
+      "active": false,
+      "created_at": "2026-11-15T15:13:12.090385+00:00",
+      "creation_receipts": 1,
+      "closure_receipts": 1,
+      "unrevoked_credentials": 0
+    }
+  ],
+  "devices": [
+    {
+      "id": 2,
+      "user_id": 71,
+      "name": "Audited production protocol check 09ccd1ad83",
+      "version": "2.0.0-beta.2",
+      "revoked": true,
+      "last_connection": "2026-11-15T02:59:46.112858+00:00"
+    },
+    {
+      "id": 1,
+      "user_id": 69,
+      "name": "Audited production protocol check 98c864bb5f",
+      "version": "2.0.0-beta.2",
+      "revoked": true,
+      "last_connection": "2026-11-15T02:57:02.856686+00:00"
+    },
+    {
+      "id": 5,
+      "user_id": 1,
+      "name": "M1.5 bounded acceptance",
+      "version": "2.0.0-beta.3",
+      "revoked": true,
+      "last_connection": "2026-11-16T02:53:16.12462+00:00"
+    },
+    {
+      "id": 4,
+      "user_id": 1,
+      "name": "Audited production protocol check a8723cff1c",
+      "version": "2.0.0-beta.2",
+      "revoked": true,
+      "last_connection": "2026-11-15T05:35:17.739575+00:00"
+    },
+    {
+      "id": 3,
+      "user_id": 1,
+      "name": "Windows PC",
+      "version": "2.0.0-beta.3",
+      "revoked": false,
+      "last_connection": "2026-11-17T00:56:09.639014+00:00"
+    }
+  ]
+}

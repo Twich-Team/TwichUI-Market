@@ -28,3 +28,9 @@ it('distinguishes Denver repeated DST hour and dates across the international da
   expect(renderToStaticMarkup(<LastSeen value="2026-11-15T23:55:00Z"/>)).toContain('Last seen 11/16/2026');
  }finally{env.TZ=previous;}
 });
+
+it('listing freshness formats the supplied observation in viewer local time rather than the current clock',async()=>{
+ const {ListingsFreshness}=await import('./local-time');
+ const env=(globalThis as unknown as {process:{env:Record<string,string|undefined>}}).process.env,previous=env.TZ;env.TZ='America/Denver';
+ try{const html=renderToStaticMarkup(<ListingsFreshness value="2026-11-15T00:05:00Z"/>);expect(html).toContain('As of 11/14/2026, 5:05 PM');expect(html).toContain('dateTime="2026-11-15T00:05:00Z"');}finally{env.TZ=previous;}
+});

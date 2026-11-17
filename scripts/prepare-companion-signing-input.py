@@ -17,8 +17,8 @@ spec=importlib.util.spec_from_file_location('beta_prepare',ROOT/'scripts/prepare
 prepare=importlib.util.module_from_spec(spec);spec.loader.exec_module(prepare)
 
 
-def stage(installer,acceptance,source,runs,artifact_id,output):
-    config=prepare.source_config(source,'e55807c58c4cf68560729471019b88cc518fb5b0')
+def stage(installer,acceptance,source,runs,artifact_id,output,visual='e55807c58c4cf68560729471019b88cc518fb5b0'):
+    config=prepare.source_config(source,visual)
     version=config['version'];key=(ROOT/'desktop/src-tauri/updater-public-key.txt').read_text().strip()
     committed=subprocess.check_output(['git','show',source+':desktop/src-tauri/updater-public-key.txt'],cwd=ROOT,text=True).strip()
     if key!=committed:raise ValueError('Signing host and exact payload source public keys differ')
@@ -63,11 +63,11 @@ def stage(installer,acceptance,source,runs,artifact_id,output):
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--installer',type=Path,required=True);parser.add_argument('--acceptance',type=Path,required=True)
-    parser.add_argument('--source-commit',required=True);parser.add_argument('--installer-artifact-id',type=int,required=True)
+    parser.add_argument('--visual-approval-commit',required=True);parser.add_argument('--source-commit',required=True);parser.add_argument('--installer-artifact-id',type=int,required=True)
     parser.add_argument('--windows-run',required=True);parser.add_argument('--backend-run',required=True);parser.add_argument('--website-run',required=True)
     parser.add_argument('--output',type=Path,required=True)
     args=parser.parse_args();stage(args.installer,args.acceptance,args.source_commit,
-        {'windows':args.windows_run,'backend':args.backend_run,'website':args.website_run},args.installer_artifact_id,args.output)
+        {'windows':args.windows_run,'backend':args.backend_run,'website':args.website_run},args.installer_artifact_id,args.output,args.visual_approval_commit)
     print('Exact passed Windows candidate staged for local Tauri signing. No private key read, publication or deployment.')
 
 

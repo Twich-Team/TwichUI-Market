@@ -5,7 +5,7 @@ import os
 from datetime import timedelta
 from sqlalchemy import delete, func, select, text
 from .db import Session, now
-from .models import RetentionPolicy, CollectionRun, Credential, DailyObservation, Invitation, Listing, LoginAttempt, Observation, SecurityEvent, Snapshot, SnapshotStatistic
+from .models import RetentionPolicy, CollectionRun, Credential, DailyObservation, Invitation, Listing, LoginAttempt, Observation, SecurityEvent, Snapshot, SnapshotStatistic, CompanionAuthorization
 
 
 def maintain(factory=Session, *, apply=False, at=None, compact=None):
@@ -21,9 +21,13 @@ def maintain(factory=Session, *, apply=False, at=None, compact=None):
     predicates=[(CollectionRun,CollectionRun.checked_at<at-timedelta(days=collection_days)),
                 (SecurityEvent,SecurityEvent.created_at<at-timedelta(days=security_days)),
                 (LoginAttempt,LoginAttempt.window_start<at-timedelta(days=1)),
-                (Credential,Credential.expires_at<at-timedelta(days=30)),
+                (Credential,(Credential.expires_at<at-timedelta(days=30)) & Credential.companion_device_id.is_(None) &
+                 ~select(CompanionAuthorization.id).where(CompanionAuthorization.approved_credential_id==Credential.id).exists()),
                 (Invitation,Invitation.expires_at<at-timedelta(days=30))]
     with factory.begin() as db:
+        if apply and compact and not (db.bind.url.database == 'market_test' or
+                (db.bind.dialect.name == 'sqlite' and db.bind.url.database in (None, ':memory:'))):
+            raise ValueError('Legacy history compaction is test-only. Use the approved policy, verified backup and signed bounded retention batches for production.')
         if db.bind.dialect.name=='postgresql' and not db.scalar(text('SELECT pg_try_advisory_xact_lock(7140233)')):
             return {'status':'busy'}
         if db.bind.dialect.name=='postgresql' and not db.scalar(text('SELECT pg_try_advisory_xact_lock(7140232)')):

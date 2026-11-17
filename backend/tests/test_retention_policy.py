@@ -140,3 +140,39 @@ def test_backup_gate_binds_restoration_to_the_current_archive(monkeypatch):
     assert not retention.backup_ready()
     state['filename']='market-fixture.dump';state['restored_archive_sha256']='invalid'
     assert not retention.backup_ready()
+
+
+def test_real_batch_cap_exact_removal_replay_and_resume(owner, database, monkeypatch):
+    """6,201 eligible raw rows cross the actual 5,000-row transaction boundary."""
+    at = now()
+    with database.begin() as db:
+        market = Market(region='us', ruleset_id=2, house_id=114, source_kind='auctions', label='Synthetic batch boundary')
+        db.add(market); db.flush(); market_id = market.id
+        old = ingest(db, market_id, json.dumps({'auctions':[
+            {'id':i, 'item':{'id':25}, 'buyout':100, 'quantity':1} for i in range(1,6202)
+        ]}).encode(), request_key='batch-old', retrieved_at=at-timedelta(days=10), synthetic=True)
+        old_snapshot = old.snapshot_id
+        current = ingest(db, market_id, b'{"auctions":[{"id":7000,"item":{"id":25},"buyout":200,"quantity":1}]}',
+                         request_key='batch-current', retrieved_at=at, synthetic=True)
+        current_snapshot = current.snapshot_id
+        variant = db.scalar(select(SnapshotStatistic.variant_key))
+        baseline = values(db,market_id,25,variant)
+    authorize(database, monkeypatch)
+    first = owner.get('/api/v1/admin/retention/preview').json()
+    assert first['next_stage'] == 'raw_listings' and first['next_batch_rows'] == 5000
+    applied = owner.post('/api/v1/admin/retention/apply', json={'confirmation':first['confirmation'],'confirm':True})
+    assert applied.json()['rows_removed'] == 5000
+    assert owner.post('/api/v1/admin/retention/apply', json={'confirmation':first['confirmation'],'confirm':True}).status_code == 409
+    with database() as db:
+        assert db.scalar(select(func.count()).select_from(Listing).where(Listing.snapshot_id == old_snapshot)) == 1201
+        assert db.scalar(select(func.count()).select_from(Listing).where(Listing.snapshot_id == current_snapshot)) == 1
+        assert values(db,market_id,25,variant) == baseline
+    # A later independent preview resumes from persisted state; no in-memory task state.
+    second = owner.get('/api/v1/admin/retention/preview').json()
+    assert second['next_batch_rows'] == 1201
+    assert owner.post('/api/v1/admin/retention/apply', json={'confirmation':second['confirmation'],'confirm':True}).json()['rows_removed'] == 1201
+    with database() as db:
+        assert db.scalar(select(func.count()).select_from(Listing)) == 1
+        assert values(db,market_id,25,variant) == baseline
+    state = owner.get('/api/v1/admin/retention').json()
+    assert state['completed_batches'] == 2 and state['scheduled'] is False

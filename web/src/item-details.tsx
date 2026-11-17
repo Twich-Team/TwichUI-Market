@@ -1,3 +1,6 @@
+import { IntradayHistory } from "./intraday-history";
+import { InfoTooltip,metricExplanations } from "./info-tooltip";
+import { Loading } from "./loading";
 import {useEffect} from 'react';
 import {useQuery} from '@tanstack/react-query';
 import {api,when} from './api';
@@ -14,7 +17,7 @@ import type {Detail,Market} from './types';
 
 export function ItemDetails({route,markets,marketsReady}:{route:ItemRoute;markets:Market[];marketsReady:boolean}){
   const current=markets.find(m=>m.id===route.market);
-  if(!marketsReady)return <p role="status">Loading linked market…</p>;
+  if(!marketsReady)return <Loading label="Loading linked market…" />;
   if(!current)return <section className="empty panel"><h1>Market unavailable</h1><p>Market #{route.market} is not available to this account. This item link has not been moved to another market.</p><a href="/" onClick={e=>{e.preventDefault();navigate('/');}}>Back to Explorer</a></section>;
   return <Research key={`${route.market}:${route.item}`} route={route} market={current}/>;
 }
@@ -31,13 +34,14 @@ function Research({route,market}:{route:ItemRoute;market:Market}){
     if(variant || group?.variant_count!==1 || !result || result.snapshot_id!==overview.data?.snapshot_id || result.total_variants!==1 || result.variants.length!==1)return;
     const key=result.variants[0].variant_key;
     if(!/^[a-f0-9]{64}$/.test(key))return;
-    navigate(itemUrl(marketId,item,key)+(route.days?`&days=${route.days}`:''),true);
-  },[variant,group?.variant_count,sole.data,overview.data?.snapshot_id,marketId,item,route.days]);
+    navigate(itemUrl(marketId,item,key)+(route.days?`&days=${route.days}`:'')+(route.hours?`&hours=${route.hours}`:''),true);
+  },[variant,group?.variant_count,sole.data,overview.data?.snapshot_id,marketId,item,route.days,route.hours]);
   const identity=profile.data??group??{item_id:item,name:`Item #${item}`,quality:null};
   const value=variant?detail.data?.valuation:undefined;
   const back=backDestination(marketId);
   useEffect(()=>{document.title=`${identity.name} · ${market.label} | TwichUI Market`;return()=>{document.title="TwichUI Market";};},[identity.name,market.label]);
-  function setDays(next:typeof days){preferences.update({explorer_days:next});const url=new URL(currentLocation(),location.origin);url.searchParams.set('days',String(next));navigate(url.pathname+url.search,true);}
+  function setDays(next:typeof days){preferences.update({explorer_days:next});const url=new URL(currentLocation(),location.origin);url.searchParams.delete('hours');url.searchParams.set('days',String(next));navigate(url.pathname+url.search,true);}
+  function setHours(hours:24|48){const url=new URL(currentLocation(),location.origin);url.searchParams.set('hours',String(hours));navigate(url.pathname+url.search,true);}
   return <div className="item-research">
     <div className="research-breadcrumb"><a href={back} onClick={returnToBrowse}>{back.startsWith('/deals')?'← Back to Deal Finder':'← Back to Explorer'}</a><span>{market.label}</span><button className="text-button" onClick={()=>{void overview.refetch();void profile.refetch();if(variant)void detail.refetch();}}>Refresh item</button></div>
     <div className="item-heading research-heading">
@@ -47,6 +51,7 @@ function Research({route,market}:{route:ItemRoute;market:Market}){
       </div>
     </div>
     <div className="research-observation"><LastSeen value={variant ? detail.data?.last_seen_at : overview.data?.observed_at}/>
+      {market.freshness==='unknown'&&<span className="small muted">Source freshness unknown</span>}
       {market.freshness==='stale'&&<span className="notice warning">Source data is stale</span>}
     </div>
     <details className="research-technical"><summary>Market technical details</summary><dl className="record-details">
@@ -56,27 +61,27 @@ function Research({route,market}:{route:ItemRoute;market:Market}){
       <dt>Current snapshot</dt><dd>{overview.data?.snapshot_id || 'Unknown'}</dd>
       {value&&<><dt>Reference algorithm</dt><dd>{value.algorithm}. Workshop compatibility remains unverified.</dd></>}
     </dl></details>
-    {!variant&&group?.variant_count===1&&sole.isPending&&<p role="status">Opening current variant…</p>}
+    {!variant&&group?.variant_count===1&&sole.isPending&&<Loading label="Opening current variant…" />}
     {sole.error&&<p role="alert" className="notice error">Current variant could not be verified. <button onClick={()=>{void overview.refetch();void sole.refetch();}}>Retry variant selection</button></p>}
     {(overview.data?.synthetic||value?.synthetic)&&<p className="notice warning">Synthetic fixture data · not live Auction House observations.</p>}
-    {overview.isPending&&<p role="status">Loading current market overview…</p>}
+    {overview.isPending&&<Loading label="Loading current market overview…" />}
     {overview.error&&<p role="alert" className="notice error">Current overview unavailable: {overview.error.message} <button onClick={()=>overview.refetch()}>Retry overview</button></p>}
-    {variant&&detail.isPending&&<p role="status">Loading exact variant research…</p>}
+    {variant&&detail.isPending&&<Loading label="Loading exact variant research…" />}
     {detail.error&&<p role="alert" className="notice error">Variant research unavailable: {detail.error.message} <button onClick={()=>detail.refetch()}>Retry variant research</button></p>}
     {!overview.isPending&&!overview.error&&!group&&<p className="notice" role="status">This item has no listings in the current market snapshot. Retained metadata and exact-variant history can still be researched when available.</p>}
     {variant&&value&&value.listing_count===0&&<p className="notice" role="status">This exact variant is not currently listed in this market. Its URL is retained; no other variant has been substituted. Historical observations may still be available.</p>}
     {value?<div className="stats" aria-label="Exact variant current market">
-      <article><label>LOWEST BUYOUT / UNIT</label><strong><Currency value={value.lowest_buyout}/></strong><small>Current asking price</small></article>
-      <article><label>RECENT PRICE / UNIT</label><strong><Currency value={value.recent_price}/></strong><small>Quantity-weighted listings</small></article>
-      <article><label>14-DAY MARKET REFERENCE</label><strong><Currency value={value.market_value}/></strong><small>{value.market_coverage_days} observed UTC days</small></article>
-      <article><label>CURRENT MARKET SUPPLY</label><strong>{value.supply.toLocaleString()} units</strong><small>{value.listing_count.toLocaleString()} listings · {value.priced_supply.toLocaleString()} priced units</small></article>
+      <article><label>LOWEST BUYOUT / UNIT<InfoTooltip label="Lowest Buyout / Unit">{metricExplanations.lowest}</InfoTooltip></label><strong><Currency value={value.lowest_buyout}/></strong><small>Current asking price</small></article>
+      <article><label>RECENT PRICE / UNIT<InfoTooltip label="Recent Price / Unit">{metricExplanations.recent}</InfoTooltip></label><strong><Currency value={value.recent_price}/></strong><small>Quantity-weighted listings</small></article>
+      <article><label>14-DAY MARKET REFERENCE<InfoTooltip label="14-Day Market Reference">{metricExplanations.reference}</InfoTooltip></label><strong><Currency value={value.market_value}/></strong><small>{value.market_coverage_days} observed UTC days</small></article>
+      <article><label>CURRENT MARKET SUPPLY<InfoTooltip label="Current Market Supply">{metricExplanations.supply}</InfoTooltip></label><strong>{value.supply.toLocaleString()} units</strong><small>{value.listing_count.toLocaleString()} listings · {value.priced_supply.toLocaleString()} priced units</small></article>
     </div>:!variant&&group?<ParentOverview group={group}/>:null}
     {group&&group.variant_count>1&&<details className="panel research-variants" open={!variant} aria-label="Item variants"><summary>{group.variant_count} variants · {variant?'Change variant':'Choose a variant'}</summary><Variants key={`${marketId}:${item}`} market={marketId} item={group} replaceSelection selectedVariant={variant} snapshot={overview.data?.snapshot_id}/></details>}
     {!variant&&group&&group.variant_count>1&&<p className="notice">Prices above are ranges across variants. Select a variant to inspect its lowest buyout, historical charts and paginated auctions.</p>}
     {variant&&<>
       <div className="two-col research-charts">
-        <section className="panel" aria-label="Price history"><div className="panel-heading"><h2>Price history</h2><div className="segmented" aria-label="History range">{([7,14,60,365,3650] as const).map(d=><button key={d} className={days===d?'selected':''} aria-pressed={days===d} onClick={()=>setDays(d)}>{d===3650?'10Y':`${d}D`}</button>)}</div></div>
-          <PriceHistory key={`${marketId}:${item}:${variant}:${days}`} market={marketId} item={item} variant={variant} days={days}/>
+        <section className="panel" aria-label="Price history"><div className="panel-heading"><h2>Price history</h2><div className="segmented" aria-label="History range">{([24,48] as const).map(hours=><button key={hours} className={route.hours===hours?"selected":""} aria-pressed={route.hours===hours} onClick={()=>setHours(hours)}>{hours}H</button>)}{([7,14,60,365,3650] as const).map(d=><button key={d} className={!route.hours&&days===d?'selected':''} aria-pressed={!route.hours&&days===d} onClick={()=>setDays(d)}>{d===3650?'10Y':d===365?'1Y':`${d}D`}</button>)}</div></div>
+          {route.hours?<IntradayHistory key={`${marketId}:${item}:${variant}:${route.hours}`} market={marketId} item={item} variant={variant} hours={route.hours}/>:<PriceHistory key={`${marketId}:${item}:${variant}:${days}`} market={marketId} item={item} variant={variant} days={days}/>}
           {value&&<p className="panel-note">60-day historical value: <Currency value={value.historical_value}/> · {value.coverage_days} observed days</p>}
         </section>
         <section className="panel" aria-label="Supply information"><div className="panel-heading"><h2>Supply by price</h2></div><SupplyDistribution key={`${marketId}:${item}:${variant}`} market={marketId} item={item} variant={variant}/></section>
@@ -85,7 +90,7 @@ function Research({route,market}:{route:ItemRoute;market:Market}){
       <p className="small muted">Asking listings do not establish sales. Missing days remain unobserved.</p>
     </>}
     <section className="panel padded research-metadata" aria-label="Item metadata"><h2>Item metadata</h2>
-      {profile.isPending&&<p role="status">Loading item metadata independently for this link…</p>}
+      {profile.isPending&&<Loading label="Loading item metadata independently for this link…" />}
       {profile.error&&<p className="notice error" role="alert">Item metadata could not be loaded. <button onClick={()=>profile.refetch()}>Retry metadata</button></p>}
       {profile.data&&<ItemFacts profile={profile.data}/>}
     </section>

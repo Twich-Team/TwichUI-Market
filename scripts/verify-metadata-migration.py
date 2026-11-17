@@ -40,7 +40,7 @@ with Session(engine) as db,db.begin():
     db.add(market);db.flush()
     ingest(db,market.id,b'{"auctions":[{"id":1,"item":{"id":720},"quantity":2,"buyout":400}]}',request_key='migration-fixture',synthetic=True)
 
-queries={'users':'select * from users order by id','credentials':'select * from credentials order by id',
+queries={'users':'select id,username,password_hash,role,active,created_at from users order by id','credentials':'select * from credentials order by id',
     'preferences':'select * from user_preferences order by user_id',
     'names':'select region,item_id,name,status,namespace,checked_at,resolved_at,retry_after,synthetic from item_metadata order by region,item_id',
     'observations':'select * from observations order by id','listings':'select * from listings order by snapshot_id,auction_id',

@@ -56,6 +56,7 @@ export interface Detail {
   listings_truncated: boolean;
 }
 export interface Deal {
+  icon_url?: string | null;
   quality?: string | null;
   name: string;
   name_verified: boolean;
@@ -73,6 +74,7 @@ export interface Deal {
 }
 
 export interface Signal {
+  icon_url?: string | null;
   quality?: string | null;
   kind: "supply" | "price";
   item_id: number;

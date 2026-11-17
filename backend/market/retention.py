@@ -130,6 +130,9 @@ def backup_ready():
 @router.get('')
 def get_policy(user:User=Depends(admin),db:Session=Depends(session)):
     return {**policy_view(db),'backup_restore_ready':backup_ready(),
+            'policy_configured':db.get(RetentionPolicy,1) is not None, 'scheduled':False,
+            'completed_batches':db.scalar(select(func.count()).select_from(RetentionBatch)),
+            'last_completed_at':db.scalar(select(func.max(RetentionBatch.created_at))),
             'notice':'Proposal only. Current snapshot and 60-day valuation support are protected; live application requires separate owner/operator authorization.'}
 
 

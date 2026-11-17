@@ -258,46 +258,60 @@ def control(job_id: int, action: Literal['pause', 'resume', 'cancel'], user: Use
 
 @router.get('/item-metadata')
 def overview(market_id: int | None = Query(None, ge=1), user: User = Depends(admin), db: Session = Depends(session)):
-    ids = observed_query(market_id).subquery()
+    ids = observed_query(market_id).cte('coverage_observed')
+    if db.bind.dialect.name == 'postgresql': ids = ids.prefix_with('MATERIALIZED')
     join = select(func.count(), func.count(ItemMetadata.name),
-        func.count(ItemMetadata.fallback_name).filter(ItemMetadata.name.is_(None)), func.count(ItemMedia.asset_hash),
+        func.count(ItemMetadata.fallback_name).filter(ItemMetadata.name.is_(None)), func.count(ItemMedia.asset_hash).filter(ItemMedia.data.is_not(None), ItemMedia.byte_count > 0),
         func.count(ItemMetadata.item_id).filter(ItemMetadata.http_status == 404),
         func.count(ItemMetadata.details), func.count(ItemMetadata.catalog_json),
         func.count().filter(ItemMetadata.name.is_(None),or_(ItemMetadata.http_status.is_(None),ItemMetadata.http_status!=404))).select_from(ids).outerjoin(ItemMetadata,
         (ItemMetadata.region == ids.c.region) & (ItemMetadata.item_id == ids.c.item_id)).outerjoin(ItemMedia,
         (ItemMedia.region == ids.c.region) & (ItemMedia.item_id == ids.c.item_id))
     total, primary, supplemental, icons, primary_missing, attributes, catalog, primary_pending = db.execute(join).one()
-    source_name=cast(MetadataSource.fields_json,JSON)['name'].as_string()
-    sources = list(db.execute(select(MetadataSource.provider, func.count(), func.count(source_name)).join(ids,
-        (ids.c.region == MetadataSource.region) & (ids.c.item_id == MetadataSource.item_id)).group_by(MetadataSource.provider)))
-    # Coverage counts describe locally retained fields, including good data from
-    # a failed refresh. They are not claims about remote API availability.
+    # Parse each retained source document once per query, rather than again for
+    # every counted field. Keep locale explicit so alternate locales cannot double-count.
     from .metadata_catalog import FIELDS
+    from sqlalchemy.dialects.postgresql import JSONB
+    json_type = JSONB if db.bind.dialect.name == 'postgresql' else JSON
+    scoped = select(MetadataSource.region, MetadataSource.item_id, MetadataSource.provider,
+                    cast(MetadataSource.fields_json, json_type).label('fields')).join(ids,
+        (ids.c.region == MetadataSource.region) & (ids.c.item_id == MetadataSource.item_id))
+    scoped = scoped.where(MetadataSource.locale == 'en_US').cte('coverage_sources')
+    if db.bind.dialect.name == 'postgresql': scoped = scoped.prefix_with('MATERIALIZED')
+    source_name = scoped.c.fields['name'].as_string()
     detail_fields = sorted(FIELDS - {'name', 'icon_reference'})
-    source_fields = cast(MetadataSource.fields_json, JSON)
-    populated = {field: source_fields[field].as_string().is_not(None) &
-        source_fields[field].as_string().not_in(('', '[]', '{}', 'null')) for field in detail_fields}
+    populated = {field: scoped.c.fields[field].as_string().is_not(None) &
+        scoped.c.fields[field].as_string().not_in(('', '[]', '{}', 'null')) for field in detail_fields}
     detailed = or_(*populated.values())
-    coverage = {}
-    for ident in PROVIDERS:
-        counts = db.execute(select(func.count().filter(source_name.is_not(None), ~detailed),
-            func.count().filter(detailed),
-            *[func.count().filter(condition) for condition in populated.values()]).join(ids,
-            (ids.c.region == MetadataSource.region) & (ids.c.item_id == MetadataSource.item_id))
-            .where(MetadataSource.provider == ident)).one()
-        coverage[ident] = {'name_only':counts[0], 'detailed_records':counts[1],
-            'fields_available':dict(zip(detail_fields, counts[2:]))}
+    grouped = list(db.execute(select(scoped.c.provider, func.count(), func.count(source_name),
+        func.count().filter(source_name.is_not(None), ~detailed), func.count().filter(detailed),
+        *[func.count().filter(condition) for condition in populated.values()]).group_by(scoped.c.provider)))
+    grouped_by_provider = {row[0]: row for row in grouped}
+    sources = [grouped_by_provider[provider][:3] if provider in grouped_by_provider else (provider,0,0) for provider in PROVIDERS]
+    coverage = {row[0]: {'name_only':row[3], 'detailed_records':row[4],
+                       'fields_available':dict(zip(detail_fields,row[5:]))} for row in grouped}
+    for provider in PROVIDERS:
+        coverage.setdefault(provider, {'name_only':0, 'detailed_records':0, 'fields_available':dict.fromkeys(detail_fields,0)})
+    # Empty providers are represented by zero source records, never inferred remote capability.
+    source_name=cast(MetadataSource.fields_json,JSON)['name'].as_string()
     source_build = cast(MetadataSource.source_json, JSON)['build'].as_string()
     build_counts = list(db.execute(select(MetadataSource.provider,
         source_build, func.count())
         .join(ids, (ids.c.region == MetadataSource.region) & (ids.c.item_id == MetadataSource.item_id))
-        .where(MetadataSource.source_json.is_not(None)).group_by(MetadataSource.provider,
+        .where(MetadataSource.source_json.is_not(None), MetadataSource.locale == "en_US").group_by(MetadataSource.provider,
             source_build)))
-    overlaps=select(MetadataSource.region,MetadataSource.item_id,func.count(source_name).label('names'),func.count(func.distinct(source_name)).label('distinct_names')).join(ids,(ids.c.region==MetadataSource.region)&(ids.c.item_id==MetadataSource.item_id)).group_by(MetadataSource.region,MetadataSource.item_id).subquery()
+    overlaps=select(MetadataSource.region,MetadataSource.item_id,func.count(source_name).label('names'),func.count(func.distinct(source_name)).label('distinct_names')).join(ids,(ids.c.region==MetadataSource.region)&(ids.c.item_id==MetadataSource.item_id)).where(MetadataSource.locale == "en_US").group_by(MetadataSource.region,MetadataSource.item_id).subquery()
     overlap_count=db.scalar(select(func.count()).select_from(overlaps).where(overlaps.c.names>1))
     conflicting_count=db.scalar(select(func.count()).select_from(overlaps).where(overlaps.c.distinct_names>1))
+    provider_overlap = {provider: (overlap, conflict) for provider, overlap, conflict in db.execute(
+        select(MetadataSource.provider, func.count().filter(overlaps.c.names > 1),
+               func.count().filter(overlaps.c.distinct_names > 1)).join(overlaps,
+            (overlaps.c.region == MetadataSource.region) & (overlaps.c.item_id == MetadataSource.item_id))
+        .where(MetadataSource.locale == 'en_US', source_name.is_not(None)).group_by(MetadataSource.provider))}
+    from .metadata_coverage import summary
+    additional = summary(db, ids)
     recent = list(db.scalars(select(MetadataTask).where(MetadataTask.state == 'completed', MetadataTask.result_json.is_not(None)).order_by(MetadataTask.updated_at.desc(), MetadataTask.id.desc()).limit(20)))
-    return {'snapshot_scope':'Latest recorded observation per selected market', 'measured_at':now(), 'observed':total,
+    return {**additional, 'snapshot_scope':'Latest recorded observation per selected market', 'measured_at':now(), 'observed':total,
         'resolved_names':primary+supplemental, 'missing_names':total-primary-supplemental,
         'name_percent':round(100*(primary+supplemental)/total, 2) if total else None, 'primary_names':primary,
         'supplemental_names':supplemental, 'primary_missing_responses':primary_missing,
@@ -307,6 +321,7 @@ def overview(market_id: int | None = Query(None, ge=1), user: User = Depends(adm
         'pending_queue':db.scalar(select(func.count()).select_from(MetadataTask).where(MetadataTask.state == 'queued')),
         'active_jobs':db.scalar(select(func.count()).select_from(MetadataJob).where(MetadataJob.state.in_(ACTIVE))),
         'provider_records':[{'provider':r[0], 'checked':r[1], 'names_available':r[2], **coverage[r[0]],
+            'overlapping_names':provider_overlap.get(r[0],(0,0))[0], 'conflicting_names':provider_overlap.get(r[0],(0,0))[1],
             'builds':[{'build':build, 'records':count} for provider,build,count in build_counts if provider==r[0]]} for r in sources],
         'queue_status':dict(db.execute(select(MetadataTask.state, func.count()).group_by(MetadataTask.state)).all()),
         'rate_limited_queue':db.scalar(select(func.count()).select_from(MetadataTask).where(MetadataTask.state=='queued',

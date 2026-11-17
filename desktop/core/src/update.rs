@@ -3,7 +3,7 @@
 use crate::{Error, Result};
 use base64::{engine::general_purpose::STANDARD, Engine};
 use reqwest::blocking::Client;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::{io::Read, time::Duration};
 use url::Url;
@@ -217,6 +217,40 @@ fn metadata_with(
     package.validate()?;
     Ok(Some((package, raw)))
 }
+/// A bounded persisted semantic-version watermark prevents repeat Windows notices,
+/// including process restarts and a server temporarily advertising an older update.
+/// This ordering is notification policy only; data compatibility never uses it.
+#[derive(Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct NoticeWatermark {
+    version: Option<String>,
+}
+fn notice_sequence(version: &str) -> Result<(u32,u32,u32,bool,u32)> {
+    if !release_version(version) { return Err(Error::Invalid("update notice version")); }
+    let (base,beta)=version.split_once("-beta.").map_or((version,None),|(base,beta)|(base,Some(beta)));
+    let numbers:Vec<u32>=base.split('.').map(|n|n.parse().map_err(|_|Error::Invalid("update notice version"))).collect::<Result<_>>()?;
+    Ok((numbers[0],numbers[1],numbers[2],beta.is_none(),beta.unwrap_or("0").parse().map_err(|_|Error::Invalid("update notice version"))?))
+}
+pub fn claim_update_notice(directory: &std::path::Path, version: &str, background: bool) -> Result<bool> {
+    let next=notice_sequence(version)?;
+    if !background {return Ok(false);}
+    let path=directory.join("update-notice-v1.json");
+    let previous:NoticeWatermark=if path.exists() {
+        let mut bytes=Vec::new();std::fs::File::open(&path)?.take(4097).read_to_end(&mut bytes)?;
+        if bytes.len()>4096 {return Err(Error::Invalid("update notice history limit"));}
+        serde_json::from_slice(&bytes)?
+    } else {NoticeWatermark::default()};
+    if let Some(previous)=previous.version {if next<=notice_sequence(&previous)? {return Ok(false);}}
+    // Reserve before sending to the OS: a crash cannot repeat an already submitted notice.
+    std::fs::create_dir_all(directory)?;
+    let mut file=tempfile::NamedTempFile::new_in(directory)?;
+    use std::io::Write;
+    serde_json::to_writer(&mut file,&NoticeWatermark{version:Some(version.into())})?;
+    file.flush()?;file.as_file().sync_all()?;
+    file.persist(path).map_err(|error|Error::Io(error.error))?;
+    Ok(true)
+}
+
 /// Native update-check policy. Market synchronization preferences do not own it.
 #[derive(Default)]
 pub struct CheckSchedule {
@@ -382,5 +416,33 @@ mod tests {
         let text = String::from_utf8(STANDARD.decode(signature.trim()).unwrap()).unwrap();
         let forged = STANDARD.encode(text.replace("version:2.0.0", "version:2.0.1"));
         assert!(verify_signature(bytes, key, &forged, "2.0.1").is_err());
+    }
+}
+
+#[cfg(test)]
+mod notice_tests {
+    use super::*;
+    #[test]
+    fn background_notice_survives_restart_and_never_repeats_or_downgrades() {
+        let directory=tempfile::tempdir().unwrap();let path=directory.path();
+        assert!(!claim_update_notice(path,"2.0.0-beta.3",false).unwrap());
+        assert!(!path.join("update-notice-v1.json").exists());
+        assert!(claim_update_notice(path,"2.0.0-beta.3",true).unwrap());
+        assert!(!claim_update_notice(path,"2.0.0-beta.3",true).unwrap());
+        assert!(claim_update_notice(path,"2.0.0-beta.10",true).unwrap());
+        assert!(!claim_update_notice(path,"2.0.0-beta.9",true).unwrap());
+        assert!(claim_update_notice(path,"2.0.0",true).unwrap());
+        assert!(!claim_update_notice(path,"2.0.0-beta.11",true).unwrap());
+        assert!(claim_update_notice(path,"2.1.0",true).unwrap());
+        assert!(!claim_update_notice(path,"invalid",true).is_ok());
+    }
+    #[test]
+    fn corrupt_or_unbounded_history_fails_without_overwriting_it() {
+        let directory=tempfile::tempdir().unwrap();let path=directory.path().join("update-notice-v1.json");
+        for bytes in [b"corrupt".to_vec(),vec![b'x';4097]] {
+            std::fs::write(&path,&bytes).unwrap();
+            assert!(claim_update_notice(directory.path(),"2.1.0",true).is_err());
+            assert_eq!(std::fs::read(&path).unwrap(),bytes);
+        }
     }
 }

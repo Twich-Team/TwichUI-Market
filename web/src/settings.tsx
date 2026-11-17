@@ -1,3 +1,9 @@
+import { Loading } from "./loading";
+import { AdministrationOverview } from "./admin-overview";
+import type { MetadataOverview } from "./metadata-admin";
+import { DatabaseGrowth } from "./storage-growth";
+import { formatBytes as bytes } from "./size";
+import { MemberArchive } from "./member-archive";
 import { CollectionHistory, SecurityHistory } from "./admin-histories";
 import { LocalTime } from "./admin-table";
 import { DataSources, ItemMetadataAdmin } from "./metadata-admin";
@@ -63,7 +69,7 @@ interface Event {
   detail: string;
   created_at: string;
 }
-interface Storage {
+export interface Storage {
   growth: {
     samples: { sampled_at: string; database_bytes: number }[];
     delta_bytes: number | null;
@@ -88,12 +94,6 @@ interface Storage {
     error?: string;
   };
 }
-const bytes = (value: number | null | undefined) =>
-  value == null
-    ? "Unavailable"
-    : value < 1048576
-      ? `${(value / 1024).toFixed(1)} KiB`
-      : `${(value / 1048576).toFixed(1)} MiB`;
 
 export function Account({
   signedOut,
@@ -143,6 +143,7 @@ export function Account({
           {message}
         </p>
       )}
+      {working && <Loading label="Updating your account…"/>}
       <MyPreferences />
       <section className="panel padded"><div className="eyebrow">WINDOWS COMPANION</div><h2>Your market, ready on your PC.</h2><p>Install the companion, then approve this device in your browser. Your password stays on the website.</p><button className="primary" onClick={openCompanion}>Get Desktop Companion</button></section>
       <CompanionDevices userId={userId}/>
@@ -308,6 +309,7 @@ export function Administration({
   refreshMarkets: () => Promise<void>;
   readOnly?: boolean;
 }) {
+  const [includeArchived, setIncludeArchived] = useState(false);
   const [tab, setTab] = useState("overview"),
     [message, setMessage] = useState(""),
     [error, setError] = useState(""),
@@ -322,12 +324,16 @@ export function Administration({
         devices,
         storage,
         enrichment,
+        deviceSummary,
+        coverage,
       ] = await Promise.all([
-        api<User[]>("/admin/users"),
+        api<User[]>(`/admin/users?include_archived=${includeArchived}`),
         api<Invitation[]>("/admin/invitations"),
         api<Device[]>("/admin/devices"),
         api<Storage>("/admin/storage"),
         api<Enrichment>("/admin/item-enrichment"),
+        api<{authorized:number;revoked:number;expired:number;recently_connected:number;authorized_names:string[];live_status:string}>("/companion/admin/device-summary"),
+        api<MetadataOverview>("/admin/item-metadata"),
       ]);
       return {
         users,
@@ -335,9 +341,11 @@ export function Administration({
         devices,
         storage,
         enrichment,
+        deviceSummary,
+        coverage,
       };
     },
-    [],
+    [includeArchived],
   );
   const busy = working || readOnly;
   async function action(job: () => Promise<void>) {
@@ -402,10 +410,9 @@ export function Administration({
         </p>
       )}
       {data.loading && (
-        <p role="status" className="muted">
-          Loading administration…
-        </p>
+        <Loading label="Loading administration…" />
       )}
+      {(working || data.refreshing) && <Loading inline label="Updating administration…"/>}
       <div className="admin-tabs" role="tablist">
         {Object.entries(titles).map(([key, title]) => (
           <button
@@ -423,138 +430,16 @@ export function Administration({
       {tab === "sources" && <DataSources readOnly={readOnly} />}
       {state && (
         <>
-          {tab === "overview" && (
-            <>
-              <div className="stats">
-                <article>
-                  <label>COLLECTION</label>
-                  <strong>
-                    {markets.filter((row) => row.enabled).length} active markets
-                  </strong>
-                  <small>
-                    {markets.filter((row) => row.failures).length} reporting
-                    failures
-                  </small>
-                </article>
-                <article>
-                  <label>DATABASE SIZE</label>
-                  <strong>{bytes(state.storage.database_bytes)}</strong>
-                  <small>
-                    {state.storage.observations.toLocaleString()} observations
-                  </small>
-                </article>
-                <article>
-                  <label>BACKUP STATUS</label>
-                  <strong>
-                    {state.storage.backup.status.replaceAll("_", " ")}
-                  </strong>
-                  <small>{when(state.storage.backup.last_success)}</small>
-                </article>
-                <article>
-                  <label>DEVICE ACCESS</label>
-                  <strong>
-                    {
-                      state.devices.filter(
-                        (row) =>
-                          !row.revoked && new Date(row.expires_at) > new Date(),
-                      ).length
-                    }{" "}
-                    active devices
-                  </strong>
-                  <small>
-                    {state.users.filter((row) => row.active).length} active
-                    members
-                  </small>
-                </article>
-              </div>
-              <section className="panel padded">
-                <h3>Item enrichment</h3>
-                {state.enrichment.name_coverage && (
-                  <p>
-                    <strong>
-                      {state.enrichment.name_coverage.percent ?? 0}% names
-                      resolved
-                    </strong>{" "}
-                    across{" "}
-                    {state.enrichment.name_coverage.item_ids.toLocaleString()}{" "}
-                    current item IDs ·{" "}
-                    {state.enrichment.name_coverage.primary_names.toLocaleString()}{" "}
-                    Blizzard ·{" "}
-                    {state.enrichment.name_coverage.supplemental_names.toLocaleString()}{" "}
-                    attributed supplemental ·{" "}
-                    {state.enrichment.name_coverage.unresolved.toLocaleString()}{" "}
-                    unresolved.
-                  </p>
-                )}
-                <p>
-                  {state.enrichment.rich_items.toLocaleString()} items with base
-                  attributes ·{" "}
-                  {state.enrichment.community_items.toLocaleString()} separately
-                  attributed community records.
-                </p>
-                <p>
-                  Community fallback{" "}
-                  {state.enrichment.community_enabled ? "enabled" : "disabled"}.
-                  Artwork cache limit{" "}
-                  {bytes(state.enrichment.icon_cache_budget_bytes)}.
-                </p>
-                <DataTable label="icon cache states" data={state.enrichment.icon_states} getRowId={row=>row.status} columns={[
-                  {accessorKey:"status",header:"Cache status"},{accessorKey:"count",header:"Icons",meta:{numeric:true},cell:({row})=>row.original.count.toLocaleString()},
-                  {accessorKey:"bytes",header:"Allocation",meta:{numeric:true},cell:({row})=>bytes(row.original.bytes)},
-                ]}/>
-                <details>
-                  <summary>Recent artwork failures</summary>
-                  <DataTable<MetadataFailure>
-                    label="artwork failures"
-                    data={state.enrichment.media_failures}
-                    getRowId={row=>`${row.region}-${row.item_id}`}
-                    columns={[
-                      {
-                        accessorKey: "item_id",
-                        header: "Item ID",
-                        enableHiding: false,
-                      },
-                      { accessorKey: "region", header: "Region" },
-                      { accessorKey: "status", header: "Status" },
-                      { accessorKey: "http_status", header: "HTTP" },
-                      {
-                        accessorKey: "retry_after",
-                        header: "Next attempt",
-                        cell: ({ row }) => <LocalTime value={row.original.retry_after}/>,
-                      },
-                    ]}
-                  />
-                </details>
-                <h3>Collection readiness</h3>
-                {!markets.length ? (
-                  <p>
-                    No markets configured. Add a mapping under Markets &
-                    schedules.
-                  </p>
-                ) : (
-                  <DataTable<Market> label="collection readiness" data={markets} getRowId={row=>String(row.id)} columns={[
-                    {accessorKey:"label",header:"Market",enableHiding:false},
-                    {id:"mapping",header:"Mapping",accessorFn:row=>row.verified?"Verified":"Verification pending"},
-                    {id:"schedule",header:"Collection",accessorFn:row=>row.enabled?"Scheduled":"Disabled"},
-                    {accessorKey:"last_success",header:"Last successful check",cell:({row})=><LocalTime value={row.original.last_success}/>},
-                    {accessorKey:"last_error",header:"Recent failure",cell:({row})=>row.original.last_error||"None"},
-                  ]}/>
-                )}
-                <p className="notice">
-                  Historical retention is configurable under Storage & backups.
-                  Proposed policies require explicit owner approval before
-                  destructive application.
-                </p>
-              </section>
-            </>
-          )}
+          {tab === "overview" && <AdministrationOverview storage={state.storage} coverage={state.coverage} devices={state.deviceSummary} markets={markets} open={setTab}/>}
           {tab === "members" && (
             <>
               <section className="panel padded">
                 <h3>Members</h3>
+                <p className="small muted">Disabled accounts remain listed. Archiving hides an account and retains its audit and owned records. Restoring a listing does not restore access.</p>
+                <label className="checkbox"><input type="checkbox" checked={includeArchived} onChange={e => setIncludeArchived(e.target.checked)}/>Include archived accounts</label>
                 <DataTable<User>
                   label="members"
-                  filters={[{id:"role",label:"Filter member role",options:[{value:"admin",label:"Administrator"},{value:"member",label:"Member"}]},{id:"status",label:"Filter member status",options:[{value:"Active",label:"Active"},{value:"Disabled",label:"Disabled"}]}]}
+                  filters={[{id:"role",label:"Filter member role",options:[{value:"admin",label:"Administrator"},{value:"member",label:"Member"}]},{id:"status",label:"Filter member status",options:[{value:"Active",label:"Active"},{value:"Disabled",label:"Disabled"},{value:"Archived",label:"Archived"}]}]}
                   data={state.users}
                   getRowId={(row) => String(row.id)}
                   columns={[
@@ -572,7 +457,7 @@ export function Administration({
                         <select
                           aria-label={`Role for ${row.original.username}`}
                           value={row.original.role}
-                          disabled={busy || row.original.id === user.id}
+                          disabled={busy || row.original.id === user.id || Boolean(row.original.archived_at)}
                           onChange={(event) =>
                             action(async () => {
                               await api(
@@ -595,7 +480,7 @@ export function Administration({
                     {
                       id: "status",
                       header: "Status",
-                      accessorFn: (row) => (row.active ? "Active" : "Disabled"),
+                      accessorFn: (row) => (row.archived_at ? "Archived" : row.active ? "Active" : "Disabled"),
                     },
                     {
                       id: "action",
@@ -604,7 +489,7 @@ export function Administration({
                       cell: ({ row }) => (
                         <button
                           className="secondary"
-                          disabled={busy || row.original.id === user.id}
+                          disabled={busy || row.original.id === user.id || Boolean(row.original.archived_at)}
                           onClick={() =>
                             action(async () => {
                               await api(
@@ -625,6 +510,7 @@ export function Administration({
                         </button>
                       ),
                     },
+                    {id:"archive",header:"Listing",enableSorting:false,cell:({row}) => <MemberArchive member={row.original} disabled={busy || row.original.id === user.id} run={action}/>},
                   ]}
                 />
               </section>
@@ -707,6 +593,7 @@ export function Administration({
           {tab === "collection" && <CollectionHistory markets={markets}/>}
           {tab === "storage" && (
             <>
+              <DatabaseGrowth samples={state.storage.growth.samples} current={state.storage.database_bytes}/>
               <RetentionControls readOnly={readOnly} />
               <section className="panel padded">
                 <h3>Database & historical retention</h3>

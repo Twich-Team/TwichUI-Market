@@ -676,7 +676,22 @@ mod tests {
                 .0,
             g2
         );
-        rollback(&c).unwrap();
+        let restored = restore_previous(temp.path(), &c).unwrap();
+        assert_eq!(
+            restored.published_generation,
+            g["generation_id"].as_str().map(str::to_owned)
+        );
+        assert!(restored.loaded_game_generation.is_none());
+        assert_eq!(
+            status_for(temp.path(), &c).unwrap().published_generation,
+            restored.published_generation
+        );
+        let mut other = c.clone();
+        other.installation = temp.path().join("Other-Forever");
+        assert!(status_for(temp.path(), &other)
+            .unwrap()
+            .published_generation
+            .is_none());
         assert_eq!(fs::read(&data).unwrap(), before);
         let toc = data.parent().unwrap().join("TwichUI_MarketData.toc");
         fs::write(&toc, b"unknown TOC").unwrap();

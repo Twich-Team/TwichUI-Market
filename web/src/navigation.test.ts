@@ -32,3 +32,9 @@ describe('private transient restoration',()=>{
  it('retains a bounded origin entry and clears optional state on account change',()=>{const history=browser();setQueryIdentity('one:member');saveRestoration({focus:'catalogue-item-25',expanded:{25:true},draft:'cloth'});expect(restoration()).toMatchObject({scroll:120,draft:'cloth',focus:'catalogue-item-25',expanded:{25:true}});navigate(itemUrl(2,25));expect(history.state.marketOrigin).toBe('/?market=2');setQueryIdentity('two:member');expect(restoration()).toBeUndefined();});
  it('clears optional state on logout while retaining the direct URL',()=>{browser();saveRestoration({draft:'cloth'});clearPrivateCache();expect(restoration()).toBeUndefined();expect(location.search).toBe('?market=2');});
 });
+
+it('round trips bounded intraday ranges independently of stored daily preferences',()=>{
+ expect(parseRoute('/markets/2/items/25','?hours=24')).toMatchObject({kind:'item',hours:24});
+ expect(parseRoute('/markets/2/items/25','?hours=48&days=60')).toMatchObject({kind:'item',hours:48,days:60});
+ expect(parseRoute('/markets/2/items/25','?hours=9999')).not.toHaveProperty('hours');
+});

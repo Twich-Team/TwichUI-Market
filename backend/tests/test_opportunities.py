@@ -82,3 +82,19 @@ def test_zero_copper_reference_and_future_source_timestamp_fail_conservatively(o
     assert owner.get(f'/api/v1/markets/{market_id}/deals').json()['deals']==[]
     assert owner.get(f'/api/v1/markets/{market_id}/signals?kind=price').json()['signals']==[]
     assert owner.get('/api/v1/markets').json()['markets'][0]['freshness']=='unknown'
+
+
+def test_opportunity_icons_are_delivered_without_tooltip_requests(owner, database):
+    from market.models import ItemMedia
+    market = seed(database)
+    with database.begin() as db:
+        db.add(ItemMedia(region='eu', item_id=12363, status='available', asset_hash='a'*64,
+                         data=b'synthetic-only', byte_count=14, content_type='image/png'))
+        # The same ID from a different edition/region must never replace its local URL.
+        db.add(ItemMedia(region='us', item_id=12363, status='available', asset_hash='b'*64))
+    for path, key in [('deals','deals'),('signals?kind=price','signals'),('signals?kind=supply','signals')]:
+        data = owner.get(f'/api/v1/markets/{market}/{path}').json()
+        assert data[key][0]['icon_url'] == '/api/v1/items/eu/12363/icon?v='+'a'*64
+    with database.begin() as db:
+        db.get(ItemMedia, ('eu',12363)).asset_hash = None
+    assert owner.get(f'/api/v1/markets/{market}/deals').json()['deals'][0]['icon_url'] is None

@@ -4719,7 +4719,7 @@ checksum = "e421abadd41a4225275504ea4d6566923418b7f05506fbc9c0fe86ba7396114b"
 
 [[package]]
 name = "twichui-market-companion"
-version = "2.0.0-beta.4"
+version = "2.0.0-beta.5"
 dependencies = [
  "chrono",
  "serde",
@@ -4738,7 +4738,7 @@ dependencies = [
 
 [[package]]
 name = "twichui-market-core"
-version = "2.0.0-beta.4"
+version = "2.0.0-beta.5"
 dependencies = [
  "base64 0.22.1",
  "chrono",

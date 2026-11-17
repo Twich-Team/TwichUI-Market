@@ -29,7 +29,8 @@ command+=['local-api','python','-']
 program='''
 import os
 from sqlalchemy import select,update
-from market.db import Session
+from market.db import Session, engine
+assert engine.url.database == "market_test", "Test accounts are allowed only in disposable market_test; use read-only diagnostics for production"
 from market.models import User,Credential,SecurityEvent
 from market.security import hasher
 with Session.begin() as db:

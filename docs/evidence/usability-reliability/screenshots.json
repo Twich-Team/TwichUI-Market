@@ -1,0 +1,24 @@
+{
+  "source": "Actual Chromium against disposable synthetic market_test; never production observations",
+  "sha256": {
+    "administration-overview.png": "e0b3f82ce136149a8d6135974840d9df14f8ca2cf49b812ea6db4b58e8c3c0a6",
+    "compact-explorer.png": "bcb14280a7d4501a64a254dd4097ce9e4911ec1fd8e564c3750a5c26193a90fe",
+    "current-listings-freshness.png": "1989103ce9180c939c2745d867196ded36df1a060e599cbdde11c1650aec0b4d",
+    "database-growth.png": "ab0a0a5d1789cfbafc56a8d4abc08786b9e3d9a86461323209084a7c4105aed3",
+    "deal-icons-mobile.png": "7933c9b1d2ebd9128fe22e3ef7907452269d2983f6394d46d9ec6a0297c260cf",
+    "deal-icons-no-hover.png": "0f1067cda244098df940b834f8739c9ca8589b031a1dafec358320f9d411143c",
+    "device-archive-confirmation.png": "e0728d906ab20b7ee917c1b3c6ea0dcd412563836830deef68e151cdf2904403",
+    "intraday-mobile.png": "13442fbb642ba6c499879e7e13c153e8ac8973c33fc1878468e040e96a5a12b6",
+    "item-summary-tooltip.png": "c0244a81d793469ca034509f0e625230811d8c8d3e2d647ca8997cd9ac572e64",
+    "loading-administration.png": "87d546209727ddafc5f93928488efbc92c155724d1148870f3bcc43997682605",
+    "loading-catalogue.png": "e315895bde7ff0ce806524a333052bf376a6f97e71bef628cd2461d02aab10e5",
+    "m1-overview.png": "bc353c5efbbb4bfd305973cb84c9bab18c4947a4249d829dfb32ac0d4b9f2aad",
+    "member-archive-confirmation.png": "84ab0c1d7d4045bdb53e12e47e732517cbcf70a58251b425cb0939254b3153b4",
+    "metadata-summary.png": "30773e17b80e1a8ae26e831624253c4256c98bda3342b73838df9c5530a8054c",
+    "price-history-24h.png": "b31e175990c59fe1cc7742a0fe1fe076a6dfe86788b15be804a63619d368aeea",
+    "price-history-48h.png": "16fbcfb29e2684bc42867efec1e82f0b69eb81e9c86649ce2c9178cb1cb8c3a1",
+    "provider-coverage.png": "f5f2c8bebb5995c8cccda8ab6c69831de25666e2fb76fb11f16e13f31deaeccb",
+    "storage-mobile.png": "1252b647e1176a2c1669c857e0ec75629f65f29454fd2b76126fd03f019d7ba7",
+    "companion-update-notice.png": "f97299c612572e1aa22b37966c3a6d130d7d4d0c531c9888c5baa27954941779"
+  }
+}

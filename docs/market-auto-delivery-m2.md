@@ -52,7 +52,7 @@ rather than deleting files. Locked, denied and full-disk failures retain recover
 | Component | Requirement |
 |---|---|
 | Server | L2 archive protocol 1 / evidence revision 1; bridge contract 1 |
-| Companion | M2 2.0.0-beta.4 candidate; existing device credentials/updater trust retained |
+| Companion | M2 2.0.0-beta.5 candidate; existing device credentials/updater trust retained |
 | Workshop | M2 installed consumer capability 1, schema 3, transport 1, 2/3 MiB limits |
 | Payload | Unchanged generation schema 3, selection contract 1, receipt schema 1 |
 
@@ -106,3 +106,5 @@ signing key is accessed, and no deployment/game installation is claimed. The pil
 Formal L4, actual game-running behavior, antivirus/power/crash/restart and signed owner upgrade evidence
 remain open. Next Advisor milestone: a separate source-qualified lightweight summary index with its
 competition safeguards; no universal summary runtime is implemented in M2.
+
+Reconciled with concurrently approved integration b3ef86411ef23331a059aea113485abbcd3e0019. Its signed beta.4 identity and usability/update-notice work are preserved; M2 is a distinct beta.5 candidate. The 106 changed upstream text files were reconstructed from GitHub diffs and matched their Git blob SHA-1 values before three-way merging. The only content conflict was the two plan introductions; both were retained. Binary upstream evidence is not modified. Repository upload approval is now explicitly granted. Final source CI and integration follow this history-preserving merge.

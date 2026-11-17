@@ -1,3 +1,4 @@
+import { Loading } from "./loading";
 import { Fragment, ReactNode, useEffect, useId, useMemo, useState } from "react";
 import {
   ColumnDef,
@@ -196,6 +197,7 @@ export function DataTable<T>({
             ))}
           </thead>
           <tbody>
+            {loading && !data.length && <tr aria-hidden="true"><td colSpan={table.getVisibleLeafColumns().length+(renderDetails?1:0)}><div className="loading-skeleton"><span/><span/><span/></div></td></tr>}
             {table.getRowModel().rows.map((row) => (
               <Fragment key={row.id}><tr>
                 {renderDetails && <td><button aria-label={`${expanded[row.id] ? "Hide" : "Show"} details for ${label} ${row.id}`} aria-expanded={!!expanded[row.id]} aria-controls={`${tableId}-${row.id}`} onClick={() => setExpanded(value => ({ ...value, [row.id]: !value[row.id] }))}>{expanded[row.id] ? "−" : "+"}</button></td>}
@@ -218,7 +220,7 @@ export function DataTable<T>({
           </tbody>
         </table>
       </div>
-      {loading && <p role="status">Loading {label}…</p>}
+      {loading && <Loading label={`Loading ${label}…`} inline/>}
       {error && <p className="notice error" role="alert">{error}</p>}
       {!loading && !error && !table.getRowModel().rows.length && (
         <p className="empty">{emptyMessage}</p>

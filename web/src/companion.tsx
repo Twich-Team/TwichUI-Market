@@ -1,3 +1,5 @@
+import { Loading } from "./loading";
+import { formatBytes } from "./size";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api, ApiError, User, when } from "./api";
@@ -167,7 +169,7 @@ export function CompanionSetup({ user }: { user: User }) {
                 No GitHub account is needed.
               </p>
               {release.isPending ? (
-                <p role="status">Checking the current release…</p>
+                <Loading label="Checking the current release…"/>
               ) : release.error ? (
                 <div className="notice error" role="alert">
                   <p>Download information is unavailable. Please try again.</p>
@@ -190,7 +192,7 @@ export function CompanionSetup({ user }: { user: User }) {
                   </a>
                   <p className="small muted">
                     Version {release.data?.version} · Windows 10/11, 64-bit ·{" "}
-                    {((release.data?.bytes || 0) / 1048576).toFixed(1)} MiB
+                    {formatBytes(release.data?.bytes)}
                   </p>
                   <p className="small muted">
                     Published {when(release.data?.published_at)}. The installer
@@ -210,7 +212,7 @@ export function CompanionSetup({ user }: { user: User }) {
                   <a className="primary companion-download" href={betaUrl} download onClick={() => step(1)}>
                     Download private beta <span aria-hidden="true">↓</span>
                   </a>
-                  <p className="small muted">Version {beta?.version} · Windows 10/11, 64-bit · {((beta?.bytes || 0) / 1048576).toFixed(1)} MiB</p>
+                  <p className="small muted">Version {beta?.version} · Windows 10/11, 64-bit · {formatBytes(beta?.bytes)}</p>
                   <details>
                     <summary>Download integrity and Windows warnings</summary>
                     <p>Download only from market.twich.gg and compare the SHA-256 below. If SmartScreen offers More info, review the app and choose Run anyway only when you trust this exact download. If Windows blocks it without that option, stop and report the message. Keep Windows security protections enabled.</p>

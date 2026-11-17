@@ -8,7 +8,7 @@ export function SecurityHistory() {
   const page=useRecordPage<SecurityRecord>("security",{q:search,category},"created_at");
   return <section className="panel padded"><h3>Security events</h3><p className="small muted">Server-filtered audit history. Reference details remain redacted.</p>
     <div className="toolbar"><label>Search account or event<input type="search" value={search} maxLength={64} onChange={e=>{setSearch(e.target.value);page.reset();}}/></label><label>Event category<select value={category} onChange={e=>{setCategory(e.target.value);page.reset();}}><option value="">All categories</option>{["auth","user","device","companion","metadata","retention","market","invitation"].map(value=><option key={value} value={value}>{value}</option>)}</select></label></div>
-    <DataTable<SecurityRecord> label="security events" data={page.query.data?.rows||[]} server={page.server} loading={page.query.isPending} error={page.query.error?.message} getRowId={row=>String(row.id)} columns={[
+    <DataTable<SecurityRecord> label="security events" data={page.query.data?.rows||[]} server={page.server} loading={page.query.isFetching} error={page.query.error?.message} getRowId={row=>String(row.id)} columns={[
       {id:"created_at",accessorKey:"at",header:"Timestamp",enableHiding:false,cell:({row})=><LocalTime value={row.original.at}/>},
       {accessorKey:"action",header:"Event category",cell:({row})=>row.original.action.replaceAll("."," ").replaceAll("_"," ")},
       {accessorKey:"actor_id",header:"Account",cell:({row})=>row.original.account||"System / unauthenticated"},
@@ -21,7 +21,7 @@ export function CollectionHistory({markets}:{markets:Market[]}) {
   const [market,setMarket]=useState(""),[status,setStatus]=useState("");
   const page=useRecordPage<Run>("collection",{...(market?{market_id:market}:{}),status},"checked_at");
   return <section className="panel padded"><h3>Collection checks</h3><div className="toolbar"><label>Collection market<select value={market} onChange={e=>{setMarket(e.target.value);page.reset();}}><option value="">All markets</option>{markets.map(row=><option key={row.id} value={row.id}>{row.label}</option>)}</select></label><label>Collection outcome<select value={status} onChange={e=>{setStatus(e.target.value);page.reset();}}><option value="">All outcomes</option><option value="failures">Failures only</option><option value="collected">Collected new snapshot</option><option value="unchanged">Unchanged</option></select></label></div>
-    <DataTable<Run> label="collection checks" data={page.query.data?.rows||[]} server={page.server} loading={page.query.isPending} error={page.query.error?.message} getRowId={row=>String(row.id)} columns={[
+    <DataTable<Run> label="collection checks" data={page.query.data?.rows||[]} server={page.server} loading={page.query.isFetching} error={page.query.error?.message} getRowId={row=>String(row.id)} columns={[
       {accessorKey:"market_id",header:"Market",enableHiding:false,cell:({row})=>markets.find(m=>m.id===row.original.market_id)?.label||`#${row.original.market_id}`},
       {accessorKey:"checked_at",header:"Checked",cell:({row})=><LocalTime value={row.original.checked_at}/>},
       {accessorKey:"status",header:"Result",cell:({row})=><Status tone={row.original.error||row.original.status==="failed"?"error":"neutral"}>{row.original.status.replaceAll("_"," ")}</Status>},

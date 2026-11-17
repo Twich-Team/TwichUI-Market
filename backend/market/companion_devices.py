@@ -1,9 +1,10 @@
 """Owned native device metadata/bootstrap; no token exposure or collection mutations."""
+from datetime import timedelta
 from email.utils import parsedate_to_datetime
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Path, Request
 from pydantic import Field, field_validator
-from sqlalchemy import select, update
+from sqlalchemy import select, update, func, case
 from sqlalchemy.orm import Session
 
 from .companion_auth import AppVersion, Strict, _revoke, display_name
@@ -51,7 +52,8 @@ def device_view(db, device):
             'renewal_expires_at': stamp(device.refresh_expires_at),
             'last_connection_at': stamp(device.last_connection_at), 'last_sync_at': stamp(device.last_sync_at),
             'selected_market_id': device.selected_market_id,
-            'selected_market_name': market.label if market else None, 'revoked': device.revoked}
+            'selected_market_name': market.label if market else None, 'revoked': device.revoked,
+            'archived_at': stamp(device.archived_at)}
 
 
 def paired(request):
@@ -132,8 +134,8 @@ def record_sync(db, request, market_id, observation_id, completed):
 
 
 @router.get('/devices')
-def devices(user: User = Depends(browser_member), db: Session = Depends(session)):
-    rows = list(db.scalars(select(CompanionDevice).where(CompanionDevice.user_id == user.id)
+def devices(include_archived: bool = False, user: User = Depends(browser_member), db: Session = Depends(session)):
+    rows = list(db.scalars(select(CompanionDevice).where(CompanionDevice.user_id == user.id, True if include_archived else CompanionDevice.archived_at.is_(None))
         .order_by(CompanionDevice.revoked, CompanionDevice.expires_at.desc(), CompanionDevice.id.desc()).limit(200)))
     legacy = list(db.scalars(select(Credential).where(Credential.user_id == user.id,
         Credential.kind == 'device', Credential.companion_device_id.is_(None))
@@ -178,8 +180,8 @@ def revoke_self(request: Request, user: User = Depends(identity), db: Session = 
 
 
 @router.get('/admin/devices')
-def admin_devices(user: User = Depends(admin), db: Session = Depends(session)):
-    return {'devices': [device_view(db, row) for row in db.scalars(select(CompanionDevice).order_by(CompanionDevice.id.desc()).limit(200))]}
+def admin_devices(include_archived: bool = False, user: User = Depends(admin), db: Session = Depends(session)):
+    return {'devices': [device_view(db, row) for row in db.scalars(select(CompanionDevice).where(True if include_archived else CompanionDevice.archived_at.is_(None)).order_by(CompanionDevice.id.desc()).limit(200))]}
 
 
 @router.delete('/admin/devices/{device_id}', status_code=204)
@@ -189,3 +191,71 @@ def admin_revoke(device_id: DeviceId, user: User = Depends(admin), db: Session =
         raise HTTPException(404, 'Desktop connection not found')
     _revoke(db, device, 'administrator_revocation', actor_id=user.id)
     db.commit()
+
+
+class ArchiveDevice(Strict):
+    confirmation: Annotated[str, Field(min_length=1, max_length=80)]
+
+
+def archive_device(db, device, user, body):
+    if body.confirmation != device.name:
+        raise HTTPException(409, 'Type the exact device name to confirm archival')
+    if not device.revoked:
+        raise HTTPException(409, 'Revoke access before archiving this entry')
+    device.archived_at = device.archived_at or now()
+    audit(db, user.id, 'companion.device.archived', f'device={device.id}; security evidence retained')
+    db.commit()
+    return device_view(db, device)
+
+
+@router.post('/devices/{device_id}/archive')
+def archive_owned(device_id: DeviceId, body: ArchiveDevice, user: User = Depends(browser_member), db: Session = Depends(session)):
+    return archive_device(db, owned(db, user, device_id), user, body)
+
+
+@router.post('/admin/devices/{device_id}/archive')
+def archive_admin(device_id: DeviceId, body: ArchiveDevice, user: User = Depends(admin), db: Session = Depends(session)):
+    device = db.get(CompanionDevice, device_id)
+    if device is None:
+        raise HTTPException(404, 'Desktop connection not found')
+    return archive_device(db, device, user, body)
+
+
+@router.post('/devices/{device_id}/restore')
+def restore_owned(device_id: DeviceId, user: User = Depends(browser_member), db: Session = Depends(session)):
+    device = owned(db, user, device_id)
+    device.archived_at = None
+    audit(db, user.id, 'companion.device.archive.restored', f'device={device.id}; access remains revoked')
+    db.commit()
+    return device_view(db, device)
+
+
+@router.get('/admin/device-summary')
+def device_summary(user: User = Depends(admin), db: Session = Depends(session)):
+    # Count logical registrations, excluding rotated access tokens and sessions.
+    # A recent authenticated request proves recent activity, never a live socket.
+    at = now()
+    recent = at - timedelta(minutes=15)
+    c = CompanionDevice
+    base = select(c.id, c.name, c.revoked, c.expires_at, c.refresh_expires_at.label('renewal'),
+                  c.last_connection_at.label('last_seen'), User.active).join(User, User.id == c.user_id)
+    native = base.subquery()
+    legacy = select(Credential.id, Credential.name, Credential.revoked, Credential.expires_at,
+                    Credential.expires_at.label('renewal'), User.active).join(User, User.id == Credential.user_id).where(
+                        Credential.kind == 'device', Credential.companion_device_id.is_(None)).subquery()
+    def counts(table):
+        authorized = (~table.c.revoked) & table.c.active & (table.c.expires_at > at) & (table.c.renewal > at)
+        expired = (~table.c.revoked) & ((table.c.expires_at <= at) | (table.c.renewal <= at) | (~table.c.active))
+        def count(predicate):
+            return func.coalesce(func.sum(case((predicate, 1), else_=0)), 0)
+        result = db.execute(select(count(authorized), count(table.c.revoked), count(expired))).one()
+        return {'authorized': result[0], 'revoked': result[1], 'expired': result[2]}
+    native_counts, legacy_counts = counts(native), counts(legacy)
+    authorized = (~native.c.revoked) & native.c.active & (native.c.expires_at > at) & (native.c.renewal > at)
+    recently = db.scalar(select(func.count()).select_from(native).where(authorized, native.c.last_seen >= recent))
+    return {**{key: native_counts[key]+legacy_counts[key] for key in native_counts},
+            'companion': native_counts, 'legacy': legacy_counts,
+            'recently_connected': recently, 'recent_window_minutes': 15,
+            'currently_connected': None, 'live_status': 'No continuous heartbeat; recent requests do not prove online status.',
+            'authorized_names': list(db.scalars(select(native.c.name).where(authorized).order_by(native.c.id).limit(5))),
+            'as_of': at}
