@@ -254,7 +254,7 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
               key={key}
               className={page === key || (page === "item" && key === "explorer") ? "active" : ""}
               aria-current={page === key || (page === "item" && key === "explorer") ? "page" : undefined}
-              onClick={() => {setMenuOpen(false);setPage(key);}}
+              onClick={() => {setMenuOpen(false);if(page===key)menuButton.current?.focus();setPage(key);}}
             >
               {names[key]}
             </button>

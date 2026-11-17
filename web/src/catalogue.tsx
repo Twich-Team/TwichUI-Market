@@ -242,7 +242,6 @@ export function ItemCatalogue({market,query,state,onChange,onSummary}: {
         <button className="icon-button" aria-label="Refresh catalogue" title="Refresh catalogue" disabled={response.isFetching} onClick={()=>response.refetch()}>{response.isFetching&&data?.items.length ? <Loading compact label="Refreshing item catalogue…"/> : <span aria-hidden="true">↻</span>}</button>
       </div>
       <p role="status" aria-live="polite" className="sr-only">{response.isFetching ? "Loading item catalogue…" : response.error ? "Catalogue update failed." : `Catalogue page ${data?.page != null ? data!.page+1 : 1} loaded.`}</p>
-      {response.isFetching && !data?.items.length && <Loading label="Loading item catalogue…" skeleton/>}
       {clamped && <p role="status" className="notice">The live results changed. Your saved page was moved to the last available page.</p>}
       {response.error && <p role="alert" className="notice error">{response.error.message} <button onClick={()=>response.refetch()}>Retry catalogue</button></p>}
       {compact ? <>
@@ -253,6 +252,7 @@ export function ItemCatalogue({market,query,state,onChange,onSummary}: {
           <button className="secondary" aria-label={`Sort direction: ${sort.desc ? "descending" : "ascending"}`} onClick={()=>table.setSorting([{id:sort.id,desc:!sort.desc}])}>{sort.desc ? "Descending ↓" : "Ascending ↑"}</button>
         </div>
         <div className={`mobile-catalogue ${response.isFetching ? "catalogue-loading" : ""}`}>
+          {response.isFetching && !data?.items.length && <Loading label="Loading item catalogue…" skeleton/>}
           {table.getRowModel().rows.map(({original:item})=><article className="mobile-item" key={item.item_id}>
             <div className="mobile-item-heading">
               <ItemInfo market={market} item={item} ranges={item.variant_count>1 ? item.price_ranges : undefined}/>
@@ -273,6 +273,7 @@ export function ItemCatalogue({market,query,state,onChange,onSummary}: {
         role="region"
         aria-label="Scrollable item catalogue"
       >
+        {response.isFetching && !data?.items.length && <Loading label="Loading item catalogue…" skeleton/>}
         <table className="catalogue-table">
           <caption className="sr-only">
             Select an item to inspect its details. Expand multiple variants

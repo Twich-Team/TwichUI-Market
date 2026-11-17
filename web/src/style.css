@@ -1824,3 +1824,42 @@ a.secondary { display:inline-block; padding:10px 14px; border:1px solid var(--bo
   .stats { grid-template-columns:minmax(0,1fr); }
 }
 @media(prefers-reduced-motion:reduce) { .catalogue-scroll { transition:none; } }
+
+/* Dense records retain their columns inside an explicitly labelled scroll region. */
+.table-scroll-hint { display:none; }
+@media(max-width:800px) {
+  .admin-tabs { display:flex; flex-wrap:wrap; gap:6px; overflow:visible; }
+  .admin-tabs button { white-space:normal; min-height:44px; padding:8px 10px; }
+  .managed-table,.managed-table-controls,.record-filters,.form-grid > *, .metadata-provider-grid > *, .coverage-grid > * { min-width:0; }
+  .managed-table-controls,.record-filters { display:flex; flex-wrap:wrap; gap:10px; }
+  .managed-table-controls label,.record-filters label { min-width:0; flex:1 1 160px; max-width:100%; }
+  .managed-table-controls input,.managed-table-controls select,.record-filters input,.record-filters select { width:100%; min-width:0; }
+  .managed-table-controls button { min-height:44px; }
+  .table-scroll-hint { display:block; margin:8px 0; color:var(--muted); font-size:12px; }
+  .table-scroll { overscroll-behavior-x:contain; scroll-padding:12px; }
+  .managed-table .table-scroll { border:1px solid var(--edge); }
+  .managed-table td button,.managed-table td a.secondary { min-height:44px; margin:4px; }
+  .managed-table .table-pagination { display:grid; }
+  .record-details dd,.metadata-facts dd { min-width:0; overflow-wrap:anywhere; }
+  .schedule,.inline-actions,.record-actions,.panel-heading { flex-wrap:wrap; }
+  .confirmation-dialog { scroll-padding-block:20px; padding:16px; }
+}
+@media(max-width:700px) {
+  .variant-panel thead { display:table-header-group; position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+  .mobile-item-prices .currency > span[aria-hidden] { flex-wrap:wrap; }
+  .mobile-item-prices .currency-part { white-space:normal; overflow-wrap:anywhere; }
+}
+@media(max-width:800px) {
+  .toolbar label { min-width:0; }
+  .toolbar select { min-width:0; width:100%; }
+}
+.mobile-admin-section { display:none; }
+@media(max-width:700px) {
+  .mobile-admin-section { display:grid; margin:14px 0 20px; }
+  .mobile-admin-section select { width:100%; min-width:0; }
+  .mobile-admin-section + .admin-tabs { display:none; }
+}
+@media(max-width:700px) {
+  .mobile-item-heading .select-item { min-height:44px; display:flex; align-items:center; }
+  .catalogue-toolbar .icon-button { min-width:44px; min-height:44px; }
+}
