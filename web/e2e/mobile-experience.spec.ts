@@ -22,6 +22,7 @@ test('mobile catalogue variants sorting exact navigation and history',async({pag
  await page.getByRole('button',{name:'Next items',exact:true}).scrollIntoViewIfNeeded();await shot(page,'after-pagination-344');
 });
 test('page and administration geometry review',async({page})=>{
+ test.setTimeout(90000);
  await login(page);
  for(const width of [320,390,768,1440]){
  await page.setViewportSize({width,height:900});

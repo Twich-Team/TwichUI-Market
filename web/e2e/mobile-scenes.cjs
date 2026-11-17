@@ -1,7 +1,7 @@
 const {chromium}=require('playwright');const fs=require('node:fs');const {createHash}=require('node:crypto');
 (async()=>{
  const b=await chromium.launch({executablePath:process.env.CHROMIUM_PATH});const p=await b.newPage({viewport:{width:390,height:844},hasTouch:true});const out=require('node:path').resolve(__dirname,'../../artifacts/mobile-experience');
- await p.goto('http://127.0.0.1:5173');await p.getByLabel('Username',{exact:true}).fill('owner');await p.getByLabel('Password',{exact:true}).fill('synthetic browser owner password');await p.getByRole('button',{name:'Sign in',exact:true}).click();await p.locator('main h1').waitFor();
+ await p.goto('http://127.0.0.1:5173');await p.getByLabel('Username',{exact:true}).fill('owner');await p.getByLabel('Password',{exact:true}).fill('synthetic browser owner password');await p.getByRole('button',{name:'Sign in',exact:true}).click();await p.getByRole('heading',{name:'Market Explorer',exact:true}).waitFor();
  const result=await p.request.get('http://127.0.0.1:5173/api/v1/markets/1/catalogue/20000/variants');const key=(await result.json()).variants[0].variant_key;
  const auth=await p.request.post('http://127.0.0.1:5173/api/v1/companion/authorizations',{data:{client_id:'twichui-market-companion',redirect_uri:'http://127.0.0.1:43123/companion/callback',state:'S'.repeat(43),code_challenge:createHash('sha256').update('V'.repeat(43)).digest('base64url'),code_challenge_method:'S256',device_name:'Synthetic review computer',platform:'Windows',app_version:'2.0.0-beta.1'}});const approval=await auth.json();
  for(const [phase,port] of [['before',5176],['after',5173]]){
