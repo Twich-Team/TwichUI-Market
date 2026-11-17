@@ -1,0 +1,217 @@
+{
+  "format": "twichui-item-identity-corpus-u2",
+  "native_client_version": "1.60.1.70938 (source tree only)",
+  "coverage": {
+    "native_link_examples": 0,
+    "recorded_upstream_examples": 0,
+    "native_paired_equivalences": 0,
+    "production_approved_equivalences": 0
+  },
+  "sources": [
+    {
+      "repository": "Twich-Team/TwichUI-Market",
+      "commit": "230465e1adf7c13f40344cc073383031d4a55f8d",
+      "path": "backend/market/ingest.py",
+      "sha256": "057ac244be8ec33aa9ad4fd96102f17a5abd7c2078b4fedc2d80ca5b62921b6e",
+      "classification": "source_verified",
+      "proves": "source behavior/API shape only; no native descriptor equivalence"
+    },
+    {
+      "repository": "Twich-Team/TwichUI-Market",
+      "commit": "230465e1adf7c13f40344cc073383031d4a55f8d",
+      "path": "contracts/bridge/v1/validate.py",
+      "sha256": "50d001f6e27e1f0c7fc6a222b96bb5e80bac0d6f9555fd81f383d6c5607ce737",
+      "classification": "source_verified",
+      "proves": "source behavior/API shape only; no native descriptor equivalence"
+    },
+    {
+      "repository": "Twich-Team/TwichUI-Market",
+      "commit": "230465e1adf7c13f40344cc073383031d4a55f8d",
+      "path": "backend/market/market_configuration.py",
+      "sha256": "afa6cb38a0a626405ff66777363ff351db1838b17c9893f8e73f9b2b3c66cb7d",
+      "classification": "source_verified",
+      "proves": "source behavior/API shape only; no native descriptor equivalence"
+    },
+    {
+      "repository": "Twich-Team/TwichUI-Market",
+      "commit": "230465e1adf7c13f40344cc073383031d4a55f8d",
+      "path": "backend/market/bridge_api.py",
+      "sha256": "c9f3c2f0c29fe166b0d444ada4a64a934da684a1776d8a98462ae8d4d3621131",
+      "classification": "source_verified",
+      "proves": "source behavior/API shape only; no native descriptor equivalence"
+    },
+    {
+      "repository": "Twich-Team/TwichUI",
+      "commit": "36cdb04b35ca132650673463ecc09a0bbeadb6dc",
+      "path": "TwichUI_Workshop/Worth.lua",
+      "sha256": "e7d66d2b63b0420fd834802fe14047380bf706b787fc6c36c85e209aa8e49bfb",
+      "classification": "source_verified",
+      "proves": "source behavior/API shape only; no native descriptor equivalence"
+    },
+    {
+      "repository": "Twich-Team/TwichUI",
+      "commit": "36cdb04b35ca132650673463ecc09a0bbeadb6dc",
+      "path": "TwichUI_Workshop/auction/SellData.lua",
+      "sha256": "4b20e7c4f3f587a3b0306789a9fba6c7a6b88fc9910a9f4fb9df0e6cfd5d72ec",
+      "classification": "source_verified",
+      "proves": "source behavior/API shape only; no native descriptor equivalence"
+    },
+    {
+      "repository": "Twich-Team/TwichUI",
+      "commit": "36cdb04b35ca132650673463ecc09a0bbeadb6dc",
+      "path": "TwichUI_Workshop/auction/ReadRequests.lua",
+      "sha256": "f4e17162eef7834a7039eb3f1d79d874e31d53cc2c4f7c468ece4f3c4eaa8af3",
+      "classification": "source_verified",
+      "proves": "source behavior/API shape only; no native descriptor equivalence"
+    },
+    {
+      "repository": "Twich-Team/TwichUI",
+      "commit": "36cdb04b35ca132650673463ecc09a0bbeadb6dc",
+      "path": "TwichUI_Workshop/AdvisorData.lua",
+      "sha256": "815244a63887b13a4b53bb50728a259e7b0afcc1b45ac8f9689749a94f77fdfc",
+      "classification": "source_verified",
+      "proves": "source behavior/API shape only; no native descriptor equivalence"
+    },
+    {
+      "repository": "Twich-Team/TwichUI",
+      "commit": "36cdb04b35ca132650673463ecc09a0bbeadb6dc",
+      "path": "TwichUI_Workshop/Advisor.lua",
+      "sha256": "5e383d90bf8cc5ef224958967941f9efaf259f1fe6ccfb41bf76f02d04ad62bb",
+      "classification": "source_verified",
+      "proves": "source behavior/API shape only; no native descriptor equivalence"
+    },
+    {
+      "repository": "Twich-Team/TwichUI",
+      "commit": "36cdb04b35ca132650673463ecc09a0bbeadb6dc",
+      "path": "TwichUI_Workshop/MarketFacts.lua",
+      "sha256": "c513bf08f1096f60ae7aec217b491bdc3c8310120ee16da5a53acd48c05e2f93",
+      "classification": "source_verified",
+      "proves": "source behavior/API shape only; no native descriptor equivalence"
+    },
+    {
+      "repository": "Twich-Team/TwichUI",
+      "commit": "36cdb04b35ca132650673463ecc09a0bbeadb6dc",
+      "path": "TwichUI_Workshop/ServerMarket.lua",
+      "sha256": "e9b8fdf5726230534afb0de6d5ae56d19b1af08800752252063887baaf8b0de0",
+      "classification": "source_verified",
+      "proves": "source behavior/API shape only; no native descriptor equivalence"
+    },
+    {
+      "repository": "Twich-Team/TwichUI",
+      "commit": "36cdb04b35ca132650673463ecc09a0bbeadb6dc",
+      "path": "TwichUI_Workshop/Bridge.lua",
+      "sha256": "4c3fbb78157beaa95835b88da699616267541a50af0ce26258f30940b378610e",
+      "classification": "source_verified",
+      "proves": "source behavior/API shape only; no native descriptor equivalence"
+    },
+    {
+      "repository": "Twich-Team/TwichUI",
+      "commit": "36cdb04b35ca132650673463ecc09a0bbeadb6dc",
+      "path": "TwichUI_Workshop/Sell.lua",
+      "sha256": "5832b7304b046d14ac29480658c4d894894f9b1887e4c5cce0db0a8a01808cb1",
+      "classification": "source_verified",
+      "proves": "source behavior/API shape only; no native descriptor equivalence"
+    },
+    {
+      "repository": "local-read-only-Forever-UI",
+      "commit": "bebcb6bf309cf41b41bd74f8ca651e6a105b2676",
+      "path": "version.txt",
+      "sha256": "2341b29857364de5d7bf79957a6c228b9f87da9efd65f16e1e434a5376ff212d",
+      "classification": "source_verified",
+      "proves": "source behavior/API shape only; no native descriptor equivalence"
+    },
+    {
+      "repository": "local-read-only-Forever-UI",
+      "commit": "bebcb6bf309cf41b41bd74f8ca651e6a105b2676",
+      "path": "Interface/AddOns/Blizzard_SharedXML/LinkUtil.lua",
+      "sha256": "df40f2a7945a3ee0bbb41b711e45114a0f579389c65bb475db0455f579b0723e",
+      "classification": "source_verified",
+      "proves": "source behavior/API shape only; no native descriptor equivalence"
+    },
+    {
+      "repository": "local-read-only-Forever-UI",
+      "commit": "bebcb6bf309cf41b41bd74f8ca651e6a105b2676",
+      "path": "Interface/AddOns/Blizzard_APIDocumentationGenerated/ItemDocumentation.lua",
+      "sha256": "59c5dd2f70757cdb9bc4511cb0fafe6287bbfb51d58a7389097dcbb485785af0",
+      "classification": "source_verified",
+      "proves": "source behavior/API shape only; no native descriptor equivalence"
+    },
+    {
+      "repository": "local-read-only-Forever-UI",
+      "commit": "bebcb6bf309cf41b41bd74f8ca651e6a105b2676",
+      "path": "Interface/AddOns/Blizzard_APIDocumentationGenerated/ContainerDocumentation.lua",
+      "sha256": "dd3e4741d45720384f814d3f78ce975dab3951458ae894e728ed3aedc8ae56b3",
+      "classification": "source_verified",
+      "proves": "source behavior/API shape only; no native descriptor equivalence"
+    },
+    {
+      "repository": "local-read-only-Forever-UI",
+      "commit": "bebcb6bf309cf41b41bd74f8ca651e6a105b2676",
+      "path": "Interface/AddOns/Blizzard_APIDocumentationGenerated/AuctionHouseDocumentation.lua",
+      "sha256": "d970632b8175ef98c07cd7876debdef2a29ca023a32063787f7796795cea2372",
+      "classification": "source_verified",
+      "proves": "source behavior/API shape only; no native descriptor equivalence"
+    }
+  ],
+  "existing_links": [
+    {
+      "id": "plain",
+      "link": "|cff1eff00|Hitem:1234:0:0:0:0:0:0:0:60|h[Plain]|h|r",
+      "classification": "repository_fixture",
+      "origin_synthetic": true,
+      "source": "Twich-Team/TwichUI@36cdb04:tests/test_workshop_worth.lua:115-120",
+      "native_observation": false
+    },
+    {
+      "id": "suffix",
+      "link": "|cff1eff00|Hitem:1234:0:0:0:0:0:-15|h[Cloak of the Bear]|h|r",
+      "classification": "repository_fixture",
+      "origin_synthetic": true,
+      "source": "Twich-Team/TwichUI@36cdb04:tests/test_workshop_worth.lua:115-120",
+      "native_observation": false
+    },
+    {
+      "id": "bonus",
+      "link": "item:1234:0:0:0:0:0:0:0:0:0:0:0:2:5001:5002",
+      "classification": "repository_fixture",
+      "origin_synthetic": true,
+      "source": "Twich-Team/TwichUI@36cdb04:tests/test_workshop_worth.lua:115-120",
+      "native_observation": false
+    },
+    {
+      "id": "incomplete",
+      "link": "item:1234",
+      "classification": "repository_fixture",
+      "origin_synthetic": true,
+      "source": "Twich-Team/TwichUI@36cdb04:tests/test_workshop_worth.lua:115-120",
+      "native_observation": false
+    }
+  ],
+  "upstream_hash_vectors": [
+    {
+      "item_id": 2,
+      "variant_key": "9e7e65453739bbc64ba155eed18a37bd5fb1196c7f29ded1da660b94414d7ad8",
+      "variant_json": "{\"id\":2}",
+      "identity_basis": "exact_upstream",
+      "classification": "repository_fixture",
+      "origin_synthetic": true,
+      "source": "contracts/bridge/v1/source-canonical-generation.json"
+    },
+    {
+      "item_id": 2589,
+      "variant_key": "684434823a7f7a1797ecda68d5bb5abef5ea13a18aefa5a26cccff8e1b813d51",
+      "variant_json": "{\"id\":2589}",
+      "identity_basis": "exact_upstream",
+      "classification": "repository_fixture",
+      "origin_synthetic": true,
+      "source": "contracts/bridge/v1/source-canonical-generation.json"
+    }
+  ],
+  "limitations": [
+    "Existing link and bridge examples are synthetic repository fixtures, not game recordings.",
+    "No observed Forever bag/link + auction ItemKey + corresponding full upstream item descriptor pair was available.",
+    "No proof equates signed itemSuffix/random-property fields to any upstream descriptor member.",
+    "No proof normalizes absent fields, bonus/modifier order, enchantments, gems or item-level context across formats.",
+    "Synthetic positive equivalences are constructed explicitly by tests and never included in a production trust registry."
+  ]
+}
