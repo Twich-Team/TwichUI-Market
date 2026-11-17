@@ -87,3 +87,30 @@ def test_archive_requires_admin_browser_and_csrf(owner, database):
     assert owner.post('/api/v1/admin/users/1/archive', headers=bearer(tokens), json={'confirmation':'owner'}).status_code == 403
     owner.headers.pop('x-csrf-token')
     assert owner.post('/api/v1/admin/users/1/archive', json={'confirmation':'owner'}).status_code == 403
+
+
+@pytest.mark.parametrize('operation', ['archive', 'update'])
+@pytest.mark.parametrize('lost_access', ['disabled', 'demoted'])
+def test_cached_administrator_cannot_remove_last_admin_after_concurrent_access_change(database, operation, lost_access):
+    from fastapi import HTTPException
+    from market.app import archive_member, update_user, ArchiveMember, UserUpdate
+    with database.begin() as seed:
+        target=User(username='remaining-admin', password_hash='fixture', role='admin')
+        seed.add(target);seed.flush();target_id=target.id
+    with database() as pending:
+        actor=pending.get(User,1)
+        pending.get(User,target_id)
+        # Simulate a request authenticated before another committed transaction.
+        # FOR UPDATE alone does not refresh an existing SQLAlchemy identity.
+        with database.begin() as concurrent:
+            changed=concurrent.get(User,1)
+            if lost_access=='disabled':changed.active=False
+            else:changed.role='member'
+        with pytest.raises(HTTPException) as error:
+            if operation=='archive':archive_member(target_id,ArchiveMember(confirmation='remaining-admin'),actor,pending)
+            else:update_user(target_id,UserUpdate(role='member',active=False),actor,pending)
+        assert error.value.status_code==403
+        pending.rollback()
+    with database() as check:
+        retained=check.get(User,target_id)
+        assert retained.active and retained.role=='admin' and retained.archived_at is None

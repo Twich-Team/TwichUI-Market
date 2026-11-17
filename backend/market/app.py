@@ -337,8 +337,13 @@ def all_devices(user: User = Depends(admin),db: Session = Depends(session)):
 @app.patch("/api/v1/admin/users/{user_id}")
 def update_user(user_id: int, body: UserUpdate, user: User = Depends(admin), db: Session = Depends(session)):
     # Serialize administrator changes to preserve at least one active administrator.
-    administrators = list(db.scalars(select(User).where(User.role == "admin").order_by(User.id).with_for_update()))
-    target = db.get(User, user_id)
+    administrators = list(db.scalars(select(User).where(User.role == "admin").order_by(User.id).with_for_update().execution_options(populate_existing=True)))
+    # Authentication may precede another administrator's committed access change.
+    # Refresh cached ORM identities after acquiring the administrator locks.
+    db.refresh(user)
+    if not user.active or user.role != 'admin' or user.archived_at is not None:
+        raise HTTPException(403, 'Administrator access changed; sign in again')
+    target = db.get(User, user_id, populate_existing=True)
     if not target:
         raise HTTPException(404, "User not found")
     if target.role == "admin" and target.active and (body.role != "admin" or not body.active):
@@ -363,8 +368,13 @@ class ArchiveMember(BaseModel):
 
 @app.post('/api/v1/admin/users/{user_id}/archive')
 def archive_member(user_id: int, body: ArchiveMember, user: User = Depends(admin), db: Session = Depends(session)):
-    administrators = list(db.scalars(select(User).where(User.role == 'admin').order_by(User.id).with_for_update()))
-    target = db.get(User, user_id)
+    administrators = list(db.scalars(select(User).where(User.role == 'admin').order_by(User.id).with_for_update().execution_options(populate_existing=True)))
+    # Authentication may precede another administrator's committed access change.
+    # Refresh cached ORM identities after acquiring the administrator locks.
+    db.refresh(user)
+    if not user.active or user.role != 'admin' or user.archived_at is not None:
+        raise HTTPException(403, 'Administrator access changed; sign in again')
+    target = db.get(User, user_id, populate_existing=True)
     if target is None:
         raise HTTPException(404, 'User not found')
     if body.confirmation != target.username:
