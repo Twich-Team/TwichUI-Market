@@ -3,7 +3,7 @@ from datetime import timedelta
 import json
 from typing import Literal
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import JSON, and_, cast, func, or_, select, String, tuple_
+from sqlalchemy import JSON, and_, cast, func, or_, select, String, tuple_, literal
 from sqlalchemy.orm import Session, aliased
 from .db import now, session
 from .models import ItemMetadata, ItemMedia, Market, MetadataAttempt, MetadataJob, MetadataProvider, MetadataSource, MetadataTask, MetadataRecoveryItem, User
@@ -23,22 +23,53 @@ def tracker_query(market_id):
         ItemMedia,(ItemMedia.region==ids.c.region)&(ItemMedia.item_id==ids.c.item_id))
 
 
-def eligibility_sql(ids, context, at, build, provider=None):
+def eligibility_sql(ids, context, at, build, provider=None, *, facts=None, name=None, legacy_quality=None, no_icon=None, icon_retry=None):
     choices=[]
     for ident,(row,due,credentials) in context.items():
         if provider and ident != provider: continue
         if not row.enabled or not row.automatic or not credentials or row.expires_at and row.expires_at <= at or row.last_error in ('authorization','forbidden','subscription_required','credential_unavailable','secret_unavailable') or due > at: continue
         s=aliased(MetadataSource)
-        capable=func.coalesce(ItemMetadata.name,ItemMetadata.fallback_name).is_(None)
-        if ident != 'everloot': capable=or_(capable,essential_missing_sql(CAPABILITIES[ident]))
+        capable=func.coalesce(ItemMetadata.name,ItemMetadata.fallback_name).is_(None) if name is None else name.is_(None)
+        if ident != 'everloot': capable=or_(capable,essential_missing_sql(CAPABILITIES[ident],facts=facts,legacy_quality=legacy_quality))
         if ident in ('foreverdb','thewowdb'):
-            capable=or_(capable,and_(ItemMedia.data.is_(None),or_(ItemMedia.retry_after.is_(None),ItemMedia.retry_after<=at)))
-        if ident=='foreverdb':capable=or_(capable,fields_sql()['class'].as_string().in_(('Weapon','Armor')))
+            missing_icon=ItemMedia.data.is_(None) if no_icon is None else no_icon
+            retry=ItemMedia.retry_after if icon_retry is None else icon_retry
+            capable=or_(capable,and_(missing_icon,or_(retry.is_(None),retry<=at)))
+        if ident=='foreverdb':capable=or_(capable,(fields_sql() if facts is None else facts)['class'].as_string().in_(('Weapon','Armor')))
         source=and_(s.region==ids.c.region,s.item_id==ids.c.item_id,s.locale=='en_US',s.provider==ident)
         untried=~select(s.item_id).where(source).exists()
         due_source=select(s.item_id).where(source,source_due_sql(s,at,build=build),or_(capable,s.fields_json.is_not(None))).exists()
         choices.append(or_(and_(capable,untried),due_source))
     return or_(*choices) if choices else False
+
+
+def tracker_states(db,ids,base,context,at,build):
+    """Decode rich catalog text once and evaluate each provider once per item.
+
+    Repeating correlated eligibility inside multiple COUNT FILTERs reparses
+    TOASTed catalog/source JSON many times. Materialized narrow booleans keep
+    the summary and eligibility-filter page counts bounded on rich records.
+    """
+    from sqlalchemy.dialects.postgresql import JSONB
+    facts=base.with_only_columns(ids.c.region,ids.c.item_id,
+        func.coalesce(ItemMetadata.name,ItemMetadata.fallback_name).label('name'),
+        (func.jsonb_extract_path(cast(ItemMetadata.catalog_json,JSONB),'fields',type_=JSONB) if db.bind.dialect.name=='postgresql' else cast(ItemMetadata.catalog_json,JSON)['fields']).label('facts'),
+        ItemMetadata.quality.label('legacy_quality'),ItemMedia.data.is_(None).label('no_icon'),
+        ItemMedia.retry_after.label('icon_retry')).cte('tracker_facts')
+    if db.bind.dialect.name=='postgresql':facts=facts.prefix_with('MATERIALIZED')
+    kwargs=dict(facts=facts.c.facts,name=facts.c.name,legacy_quality=facts.c.legacy_quality,no_icon=facts.c.no_icon,icon_retry=facts.c.icon_retry)
+    values=[facts.c.region,facts.c.item_id,facts.c.name,facts.c.name.is_(None).label('unnamed'),facts.c.no_icon,
+        essential_missing_sql(facts=facts.c.facts,legacy_quality=facts.c.legacy_quality).label('missing_essential')]
+    for ident,(row,due,credentials) in context.items():
+        # Exactly one source eligibility expression/provider, assigned to its
+        # current pool state. Disabled/access-blocked sources remain false.
+        available=eligibility_sql(facts,{ident:(row,at,credentials)},at,build,**kwargs)
+        if available is False:available=literal(False)
+        values.extend([(available if due<=at else literal(False)).label('ready_'+ident),
+                       (available if due>at else literal(False)).label('cooling_'+ident)])
+    states=select(*values).select_from(facts).cte('tracker_states')
+    if db.bind.dialect.name=='postgresql':states=states.prefix_with('MATERIALIZED')
+    return states
 
 
 def provider_status(row, source, action, attempt=None):
@@ -97,24 +128,27 @@ def tracker(market_id:int=Query(ge=1),q:str=Query('',max_length=64),
     if not db.get(Market,market_id): raise HTTPException(404,'Market not found')
     at=now();context=provider_context(db,at);build=latest_foreverdb_build(db)
     ids,base=tracker_query(market_id)
-    ready=eligibility_sql(ids,context,at,build,provider)
+    states=tracker_states(db,ids,base,context,at,build)
+    ready_all=or_(*[states.c['ready_'+p] for p in context]) if context else literal(False)
+    cooling_all=or_(*[states.c['cooling_'+p] for p in context]) if context else literal(False)
+    absent_state=or_(states.c.unnamed,states.c.no_icon,states.c.missing_essential)
+    measurements=db.execute(select(func.count(),func.count().filter(states.c.unnamed),func.count().filter(states.c.no_icon),
+        func.count().filter(states.c.missing_essential),func.count().filter(ready_all),
+        func.count().filter(and_(absent_state,~ready_all)),func.count().filter(and_(absent_state,~ready_all,cooling_all))).select_from(states)).one()
+    summary=dict(zip(('observed','missing_names','missing_icons','missing_essential','eligible','no_eligible','waiting_cooldowns'),measurements))
     unnamed=func.coalesce(ItemMetadata.name,ItemMetadata.fallback_name).is_(None)
     no_icon=ItemMedia.data.is_(None)
     essentials=essential_missing_sql()
-    absent=or_(unnamed,no_icon,essentials)
-    # These counts concern the entire selected current market, before table filters.
-    measurements=db.execute(base.with_only_columns(func.count(),func.count().filter(unnamed),func.count().filter(no_icon),func.count().filter(essentials),func.count().filter(ready),func.count().filter(and_(absent,~ready if ready is not False else True)))).one()
-    summary=dict(zip(('observed','missing_names','missing_icons','missing_essential','eligible','no_eligible'),measurements))
-    cooldowns=[p for p,(row,due,credentials) in context.items() if row.enabled and row.automatic and credentials and due>at]
-    without_cooldowns={ident:(row,at,credentials) for ident,(row,due,credentials) in context.items()}
-    cooldown_items=and_(eligibility_sql(ids,without_cooldowns,at,build,provider),~ready if ready is not False else True) if cooldowns else False
-    summary['waiting_cooldowns']=db.scalar(base.with_only_columns(func.count()).where(absent,cooldown_items)) if cooldowns else 0
+    ready=states.c['ready_'+provider] if provider and provider in context else ready_all
+    cooling=states.c['cooling_'+provider] if provider and provider in context else cooling_all
+    cooldown_items=and_(absent_state,~ready,cooling)
     query=base
     if q.strip(): query=query.where(or_(cast(ids.c.item_id,String)==q.strip(),ItemMetadata.name.icontains(q.strip(),autoescape=True),ItemMetadata.fallback_name.icontains(q.strip(),autoescape=True)))
     if missing!='all': query=query.where({'name':unnamed,'icon':no_icon,'attributes':essentials}[missing])
+    if eligibility!='all':query=query.join(states,(states.c.region==ids.c.region)&(states.c.item_id==ids.c.item_id))
     if eligibility=='eligible': query=query.where(ready)
     elif eligibility=='waiting': query=query.where(cooldown_items)
-    elif eligibility=='unavailable': query=query.where(absent,~ready if ready is not False else True)
+    elif eligibility=='unavailable': query=query.where(absent_state,~ready)
     if provider or outcome:
         conditions=[MetadataSource.region==ids.c.region,MetadataSource.item_id==ids.c.item_id,MetadataSource.locale=='en_US']
         if provider: conditions.append(MetadataSource.provider==provider)

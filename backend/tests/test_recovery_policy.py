@@ -295,3 +295,39 @@ def test_blizzard_cooldown_does_not_stall_other_cached_artwork(database):
     assert resolve_media_once(database,client,at=at,image_fetch=lambda _: (PNG,'image/png'))
     assert client.calls==0
     with database() as db:assert db.get(ItemMedia,('us',721)).data==PNG
+
+
+def test_rich_tracker_summary_deadline_and_provider_filter_parity(owner,database):
+    """Rich TOASTed records must not be decoded anew for each summary count."""
+    from sqlalchemy import insert,text
+    from market.ingest import ingest
+    market=setup(database,provider='foreverdb');at=now()
+    with database.begin() as db:
+        if db.bind.dialect.name!='postgresql':pytest.skip('PostgreSQL rich-record query regression')
+        for p in db.scalars(select(MetadataProvider)):
+            p.enabled=p.automatic=p.provider in ('blizzard','foreverdb','thewowdb')
+        db.get(MetadataProvider,'foreverdb').credential=b'synthetic-placeholder'
+        db.get(MetadataProvider,'blizzard').credential_status='oauth_connected'
+        fields={'name':'Synthetic rich cloth','class':'Trade Goods','quality':'COMMON',
+                'lines':[{'kind':'effect','text':'Synthetic descriptive effect '+str(i)+' '+('x'*100)} for i in range(450)]}
+        catalog=json.dumps({'fields':fields,'provenance':{},'conflicts':[]})
+        ids=range(10000,12000)
+        ingest(db,market,json.dumps({'auctions':[{'id':i,'item':{'id':i},'quantity':1,'buyout':100} for i in ids]}).encode(),request_key='rich-tracker-regression',synthetic=True)
+        db.execute(insert(ItemMetadata),[{'region':'us','item_id':i,'name':fields['name'],'quality':'COMMON','namespace':'static-forever-us','catalog_json':catalog} for i in ids])
+        db.execute(insert(MetadataSource),[{'region':'us','item_id':i,'provider':p,'locale':'en_US','status':'available','fields_json':'{"name":"Synthetic rich cloth"}','source_json':'{}','checked_at':at-timedelta(days=10),'retrieved_at':at-timedelta(days=10),'retry_at':at-timedelta(days=1),'http_status':200} for i in ids for p in ('blizzard','foreverdb','thewowdb')])
+    # The deadline is per SQL statement, independent of Python/CI startup speed.
+    def bounded_session():
+        with database() as db:
+            db.execute(text("SET statement_timeout='5000ms'"))
+            yield db
+    from market.app import app
+    from market.db import session
+    app.dependency_overrides[session]=bounded_session
+    root=f'/api/v1/admin/item-metadata/tracker?market_id={market}'
+    data=owner.get(root+'&limit=1').json()
+    assert data['summary']['observed']==2000 and data['summary']['missing_names']==0
+    assert data['summary']['missing_essential']==0 and data['summary']['missing_icons']==2000
+    assert data['summary']['eligible']==2000
+    filtered=owner.get(root+'&provider=thewowdb&eligibility=eligible&limit=1').json()
+    assert filtered['total']==2000 and filtered['summary']==data['summary']
+    assert owner.get(root+'&eligibility=unavailable&limit=1').json()['total']==0

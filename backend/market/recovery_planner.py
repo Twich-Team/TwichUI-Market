@@ -11,11 +11,12 @@ def fields_sql():
     return cast(ItemMetadata.catalog_json, JSON)['fields']
 
 
-def essential_missing_sql(capabilities=None):
-    f = fields_sql()
+def essential_missing_sql(capabilities=None, *, facts=None, legacy_quality=None):
+    f = fields_sql() if facts is None else facts
+    quality = ItemMetadata.quality if legacy_quality is None else legacy_quality
     capabilities=set(capabilities) if capabilities is not None else {'quality','class','slot','level'}
     checks=[]
-    if 'quality' in capabilities: checks.append(func.coalesce(f['quality'].as_string(), ItemMetadata.quality).is_(None))
+    if 'quality' in capabilities: checks.append(func.coalesce(f['quality'].as_string(), quality).is_(None))
     if 'class' in capabilities: checks.append(f['class'].as_string().is_(None))
     equipment=[f[field].as_string().is_(None) for field in ('level','slot') if field in capabilities]
     if equipment: checks.append(and_(f['class'].as_string().in_(('Weapon','Armor')),or_(*equipment)))
