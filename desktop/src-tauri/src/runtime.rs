@@ -50,6 +50,7 @@ pub struct View {
     pub autostart_enabled: bool,
     pub quitting: bool,
     pub window_visible: bool,
+    pub delivery: serde_json::Value,
 }
 #[derive(Serialize, Clone)]
 pub struct StatusView {
@@ -122,7 +123,7 @@ impl Executor for NativeTask {
             return Err(Error::Cancelled);
         }
         let synchronize = |client: &MarketClient| {
-            synchronizer::synchronize(
+            let result=synchronizer::synchronize(
                 client,
                 server,
                 &self.0.path.join("market-v1.sqlite"),
@@ -138,7 +139,23 @@ impl Executor for NativeTask {
                         self.0.set_error(error);
                     }
                 },
-            )
+            )?;
+            if matches!(&result,Execution::Completed(_)) {
+                match twichui_market_core::delivery::Configuration::load(&self.0.path) {
+                    Ok(Some(config)) if config.enabled && config.scope.server==server && config.scope.market_id==run.market
+                        && profile.bootstrap.as_ref().is_some_and(|b|b.account.id==config.scope.account_id)=>{
+                        // Delivery has its own durable result. Scalar sync success
+                        // is never represented as successful game-file delivery.
+                        match twichui_market_core::delivery::synchronize(&self.0.path,client,&config,||run.cancelled()||self.0.quitting.load(Ordering::Acquire)) {
+                            Err(e)=>self.0.set_error(format!("Workshop delivery: {e}")),
+                            Ok(_)=>if let Ok(mut local)=self.0.local.lock(){if local.error.as_deref().is_some_and(|e|e.starts_with("Workshop delivery:")){local.error=None;}},
+                        }
+                    },
+                    Err(e)=>self.0.set_error(format!("Workshop delivery configuration: {e}")),
+                    _=>{},
+                }
+            }
+            Ok(result)
         };
         match profile.mode {
             Mode::Companion => AuthorizationClient::new(server)?.authenticated(
@@ -361,6 +378,14 @@ impl Runtime {
             })
             .map(Into::into);
         Ok(View {
+            delivery: match twichui_market_core::delivery::Configuration::load(&self.data.path) {
+                Ok(Some(c)) if c.scope.server==profile.server && Some(c.scope.market_id)==selected
+                    && profile.bootstrap.as_ref().is_some_and(|b|b.account.id==c.scope.account_id)=>{
+                    serde_json::json!({"configuration":c,"status":twichui_market_core::delivery::status_for(&self.data.path,&c).map_err(friendly)?})
+                },
+                Ok(_)=>serde_json::json!({"notice":"Automatic delivery is off for this account and market. Review setup to enable it."}),
+                Err(_)=>serde_json::json!({"notice":"Delivery configuration is invalid; automatic installation is disabled. Review setup."}),
+            },
             version: env!("CARGO_PKG_VERSION").into(),
             settings,
             mode: profile.mode,
@@ -801,7 +826,7 @@ impl Runtime {
         let output=twichui_market_core::bridge::export_staging(&cache,&scope,&root).map_err(friendly)?;
         Ok(output.to_string_lossy().into_owned())
     }
-    /// L2 manual archive/scope actions. Never called by the background scheduler.
+    /// Manual archive/scope setup; the worker uses the same core archive path.
     pub fn archive_workshop(
         &self,
         algorithm: &str,
@@ -918,7 +943,7 @@ impl Runtime {
             .map_err(friendly)?
             .ok_or("Complete the retained-history download first")?;
         let mut result = serde_json::json!({"header":header,"archive_bytes":archive.allocated_bytes().map_err(friendly)?,"selection":archive.selection(&scope).map_err(friendly)?,
-            "schema3_workshop_runtime_available":false,"notice":"Schema 3 is a testing artifact. Production Workshop support requires L3. No game files are installed or reloaded."});
+            "schema3_workshop_runtime_available":true,"notice":"Schema 3 requires the compatible installed Workshop reader. Manual exports stay in staging; automatic delivery is separately configured."});
         if let Some(input) = selected {
             let object = input.as_object().ok_or("Invalid exact selection")?;
             if object.len() != 3
@@ -944,7 +969,7 @@ impl Runtime {
             result["generation_id"] = generation["generation_id"].clone();
             if publish {
                 if !compatible {
-                    return Err("Acknowledge that this schema-3 staging artifact requires the future L3 reader".into());
+                    return Err("Confirm the installed schema-3 Workshop reader before staging".into());
                 }
                 let current = self.view()?;
                 let current_account = self
@@ -985,6 +1010,36 @@ impl Runtime {
         }
         verify_context()?;
         Ok(result)
+    }
+    pub fn configure_delivery(&self, installation: String, algorithm: String, history_days: u32, operation: String, confirmed: bool, variants: serde_json::Value) -> Result<serde_json::Value> {
+        use twichui_market_core::delivery::{self, Configuration};
+        let _gate=self.data.gate.lock().map_err(|_|"Connection operation interrupted")?;
+        let view=self.view()?;
+        let account=view.account.as_ref().ok_or("Connect before configuring delivery")?.id;
+        let market=view.settings.selected_market.or(view.sync.sync.selected_market).ok_or("Choose a market first")?;
+        let scope=twichui_market_core::bridge::Scope{server:view.settings.server.clone(),account_id:account,market_id:market,algorithm};
+        if operation=="disable" || operation=="rollback" {
+            let mut c=Configuration::load(&self.data.path).map_err(friendly)?.ok_or("Delivery has not been configured")?;
+            if c.scope!=scope{return Err("Delivery belongs to another account or market; select its original context".into())}
+            c.enabled=false;c.save_confirmed(&self.data.path,false).map_err(friendly)?;
+            if operation=="rollback" {if !confirmed{return Err("Confirm restoring the previous generation with WoW closed".into())}delivery::restore_previous(&self.data.path,&c).map_err(friendly)?;}
+            self.data.emit();return Ok(serde_json::json!({"enabled":false}));
+        }
+        if !view.connected || view.refreshing || view.approving {return Err("Finish connecting before configuring delivery".into())}
+        let store=twichui_market_core::archive::ArchiveStore::open(&self.data.path.join("history-archive-v1.sqlite"),twichui_market_core::archive::DEFAULT_DISK_BUDGET).map_err(friendly)?;
+        let selection=store.selection(&scope).map_err(friendly)?.ok_or("Download history and check an explicit selection of up to ten variants first")?;
+        let mut checked=selection.clone();checked["variants"]=variants;
+        let checked=twichui_market_core::archive::normalize_selection(checked).map_err(friendly)?;
+        if checked["variants"]!=selection["variants"] {return Err("Check the current exact selection and sizes before reviewing delivery".into())}
+        let c=Configuration{version:1,enabled:true,scope,installation:PathBuf::from(installation),selection,history_days};
+        let mut review=delivery::inspect_destination(&c).map_err(friendly)?;
+        let header=store.active(&c.scope).map_err(friendly)?.ok_or("Complete the archive first")?;
+        let request=delivery::request_for(&c,&header).map_err(friendly)?;
+        let (g,_,sizes)=twichui_market_core::archive::project(&store,&c.scope,&request,&delivery::budget()).map_err(friendly)?;
+        review["sizes"]=serde_json::to_value(sizes).map_err(|_|"Size report unavailable")?;review["history_days"]=history_days.into();review["generation_id"]=g["generation_id"].clone();
+        if operation=="enable" {c.save_confirmed(&self.data.path,confirmed).map_err(friendly)?;self.data.emit();}
+        else if operation!="inspect" {return Err("Unknown delivery operation".into())}
+        Ok(review)
     }
     pub fn open_exports(&self) -> Result<()> {
         let dir = self.data.path.join("exports");

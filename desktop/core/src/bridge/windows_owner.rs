@@ -7,7 +7,7 @@ struct Token(HANDLE);
 impl Drop for Token{fn drop(&mut self){unsafe{CloseHandle(self.0);}}}
 struct Descriptor(*mut c_void);
 impl Drop for Descriptor{fn drop(&mut self){if !self.0.is_null(){unsafe{LocalFree(self.0);}}}}
-pub(super) fn check(path:&Path)->Result<()>{
+pub(crate) fn check(path:&Path)->Result<()>{
  let Some(std::path::Component::Prefix(prefix))=path.components().next() else{return reject()};
  let drive=match prefix.kind(){Prefix::Disk(c)|Prefix::VerbatimDisk(c)=>c,_=>return reject()};
  let root=[drive as u16,b':' as u16,b'\\' as u16,0];

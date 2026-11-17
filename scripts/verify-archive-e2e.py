@@ -70,7 +70,7 @@ def main():
    return response
   sock=socket.socket();sock.bind(('127.0.0.1',0));port=sock.getsockname()[1]
   server=uvicorn.Server(uvicorn.Config(app,host='127.0.0.1',port=port,log_level='error',access_log=False));thread=threading.Thread(target=server.run,kwargs={'sockets':[sock]},daemon=True);thread.start()
-  measured_files=[ROOT/'backend/market/archive_api.py',ROOT/'backend/market/bridge_api.py',ROOT/'backend/market/models.py',ROOT/'desktop/core/src/client.rs',ROOT/'desktop/core/src/bridge/export.rs',ROOT/'contracts/archive/v1/archive.schema.json',ROOT/'contracts/bridge/scoped-l1/SHA256SUMS.json',*sorted((ROOT/'desktop/core/src/archive').glob('*.rs'))]
+  measured_files=[ROOT/'backend/market/archive_api.py',ROOT/'backend/market/bridge_api.py',ROOT/'backend/market/models.py',ROOT/'desktop/core/src/client.rs',ROOT/'desktop/core/src/delivery.rs',ROOT/'desktop/core/src/bridge/export.rs',ROOT/'contracts/archive/v1/archive.schema.json',ROOT/'contracts/bridge/scoped-l1/SHA256SUMS.json',*sorted((ROOT/'desktop/core/src/archive').glob('*.rs'))]
   fingerprints={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in measured_files}
   native_sha=hashlib.sha256(args.rust_client.read_bytes()).hexdigest()
   origin=f'http://127.0.0.1:{port}';stage=temp/'staging';stage.mkdir(mode=0o700);cache=temp/'history.sqlite'
@@ -124,6 +124,10 @@ def main():
     assert exact==g,'actual Rust and server scoped generation bytes differ'
     return result,g,request,path
    ten,g,request,request_path=export(h,10)
+   auto_request=temp/'automatic-selection.json';auto_request.write_text(json.dumps(request))
+   automatic=native('auto',auto_request);automatic_path=Path(automatic['lua_path']);automatic_before=automatic_path.read_bytes();automatic_mtime=automatic_path.stat().st_mtime_ns
+   automatic_noop=native('auto',auto_request);assert automatic_noop['status']['published_generation']==automatic['status']['published_generation']
+   assert automatic_path.stat().st_mtime_ns==automatic_mtime and automatic_path.read_bytes()==automatic_before
    expected_mv='100' if args.algorithm=='twichui-pricing-v1' else '110'
    expected_updated_mv='100' if args.algorithm=='twichui-pricing-v1' else '120'
    priced=next(r for r in g['records'] if r['item_id']==2589)
@@ -141,7 +145,9 @@ def main():
    priced=next(r for r in final_g['records'] if r['item_id']==2589)
    assert [d['recent_copper'] for d in priced['daily']]==['100','140']
    assert priced['current']['metrics']['market_value_copper']==expected_updated_mv
-   # Schema-3 output passes the L1 test-only consumer, never a production L3 reader.
+   automatic_updated=native('auto',auto_request);assert automatic_updated['status']['published_generation']!=automatic['status']['published_generation']
+   automatic_after=automatic_path.read_bytes();native('auto',request_path,expected=False);assert automatic_path.read_bytes()==automatic_after
+   # Frozen L1 oracle plus actual production Lua reader, independent expected values.
    lua_proof='NOT RUN (explicit --skip-lua)'
    if not args.skip_lua:
     sys.path.insert(0,str(args.addon_root/'tests'))
@@ -161,6 +167,22 @@ def main():
     lua=subprocess.run(['lua5.1',str(script)],capture_output=True,text=True,timeout=120)
     if lua.returncode:raise RuntimeError('L1 Lua proof failed: '+lua.stdout+lua.stderr)
     lua_proof=lua.stdout.strip()
+   production_lua='NOT RUN (explicit --skip-lua)'
+   if not args.skip_lua:
+    q=legacy.lua
+    lines=['require("bit")','TwichUI={Workshop={}}','TwichUIWorkshopDB={keep="local"}','TwichUIDB={keep="profile"}']
+    for name in ('Data','BridgeCodec','BridgeSchema','BridgeValidate','Bridge'):lines.append('dofile('+q(str(args.addon_root/'TwichUI_Workshop'/(name+'.lua')))+')')
+    lines+=['dofile('+q(str(automatic_path))+')','local B=TwichUI.Workshop.Bridge;B.Begin(TwichUIMarketData)','local done=false;for i=1,200000 do local ok,why=B.Step();if why~="loading" then assert(ok);done=true;break end end;assert(done)',
+     'local r=assert(B.Record(2589,'+q(key({'id':2589}))+'));assert(r.current.metrics.recent_copper=="140")',
+     'assert(B.Record(2,'+q(key({'id':2}))+').current.state=="absent")',
+     'assert(B.Record(123,'+q(key({'id':123}))+').current.supply==2)',
+     'local h=B.History(2589,'+q(key({'id':2589}))+',"recent");assert(h and #h.points==2)',
+     'assert(B.Status().generation=='+q(automatic_updated['status']['published_generation'])+')',
+     'local f=B.Freshness();assert(f.generation==B.Status().generation and f.observed_at)',
+     'assert(TwichUIWorkshopDB.keep=="local" and TwichUIDB.keep=="profile");print("Production Lua automatic-delivery proof PASS")']
+    script=temp/'production-proof.lua';script.write_text('\n'.join(lines)+'\n');lua=subprocess.run(['lua5.1',str(script)],capture_output=True,text=True,timeout=120)
+    if lua.returncode:raise RuntimeError('Production Lua proof failed: '+lua.stdout+lua.stderr)
+    production_lua=lua.stdout.strip()
    noop=native('sync');assert noop['header']['checkpoint_id']==nh['checkpoint_id'],'same-day unchanged evidence replaced recovery generation'
    before=artifact.read_bytes();Path(final['lua_path']).write_bytes(before+b' injected()')
    # Readback refuses a corrupted existing file; it does not overwrite recovery data.
@@ -178,7 +200,7 @@ def main():
     'server_sql_total':sql[0],'archive_page_requests':len(page_stats),'page_sql_max':max(s['sql'] for s in page_stats),'page_sql_total':sum(s['sql'] for s in page_stats),
     'server_process_peak_rss_bytes_including_seed':peak,'server_request_sampled_rss_bytes':max((s['sampled_rss_bytes'] or 0) for s in request_stats),'page_response_ms_max':max(s['ms'] for s in page_stats),
     'independent_expected':{'initial_recent':['100','120'],'updated_recent':['100','140'],'market_value':expected_mv,'updated_market_value':expected_updated_mv,'historical_value':None if args.algorithm=='twichui-pricing-v1' else '110','historical_current_state':'absent','bid_supply':2,'missing_days':58},
-    'lua_proof':lua_proof,'same_day_noop_retains_checkpoint':True,'corrupt_existing_artifact_refused':True,'over_budget_preserves_artifact':True,'wrong_account_refused':True}
+    'lua_proof':lua_proof,'production_lua':production_lua,'automatic_initial':automatic['status'],'automatic_noop':automatic_noop['status'],'automatic_updated':automatic_updated['status'],'automatic_oversized_selection_preserved':True,'same_day_noop_retains_checkpoint':True,'corrupt_existing_artifact_refused':True,'over_budget_preserves_artifact':True,'wrong_account_refused':True}
    # Temporary artifact paths are not reusable evidence and never identify game files.
    for name in ('ten_variant_export','hundred_variant_export','updated_export'):
     report[name]={k:v for k,v in report[name].items() if k not in ('lua_path','generation_path')}
