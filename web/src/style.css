@@ -1689,3 +1689,9 @@ a.secondary { display:inline-block; padding:10px 14px; border:1px solid var(--bo
 .provider-rate-limits select { width: 100%; min-width: 0; }
 .provider-entitlement { align-items: flex-start; font-size: .85rem; }
 .provider-rate-limits details .metadata-form-row { margin-top: .8rem; }
+
+.confirmation-dialog {position:fixed; inset:0; margin:auto; width:min(36rem,calc(100vw - 2rem)); max-height:calc(100dvh - 2rem); overflow:auto; padding:1.5rem; border:1px solid var(--line,#73572f); background:#211a14; color:#eee0c5; border-radius:6px; box-shadow:0 20px 80px #0009;}
+.confirmation-dialog::backdrop {background:#000a;}
+.confirmation-dialog label {display:grid; gap:.5rem; margin:1rem 0;}
+.confirmation-dialog input {width:100%; min-width:0; box-sizing:border-box;}
+.confirmation-dialog button {margin:.4rem .5rem .4rem 0; white-space:normal;}

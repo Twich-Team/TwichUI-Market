@@ -1,0 +1,10 @@
+{
+  "source": "Actual Chromium against disposable synthetic market_test; never production observations",
+  "sha256": {
+    "member-archive-confirmation.png": "b163203131ec5f5dc70e2abff4afb3400d2ee5b670049b458e7b2a8ef2912253",
+    "deal-icons-mobile.png": "ed52ab8f5c0993f971c05a17e14c4a5e81a19b0e9cdfedf40dce420d39fa493d",
+    "m1-overview.png": "01d22878a5a051723c1957d7c286f66ec13661146246f66519cfcd871e09f52a",
+    "deal-icons-no-hover.png": "04b5c922e497ad1b71ba58120931e5adae01582d3655dd21578bf12bd5b08437",
+    "device-archive-confirmation.png": "b43b86ee638e356196f868348e75a2bccae565b384437824fd6b9e8fee99591c"
+  }
+}

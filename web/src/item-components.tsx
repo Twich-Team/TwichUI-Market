@@ -52,6 +52,7 @@ export function ItemIcon({ item }: { item: ItemIdentity }) {
   const container = useRef<HTMLSpanElement>(null);
   useEffect(() => {
     setFailed(false);
+    setVisibleSource(null);
     if (!item.icon_url || !container.current) return;
     if (typeof IntersectionObserver === "undefined") {
       setVisibleSource(item.icon_url);
@@ -81,7 +82,7 @@ export function ItemIcon({ item }: { item: ItemIdentity }) {
           alt=""
           width={36}
           height={36}
-          loading="lazy"
+          loading="eager"
           onError={() => setFailed(true)}
         />
       ) : (

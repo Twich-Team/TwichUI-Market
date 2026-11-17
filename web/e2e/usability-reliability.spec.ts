@@ -1,0 +1,70 @@
+import { test, expect, type Page } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+import { mkdir } from 'node:fs/promises';
+const output='../artifacts/usability-reliability';
+async function login(page:Page) {
+  await page.goto('/');
+  await page.getByLabel('Username',{exact:true}).fill('owner');
+  await page.getByLabel('Password',{exact:true}).fill('synthetic browser owner password');
+  await page.getByRole('button',{name:'Sign in',exact:true}).click();
+  await expect(page.getByRole('heading',{name:'Market Explorer',exact:true})).toBeVisible();
+  await mkdir(output,{recursive:true});
+}
+async function shot(page:Page,name:string,fullPage=true){await page.screenshot({path:`${output}/${name}.png`,fullPage});}
+async function axe(page:Page){expect((await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa']).analyze()).violations).toEqual([]);}
+test('usability M1: reversible account and device archives and honest status',async({page})=>{
+  await login(page); await page.goto('/administration');
+  await expect(page.getByText(/authorized devices/)).toBeVisible();
+  await expect(page.getByText(/recent requests do not prove online/)).toBeVisible();
+  await shot(page,'m1-overview');
+  await page.getByRole('tab',{name:'Members & invitations',exact:true}).click();
+  const row=page.getByRole('row').filter({hasText:'obsolete_fixture'});
+  await row.getByRole('button',{name:'Archive account',exact:true}).click();
+  await expect(page.getByRole('dialog').getByRole('button',{name:'Confirm archive',exact:true})).toBeDisabled();
+  await page.getByRole('dialog').getByLabel('Type obsolete_fixture to confirm').fill('obsolete_fixture');
+  await shot(page,'member-archive-confirmation',false); await axe(page);
+  await page.getByRole('dialog').getByRole('button',{name:'Confirm archive',exact:true}).click();
+  await expect(row).toHaveCount(0);
+  await page.getByLabel('Include archived accounts').check();
+  await expect(row).toContainText('Archived');
+  await row.getByRole('button',{name:'Restore listing',exact:true}).click();
+  await expect(row).toContainText('Disabled');
+  await page.goto('/account');
+  const devices=page.getByRole('region',{name:'My desktop companions',exact:true});
+  const old=page.getByRole('article',{name:'Obsolete synthetic PC device',exact:true});
+  await old.getByRole('button',{name:'Archive entry',exact:true}).click();
+  await page.getByRole('dialog').getByLabel('Type Obsolete synthetic PC to confirm').fill('Obsolete synthetic PC');
+  await shot(page,'device-archive-confirmation',false); await axe(page);
+  await page.getByRole('dialog').getByRole('button',{name:'Confirm archive',exact:true}).click();
+  await expect(old).toHaveCount(0);
+  await devices.getByLabel('Include archived entries').check();
+  await expect(old).toBeVisible();
+  await old.getByRole('button',{name:'Restore listing',exact:true}).click();
+  await expect(old).toContainText('Revoked');
+});
+test('usability M1: local deal icons load without hover through delays filters scrolling cache and mobile',async({page})=>{
+  const external:string[]=[];
+  page.on('request',req=>{if(new URL(req.url()).hostname!=='proxy')external.push(req.url());});
+  await login(page); await page.goto('/deals');
+  const markets=await (await page.request.get('/api/v1/markets')).json();
+  const market=markets.markets.find((m:{label:string})=>m.label==='Synthetic usability review');
+  await page.getByRole('combobox',{name:'Market',exact:true}).selectOption(String(market.id));
+  const first=page.locator('.deal .wow-icon img').first();
+  await expect(first).toBeVisible();
+  await expect.poll(()=>first.evaluate((img:HTMLImageElement)=>img.complete&&img.naturalWidth>0)).toBe(true);
+  expect(await page.locator('.item-tooltip:visible').count()).toBe(0);
+  await shot(page,'deal-icons-no-hover'); await axe(page);
+  const last=page.locator('.deal').last();await last.scrollIntoViewIfNeeded();
+  await expect.poll(()=>last.locator('.wow-icon img').evaluate((img:HTMLImageElement)=>img.complete&&img.naturalWidth>0)).toBe(true);
+  await page.setViewportSize({width:390,height:844}); await first.scrollIntoViewIfNeeded();
+  await shot(page,'deal-icons-mobile',false);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  await page.route('**/api/v1/markets/*/deals?*',async route=>{await new Promise(resolve=>setTimeout(resolve,400));await route.continue();});
+  await page.getByRole('spinbutton',{name:'Minimum observed days',exact:true}).fill('4');
+  const delayed=page.waitForResponse(r=>r.url().includes('/deals?')&&r.url().includes('minimum_coverage=4'));
+  await page.getByRole('button',{name:'Apply filters',exact:true}).click();await delayed;
+  await page.locator('.deal').first().scrollIntoViewIfNeeded();
+  await expect.poll(()=>first.evaluate((img:HTMLImageElement)=>img.complete&&img.naturalWidth>0)).toBe(true);
+  await page.reload();await page.locator('.deal').first().scrollIntoViewIfNeeded();await expect(first).toBeVisible();
+  expect(external).toEqual([]);
+});

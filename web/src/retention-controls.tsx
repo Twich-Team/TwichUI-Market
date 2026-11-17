@@ -3,6 +3,9 @@ import { useLoad } from "./research";
 import { api } from "./api";
 import { DataTable } from "./data-table";
 interface Policy {
+  policy_configured: boolean;
+  scheduled: boolean;
+  completed_batches: number;
   raw_days: number;
   intraday_days: number;
   daily_days: number;
@@ -140,6 +143,12 @@ export function RetentionControls({ readOnly }: { readOnly: boolean }) {
               Save policy proposal
             </button>
           </form>
+          <dl className="stats">
+            <div><dt>Policy</dt><dd>{state.data.policy_configured ? "Configured" : "Default proposal; not saved"}</dd></div>
+            <div><dt>Authorization</dt><dd>{state.data.application_authorized ? "Approved for this exact policy" : "Owner approval pending"}</dd></div>
+            <div><dt>Destructive batches</dt><dd>{state.data.application_authorized && state.data.backup_restore_ready ? "Ready for explicit batch confirmation" : "Disabled"}</dd></div>
+            <div><dt>Maintenance</dt><dd>Not scheduled · {state.data.completed_batches} completed batches</dd></div>
+          </dl>
           <p className="notice">
             {state.data.notice} Live application{" "}
             {state.data.application_authorized

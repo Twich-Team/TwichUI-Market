@@ -1,3 +1,4 @@
+import { MemberArchive } from "./member-archive";
 import { CollectionHistory, SecurityHistory } from "./admin-histories";
 import { LocalTime } from "./admin-table";
 import { DataSources, ItemMetadataAdmin } from "./metadata-admin";
@@ -308,6 +309,7 @@ export function Administration({
   refreshMarkets: () => Promise<void>;
   readOnly?: boolean;
 }) {
+  const [includeArchived, setIncludeArchived] = useState(false);
   const [tab, setTab] = useState("overview"),
     [message, setMessage] = useState(""),
     [error, setError] = useState(""),
@@ -322,12 +324,14 @@ export function Administration({
         devices,
         storage,
         enrichment,
+        deviceSummary,
       ] = await Promise.all([
-        api<User[]>("/admin/users"),
+        api<User[]>(`/admin/users?include_archived=${includeArchived}`),
         api<Invitation[]>("/admin/invitations"),
         api<Device[]>("/admin/devices"),
         api<Storage>("/admin/storage"),
         api<Enrichment>("/admin/item-enrichment"),
+        api<{authorized:number;revoked:number;expired:number;recently_connected:number;authorized_names:string[];live_status:string}>("/companion/admin/device-summary"),
       ]);
       return {
         users,
@@ -335,9 +339,10 @@ export function Administration({
         devices,
         storage,
         enrichment,
+        deviceSummary,
       };
     },
-    [],
+    [includeArchived],
   );
   const busy = working || readOnly;
   async function action(job: () => Promise<void>) {
@@ -451,19 +456,13 @@ export function Administration({
                   <small>{when(state.storage.backup.last_success)}</small>
                 </article>
                 <article>
-                  <label>DEVICE ACCESS</label>
+                  <label><button className="text-button" onClick={() => setTab("devices")}>DEVICE ACCESS ↗</button></label>
                   <strong>
-                    {
-                      state.devices.filter(
-                        (row) =>
-                          !row.revoked && new Date(row.expires_at) > new Date(),
-                      ).length
-                    }{" "}
-                    active devices
+                    {state.deviceSummary.authorized} authorized devices
                   </strong>
                   <small>
-                    {state.users.filter((row) => row.active).length} active
-                    members
+                    {state.deviceSummary.recently_connected} recently connected (15 min) · {state.deviceSummary.revoked} revoked · {state.deviceSummary.expired} expired
+                    <br/>{state.deviceSummary.authorized_names.join(", ")}<br/>{state.deviceSummary.live_status}
                   </small>
                 </article>
               </div>
@@ -552,9 +551,11 @@ export function Administration({
             <>
               <section className="panel padded">
                 <h3>Members</h3>
+                <p className="small muted">Disabled accounts remain listed. Archiving hides an account and retains its audit and owned records. Restoring a listing does not restore access.</p>
+                <label className="checkbox"><input type="checkbox" checked={includeArchived} onChange={e => setIncludeArchived(e.target.checked)}/>Include archived accounts</label>
                 <DataTable<User>
                   label="members"
-                  filters={[{id:"role",label:"Filter member role",options:[{value:"admin",label:"Administrator"},{value:"member",label:"Member"}]},{id:"status",label:"Filter member status",options:[{value:"Active",label:"Active"},{value:"Disabled",label:"Disabled"}]}]}
+                  filters={[{id:"role",label:"Filter member role",options:[{value:"admin",label:"Administrator"},{value:"member",label:"Member"}]},{id:"status",label:"Filter member status",options:[{value:"Active",label:"Active"},{value:"Disabled",label:"Disabled"},{value:"Archived",label:"Archived"}]}]}
                   data={state.users}
                   getRowId={(row) => String(row.id)}
                   columns={[
@@ -572,7 +573,7 @@ export function Administration({
                         <select
                           aria-label={`Role for ${row.original.username}`}
                           value={row.original.role}
-                          disabled={busy || row.original.id === user.id}
+                          disabled={busy || row.original.id === user.id || Boolean(row.original.archived_at)}
                           onChange={(event) =>
                             action(async () => {
                               await api(
@@ -595,7 +596,7 @@ export function Administration({
                     {
                       id: "status",
                       header: "Status",
-                      accessorFn: (row) => (row.active ? "Active" : "Disabled"),
+                      accessorFn: (row) => (row.archived_at ? "Archived" : row.active ? "Active" : "Disabled"),
                     },
                     {
                       id: "action",
@@ -604,7 +605,7 @@ export function Administration({
                       cell: ({ row }) => (
                         <button
                           className="secondary"
-                          disabled={busy || row.original.id === user.id}
+                          disabled={busy || row.original.id === user.id || Boolean(row.original.archived_at)}
                           onClick={() =>
                             action(async () => {
                               await api(
@@ -625,6 +626,7 @@ export function Administration({
                         </button>
                       ),
                     },
+                    {id:"archive",header:"Listing",enableSorting:false,cell:({row}) => <MemberArchive member={row.original} disabled={busy || row.original.id === user.id} run={action}/>},
                   ]}
                 />
               </section>
