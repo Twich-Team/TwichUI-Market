@@ -1,3 +1,4 @@
+import { Loading } from "./loading";
 import {parseRoute,useLocation,navigate,restoration} from "./navigation";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient, clearPrivateCache, setQueryIdentity } from "./query";
@@ -170,7 +171,7 @@ function App() {
     try { await api("/auth/logout", "POST"); signedOut(); }
     catch(error) { setError((error as Error).message); }
   }
-  if (loading) return <main className="login" role="status">Opening your ledger…</main>;
+  if (loading) return <main className="login"><Loading label="Opening your ledger…" skeleton/></main>;
   if (!user) return <><Login onSession={result => { restore(result); announceSessionChange(); }} />{error && <p className="notice error" role="alert">{error}</p>}</>;
   if(location.pathname==='/companion/authorize')return <CompanionApproval key={user.id} user={user} logout={logout} authError={error}/>;
   return <PreferencesProvider key={`${user.id}:${user.role}`} userId={user.id}>
@@ -315,9 +316,7 @@ createRoot(document.getElementById("root")!).render(
     <QueryClientProvider client={queryClient}>
       <Suspense
         fallback={
-          <p role="status" className="empty">
-            Loading market tools…
-          </p>
+          <Loading label="Loading market tools…" />
         }
       >
         <App />

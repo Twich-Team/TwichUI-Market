@@ -27,11 +27,11 @@ Dedicated branch `feature/market-usability-admin-reliability`, worktree `.worktr
 | 9 | 2 | Database growth | Completed candidate: Existing hourly allocation samples plotted with period choices, actual gaps and signed period/daily changes |
 | 10 | 2 | Storage units | Completed candidate: Shared IEC byte formatter through TiB across database, retention, cache, backups and Companion downloads |
 | 11 | 2 | Overview | Completed candidate: Compact operational cards and links for collection/freshness, database/backup, logical devices and metadata/recovery |
-| 12 | 3 | Loading system | Pending |
-| 13 | 3 | Explorer notices | Pending |
-| 14 | 3 | Metric tooltips | Pending |
-| 15 | 3 | Actual 24H/48H history | Pending |
-| 16 | 3 | Listing freshness | Pending |
+| 12 | 3 | Loading system | Completed candidate: Shared delayed spinner/skeleton system; backend-reported job progress retained; filter refreshes keep prior table/deal rows with accessible busy states and reduced-motion verification |
+| 13 | 3 | Explorer notices | Completed candidate: Removed Explorer eyebrow and always-saved preference notice; saving/failure states and persisted preferences retained |
+| 14 | 3 | Metric tooltips | Completed candidate: Shared keyboard/touch info popovers explain actual current price, reference, supply and confidence calculations without changing formulas |
+| 15 | 3 | Actual 24H/48H history | Completed candidate: Actual bounded 24H/48H observation endpoint and local-time chart/provenance table, sparse/compacted/unsupported states, no daily substitution |
+| 16 | 3 | Listing freshness | Completed candidate: Current listing timestamp comes from its own displayed response observation, shown in local MM/DD/YYYY h:mm AM/PM; asking distinction moved into info popover |
 | 17 | 4 | Updater/bridge contracts | Pending; inspect latest integrated L2 and addon before changes |
 
 ## Checkpoints
@@ -61,3 +61,15 @@ Production evidence is read-only and separate from synthetic screenshots. At cap
 Initial read-only candidate measurement was ~7 seconds; query timing identified repeated source parsing and correlated recovery probes. Materialized scoped JSON fields and set-based recovery states preserve all shared counts. The final same-transaction sequential probe measured existing handler **2.406s** and candidate **1.383s** on 5,147 real IDs. This is not a statistical speedup guarantee; cache/load/order affect it. Coverage refresh is now 60 seconds, with explicit refresh after actions; progress polling is unchanged. See production-coverage-performance.json.
 
 Verification: 47 focused PostgreSQL coverage/recovery/storage tests, then 44 after query optimization; 125 frontend unit tests, TypeScript and Vite passed. Three synthetic browser workflows passed, plus the affected dashboard flow again after layout/query refinements, with axe checks and 390px no-overflow. Inspected Overview, coverage graphs, provider field/provenance tables, Database Growth and narrow screenshots. Field-table expansion now spans the source grid so its counts stay readable. M1 follow-up **2a502c5** is independently green in all remote workflows: Backend 43996010526, website 43996010518, Windows 43996010638.
+
+### Milestone 3 — everyday player experience
+
+Shared Loading delays spinner appearance by 160ms, reserves layout, supports stable skeletons and announces unknown-duration work without fake percentages. Existing metadata job progress uses actual completed/total task counts. Existing table rows remain during background/server-filter refresh; Deal Finder only retains results within the same market and mode. Private cache clearing across accounts remains unchanged. Browser tests hold a synthetic response to inspect the genuine loading state, verify retained rows, and confirm reduced-motion disables animation.
+
+Explorer no longer renders the redundant eyebrow or permanent “Preferences saved.” Saving/error/retry notices and stored preferences still work. Accessible shared info popovers explain exact formulas. In particular, the 14-day reference uses the **last observation** of each UTC day and omits days when that final observation is unpriced; it does not search backwards for the last priced sample. Current Listings uses its own response `observed_at`, including while old rows remain during refresh, rather than browser time or last collection check. Synthetic/stale/unknown warnings remain visible.
+
+[Intraday contract, semantics and bounds](intraday-history.md): separate authenticated endpoint, 4,096 observation-header cap / three-second PostgreSQL statement deadline, at most 25/49 partial-edge UTC buckets, actual last observed time per hour and exact variant PK statistics. Null missing/compacted/unsupported values are not zero prices; absent variants only have zero supply when the complete observed statistics establish it. Player-local labels include timezone abbreviations, exact copper remains in tooltips/tables, and provenance retains observation/snapshot/namespace/hash evidence. Daily history and desktop contracts are unchanged.
+
+Read-only real-data operator probe selected actually observed item **211780**, rather than assuming any Classic-era ID appears in this market. 24H: 262 headers / 25 points / 13,201 bytes / 14.4ms; 48H: 539 / 49 / 25,164 / 7.8ms. One warm probe, not a latency guarantee or deployed HTTP/UI observation. Full evidence in production-intraday.json. No production records or source schedules changed.
+
+Verification: focused intraday/current-listing/long-history PostgreSQL checks passed; full local backend execution reached **599 passing + two shadow-CLI failures caused by a missing /backend mount**. With that repository-path mount corrected, both shadow cases passed (all 601 cases independently checked). A time-dependent synthetic retrieval fixture initially drifted into the future near an hour boundary; it now anchors to the previous hour and the full rerun passes all functional intraday cases. Frontend **129 tests**, TypeScript and Vite passed. All **five** owner-observation Chromium flows passed; the affected **two M3** flows passed again after screenshot/edge-hour refinements. Axe checks and 390px layout passed. Inspected actual synthetic screenshots for compact Explorer, metric popover, 24H, 48H, listing timestamp, loading and narrow history. M2 checkpoint **af58c8f** is independently green: Backend 43997286873, website 43997286885, Windows 43997286887.

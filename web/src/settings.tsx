@@ -1,3 +1,4 @@
+import { Loading } from "./loading";
 import { AdministrationOverview } from "./admin-overview";
 import type { MetadataOverview } from "./metadata-admin";
 import { DatabaseGrowth } from "./storage-growth";
@@ -142,6 +143,7 @@ export function Account({
           {message}
         </p>
       )}
+      {working && <Loading label="Updating your account…"/>}
       <MyPreferences />
       <section className="panel padded"><div className="eyebrow">WINDOWS COMPANION</div><h2>Your market, ready on your PC.</h2><p>Install the companion, then approve this device in your browser. Your password stays on the website.</p><button className="primary" onClick={openCompanion}>Get Desktop Companion</button></section>
       <CompanionDevices userId={userId}/>
@@ -408,10 +410,9 @@ export function Administration({
         </p>
       )}
       {data.loading && (
-        <p role="status" className="muted">
-          Loading administration…
-        </p>
+        <Loading label="Loading administration…" />
       )}
+      {(working || data.refreshing) && <Loading inline label="Updating administration…"/>}
       <div className="admin-tabs" role="tablist">
         {Object.entries(titles).map(([key, title]) => (
           <button

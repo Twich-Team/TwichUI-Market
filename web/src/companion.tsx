@@ -1,3 +1,4 @@
+import { Loading } from "./loading";
 import { formatBytes } from "./size";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -168,7 +169,7 @@ export function CompanionSetup({ user }: { user: User }) {
                 No GitHub account is needed.
               </p>
               {release.isPending ? (
-                <p role="status">Checking the current release…</p>
+                <Loading label="Checking the current release…"/>
               ) : release.error ? (
                 <div className="notice error" role="alert">
                   <p>Download information is unavailable. Please try again.</p>

@@ -1,3 +1,4 @@
+import { Loading } from "./loading";
 import { useEffect, useRef, useState } from "react";
 import { api, User, when } from "./api";
 import { companionCallback } from "./companion-callback";
@@ -110,8 +111,9 @@ export function CompanionApproval({
           </button>
         </div>
         {!details && !error && (
-          <p role="status">Checking your connection request…</p>
+          <Loading label="Checking your connection request…"/>
         )}
+        {busy && <Loading label="Connecting your Companion…"/>}
         {details && (
           <>
             <div className="consent-device">

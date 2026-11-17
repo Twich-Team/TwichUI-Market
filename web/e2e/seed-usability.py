@@ -34,3 +34,11 @@ with Session.begin() as db:
     for ago in range(48,-1,-1):
         if ago in (15,16,17): continue
         db.add(StorageMeasurement(sampled_at=hour-timedelta(hours=ago),database_bytes=2684354560+(48-ago)*1048576))
+# Hourly fixture observations are genuine fixture rows, not daily points relabelled.
+with Session.begin() as db:
+    market=db.scalar(select(Market).where(Market.label=='Synthetic usability review'))
+    at=now()
+    for ago in range(47,-1,-1):
+        if ago in (7,8,29,30): continue
+        rows=[{'id':i,'item':{'id':i},'quantity':2,'buyout':500 if ago==0 else 1800+ago*20} for i in range(31000,31032)]
+        ingest(db,market.id,json.dumps({'auctions':rows}).encode(),request_key=f'usability-hour-{ago}',retrieved_at=at-timedelta(hours=ago),synthetic=True)

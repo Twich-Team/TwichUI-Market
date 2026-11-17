@@ -1,3 +1,4 @@
+import { Loading } from "./loading";
 import { formatBytes as size } from "./size";
 import { useState } from "react";
 import { useLoad } from "./research";
@@ -63,6 +64,7 @@ export function RetentionControls({ readOnly }: { readOnly: boolean }) {
   return (
     <section className="panel padded">
       <h3>Historical retention policy</h3>
+      {busy && <Loading label="Preparing retention operation…"/>}
       <p>
         Configure a proposal, preview its impact, then confirm a bounded batch
         after owner approval and a verified backup restoration.

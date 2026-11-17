@@ -42,6 +42,8 @@ from .market_configuration import router as configuration_router
 app.include_router(configuration_router)
 from .current_listings import router as listings_router
 app.include_router(listings_router)
+from .intraday_history import router as intraday_router
+app.include_router(intraday_router)
 from .preferences import router as preferences_router
 app.include_router(preferences_router)
 from .companion_auth import router as companion_auth_router

@@ -45,3 +45,18 @@ def test_unit_sort_distinguishes_extremely_close_rational_prices(owner,database)
         variant=db.scalar(select(SnapshotStatistic.variant_key));ident=market.id
     rows=owner.get(f'/api/v1/markets/{ident}/items/25/{variant}/listings?sort=unit').json()['listings']
     assert [row['auction_id'] for row in rows]==['2','1']
+
+
+def test_listings_timestamp_belongs_to_displayed_observation_not_collection_check(owner,database):
+    from datetime import timedelta
+    from market.db import now
+    with database.begin() as db:
+        market=Market(region='us',ruleset_id=2,house_id=114,source_kind='auctions',label='Synthetic freshness',last_success=now())
+        db.add(market);db.flush();market_id=market.id
+        stamp=now()-timedelta(hours=3)
+        obs=ingest(db,market_id,b'{"auctions":[{"id":1,"item":{"id":25},"quantity":1,"buyout":100}]}',request_key='freshness',retrieved_at=stamp,synthetic=True)
+        variant=db.scalar(select(SnapshotStatistic.variant_key));snapshot=str(obs.snapshot_id)
+    data=owner.get(f'/api/v1/markets/{market_id}/items/25/{variant}/listings').json()
+    from datetime import datetime
+    assert datetime.fromisoformat(data['observed_at'])==stamp
+    assert data['snapshot_id']==snapshot and data['listings'][0]['buyout']=='100'

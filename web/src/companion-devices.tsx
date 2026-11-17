@@ -1,3 +1,4 @@
+import { Loading } from "./loading";
 import { ConfirmationDialog } from "./confirmation-dialog";
 import { DataTable } from "./data-table";
 import { LocalTime, Status } from "./admin-table";
@@ -310,7 +311,7 @@ export function CompanionDevices({
         </button>
       </div>
       <label className="checkbox"><input type="checkbox" checked={includeArchived} onChange={e => setIncludeArchived(e.target.checked)}/>Include archived entries</label>
-      {devices.isPending && <p role="status">Loading your connections…</p>}
+      {devices.isPending && <Loading label="Loading your connections…" />}
       {devices.error && (
         <p className="notice error" role="alert">
           {devices.error.message}{" "}

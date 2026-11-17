@@ -1,3 +1,4 @@
+import { Loading } from "./loading";
 import { ForeverDBFacts, type RichFacts } from "./foreverdb-facts";
 import { ItemName } from "./item-name";
 import { Currency } from "./currency";
@@ -247,11 +248,8 @@ export function ItemInfo({
                 <ItemFacts profile={profile.data} />
               </>
             ) : (
-              <p role="status">
-                {profile.error
-                  ? "Item metadata could not be loaded."
-                  : "Loading verified item facts…"}
-              </p>
+              profile.error ? <p role="alert">Item metadata could not be loaded.</p> : <Loading label="Loading verified item facts…"/>
+
             )}
             {ranges && (
               <section

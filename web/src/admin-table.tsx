@@ -1,6 +1,6 @@
 import { ReactNode, useState } from "react";
 import { PaginationState, SortingState } from "@tanstack/react-table";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { api } from "./api";
 
 export function LocalTime({ value }: { value?: string | null }) {
@@ -25,6 +25,6 @@ export function useRecordPage<T>(path: string, filters: Record<string, string>, 
   params.set("limit", String(pagination.pageSize));
   params.set("sort", sorting[0]?.id || initialSort);
   params.set("desc", String(sorting[0]?.desc ?? desc));
-  const query = useQuery({ queryKey: ["private", "admin-records", path, params.toString()], queryFn: ({ signal }) => api<{ rows: T[]; total: number; summary?: Record<string, number> }>(`/admin/records/${path}?${params}`, "GET", undefined, signal), refetchInterval: 5000 });
+  const query = useQuery({ queryKey: ["private", "admin-records", path, params.toString()], placeholderData:keepPreviousData, queryFn: ({ signal }) => api<{ rows: T[]; total: number; summary?: Record<string, number> }>(`/admin/records/${path}?${params}`, "GET", undefined, signal), refetchInterval: 5000 });
   return { query, pagination, reset: () => setPagination(value => ({ ...value, pageIndex: 0 })), server: { rowCount: query.data?.total || 0, pagination, sorting, onPaginationChange: setPagination, onSortingChange: setSorting } };
 }

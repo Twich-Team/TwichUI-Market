@@ -52,7 +52,7 @@ test("private Explorer, history, listings, Deal Finder and browser reload use re
         response.url().includes("/history?days=365") &&
         response.status() === 200,
     ),
-    page.getByRole("button", { name: "365D", exact: true }).click(),
+    page.getByRole("button", { name: "1Y", exact: true }).click(),
   ]);
   await page.locator(".chart-viewport").first().scrollIntoViewIfNeeded();
   await expect(

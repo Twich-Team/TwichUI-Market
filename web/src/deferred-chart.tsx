@@ -1,3 +1,4 @@
+import { Loading } from "./loading";
 import { lazy, Suspense, useRef, useState, useEffect, type ComponentProps } from "react";
 const ChartEngine = lazy(() => import("./chart-engine"));
 export function DeferredChart(props: ComponentProps<typeof ChartEngine>) {
@@ -20,7 +21,7 @@ export function DeferredChart(props: ComponentProps<typeof ChartEngine>) {
   return (
     <div ref={container} className="chart-viewport">
       {visible ? (
-        <Suspense fallback={<p role="status">Opening interactive chart…</p>}>
+        <Suspense fallback={<Loading label="Opening interactive chart…" />}>
           <ChartEngine {...props} />
         </Suspense>
       ) : (

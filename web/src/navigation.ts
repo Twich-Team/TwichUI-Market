@@ -4,7 +4,7 @@ import type { ItemSort, Preferences } from './preferences-store';
 export const MAX_ID = 2147483647;
 export const VARIANT = /^[0-9a-f]{64}$/;
 const sorts = ['item_id','name','recent_price','market_value','supply','listing_count'];
-export type ItemRoute = {kind:'item'; market:number; item:number; variant?:string; days?:Preferences['explorer_days']};
+export type ItemRoute = {kind:'item'; market:number; item:number; variant?:string; days?:Preferences['explorer_days']; hours?:24|48};
 export type Route = ItemRoute | {kind:'explorer'|'deals'|'admin'|'account'|'companion'|'approval'|'missing'; error?:string};
 export function supportedId(text: string | null): number | null {
   return text && /^[1-9]\d{0,9}$/.test(text) && Number(text)<=MAX_ID ? Number(text) : null;
@@ -16,8 +16,9 @@ export function parseRoute(path: string, search=''): Route {
   if(!match)return {kind:'missing',error:'This page could not be found.'};
   const market=supportedId(match[1]),item=supportedId(match[2]),params=new URLSearchParams(search),variant=params.get('variant');
   if(!market||!item||params.getAll('variant').length>1||(variant!==null&&!VARIANT.test(variant)))return {kind:'missing',error:'This item link has an invalid market, item ID or exact variant.'};
+  const hours=Number(params.get('hours'));
   const days=Number(params.get('days'));
-  return {kind:'item',market,item,...(variant?{variant}:{}),...([7,14,60,365,3650].includes(days)?{days:days as Preferences['explorer_days']}: {})};
+  return {kind:'item',market,item,...([24,48].includes(hours)&&params.getAll('hours').length===1?{hours:hours as 24|48}:{}),...(variant?{variant}:{}),...([7,14,60,365,3650].includes(days)?{days:days as Preferences['explorer_days']}: {})};
 }
 export function itemUrl(market:number,item:number,variant?:string):string {
   if(!supportedId(String(market))||!supportedId(String(item))||(variant!==undefined&&!VARIANT.test(variant)))throw new Error('Invalid item identity');

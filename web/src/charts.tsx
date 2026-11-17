@@ -1,3 +1,4 @@
+import { Loading } from "./loading";
 import { Currency } from "./currency";
 import {
   useMemo,
@@ -160,7 +161,7 @@ export function PriceHistory({
       })),
     };
   }, [rows, overlays, zoom]);
-  if (history.isPending) return <p role="status">Loading observed history…</p>;
+  if (history.isPending) return <div className="chart-placeholder"><Loading label="Loading observed history…" skeleton/></div>;
   if (history.error)
     return (
       <p role="alert" className="notice error">
@@ -471,7 +472,7 @@ export function SupplyDistribution({
     [result.data],
   );
   if (result.isPending)
-    return <p role="status">Loading complete distribution…</p>;
+    return <Loading label="Loading complete distribution…" />;
   if (result.error) return <p role="alert">{result.error.message} <button onClick={()=>result.refetch()}>Retry supply distribution</button></p>;
   if (!result.data?.bands.length)
     return (

@@ -1,3 +1,4 @@
+import { Loading } from "./loading";
 import { MetadataSummary, ProviderCoverage } from "./metadata-coverage";
 import { ProviderRateLimits, type RateStatus } from "./provider-rate-limits";
 import { useState } from "react";
@@ -62,8 +63,9 @@ export function DataSources({ readOnly = false }: { readOnly?: boolean }) {
     <div className="eyebrow">SERVER CONNECTIONS</div><h2 id="data-sources-heading">Data Sources</h2>
     <p className="muted">Provider keys stay on the server. Replacement keys are validated in the background before becoming active.</p>
     <ErrorNotice error={error || data.error?.message || ""} />
+    {busy && <Loading label="Submitting metadata operation…"/>}
     {message && <p role="status" className="notice success">{message}</p>}
-    {data.isPending && <p role="status">Loading data sources…</p>}
+    {data.isPending && <Loading label="Loading data sources…" />}
     {data.data && !data.data.credential_storage_ready && <p className="notice">API key storage needs an owner-managed encryption key file. Keyless recovery remains available.</p>}
     <ProviderHealth providers={data.data?.providers || []} />
     <h3>Provider settings and credentials</h3><div className="metadata-provider-grid">{data.data?.providers.map(provider => <section className="panel padded metadata-provider" key={provider.provider} aria-label={`${provider.name} connection`}>
@@ -118,7 +120,7 @@ export function ItemMetadataAdmin({ markets, readOnly = false }: { markets: Mark
     <p className="muted">Recover observed item names and base attributes. Unavailable provider metadata never means an auction item does not exist.</p>
     <ErrorNotice error={error || stats.error?.message || jobs.error?.message || detail.error?.message || providers.error?.message || ""} />
     {message && <p className="notice success" role="status">{message}</p>}
-    {stats.isPending && <p role="status">Loading catalog measurements…</p>}
+    {stats.isPending && <Loading label="Loading catalog measurements…" />}
     {state && <><MetadataSummary state={state}/><ProviderCoverage state={state}/></>}
     <section className="panel padded"><h3>Recover item metadata</h3>
       <form onSubmit={event => { event.preventDefault(); action(async () => setPreview(await api("/admin/item-metadata/preview", "POST", body))); }} onChange={resetPreview}>
