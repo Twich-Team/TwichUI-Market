@@ -1,3 +1,5 @@
+import { Loading } from "./loading";
+import { InfoTooltip, metricExplanations } from "./info-tooltip";
 import {dealState,dealUrl,navigate,itemUrl,followItem,restoration,saveRestoration,useRestoreView} from "./navigation";
 import { Currency } from "./currency";
 import { useEffect, useState } from "react";
@@ -73,6 +75,7 @@ export function Deals({
       return api<Results>(`/markets/${market}${path}`,"GET",undefined,signal);
     },
     [market, mode, submitted],
+    true,
   );
   useRestoreView(!result.loading,searchParams);
   useEffect(()=>{if(markets.length&&location.pathname==='/deals'&&!searchParams)apply(browsing.filters);},[markets.length]);
@@ -183,9 +186,9 @@ export function Deals({
           />
         </label>
         <label>
-          Evidence
+          Evidence <InfoTooltip label="market evidence">{metricExplanations.evidence}</InfoTooltip>
           <select
-            value={filters.confidence}
+            aria-label="Evidence" value={filters.confidence}
             onChange={(event) =>
               changeFilters({ confidence: event.target.value })
             }
@@ -199,10 +202,8 @@ export function Deals({
           Apply filters
         </button>
       </form>
-      {result.loading && (
-        <p className="muted" role="status">
-          Evaluating observed market data…
-        </p>
+      {(result.loading || result.refreshing) && (
+        <Loading label="Evaluating observed market data…" skeleton={!result.data}/>
       )}
       {result.error && (
         <p className="notice error" role="alert">
@@ -266,6 +267,7 @@ export function Deals({
                         item_id: deal.item_id,
                         name: deal.name || `Item #${deal.item_id}`,
                         quality: deal.quality,
+                        icon_url: deal.icon_url,
                         variant_key: deal.variant_key,
                       }}
                       prices={{
@@ -329,6 +331,7 @@ export function Deals({
                         item_id: signal.item_id,
                         name: signal.name || `Item #${signal.item_id}`,
                         quality: signal.quality,
+                        icon_url: signal.icon_url,
                         variant_key: signal.variant_key,
                       }}
                       prices={{

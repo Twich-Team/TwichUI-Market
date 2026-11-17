@@ -181,6 +181,17 @@ def item_detail(market_id: MarketId, item_id: Annotated[int,Path(ge=1,le=2**31-1
         'listings_truncated':len(listings)>200,'provenance':'asking_listings_only'})
 
 
+def add_local_icons(db, region, records):
+    from .models import ItemMedia
+    ids = {row['item_id'] for row in records}
+    media = {row.item_id: row.asset_hash for row in db.scalars(select(ItemMedia).where(
+        ItemMedia.region == region, ItemMedia.item_id.in_(ids), ItemMedia.asset_hash.is_not(None)))} if ids else {}
+    for row in records:
+        digest = media.get(row['item_id'])
+        row['icon_url'] = f'/api/v1/items/{region}/{row["item_id"]}/icon?v={digest}' if digest else None
+    return records
+
+
 def coverage_status(db,market_id,required,*,prior=False):
     window=daily_window(market_id,now(),prior=prior)
     days=db.scalar(select(func.count()).select_from(window))
@@ -211,7 +222,7 @@ def deals(market_id: MarketId, minimum_discount: int = Query(15,ge=1,le=99),
             'reason':f'{discount:.1f}% below provisional 14-day asking-price reference; {coverage} observed days.',
             'cautions':['Asking prices do not establish completed sales or resale profit.',
                         'Workshop algorithm compatibility is not verified.']})
-    return money_contract({'contract_version':1,'history_coverage':history_coverage,'deals':result,'candidates_truncated':truncated,
+    return money_contract({'contract_version':1,'history_coverage':history_coverage,'deals':add_local_icons(db,market.region,result),'candidates_truncated':truncated,
         'synthetic':latest.synthetic or any(bool(row[3]) for row in rows),
         'market':view,'algorithm':'asking-v1-provisional'})
 
@@ -245,7 +256,7 @@ def signals(market_id: MarketId,kind: Literal['supply','price'],minimum_change: 
             'confidence':evidence(coverage,view['freshness'],market.verified,latest.synthetic or row['synthetic']),
             'reason':reason,'cautions':['Supply and price changes describe listings, not completed sales.',
                 'A shortage or price rise does not guarantee a profitable resale.']})
-    return money_contract({'contract_version':1,'history_coverage':history_coverage,'signals':result,'candidates_truncated':truncated,
+    return money_contract({'contract_version':1,'history_coverage':history_coverage,'signals':add_local_icons(db,market.region,result),'candidates_truncated':truncated,
         'synthetic':latest.synthetic or any(bool(row._mapping['synthetic']) for row in rows),
         'market':view,'algorithm':'asking-v1-provisional'})
 

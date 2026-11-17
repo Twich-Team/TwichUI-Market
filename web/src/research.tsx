@@ -1,3 +1,4 @@
+import { Loading } from "./loading";
 import { currentLocation, explorerState, explorerUrl, navigate, restoration, saveRestoration, type ExplorerState } from "./navigation";
 import { usePreferences } from "./preferences";
 import { useQuery } from "@tanstack/react-query";
@@ -10,16 +11,20 @@ export function useLoad<T>(
   key: string,
   load: (signal?: AbortSignal) => Promise<T>,
   dependencies: DependencyList,
+  retainPrevious = false,
 ) {
   const query = useQuery({
     queryKey: ["private", key, ...dependencies],
     queryFn: ({ signal }) => load(signal),
+    // A filter refresh can retain rows only within the same market and result mode.
+    placeholderData: (previous, previousQuery) => retainPrevious && previousQuery?.queryKey[2] === dependencies[0] && previousQuery?.queryKey[3] === dependencies[1] ? previous : undefined,
     refetchInterval: 60_000,
   });
   return {
     data: query.data,
     error: query.error?.message || "",
-    loading: query.isPending,
+    loading: query.isPending || query.isPlaceholderData,
+    refreshing:query.isFetching&&!query.isPending,
     refresh: () => query.refetch(),
   };
 }
@@ -81,7 +86,7 @@ export function Explorer({markets,market,setMarket,searchParams,marketsReady}: {
   useEffect(()=>{if(markets.length&&current&&currentLocation()!==explorerUrl(state))navigate(explorerUrl(state),true);},[markets.length,state.market,state.query,state.sort.id,state.sort.desc,state.pageIndex,state.pageSize]);
   function change(next:ExplorerState){navigate(explorerUrl(next),true);}
   return <div className="explorer-page">
-    <div className="eyebrow">KNOW YOUR MARKET</div><h1>Market Explorer</h1>
+    <h1>Market Explorer</h1>
 
     <form className="toolbar" onSubmit={event=>{event.preventDefault();saveRestoration({draft:search,expanded:{}});change({...state,query:search,pageIndex:0});}}>
       <label className="grow">Search items<input value={search} onChange={e=>{setSearch(e.target.value);saveRestoration({draft:e.target.value});}} placeholder="Item name or ID, e.g. Arcane Crystal" maxLength={64}/></label>
@@ -89,7 +94,7 @@ export function Explorer({markets,market,setMarket,searchParams,marketsReady}: {
       <button className="primary" disabled={!current}>Search</button>
     </form>
     {current&&(current.freshness!=="current"||!current.verified)&&<p className="small muted explorer-freshness" title={`Last collection check: ${when(current.last_success)}`}>{current.freshness==="stale"?"Source data is stale":current.freshness==="unknown"?"Source freshness unknown":""}{!current.verified&&" · Mapping not live-verified; collection disabled"}</p>}
-    {!marketsReady&&<p role="status" className="empty panel">Loading available markets…</p>}
+    {!marketsReady&&<Loading label="Loading available markets…" />}
     {marketsReady&&!markets.length&&<p className="empty panel">No market mappings are configured. An administrator can add a mapping under Administration.</p>}
     {markets.length>0&&!current&&<p className="notice" role="alert">This market is unavailable. Choose an available market to browse; your link has not been moved to another market.</p>}
     {summary.synthetic&&<p className="notice warning">Synthetic fixture data · not live Auction House observations.</p>}

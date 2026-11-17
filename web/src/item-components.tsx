@@ -1,3 +1,4 @@
+import { Loading } from "./loading";
 import { ForeverDBFacts, type RichFacts } from "./foreverdb-facts";
 import { ItemName } from "./item-name";
 import { Currency } from "./currency";
@@ -52,6 +53,7 @@ export function ItemIcon({ item }: { item: ItemIdentity }) {
   const container = useRef<HTMLSpanElement>(null);
   useEffect(() => {
     setFailed(false);
+    setVisibleSource(null);
     if (!item.icon_url || !container.current) return;
     if (typeof IntersectionObserver === "undefined") {
       setVisibleSource(item.icon_url);
@@ -81,7 +83,7 @@ export function ItemIcon({ item }: { item: ItemIdentity }) {
           alt=""
           width={36}
           height={36}
-          loading="lazy"
+          loading="eager"
           onError={() => setFailed(true)}
         />
       ) : (
@@ -246,11 +248,8 @@ export function ItemInfo({
                 <ItemFacts profile={profile.data} />
               </>
             ) : (
-              <p role="status">
-                {profile.error
-                  ? "Item metadata could not be loaded."
-                  : "Loading verified item facts…"}
-              </p>
+              profile.error ? <p role="alert">Item metadata could not be loaded.</p> : <Loading label="Loading verified item facts…"/>
+
             )}
             {ranges && (
               <section

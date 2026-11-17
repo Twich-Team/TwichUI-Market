@@ -1,8 +1,13 @@
+import { Loading } from "./loading";
+import { formatBytes as size } from "./size";
 import { useState } from "react";
 import { useLoad } from "./research";
 import { api } from "./api";
 import { DataTable } from "./data-table";
 interface Policy {
+  policy_configured: boolean;
+  scheduled: boolean;
+  completed_batches: number;
   raw_days: number;
   intraday_days: number;
   daily_days: number;
@@ -32,8 +37,7 @@ const fields = [
   ["operational_days", "Collection logs"],
   ["security_days", "Security logs"],
 ] as const;
-const size = (v: number | null) =>
-  v === null ? "Unknown" : `${(v / 1048576).toFixed(2)} MiB`;
+
 export function RetentionControls({ readOnly }: { readOnly: boolean }) {
   const state = useLoad(
     "retention-policy",
@@ -60,6 +64,7 @@ export function RetentionControls({ readOnly }: { readOnly: boolean }) {
   return (
     <section className="panel padded">
       <h3>Historical retention policy</h3>
+      {busy && <Loading label="Preparing retention operation…"/>}
       <p>
         Configure a proposal, preview its impact, then confirm a bounded batch
         after owner approval and a verified backup restoration.
@@ -140,6 +145,12 @@ export function RetentionControls({ readOnly }: { readOnly: boolean }) {
               Save policy proposal
             </button>
           </form>
+          <dl className="stats">
+            <div><dt>Policy</dt><dd>{state.data.policy_configured ? "Configured" : "Default proposal; not saved"}</dd></div>
+            <div><dt>Authorization</dt><dd>{state.data.application_authorized ? "Approved for this exact policy" : "Owner approval pending"}</dd></div>
+            <div><dt>Destructive batches</dt><dd>{state.data.application_authorized && state.data.backup_restore_ready ? "Ready for explicit batch confirmation" : "Disabled"}</dd></div>
+            <div><dt>Maintenance</dt><dd>Not scheduled · {state.data.completed_batches} completed batches</dd></div>
+          </dl>
           <p className="notice">
             {state.data.notice} Live application{" "}
             {state.data.application_authorized

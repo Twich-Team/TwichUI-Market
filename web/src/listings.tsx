@@ -1,3 +1,6 @@
+import { InfoTooltip } from "./info-tooltip";
+import { ListingsFreshness } from "./local-time";
+import { Loading } from "./loading";
 import { useState } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { SortingState } from "@tanstack/react-table";
@@ -57,7 +60,7 @@ export function CurrentListings({
     refetchInterval: 60000,
     placeholderData: keepPreviousData,
     queryFn: ({ signal }) =>
-      api<{ listings: Auction[]; total: number; snapshot_id: string }>(
+      api<{ listings: Auction[]; total: number; snapshot_id: string; observed_at:string|null; synthetic:boolean }>(
         `/markets/${market}/items/${item}/${variant}/listings?page=${pagination.pageIndex}&page_size=${pagination.pageSize}&sort=${sort.id}&direction=${sort.desc ? "desc" : "asc"}`,
         "GET",
         undefined,
@@ -79,10 +82,8 @@ export function CurrentListings({
           total
         </span>
       </div>
-      <p className="small muted">
-        Asking listings, not completed sales. Time remaining is an upstream
-        duration category; exact expiry is unavailable.
-      </p>
+      <div><ListingsFreshness value={response.data?.observed_at}/><InfoTooltip label="current listings">Current asking listings, not completed sales. The timestamp is when this displayed snapshot was observed. Time remaining is an upstream duration category; exact expiry is unavailable.</InfoTooltip></div>
+      {response.data?.synthetic && <p className="small muted">Synthetic fixture listings · not live observations.</p>}
       <label className="checkbox">
         <input
           type="checkbox"
@@ -92,7 +93,7 @@ export function CurrentListings({
         Advanced auction diagnostics
       </label>
       {response.error && <p role="alert">{response.error.message} <button onClick={()=>response.refetch()}>Retry current auctions</button></p>}
-      {response.isFetching && <p role="status">Loading current listings…</p>}
+      {response.isFetching && <Loading label="Loading current listings…" />}
       <DataTable<Auction>
         label="current listings"
         data={listings}

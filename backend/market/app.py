@@ -42,6 +42,8 @@ from .market_configuration import router as configuration_router
 app.include_router(configuration_router)
 from .current_listings import router as listings_router
 app.include_router(listings_router)
+from .intraday_history import router as intraday_router
+app.include_router(intraday_router)
 from .preferences import router as preferences_router
 app.include_router(preferences_router)
 from .companion_auth import router as companion_auth_router
@@ -306,8 +308,8 @@ def invite(user: User = Depends(admin), db: Session = Depends(session)):
 
 
 @app.get("/api/v1/admin/users")
-def users(user: User = Depends(admin), db: Session = Depends(session)):
-    return [user_view(row) for row in db.scalars(select(User).order_by(User.id))]
+def users(include_archived: bool = False, user: User = Depends(admin), db: Session = Depends(session)):
+    return [{**user_view(row), "archived_at": row.archived_at} for row in db.scalars(select(User).where(True if include_archived else User.archived_at.is_(None)).order_by(User.id))]
 
 
 @app.get('/api/v1/admin/invitations')
@@ -335,18 +337,68 @@ def all_devices(user: User = Depends(admin),db: Session = Depends(session)):
 @app.patch("/api/v1/admin/users/{user_id}")
 def update_user(user_id: int, body: UserUpdate, user: User = Depends(admin), db: Session = Depends(session)):
     # Serialize administrator changes to preserve at least one active administrator.
-    administrators = list(db.scalars(select(User).where(User.role == "admin").order_by(User.id).with_for_update()))
-    target = db.get(User, user_id)
+    administrators = list(db.scalars(select(User).where(User.role == "admin").order_by(User.id).with_for_update().execution_options(populate_existing=True)))
+    # Authentication may precede another administrator's committed access change.
+    # Refresh cached ORM identities after acquiring the administrator locks.
+    db.refresh(user)
+    if not user.active or user.role != 'admin' or user.archived_at is not None:
+        raise HTTPException(403, 'Administrator access changed; sign in again')
+    target = db.get(User, user_id, populate_existing=True)
     if not target:
         raise HTTPException(404, "User not found")
     if target.role == "admin" and target.active and (body.role != "admin" or not body.active):
         if sum(row.active for row in administrators) <= 1:
             raise HTTPException(409, "Keep at least one active administrator")
+    if target.id == user.id and not body.active:
+        raise HTTPException(409, "You cannot disable your own account")
+    if target.archived_at is not None and body.active:
+        raise HTTPException(409, "Restore the archived account before enabling access")
     target.role, target.active = body.role, body.active
     if not body.active:
         db.execute(update(CompanionDevice).where(CompanionDevice.user_id == target.id).values(revoked=True))
         db.execute(update(Credential).where(Credential.user_id == target.id).values(revoked=True))
     audit(db, user.id, "user.updated", str(target.id))
+    db.commit()
+    return user_view(target)
+
+
+class ArchiveMember(BaseModel):
+    confirmation: str = Field(min_length=1, max_length=64)
+
+
+@app.post('/api/v1/admin/users/{user_id}/archive')
+def archive_member(user_id: int, body: ArchiveMember, user: User = Depends(admin), db: Session = Depends(session)):
+    administrators = list(db.scalars(select(User).where(User.role == 'admin').order_by(User.id).with_for_update().execution_options(populate_existing=True)))
+    # Authentication may precede another administrator's committed access change.
+    # Refresh cached ORM identities after acquiring the administrator locks.
+    db.refresh(user)
+    if not user.active or user.role != 'admin' or user.archived_at is not None:
+        raise HTTPException(403, 'Administrator access changed; sign in again')
+    target = db.get(User, user_id, populate_existing=True)
+    if target is None:
+        raise HTTPException(404, 'User not found')
+    if body.confirmation != target.username:
+        raise HTTPException(409, 'Type the exact account name to confirm archival')
+    if target.id == user.id:
+        raise HTTPException(409, 'You cannot archive your own account')
+    if target.active and target.role == 'admin' and sum(row.active for row in administrators) <= 1:
+        raise HTTPException(409, 'Keep at least one active administrator')
+    target.active = False
+    target.archived_at = target.archived_at or now()
+    db.execute(update(Credential).where(Credential.user_id == target.id).values(revoked=True))
+    db.execute(update(CompanionDevice).where(CompanionDevice.user_id == target.id).values(revoked=True))
+    audit(db, user.id, 'user.archived', f'user={target.id}; access revoked; audit and owned records retained')
+    db.commit()
+    return user_view(target)
+
+
+@app.post('/api/v1/admin/users/{user_id}/restore')
+def restore_member(user_id: int, user: User = Depends(admin), db: Session = Depends(session)):
+    target = db.get(User, user_id)
+    if target is None:
+        raise HTTPException(404, 'User not found')
+    target.archived_at = None
+    audit(db, user.id, 'user.archive.restored', f'user={target.id}; access remains disabled')
     db.commit()
     return user_view(target)
 

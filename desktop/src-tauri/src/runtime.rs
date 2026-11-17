@@ -1061,6 +1061,9 @@ impl Runtime {
             local.settings.onboarding_completed && local.settings.minimize_to_tray
         })
     }
+    pub fn claim_update_notice(&self, version: &str, background: bool) -> Result<bool> {
+        twichui_market_core::update::claim_update_notice(&self.data.path,version,background).map_err(friendly)
+    }
     pub fn updates_eligible(&self) -> bool {
         !self.quitting()
             && self.data.local.lock().is_ok_and(|local| {

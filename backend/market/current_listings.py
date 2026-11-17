@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from .db import session
 from .market_api import MarketId,latest_observation,money_contract,require_market
 from .models import Listing,User
-from .security import identity
+from .security import identity,aware
 router=APIRouter(prefix='/api/v1/markets')
 
 @router.get('/{market_id}/items/{item_id}/{variant_key}/listings')
@@ -20,7 +20,7 @@ def current_listings(market_id:MarketId,item_id:MarketId,variant_key:str,
     head=latest_observation(db,market_id)
     snapshot=str(head.snapshot_id) if head else None
     if expected_snapshot and expected_snapshot!=snapshot:raise HTTPException(409,'Current snapshot changed; refresh listings')
-    if not head:return {'listings':[],'total':0,'snapshot_id':None,'page':page,'page_size':page_size,'synthetic':False}
+    if not head:return {'listings':[],'total':0,'snapshot_id':None,'page':page,'page_size':page_size,'synthetic':False,'observed_at':None}
     predicate=(Listing.snapshot_id==head.snapshot_id)&(Listing.item_id==item_id)&(Listing.variant_key==variant_key)
     unit=func.coalesce(cast(Listing.unit_price,Numeric(80,40)),cast(Listing.buyout,Numeric(80,40))/Listing.quantity)
     total=func.coalesce(cast(Listing.buyout,Numeric),cast(Listing.unit_price,Numeric)*Listing.quantity)
@@ -30,4 +30,4 @@ def current_listings(market_id:MarketId,item_id:MarketId,variant_key:str,
     count=db.scalar(select(func.count()).select_from(Listing).where(predicate))
     rows=db.scalars(select(Listing).where(predicate).order_by(order,Listing.auction_id).offset(page*page_size).limit(page_size))
     return money_contract({'listings':[{'auction_id':str(r.auction_id),'quantity':r.quantity,'buyout':r.buyout,'unit_price':r.unit_price,'bid':r.bid,'time_left':r.time_left} for r in rows],
-        'total':count,'snapshot_id':snapshot,'page':page,'page_size':page_size,'synthetic':head.synthetic,'provenance':'asking_listings_only'})
+        'observed_at':aware(head.retrieved_at).isoformat(),'total':count,'snapshot_id':snapshot,'page':page,'page_size':page_size,'synthetic':head.synthetic,'provenance':'asking_listings_only'})

@@ -1,49 +1,15 @@
+import { Loading } from "./loading";
 import { Currency } from "./currency";
 import {
-  lazy,
-  Suspense,
   useMemo,
   useRef,
   useState,
-  useEffect,
-  ComponentProps,
 } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { api, money } from "./api";
 import { HistoryPoint, withMissingDays, exactPriceTooltip, observationLabel } from "./chart-data";
-const ChartEngine = lazy(() => import("./chart-engine"));
-function DeferredChart(props: ComponentProps<typeof ChartEngine>) {
-  const container = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    if (visible || !container.current) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((entry) => entry.isIntersecting)) {
-          setVisible(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: "150px" },
-    );
-    observer.observe(container.current);
-    return () => observer.disconnect();
-  }, [visible]);
-  return (
-    <div ref={container} className="chart-viewport">
-      {visible ? (
-        <Suspense fallback={<p role="status">Opening interactive chart…</p>}>
-          <ChartEngine {...props} />
-        </Suspense>
-      ) : (
-        <button className="secondary" onClick={() => setVisible(true)}>
-          Load {props.label.toLowerCase()}
-        </button>
-      )}
-    </div>
-  );
-}
+import { DeferredChart } from "./deferred-chart";
 const palette = {
   price: "#d9b365",
   reference: "#83aca1",
@@ -195,7 +161,7 @@ export function PriceHistory({
       })),
     };
   }, [rows, overlays, zoom]);
-  if (history.isPending) return <p role="status">Loading observed history…</p>;
+  if (history.isPending) return <div className="chart-placeholder"><Loading label="Loading observed history…" skeleton/></div>;
   if (history.error)
     return (
       <p role="alert" className="notice error">
@@ -506,7 +472,7 @@ export function SupplyDistribution({
     [result.data],
   );
   if (result.isPending)
-    return <p role="status">Loading complete distribution…</p>;
+    return <Loading label="Loading complete distribution…" />;
   if (result.error) return <p role="alert">{result.error.message} <button onClick={()=>result.refetch()}>Retry supply distribution</button></p>;
   if (!result.data?.bands.length)
     return (

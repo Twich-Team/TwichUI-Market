@@ -23,7 +23,7 @@ export function UnresolvedNames({ market, chooseItem }: { market:number; chooseI
   const page=useRecordPage<Unresolved>("unresolved",filters,"item_id",false);
   return <section className="panel padded"><h3>Unresolved names</h3><p className="small muted">Current market snapshot. A provider’s missing response does not mean the auction item does not exist.</p>
     <div className="toolbar"><label>Search unresolved item ID<input type="search" inputMode="numeric" value={item} maxLength={10} onChange={e=>{if(/^\d*$/.test(e.target.value)&&Number(e.target.value)<=2147483647){setItem(e.target.value);page.reset();}}}/></label><label>Blizzard lookup<select value={primary} onChange={e=>{setPrimary(e.target.value);page.reset();}}><option value="">All</option><option value="missing">Provider reports missing</option><option value="pending">Pending or unavailable</option></select></label></div>
-    <DataTable<Unresolved> label="unresolved names" data={page.query.data?.rows||[]} server={page.server} loading={page.query.isPending} error={page.query.error?.message} getRowId={row=>row.id} columns={[
+    <DataTable<Unresolved> label="unresolved names" data={page.query.data?.rows||[]} server={page.server} loading={page.query.isFetching} error={page.query.error?.message} getRowId={row=>row.id} columns={[
       {accessorKey:"item_id",header:"Item ID",enableHiding:false,cell:({row})=>`Item #${row.original.item_id}`},
       {accessorKey:"market_presence",header:"Market presence",enableSorting:false},
       {accessorKey:"blizzard_status",header:"Blizzard lookup",enableSorting:false},

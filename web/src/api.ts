@@ -3,6 +3,7 @@ export interface User {
   username: string;
   role: "member" | "admin";
   active: boolean;
+  archived_at?: string | null;
 }
 export interface BrowserSession {
   user: User;

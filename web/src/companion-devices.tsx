@@ -1,3 +1,5 @@
+import { Loading } from "./loading";
+import { ConfirmationDialog } from "./confirmation-dialog";
 import { DataTable } from "./data-table";
 import { LocalTime, Status } from "./admin-table";
 import { useState } from "react";
@@ -17,6 +19,7 @@ export interface CompanionDevice {
   last_sync_at: string | null;
   selected_market_id: number | null;
   selected_market_name: string | null;
+  archived_at?: string | null;
   revoked: boolean;
 }
 export interface DeviceList {
@@ -38,12 +41,13 @@ export function useCompanionDevices(
   userId: number,
   admin = false,
   poll = false,
+  includeArchived = false,
 ) {
   return useQuery({
-    queryKey: deviceKey(userId, admin),
+    queryKey: [...deviceKey(userId, admin), includeArchived],
     queryFn: ({ signal }) =>
       api<DeviceList>(
-        admin ? "/companion/admin/devices" : "/companion/devices",
+        `${admin ? "/companion/admin/devices" : "/companion/devices"}?include_archived=${includeArchived}`,
         "GET",
         undefined,
         signal,
@@ -68,6 +72,8 @@ function DeviceCard({
   const [editing, setEditing] = useState(false),
     [draft, setDraft] = useState(device.name),
     [confirm, setConfirm] = useState(false),
+    [archiveConfirm, setArchiveConfirm] = useState(false),
+    [archiveName, setArchiveName] = useState(""),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
     [message, setMessage] = useState("");
@@ -77,7 +83,7 @@ function DeviceCard({
       device.renewal_expires_at &&
         new Date(device.renewal_expires_at).getTime() <= Date.now(),
     );
-  async function act(operation: "rename" | "revoke") {
+  async function act(operation: "rename" | "revoke" | "archive" | "restore") {
     setBusy(true);
     setError("");
     setMessage("");
@@ -86,6 +92,8 @@ function DeviceCard({
         await api(`/companion/devices/${device.id}`, "PATCH", {
           name: draft.trim(),
         });
+      else if (operation === "archive" || operation === "restore")
+        await api(`/companion/${admin ? "admin/" : ""}devices/${device.id}/${operation}`, "POST", operation === "archive" ? {confirmation: archiveName} : undefined);
       else
         await api(
           `/companion/${admin ? "admin/" : ""}devices/${device.id}`,
@@ -96,10 +104,11 @@ function DeviceCard({
       });
       setEditing(false);
       setConfirm(false);
+      setArchiveConfirm(false);
       setMessage(
         operation === "rename"
           ? "Device renamed."
-          : "Access revoked. Offline data on that PC is preserved.",
+          : operation === "archive" ? "Entry archived. Security evidence is retained." : operation === "restore" ? "Entry restored; access remains revoked." : "Access revoked. Offline data on that PC is preserved.",
       );
     } catch (error) {
       setError((error as Error).message);
@@ -127,7 +136,7 @@ function DeviceCard({
             ? "Revoked"
             : expired
               ? "Sign-in expired"
-              : "Connected"}
+              : "Authorized"}
         </span>
       </div>
       <dl className="companion-device-facts">
@@ -194,7 +203,7 @@ function DeviceCard({
         </form>
       ) : (
         <div className="companion-device-actions">
-          {!admin && (
+          {!admin && !device.archived_at && (
             <button
               className="secondary"
               disabled={busy}
@@ -207,6 +216,8 @@ function DeviceCard({
               Rename
             </button>
           )}
+          {device.revoked && !device.archived_at && <button className="secondary" disabled={busy || readOnly} onClick={() => setArchiveConfirm(true)}>Archive entry</button>}
+          {device.archived_at && !admin && <button className="secondary" disabled={busy || readOnly} onClick={() => act("restore")}>Restore listing</button>}
           {!device.revoked && !confirm && (
             <button
               className="secondary"
@@ -221,6 +232,12 @@ function DeviceCard({
           )}
         </div>
       )}
+      {archiveConfirm && <ConfirmationDialog title={`Archive ${device.name}?`} onClose={() => setArchiveConfirm(false)}>
+        <p>Hide {device.name} from the ordinary device list? Access is already revoked. Security and delivery evidence is retained; no database records are deleted.</p>
+        <label>Type {device.name} to confirm<input value={archiveName} onChange={e => setArchiveName(e.target.value)} autoComplete="off"/></label>
+        <button className="primary" disabled={busy || readOnly || archiveName !== device.name} onClick={() => act("archive")}>Confirm archive</button>
+        <button className="text-button" disabled={busy} onClick={() => setArchiveConfirm(false)}>Cancel</button>
+      </ConfirmationDialog>}
       {confirm && (
         <div className="notice">
           <p>
@@ -267,7 +284,8 @@ export function CompanionDevices({
   readOnly?: boolean;
   owners?: Record<number, string>;
 }) {
-  const devices = useCompanionDevices(userId, admin, admin),
+  const [includeArchived, setIncludeArchived] = useState(false);
+  const devices = useCompanionDevices(userId, admin, admin, includeArchived),
     [shown, setShown] = useState(10);
   return (
     <section
@@ -281,7 +299,7 @@ export function CompanionDevices({
           <h2>{admin ? "Desktop companions" : "Your desktop companions"}</h2>
           <p className="muted">
             Browser-approved connections. Revoking access keeps existing market
-            history and the PC’s offline cache.
+            history and the PC’s offline cache. Authorized does not mean online. Last connection records an authenticated request. Archive revoked entries to hide them while retaining security evidence.
           </p>
         </div>
         <button
@@ -292,7 +310,8 @@ export function CompanionDevices({
           Refresh devices
         </button>
       </div>
-      {devices.isPending && <p role="status">Loading your connections…</p>}
+      <label className="checkbox"><input type="checkbox" checked={includeArchived} onChange={e => setIncludeArchived(e.target.checked)}/>Include archived entries</label>
+      {devices.isPending && <Loading label="Loading your connections…" />}
       {devices.error && (
         <p className="notice error" role="alert">
           {devices.error.message}{" "}
@@ -303,7 +322,7 @@ export function CompanionDevices({
       )}
       {devices.data?.devices.length === 0 && (
         <p className="empty">
-          No companion connected yet. Open Get Desktop Companion to set up this
+          No companion registrations to display. Open Get Desktop Companion to set up this
           PC.
         </p>
       )}
