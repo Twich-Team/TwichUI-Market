@@ -1,0 +1,14 @@
+{
+  "publisher_image": "sha256:3f757981f846016e3578f78998f4a8e2cb277705771f9bd83bb8daf6468c5b6f",
+  "network_mode": "none",
+  "read_only_root": true,
+  "memory_limit": "268435456",
+  "cpus": 1,
+  "mounted_destinations": [
+    "/private-beta",
+    "/incoming"
+  ],
+  "private_allowlist_unchanged": true,
+  "account_secrets_or_db_access": false,
+  "new_services_or_listener_allocated": false
+}

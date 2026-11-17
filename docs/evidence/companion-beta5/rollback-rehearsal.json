@@ -1,0 +1,21 @@
+{
+  "isolated_copy_only": true,
+  "production_pointer_untouched": true,
+  "transitions": [
+    {
+      "changed": true,
+      "channel": "private-beta",
+      "previous_version": "2.0.0-beta.4",
+      "version": "2.0.0-beta.3",
+      "audit": "00000004.json"
+    },
+    {
+      "changed": true,
+      "channel": "private-beta",
+      "previous_version": "2.0.0-beta.3",
+      "version": "2.0.0-beta.4",
+      "audit": "00000005.json"
+    }
+  ],
+  "updater_never_forces_downgrade": true
+}

@@ -12,12 +12,8 @@ permissions:
   contents: read
   actions: read
 jobs:
-  original-signed-byte-acceptance:
-    uses: ./.github/workflows/companion-release.yml
-    with:
-      harness_commit: ${{ github.sha }}
-      proof_path: docs/evidence/companion-beta5/signed-candidate.json
-      pending_only: false
+  # Original signed-byte SDK/legacy acceptance passed in run 44085832476.
+  # Reuse that source-bound receipt; follow-up pushes exercise only beta.4.
   beta4-upgrade:
     runs-on: windows-latest
     timeout-minutes: 25

@@ -1,0 +1,10 @@
+{
+  "corrupt_payload_rejected": true,
+  "expected_install_directory": "D:\\a\\_temp\\TwichMarket-Upgrade",
+  "installer": "D:\\a\\TwichUI-Market\\TwichUI-Market\\desktop\\src-tauri\\target\\release\\bundle\\nsis\\2.0.0-beta.5-setup.exe",
+  "sdk_test_executed": true,
+  "supported_sdk_signature_verified": true,
+  "updater_public_key_sha256": "5794736c840c7c09a49396e60cd569ff6b5f24f872eb0318ed95d55c16616ecf",
+  "version": "2.0.0-beta.5",
+  "wrong_signed_version_rejected": true
+}

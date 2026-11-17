@@ -1,0 +1,21 @@
+{
+  "original_credential_cutoff": 257,
+  "tables": {
+    "users": {
+      "sha256": "b95ca930dd406c435aec067df94e24127606fb29b641cbef785578dd4bda3368",
+      "rows": 97
+    },
+    "credentials": {
+      "sha256": "8a845767b89e9c65c2491d33e3f74f54f47cf55adb483c25ff52c2255f20651d",
+      "rows": 257
+    },
+    "companion_devices": {
+      "sha256": "3cec2b55cde349f7c560521f630957935916202049a19ec4de26c19959691438",
+      "rows": 5
+    },
+    "user_preferences": {
+      "sha256": "786f4d36e212fdf59db413a1bad78d19b1b50ae4fe2e8d06d4396153eaf23922",
+      "rows": 22
+    }
+  }
+}

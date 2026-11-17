@@ -49,11 +49,13 @@ const {execFile,spawn}=require('node:child_process'),{promisify}=require('node:u
     for(const [name,digest] of Object.entries(snapshots))expect(hash(path.join(data,name))).toBe(digest);
     const upgraded=spawn(process.env.MARKET_TEST_INSTALLED_EXE,[],{detached:true,stdio:'ignore'});upgraded.unref();
     await expect.poll(available,{timeout:30000}).toBe(true);browser=await chromium.connectOverCDP(endpoint);page=browser.contexts()[0].pages()[0];
+    await expect(page.locator('#version')).toHaveText('v2.0.0-beta.5',{timeout:20000});
     await expect.poll(async()=>(await invoke('app_state')).connected,{timeout:20000}).toBe(true);
     const after=await invoke('app_state');expect(after.version).toBe('2.0.0-beta.5');expect(after.mode).toBe('companion');expect(after.account).toEqual(before.account);
     expect(after.settings.server).toBe(before.settings.server);expect(after.settings.selected_market).toBe(before.settings.selected_market);expect(after.settings.interval_minutes).toBe(60);expect(after.cache.item_count).toBe(2);
     expect(after.delivery.configuration).toBeUndefined();expect(fs.existsSync(path.join(data,'workshop-delivery-v1.json'))).toBe(false);
-    const archiveAfter=await invoke('archive_workshop',{...args,selected:null});expect(archiveAfter.selection).toEqual(archiveBefore.selection);expect(archiveAfter.header).toEqual(archiveBefore.header);
+    // Inspect/project the retained checkpoint, without requesting a fresh one.
+    const archiveAfter=await invoke('archive_workshop',{...args,selected});expect(archiveAfter.selection).toEqual(archiveBefore.selection);expect(archiveAfter.header).toEqual(archiveBefore.header);
     const last=(await invoke('app_state')).sync.sync.last_sync_ms;await invoke('sync_now');await expect.poll(async()=>(await invoke('app_state')).sync.sync.last_sync_ms,{timeout:30000}).toBeGreaterThan(last||0);
     const devicesAfter=(await(await api.get('/api/v1/companion/devices')).json()).devices;expect(devicesAfter.map(x=>x.id)).toEqual(deviceBefore.map(x=>x.id));
     const exported=JSON.parse(fs.readFileSync(await invoke('export_market'),'utf8'));expect(exported.items).toHaveLength(2);

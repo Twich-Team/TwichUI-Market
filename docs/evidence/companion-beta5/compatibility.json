@@ -1,0 +1,22 @@
+{
+  "addon_main_commit": "36cdb04b35ca132650673463ecc09a0bbeadb6dc",
+  "capability_url": "https://raw.githubusercontent.com/Twich-Team/TwichUI/36cdb04b35ca132650673463ecc09a0bbeadb6dc/TwichUI_Workshop/MarketDelivery.json",
+  "capability": {
+    "format": "twichui-market-consumer",
+    "capability_version": 1,
+    "contract_version": 1,
+    "transport_version": 1,
+    "schema_versions": [
+      3
+    ],
+    "canonical_bytes": 2097152,
+    "lua_bytes": 3145728,
+    "automatic_reload": false
+  },
+  "capability_sha256": "1f862b5678c26546c473d5750abff7470d161c7b46a4fe9184eecdc2b2e17d67",
+  "pr42_merged_at": "0c65a2f729489786c9881ee1d190471942324646",
+  "pr43_merged_at": "3466279f12006cdd6d489f7dbe3760af98e2daa8",
+  "server_source": "2920f366f7b5cd32178ae06ae94cea84701ff87f",
+  "server_backend_contract_diff_to_beta5": [],
+  "general_addon_release_published": false
+}

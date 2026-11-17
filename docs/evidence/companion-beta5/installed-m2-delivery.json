@@ -1,0 +1,21 @@
+{
+  "fixture": true,
+  "source_commit": "8c52b70afe8db4d514a46daf7dd13f27cccc8014",
+  "status": {
+    "archive_checkpoint": "98558d5d050df65c19d08f46f91464e7b0653730dbe3c9ab22639cba19b48a63",
+    "canonical_bytes": 6305,
+    "error": null,
+    "installation": "C:\\Users\\runneradmin\\AppData\\Roaming\\team.twich.market\\synthetic-Forever",
+    "last_attempt": "2026-11-17T04:15:12Z",
+    "last_successful_write": "2026-11-17T04:15:12Z",
+    "loaded_game_generation": null,
+    "lua_bytes": 8755,
+    "projection_input": "299ec9a19ce9e972f3a38f7100053bb4f6a3a6c4fc819d6c9b54088929809872",
+    "published_generation": "8f244688b229b50a59c97f2fe2c4bcd74bb97d93a7225eed6a9f3c85e8e621a9",
+    "result": "published; login or manually reload WoW",
+    "validated_generation": "8f244688b229b50a59c97f2fe2c4bcd74bb97d93a7225eed6a9f3c85e8e621a9"
+  },
+  "no_op_mtime_preserved": true,
+  "delivery_disabled": true,
+  "real_game": false
+}
