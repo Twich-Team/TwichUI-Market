@@ -232,7 +232,7 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
         <a
           href="#explorer"
           className="brand"
-          onClick={event => {event.preventDefault();setPage("explorer");}}
+          onClick={event => {event.preventDefault();setMenuOpen(false);setPage("explorer");}}
         >
           <span className="sigil">T</span>
           <span>

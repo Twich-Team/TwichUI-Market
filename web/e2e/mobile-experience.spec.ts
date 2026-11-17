@@ -1,9 +1,9 @@
 import {test,expect,Page} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import fs from 'node:fs';
-const output='../artifacts/mobile-experience';
+const output=process.env.MOBILE_SCREENSHOT_DIR || '../artifacts/mobile-experience';
 const widths=[320,344,360,375,390,430,600,768,1024,1440];
-async function login(page:Page){await page.goto('/?market=1');await page.getByLabel('Username',{exact:true}).fill('owner');await page.getByLabel('Password',{exact:true}).fill('synthetic browser owner password');await page.getByRole('button',{name:'Sign in',exact:true}).click();await expect(page.getByRole('heading',{name:'Market Explorer',exact:true})).toBeVisible();}
+async function login(page:Page){await page.route('**/api/v1/markets',async route=>{const response=await route.fetch();const body=await response.json();body.markets=body.markets.map((market:object,index:number)=>index===0?{...market,label:'Synthetic market with an exceptionally long regional and faction description'}:market);await route.fulfill({response,json:body});});await page.goto('/?market=1');await page.getByLabel('Username',{exact:true}).fill('owner');await page.getByLabel('Password',{exact:true}).fill('synthetic browser owner password');await page.getByRole('button',{name:'Sign in',exact:true}).click();await expect(page.getByRole('heading',{name:'Market Explorer',exact:true})).toBeVisible();}
 async function overflow(page:Page){const wide=await page.evaluate(w=>[...document.querySelectorAll('main *')].filter(e=>e.getBoundingClientRect().right>w).slice(0,12).map(e=>({tag:e.tagName,cls:e.className,width:e.getBoundingClientRect().width})),page.viewportSize()!.width);expect(await page.evaluate(()=>({viewport:innerWidth,width:document.documentElement.scrollWidth})),JSON.stringify(wide)).toEqual({viewport:page.viewportSize()!.width,width:page.viewportSize()!.width});}
 async function shot(page:Page,name:string){fs.mkdirSync(output,{recursive:true});await page.screenshot({path:`${output}/${name}.png`,fullPage:true});}
 test('mobile shell and search geometry across viewport matrix',async({page})=>{
@@ -38,4 +38,11 @@ test('touch disclosure long records delayed search enlarged text and loading sta
  await page.getByLabel('Search items',{exact:true}).fill('Synthetic');await page.getByLabel('Search items',{exact:true}).press('Enter');await expect(page.locator('.mobile-item').first()).toContainText('extraordinarily');await overflow(page);
  await page.addStyleTag({content:':root{font-size:28px}'});await overflow(page);await shot(page,'after-text-200-percent-320');
  await page.getByRole('button',{name:'Menu',exact:true}).click();await expect(page.getByRole('button',{name:'Account & devices',exact:true})).toBeVisible();await page.getByRole('button',{name:'Account & devices',exact:true}).click();await expect(page.getByRole('button',{name:'Menu',exact:true})).toBeVisible();await expect(page.getByRole('button',{name:'Sign out',exact:true})).not.toBeVisible();await overflow(page);
+});
+test('landscape phone navigation remains reachable without a fixed short sidebar',async({page})=>{
+ await login(page);
+ for(const viewport of [{width:844,height:390},{width:932,height:430},{width:600,height:320}]){
+  await page.setViewportSize(viewport);await overflow(page);await page.getByRole('button',{name:'Menu',exact:true}).click();
+  const logout=page.getByRole('button',{name:'Sign out',exact:true});await logout.scrollIntoViewIfNeeded();await expect(logout).toBeVisible();await overflow(page);await page.keyboard.press('Escape');await expect(page.getByRole('button',{name:'Menu',exact:true})).toBeFocused();
+ }
 });

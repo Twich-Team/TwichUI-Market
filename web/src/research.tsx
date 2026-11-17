@@ -38,7 +38,7 @@ export function MarketSelect({
   setMarket: (id: number) => void;
 }) {
   return (
-    <label>
+    <label className="market-select">
       Market
       <select
         value={market}
