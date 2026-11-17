@@ -1,0 +1,48 @@
+{
+  "source": "GitHub Actions PR integration preview; not a deployment approval or Windows toast observation",
+  "application_head": "df4d974bec1adb157fbca8b0eabb99f5190c6286",
+  "base": "6cef35797f28d562c7ee3db3aa290cfe876f418d",
+  "tested_merge_preview": "2b166c76e7f757069c102b8ccad00f6cb686ddac",
+  "runs": [
+    {
+      "id": 44005390956,
+      "name": "Backend",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/44005390956"
+    },
+    {
+      "id": 44005391032,
+      "name": "Private website",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/44005391032"
+    },
+    {
+      "id": 44005391081,
+      "name": "Windows companion",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/44005391081"
+    }
+  ],
+  "counts": {
+    "postgresql": 605,
+    "operational_python": 44,
+    "scoped_contract_python": 16,
+    "frontend": 129,
+    "chromium_workflows": 48,
+    "local_rust_workspace_passed": 92,
+    "local_rust_workspace_ignored": 1,
+    "addon_offline_checks": 48,
+    "addon_feature_overall": "FAIL: separate simulator checkout missing"
+  },
+  "addon_head": "46b4074d007b7b182d8b9e2f4eb7a1a9a1e90e0b",
+  "not_verified": [
+    "Actual Windows OS toast delivery and tray focus",
+    "Addon simulator (checkout absent)",
+    "Real game-client appearance/import acceptance"
+  ],
+  "production_revision": "6bb71a61fa3493da3f418288c3af1841fabfb0fc",
+  "deployment_performed": false
+}

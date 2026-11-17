@@ -1,0 +1,20 @@
+{
+  "source": "read-only production final guard; not browser or heartbeat evidence",
+  "captured_at": "2026-11-17 02:51:50.079983+00:00",
+  "schema": "fdb_20261116",
+  "active_collectors": [
+    {
+      "id": 2,
+      "house_id": 114,
+      "interval_seconds": 300,
+      "failures": 0
+    }
+  ],
+  "protected_owner_device": {
+    "id": 3,
+    "name": "Windows PC",
+    "app_version": "2.0.0-beta.3",
+    "revoked": false
+  },
+  "retention_batch_count": 0
+}
