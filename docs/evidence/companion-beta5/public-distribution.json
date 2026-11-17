@@ -1,0 +1,72 @@
+{
+  "source": "Actual authenticated public market.twich.gg HTTPS; temporary narrow grant on existing device; no owner-PC claim",
+  "release": {
+    "contract_version": 1,
+    "ready": true,
+    "platform": "windows-x64",
+    "channel": "private-beta",
+    "version": "2.0.0-beta.5",
+    "download_url": "/api/v1/companion/private-beta/2.0.0-beta.5/windows-x64",
+    "bytes": 4762861,
+    "sha256": "6124b9472b03c1ee53a83e3a8e7570a9f3621834c77624cd9aa48bc005465de1",
+    "source_commit": "8c52b70afe8db4d514a46daf7dd13f27cccc8014",
+    "published_at": "2026-11-17T12:53:12.079851+00:00",
+    "updates": "signed",
+    "signed": false,
+    "updater_signature_verified": true,
+    "updater_public_key_sha256": "5794736c840c7c09a49396e60cd569ff6b5f24f872eb0318ed95d55c16616ecf",
+    "tray_actions_verified": false,
+    "notes": "M2 private pilot: opt-in scheduled history synchronization and bounded exact-variant Workshop delivery. Requires compatible Workshop M2 consumer, explicit WoW path/review and closed game. Delivery remains off until enabled. Windows publisher is unsigned; Tauri updater verifies the signed payload. Owner-PC, tray and real Forever acceptance remain separate.",
+    "message": "Private Windows beta. Unsigned Windows publisher; cryptographically verified updates require your installation consent. Tray actions are still being checked."
+  },
+  "native_updates": {
+    "2.0.0-beta.4": {
+      "http_status": 200,
+      "metadata": {
+        "version": "2.0.0-beta.5",
+        "pub_date": "2026-11-17T12:53:12.079851+00:00",
+        "notes": "M2 private pilot: opt-in scheduled history synchronization and bounded exact-variant Workshop delivery. Requires compatible Workshop M2 consumer, explicit WoW path/review and closed game. Delivery remains off until enabled. Windows publisher is unsigned; Tauri updater verifies the signed payload. Owner-PC, tray and real Forever acceptance remain separate.",
+        "url": "https://market.twich.gg/api/v1/companion/private-beta/2.0.0-beta.5/windows-x64",
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTSTBwUk5ybTY3SlpRcy80UzFvSkx4bHJMQTA3Znc2Q1c4dWloSkhZbk9CVjdpamJrTGNhZHVuNkpWL1VZQ0k4V3JSZHpZdzIzcFlEQUswZVZQTFU1Y2JoL08wUUhRb3dRPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzk0OTE5MjIwCWZpbGU6VHdpY2hVSS1NYXJrZXQtQ29tcGFuaW9uLTIuMC4wLWJldGEuNS13aW5kb3dzLXg2NC5leGUJdmVyc2lvbjoyLjAuMC1iZXRhLjUKY2NjRE1HeUNkcWxYSEJscnF1M0VSaCtMUUQwd21uNTN0WjZ6dGpLbTZtTWpEaHREbzNORVRFZlE5dVlHY0ovYmxTQkJWS3N4ZjU1NnVqd3FPV1NRRFE9PQo=",
+        "bytes": 4762861,
+        "sha256": "6124b9472b03c1ee53a83e3a8e7570a9f3621834c77624cd9aa48bc005465de1",
+        "source_commit": "8c52b70afe8db4d514a46daf7dd13f27cccc8014"
+      }
+    },
+    "2.0.0-beta.5": {
+      "http_status": 204,
+      "metadata": null
+    },
+    "2.0.0-beta.6": {
+      "http_status": 204,
+      "metadata": null
+    },
+    "2.0.0": {
+      "http_status": 204,
+      "metadata": null
+    }
+  },
+  "download": {
+    "url": "https://market.twich.gg/api/v1/companion/private-beta/2.0.0-beta.5/windows-x64",
+    "bytes": 4762861,
+    "sha256": "6124b9472b03c1ee53a83e3a8e7570a9f3621834c77624cd9aa48bc005465de1",
+    "content_length_matches": true,
+    "browser_and_native_bytes_identical": true
+  },
+  "previous_beta4": {
+    "url": "https://market.twich.gg/api/v1/companion/private-beta/2.0.0-beta.4/windows-x64",
+    "bytes": 4715921,
+    "sha256": "6a64493b795577b23503af86a1ff8d79181a157f233272a2247703c2059689af",
+    "recoverable": true
+  },
+  "unauthenticated_update_status": 401,
+  "existing_device_bootstrap_http_status": 200,
+  "production_sync_contract_version": 1,
+  "production_sync_http_status": 200,
+  "production_health": {
+    "status": "ok",
+    "contract_version": 1
+  },
+  "native_windows_to_production_tested": false,
+  "owner_pc_tested": false
+}

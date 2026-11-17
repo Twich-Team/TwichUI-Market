@@ -1,3 +1,5 @@
+**Companion beta.5 distribution complete (2026-11-17):** Owner-authorized **2.0.0-beta.5**, exact approved source **8c52b70afe8db4d514a46daf7dd13f27cccc8014**, is signed with the existing Tauri key and published through the existing private production website/updater. [Acceptance, exact hashes, public URLs and rollback](companion-beta5-release-acceptance.md). Original candidate reused without rebuild; signed SDK and actual beta.4-to-beta.5 installed Windows CI acceptance pass, public bytes/signature/version/no-downgrade checks pass, beta.4 stays recoverable. All production images/schema/settings and original account credentials/history are preserved. M2 delivery remains opt-in; owner-PC/tray and real Forever/L4 acceptance remain separate. No public addon release or automatic owner installation was performed. Earlier desktop-release holds below are historical for this exact authorized publication; no broader release or infrastructure work is authorized.
+
 # M2 automatic Market delivery
 
 Market baseline: integrated `6cef35797f28d562c7ee3db3aa290cfe876f418d`.

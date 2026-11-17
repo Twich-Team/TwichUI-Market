@@ -1,0 +1,16 @@
+{
+  "publisher_result": {
+    "changed": true,
+    "channel": "private-beta",
+    "previous_version": "2.0.0-beta.4",
+    "version": "2.0.0-beta.5",
+    "audit": "00000004.json"
+  },
+  "actor": "owner-authorized-M2-beta5-publication",
+  "publisher_image": "sha256:3f757981f846016e3578f78998f4a8e2cb277705771f9bd83bb8daf6468c5b6f",
+  "production_store": "twichui-market_companion-private-beta",
+  "input_source": "8c52b70afe8db4d514a46daf7dd13f27cccc8014",
+  "api_frontend_workers_replaced": false,
+  "database_migration": false,
+  "publisher_stderr": "Container twichui-market-private-beta-publisher-run-68a4d8833d9b Creating \n Container twichui-market-private-beta-publisher-run-68a4d8833d9b Created"
+}

@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "scope": "private-nsis-with-tauri-signed-updates",
+  "owner_approved_publication": true,
+  "owner_approved_deployment": true,
+  "owner_statement": "Owner explicitly requested completion of the already approved M2 Companion beta.5 signing, private publication and production website/updater distribution using the existing key/store, including exact public byte and beta.4 upgrade checks. No duplicate deployment approval is required. Physical owner-PC and Forever/tray acceptance remain separately unverified, as required in the request; this private beta does not assert those results.",
+  "visual_approval_commit": "8c52b70afe8db4d514a46daf7dd13f27cccc8014",
+  "source_commit": "8c52b70afe8db4d514a46daf7dd13f27cccc8014",
+  "version": "2.0.0-beta.5",
+  "installer_sha256": "6124b9472b03c1ee53a83e3a8e7570a9f3621834c77624cd9aa48bc005465de1",
+  "windows_run_id": 44015042019,
+  "signed_update_run_id": 44085832476,
+  "updater_public_key_sha256": "5794736c840c7c09a49396e60cd569ff6b5f24f872eb0318ed95d55c16616ecf",
+  "tray_actions_verified": false,
+  "acknowledges_unverified_tray": true
+}

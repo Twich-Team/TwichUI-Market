@@ -1,0 +1,33 @@
+{
+  "collector": [
+    {
+      "id": 2,
+      "house_id": 114,
+      "enabled": true,
+      "interval_seconds": 300,
+      "failures": 0,
+      "last_success": "2026-11-17T13:01:30.488015+00:00"
+    }
+  ],
+  "observations": {
+    "count": 939,
+    "max_id": 939,
+    "original_cutoff": 937,
+    "original_rows_retained": 937
+  },
+  "retention": {
+    "batches": 0,
+    "authorized": false
+  },
+  "schema": "usability_20261117",
+  "existing_owner_device": {
+    "id": 3,
+    "user_id": 1,
+    "app_version": "2.0.0-beta.4",
+    "revoked": false,
+    "archived_at": null,
+    "selected_market_id": 2,
+    "last_connection_at": "2026-11-17T13:03:10.918957+00:00",
+    "last_sync_at": "2026-11-17T02:58:20.266512+00:00"
+  }
+}

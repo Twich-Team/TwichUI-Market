@@ -1,0 +1,16 @@
+{
+  "temporary_grants_revoked": 2,
+  "requests_after_revocation": [
+    {
+      "path": "/api/v1/auth/session",
+      "status": 401
+    },
+    {
+      "path": "/api/v1/companion/private-beta/update/windows-x86_64/2.0.0-beta.4",
+      "status": 401
+    }
+  ],
+  "new_account_or_device_records": 0,
+  "original_device_revoked": false,
+  "private_grant_file_removed": true
+}

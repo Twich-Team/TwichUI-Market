@@ -1,0 +1,29 @@
+{
+  "fixture": true,
+  "from_version": "2.0.0-beta.4",
+  "to_version": "2.0.0-beta.5",
+  "actual_old_installer": true,
+  "actual_new_installer": true,
+  "signed_updater_sdk_install": true,
+  "installed_executable_sha256": "ea0aefbcc4e62c286f9ab7e2a963947c2c99e3730446565986578f23f77a1b1f",
+  "retained_files_sha256": {
+    "connection-v2-a2fbf0f0648acacc209d420e1c43b11c8ad6784c21c8e799d44f57f8b2f43f41.json": "9835bf6f8c4ecbb8d811cea33d213783b19d7f5cdedac49ed8b3d4ec4ce553a0",
+    "history-archive-v1.sqlite": "f320aabe7382997918e17ec6eb22e3431b3e60c6a20505d18ba66a18a2e82c03",
+    "market-v1.sqlite": "8a3a93adffa031257779c0c2053aca6fe421b6587082dcf3890e45a213c17cf6",
+    "settings.json": "c3dc587b8c925f450c41c7c543fd8b6ea54d7d9e3684073bc42103722d65529b"
+  },
+  "installer_preserved_exact_files": true,
+  "sqlite_archive_and_working_set_preserved": true,
+  "selected_market_preserved": true,
+  "settings_preserved": true,
+  "same_account_and_device": true,
+  "reconnect_sync_export": true,
+  "delivery_remains_opt_in": true,
+  "no_game_directory_configured_or_written": true,
+  "owner_pc": false,
+  "uninstall_data_preservation_verified_by_parent": true,
+  "workflow_run_id": 44087256780,
+  "harness_source_commit": "fc1f435dd31e569e3bf986a178fc966e73fcec76",
+  "artifact_id": 14330516361,
+  "artifact_zip_sha256": "fc88a4a0143f76ea3b3bdb98fca4df7fc04b009f621ab3c93fffff60ece77801"
+}

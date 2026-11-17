@@ -17,5 +17,21 @@
       "audit": "00000005.json"
     }
   ],
-  "updater_never_forces_downgrade": true
+  "updater_never_forces_downgrade": true,
+  "staged_beta5_import_and_beta4_rollback": [
+    {
+      "changed": true,
+      "channel": "private-beta",
+      "previous_version": "2.0.0-beta.4",
+      "version": "2.0.0-beta.5",
+      "audit": "00000006.json"
+    },
+    {
+      "changed": true,
+      "channel": "private-beta",
+      "previous_version": "2.0.0-beta.5",
+      "version": "2.0.0-beta.4",
+      "audit": "00000007.json"
+    }
+  ]
 }

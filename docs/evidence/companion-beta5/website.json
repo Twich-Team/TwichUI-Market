@@ -1,0 +1,8 @@
+{
+  "source": "Actual Chromium public production HTTPS, authenticated owner account",
+  "url": "https://market.twich.gg/companion",
+  "advertised_version": "2.0.0-beta.5",
+  "download_href": "/api/v1/companion/private-beta/2.0.0-beta.5/windows-x64",
+  "page_errors": [],
+  "production_frontend_rebuilt": false
+}
