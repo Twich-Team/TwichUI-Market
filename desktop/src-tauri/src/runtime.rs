@@ -146,7 +146,10 @@ impl Executor for NativeTask {
                         && profile.bootstrap.as_ref().is_some_and(|b|b.account.id==config.scope.account_id)=>{
                         // Delivery has its own durable result. Scalar sync success
                         // is never represented as successful game-file delivery.
-                        let _=twichui_market_core::delivery::synchronize(&self.0.path,client,&config,||run.cancelled()||self.0.quitting.load(Ordering::Acquire));
+                        match twichui_market_core::delivery::synchronize(&self.0.path,client,&config,||run.cancelled()||self.0.quitting.load(Ordering::Acquire)) {
+                            Err(e)=>self.0.set_error(format!("Workshop delivery: {e}")),
+                            Ok(_)=>if let Ok(mut local)=self.0.local.lock(){if local.error.as_deref().is_some_and(|e|e.starts_with("Workshop delivery:")){local.error=None;}},
+                        }
                     },
                     Err(e)=>self.0.set_error(format!("Workshop delivery configuration: {e}")),
                     _=>{},
@@ -378,7 +381,7 @@ impl Runtime {
             delivery: match twichui_market_core::delivery::Configuration::load(&self.data.path) {
                 Ok(Some(c)) if c.scope.server==profile.server && Some(c.scope.market_id)==selected
                     && profile.bootstrap.as_ref().is_some_and(|b|b.account.id==c.scope.account_id)=>{
-                    serde_json::json!({"configuration":c,"status":twichui_market_core::delivery::status(&self.data.path,&c.scope).map_err(friendly)?})
+                    serde_json::json!({"configuration":c,"status":twichui_market_core::delivery::status_for(&self.data.path,&c).map_err(friendly)?})
                 },
                 Ok(_)=>serde_json::json!({"notice":"Automatic delivery is off for this account and market. Review setup to enable it."}),
                 Err(_)=>serde_json::json!({"notice":"Delivery configuration is invalid; automatic installation is disabled. Review setup."}),
@@ -1008,7 +1011,7 @@ impl Runtime {
         verify_context()?;
         Ok(result)
     }
-    pub fn configure_delivery(&self, installation: String, algorithm: String, history_days: u32, operation: String, confirmed: bool) -> Result<serde_json::Value> {
+    pub fn configure_delivery(&self, installation: String, algorithm: String, history_days: u32, operation: String, confirmed: bool, variants: serde_json::Value) -> Result<serde_json::Value> {
         use twichui_market_core::delivery::{self, Configuration};
         let _gate=self.data.gate.lock().map_err(|_|"Connection operation interrupted")?;
         let view=self.view()?;
@@ -1019,14 +1022,21 @@ impl Runtime {
             let mut c=Configuration::load(&self.data.path).map_err(friendly)?.ok_or("Delivery has not been configured")?;
             if c.scope!=scope{return Err("Delivery belongs to another account or market; select its original context".into())}
             c.enabled=false;c.save_confirmed(&self.data.path,false).map_err(friendly)?;
-            if operation=="rollback" {if !confirmed{return Err("Confirm restoring the previous generation with WoW closed".into())}delivery::rollback(&c).map_err(friendly)?;}
+            if operation=="rollback" {if !confirmed{return Err("Confirm restoring the previous generation with WoW closed".into())}delivery::restore_previous(&self.data.path,&c).map_err(friendly)?;}
             self.data.emit();return Ok(serde_json::json!({"enabled":false}));
         }
         if !view.connected || view.refreshing || view.approving {return Err("Finish connecting before configuring delivery".into())}
         let store=twichui_market_core::archive::ArchiveStore::open(&self.data.path.join("history-archive-v1.sqlite"),twichui_market_core::archive::DEFAULT_DISK_BUDGET).map_err(friendly)?;
         let selection=store.selection(&scope).map_err(friendly)?.ok_or("Download history and check an explicit selection of up to ten variants first")?;
+        let mut checked=selection.clone();checked["variants"]=variants;
+        let checked=twichui_market_core::archive::normalize_selection(checked).map_err(friendly)?;
+        if checked["variants"]!=selection["variants"] {return Err("Check the current exact selection and sizes before reviewing delivery".into())}
         let c=Configuration{version:1,enabled:true,scope,installation:PathBuf::from(installation),selection,history_days};
-        let review=delivery::inspect_destination(&c).map_err(friendly)?;
+        let mut review=delivery::inspect_destination(&c).map_err(friendly)?;
+        let header=store.active(&c.scope).map_err(friendly)?.ok_or("Complete the archive first")?;
+        let request=delivery::request_for(&c,&header).map_err(friendly)?;
+        let (g,_,sizes)=twichui_market_core::archive::project(&store,&c.scope,&request,&delivery::budget()).map_err(friendly)?;
+        review["sizes"]=serde_json::to_value(sizes).map_err(|_|"Size report unavailable")?;review["history_days"]=history_days.into();review["generation_id"]=g["generation_id"].clone();
         if operation=="enable" {c.save_confirmed(&self.data.path,confirmed).map_err(friendly)?;self.data.emit();}
         else if operation!="inspect" {return Err("Unknown delivery operation".into())}
         Ok(review)

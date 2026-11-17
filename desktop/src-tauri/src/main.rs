@@ -100,9 +100,9 @@ async fn export_workshop(app: AppHandle,algorithm:String) -> Result<String,Strin
     tauri::async_runtime::spawn_blocking(move || owned.export_workshop(&algorithm)).await.map_err(|_| "Workshop test export interrupted".to_string())?
 }
 #[tauri::command]
-async fn configure_delivery(app:AppHandle,installation:String,algorithm:String,history_days:u32,operation:String,confirmed:bool)->Result<serde_json::Value,String>{
+async fn configure_delivery(app:AppHandle,installation:String,algorithm:String,history_days:u32,operation:String,confirmed:bool,variants:serde_json::Value)->Result<serde_json::Value,String>{
     let owned=runtime(&app);
-    tauri::async_runtime::spawn_blocking(move ||owned.configure_delivery(installation,algorithm,history_days,operation,confirmed)).await.map_err(|_|"Delivery setup interrupted".to_string())?
+    tauri::async_runtime::spawn_blocking(move ||owned.configure_delivery(installation,algorithm,history_days,operation,confirmed,variants)).await.map_err(|_|"Delivery setup interrupted".to_string())?
 }
 #[tauri::command]
 async fn archive_workshop(

@@ -70,7 +70,7 @@ def main():
    return response
   sock=socket.socket();sock.bind(('127.0.0.1',0));port=sock.getsockname()[1]
   server=uvicorn.Server(uvicorn.Config(app,host='127.0.0.1',port=port,log_level='error',access_log=False));thread=threading.Thread(target=server.run,kwargs={'sockets':[sock]},daemon=True);thread.start()
-  measured_files=[ROOT/'backend/market/archive_api.py',ROOT/'backend/market/bridge_api.py',ROOT/'backend/market/models.py',ROOT/'desktop/core/src/client.rs',ROOT/'desktop/core/src/bridge/export.rs',ROOT/'contracts/archive/v1/archive.schema.json',ROOT/'contracts/bridge/scoped-l1/SHA256SUMS.json',*sorted((ROOT/'desktop/core/src/archive').glob('*.rs'))]
+  measured_files=[ROOT/'backend/market/archive_api.py',ROOT/'backend/market/bridge_api.py',ROOT/'backend/market/models.py',ROOT/'desktop/core/src/client.rs',ROOT/'desktop/core/src/delivery.rs',ROOT/'desktop/core/src/bridge/export.rs',ROOT/'contracts/archive/v1/archive.schema.json',ROOT/'contracts/bridge/scoped-l1/SHA256SUMS.json',*sorted((ROOT/'desktop/core/src/archive').glob('*.rs'))]
   fingerprints={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in measured_files}
   native_sha=hashlib.sha256(args.rust_client.read_bytes()).hexdigest()
   origin=f'http://127.0.0.1:{port}';stage=temp/'staging';stage.mkdir(mode=0o700);cache=temp/'history.sqlite'

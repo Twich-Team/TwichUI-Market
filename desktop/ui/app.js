@@ -57,9 +57,9 @@ function render(next) {
   if(archiveContext!==historyContext){archiveContext=historyContext;reviewedDelivery=null;delete $('delivery-installation').dataset.initialized;$('delivery-installation').value='';$('delivery-confirm').checked=false;text('archive-status','No completed archive selected.');text('scope-status','Choose exact variants after downloading retained history.');$('scope-variants').value='';$('scope-compatible').checked=false;}
   for(const id of ['archive-sync','scope-preview','scope-export'])$(id).disabled=archiveBusy||workshopExporting;
   const dc=view.delivery?.configuration,ds=view.delivery?.status;
-  if(dc&&!$('delivery-installation').dataset.initialized){$('delivery-installation').value=dc.installation;$('delivery-days').value=String(dc.history_days);$('delivery-installation').dataset.initialized='true';}
+  if(dc&&!$('delivery-installation').dataset.initialized){$('delivery-installation').value=dc.installation;$('delivery-days').value=String(dc.history_days);$('workshop-pricing').value=dc.scope.algorithm;$('scope-variants').value=dc.selection.variants.map(v=>`${v.item_id} ${v.variant_key}`).join('\n');$('delivery-installation').dataset.initialized='true';}
   for(const id of ['delivery-review','delivery-enable','delivery-disable','delivery-rollback'])$(id).disabled=deliveryBusy||archiveBusy||s.running;
-  text('delivery-status',dc?`${dc.enabled?'Automatic delivery enabled':'Delivery disabled'} · ${ds?.result||'Waiting for next sync'}. Archive: ${ds?.archive_checkpoint||'not downloaded'}. Validated: ${ds?.validated_generation||'none'}. Published: ${ds?.published_generation||'none'}. Last file write: ${datetime(ds?.last_successful_write)}. ${ds?.lua_bytes==null?'':`Lua: ${ds.lua_bytes.toLocaleString()} bytes.`} ${ds?.error||''} Loaded game generation: unknown; inspect Workshop in WoW.`:view.delivery?.notice||'Automatic delivery is off.');
+  text('delivery-status',dc?`${dc.enabled?'Automatic delivery enabled':'Delivery disabled'} · ${dc.selection.variants.length} selected · ${dc.history_days} UTC days · ${ds?.result||'Waiting for next sync'}. Archive: ${ds?.archive_checkpoint||'not downloaded'}. Validated: ${ds?.validated_generation||'none'}. Published: ${ds?.published_generation||'none'}. Last file write: ${datetime(ds?.last_successful_write)}. ${ds?.lua_bytes==null?'':`Lua: ${ds.lua_bytes.toLocaleString()} bytes.`} ${ds?.error||''} Loaded game generation: unknown; inspect Workshop in WoW.`:view.delivery?.notice||'Automatic delivery is off.');
 
   $('disconnect').disabled=view.approving||view.refreshing;
   if(view.error||view.sync.error) {message(view.error||view.sync.error,true);nativeErrorShown=true;}
@@ -196,14 +196,15 @@ async function deliveryAction(operation){
   if(operation==='enable'&&(reviewedDelivery!==deliveryKey()||!$('delivery-confirm').checked)){message('Review this exact installation and market, then confirm the destination.',true);return;}
   if(operation==='rollback'&&!$('delivery-confirm').checked){message('Confirm restoring the previous generation with WoW closed. Delivery will be disabled.',true);return;}
   const context=archiveContext;
+  let variants=null;try{if(operation==='inspect'||operation==='enable')variants=scopeInput().variants;}catch(e){message(String(e?.message||e),true);return;}
   deliveryBusy=true;render(view);
   try{
-    const result=await action('configure_delivery',{installation:$('delivery-installation').value,algorithm:$('workshop-pricing').value,historyDays:Number($('delivery-days').value),operation,confirmed:$('delivery-confirm').checked});
+    const result=await action('configure_delivery',{installation:$('delivery-installation').value,algorithm:$('workshop-pricing').value,historyDays:Number($('delivery-days').value),operation,confirmed:$('delivery-confirm').checked,variants});
     if(!result?.ok||context!==archiveContext)return;
     const r=result.value;
     if(operation==='inspect'){
       reviewedDelivery=deliveryKey();$('delivery-confirm').checked=false;
-      text('delivery-destination',`Destination: ${r.destination}. Market: ${r.market.region.toUpperCase()} · ${r.market.player_ruleset||'unknown ruleset'} · house ${r.market.house_id} · transport ruleset ${r.market.transport_ruleset_id}. Existing generation: ${r.existing_generation||'none'}. Schema ${r.schema}. Confirm below to enable.`);
+      text('delivery-destination',`Destination: ${r.destination}. Market: ${r.market.region.toUpperCase()} · ${r.market.player_ruleset||'unknown ruleset'} · house ${r.market.house_id} · transport ruleset ${r.market.transport_ruleset_id}. Existing generation: ${r.existing_generation||'none'}. Schema ${r.schema}. ${r.sizes?`${r.sizes.records} selected · ${r.history_days} UTC days · ${r.sizes.canonical_bytes.toLocaleString()} data bytes · ${r.sizes.lua_bytes.toLocaleString()} Lua bytes.`:''} ${r.requires_adoption?'This compatible manual export has no account or installation receipt. Confirm explicitly adopting it for this account and installation; previous data will be preserved.':'Confirm below to enable.'}`);
     }else{message(operation==='enable'?'Delivery enabled for this installation. Close WoW, then use Sync now or wait for the next scheduled sync.':operation==='rollback'?'Delivery disabled and previous files restored. Log in to use them.':'Automatic delivery disabled. Existing game files are kept.');}
   }finally{deliveryBusy=false;render(view);}
 }

@@ -114,8 +114,33 @@ pub fn status(base: &Path, scope: &Scope) -> Result<Status> {
     }
     Ok(serde_json::from_slice(&read(&p, 8192)?)?)
 }
+pub fn status_for(base: &Path, config: &Configuration) -> Result<Status> {
+    let s = status(base, &config.scope)?;
+    Ok(if s.installation.as_ref() == Some(&config.installation) {
+        s
+    } else {
+        Status::default()
+    })
+}
 fn save_status(base: &Path, scope: &Scope, s: &Status) -> Result<()> {
     atomic(&status_path(base, scope)?, &serde_json::to_vec_pretty(s)?)
+}
+
+pub fn request_for(config: &Configuration, h: &archive::Header) -> Result<Value> {
+    config.validate()?;
+    let mut request = config.selection.clone();
+    need(
+        request["market"] == h.market && request["issuer_id"] == h.issuer_id,
+        "delivery source identity changed; review setup",
+    )?;
+    let day = chrono::DateTime::parse_from_rfc3339(&h.generated_at)
+        .map_err(|_| Error::Invalid("archive UTC day"))?
+        .date_naive();
+    request["history_through_day"] = day.to_string().into();
+    request["history_from_day"] = (day - Duration::days(i64::from(config.history_days) - 1))
+        .to_string()
+        .into();
+    Ok(request)
 }
 
 /// Called after a successful scalar sync with the same authenticated client.
@@ -128,7 +153,7 @@ pub fn synchronize(
 ) -> Result<Status> {
     config.validate()?;
     need(config.enabled, "automatic delivery is disabled")?;
-    let mut s = status(base, &config.scope)?;
+    let mut s = status_for(base, config)?;
     s.last_attempt = Some(Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true));
     s.installation = Some(config.installation.clone());
     s.error = None;
@@ -147,18 +172,7 @@ pub fn synchronize(
             .ok_or(Error::Invalid("completed history archive"))?;
         s.archive_checkpoint = Some(h.checkpoint_id.clone());
         save_status(base, &config.scope, &s)?;
-        let mut request = config.selection.clone();
-        need(
-            request["market"] == h.market && request["issuer_id"] == h.issuer_id,
-            "delivery source identity changed; review setup",
-        )?;
-        let day = chrono::DateTime::parse_from_rfc3339(&h.generated_at)
-            .map_err(|_| Error::Invalid("archive UTC day"))?
-            .date_naive();
-        request["history_through_day"] = day.to_string().into();
-        request["history_from_day"] = (day - Duration::days(i64::from(config.history_days) - 1))
-            .to_string()
-            .into();
+        let request = request_for(config, &h)?;
         let input = format!(
             "{:x}",
             Sha256::digest(bridge::canonical(
@@ -348,10 +362,12 @@ pub fn inspect_destination(c: &Configuration) -> Result<Value> {
                 "destination belongs to another account, installation or market",
             )?;
         } else {
-            // Manual legacy exports have no account/installation proof. Keep them.
+            // A recognized manual export can be explicitly adopted after review;
+            // its account/installation cannot be inferred from the payload.
             need(
-                fs::read_dir(&destination)?.next().is_none(),
-                "existing unowned Market data folder; back it up outside AddOns before setup",
+                fs::read_dir(&destination)?.next().is_none()
+                    || (toc.is_file() && destination.join("Data.lua").is_file()),
+                "incomplete unowned Market folder; preserve it outside AddOns before setup",
             )?;
         }
         for name in ["Data.lua", "Previous.lua"] {
@@ -368,7 +384,7 @@ pub fn inspect_destination(c: &Configuration) -> Result<Value> {
         }
     }
     Ok(
-        serde_json::json!({"destination":destination,"market":c.selection["market"],"existing_generation":if destination.join("Data.lua").is_file(){bridge::inspect_artifact(&read(&destination.join("Data.lua"),3*1024*1024)?)?.0["generation_id"].clone()}else{Value::Null},"schema":3}),
+        serde_json::json!({"destination":destination,"market":c.selection["market"],"requires_adoption":destination.join("Data.lua").is_file()&&!destination.join(".twichui-delivery.json").try_exists()?,"existing_generation":if destination.join("Data.lua").is_file(){bridge::inspect_artifact(&read(&destination.join("Data.lua"),3*1024*1024)?)?.0["generation_id"].clone()}else{Value::Null},"schema":3}),
     )
 }
 fn identity_for(c: &Configuration) -> Result<Value> {
@@ -509,6 +525,23 @@ pub fn rollback(c: &Configuration) -> Result<()> {
         "rollback byte verification",
     )
 }
+pub fn restore_previous(base: &Path, c: &Configuration) -> Result<Status> {
+    rollback(c)?;
+    let data = c
+        .installation
+        .join("Interface/AddOns/TwichUI_MarketData/Data.lua");
+    let (g, _) = bridge::inspect_artifact(&read(&data, 3 * 1024 * 1024)?)?;
+    let mut s = status_for(base, c)?;
+    s.installation = Some(c.installation.clone());
+    s.published_generation = g["generation_id"].as_str().map(str::to_owned);
+    s.last_successful_write = Some(Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true));
+    s.projection_input = None;
+    s.error = None;
+    s.loaded_game_generation = None;
+    s.result = "previous generation restored; delivery disabled".into();
+    save_status(base, &c.scope, &s)?;
+    Ok(s)
+}
 #[cfg(not(windows))]
 fn game_running() -> Result<bool> {
     Ok(false)
@@ -516,7 +549,7 @@ fn game_running() -> Result<bool> {
 #[cfg(windows)]
 fn game_running() -> Result<bool> {
     use windows_sys::Win32::{
-        Foundation::{CloseHandle, INVALID_HANDLE_VALUE},
+        Foundation::{CloseHandle, GetLastError, ERROR_NO_MORE_FILES, INVALID_HANDLE_VALUE},
         System::Diagnostics::ToolHelp::*,
     };
     unsafe {
@@ -542,6 +575,11 @@ fn game_running() -> Result<bool> {
                 return Ok(true);
             }
             if Process32NextW(h, &mut e) == 0 {
+                let error = GetLastError();
+                if error != ERROR_NO_MORE_FILES {
+                    CloseHandle(h);
+                    return Err(std::io::Error::from_raw_os_error(error as i32).into());
+                }
                 break;
             }
         }
@@ -553,6 +591,7 @@ fn game_running() -> Result<bool> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    static TEST_LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
     fn fixture(name: &str) -> Value {
         let root =
             Path::new(env!("CARGO_MANIFEST_DIR")).join("../../contracts/bridge/scoped-l1/fixtures");
@@ -588,6 +627,7 @@ mod tests {
     }
     #[test]
     fn confirmed_destination_noop_recovery_and_fixed_toc() {
+        let _guard = TEST_LOCK.lock().unwrap();
         let (temp, c, g, r) = setup();
         assert!(Configuration::load(temp.path()).unwrap().is_none());
         assert!(c.save_confirmed(temp.path(), false).is_err());
@@ -645,6 +685,7 @@ mod tests {
     }
     #[test]
     fn refuses_unknown_folders_scopes_consumers_and_large_selection() {
+        let _guard = TEST_LOCK.lock().unwrap();
         let (_temp, mut c, g, r) = setup();
         let folder = c.installation.join("Interface/AddOns/TwichUI_MarketData");
         fs::create_dir(&folder).unwrap();
@@ -652,6 +693,11 @@ mod tests {
         assert!(inspect_destination(&c).is_err());
         fs::remove_file(folder.join("unrelated.lua")).unwrap();
         publish(&c, &g, &r).unwrap();
+        fs::remove_file(folder.join(".twichui-delivery.json")).unwrap();
+        assert_eq!(inspect_destination(&c).unwrap()["requires_adoption"], true);
+        assert!(c.save_confirmed(_temp.path(), false).is_err());
+        c.save_confirmed(_temp.path(), true).unwrap();
+        assert!(!publish(&c, &g, &r).unwrap());
         c.scope.account_id = 2;
         assert!(inspect_destination(&c).is_err());
         c.scope.account_id = 1;
@@ -672,6 +718,7 @@ mod tests {
     #[cfg(unix)]
     #[test]
     fn refuses_links_unsafe_parents_and_broad_writes() {
+        let _guard = TEST_LOCK.lock().unwrap();
         use std::os::unix::fs::{symlink, PermissionsExt};
         let (temp, mut c, _, _) = setup();
         let real = c.installation.clone();
@@ -686,7 +733,54 @@ mod tests {
     }
     #[cfg(windows)]
     #[test]
+    fn running_wow_named_fixture_defers_writes() {
+        let _guard = TEST_LOCK.lock().unwrap();
+        let (temp, c, g, r) = setup();
+        publish(&c, &g, &r).unwrap();
+        let path = c
+            .installation
+            .join("Interface/AddOns/TwichUI_MarketData/Data.lua");
+        let old = fs::read(&path).unwrap();
+        let exe = temp.path().join("Wow-M2-Fixture.exe");
+        fs::copy(
+            std::env::var_os("COMSPEC").expect("Windows command processor"),
+            &exe,
+        )
+        .unwrap();
+        struct Process(std::process::Child);
+        impl Drop for Process {
+            fn drop(&mut self) {
+                let _ = self.0.kill();
+                let _ = self.0.wait();
+            }
+        }
+        let _child = Process(
+            std::process::Command::new(exe)
+                .args(["/C", "ping -n 30 127.0.0.1 > NUL"])
+                .stdout(std::process::Stdio::null())
+                .stderr(std::process::Stdio::null())
+                .spawn()
+                .unwrap(),
+        );
+        let mut detected = false;
+        for _ in 0..50 {
+            if game_running().unwrap() {
+                detected = true;
+                break;
+            }
+            std::thread::sleep(std::time::Duration::from_millis(20));
+        }
+        assert!(
+            detected,
+            "actual process enumeration detects the modeled executable name"
+        );
+        assert!(publish(&c, &g, &r).is_err());
+        assert_eq!(fs::read(path).unwrap(), old);
+    }
+    #[cfg(windows)]
+    #[test]
     fn locked_data_file_retains_previous_bytes() {
+        let _guard = TEST_LOCK.lock().unwrap();
         use std::os::windows::fs::OpenOptionsExt;
         let (_temp, c, g, r) = setup();
         publish(&c, &g, &r).unwrap();

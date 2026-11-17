@@ -33,7 +33,7 @@ schedule. No collection, metadata requests or provider allowance changes are int
 Preflight validates `Wow.exe`, owned `Interface/AddOns`, and compatible installed Workshop
 `MarketDelivery.json`. Checks cover absolute local paths, ownership/ACLs, permissions, links,
 junction/reparse points, parent components, existing files and available disk space. Unknown folders
-and unmarked manual exports are refused and preserved. An account/market/issuer/installation marker
+are refused and preserved. Compatible manual exports are validated and shown for explicit adoption; their original account/installation cannot be inferred. An account/market/issuer/installation marker
 prevents cross-scope reuse. Existing owned generations are validated and shown during review.
 
 Windows defers writes if any process is named `wow*.exe`; enumeration failure refuses publication.
@@ -75,8 +75,7 @@ are refused. No public addon release, valuation-default change or live AH transa
 4. Connect the companion; choose the intended market. Open **Workshop history and automatic delivery**,
    download history, explicitly enter ten item-ID/full-variant-key pairs and check selection sizes.
 5. Paste the one folder containing `Wow.exe`; choose a conservative rolling history window (30 days).
-   Review exact destination, region/ruleset/house, then confirm and enable. If an unmarked old data
-   folder is found, preserve its intact backup outside AddOns before retrying setup.
+   Review exact destination, region/ruleset/house, then confirm and enable. A validated manual export requires explicit adoption; preserve an unknown/incompatible folder outside AddOns before retrying.
 6. Close WoW; use Sync now or wait for its ordinary schedule. Verify archive, validated and published
    identities, file size and last write. Resolve errors without deleting last-good files.
 7. Log in, enable Workshop — Experimental, open AH Market and select Market server history. Compare
