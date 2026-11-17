@@ -396,3 +396,5 @@ class ArchiveMember(Base):
     source_id: Mapped[int] = mapped_column(Integer, primary_key=True)
     value_json: Mapped[str] = mapped_column(Text)
     transmit: Mapped[bool] = mapped_column(Boolean)
+
+from .metadata_models import MetadataAttempt

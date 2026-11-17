@@ -310,7 +310,7 @@ export function Administration({
   readOnly?: boolean;
 }) {
   const [includeArchived, setIncludeArchived] = useState(false);
-  const [tab, setTab] = useState("overview"),
+  const [tab, setTab] = useState(new URLSearchParams(location.search).get("metadata_view")==="tracker"?"metadata":"overview"),
     [message, setMessage] = useState(""),
     [error, setError] = useState(""),
     [invitation, setInvitation] = useState(""),

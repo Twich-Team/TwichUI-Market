@@ -48,6 +48,7 @@ class RelatedInput(BaseModel):
 class RecoveryInput(BaseModel):
     model_config = ConfigDict(extra='forbid')
     market_id: int = Field(ge=1, le=2**31-1)
+    force_refresh: bool = False
     mode: Literal['single', 'missing', 'stale', 'bulk']
     item_id: int | None = Field(default=None, ge=1, le=2**31-1)
     providers: list[Literal['blizzard', 'everloot', 'foreverdb', 'thewowdb']] = Field(min_length=1, max_length=4)
@@ -181,7 +182,7 @@ def start(body: RecoveryInput, user: User = Depends(admin), db: Session = Depend
     try:
         ensure_providers(db)
         job, created = enqueue(db, body.market_id, body.mode, body.providers, actor_id=user.id, item_id=body.item_id,
-            limit=body.limit, budget=body.request_budget)
+            limit=body.limit, budget=body.request_budget, force_refresh=body.force_refresh)
     except ValueError as error: raise HTTPException(422, str(error)) from None
     db.commit()
     return {'job_id':job.id, 'created':created, 'state':job.state}

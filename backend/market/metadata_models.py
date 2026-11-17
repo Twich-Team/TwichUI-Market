@@ -69,6 +69,7 @@ class MetadataSource(Base):
     refresh_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     retry_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     http_status: Mapped[int | None] = mapped_column(Integer)
+    recovery_json: Mapped[str | None] = mapped_column(Text)
     __table_args__ = (Index('ix_metadata_sources_due', 'provider', 'retry_at'),)
 
 
@@ -118,6 +119,8 @@ class MetadataTask(Base):
     lease_token: Mapped[str | None] = mapped_column(String(48))
     result_json: Mapped[str | None] = mapped_column(Text)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+    decision_json: Mapped[str | None] = mapped_column(Text)
+    force_refresh: Mapped[bool] = mapped_column(Boolean, default=False, server_default='false')
     __table_args__ = (UniqueConstraint('job_id', 'provider', 'region', 'item_id', 'locale', name='uq_metadata_job_item'),
         Index('ix_metadata_tasks_queue', 'state', 'available_at'), Index('ix_metadata_tasks_identity', 'provider', 'region', 'item_id', 'locale', 'state'))
 
@@ -136,3 +139,24 @@ class MetadataResource(Base):
     refresh_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     retry_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     http_status: Mapped[int | None] = mapped_column(Integer)
+
+
+class MetadataAttempt(Base):
+    """Append-only per-request evidence; never backfill invented historical goals."""
+    __tablename__ = 'metadata_attempts'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    task_id: Mapped[int | None] = mapped_column(ForeignKey('metadata_tasks.id'))
+    provider: Mapped[str] = mapped_column(String(24))
+    region: Mapped[str] = mapped_column(String(2))
+    item_id: Mapped[int | None] = mapped_column(Integer)
+    kind: Mapped[str] = mapped_column(String(24), default='metadata')
+    started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    state: Mapped[str] = mapped_column(String(16), default='reserved')
+    http_status: Mapped[int | None] = mapped_column(Integer)
+    outcome: Mapped[str | None] = mapped_column(String(32))
+    decision_json: Mapped[str | None] = mapped_column(Text)
+    returned_json: Mapped[str | None] = mapped_column(Text)
+    new_json: Mapped[str | None] = mapped_column(Text)
+    __table_args__ = (Index('ix_metadata_attempts_period', 'started_at', 'provider'),
+                     Index('ix_metadata_attempts_item', 'region', 'item_id', 'started_at'))
