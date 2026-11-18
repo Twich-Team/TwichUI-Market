@@ -19,7 +19,7 @@
   "addon_package_sha256": "a345623aa42849ba00a9908874887247b97514fa6fa1d1a53ad81fd7e7eb5876",
   "actual_packaged_addon_probe": "compatible",
   "owner_specific_cause": "not reproduced; precise failed check available in DEV",
-  "owner_result": "pending",
+  "owner_result": "Owner reported core_interface rejection despite TOC16001; follow-up source17cca1e removes TOC Interface gates",
   "full_certification": "deferred",
   "unsigned_private_test": true,
   "public_release_or_deployment": false
