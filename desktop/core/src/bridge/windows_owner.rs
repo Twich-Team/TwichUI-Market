@@ -235,11 +235,15 @@ mod tests {
         let dir = root.path().join("TwichUI_MarketData"); fs::create_dir(&dir).unwrap();
         let deny = format!("*{}:(WD,AD)", current_sid()); icacls(&dir, &["/deny", &deny]);
         let path = dir.join("Data.lua");
+        let native = fs::File::create(&path).unwrap_err();
+        assert_eq!(native.raw_os_error(), Some(5));
         let Error::Io(error) = crate::delivery::game_atomic(&path, b"must not publish").unwrap_err() else {
             panic!("native file creation must fail when Windows denies it")
         };
         assert_eq!(error.kind(), std::io::ErrorKind::PermissionDenied);
-        assert_eq!(error.raw_os_error(), Some(5)); assert!(!path.exists());
+        // tempfile adds path context to its I/O error; the permission-denied
+        // kind survives even when raw_os_error() is no longer exposed.
+        assert!(!path.exists());
     }
     #[test]
     fn game_output_policy_still_refuses_junctions_before_writing() {
