@@ -40,7 +40,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: Twich-Team/TwichUI
-          ref: c5c244a9c9e8b8e211cc3d0e86b50f8c81848fae
+          ref: 1f437e384d0e024be9c1da2be343d79e04d49840
           path: coordinated-addon
           persist-credentials: false
       - run: cargo test --manifest-path desktop/Cargo.toml --workspace --locked
@@ -105,7 +105,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: Twich-Team/TwichUI
-          ref: c5c244a9c9e8b8e211cc3d0e86b50f8c81848fae
+          ref: 1f437e384d0e024be9c1da2be343d79e04d49840
           persist-credentials: false
       - uses: actions/download-artifact@v4
         with:
@@ -131,3 +131,14 @@ jobs:
           WORKSHOP_SUMMARY_PARTS: ${{ github.workspace }}/acceptance/workshop-large/publication
           WORKSHOP_SUMMARY_EXPECTED_ITEM: '10000'
         run: lua5.1 -e 'require("bit"); ROOT="../!!!TwichUI/"; REPO="../"; TESTS="./"' test_workshop_auction_market_summary.lua
+      - name: Measure source-qualified large-publication Lua costs
+        working-directory: tests
+        env:
+          WORKSHOP_SUMMARY_ARTIFACT: ${{ github.workspace }}/acceptance/workshop-large/publication/TwichUI_MarketData/Data.lua
+          WORKSHOP_SUMMARY_PARTS: ${{ github.workspace }}/acceptance/workshop-large/publication
+          WORKSHOP_SUMMARY_EXPECTED_ITEM: '10000'
+        run: lua5.1 -e 'require("bit"); ROOT="../!!!TwichUI/"; REPO="../"; TESTS="./"' bench_workshop_summary.lua | tee ../acceptance/workshop-large/production-lua-costs.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: workshop-production-lua-acceptance
+          path: acceptance/workshop-large/

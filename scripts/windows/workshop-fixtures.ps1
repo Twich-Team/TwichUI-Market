@@ -43,10 +43,11 @@ if($Action -in @('Register','RegisterSecond')) {
     $null=New-Item $keys[$index] -Force
     $null=New-ItemProperty $keys[$index] -Name DisplayName -Value 'Synthetic Forever CI fixture' -PropertyType String
     $null=New-ItemProperty $keys[$index] -Name InstallLocation -Value $path -PropertyType String
+    $null=New-ItemProperty $keys[$index] -Name TwichUIFixtureOwned -Value $base -PropertyType String
     @{registered=$true}|ConvertTo-Json -Compress;exit
 }
 if($Action -eq 'ClearRegistry') {
-    foreach($key in $keys){if(Test-Path $key){Remove-Item $key -Recurse}}
+    foreach($key in $keys){if((Get-ItemProperty -Path $key -Name TwichUIFixtureOwned -ErrorAction SilentlyContinue).TwichUIFixtureOwned -eq $base){Remove-Item $key -Recurse}}
     @{cleared=$true}|ConvertTo-Json -Compress;exit
 }
 if($Action -in @('StartGame','StopGame')) {
@@ -65,18 +66,53 @@ for($i=0;$i -lt 200;$i++) {
     if($dialog){break};Start-Sleep -Milliseconds 100
 }
 if(-not $dialog){throw 'Actual Companion folder dialog not found'}
+# Classic shell controls do not always implement UIA Invoke/Value on the runner.
+# Use actual, process-checked native controls, never a mocked picker/IPC result.
+# BM_CLICK: https://learn.microsoft.com/windows/win32/controls/bm-click
+Add-Type @'
+using System;
+using System.Runtime.InteropServices;
+public static class SummaryPickerControls {
+ [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr window);
+ [DllImport("user32.dll")] public static extern IntPtr GetDlgItem(IntPtr window,int id);
+ [DllImport("user32.dll")] public static extern uint GetWindowThreadProcessId(IntPtr window,out uint pid);
+ [DllImport("user32.dll",CharSet=CharSet.Unicode)] public static extern IntPtr SendMessageTimeoutW(IntPtr window,uint message,IntPtr w,IntPtr l,uint flags,uint milliseconds,out IntPtr result);
+ [DllImport("user32.dll",CharSet=CharSet.Unicode,EntryPoint="SendMessageTimeoutW")] public static extern IntPtr SetText(IntPtr window,uint message,IntPtr w,string text,uint flags,uint milliseconds,out IntPtr result);
+}
+'@
+$dialogWindow=[IntPtr]$dialog.Current.NativeWindowHandle
+$null=[SummaryPickerControls]::SetForegroundWindow($dialogWindow)
+function CheckedWindow($element) {
+    $window=[IntPtr]$element.Current.NativeWindowHandle
+    [uint32]$owner=0
+    $null=[SummaryPickerControls]::GetWindowThreadProcessId($window,[ref]$owner)
+    if($window -eq [IntPtr]::Zero -or $owner -ne [uint32]$env:MARKET_TEST_PRIMARY_PID){throw 'Native control process identity changed'}
+    return $window
+}
+function ClickButton($element) {
+    $pattern=$null
+    if($element.TryGetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern,[ref]$pattern)){$pattern.Invoke();return}
+    $window=CheckedWindow $element
+    $result=[IntPtr]::Zero
+    if([SummaryPickerControls]::SendMessageTimeoutW($window,0x00F5,[IntPtr]::Zero,[IntPtr]::Zero,2,3000,[ref]$result) -eq [IntPtr]::Zero){throw 'Actual native button click timed out'}
+}
 if($Action -eq 'CancelFolder') {
     $button=$dialog.FindFirst([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::AutomationIdProperty,'2'))
     if(-not $button){throw 'Native cancel button unavailable'}
-    $button.GetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern).Invoke()
+    ClickButton $button
 } else {
     $resolved=[IO.Path]::GetFullPath($GamePath)
     if(-not $resolved.StartsWith([IO.Path]::GetFullPath($base)+'\',[StringComparison]::OrdinalIgnoreCase)){throw 'Picker fixture path escaped'}
     $edit=$dialog.FindFirst([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::ControlTypeProperty,[System.Windows.Automation.ControlType]::Edit))
     if(-not $edit){throw 'Actual native folder edit unavailable'}
-    $edit.GetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern).SetValue($resolved)
+    $pattern=$null
+    if($edit.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern,[ref]$pattern)){$pattern.SetValue($resolved)}
+    else {
+        $window=CheckedWindow $edit;$result=[IntPtr]::Zero
+        if([SummaryPickerControls]::SetText($window,0x000C,[IntPtr]::Zero,$resolved,2,3000,[ref]$result) -eq [IntPtr]::Zero){throw 'Actual native edit timed out'}
+    }
     $button=$dialog.FindFirst([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::AutomationIdProperty,'1'))
     if(-not $button){throw 'Native folder confirmation unavailable'}
-    $button.GetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern).Invoke()
+    ClickButton $button
 }
 @{native_dialog=$true;cancelled=($Action -eq 'CancelFolder')}|ConvertTo-Json -Compress
