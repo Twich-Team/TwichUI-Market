@@ -194,3 +194,22 @@ def test_empty_collector_yield_retries_without_phase_starvation(database,automat
         db.scalar(select(Market)).enabled=False
     assert work_once(database,at=at+timedelta(seconds=30))['status']=='not_due'
     assert work_once(database,at=at+timedelta(seconds=61))['rows_processed']==200
+
+
+def test_backup_validation_does_not_consume_deletion_work_budget(database,automation,monkeypatch):
+    clock_value=[0]
+    def verified(_):clock_value[0]=100;return True
+    monkeypatch.setattr('market.retention_worker.recovery_ready',verified)
+    assert work_once(database,clock=lambda:clock_value[0])['rows_processed']==200
+
+
+def test_authorized_reserve_cannot_be_lowered_by_measurement_configuration(database,automation,monkeypatch):
+    reserve=automation['scope']['minimum_filesystem_reserve_bytes']
+    monkeypatch.setattr('market.capacity.filesystem',lambda:{'available_bytes':reserve-1,'reserve_bytes':1})
+    assert 'filesystem' in work_once(database)['reason']
+
+
+def test_changed_scheduler_source_invalidates_durable_authorization(database,automation,monkeypatch):
+    from market.retention_worker import SCOPE
+    monkeypatch.setitem(SCOPE,'scheduler_sha256','0'*64)
+    assert work_once(database)['status']=='inactive'
