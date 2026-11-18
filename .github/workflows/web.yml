@@ -36,7 +36,7 @@ jobs:
       - run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml exec -T api python - < web/e2e/seed-admin.py
       - run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml exec -T api python - < web/e2e/seed-quality.py
       - run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml exec -T api python - < web/e2e/seed-private-beta.py
-      - run: docker run --rm --network twichui-market-browser_default -v "$PWD:/work" -w /work/web mcr.microsoft.com/playwright:v1.65.1-noble npm run test:e2e -- --grep-invert 'unified commodities|Recovery Tracker:|provider rate limits:|ForeverDB metadata:|usability M[1-4]:'
+      - run: docker run --rm --network twichui-market-browser_default -v "$PWD:/work" -w /work/web mcr.microsoft.com/playwright:v1.65.1-noble npm run test:e2e -- --grep-invert 'backup management|unified commodities|Recovery Tracker:|provider rate limits:|ForeverDB metadata:|usability M[1-4]:'
       - name: Verify mobile geometry and navigation in WebKit
         run: docker run --rm --network twichui-market-browser_default -e MOBILE_SCREENSHOT_DIR=../artifacts/mobile-webkit -v "$PWD:/work" -w /work/web mcr.microsoft.com/playwright:v1.65.1-noble npm run test:e2e -- --config playwright.webkit.config.ts
       - uses: actions/upload-artifact@v4
@@ -151,5 +151,26 @@ jobs:
         with:
           name: browser-failure-evidence
           path: artifacts/web-e2e
+      - name: Prepare isolated backup management service and fixtures
+        run: |
+          mkdir -p artifacts/backup-management/browser-fixtures
+          chmod 700 artifacts/backup-management/browser-fixtures
+          python3 -c "from pathlib import Path; Path('artifacts/backup-management/synthetic-token').write_text('synthetic-backup-browser-token-not-for-production-2026')"
+          docker tag twichui-market-backend:dev twichui-market-backend:backup-review
+          docker tag twichui-market-web:dev twichui-market-web:backup-review
+          docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml -f compose.backup-browser.yaml build backup-manager
+          docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml -f compose.backup-browser.yaml up -d --no-deps api backup-manager
+      - name: Verify backup administration and actual management boundary in Chromium and WebKit
+        run: |
+          docker run --rm --network twichui-market-browser_default -v "$PWD:/work" -w /work/web mcr.microsoft.com/playwright:v1.65.1-noble npm run test:e2e -- backup-management.spec.ts
+          docker run --rm --network twichui-market-browser_default -v "$PWD:/work" -w /work/web mcr.microsoft.com/playwright:v1.65.1-noble npm run test:e2e -- --config playwright.backup-webkit.config.ts
       - if: always()
-        run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml down --volumes --remove-orphans
+        uses: actions/upload-artifact@v4
+        with:
+          name: backup-management-review
+          path: |
+            artifacts/backup-management/screenshots
+            artifacts/backup-management-webkit
+          if-no-files-found: ignore
+      - if: always()
+        run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml -f compose.backup-browser.yaml down --volumes --remove-orphans

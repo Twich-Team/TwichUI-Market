@@ -1,6 +1,7 @@
 import { Loading } from "./loading";
 import { AdministrationOverview } from "./admin-overview";
 import type { MetadataOverview } from "./metadata-admin";
+import { BackupManagement } from "./backup-management";
 import { DatabaseGrowth } from "./storage-growth";
 import { formatBytes as bytes } from "./size";
 import { MemberArchive } from "./member-archive";
@@ -594,6 +595,7 @@ export function Administration({
           {tab === "collection" && <CollectionHistory markets={markets}/>}
           {tab === "storage" && (
             <>
+              <BackupManagement readOnly={readOnly}/>
               <DatabaseGrowth samples={state.storage.growth.samples} current={state.storage.database_bytes}/>
               <RetentionControls readOnly={readOnly} />
               <section className="panel padded">

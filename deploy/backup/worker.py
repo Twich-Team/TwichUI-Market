@@ -61,9 +61,8 @@ def create():
             target.with_suffix('.json').write_text(json.dumps(manifest,indent=2)+'\n')
             write_status({'status':'ok','last_success':manifest['created_at'],'filename':filename,
                           'bytes':manifest['bytes'],'keep':keep})
-            for old in sorted(DIRECTORY.glob('market-development-*.dump'),reverse=True)[keep:]:
-                old.unlink()
-                old.with_suffix('.json').unlink(missing_ok=True)
+            # Legacy metadata cannot establish recovery ownership. Only the v2
+            # management service may rotate its own verified scheduled archives.
         finally:
             temporary.unlink(missing_ok=True)
 

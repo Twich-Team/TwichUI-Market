@@ -1,0 +1,106 @@
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { api } from './api';
+import { LocalTime, Status } from './admin-table';
+import { ConfirmationDialog } from './confirmation-dialog';
+import { formatBytes } from './size';
+
+interface PolicyValues {
+  enabled:boolean; interval_seconds:number; daily:number; weekly:number; monthly:number;
+  max_bytes:number|null; minimum_recovery_points:number; warning_free_bytes:number;
+}
+interface Policy extends PolicyValues {revision:number}
+interface Backup {
+  id:string; filename:string; type:string; origin:string; created_at:string|null; bytes:number|null;
+  sha256:string|null; verification:string; restoration_verified_at:string|null; protected:boolean;
+  required_by:string[]; eligible:boolean; reason:string;
+}
+interface Overview {
+  policy:Policy; inventory_stale?:boolean; service_status:string; last_success:string|null; last_restoration_verified_at:string|null;
+  total:number; total_bytes:number; items:Backup[]; artifact_count:number; artifacts:{name:string;type:string}[];
+  filesystem:{capacity_bytes:number;available_bytes:number;reserve_bytes:number;filesystem_id:string;measurement:string};
+  storage_pressure:boolean; next_scheduled_at:string|null; estimate_bytes:number;
+  job:{status?:string;error?:string};
+  preview:{candidates:{id:string;filename:string;bytes:number}[];reclaimable_bytes:number;budget_exceeded:boolean;scope:string};
+  receipts:{id:string;at:string;actor:string;action:string;detail:unknown}[];
+}
+const GIB=1024**3;
+const verification=(row:Backup)=>row.restoration_verified_at?'Restore rehearsal recorded':row.verification==='archive_integrity_verified'?'Archive integrity checked':row.verification==='legacy_metadata_only'?'Legacy metadata only':'Verification unavailable';
+
+export function BackupManagement({readOnly=false}:{readOnly?:boolean}) {
+  const [offset,setOffset]=useState(0), [error,setError]=useState(''), [notice,setNotice]=useState(''), [busy,setBusy]=useState(false);
+  const [selected,setSelected]=useState<Backup|null>(null), [intent,setIntent]=useState<'delete'|'details'|'protect'|null>(null), [confirmation,setConfirmation]=useState('');
+  const [manual,setManual]=useState(false);
+  const query=useQuery({queryKey:['private','backup-management',offset],queryFn:({signal})=>api<Overview>(`/admin/backups?offset=${offset}&limit=10`,'GET',undefined,signal),refetchInterval:15000,retry:false});
+  const data=query.data;
+  async function act(path:string,body:unknown) {
+    setBusy(true);setError('');setNotice('');
+    try {
+      const result=await api<{status?:string;unlinked_bytes?:number;archive_removed?:boolean;manifest_removed?:boolean}>(`/admin/backups${path}`,'POST',body);
+      setNotice(result.status==='partial_failure'?`Partial deletion: archive ${result.archive_removed?'removed':'retained'}, manifest ${result.manifest_removed?'removed':'retained'}. Receipt saved; review operations before retrying.`:result.unlinked_bytes!==undefined?`Archive and manifest removed. ${formatBytes(result.unlinked_bytes)} unlinked; filesystem availability may differ.`:path==='/create'?'Manual backup queued. Progress is shown below.':'Backup settings updated.');
+      setIntent(null);setSelected(null);setManual(false);setOffset(0);await query.refetch();
+    } catch(e) {setError((e as Error).message);} finally {setBusy(false);}
+  }
+  function choose(row:Backup,action:typeof intent){setSelected(row);setIntent(action);setConfirmation('');setError('');}
+  const fs=data?.filesystem;
+  const used=fs?Math.max(0,Math.min(100,(fs.capacity_bytes-fs.available_bytes)/fs.capacity_bytes*100)):0;
+  return <section className="panel padded backup-management" aria-label="Backup Management">
+    <div className="backup-heading"><div><span className="eyebrow">STORAGE & BACKUPS</span><h2>Backup Management</h2><p className="muted">Recovery archives, protected points and safe rotation.</p></div><div className="backup-actions"><button onClick={()=>void query.refetch()} disabled={busy}>Refresh backups</button><button className="primary" disabled={readOnly||busy||!data||['queued','running'].includes(data.job.status||'')} onClick={()=>{setManual(true);setError('');}}>Create manual backup</button></div></div>
+    {query.isPending&&<p role="status">Checking backup service…</p>}
+    {query.error&&<p className="notice" role="alert">{query.error.message}. Storage measurements and archive eligibility are unavailable until the operations service responds.</p>}
+    {error&&<p className="notice error" role="alert">{error}</p>}{notice&&<p className="notice" role="status">{notice}</p>}
+    {data&&fs&&<>
+      <div className="backup-cards">
+        <article><span>Backup service</span><strong>{data.policy.enabled?'Scheduled':'Schedule disabled'}</strong><small>{data.service_status==='operation_busy'?'Operation in progress':data.job.status?`Latest operation: ${data.job.status}`:'Management service available'}</small></article>
+        <article><span>Managed archives</span><strong>{data.total.toLocaleString()} <small>· {formatBytes(data.total_bytes)}</small></strong><small>Actual compressed archive bytes</small></article>
+        <article><span>Available disk space</span><strong>{formatBytes(fs.available_bytes)}</strong><small>{formatBytes(fs.reserve_bytes)} reserved for safe operation</small></article>
+        <article><span>Last successful backup</span><strong><LocalTime value={data.last_success}/></strong><small>Restored: <LocalTime value={data.last_restoration_verified_at}/></small></article>
+      </div>
+      <div className="backup-disk"><div><strong>Backup filesystem</strong><span>{formatBytes(fs.capacity_bytes)} total · {formatBytes(fs.available_bytes)} available</span></div><div className="backup-capacity" role="meter" aria-label="Backup filesystem used or unavailable" aria-valuenow={Math.round(used)} aria-valuemin={0} aria-valuemax={100} aria-valuetext={`${used.toFixed(1)} percent used or unavailable`}><span style={{width:`${used}%`}}/></div><p className="small muted">Includes all files on the backup filesystem. PostgreSQL allocation is measured separately below; it does not predict compressed backup size.</p></div>
+      {(data.storage_pressure||data.preview.budget_exceeded)&&<p className="notice" role="status"><strong>Storage pressure.</strong> New backups pause if the full replacement and reserve cannot fit. No recovery point is deleted to make room automatically. Estimated replacement allowance: {formatBytes(data.estimate_bytes)}.</p>}
+      {data.inventory_stale&&<p className="notice" role="status">A backup operation is in progress. Inventory and storage show the last completed measurement; actions recheck availability after completion.</p>}
+      {data.job.error&&<p className="notice error">{data.job.error}</p>}
+      <div className="backup-inventory-heading"><h3>Backup inventory</h3><span className="small muted">Newest first · times in your local timezone</span></div>
+      {data.total===0?<p className="backup-empty">No managed archives are available. A previous restore receipt does not mean its archive still exists.</p>:<>
+        <div className="table-scroll" tabIndex={0} role="region" aria-label="Backup inventory scroll area"><table className="backup-table" aria-label="Managed backup archives"><thead><tr><th scope="col">Backup</th><th scope="col">Size</th><th scope="col">Verification</th><th scope="col">Protection & eligibility</th><th scope="col">Actions</th></tr></thead><tbody>{data.items.map(row=><tr key={row.id}>
+          <td><strong className="backup-filename">{row.filename}</strong><span className="small muted">{row.type.replaceAll('-',' ')} · {row.origin}</span><LocalTime value={row.created_at}/></td>
+          <td>{formatBytes(row.bytes)}</td><td><Status tone={row.restoration_verified_at?'success':row.verification==='archive_integrity_verified'?'neutral':'warning'}>{verification(row)}</Status><span className="small muted">{row.sha256?`SHA-256 ${row.sha256.slice(0,12)}…`:'SHA-256 unavailable'}</span></td>
+          <td><Status tone={row.protected?'success':'neutral'}>{row.protected?'Protected':'Unprotected'}</Status><span className="small muted">{row.reason}</span></td>
+          <td><div className="backup-row-actions"><button onClick={()=>choose(row,'details')}>Details</button><button disabled={readOnly||busy||row.type==='legacy'||row.verification!=='archive_integrity_verified'||Boolean(row.required_by.length)} onClick={()=>choose(row,'protect')}>{row.protected?'Unprotect':'Protect'}</button><button disabled={readOnly||busy||!row.eligible} onClick={()=>choose(row,'delete')}>Delete</button></div></td>
+        </tr>)}</tbody></table></div>
+        <div className="backup-pagination"><span className="small">{offset+1}–{Math.min(offset+10,data.total)} of {data.total}</span><button disabled={offset===0} onClick={()=>setOffset(Math.max(0,offset-10))}>Previous backups</button><button disabled={offset+10>=data.total} onClick={()=>setOffset(offset+10)}>Next backups</button></div>
+      </>}
+      <PolicyEditor key={data.policy.revision} policy={data.policy} disabled={busy||readOnly} save={body=>void act('/policy',body)}/>
+      <details className="backup-disclosure"><summary>Retention preview & emergency cleanup</summary><p>{data.preview.scope}</p><p><strong>{data.preview.candidates.length} scheduled archives</strong> outside the current tiers · {formatBytes(data.preview.reclaimable_bytes)} estimated reclaimable.</p>{data.preview.candidates.length>0&&<ul>{data.preview.candidates.map(row=><li key={row.id}>{row.filename} · {formatBytes(row.bytes)}</li>)}</ul>}<p className="small muted">This is a dry run. Automatic removal follows a successfully completed, integrity-checked scheduled replacement. For emergency cleanup, explicitly select an eligible archive’s Delete action and confirm its name. Each request rechecks recovery safeguards. Legacy archives require a separate operator procedure.</p></details>
+      <details className="backup-disclosure"><summary>Service details & audit receipts</summary><dl><dt>Next scheduled backup</dt><dd><LocalTime value={data.next_scheduled_at}/></dd><dt>Replacement allowance</dt><dd>{formatBytes(data.estimate_bytes)} · measured archives plus margin; first backup uses 1 GiB</dd><dt>Filesystem measurement</dt><dd>{fs.measurement} · device {fs.filesystem_id}</dd><dt>Unmanaged artifacts</dt><dd>{data.artifact_count} incomplete files or orphan manifests; excluded from automatic deletion</dd></dl>{data.artifacts.length>0&&<ul>{data.artifacts.map((artifact,i)=><li key={i}>{artifact.name} · {artifact.type.replaceAll('_',' ')}</li>)}</ul>}<ol className="backup-receipts">{data.receipts.map(row=><li key={row.id}><LocalTime value={row.at}/> · {row.action} · {row.actor}</li>)}</ol><p className="small muted">Local archives contain private account data. Use an owner-managed encrypted off-host copy for disaster recovery.</p></details>
+    </>}
+    {selected&&intent&&<ConfirmationDialog title={intent==='delete'?'Delete backup archive':intent==='protect'?(selected.protected?'Unprotect recovery archive':'Protect recovery archive'):'Backup details'} onClose={()=>{if(!busy){setSelected(null);setIntent(null);}}}>
+      <p className="backup-filename"><strong>{selected.filename}</strong></p>
+      {intent==='details'?<><dl><dt>Created locally</dt><dd><LocalTime value={selected.created_at}/></dd><dt>Origin</dt><dd>{selected.origin}</dd><dt>Compressed size</dt><dd>{formatBytes(selected.bytes)}</dd><dt>Verification</dt><dd>{verification(selected)}</dd><dt>Restore rehearsal</dt><dd><LocalTime value={selected.restoration_verified_at}/></dd><dt>SHA-256</dt><dd className="backup-hash">{selected.sha256||'Unavailable'}</dd><dt>Deletion</dt><dd>{selected.reason}</dd></dl><p className="small">Archive integrity checks decode the dump and record SHA-256. Only a successful isolated restoration records a restore rehearsal.</p>{selected.verification==='archive_integrity_verified'&&<div className="backup-actions"><a className="button" href={`/api/v1/admin/backups/${selected.id}/download`}>Download archive</a><a className="button" href={`/api/v1/admin/backups/${selected.id}/manifest`} target="_blank" rel="noreferrer">Open restore manifest</a></div>}<button onClick={()=>{setSelected(null);setIntent(null);}}>Close details</button></>:<>
+        <p>{intent==='delete'?`Removes this archive and its matching manifest. Up to ${formatBytes(selected.bytes)} may be reclaimed. The deletion receipt is retained.`:selected.protected?'Allows this archive to become eligible for deletion if recovery safeguards permit. Manual and release archives are excluded from automatic rotation.':'Excludes this archive from automatic rotation and manual deletion until explicitly unprotected.'}</p>
+        <p className="notice">Live PostgreSQL data and auction history stay intact.</p>
+        <label>Type {selected.filename} to confirm<input value={confirmation} onChange={e=>setConfirmation(e.target.value)} autoComplete="off"/></label>
+        {error&&<p className="notice error" role="alert">{error}</p>}
+        <button disabled={busy} onClick={()=>{setSelected(null);setIntent(null);}}>Cancel</button><button className="primary" disabled={readOnly||busy||confirmation!==selected.filename} onClick={()=>void act(`/${selected.id}/${intent}`,intent==='delete'?{confirmation}:{protected:!selected.protected})}>{intent==='delete'?'Confirm archive deletion':selected.protected?'Confirm unprotect':'Confirm protection'}</button>
+      </>}
+    </ConfirmationDialog>}
+    {manual&&data&&<ConfirmationDialog title="Create manual backup" onClose={()=>{if(!busy)setManual(false);}}><p>A consistent PostgreSQL archive will be created, fully decoded for integrity, and published with its SHA-256 manifest. It starts protected and is excluded from scheduled rotation.</p><p>Allow {formatBytes(data.estimate_bytes)} for the replacement plus {formatBytes(data.filesystem.reserve_bytes)} safe reserve. The operation pauses if capacity is insufficient. A restore rehearsal is a separate operator action.</p>{error&&<p className="notice error" role="alert">{error}</p>}<button disabled={busy} onClick={()=>setManual(false)}>Cancel</button><button className="primary" disabled={busy||readOnly} onClick={()=>void act('/create',{})}>Queue protected backup</button></ConfirmationDialog>}
+  </section>;
+}
+
+function PolicyEditor({policy,disabled,save}:{policy:Policy;disabled:boolean;save:(body:unknown)=>void}) {
+  const [draft,setDraft]=useState(policy),[review,setReview]=useState(false);
+  function number(key:keyof PolicyValues,value:string,scale=1){setDraft({...draft,[key]:value===''&&key==='max_bytes'?null:Math.round(Number(value)*scale)});}
+  const changed=JSON.stringify(draft)!==JSON.stringify(policy);
+  const valid=Number.isInteger(draft.daily)&&draft.daily>=1&&draft.daily<=365&&draft.interval_seconds>=3600&&draft.interval_seconds<=31*86400&&draft.weekly>=0&&draft.weekly<=104&&draft.monthly>=0&&draft.monthly<=120&&draft.minimum_recovery_points>=1&&draft.minimum_recovery_points<=30&&draft.warning_free_bytes>=2*GIB&&(draft.max_bytes===null||draft.max_bytes>=1024**2);
+  return <section className="backup-policy" aria-label="Backup retention policy"><div className="backup-inventory-heading"><h3>Backup retention</h3><Status tone={policy.enabled?'success':'neutral'}>{policy.enabled?'Schedule enabled':'Schedule disabled'}</Status></div><p className="small muted">Applies to new scheduled archives. Keeps the newest archive in each retained UTC day, week or month; tiers overlap. Protected, manual, release and legacy backups stay outside automatic rotation.</p><div className="backup-policy-grid">
+    <label className="backup-check"><input type="checkbox" checked={draft.enabled} disabled={disabled} onChange={e=>setDraft({...draft,enabled:e.target.checked})}/>Enable scheduled backups</label>
+    <label>Backup interval (hours)<input type="number" min={1} max={744} step={1} value={draft.interval_seconds/3600} disabled={disabled} onChange={e=>number('interval_seconds',e.target.value,3600)}/></label>
+    <label>Daily backups to keep<input type="number" min={1} max={365} value={draft.daily} disabled={disabled} onChange={e=>number('daily',e.target.value)}/></label>
+    <label>Weekly backups to keep (0 disables)<input type="number" min={0} max={104} value={draft.weekly} disabled={disabled} onChange={e=>number('weekly',e.target.value)}/></label>
+    <label>Monthly backups to keep (0 disables)<input type="number" min={0} max={120} value={draft.monthly} disabled={disabled} onChange={e=>number('monthly',e.target.value)}/></label>
+    <label>Minimum recovery points<input type="number" min={1} max={30} value={draft.minimum_recovery_points} disabled={disabled} onChange={e=>number('minimum_recovery_points',e.target.value)}/></label>
+  </div><details><summary>Storage limits</summary><div className="backup-policy-grid"><label>Maximum managed archive storage (GiB, optional)<input type="number" min={0.001} step="any" value={draft.max_bytes===null?'':draft.max_bytes/GIB} disabled={disabled} onChange={e=>number('max_bytes',e.target.value,GIB)}/></label><label>Warn below available space (GiB)<input type="number" min={2} step="any" value={draft.warning_free_bytes/GIB} disabled={disabled} onChange={e=>number('warning_free_bytes',e.target.value,GIB)}/></label></div><p className="small muted">The fixed 2 GiB safety reserve cannot be lowered. The budget must accommodate both existing archives and a complete new replacement before rotation.</p></details><button disabled={disabled||!changed||!valid} onClick={()=>setReview(true)}>Review backup policy</button>
+    {review&&<ConfirmationDialog title="Save backup retention policy" onClose={()=>setReview(false)}><p>Daily: keep {draft.daily}. Weekly: {draft.weekly||'disabled'}. Monthly: {draft.monthly||'disabled'}. Minimum recovery points: {draft.minimum_recovery_points}.</p><p>{draft.enabled?`Enable scheduled backups every ${draft.interval_seconds/3600} hours. The next backup is due one full interval after saving.`:'Scheduled backups will be disabled.'}</p><p>Saving does not delete existing files. Eligible scheduled archives rotate only after a new successful, integrity-checked scheduled backup. Historical data retention remains separate.</p><button onClick={()=>setReview(false)}>Cancel</button><button className="primary" disabled={disabled||!valid} onClick={()=>{const {revision,...values}=draft;save({revision,values});setReview(false);}}>Confirm backup policy</button></ConfirmationDialog>}
+  </section>;
+}

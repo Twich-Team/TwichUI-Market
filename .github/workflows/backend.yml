@@ -56,3 +56,13 @@ jobs:
       - run: python ../scripts/verify-unified-migration.py
       - run: python -m unittest discover -s ../scripts/tests -v
       - run: python -m unittest discover -s ../contracts/bridge/scoped-l1 -v
+      - name: Verify actual backup rotation and isolated PostgreSQL restoration
+        working-directory: .
+        run: |
+          mkdir -p artifacts/backup-management/fixtures
+          chmod 700 artifacts/backup-management/fixtures
+          docker compose -f compose.backup-test.yaml build backup-check
+          docker compose -f compose.backup-test.yaml run --rm backup-check
+      - if: always()
+        working-directory: .
+        run: docker compose -f compose.backup-test.yaml down --volumes
