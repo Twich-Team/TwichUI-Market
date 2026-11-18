@@ -624,21 +624,10 @@ export function Administration({
                   <dd>{state.storage.observations.toLocaleString()}</dd>
                   <dt>Historical retention</dt>
                   <dd>
-                    Policy proposals are shown above; live historical pruning
-                    remains disabled until authorized.
+                    The saved policy and current maintenance state are shown
+                    above. Saving a proposal does not start deletion.
                   </dd>
-                  <dt>Raw listing details</dt>
-                  <dd>
-                    {state.storage.retention.compaction_enabled
-                      ? `${state.storage.retention.raw_listing_days} days plus the current snapshot`
-                      : "Compaction disabled; raw details preserved"}
-                  </dd>
-                  <dt>Detailed price samples</dt>
-                  <dd>
-                    {state.storage.retention.compaction_enabled
-                      ? `${state.storage.retention.detailed_statistics_days} days; daily policy protects valuation support`
-                      : "Historical compaction is disabled"}
-                  </dd>
+
                 </dl>
                 <p>
                   Operational logs have separate configurable retention.
