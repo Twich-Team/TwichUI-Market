@@ -3,17 +3,20 @@ import json
 from datetime import timedelta
 from email.utils import format_datetime
 from types import SimpleNamespace
-from sqlalchemy import select
+from sqlalchemy import select, update
 from market.db import Session, engine, now
 from market.ingest import canonical, ingest
 from market.metadata import store_metadata
-from market.models import Market, MarketFeed, Observation, User
+from market.models import CollectionRun, Market, MarketFeed, Observation, User
 from market.security import hasher
 from market.worker import collect_once
 
 assert engine.url.database == 'market_test', 'Refusing unified fixtures outside market_test'
-at = now()-timedelta(minutes=1)
+at = now()
 with Session.begin() as db:
+    # Existing suites leave other verified markets due. This final isolated
+    # scenario must collect its own market, not merely report any work done.
+    db.execute(update(Market).values(enabled=False))
     if db.scalar(select(User.id).where(User.username=='commodity_fixture')) is None:
         db.add(User(username='commodity_fixture', password_hash=hasher.hash('synthetic commodity browser password'), role='member'))
     market = db.scalar(select(Market).where(Market.region=='us',Market.ruleset_id==2,
@@ -51,6 +54,12 @@ class Fixtures:
         return {'status':200,'headers':{'Battlenet-Namespace':'dynamic-forever-us','Last-Modified':format_datetime(at)}},json.dumps(body).encode()
 assert collect_once(Session, Fixtures(), at=at)
 with Session.begin() as db:
+    run=db.scalar(select(CollectionRun).where(CollectionRun.market_id==mid)
+        .order_by(CollectionRun.id.desc()).limit(1))
+    assert run and run.status=='collected', 'Unified fixture did not publish: '+str(run.status if run else None)
+    latest=db.scalar(select(Observation).where(Observation.market_id==mid)
+        .order_by(Observation.retrieved_at.desc(),Observation.id.desc()).limit(1))
+    assert latest.source_manifest, 'Unified fixture has no combined source manifest'
     db.get(Market, mid).enabled=False
     for observation in db.scalars(select(Observation).where(Observation.market_id==mid)):
         observation.synthetic=True

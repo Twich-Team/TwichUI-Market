@@ -1,0 +1,833 @@
+{
+  "scope": "Isolated market_test restored from temporary genuine production dump; no production writes",
+  "checked_at": "2026-11-18T01:07:37.981009+00:00",
+  "elapsed_seconds": 21.604,
+  "database_revision": "coverage_20261117",
+  "original_tables": 41,
+  "columns": {
+    "archive_checkpoints": [
+      "checkpoint_id",
+      "market_id",
+      "user_id",
+      "credential_id",
+      "header_json",
+      "created_at",
+      "expires_at"
+    ],
+    "archive_digests": [
+      "snapshot_id",
+      "algorithm",
+      "revision",
+      "record_count",
+      "records_sha256",
+      "records_bytes"
+    ],
+    "archive_members": [
+      "checkpoint_id",
+      "phase",
+      "source_id",
+      "value_json",
+      "transmit"
+    ],
+    "bridge_derivations": [
+      "snapshot_id",
+      "algorithm",
+      "revision",
+      "record_count"
+    ],
+    "bridge_derived_records": [
+      "snapshot_id",
+      "algorithm",
+      "revision",
+      "item_id",
+      "variant_key",
+      "record_json"
+    ],
+    "bridge_generations": [
+      "generation_id",
+      "market_id",
+      "algorithm",
+      "source_signature",
+      "manifest_json",
+      "created_at"
+    ],
+    "bridge_records": [
+      "generation_id",
+      "position",
+      "record_json"
+    ],
+    "collection_runs": [
+      "id",
+      "market_id",
+      "checked_at",
+      "status",
+      "http_status",
+      "duration_seconds",
+      "payload_bytes",
+      "error"
+    ],
+    "companion_authorizations": [
+      "id",
+      "user_id",
+      "device_id",
+      "approved_credential_id",
+      "device_name",
+      "platform",
+      "app_version",
+      "issuer_origin",
+      "redirect_uri",
+      "state_value",
+      "state_hash",
+      "code_challenge",
+      "code_hash",
+      "code_expires_at",
+      "created_at",
+      "expires_at",
+      "status",
+      "invalid_attempts"
+    ],
+    "companion_devices": [
+      "id",
+      "user_id",
+      "name",
+      "platform",
+      "app_version",
+      "issuer_origin",
+      "created_at",
+      "expires_at",
+      "refresh_expires_at",
+      "revoked",
+      "refresh_hash",
+      "previous_refresh_hash",
+      "rotation_nonce_hash",
+      "rotated_at",
+      "generation",
+      "access_credential_id",
+      "last_connection_at",
+      "last_sync_at",
+      "selected_market_id",
+      "last_observation_id",
+      "archived_at"
+    ],
+    "companion_refresh_history": [
+      "token_hash",
+      "device_id",
+      "consumed_at"
+    ],
+    "credentials": [
+      "id",
+      "user_id",
+      "token_hash",
+      "kind",
+      "name",
+      "csrf_hash",
+      "created_at",
+      "expires_at",
+      "revoked",
+      "audience",
+      "companion_device_id"
+    ],
+    "daily_observations": [
+      "market_id",
+      "day",
+      "observation_id"
+    ],
+    "invitations": [
+      "id",
+      "token_hash",
+      "created_by",
+      "expires_at",
+      "used"
+    ],
+    "item_media": [
+      "region",
+      "item_id",
+      "status",
+      "source",
+      "source_url",
+      "namespace",
+      "metadata_hash",
+      "asset_hash",
+      "content_type",
+      "data",
+      "byte_count",
+      "checked_at",
+      "retry_after",
+      "http_status",
+      "resolved_at"
+    ],
+    "item_metadata": [
+      "region",
+      "item_id",
+      "name",
+      "status",
+      "namespace",
+      "checked_at",
+      "resolved_at",
+      "retry_after",
+      "http_status",
+      "payload_hash",
+      "synthetic",
+      "quality",
+      "details",
+      "resolved_namespace",
+      "requested_at",
+      "fallback",
+      "fallback_name",
+      "fallback_retry_after",
+      "catalog_json",
+      "catalog_revision"
+    ],
+    "listings": [
+      "id",
+      "snapshot_id",
+      "auction_id",
+      "item_id",
+      "variant",
+      "variant_key",
+      "quantity",
+      "buyout",
+      "unit_price",
+      "bid",
+      "time_left"
+    ],
+    "login_attempts": [
+      "key",
+      "count",
+      "window_start"
+    ],
+    "market_verifications": [
+      "id",
+      "market_id",
+      "actor_id",
+      "created_at",
+      "evidence",
+      "evidence_hash",
+      "notes"
+    ],
+    "markets": [
+      "id",
+      "region",
+      "ruleset_id",
+      "house_id",
+      "source_kind",
+      "label",
+      "enabled",
+      "verified",
+      "interval_seconds",
+      "next_check",
+      "last_success",
+      "last_modified",
+      "etag",
+      "failures",
+      "last_error"
+    ],
+    "metadata_attempts": [
+      "id",
+      "task_id",
+      "provider",
+      "region",
+      "item_id",
+      "kind",
+      "started_at",
+      "completed_at",
+      "state",
+      "http_status",
+      "outcome",
+      "decision_json",
+      "returned_json",
+      "new_json",
+      "updated_json"
+    ],
+    "metadata_jobs": [
+      "id",
+      "actor_id",
+      "market_id",
+      "mode",
+      "state",
+      "dedupe_key",
+      "providers_json",
+      "total",
+      "request_budget",
+      "requests_used",
+      "created_at",
+      "updated_at"
+    ],
+    "metadata_providers": [
+      "provider",
+      "enabled",
+      "automatic",
+      "hourly_budget",
+      "daily_budget",
+      "hour_start",
+      "day_start",
+      "hour_used",
+      "day_used",
+      "next_request_at",
+      "cooldown_until",
+      "last_success",
+      "last_error",
+      "credential",
+      "credential_key_id",
+      "expires_at",
+      "validated_at",
+      "credential_status",
+      "pending_credential",
+      "pending_key_id",
+      "pending_expires_at",
+      "validation_requested",
+      "validation_revision",
+      "validation_error",
+      "rate_config",
+      "rate_tokens",
+      "rate_token_at",
+      "rate_inflight_until",
+      "rate_streak",
+      "adaptive_until",
+      "last_rate_limit",
+      "last_http_success",
+      "last_recovery",
+      "rate_observation"
+    ],
+    "metadata_quota_buckets": [
+      "provider",
+      "resolution",
+      "started_at",
+      "used"
+    ],
+    "metadata_recovery_items": [
+      "region",
+      "item_id",
+      "locale",
+      "status",
+      "decided_at",
+      "next_at",
+      "decision_json"
+    ],
+    "metadata_recovery_state": [
+      "id",
+      "turn",
+      "historical_after",
+      "audit_after"
+    ],
+    "metadata_resources": [
+      "region",
+      "resource",
+      "offset",
+      "status",
+      "fields_json",
+      "source_json",
+      "etag",
+      "checked_at",
+      "refresh_at",
+      "retry_at",
+      "http_status"
+    ],
+    "metadata_sources": [
+      "region",
+      "item_id",
+      "locale",
+      "provider",
+      "status",
+      "fields_json",
+      "source_json",
+      "revision",
+      "etag",
+      "checked_at",
+      "retrieved_at",
+      "refresh_at",
+      "retry_at",
+      "http_status",
+      "recovery_json"
+    ],
+    "metadata_tasks": [
+      "id",
+      "job_id",
+      "provider",
+      "region",
+      "item_id",
+      "locale",
+      "state",
+      "attempts",
+      "available_at",
+      "lease_until",
+      "lease_token",
+      "result_json",
+      "updated_at",
+      "resource",
+      "decision_json",
+      "force_refresh"
+    ],
+    "metadata_versions": [
+      "id",
+      "region",
+      "item_id",
+      "locale",
+      "provider",
+      "revision",
+      "fields_json",
+      "source_json",
+      "created_at"
+    ],
+    "observations": [
+      "id",
+      "market_id",
+      "snapshot_id",
+      "request_key",
+      "retrieved_at",
+      "upstream_modified",
+      "namespace",
+      "payload_hash",
+      "payload_bytes",
+      "synthetic"
+    ],
+    "player_market_mappings": [
+      "id",
+      "region",
+      "ruleset",
+      "faction",
+      "house_id",
+      "transport_ruleset_id",
+      "source_kind",
+      "confidence",
+      "evidence",
+      "evidence_hash",
+      "verified_at"
+    ],
+    "retention_batches": [
+      "id",
+      "actor_id",
+      "policy_hash",
+      "stage",
+      "rows_removed",
+      "cutoff",
+      "history_floor",
+      "created_at"
+    ],
+    "retention_policy": [
+      "id",
+      "revision",
+      "raw_days",
+      "intraday_days",
+      "daily_days",
+      "operational_days",
+      "security_days",
+      "approved_hash",
+      "approved_at",
+      "updated_at"
+    ],
+    "retention_policy_changes": [
+      "id",
+      "actor_id",
+      "before",
+      "after",
+      "created_at"
+    ],
+    "security_events": [
+      "id",
+      "actor_id",
+      "action",
+      "detail",
+      "created_at"
+    ],
+    "snapshot_statistics": [
+      "snapshot_id",
+      "item_id",
+      "variant_key",
+      "algorithm",
+      "recent_price",
+      "lowest_buyout",
+      "supply",
+      "priced_supply",
+      "listing_count"
+    ],
+    "snapshots": [
+      "id",
+      "market_id",
+      "content_hash",
+      "created_at",
+      "listing_count",
+      "raw_retained",
+      "statistics_retained"
+    ],
+    "storage_measurements": [
+      "sampled_at",
+      "database_bytes"
+    ],
+    "user_preferences": [
+      "user_id",
+      "schema_version",
+      "revision",
+      "values_json",
+      "updated_at"
+    ],
+    "users": [
+      "id",
+      "username",
+      "password_hash",
+      "role",
+      "active",
+      "created_at",
+      "archived_at"
+    ]
+  },
+  "ordering": {
+    "archive_checkpoints": [
+      "checkpoint_id"
+    ],
+    "archive_digests": [
+      "snapshot_id",
+      "algorithm",
+      "revision"
+    ],
+    "archive_members": [
+      "checkpoint_id",
+      "phase",
+      "source_id"
+    ],
+    "bridge_derivations": [
+      "snapshot_id",
+      "algorithm",
+      "revision"
+    ],
+    "bridge_derived_records": [
+      "snapshot_id",
+      "algorithm",
+      "revision",
+      "item_id",
+      "variant_key"
+    ],
+    "bridge_generations": [
+      "generation_id"
+    ],
+    "bridge_records": [
+      "generation_id",
+      "position"
+    ],
+    "collection_runs": [
+      "id"
+    ],
+    "companion_authorizations": [
+      "id"
+    ],
+    "companion_devices": [
+      "id"
+    ],
+    "companion_refresh_history": [
+      "token_hash"
+    ],
+    "credentials": [
+      "id"
+    ],
+    "daily_observations": [
+      "market_id",
+      "day"
+    ],
+    "invitations": [
+      "id"
+    ],
+    "item_media": [
+      "region",
+      "item_id"
+    ],
+    "item_metadata": [
+      "region",
+      "item_id"
+    ],
+    "listings": [
+      "id"
+    ],
+    "login_attempts": [
+      "key"
+    ],
+    "market_verifications": [
+      "id"
+    ],
+    "markets": [
+      "id"
+    ],
+    "metadata_attempts": [
+      "id"
+    ],
+    "metadata_jobs": [
+      "id"
+    ],
+    "metadata_providers": [
+      "provider"
+    ],
+    "metadata_quota_buckets": [
+      "provider",
+      "resolution",
+      "started_at"
+    ],
+    "metadata_recovery_items": [
+      "region",
+      "item_id",
+      "locale"
+    ],
+    "metadata_recovery_state": [
+      "id"
+    ],
+    "metadata_resources": [
+      "region",
+      "resource",
+      "offset"
+    ],
+    "metadata_sources": [
+      "region",
+      "item_id",
+      "locale",
+      "provider"
+    ],
+    "metadata_tasks": [
+      "id"
+    ],
+    "metadata_versions": [
+      "id"
+    ],
+    "observations": [
+      "id"
+    ],
+    "player_market_mappings": [
+      "id"
+    ],
+    "retention_batches": [
+      "id"
+    ],
+    "retention_policy": [
+      "id"
+    ],
+    "retention_policy_changes": [
+      "id"
+    ],
+    "security_events": [
+      "id"
+    ],
+    "snapshot_statistics": [
+      "snapshot_id",
+      "item_id",
+      "variant_key"
+    ],
+    "snapshots": [
+      "id"
+    ],
+    "storage_measurements": [
+      "sampled_at"
+    ],
+    "user_preferences": [
+      "user_id"
+    ],
+    "users": [
+      "id"
+    ]
+  },
+  "fingerprints": {
+    "archive_checkpoints": {
+      "rows": 0,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "archive_digests": {
+      "rows": 7,
+      "bytes": 721,
+      "sha256": "627fc20e8cf564511d7dd11b8ab64dc7a4fb7efd95b5ca690f2df624a5abf705"
+    },
+    "archive_members": {
+      "rows": 0,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "bridge_derivations": {
+      "rows": 7,
+      "bytes": 210,
+      "sha256": "7b7682064a433d264be0dcdbe03dab6ea53358b490f52c4c9610435021d24000"
+    },
+    "bridge_derived_records": {
+      "rows": 152194,
+      "bytes": 143178398,
+      "sha256": "4b6322bfef345f69c5b8f37dc69a63047ecba66b17d0a414b16dfe766506b294"
+    },
+    "bridge_generations": {
+      "rows": 0,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "bridge_records": {
+      "rows": 0,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "collection_runs": {
+      "rows": 1072,
+      "bytes": 61727,
+      "sha256": "765683e9307a39913bfb257df968b0bc41f3be0a0adcf6ff6801ca0c4ced66bd"
+    },
+    "companion_authorizations": {
+      "rows": 2,
+      "bytes": 802,
+      "sha256": "c2d401aac3e18638e2cd5713c06807998f025ff2773ae1ed27608a751be90a93"
+    },
+    "companion_devices": {
+      "rows": 5,
+      "bytes": 2070,
+      "sha256": "ea4dcc6d95b0753ab05cd2287e656ec725da9fd7ee182a26b06f182d5d9686ee"
+    },
+    "companion_refresh_history": {
+      "rows": 34,
+      "bytes": 3291,
+      "sha256": "3ab385ed32b2d7ed908e4938bd19b7641da8db76572230916776a8a6bc69d8bc"
+    },
+    "credentials": {
+      "rows": 272,
+      "bytes": 61376,
+      "sha256": "84d1e93e2ea0237f25aabac32c919ab58d610a73f59aff79ae819ba6ff5bdeeb"
+    },
+    "daily_observations": {
+      "rows": 6,
+      "bytes": 104,
+      "sha256": "0a552ac53f98f701fb4c096bc8bc2212e9cfd98f3903859c82d4608b5f4cc5a0"
+    },
+    "invitations": {
+      "rows": 2,
+      "bytes": 202,
+      "sha256": "009b43589b93a398061c5edd6279a4917ad03d53146268c494ae3c7bb7063d37"
+    },
+    "item_media": {
+      "rows": 5861,
+      "bytes": 30003209,
+      "sha256": "1c4437aecb5624204179b73cc9f1ef4e9b027fc48bcc743dda2791ca500df4d7"
+    },
+    "item_metadata": {
+      "rows": 5916,
+      "bytes": 72995928,
+      "sha256": "2b21d78cc9e95a85872112e712e6a3ba8364309ac66fab31cf8330dd91d642f8"
+    },
+    "listings": {
+      "rows": 11040033,
+      "bytes": 1506636555,
+      "sha256": "2abc66ae4ea55d95de5bad33170b0ebbefc6a2e246496fc758cea687e324fb13"
+    },
+    "login_attempts": {
+      "rows": 7,
+      "bytes": 679,
+      "sha256": "383e969a6496c2d24e8e3aa4c5b4e8894936a21dfa00e10c342f4673bd6c8c5d"
+    },
+    "market_verifications": {
+      "rows": 2,
+      "bytes": 5028,
+      "sha256": "e7d6d471274fb9da263bf766a53941675224876ef60df832c1194ae61fa03d17"
+    },
+    "markets": {
+      "rows": 2,
+      "bytes": 328,
+      "sha256": "0839b1a3a943e3da18b8af1be695e36eac6479d78da19897c3f3365a36bb7d03"
+    },
+    "metadata_attempts": {
+      "rows": 2052,
+      "bytes": 4982397,
+      "sha256": "ade069b8cb6911f74adf56f368e31cc6f2eb40c2d5d79d453e0a2678332f58ab"
+    },
+    "metadata_jobs": {
+      "rows": 17980,
+      "bytes": 3081593,
+      "sha256": "f748bc21342462e4f60977044573280e49e7ae0e1c437c7e2ecfab3b9f754bdc"
+    },
+    "metadata_providers": {
+      "rows": 4,
+      "bytes": 2141,
+      "sha256": "2b97b51a3e90e8b80c5b40ab4edd846787665d58f27da83c8ae88393952ea314"
+    },
+    "metadata_quota_buckets": {
+      "rows": 1203,
+      "bytes": 45189,
+      "sha256": "7a6480a7643d13686955bcb9557180d7fc1dd64d58012fe993370af31127c5c7"
+    },
+    "metadata_recovery_items": {
+      "rows": 5374,
+      "bytes": 7850415,
+      "sha256": "c2fc1f2891b15a3163a203834cb2fddcb52d634c5d28b4fdffac104bd9939e63"
+    },
+    "metadata_recovery_state": {
+      "rows": 1,
+      "bytes": 65,
+      "sha256": "beefc0007081cf5690e2fc12e03f6e2e452733a76a027c8f611b15fcba93d6e2"
+    },
+    "metadata_resources": {
+      "rows": 3,
+      "bytes": 101900,
+      "sha256": "3e5e6079fa69031e61f2d0bd8127df9b75ae99b73c1a2f77048e50afaec577f3"
+    },
+    "metadata_sources": {
+      "rows": 16004,
+      "bytes": 91784713,
+      "sha256": "87ec64b985b861f3235ce3e8b96da6122955874a9cfc1c0a1520dd9d889859f2"
+    },
+    "metadata_tasks": {
+      "rows": 18299,
+      "bytes": 21660394,
+      "sha256": "59677a99333167d48483e8c990baba233c511c706de1883e144abf3411140e75"
+    },
+    "metadata_versions": {
+      "rows": 16626,
+      "bytes": 108657359,
+      "sha256": "f5d76238597fae22488122dcd175db9a773790bb56c282dd4054e39f924d2183"
+    },
+    "observations": {
+      "rows": 1070,
+      "bytes": 203678,
+      "sha256": "7c6da4a189b33c1d327f38a9759e4f2ff27f1c31b0e765b599d94e11df991700"
+    },
+    "player_market_mappings": {
+      "rows": 1,
+      "bytes": 15546,
+      "sha256": "dde78a44cad988f6801006e0263f2bc09ae209428459ef17d26f9571c3c50cdd"
+    },
+    "retention_batches": {
+      "rows": 0,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "retention_policy": {
+      "rows": 1,
+      "bytes": 56,
+      "sha256": "b13d69b12df05e5e409c8df5f3f387142f039e622f11aaf578f500c062ab03f2"
+    },
+    "retention_policy_changes": {
+      "rows": 2,
+      "bytes": 440,
+      "sha256": "f911953ccd587fefb82c7c38037046db393264b6be056bf43d46cceed2955b11"
+    },
+    "security_events": {
+      "rows": 43805,
+      "bytes": 4264491,
+      "sha256": "8c60d9c24315cf5fac5ec0ed74fa59964b3326bcb23853613843bf143aca786c"
+    },
+    "snapshot_statistics": {
+      "rows": 2372883,
+      "bytes": 266099799,
+      "sha256": "9447bf8c36311222bfc3056843c2d64f59aae765f90fec9f4753dded7afc5eea"
+    },
+    "snapshots": {
+      "rows": 95,
+      "bytes": 10507,
+      "sha256": "fc861a981458b5e4160d0f66ea42b2de6dd969ddd0650c4978f62a324c46ded4"
+    },
+    "storage_measurements": {
+      "rows": 96,
+      "bytes": 3231,
+      "sha256": "3ee978fd7128021a817ebf59c6618f1be61df41720392365d69723eaae1ea7f0"
+    },
+    "user_preferences": {
+      "rows": 22,
+      "bytes": 8212,
+      "sha256": "b5e36ad92afd9818f7db162c02f5ef9050ac152face46c5d87bbb72fdff44ba8"
+    },
+    "users": {
+      "rows": 97,
+      "bytes": 16721,
+      "sha256": "679095ee279b4bfbf3567beed7a644265932c20c83f4e82b26b1a1f67ffe5ff0"
+    }
+  },
+  "all_original_columns_identical": true,
+  "database_bytes": 3757143731
+}
