@@ -100,6 +100,7 @@ struct Data {
     performance_capture: AtomicBool,
     sync_progress: Mutex<twichui_market_core::performance::Progress>,
     performance_reports: Mutex<std::collections::VecDeque<twichui_market_core::performance::Report>>,
+    active_performance: Mutex<Option<twichui_market_core::performance::Report>>,
     workshop_failure: Mutex<Option<twichui_market_core::workshop_setup::Failure>>,
 }
 pub struct Runtime {
@@ -209,14 +210,19 @@ impl Executor for NativeTask {
     }
 }
 impl Data {
+    fn clear_performance(&self){if let Ok(mut reports)=self.performance_reports.lock(){reports.clear();}if let Ok(mut value)=self.active_performance.lock(){*value=None;}if let Ok(mut progress)=self.sync_progress.lock(){*progress=Default::default();}}
     fn begin_capture(self:&Arc<Self>)->twichui_market_core::performance::Capture {
         let data=self.clone();
         let context=self.local.lock().ok().map(|l|(l.profile.server.clone(),l.profile.bootstrap.as_ref().map(|b|b.account.id)));
         twichui_market_core::performance::Capture::observe(self.performance_capture.load(Ordering::Acquire),move|progress,report|{
             let current=data.local.lock().ok().map(|l|(l.profile.server.clone(),l.profile.bootstrap.as_ref().map(|b|b.account.id)));
             if context!=current{return;}
+            let active=progress.active;
             if let Ok(mut value)=data.sync_progress.lock(){*value=progress;}
-            if data.performance_capture.load(Ordering::Acquire) {if let Some(report)=report {if let Ok(mut reports)=data.performance_reports.lock(){while reports.len()>=4{reports.pop_front();}reports.push_back(report);}}}
+            if data.performance_capture.load(Ordering::Acquire) {
+                if active {if let Ok(mut value)=data.active_performance.lock(){*value=report;}}
+                else {if let Ok(mut value)=data.active_performance.lock(){*value=None;}if let Some(report)=report {if let Ok(mut reports)=data.performance_reports.lock(){while reports.len()>=4{reports.pop_front();}reports.push_back(report);}}}
+            }
             data.emit();
         })
     }
@@ -251,7 +257,7 @@ impl Data {
                 label: market.label.clone(),
             });
         }
-        if profile.bootstrap.as_ref().is_some_and(|b|b.account.id!=bootstrap.account.id) {if let Ok(mut reports)=self.performance_reports.lock(){reports.clear();}if let Ok(mut progress)=self.sync_progress.lock(){*progress=Default::default();}}
+        if profile.bootstrap.as_ref().map(|b|b.account.id)!=Some(bootstrap.account.id) {self.clear_performance();}
         profile.bootstrap = Some(bootstrap.clone());
         profile.validate(&local.settings.server).map_err(friendly)?;
         profile.save(&self.path).map_err(friendly)?;
@@ -358,6 +364,7 @@ impl Runtime {
             performance_capture: AtomicBool::new(performance_capture),
             sync_progress: Mutex::new(Default::default()),
             performance_reports: Mutex::new(Default::default()),
+            active_performance: Mutex::new(None),
             workshop_failure: Mutex::new(None),
         });
         let observer = data.clone();
@@ -741,6 +748,7 @@ impl Runtime {
         if settings.server != old.server && approving {
             return Err("Cancel browser approval before changing the server".into());
         }
+        if settings.server!=old.server {self.data.clear_performance();}
         let changed_profile = if settings.server != old.server {
             Some(
                 Profile::load(&self.data.path, &settings.server)
@@ -1256,7 +1264,7 @@ impl Runtime {
                 let mut replacement=Profile::disconnected(&profile.server).map_err(friendly)?;
                 replacement.last_market=profile.last_market;
                 {let mut local=owned.data.local.lock().map_err(|_|"Connection settings are unavailable")?;local.profile=replacement.clone();local.credential_available=false;local.error=warning;}
-                replacement.save(&owned.data.path).map_err(friendly)?;Ok(())
+                replacement.save(&owned.data.path).map_err(friendly)?;owned.data.clear_performance();Ok(())
             })();if let Err(error)=result{owned.data.set_error(error)}owned.data.emit();
         }).map_err(friendly)?;
         Ok(())
@@ -1391,14 +1399,14 @@ impl Runtime {
     pub fn set_performance_capture(&self,enabled:bool)->Result<()> {
         twichui_market_core::performance::set_enabled(&self.data.path,enabled).map_err(friendly)?;
         self.data.performance_capture.store(enabled,Ordering::Release);
-        if !enabled {if let Ok(mut reports)=self.data.performance_reports.lock(){reports.clear();}}
+        if !enabled {if let Ok(mut reports)=self.data.performance_reports.lock(){reports.clear();}if let Ok(mut value)=self.data.active_performance.lock(){*value=None;}}
         self.data.emit();Ok(())
     }
     pub fn diagnostics(&self) -> Result<String> {
         let view = self.view()?;
         let document = serde_json::json!({"schema_version":1,"version":view.version,"server":view.settings.server,"workshop_setup":self.data.workshop_failure.lock().ok().and_then(|last|last.clone()),
         "workshop_delivery":twichui_market_core::workshop_setup::delivery_diagnostics(&view.delivery),
-        "sync_performance":{"enabled":view.performance_capture,"last_runs":self.data.performance_reports.lock().map(|r|r.iter().cloned().collect::<Vec<_>>()).unwrap_or_default(),"timings":"nested inclusive durations; process CPU delta; process-lifetime peak RSS; no payloads, paths or cursors"},
+        "sync_performance":{"enabled":view.performance_capture,"current_run":self.data.active_performance.lock().ok().and_then(|r|r.clone()),"last_runs":self.data.performance_reports.lock().map(|r|r.iter().cloned().collect::<Vec<_>>()).unwrap_or_default(),"timings":"nested inclusive durations; process CPU delta; process-lifetime peak RSS; no payloads, paths or cursors"},
         "phase":view.sync.sync.phase,"last_sync_ms":view.sync.sync.last_sync_ms,"last_server_check_ms":view.sync.sync.last_server_check_ms,
         "upstream_update_ms":view.sync.sync.upstream_update_ms,"cache":view.cache,"error":view.sync.error,"automatic_sync":view.settings.automatic_sync,"interval_minutes":view.settings.interval_minutes});
         let dir = self.data.path.join("exports");

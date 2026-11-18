@@ -130,23 +130,103 @@ impl Session {
 fn micros(value: Duration) -> u64 {
     value.as_micros().min(u64::MAX as u128) as u64
 }
-#[derive(Clone,Copy,Debug,PartialEq,Eq,PartialOrd,Ord,Serialize)]
-#[serde(rename_all="snake_case")]
-pub enum ServerStage {Authentication,Watermark,History,Pricing,Keys,Changes,Json,Sql,Lock,Total,Cpu,Calculation}
-pub fn request_timings()->bool {CURRENT.with(|slot|slot.borrow().as_ref().is_some_and(|s|s.lock().is_ok_and(|s|s.detailed)))}
-pub fn server_timings(headers:&reqwest::header::HeaderMap) {
-    if !request_timings(){return;}
-    CURRENT.with(|slot|{if let Some(session)=slot.borrow().as_ref(){if let Ok(mut session)=session.lock(){
-        if let Some(value)=headers.get("server-timing").and_then(|v|v.to_str().ok()).filter(|v|v.len()<=2048) {
-            for metric in value.split(',').take(16) {let Some((name,value))=metric.split_once(";dur=")else{continue};
-                let stage=match name.trim(){"authentication"=>ServerStage::Authentication,"watermark"=>ServerStage::Watermark,"history"=>ServerStage::History,"pricing"=>ServerStage::Pricing,"keys"=>ServerStage::Keys,"changes"=>ServerStage::Changes,"json"=>ServerStage::Json,"sql"=>ServerStage::Sql,"lock"=>ServerStage::Lock,"total"=>ServerStage::Total,"cpu"=>ServerStage::Cpu,"calculation"=>ServerStage::Calculation,_=>continue};
-                if let Ok(ms)=value.parse::<f64>() {if ms.is_finite()&&(0.0..=3_600_000.0).contains(&ms){let timing=session.report.server_stages.entry(stage).or_default();timing.calls=timing.calls.saturating_add(1);timing.elapsed_us=timing.elapsed_us.saturating_add((ms*1000.0) as u64);}}
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ServerStage {
+    Authentication,
+    Watermark,
+    History,
+    Pricing,
+    Keys,
+    Changes,
+    Json,
+    Sql,
+    Lock,
+    Total,
+    Cpu,
+    Calculation,
+}
+pub fn request_timings() -> bool {
+    CURRENT.with(|slot| {
+        slot.borrow()
+            .as_ref()
+            .is_some_and(|s| s.lock().is_ok_and(|s| s.detailed))
+    })
+}
+pub fn server_timings(headers: &reqwest::header::HeaderMap) {
+    if !request_timings() {
+        return;
+    }
+    CURRENT.with(|slot| {
+        if let Some(session) = slot.borrow().as_ref() {
+            if let Ok(mut session) = session.lock() {
+                if let Some(value) = headers
+                    .get("server-timing")
+                    .and_then(|v| v.to_str().ok())
+                    .filter(|v| v.len() <= 2048)
+                {
+                    for metric in value.split(',').take(16) {
+                        let Some((name, value)) = metric.split_once(";dur=") else {
+                            continue;
+                        };
+                        let stage = match name.trim() {
+                            "authentication" => ServerStage::Authentication,
+                            "watermark" => ServerStage::Watermark,
+                            "history" => ServerStage::History,
+                            "pricing" => ServerStage::Pricing,
+                            "keys" => ServerStage::Keys,
+                            "changes" => ServerStage::Changes,
+                            "json" => ServerStage::Json,
+                            "sql" => ServerStage::Sql,
+                            "lock" => ServerStage::Lock,
+                            "total" => ServerStage::Total,
+                            "cpu" => ServerStage::Cpu,
+                            "calculation" => ServerStage::Calculation,
+                            _ => continue,
+                        };
+                        if let Ok(ms) = value.parse::<f64>() {
+                            if ms.is_finite() && (0.0..=3_600_000.0).contains(&ms) {
+                                let timing = session.report.server_stages.entry(stage).or_default();
+                                timing.calls = timing.calls.saturating_add(1);
+                                timing.elapsed_us =
+                                    timing.elapsed_us.saturating_add((ms * 1000.0) as u64);
+                            }
+                        }
+                    }
+                }
+                if let Some(value) = headers
+                    .get("x-companion-sync-counts")
+                    .and_then(|v| v.to_str().ok())
+                    .filter(|v| v.len() <= 256)
+                {
+                    for metric in value.split(';').take(4) {
+                        let Some((name, value)) = metric.split_once('=') else {
+                            continue;
+                        };
+                        if let Ok(count) = value.parse::<u32>() {
+                            match name {
+                                "queries" => {
+                                    session.report.server_sql_queries = session
+                                        .report
+                                        .server_sql_queries
+                                        .saturating_add(count as u64)
+                                }
+                                "scanned" => {
+                                    session.report.server_scanned =
+                                        session.report.server_scanned.saturating_add(count as u64)
+                                }
+                                "changed" => {
+                                    session.report.server_changed =
+                                        session.report.server_changed.saturating_add(count as u64)
+                                }
+                                _ => {}
+                            }
+                        }
+                    }
+                }
             }
         }
-        if let Some(value)=headers.get("x-companion-sync-counts").and_then(|v|v.to_str().ok()).filter(|v|v.len()<=256) {
-            for metric in value.split(';').take(4) {let Some((name,value))=metric.split_once('=')else{continue};if let Ok(count)=value.parse::<u32>() {match name {"queries"=>session.report.server_sql_queries=session.report.server_sql_queries.saturating_add(count as u64),"scanned"=>session.report.server_scanned=session.report.server_scanned.saturating_add(count as u64),"changed"=>session.report.server_changed=session.report.server_changed.saturating_add(count as u64),_=>{}}}}
-        }
-    }}});
+    });
 }
 thread_local! { static CURRENT:RefCell<Option<Arc<Mutex<Session>>>>=const { RefCell::new(None) }; }
 pub struct Capture {
@@ -267,13 +347,16 @@ pub fn checkpoint() {
         }
         session.last_emitted = Instant::now();
         session.last_operation = Some(session.operation);
-        session
-            .observer
-            .clone()
-            .map(|observer| (observer, session.progress(true)))
+        session.observer.clone().map(|observer| {
+            (
+                observer,
+                session.progress(true),
+                session.detailed.then(|| session.report()),
+            )
+        })
     });
-    if let Some((observer, progress)) = notification {
-        observer(progress, None);
+    if let Some((observer, progress, report)) = notification {
+        observer(progress, report);
     }
 }
 pub fn enabled(base: &std::path::Path) -> crate::Result<bool> {
@@ -417,6 +500,12 @@ mod tests {
         assert!(!progress.active);
         assert_ne!(progress.operation, Operation::Complete);
         assert!(report.as_ref().unwrap().process_cpu_us.is_some());
+        assert!(events
+            .iter()
+            .any(|(progress, report)| progress.active
+                && report
+                    .as_ref()
+                    .is_some_and(|r| r.counters.get(&Counter::ReceivedRecords) == Some(&42))));
         assert!(CURRENT.with(|s| s.borrow().is_none()));
     }
     #[test]
