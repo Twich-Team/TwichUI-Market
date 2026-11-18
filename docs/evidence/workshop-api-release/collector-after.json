@@ -1,0 +1,68 @@
+{
+  "market": {
+    "id": 2,
+    "house_id": 114,
+    "interval_seconds": 300,
+    "failures": 0,
+    "last_success": "2026-11-18 20:50:54.853629+00:00"
+  },
+  "feeds": [
+    {
+      "source_kind": "auctions",
+      "enabled": true,
+      "failures": 0,
+      "last_success": "2026-11-18 20:50:54.853629+00:00"
+    },
+    {
+      "source_kind": "commodities",
+      "enabled": true,
+      "failures": 0,
+      "last_success": "2026-11-18 20:50:54.853629+00:00"
+    }
+  ],
+  "recent_feed_checks": [
+    {
+      "source_kind": "commodities",
+      "checked_at": "2026-11-18 20:50:54.853629+00:00",
+      "status": "unchanged",
+      "http_status": 304,
+      "has_error": false
+    },
+    {
+      "source_kind": "auctions",
+      "checked_at": "2026-11-18 20:50:54.853629+00:00",
+      "status": "unchanged",
+      "http_status": 304,
+      "has_error": false
+    },
+    {
+      "source_kind": "commodities",
+      "checked_at": "2026-11-18 20:45:52.304532+00:00",
+      "status": "unchanged",
+      "http_status": 304,
+      "has_error": false
+    },
+    {
+      "source_kind": "auctions",
+      "checked_at": "2026-11-18 20:45:52.304532+00:00",
+      "status": "unchanged",
+      "http_status": 304,
+      "has_error": false
+    },
+    {
+      "source_kind": "commodities",
+      "checked_at": "2026-11-18 20:40:34.588493+00:00",
+      "status": "unchanged",
+      "http_status": 304,
+      "has_error": false
+    },
+    {
+      "source_kind": "auctions",
+      "checked_at": "2026-11-18 20:40:34.588493+00:00",
+      "status": "unchanged",
+      "http_status": 304,
+      "has_error": false
+    }
+  ],
+  "retention_enabled": true
+}

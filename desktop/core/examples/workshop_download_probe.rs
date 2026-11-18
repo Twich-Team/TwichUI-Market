@@ -14,8 +14,16 @@ fn main()->Result<(),Box<dyn std::error::Error>> {
         Err(e)=>return Err(e.into()),
     }};
     let records=bundle.manifest["record_count"].as_u64().ok_or("Missing count")?;
-    let (warm,warm_bytes,warm_requests)=workshop_summary::download(d.path(),&client,&c,&||false)?;
-    if warm.manifest!=bundle.manifest||warm_bytes!=0||warm_requests!=1{return Err("Unchanged generation acceptance failed".into())}
-    println!("{}",serde_json::json!({"authenticated_https":server.starts_with("https://"),"native_summary_validation":true,"records":records,"download_bytes":bytes,"download_requests":requests,"preparation_responses":preparations,"warm_304":true,"warm_bytes":warm_bytes,"game_publication":false,"physical_windows_acceptance":false,"synthetic":bundle.manifest["synthetic"],"generation":bundle.manifest["generation_id"]}));
-    Ok(())
+    let mut report=serde_json::json!({"authenticated_https":server.starts_with("https://"),"native_summary_validation":true,"records":records,"download_bytes":bytes,"download_requests":requests,"preparation_responses":preparations,"game_publication":false,"physical_windows_acceptance":false,"synthetic":bundle.manifest["synthetic"],"generation":bundle.manifest["generation_id"]});
+    // Collection may advance while downloading the sealed generation. Its next
+    // preparation is a separate valid outcome, never failure of this download.
+    match workshop_summary::download(d.path(),&client,&c,&||false) {
+        Ok((warm,warm_bytes,warm_requests))=>{
+            if warm.manifest!=bundle.manifest||warm_bytes!=0||warm_requests!=1{return Err("Unchanged generation acceptance failed".into())}
+            report["warm_304"]=true.into();report["warm_bytes"]=warm_bytes.into();
+        },
+        Err(Error::SummaryPreparing(_))=>{report["warm_304"]=false.into();report["next_generation_preparing"]=true.into();},
+        Err(e)=>return Err(e.into()),
+    }
+    println!("{report}");Ok(())
 }

@@ -17,7 +17,7 @@ The already implemented, reviewed [automatic delivery candidate](workshop-automa
 
 Existing bridge models and disposable export tables are reused; no Workshop schema migration, collector/retention/provider configuration, website asset, signing key, addon or signed Companion publication is required. Preserve the deployed two-module retention recovery/selector patch and existing overlay chain. Deploy only matching API/local API images after exact-source backend/contract tests and bounded resource/recovery validation. Verify authenticated summary preparation, eventual complete validated manifest/parts and warm unchanged response; a 202 alone is not delivery acceptance. Preserve all last-good files/caches and immutable releases. Roll back only these API images if necessary; do not run incompatible pre-unified readers. Current genuine-history availability and actual owner-PC loaded generation remain checks, never assumptions.
 
-**No server rollout is performed.** Supplied AGENTS.md explicitly retains the broader Workshop API rollout as separate and forbids production deployment for the delivery candidate. Owner approval of this concrete server scope is required before promotion. The independent sync-performance goal remains paused, its edits/evidence preserved in its separate worktree, with task-owned fixture services stopped.
+**Owner subsequently approved “Approve Workshop API rollout.”** The earlier approval boundary is superseded for this concrete API-only scope. [Current deployment, validation and rollback](workshop-api-release-acceptance.md). The independent sync-performance goal remains paused, its edits/evidence preserved in its separate worktree, with task-owned fixture services stopped.
 
 ## Focused verification
 
