@@ -24,3 +24,21 @@ test('automatic retention: exact authorization gates, real dry run and responsiv
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   await page.screenshot({path:'../artifacts/automatic-retention/screenshots/mobile.png',fullPage:true});
 });
+
+test('automatic retention: enabled maintenance does not inherit obsolete legacy compaction claims',async({page})=>{
+  await page.route('**/api/v1/admin/retention',async route=>{
+    if(route.request().method()!=='GET')return route.continue();
+    const response=await route.fetch();const value=await response.json();
+    value.application_authorized=true;value.backup_restore_ready=true;value.completed_batches=9;
+    value.automation={...value.automation,installed:true,authorized:true,enabled:true,paused_reason:null,rows_by_stage:{raw_listings:45000}};
+    await route.fulfill({response,json:value});
+  });
+  await page.goto('/');await page.getByLabel('Username',{exact:true}).fill('owner');await page.getByLabel('Password',{exact:true}).fill('synthetic browser owner password');await page.getByRole('button',{name:'Sign in',exact:true}).click();
+  await expect(page.getByRole('heading',{name:'Market Explorer',exact:true})).toBeVisible();
+  await page.goto('/administration');await page.getByRole('button',{name:'Storage & backups ↗',exact:true}).click();
+  await expect(page.getByRole('button',{name:'Pause automatic maintenance',exact:true})).toBeEnabled();
+  await expect(page.getByText('Schedule enabled · 9 completed batches',{exact:true})).toBeVisible();
+  await expect(page.getByText('raw listings: 45,000 rows processed',{exact:true})).toBeVisible();
+  await expect(page.getByText('Compaction disabled; raw details preserved',{exact:true})).toHaveCount(0);
+  await expect(page.getByText('Historical compaction is disabled',{exact:true})).toHaveCount(0);
+});
