@@ -1,0 +1,9 @@
+{
+  "at": "2026-11-18T04:14:38.610329+00:00",
+  "filename": "production-before.dump",
+  "bytes": 653148210,
+  "sha256": "8f6fc1fb5eda8ce19f31b4b6fafa9b529506905f994724abf78d0e0011d1ee29",
+  "temporary_release_archive": true,
+  "managed_production_archives_changed": false,
+  "filesystem_reserve_bytes": 2147483648
+}

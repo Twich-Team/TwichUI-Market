@@ -1,6 +1,6 @@
-# Backup management operations and owner review gate
+# Backup management operations and approved deployment
 
-This candidate is **not deployed**. Installing the feature does not authorize a production backup, deletion, schedule activation or historical-data retention. The owner currently requires recurring backups off and no retained production dumps. The read-only audit found **zero recoverable database archives**, not the old budget-full inventory. The active production overlay `compose.owner-backup-policy.yaml` must remain in place. No populated PostgreSQL migration is introduced; management state uses its own durable SQLite ledger and archive manifests.
+**Owner-approved deployment is complete** at `e49de6a`; see [current production acceptance and rollback](backup-management-release-acceptance.md). The exact release commands below were executed after the owner instructed “Merge and deploy.” Rollback was not needed. The initial review-stage prohibition is superseded for this completed release; future production backup deletion, schedule activation and historical-data retention remain separate explicit actions. The owner currently requires recurring backups off and no retained production dumps. The read-only audit found **zero recoverable database archives**, not the old budget-full inventory. The active production overlay `compose.owner-backup-policy.yaml` must remain in place. No populated PostgreSQL migration is introduced; management state uses its own durable SQLite ledger and archive manifests.
 
 ## Ownership and scope
 
@@ -46,16 +46,16 @@ Rollback: stop only backup-manager, restore the pre-feature pinned API/local-API
 
 Actual discovery: zero managed archives and zero reclaimable archive bytes. Preserve the 29 orphan manifests, stale status and empty lock (16,809 bytes total). These are historical receipts with negligible space impact; deleting them needs explicit file selection/confirmation and is outside the automated v2 policy. No other Market dump was found in repository/worktree artifact roots. No unrelated volume/host cleanup is proposed. Off-host backup/keyring durability remains unverified.
 
-## Prepared commands (not executed on production)
+## Prepared commands used for the approved release
 
 The current production environment files and full overlay list were read from the live container's Compose labels. [Prepared immutable candidate pins](../compose.backup-review-images.yaml), [prior-image rollback pins](../compose.backup-review-rollback.yaml) and [image/source receipts](evidence/backup-management/images.json) are review artifacts. Candidate images are local to this rootless host; no registry publication is implied. Reconfirm all paths and image IDs after owner approval, especially if another release has intervened.
 
 ```bash
 MARKET_PROD_ROOT=/home/marketdev/projects/TwichUI-Market
 MARKET_REVIEW_ROOT=/home/marketdev/.codex/worktrees/backup-management-retention/TwichUI-Market
-# Set MARKET_BACKUP_TOKEN_FILE privately after approval; do not echo the token.
+# Existing private token file; never print its contents.
 export MARKET_MANAGED_BACKUP_ROOT="$MARKET_PROD_ROOT/backups"
-export MARKET_BACKUP_TOKEN_FILE
+export MARKET_BACKUP_TOKEN_FILE="$MARKET_PROD_ROOT/.local/backup-management/token"
 MARKET_BACKUP_DC=(docker --context rootless compose -p twichui-market
   --project-directory "$MARKET_PROD_ROOT"
   --env-file "$MARKET_PROD_ROOT/.env"
@@ -79,7 +79,7 @@ MARKET_BACKUP_DC=(docker --context rootless compose -p twichui-market
   -f "$MARKET_REVIEW_ROOT/compose.backup-management.yaml"
   -f "$MARKET_REVIEW_ROOT/compose.backup-review-images.yaml")
 "${MARKET_BACKUP_DC[@]}" --profile backup-management config --quiet
-# OWNER-APPROVED RELEASE ONLY; the commands below are not executed by this task.
+# OWNER-APPROVED RELEASE: the following scoped promotion was executed; schedule stays disabled.
 "${MARKET_BACKUP_DC[@]}" --profile backup-management up -d --no-deps --no-build --pull never backup-manager
 "${MARKET_BACKUP_DC[@]}" up -d --no-deps --no-build --pull never api local-api proxy
 # Compatible code rollback, only if needed after that approved release:
