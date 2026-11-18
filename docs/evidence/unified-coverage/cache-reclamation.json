@@ -1,0 +1,131 @@
+{
+  "scope": "Exact unused private immutable Market build-cache IDs only; no image/container/volume/data/backup pruning",
+  "records": [
+    {
+      "CreatedAt": "2026-11-15 02:29:27.916414938 +0000 UTC",
+      "Description": "mount / from exec /bin/sh -c apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*",
+      "ID": "g56t1dx3sfntfub5q7mf47nuw",
+      "LastUsedAt": "2 days ago",
+      "Mutable": false,
+      "Parents": [
+        "lkp0zrrfutwiuma2zed1ttbrc"
+      ],
+      "Reclaimable": true,
+      "Shared": false,
+      "Size": "141.1MB",
+      "Type": "regular",
+      "UsageCount": 1,
+      "verified_project_ancestry": [
+        "[10/11] COPY backend/tests ./tests",
+        "[ 9/11] COPY backend/migrations ./migrations",
+        "[ 8/11] COPY backend/alembic.ini ./",
+        "[ 6/11] COPY backend/market ./market",
+        "[ 4/11] COPY backend/requirements.lock ./",
+        "[ 3/11] COPY backend/pyproject.toml ./"
+      ]
+    },
+    {
+      "CreatedAt": "2026-11-15 01:04:41.647603661 +0000 UTC",
+      "Description": "mount / from exec /bin/sh -c apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*",
+      "ID": "ndit7p5lb0k9ma41g0t7tmxah",
+      "LastUsedAt": "2 days ago",
+      "Mutable": false,
+      "Parents": [
+        "k6twd9z8wjxjz5p93wdt94h6l"
+      ],
+      "Reclaimable": true,
+      "Shared": false,
+      "Size": "141.1MB",
+      "Type": "regular",
+      "UsageCount": 1,
+      "verified_project_ancestry": [
+        "[10/11] COPY backend/tests ./tests",
+        "[ 9/11] COPY backend/migrations ./migrations",
+        "[ 8/11] COPY backend/alembic.ini ./",
+        "[ 6/11] COPY backend/market ./market",
+        "[ 4/11] COPY backend/requirements.lock ./",
+        "[ 3/11] COPY backend/pyproject.toml ./"
+      ]
+    },
+    {
+      "CreatedAt": "2026-11-14 23:56:41.12497918 +0000 UTC",
+      "Description": "mount / from exec /bin/sh -c apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*",
+      "ID": "ycszegfr0pnsq56x96m8iaohi",
+      "LastUsedAt": "3 days ago",
+      "Mutable": false,
+      "Parents": [
+        "k30ucg0rmpeufh4xsmhy461qp"
+      ],
+      "Reclaimable": true,
+      "Shared": false,
+      "Size": "141.1MB",
+      "Type": "regular",
+      "UsageCount": 1,
+      "verified_project_ancestry": [
+        "[10/11] COPY backend/tests ./tests",
+        "[ 9/11] COPY backend/migrations ./migrations",
+        "[ 8/11] COPY backend/alembic.ini ./",
+        "[ 6/11] COPY backend/market ./market",
+        "[ 4/11] COPY backend/requirements.lock ./",
+        "[ 3/11] COPY backend/pyproject.toml ./"
+      ]
+    },
+    {
+      "CreatedAt": "2026-11-15 02:24:47.402711397 +0000 UTC",
+      "Description": "mount / from exec /bin/sh -c pip install --no-cache-dir -r requirements.lock",
+      "ID": "7t0x4vg12d00kizymx04w90ml",
+      "LastUsedAt": "2 days ago",
+      "Mutable": false,
+      "Parents": [
+        "x1krxo2croivdwxgd86sjoe9o"
+      ],
+      "Reclaimable": true,
+      "Shared": false,
+      "Size": "131.8MB",
+      "Type": "regular",
+      "UsageCount": 7,
+      "verified_project_ancestry": [
+        "[ 4/11] COPY backend/requirements.lock ./",
+        "[ 3/11] COPY backend/pyproject.toml ./"
+      ]
+    },
+    {
+      "CreatedAt": "2026-11-16 02:47:26.49687565 +0000 UTC",
+      "Description": "mount / from exec /bin/sh -c pip install --no-cache-dir -r requirements.lock",
+      "ID": "qn0s9aw627o9g4e1dieu1d9tv",
+      "LastUsedAt": "21 hours ago",
+      "Mutable": false,
+      "Parents": [
+        "jwrtfcpbengmhfjomvw0j5fk9"
+      ],
+      "Reclaimable": true,
+      "Shared": false,
+      "Size": "131.8MB",
+      "Type": "regular",
+      "UsageCount": 8,
+      "verified_project_ancestry": [
+        "[ 4/11] COPY backend/requirements.lock ./",
+        "[ 3/11] COPY backend/pyproject.toml ./"
+      ]
+    },
+    {
+      "CreatedAt": "2026-11-14 01:24:10.865992831 +0000 UTC",
+      "Description": "mount / from exec /bin/sh -c pip install --no-cache-dir -r requirements.lock",
+      "ID": "2kj0nk91v6xckv82n0uedjvki",
+      "LastUsedAt": "2 days ago",
+      "Mutable": false,
+      "Parents": [
+        "xhchykpyev1r5cf5a40m94u33"
+      ],
+      "Reclaimable": true,
+      "Shared": false,
+      "Size": "110.6MB",
+      "Type": "regular",
+      "UsageCount": 22,
+      "verified_project_ancestry": [
+        "[ 4/11] COPY backend/requirements.lock ./",
+        "[ 3/11] COPY backend/pyproject.toml ./"
+      ]
+    }
+  ]
+}

@@ -11,6 +11,7 @@ from market.ingest import canonical, ingest
 from market.models import (CollectionRun, FeedCapture, FeedCheck, ItemSourceCoverage, Listing,
                            Market, MarketFeed, Observation, Snapshot, SnapshotStatistic)
 from market.worker import collect_once
+from test_bridge_export import contract_bundle  # Frozen bundle for installed-package CI.
 
 
 def payload(kind, rows):
@@ -268,3 +269,71 @@ def test_archive_v1_stays_regular_only_and_v2_carries_coverage(client, database,
                for r in unified if r['item_id'] != 25)
     assert client.get('/api/v1/archive/markets/2/checkpoint', params={
         'protocol': 2, 'base': envelopes[1]['header']['checkpoint_id']}).status_code == 409
+
+
+def test_retry_after_survives_restart_and_does_not_refetch_deferred_feed(database):
+    at = configure(database)
+    class Limited(Client):
+        def fetch(self, market):
+            meta, body = super().fetch(market)
+            if market.source_kind == 'commodities':
+                meta['status'] = 429
+                meta['headers']['Retry-After'] = '900'
+                body = b''
+            return meta, body
+    assert collect_once(database, Limited(), at=at)
+    restarted = Client()
+    assert collect_once(database, restarted, at=at+timedelta(seconds=300))
+    assert [c[0] for c in restarted.calls] == ['auctions']
+    with database() as db:
+        assert db.scalar(select(func.count()).select_from(Observation)) == 0
+        assert db.get(MarketFeed, (2, 'commodities')).retry_after
+        assert db.scalar(select(FeedCheck.status).where(FeedCheck.source_kind=='commodities')
+            .order_by(FeedCheck.id.desc()).limit(1)) == 'deferred'
+    assert collect_once(database, Client(), at=at+timedelta(seconds=900))
+    with database() as db:
+        assert db.scalar(select(func.count()).select_from(Observation)) == 1
+
+
+def test_compacted_identical_snapshot_is_reconstructed_without_new_snapshot_identity(database):
+    from sqlalchemy import delete
+    at = configure(database)
+    assert collect_once(database, Client(), at=at)
+    with database.begin() as db:
+        snapshot = db.scalar(select(Snapshot))
+        sid = snapshot.id
+        db.execute(delete(Listing).where(Listing.snapshot_id==sid))
+        snapshot.raw_retained=False
+    assert collect_once(database, Client(statuses={'auctions':304,'commodities':304}), at=at+timedelta(seconds=300))
+    with database() as db:
+        assert db.scalar(select(func.count()).select_from(Snapshot)) == 1
+        assert db.get(Snapshot, sid).raw_retained
+        assert db.scalar(select(func.count()).select_from(Listing)) == 4
+        assert db.scalar(select(func.count()).select_from(Observation)) == 2
+
+
+def test_global_lock_protects_unified_collection_before_network_io(database):
+    from sqlalchemy import text
+    with database() as db:
+        if db.bind.dialect.name != 'postgresql': pytest.skip('PostgreSQL advisory-lock behavior')
+    at = configure(database)
+    client = Client()
+    with database.begin() as holder:
+        holder.execute(text('SELECT pg_advisory_xact_lock(7140232)'))
+        assert collect_once(database, client, at=at) is False
+        assert not client.calls
+    assert collect_once(database, client, at=at)
+
+
+def test_wrong_commodity_self_link_is_not_silently_substituted(database):
+    at = configure(database)
+    class OtherHouse(Client):
+        def fetch(self, market):
+            meta, body = super().fetch(market)
+            if market.source_kind=='commodities': body=body.replace(b'/114/', b'/113/')
+            return meta, body
+    assert collect_once(database, OtherHouse(), at=at)
+    with database() as db:
+        assert db.scalar(select(func.count()).select_from(Observation)) == 0
+        assert db.scalar(select(func.count()).select_from(FeedCapture)) == 1
+        assert db.get(MarketFeed,(2,'commodities')).failures == 1

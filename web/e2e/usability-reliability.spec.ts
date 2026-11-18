@@ -153,6 +153,6 @@ test('usability M3: delayed loading keeps table rows, uses shared indicators and
  await page.getByLabel('Item name or ID',{exact:true}).fill('290000');
  await expect(page.getByRole('status').filter({hasText:'Loading provider attempts'})).toBeVisible();
  expect(await table.locator('tbody tr').count()).toBe(before);
- try {await table.locator('..').locator('..').screenshot({path:`${output}/loading-administration.png`});}finally{release();}
+ try {await page.screenshot({path:`${output}/loading-administration.png`,fullPage:true});await expect(page.getByRole('status').filter({hasText:'Loading provider attempts'})).toBeVisible();}finally{release();}
  await axe(page);
 });

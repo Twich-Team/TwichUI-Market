@@ -49,7 +49,7 @@ pub fn project(
         to <= today && (today - from).num_days() < 60,
         "projection supported history window",
     )?;
-    let key = super::coverage_key(scope)?;
+    let key = super::coverage_key(scope, h.protocol_version)?;
     let current = read_one(store, &key, &h.checkpoint_id)?;
     let canonical_model = h.pricing_algorithm == "twichui-pricing-v1";
     let mut observations = Vec::new();

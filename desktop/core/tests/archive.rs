@@ -612,3 +612,35 @@ fn commodity_archive_keeps_precollection_days_unknown_and_prices_exact() {
     assert!(cloth["daily"][0]["recent_copper"].is_null());
     assert_eq!(cloth["daily"][1]["state"], "listed");
 }
+
+#[test]
+fn commodity_upgrade_preserves_legacy_sqlite_and_offline_projection() {
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("history.sqlite");
+    let (legacy, pages, request) = fixture("a");
+    let mut store = ArchiveStore::open(&path, 64 * 1024 * 1024).unwrap();
+    store.begin(&scope(), &encoded(&legacy)).unwrap();
+    for (i, page) in pages.iter().enumerate() {
+        store.apply(&scope(), &format!("page{i}"), &encoded(page)).unwrap();
+    }
+    store.save_selection(&scope(), &request).unwrap();
+    let original = project(&store, &scope(), &request, &DeliveryBudget::default()).unwrap().0;
+    let db = rusqlite::Connection::open(&path).unwrap();
+    let old_rows = || -> Vec<String> {
+        db.prepare("SELECT value FROM history_entries WHERE scope=?1 ORDER BY phase,source_id,item_id,variant").unwrap()
+            .query_map([scope().key().unwrap()], |row| row.get(0)).unwrap()
+            .collect::<Result<Vec<_>,_>>().unwrap()
+    };
+    let original_rows = old_rows();
+    let (unified, pages, _) = from_source_coverage(source(), "b", true);
+    store.begin(&scope(), &encoded(&unified)).unwrap();
+    assert_eq!(store.active(&scope()).unwrap().unwrap().protocol_version, 1);
+    // A partially downloaded new format never hides completed offline history.
+    assert_eq!(project(&store, &scope(), &request, &DeliveryBudget::default()).unwrap().0, original);
+    for (i, page) in pages.iter().enumerate() {
+        store.apply(&scope(), &format!("page{i}"), &encoded(page)).unwrap();
+    }
+    assert_eq!(store.active(&scope()).unwrap().unwrap().protocol_version, 2);
+    assert_eq!(store.selection(&scope()).unwrap().unwrap(), request);
+    assert_eq!(old_rows(), original_rows);
+}

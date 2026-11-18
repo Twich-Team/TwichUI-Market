@@ -522,6 +522,14 @@
                   "type": "string",
                   "format": "date-time"
                 }
+              },
+              "dependentRequired": {
+                "source_kind": [
+                  "coverage_started_at"
+                ],
+                "coverage_started_at": [
+                  "source_kind"
+                ]
               }
             }
           }
