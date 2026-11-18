@@ -1,0 +1,14 @@
+{
+  "source_commit": "16de8ea512e49d7b27c9971bacdad63010699547",
+  "changed_services": [
+    "proxy"
+  ],
+  "proxy_image_before": "sha256:ff172a984cba5d20359fc5e18d18cac226f8858e9422eb7138b0e644f8a00dc1",
+  "proxy_image_after": "sha256:5bc8c724c44649dc63642581cb2276fe4daa77151ec24077112aac6994e80595",
+  "all_non_image_proxy_configuration_preserved": true,
+  "all_other_service_specifications_preserved": true,
+  "overlay": "/home/marketdev/projects/TwichUI-Market/compose.companion-beta7-web.yaml",
+  "existing_backup_mount_paths_reused_without_modifying_them": true,
+  "compose_before_sha256": "15b7a2d672020caa8c446b4263bc871bfaf1bec1a338d213169f6d48062ce4a2",
+  "compose_after_sha256": "3d458cde523997fd6f5e8f322a3859111b698a819011826732e146e37c4f6b1b"
+}

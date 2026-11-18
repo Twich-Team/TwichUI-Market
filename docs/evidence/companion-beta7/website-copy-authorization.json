@@ -1,0 +1,8 @@
+{
+  "owner_statement": "Publish Companion beta.7 and make available for download on web page.",
+  "necessary_correction": "Replace the obsolete never-changes-game-files claim with consent and closed-game wording; retain the SavedVariables assurance.",
+  "source_commit": "16de8ea512e49d7b27c9971bacdad63010699547",
+  "scope": "One paragraph on the existing download page, preserving the current deployed e49de6a backup-management frontend.",
+  "production_api_deployment": false,
+  "addon_publication": false
+}

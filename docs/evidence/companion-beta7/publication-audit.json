@@ -1,0 +1,37 @@
+{
+  "prepared": {
+    "actor": "owner-authorized-beta7-publication",
+    "at": "2026-11-18T04:42:08.476984+00:00",
+    "authenticode_status": "NotSigned",
+    "channel": "private-beta",
+    "evidence_sha256": {
+      "installed-smoke.json": "fbd9eaa8a68471faf0d82b7565dc8a3ed17b6c9d1c452cf4e9fb173578cffbba",
+      "launch-metrics.json": "494cb5f60a89fe278fec4c2bc2b5b52faad61ae30c320648b906fae825f3002a",
+      "legacy-upgrade.json": "8f47e6e5ae1b903aa9c57f50eac0d2d498d1ec95c4e31acd029ca05c7724dcd9",
+      "owner-release-approval.json": "5dcc68ea6308b58e162ee38da5fa034a38a9fae953ef45a5e8df9f2d5876d0f0",
+      "performance.json": "c314f7b0a61d6dc6cd69fd57ec972f5c18a4128d9d2b97d4d9684b2b8f03cb26",
+      "signed-update-acceptance.json": "aad5337978154cf813eb0f393221303a2171a8c81b1ee4724709dfd973fc92f1",
+      "windows-signature.json": "307b0d3ab0ce1977bd7695b50d5ec3627fee422617f0c736f7179e008685b663"
+    },
+    "installer_sha256": "ef770b95dab2240605f133ce78d63c55cd6be5689a8f2aa65789905f1eb1a3c8",
+    "manifest_sha256": "17a4b063d2cca7e6658bde3e9ee58413a5869d3eed0d83ee46a156c89592bd18",
+    "operation": "publish",
+    "phase": "prepared",
+    "previous_version": "2.0.0-beta.6",
+    "schema_version": 1,
+    "source_commit": "4b0ff82fbf6e38937a0727e781a8aa79efac79c6",
+    "tray_actions_verified": false,
+    "updater_public_key_sha256": "5794736c840c7c09a49396e60cd569ff6b5f24f872eb0318ed95d55c16616ecf",
+    "updates": "signed",
+    "version": "2.0.0-beta.7",
+    "workflow_run_id": 44236143135
+  },
+  "committed": {
+    "at": "2026-11-18T04:42:08.486223+00:00",
+    "channel": "private-beta",
+    "phase": "committed",
+    "prepared": "00000006.json",
+    "schema_version": 1,
+    "version": "2.0.0-beta.7"
+  }
+}

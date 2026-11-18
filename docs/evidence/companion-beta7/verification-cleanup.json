@@ -1,0 +1,18 @@
+{
+  "all_temporary_credential_ids": [
+    279,
+    280,
+    281,
+    282
+  ],
+  "all_revoked": true,
+  "all_post_revocation_checks": [
+    401,
+    401,
+    401,
+    401
+  ],
+  "private_grant_files_removed": true,
+  "no_new_accounts": true,
+  "no_new_devices": true
+}

@@ -1,0 +1,18 @@
+{
+  "rows": 4,
+  "protected_fields": [
+    "provider",
+    "enabled",
+    "automatic",
+    "hourly_budget",
+    "daily_budget",
+    "credential",
+    "credential_key_id",
+    "expires_at",
+    "pending_credential",
+    "pending_key_id",
+    "pending_expires_at",
+    "rate_config"
+  ],
+  "sha256": "16f30420f2f6dd1c5757f82fd4f5cb565b6132a5ea5a380a42072c6914da97d1"
+}

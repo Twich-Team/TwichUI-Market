@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "version": "2.0.0-beta.7",
+  "payload_source_commit": "4b0ff82fbf6e38937a0727e781a8aa79efac79c6",
+  "windows_run_id": 44236143135,
+  "backend_run_id": 44236143158,
+  "website_run_id": 44236143136,
+  "installer_artifact_id": 14397612723,
+  "installer_sha256": "ef770b95dab2240605f133ce78d63c55cd6be5689a8f2aa65789905f1eb1a3c8",
+  "installer_bytes": 4834587,
+  "executable_sha256": "e0f727caef424f2b702853b20695d3c48f3a6ca3aa4ba1fbc63c958d4e03df33",
+  "updater_public_key_sha256": "5794736c840c7c09a49396e60cd569ff6b5f24f872eb0318ed95d55c16616ecf",
+  "authenticode_status": "NotSigned",
+  "updates": "Tauri signed",
+  "signer_cli": "2.12.4",
+  "signer_network": "none",
+  "signer_logging": "none",
+  "verifier_image": "sha256:2a28087cb330f9075cdd646f69fae8571580e0fcdd03df3a73800d8cb528f3cb",
+  "harness_source_commit": "dbad1742a513cb845e380a451befbb80c8bf91e9",
+  "sdk_run_id": 44238379159,
+  "publication": "published and actual authenticated HTTPS verified"
+}
