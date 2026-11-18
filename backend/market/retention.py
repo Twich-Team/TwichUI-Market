@@ -99,7 +99,7 @@ def plan(db, at):
             'protected_rows_estimate':max(0,round(estimated_rows)-count) if db.bind.dialect.name=='postgresql' else None})
         if first is None and count:
             keys=primary_keys(model)
-            ids=[list(row) for row in db.execute(select(*keys).where(predicate).order_by(*keys).limit(BATCH_ROWS))]
+            ids=[list(row) for row in db.execute(select(*keys).where(predicate).order_by(*keys).limit(min(BATCH_ROWS,25) if model is FeedCapture else BATCH_ROWS))]
             first=(name,model,ids)
     fingerprint=hashlib.sha256(canonical({'policy':policy['policy_hash'],'at':at.isoformat(),'first':
         [first[0],[[str(v) for v in row] for row in first[2]]] if first else None}).encode()).hexdigest()

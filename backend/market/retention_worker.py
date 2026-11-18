@@ -88,6 +88,7 @@ def recovery_ready(actor_id):
             and manifest['protected'] is True and bool(manifest['required_by'])
             and manifest['verification'] == 'archive_integrity_verified' and bool(manifest['restored'])
             and now()-timedelta(hours=24) <= dump <= restored <= now()
+            and dump <= stamp <= now()
             and evidence.get('restored_archive_sha256') == manifest['sha256'])
     except (OSError, KeyError, ValueError, TypeError, HTTPException):
         return False
@@ -182,13 +183,14 @@ def work_once(factory=Session, *, at=None, clock=time.monotonic):
 
 def _work(factory, at, clock):
     with factory.begin() as db:
+        # A held leader lock proves old in-flight receipts lost their process,
+        # including when the owner paused/revoked authorization during a crash.
+        db.execute(update(RetentionExecution).where(RetentionExecution.status=='running').values(
+            status='interrupted', reason='Previous process interrupted; committed batches preserved', finished_at=at))
         row=db.get(RetentionAutomation,1)
         document=approved_document(db,row)
         if not row or not row.enabled or not document: return {'status':'inactive'}
         if row.next_run_at and aware(row.next_run_at)>at: return {'status':'not_due'}
-        # A held leader lock proves old in-flight receipts lost their process.
-        db.execute(update(RetentionExecution).where(RetentionExecution.status=='running').values(
-            status='interrupted', reason='Previous process interrupted; committed batches preserved', finished_at=at))
         limits=Limits(**document['limits'])
         row.next_run_at=at+timedelta(seconds=limits.interval_seconds)
         receipt=RetentionExecution(policy_hash=document['policy_hash'],status='running')

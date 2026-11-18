@@ -174,3 +174,11 @@ def test_off_vm_readiness_status_cannot_claim_missing_receipts(tmp_path,monkeypa
     monkeypatch.setenv('RETENTION_RECOVERY_EVIDENCE',str(tmp_path/'missing.json'))
     state=recovery_evidence_view()
     assert not state['off_vm_verification_recent'] and 'missing' in state['reason']
+
+
+def test_restart_records_interruption_even_when_owner_paused(database,automation):
+    with database.begin() as db:
+        db.get(RetentionAutomation,1).enabled=False
+        db.add(RetentionExecution(policy_hash=automation['policy_hash'],status='running'))
+    assert work_once(database)['status']=='inactive'
+    with database() as db: assert db.scalar(select(RetentionExecution.status))=='interrupted'
