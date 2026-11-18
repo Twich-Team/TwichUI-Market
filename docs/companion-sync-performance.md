@@ -1,0 +1,19 @@
+# Companion synchronization performance investigation
+
+Owner requested measurement before optimization, comparable repeated runs, exact cache equality, correctness/durability preservation, separate standard/archive/Workshop stages, real progress, Windows verification and a draft review PR. No automatic performance deployment, signing or publication. Resume authorized after the separate Workshop server repair; that deployed image and all production policies remain preserved.
+
+Base: integrated beta.8 plus the owner's Windows validator repairs. The independent Workshop repair is being reconciled before implementation. The new PR will stack on the repair branch, never the repository's initial main commit. Earlier Workshop route404s are a now-repaired availability failure, not standard synchronization throughput.
+
+## Stages and baseline
+
+Native price synchronization executes bootstrap, paired-device activity, sequential signed-cursor price pages, durable SQLite staging/activation, then source provenance. Successful automatic runs then invoke Workshop delivery synchronously on the same worker: the application remains busy through that separate operation. Version2 broad Workshop summaries require no archive; optional manual archives and legacy version1 selected delivery have distinct paths.
+
+Bounded read-only production inspection captured exact daily winners and complete variant sets from six snapshots (153,393 aggregate statistics), plus recent changed/repeated observations. This summary-only slice contains genuine commodities and no accounts, credentials or raw listings. Current set is complete; history is explicitly bounded and cannot be presented as a complete retained-history archive or as canonical raw-listing pricing. Repeated native HTTP/SQLite runs use only isolated market_test. Fixture SHA/source scope and three-run aggregate evidence: [baseline](evidence/sync-performance/baseline.json).
+
+Linux native release baseline, loopback (no WAN delay injected), API1CPU/768MiB, PostgreSQL1CPU/1GiB, client2CPU/1GiB; WAL/FULL durability. Full24,584 variants: median10.205s at50 versus6.694s at100. Genuine incremental: median22.763s versus13.848s, 11,623 transferred changes, resulting25,426 variants. HTTP requests495→249/full and554→279/incremental. Unchanged checks already avoid record transfer and full cache copying: about0.05s/four requests. All final value hashes match across page sizes. These are Linux fixture-copy observations, not production or Windows speedup claims.
+
+Measured ranking: per-page server/round-trip overhead dominates; incremental database SQL is12.715s at50 and7.077s at100. SQLite transactions total2.017s and1.167s; final activation is a small share. Historical signatures are repeatedly calculated but measured below key-generation/pricing costs. Do not rewrite staging, weaken synchronous durability or introduce cross-account caches without stronger evidence. Next: EXPLAIN ANALYZE the incremental distinct/keyset query on the isolated representative copy; then optimize bounded key discovery and repeat identical scenarios.
+
+## Status and remaining work
+
+Baseline instrumentation and runner checkpoint only. Instrumentation is opt-in/thread-scoped, records bounded fixed stage/counter maps without payloads, tokens, URLs or cursors. Benchmark-only server wrapper captures bounded timing/SQL counts without SQL text or parameters and is guarded by explicit market_test identity. Product diagnostics/progress and archive/Workshop instrumentation remain to implement. Required Windows, browser, old-client, recovery/failure and comparable final measurements remain open; no performance completion is claimed.

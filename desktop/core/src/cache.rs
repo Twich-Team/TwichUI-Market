@@ -38,6 +38,7 @@ pub struct Completion {
 
 impl Cache {
     pub fn open(path: &Path) -> Result<Self> {
+        let _stage=crate::performance::measure(crate::performance::Stage::SqliteOpen);
         Self::initialize(Connection::open(path)?)
     }
     pub fn memory() -> Result<Self> {
@@ -153,7 +154,10 @@ impl Cache {
         requested_cursor: Option<&str>,
         page: &Page,
     ) -> Result<()> {
-        page.validate(market)?;
+        let validation=crate::performance::measure(crate::performance::Stage::Validation);
+        page.validate(market)?;drop(validation);
+        let _transaction=crate::performance::measure(crate::performance::Stage::SqliteTransaction);
+        let staging=crate::performance::measure(crate::performance::Stage::SqliteStaging);
         let tx = self.db.transaction()?;
         tx.execute(
             "INSERT OR IGNORE INTO state(server,market) VALUES(?1,?2)",
@@ -207,6 +211,8 @@ impl Cache {
                 }
             }
         }
+        drop(staging);
+        let _activation=(!page.has_more).then(||crate::performance::measure(crate::performance::Stage::SqliteActivation));
         if !page.has_more {
             tx.execute(
                 "DELETE FROM active WHERE server=?1 AND market=?2",
@@ -235,6 +241,7 @@ impl Cache {
                 page.target_observation_id
             ],
         )?;
+        let _commit=crate::performance::measure(crate::performance::Stage::SqliteCommit);
         tx.commit()?;
         Ok(())
     }
