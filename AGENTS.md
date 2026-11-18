@@ -1,5 +1,7 @@
 # TwichUI Market engineering instructions
 
+**Current owner request — automatic Workshop delivery candidate:** the owner explicitly requests coordinated implementation in Market and TwichUI, superseding the repository-only/addon-source restriction for this exact task. Use isolated `feature/workshop-automatic-delivery` worktrees, preserve draft U1/U2 history/dependencies, signed beta.5 and all production state. Implement/test/push review checkpoints and coordinated draft PRs; no production deployment, existing-draft merge, signing/publication, live AddOns/SavedVariables change or native Forever acceptance claim. [Decision](docs/workshop-automatic-delivery-plan.md), [progress](docs/workshop-automatic-delivery-progress.md).
+
 Read docs/implementation-plan.md and docs/progress.md before each cycle. Implement small complete tasks, verify behavior, inspect diffs, commit and push checkpoints on a development branch. Never claim live observations from fixtures.
 
 Operate only in this repository and the marketdev rootless Docker context. Never use root/sudo or touch AMP, other users, unrelated containers, firewall, SSH or host proxies. Bind services to localhost. Check resources and ports before allocation. Limit container CPU, memory, logs and retained data. Never commit secrets.

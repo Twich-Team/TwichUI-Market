@@ -25,7 +25,7 @@ fn safe_root(root:&Path)->Result<()>{
  #[cfg(unix)]{use std::os::unix::fs::PermissionsExt;if fs::metadata(root)?.permissions().mode()&0o022!=0{return refuse()}}
  Ok(())
 }
-fn literal(raw:&[u8],out:&mut Vec<u8>){
+pub(crate) fn literal(raw:&[u8],out:&mut Vec<u8>){
  out.reserve(raw.len()+2);out.push(b'"');
  for &b in raw{
   if (32..=126).contains(&b)&&b!=b'"'&&b!=b'\\'{out.push(b)}
@@ -35,7 +35,7 @@ fn literal(raw:&[u8],out:&mut Vec<u8>){
 }
 // Exactly the quoted-string subset emitted above, plus older all-decimal
 // artifacts. No Lua evaluation, escape aliases, raw controls or expressions.
-fn read_literal(bytes:&[u8],i:&mut usize,max:usize)->Result<Vec<u8>>{
+pub(crate) fn read_literal(bytes:&[u8],i:&mut usize,max:usize)->Result<Vec<u8>>{
  if bytes.get(*i)!=Some(&b'"'){return refuse()}*i+=1;let mut out=Vec::new();
  loop{
   let b=*bytes.get(*i).ok_or(Error::Invalid("bridge Lua string"))?;*i+=1;

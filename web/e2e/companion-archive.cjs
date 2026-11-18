@@ -37,8 +37,8 @@ const path=require('node:path');const fs=require('node:fs');const http=require('
  await expect(page.locator('#account-name')).toHaveText('Synthetic');
  expect(await page.evaluate(()=>window.__calls.filter(c=>c.command==='archive_workshop').length)).toBe(0);
  // Preserve the installed-client legacy selector's unique existing More actions.
- await expect(page.locator('.more summary')).toHaveCount(1);await expect(page.locator('.advanced summary')).toHaveCount(1);
- await page.locator('#history-panel summary').click();await page.locator('#archive-sync').click();
+ await expect(page.locator('.more > summary')).toHaveCount(1);await expect(page.locator('.advanced summary')).toHaveCount(1);
+ if(!await page.locator('.more').evaluate(el=>el.open))await page.locator('.more > summary').click();await page.locator('#history-panel summary').click();await page.locator('#archive-sync').click();
  await expect(page.locator('#archive-status')).toContainText('Checkpoint '+ 'c'.repeat(64));
  await expect(page.locator('#scope-through')).toHaveValue('2026-11-16');await expect(page.locator('#scope-from')).toHaveValue('2026-09-18');
  await page.locator('#scope-variants').fill('2589 '+ 'a'.repeat(64));

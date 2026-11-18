@@ -123,7 +123,7 @@ const {createHash}=require('node:crypto');const fs=require('node:fs');const path
     // Real process restart independently checks vault, settings, cache and hidden startup.
     await expect.poll(async()=>{try{return(await fetch(`${endpoint}/json/version`)).ok}catch{return false}}).toBe(false);
     await browser.close().catch(()=>{});
-    const restarted=spawn(process.env.MARKET_TEST_INSTALLED_EXE,[],{detached:true,stdio:'ignore'});restarted.unref();
+    const restarted=spawn(process.env.MARKET_TEST_INSTALLED_EXE,[],{detached:true,stdio:'ignore'});restarted.unref();process.env.MARKET_TEST_PRIMARY_PID=String(restarted.pid);
     await expect.poll(async()=>{try{return(await fetch(`${endpoint}/json/version`)).ok}catch{return false}},{timeout:30000}).toBe(true);
     browser=await chromium.connectOverCDP(endpoint);page=browser.contexts()[0].pages()[0];
     await expect(page.locator('#version')).toHaveText(/^v2\./,{timeout:20000}); // Wait for the restarted WebView's real document and native state.
@@ -134,13 +134,16 @@ const {createHash}=require('node:crypto');const fs=require('node:fs');const path
     expect((await invoke('app_state')).autostart_enabled).toBe(true);
     await promisify(execFile)(process.env.MARKET_TEST_INSTALLED_EXE,[],{timeout:15000});
     await expect.poll(async()=>(await invoke('app_state')).window_visible).toBe(true);
-    await page.locator('.more summary').click();await page.locator('#export').click();await expect(page.locator('#message')).toContainText('Export saved');
+    await page.locator('.more > summary').click();await page.locator('#export').click();await expect(page.locator('#message')).toContainText('Export saved');
     const folder=path.join(process.env.MARKET_TEST_APP_DATA,'exports');const exports=fs.readdirSync(folder).filter(file=>file.endsWith('.json')&&!file.startsWith('diagnostics'));
     expect(exports.length).toBeGreaterThan(0);const data=JSON.parse(fs.readFileSync(path.join(folder,exports[exports.length-1]),'utf8'));
     expect(data.format).toBe('twichui-market-addon-data');expect(data.synthetic).toBe(true);expect(data.items).toHaveLength(2);expect(data.items[0].value.recent_price).toBe('100');
+    // The retained signed beta.5/beta.6 SDK is independently tested with its original
+    // feature set; the new source candidate must pass automatic-summary coverage.
+    if((await invoke('app_state')).version==='2.0.0-beta.7')await require('./companion-workshop-native.cjs')({page,invoke,api,shots,sourceCommit});
     // Actual installed WebView -> Rust command -> authenticated archive server ->
     // transactional SQLite -> schema-3 publisher, confined to test AppData.
-    await page.locator('#history-panel summary').click();await page.locator('#archive-sync').click();
+    if(!await page.locator('.more').evaluate(el=>el.open))await page.locator('.more > summary').click();await page.locator('#history-panel summary').click();await page.locator('#archive-sync').click();
     await expect(page.locator('#scope-status')).toContainText('Archive complete',{timeout:30000});
     const variant=createHash('sha256').update(JSON.stringify({id:12363})).digest('hex');
     await page.locator('#scope-variants').fill('12363 '+variant);await page.locator('#scope-preview').click();

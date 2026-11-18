@@ -15,7 +15,9 @@ use std::{
     path::{Component, Path, PathBuf},
 };
 
-const TOC: &[u8] = b"## Interface: 16001\n## Title: TwichUI Market Data\n## Notes: Companion-generated market observations. No local scans or SavedVariables.\n## LoadOnDemand: 1\nData.lua\n";
+pub(crate) const TOC: &[u8] = b"## Interface: 16001\n## Title: TwichUI Market Data\n## Notes: Companion-generated market observations. No local scans or SavedVariables.\n## LoadOnDemand: 1\nData.lua\n";
+pub(crate) const SUMMARY_TOC: &[u8] = b"## Interface: 16001\n## Title: TwichUI Market Data\n## Notes: Companion-generated market observations. No local scans or SavedVariables.\n## LoadOnDemand: 1\n## X-TwichUI-Summary: 1\nData.lua\n";
+pub(crate) fn known_toc(raw:&[u8])->bool {raw==TOC||raw==SUMMARY_TOC}
 const CAPABILITY: &str = "twichui-market-consumer";
 pub const CONFIG: &str = "workshop-delivery-v1.json";
 pub fn budget() -> DeliveryBudget {
@@ -44,6 +46,18 @@ pub struct Configuration {
 }
 impl Configuration {
     pub fn validate(&self) -> Result<()> {
+        if self.version == 2 {
+            self.scope.key()?;
+            let fields=self.selection.as_object();
+            let previous=self.selection.get("previous_installation");
+            return need(self.history_days == 0 && self.scope.algorithm == "twichui-pricing-v1"
+                && self.installation.is_absolute() && fields.is_some_and(|m|(3..=5).contains(&m.len())&&m.keys().all(|k|["kind","market_id","region","previous_installation","previous_scope"].contains(&k.as_str())))
+                && previous.is_none_or(|v|v.as_str().is_some_and(|p|Path::new(p).is_absolute()&&!Path::new(p).components().any(|c|matches!(c,Component::ParentDir|Component::CurDir))))
+                && self.selection.get("previous_scope").is_none_or(|v|v.as_str().is_some_and(|s|s.len()==64&&s.bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b))))
+                && self.selection["kind"] == "broad_summary" && self.selection["market_id"] == self.scope.market_id
+                && self.selection["region"].as_str().is_some_and(|r|["us","eu","kr","tw"].contains(&r)),
+                "automatic Workshop summary configuration");
+        }
         need(
             self.version == 1 && (1..=60).contains(&self.history_days),
             "delivery configuration version/window",
@@ -83,13 +97,33 @@ impl Configuration {
         if self.enabled {
             inspect_destination(self)?;
         }
+        if self.version==2 {
+            let old=base.join(CONFIG);let backup=base.join("workshop-delivery-v1.previous.json");
+            if old.try_exists()?&&!backup.try_exists()? {
+                let raw=read(&old,16384)?;
+                if crate::bridge::parse(&raw,16384)?["version"]==1 {atomic(&backup,&raw)?;}
+            }
+        }
         atomic(&base.join(CONFIG), &serde_json::to_vec_pretty(self)?)
+    }
+    /// One installation grant follows the already authenticated market choice.
+    /// Ownership stays account/origin-bound; payloads/caches stay market-bound.
+    pub fn follow_selected_market(&self,base:&Path,market:u32,region:&str)->Result<Self> {
+        self.validate()?;need(self.version==2&&self.enabled,"connect automatic Workshop delivery first")?;
+        let saved=Self::load(base)?.ok_or(Error::Cancelled)?;
+        need(saved.version==2&&saved.enabled&&saved.scope==self.scope&&saved.installation==self.installation&&saved.selection==self.selection,"Workshop connection changed")?;
+        let mut next=self.clone();next.scope.market_id=market;next.selection["market_id"]=market.into();next.selection["region"]=region.into();
+        next.validate()?;inspect_destination(&next)?;
+        atomic(&base.join(CONFIG),&serde_json::to_vec_pretty(&next)?)?;Ok(next)
     }
 }
 
 #[derive(Clone, Default, Debug, Serialize, Deserialize)]
 #[serde(default, deny_unknown_fields)]
 pub struct Status {
+    pub download_bytes: Option<u64>,
+    pub download_requests: Option<u32>,
+    pub summary_records: Option<u64>,
     pub projection_input: Option<String>,
     pub archive_checkpoint: Option<String>,
     pub validated_generation: Option<String>,
@@ -122,7 +156,7 @@ pub fn status_for(base: &Path, config: &Configuration) -> Result<Status> {
         Status::default()
     })
 }
-fn save_status(base: &Path, scope: &Scope, s: &Status) -> Result<()> {
+pub(crate) fn save_status(base: &Path, scope: &Scope, s: &Status) -> Result<()> {
     atomic(&status_path(base, scope)?, &serde_json::to_vec_pretty(s)?)
 }
 
@@ -153,6 +187,9 @@ pub fn synchronize(
 ) -> Result<Status> {
     config.validate()?;
     need(config.enabled, "automatic delivery is disabled")?;
+    if config.version == 2 {
+        return crate::workshop_summary::synchronize(base, client, config, cancelled);
+    }
     let mut s = status_for(base, config)?;
     s.last_attempt = Some(Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true));
     s.installation = Some(config.installation.clone());
@@ -259,7 +296,7 @@ fn no_links(path: &Path) -> Result<()> {
     }
     Ok(())
 }
-fn owned(path: &Path) -> Result<()> {
+pub(crate) fn owned(path: &Path) -> Result<()> {
     no_links(path)?;
     #[cfg(windows)]
     crate::bridge::windows_owner::check(path)?;
@@ -274,7 +311,7 @@ fn owned(path: &Path) -> Result<()> {
     }
     Ok(())
 }
-fn read(path: &Path, max: usize) -> Result<Vec<u8>> {
+pub(crate) fn read(path: &Path, max: usize) -> Result<Vec<u8>> {
     no_links(path)?;
     let mut b = Vec::new();
     fs::File::open(path)?
@@ -283,7 +320,7 @@ fn read(path: &Path, max: usize) -> Result<Vec<u8>> {
     need(b.len() <= max, "delivery file exceeds size limit")?;
     Ok(b)
 }
-fn atomic(path: &Path, bytes: &[u8]) -> Result<()> {
+pub(crate) fn atomic(path: &Path, bytes: &[u8]) -> Result<()> {
     let parent = path.parent().ok_or(Error::Invalid("delivery parent"))?;
     owned(parent)?;
     no_links(path)?;
@@ -302,6 +339,9 @@ fn atomic(path: &Path, bytes: &[u8]) -> Result<()> {
 /// Read-only preflight. Unknown addon folders and incompatible consumers fail closed.
 pub fn inspect_destination(c: &Configuration) -> Result<Value> {
     c.validate()?;
+    if c.version == 2 {
+        return crate::workshop_summary::inspect_destination(c);
+    }
     let root = &c.installation;
     owned(root)?;
     need(
@@ -350,7 +390,7 @@ pub fn inspect_destination(c: &Configuration) -> Result<Value> {
         let toc = destination.join("TwichUI_MarketData.toc");
         if toc.try_exists()? {
             need(
-                read(&toc, 1024)? == TOC,
+                known_toc(&read(&toc, 1024)?),
                 "incompatible existing Market data TOC",
             )?;
         }
@@ -392,7 +432,7 @@ fn identity_for(c: &Configuration) -> Result<Value> {
         serde_json::json!({"version":1,"scope":c.scope.key()?,"installation":fs::canonicalize(&c.installation)?.to_string_lossy(),"market":c.selection["market"],"issuer_id":c.selection["issuer_id"]}),
     )
 }
-fn free_space(path: &Path) -> Result<u64> {
+pub(crate) fn free_space(path: &Path) -> Result<u64> {
     #[cfg(unix)]
     {
         use std::{ffi::CString, os::unix::ffi::OsStrExt};
@@ -514,6 +554,9 @@ fn publish_with(
     Ok(true)
 }
 pub fn rollback(c: &Configuration) -> Result<()> {
+    if c.version == 2 {
+        return crate::workshop_summary::rollback(c);
+    }
     inspect_destination(c)?;
     need(!game_running()?, "close WoW before rollback")?;
     let dir = c.installation.join("Interface/AddOns/TwichUI_MarketData");
@@ -526,6 +569,9 @@ pub fn rollback(c: &Configuration) -> Result<()> {
     )
 }
 pub fn restore_previous(base: &Path, c: &Configuration) -> Result<Status> {
+    if c.version == 2 {
+        return crate::workshop_summary::restore_previous(base, c);
+    }
     rollback(c)?;
     let data = c
         .installation
@@ -543,11 +589,11 @@ pub fn restore_previous(base: &Path, c: &Configuration) -> Result<Status> {
     Ok(s)
 }
 #[cfg(not(windows))]
-fn game_running() -> Result<bool> {
+pub(crate) fn game_running() -> Result<bool> {
     Ok(false)
 }
 #[cfg(windows)]
-fn game_running() -> Result<bool> {
+pub(crate) fn game_running() -> Result<bool> {
     use windows_sys::Win32::{
         Foundation::{CloseHandle, GetLastError, ERROR_NO_MORE_FILES, INVALID_HANDLE_VALUE},
         System::Diagnostics::ToolHelp::*,

@@ -71,6 +71,7 @@ def identity(request: Request, db: Session = Depends(session)):
         read = request.method == 'GET' and (path in ('/api/v1/auth/me', '/api/v1/markets', '/api/v1/companion/bootstrap')
             or re.fullmatch(r'/api/v1/sync/markets/[0-9]+', path)
             or re.fullmatch(r'/api/v1/bridge/markets/[0-9]+/(manifest|records)', path)
+            or re.fullmatch(r'/api/v1/workshop/markets/[0-9]+/summary(?:/[0-9a-f]{64}/parts/(?:[0-9]|[1-5][0-9]|6[0-3]))?', path)
             or re.fullmatch(r'/api/v1/archive/markets/[0-9]+/(checkpoint|pages)', path)
             or re.fullmatch(r'/api/v1/metadata/markets/[0-9]+', path)
             or re.fullmatch(r'/api/v1/companion/markets/[0-9]+/observations/[0-9]+', path)

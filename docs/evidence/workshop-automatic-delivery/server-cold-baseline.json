@@ -1,0 +1,46 @@
+{
+  "synthetic": true,
+  "variants": 45125,
+  "measurements": [
+    {
+      "iteration": 0,
+      "wall_seconds": 15.186454698909074,
+      "cpu_seconds": 7.585137216000001,
+      "peak_rss_bytes": 99467264,
+      "ready": false,
+      "records": null,
+      "part_bytes": null,
+      "largest_part_bytes": null
+    },
+    {
+      "iteration": 1,
+      "wall_seconds": 74.6383139390964,
+      "cpu_seconds": 13.379914665000001,
+      "peak_rss_bytes": 119672832,
+      "ready": true,
+      "records": 45125,
+      "part_bytes": 5099189,
+      "largest_part_bytes": 79779
+    },
+    {
+      "iteration": 2,
+      "wall_seconds": 0.008214199915528297,
+      "cpu_seconds": 0.005746126000001794,
+      "peak_rss_bytes": 119672832,
+      "ready": true,
+      "records": 45125,
+      "part_bytes": 5099189,
+      "largest_part_bytes": 79779
+    },
+    {
+      "iteration": 3,
+      "wall_seconds": 0.005806570872664452,
+      "cpu_seconds": 0.004220290999999321,
+      "peak_rss_bytes": 119672832,
+      "ready": true,
+      "records": 45125,
+      "part_bytes": 5099189,
+      "largest_part_bytes": 79779
+    }
+  ]
+}

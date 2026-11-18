@@ -89,6 +89,8 @@ struct Data {
     local: Mutex<Local>,
     gate: Mutex<()>,
     quitting: AtomicBool,
+    workshop_review: Mutex<Option<(String,twichui_market_core::delivery::Configuration,chrono::DateTime<Utc>)>>,
+    workshop_setup: AtomicBool,
 }
 pub struct Runtime {
     data: Arc<Data>,
@@ -142,12 +144,29 @@ impl Executor for NativeTask {
             )?;
             if matches!(&result,Execution::Completed(_)) {
                 match twichui_market_core::delivery::Configuration::load(&self.0.path) {
-                    Ok(Some(config)) if config.enabled && config.scope.server==server && config.scope.market_id==run.market
+                    Ok(Some(mut config)) if config.enabled && config.scope.server==server && (config.scope.market_id==run.market||config.version==2)
                         && profile.bootstrap.as_ref().is_some_and(|b|b.account.id==config.scope.account_id)=>{
+                        if config.version==2&&config.scope.market_id!=run.market {
+                            let region=self.0.local.lock().ok().and_then(|l|l.profile.bootstrap.as_ref().and_then(|b|b.markets.iter().find(|m|m.id==run.market&&m.available_for_sync&&m.player_identity_verified)).map(|m|m.region.clone())).ok_or(Error::Invalid("selected Workshop market unavailable"))?;
+                            config=config.follow_selected_market(&self.0.path,run.market,&region)?;
+                        }
                         // Delivery has its own durable result. Scalar sync success
                         // is never represented as successful game-file delivery.
                         match twichui_market_core::delivery::synchronize(&self.0.path,client,&config,||run.cancelled()||self.0.quitting.load(Ordering::Acquire)) {
-                            Err(e)=>self.0.set_error(format!("Workshop delivery: {e}")),
+                            Err(e)=>{
+                                if matches!(&e,Error::SummaryPreparing(_)) {
+                                    if let Ok(mut local)=self.0.local.lock(){if local.error.as_deref().is_some_and(|e|e.starts_with("Workshop delivery:")){local.error=None;}}
+                                    return Err(e);
+                                }
+                                if matches!(&e,Error::Invalid("Waiting for World of Warcraft to close.")) {
+                                    if let Ok(mut local)=self.0.local.lock(){if local.error.as_deref().is_some_and(|e|e.starts_with("Workshop delivery:")){local.error=None;}}
+                                } else {
+                                    self.0.set_error(format!("Workshop delivery: {e}"));
+                                    // Use the existing worker's Retry-After/backoff, not a
+                                    // second timer. Completed scalar cache remains intact.
+                                    if config.version==2 {return Err(e);}
+                                }
+                            },
                             Ok(_)=>if let Ok(mut local)=self.0.local.lock(){if local.error.as_deref().is_some_and(|e|e.starts_with("Workshop delivery:")){local.error=None;}},
                         }
                     },
@@ -308,6 +327,8 @@ impl Runtime {
             }),
             gate: Mutex::new(()),
             quitting: AtomicBool::new(false),
+            workshop_review: Mutex::new(None),
+            workshop_setup: AtomicBool::new(false),
         });
         let observer = data.clone();
         let worker = Arc::new(
@@ -447,6 +468,7 @@ impl Runtime {
             .map_err(friendly)
     }
     pub fn sign_in(self: &Arc<Self>, device_name: String) -> Result<()> {
+        self.cancel_workshop()?;
         if self.quitting() {
             return Err("The companion is closing. Please wait.".into());
         }
@@ -1011,6 +1033,80 @@ impl Runtime {
         verify_context()?;
         Ok(result)
     }
+    /// The ordinary WebView supplies intent, never an installation path.
+    pub fn prepare_workshop(&self) -> Result<serde_json::Value> {
+        use twichui_market_core::{delivery::{self,Configuration},installation};
+        if self.data.workshop_setup.compare_exchange(false,true,Ordering::AcqRel,Ordering::Acquire).is_err() {
+            return Err("Workshop setup is already open.".into());
+        }
+        struct Reset<'a>(&'a AtomicBool);
+        impl Drop for Reset<'_>{fn drop(&mut self){self.0.store(false,Ordering::Release);}}
+        let _reset=Reset(&self.data.workshop_setup);
+        *self.data.workshop_review.lock().map_err(|_|"Workshop setup interrupted")?=None;
+        let view=self.view()?;
+        if !view.connected||view.approving||view.refreshing {return Err("Finish signing in before connecting Workshop.".into());}
+        let account=view.account.as_ref().ok_or("Sign in before connecting Workshop.")?.id;
+        let market=view.settings.selected_market.or(view.sync.sync.selected_market).ok_or("Choose your market first.")?;
+        let chosen=view.bootstrap.as_ref().and_then(|b|b.markets.iter().find(|m|m.id==market))
+            .filter(|m|m.available_for_sync&&m.verified&&m.player_identity_verified).ok_or("Your selected market is unavailable. Retry after synchronization.")?;
+        let scope=twichui_market_core::bridge::Scope{server:view.settings.server.clone(),account_id:account,market_id:market,algorithm:"twichui-pricing-v1".into()};
+        let previous=delivery::Configuration::load(&self.data.path).map_err(friendly)?
+            .filter(|c|c.scope.server==scope.server&&c.scope.account_id==account);
+        if let Some(c)=previous.as_ref().filter(|c|c.version==2&&c.enabled&&c.scope.market_id==market) {
+            if delivery::inspect_destination(c).is_ok() {self.worker.sync_now().map_err(friendly)?;return Ok(serde_json::json!({"connected":true}));}
+        }
+        let found=installation::discover(previous.as_ref().map(|c|c.installation.as_path()));
+        let installation=if found.len()==1 {found[0].clone()}else{
+            installation::choose_folder().map_err(friendly)?.ok_or("Folder selection cancelled.")?
+        };
+        let mut config=Configuration{version:2,enabled:true,scope,installation,
+            selection:serde_json::json!({"kind":"broad_summary","market_id":market,"region":chosen.region}),history_days:0};
+        if let Some(old)=previous.as_ref().filter(|old|old.installation!=config.installation) {
+            config.selection["previous_installation"]=old.installation.to_string_lossy().into_owned().into();
+        }
+        if let Some(old)=previous.as_ref().filter(|old|old.version==1&&old.scope!=config.scope) {
+            config.selection["previous_scope"]=old.scope.key().map_err(friendly)?.into();
+        }
+        let inspected=match delivery::inspect_destination(&config) {
+            Ok(value)=>value,
+            Err(first)=>{
+                // A second move can happen before an interrupted first move
+                // has updated every bank's marker. Both paths come from the
+                // existing account/origin's native configuration, never IPC.
+                if let Some(original)=previous.as_ref().and_then(|c|c.selection.get("previous_installation")) {
+                    config.selection["previous_installation"]=original.clone();
+                    delivery::inspect_destination(&config).map_err(friendly)?
+                } else {return Err(friendly(first));}
+            }
+        };
+        // Discovery/dialog may outlive account changes. Do not authorize or
+        // retain a path for a different account/origin/market context.
+        let _gate=self.data.gate.lock().map_err(|_|"Connection operation interrupted")?;
+        let current=self.view()?;
+        if !current.connected||current.account.as_ref().map(|a|a.id)!=Some(account)||current.settings.server!=config.scope.server
+            ||current.settings.selected_market.or(current.sync.sync.selected_market)!=Some(market) {
+            return Err("Connection changed. Connect Workshop again.".into());
+        }
+        let review=twichui_market_core::workshop_summary::review_nonce().map_err(friendly)?;
+        *self.data.workshop_review.lock().map_err(|_|"Workshop setup interrupted")?=Some((review.clone(),config.clone(),Utc::now()+chrono::Duration::minutes(10)));
+        Ok(serde_json::json!({"review_id":review,"installation":config.installation,"market":chosen.label,
+            "requires_adoption":inspected["requires_adoption"]}))
+    }
+    pub fn cancel_workshop(&self)->Result<()> {
+        *self.data.workshop_review.lock().map_err(|_|"Workshop setup interrupted")?=None;Ok(())
+    }
+    pub fn confirm_workshop(&self,review_id:String)->Result<()> {
+        let _gate=self.data.gate.lock().map_err(|_|"Connection operation interrupted")?;
+        let review=self.data.workshop_review.lock().map_err(|_|"Workshop setup interrupted")?.take().ok_or("Connect Workshop again to confirm its installation.")?;
+        if review.0!=review_id||review.2<Utc::now() {return Err("Workshop confirmation expired. Connect again.".into());}
+        let config=review.1;let view=self.view()?;
+        if !view.connected||view.approving||view.refreshing||view.account.as_ref().map(|a|a.id)!=Some(config.scope.account_id)
+            ||view.settings.server!=config.scope.server||view.settings.selected_market.or(view.sync.sync.selected_market)!=Some(config.scope.market_id) {
+            return Err("Connection changed. Connect Workshop again.".into());
+        }
+        config.save_confirmed(&self.data.path,true).map_err(friendly)?;
+        self.data.emit();self.worker.sync_now().map_err(friendly)?;Ok(())
+    }
     pub fn configure_delivery(&self, installation: String, algorithm: String, history_days: u32, operation: String, confirmed: bool, variants: serde_json::Value) -> Result<serde_json::Value> {
         use twichui_market_core::delivery::{self, Configuration};
         let _gate=self.data.gate.lock().map_err(|_|"Connection operation interrupted")?;
@@ -1075,6 +1171,7 @@ impl Runtime {
             .map_err(|_| "Could not open your browser".into())
     }
     pub fn disconnect(self: &Arc<Self>) -> Result<()> {
+        self.cancel_workshop()?;
         if self.quitting() {
             return Err("The companion is closing. Please wait.".into());
         }
