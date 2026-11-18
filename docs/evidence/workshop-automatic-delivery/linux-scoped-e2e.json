@@ -1,0 +1,25 @@
+{
+  "credential_kind": "companion",
+  "synthetic": true,
+  "real_game": false,
+  "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.41",
+  "mode": "Linux native staging; not installed Windows acceptance",
+  "variants": 45125,
+  "total_seconds": 45.2199200859759,
+  "mandatory_archive": false,
+  "no_change_http_304": true,
+  "no_change_game_mtime_preserved": null,
+  "production_lua_market_passed": true,
+  "native_binary_sha256": "e220a94bdc741c653889d5a08c16618a2a424a0601447b3d5ba34986994dac4e",
+  "source_sha256": {
+    "backend/market/workshop_summary.py": "1f5b0ed5ee9e5110841a4c25416bdb8d97de09ac1f005d850e1186823737cf17",
+    "backend/market/bridge_api.py": "a7a7063b6d736f24dd9098e9d41687b3ef384d2174f301a236569bffa3e28896",
+    "desktop/core/src/workshop_summary.rs": "fcd351fa9eaa5958e94b6f1bf2afb55e792c31bc86147754f326f17c16e14392",
+    "desktop/core/src/client.rs": "88e3dec13648f7e1e05913da375e5e4e98e5e5765a0e9e8709a113ed3757add6",
+    "contracts/workshop-summary/v1/manifest.schema.json": "bbddcc1d038e3c5528b2e45b699e69d15d834e2e1670883bbfb482fb908e0c92",
+    "contracts/workshop-summary/v1/row.schema.json": "8b1f1d49547bf27f4ec88a6230fe049a391a93288923d97144710fe9e585d538"
+  },
+  "game_consumption": "pending actual Forever",
+  "native_call_count": 49,
+  "http_request_count": 113
+}
