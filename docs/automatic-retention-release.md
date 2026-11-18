@@ -1,6 +1,6 @@
 # Automatic historical retention — release and activation record
 
-**Verified release candidate. Production history deletion remains unauthorized.** Application source `4a0a44a037d1c870e3c21b1a24e0970c4bca506c` has all exact-source CI green. Final production acceptance follows scoped promotion.
+**Deployed and accepted. Production history deletion remains unauthorized.** Application source **`fe92999cc969a23684f3023638673c656efb3bce`**, schema **`retention_20261118`**, is live. PR36 merged the engine/configuration; PR38 corrected administration status. All final-source CI is green. [Exact activation proposal](automatic-retention-activation-proposal.md), [live desktop/mobile gallery](evidence/automatic-retention/review.html).
 
 ## Problem and immediate stabilization
 
@@ -39,14 +39,14 @@ Canonical export has an existing availability constraint: if raw originals were 
 
 ## Recovery evidence and current activation blockers
 
-A current custom-format archive was created using Backup Management without enabling its schedule or rotating/removing archives:
+The initial rehearsal archive below was created using Backup Management without enabling its schedule or rotating/removing archives. The final immediately pre-deployment recovery point is recorded in Final production acceptance below:
 
 - Filename: `market-release-20261118T133835118331Z-a0d03457794e.dump`.
 - Size: **713,963,067 bytes**.
 - SHA-256: **55ac4af5da2731c61b4bbc5fb3902147528990882132311412de3b9f9ddaa802**.
 - Custom archive fully decoded and restored with constraints into a separate no-port PostgreSQL `market_restore` instance.
-- An additive migration round trip preserved every original column in all **45 data tables**; [fingerprints](evidence/automatic-retention/restored-preservation.json).
-- Archive is protected and required by `automatic-retention-owner-review` and `restore-recovery-gate`; [manifest](evidence/automatic-retention/protected-backup.json).
+- An additive migration round trip preserved every original column in all **45 data tables**; [initial fingerprints](evidence/automatic-retention/initial-restored-preservation.json).
+- Archive is protected and required by `automatic-retention-owner-review` and `restore-recovery-gate`; [initial manifest](evidence/automatic-retention/initial-protected-backup.json).
 
 **Off-VM recovery is unverified.** A mounted NAS is not proof of a copy and is not authorization to modify external storage. No external storage was changed. Missing items are an owner-authorized destination, a copied archive with independently matching checksum, required protected encryption/provider key material where applicable, and a dated off-VM verification receipt bound to this archive. No such receipt is manufactured by deployment.
 
@@ -60,7 +60,7 @@ An explicitly isolated, simulated eight-day backlog rehearsal processed **60,000
 
 Prior three full days contained about 2.84 million ordinary listing rows/day and 0.60 million statistic rows/day. The short commodity window suggests a provisional 1.3–2.5 million commodity rows/day, with material uncertainty. Catalogue allocation estimates are about 256 bytes/listing and 318 bytes/statistic, including relation/index allocation. Seven-day raw data models to 6.9–8.9 GiB, 90-day statistics about 16 GiB, and additional daily support about 2.5 GiB. A **conditional 30–45 GiB retained-history envelope** includes other retained history and internal slack. It does not prove a finite total database steady state: bridge derived records, metadata growth, future commodity changes and fragmentation remain uncertain/outside this deletion scope. Review after seven commodity-enabled days and after actual authorized maintenance. [Measured inputs/model](evidence/automatic-retention/capacity-model.json).
 
-The final exact-source rehearsal at production controller limits (192 MiB / 0.25 CPU) repeated 60,000 rows in **4.61 seconds**, peaked at **94.3 MiB**, and generated **zero measured temporary-file bytes**. Current listings and all six price/chart samples again remained unchanged. [Exact-source resource receipt](evidence/automatic-retention/restored-performance-final.json).
+The final engine rehearsal (Python modules are byte-identical to deployed fe92999) at production controller limits (192 MiB / 0.25 CPU) repeated 60,000 rows in **4.61 seconds**, peaked at **94.3 MiB**, and generated **zero measured temporary-file bytes**. Current listings and all six price/chart samples again remained unchanged. [Exact-source resource receipt](evidence/automatic-retention/restored-performance-final.json).
 
 Ordinary production autovacuum is enabled (1 GiB max WAL size, five-minute checkpoint timeout); largest historical tables showed zero estimated dead tuples at entry and actual automatic vacuum/analyze activity. Read-only catalogues expose dead/live tuple estimates and checkpoint/WAL facts. Isolated ordinary vacuum plus `pgstattuple` measured zero dead tuples and 32,211,912 bytes internally free in the listing heap. [Isolated reuse proof](evidence/automatic-retention/isolated-vacuum-reuse.txt). No production extension, VACUUM FULL, rewrite, recreation or index rebuild was run. DELETE does not promise smaller database files or immediate host free space.
 
@@ -74,4 +74,19 @@ Preferred rollback stops only `retention`, appends `compose.retention-rollback.y
 
 ## Final verification and exact activation proposal
 
-Local final-source verification: 696 PostgreSQL tests, 132 frontend tests, 65 operational checks, shared-filesystem Chromium/WebKit commodity flows, and four backup browser cases including actual create/protect/download/delete on disposable fixtures pass. The first hosted browser run correctly refused the old fixture without a measurable PostgreSQL filesystem; the repaired browser and backup overlays share their own disposable data volume and retain the full guard. All final hosted CI workflows pass at `4a0a44a`; [exact runs](evidence/automatic-retention/ci.json). Production promotion, authenticated production screenshots and final acceptance are pending. Production historical deletion is not authorized by any section of this report.
+Local final-source verification: 696 PostgreSQL tests, 132 frontend tests, 65 operational checks, shared-filesystem Chromium/WebKit commodity flows, and four backup browser cases including actual create/protect/download/delete on disposable fixtures pass. The first hosted browser run correctly refused the old fixture without a measurable PostgreSQL filesystem; the repaired browser and backup overlays share their own disposable data volume and retain the full guard. All final hosted CI workflows pass at `fe92999`; [exact runs](evidence/automatic-retention/ci.json). Actual HTTPS administration, both current source kinds/prices and365-day history routes pass; mobile has no overflow or page errors. Anonymous401, missing-CSRF403 and unapproved enable409 pass. The audited temporary owner credential is revoked and independently returns401. No password was reset. [Public acceptance](evidence/automatic-retention/production-acceptance.json), [session revocation](evidence/automatic-retention/session-revocation.json). Production historical deletion is not authorized by any section of this report.
+
+## Final production acceptance
+
+- Deployed application `fe92999`; merged engine PR36 / integration a6fe867 and UI PR38 / integration4cc479c. The database, enrichment and backup-manager container IDs remained unchanged; only API/localAPI/worker/monitor/proxy and the new inactive retention service were installed/replaced. [Deployment](evidence/automatic-retention/deployment.json).
+- Original deployment-boundary fingerprints match for all original snapshots, observations, raw listings, statistics, accounts, credentials, preferences, market mappings and policy. [Before](evidence/automatic-retention/production-before.json), [after](evidence/automatic-retention/production-after.json). Provider configuration, encrypted envelopes and mounted keyring match and decrypt, with zero verification provider requests. [Provider proof](evidence/automatic-retention/provider-preservation.json).
+- A later authenticated owner-browser Save kept every duration unchanged and advanced policy revision2 to3 at15:18UTC. It cleared authorization as designed. That concurrent save is preserved; the final proposal uses revision3/new hashes, rather than resetting it to the deployment baseline. [Receipt](evidence/automatic-retention/owner-policy-save.json).
+- New collector completed both feeds with HTTP304 at15:16/15:22 and genuine HTTP200 for both at15:27, with successful ingestion in22seconds and zero failures; configured interval stays300seconds and house114 alone is active. History/current price checks are genuine, not fixtures. [Final health](evidence/automatic-retention/final-health.json), [price/history samples](evidence/automatic-retention/production-current-prices-and-history.json).
+- Scheduler reaches its database and the existing backup boundary, but has no approval or enablement and has executed zero batches. Current backup schedule remains disabled. Missing off-VM evidence is honestly warned and fails the live gate. [Service readiness](evidence/automatic-retention/scheduler-readiness.json).
+- Task-owned disposable databases, volumes and browser services are retired. Other Codex worktrees, unrelated services and all production archives remain untouched. The original and final fresh protected recovery points are retained. No production pruning, invasive physical reclamation, identity cleanup, provider campaign, external storage change, desktop publication or market remapping occurred.
+
+Current measured database allocation: **4,673,722,035bytes (4.35GiB)**. Actual PostgreSQL filesystem available space after retiring rehearsals: approximately **148.0GiB**, on **248.4GiB** total. Collector cap **64GiB**, physical reserve **32GiB**. Oldest retained observation `2026-11-14T02:45:34.522262+00:00`; oldest daily reference `2026-11-14`.
+
+The final immediately pre-deployment archive is `market-release-20261118T144809003060Z-df8c8cd2a368.dump`, **723,098,027bytes**, SHA256 **`a8fda36e26ecb839427952bab75b14b3b2862d21e731153b1ca4328cb6c69d66`**, verified by full isolated restoration and45-table original-column comparison, then protected/pinned. The earlier archive described above remains a separate protected point. Off-VM copies and supporting recovery key durability remain unverified; recurring backups remain disabled.
+
+Remaining activation prerequisites: separate approval of revision3 / policy `9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7` / execution `3543c34bde2c8e3ed5b63c21ef645c6c6ccfbb19945b4ff7a685e37694e4d243`; actual protected off-VM recovery and fresh ongoing verification; review of required cold canonical Workshop/archive coverage before destructive raw expiry. Current preview: **zero eligible rows / zero logical bytes**. Retained-history capacity estimates remain conditional; a35–50GiB or30–45GiB total database steady state is not proven. No destructive activation is recommended until these conditions are resolved.

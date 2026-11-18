@@ -1,12 +1,12 @@
 {
   "services": {
     "api": {
-      "image": "sha256:275ef0de74104da53f50bd9359c8b2ae380583f934a6ae6ba29d3ac5944b2d40",
+      "image": "sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b",
       "environment": {
         "MAX_DATABASE_BYTES": "68719476736",
         "MIN_DATABASE_FREE_BYTES": "34359738368",
         "DATABASE_FILESYSTEM_PATH": "/database-filesystem",
-        "APP_COMMIT": "4a0a44a037d1c870e3c21b1a24e0970c4bca506c",
+        "APP_COMMIT": "fe92999cc969a23684f3023638673c656efb3bce",
         "RETENTION_SCHEDULER_INSTALLED": "true"
       },
       "volumes": [
@@ -15,12 +15,12 @@
       ]
     },
     "local-api": {
-      "image": "sha256:275ef0de74104da53f50bd9359c8b2ae380583f934a6ae6ba29d3ac5944b2d40",
+      "image": "sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b",
       "environment": {
         "MAX_DATABASE_BYTES": "68719476736",
         "MIN_DATABASE_FREE_BYTES": "34359738368",
         "DATABASE_FILESYSTEM_PATH": "/database-filesystem",
-        "APP_COMMIT": "4a0a44a037d1c870e3c21b1a24e0970c4bca506c",
+        "APP_COMMIT": "fe92999cc969a23684f3023638673c656efb3bce",
         "RETENTION_SCHEDULER_INSTALLED": "true"
       },
       "volumes": [
@@ -29,24 +29,24 @@
       ]
     },
     "worker": {
-      "image": "sha256:275ef0de74104da53f50bd9359c8b2ae380583f934a6ae6ba29d3ac5944b2d40",
+      "image": "sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b",
       "environment": {
         "MAX_DATABASE_BYTES": "68719476736",
         "MIN_DATABASE_FREE_BYTES": "34359738368",
         "DATABASE_FILESYSTEM_PATH": "/database-filesystem",
-        "APP_COMMIT": "4a0a44a037d1c870e3c21b1a24e0970c4bca506c"
+        "APP_COMMIT": "fe92999cc969a23684f3023638673c656efb3bce"
       },
       "volumes": [
         "market-data:/database-filesystem:ro"
       ]
     },
     "monitor": {
-      "image": "sha256:275ef0de74104da53f50bd9359c8b2ae380583f934a6ae6ba29d3ac5944b2d40",
+      "image": "sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b",
       "environment": {
         "MAX_DATABASE_BYTES": "68719476736",
         "MIN_DATABASE_FREE_BYTES": "34359738368",
         "DATABASE_FILESYSTEM_PATH": "/database-filesystem",
-        "APP_COMMIT": "4a0a44a037d1c870e3c21b1a24e0970c4bca506c",
+        "APP_COMMIT": "fe92999cc969a23684f3023638673c656efb3bce",
         "RAW_LISTING_DAYS": "2",
         "DETAILED_STATISTICS_DAYS": "64"
       },
@@ -55,17 +55,17 @@
       ]
     },
     "proxy": {
-      "image": "sha256:f36a62024b9ca88469d717a9436652d4d7923a9704a3f2ab7faa9aa901b4e3fa",
+      "image": "sha256:f48f8f1a7e5a030432abde0792ee0be1aae0326950404e83036bc9c0172a6814",
       "labels": {
-        "org.opencontainers.image.revision": "4a0a44a037d1c870e3c21b1a24e0970c4bca506c",
+        "org.opencontainers.image.revision": "fe92999cc969a23684f3023638673c656efb3bce",
         "gg.twich.market.change": "Authorized storage safeguards and inactive historical retention infrastructure"
       }
     },
     "migrate": {
-      "image": "sha256:275ef0de74104da53f50bd9359c8b2ae380583f934a6ae6ba29d3ac5944b2d40"
+      "image": "sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b"
     },
     "retention": {
-      "image": "sha256:275ef0de74104da53f50bd9359c8b2ae380583f934a6ae6ba29d3ac5944b2d40",
+      "image": "sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b",
       "profiles": [
         "retention"
       ],

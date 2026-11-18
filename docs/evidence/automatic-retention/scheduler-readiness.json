@@ -1,0 +1,10 @@
+{
+  "scheduler_database_connection": true,
+  "backup_boundary_reachable": true,
+  "backup_schedule_enabled": false,
+  "retention_enabled": false,
+  "retention_authorized": false,
+  "recovery_ready": false,
+  "off_vm_verification_recent": false,
+  "execution_hash": "3543c34bde2c8e3ed5b63c21ef645c6c6ccfbb19945b4ff7a685e37694e4d243"
+}

@@ -1,0 +1,18 @@
+{
+  "source_sha": "fe92999cc969a23684f3023638673c656efb3bce",
+  "scheduler_source_sha256": "1f38819646cb84561565a5037f6579e525617973670ee0c6272eff629ca8acd8",
+  "synthetic": false,
+  "tls_errors_ignored": false,
+  "desktop_mobile_pass": true,
+  "no_mobile_overflow": true,
+  "zero_retention_batches": true,
+  "policy_unauthorized": true,
+  "scheduler_installed_disabled": true,
+  "backup_schedule_disabled": true,
+  "protected_restore_present": true,
+  "off_vm_unverified": true,
+  "anonymous_status": 401,
+  "missing_csrf_status": 403,
+  "unapproved_enable_status": 409,
+  "page_errors": []
+}

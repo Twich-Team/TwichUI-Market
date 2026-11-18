@@ -1,0 +1,16 @@
+{
+  "observed_at": "2026-11-18T15:18:01.531022+00:00",
+  "actor_id": 1,
+  "old_revision": 2,
+  "new_revision": 3,
+  "selected_windows_unchanged": true,
+  "raw_days": 7,
+  "intraday_days": 90,
+  "daily_days": 365,
+  "daily_support_days": 60,
+  "operational_days": 90,
+  "security_days": 365,
+  "approval_cleared": true,
+  "verification_client_did_not_patch_policy": true,
+  "action": "Preserve the concurrent authenticated save and regenerate activation hashes; never reset to revision2."
+}
