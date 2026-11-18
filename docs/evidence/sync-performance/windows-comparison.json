@@ -1,0 +1,2800 @@
+{
+  "head": "34363c380496dbe0ebdf8821ec48de8b5761bffe",
+  "tested_preview": "a72de05eb39d4456b7694783bbe2d0a156eb474b",
+  "run": 44413175633,
+  "job": 135186432413,
+  "artifact": 14480320586,
+  "artifact_zip_sha256": "bb6c0dc9ca53e2469941b27cf050871200ac6054c2937cc31cd5fcb514a30a31",
+  "synthetic": true,
+  "production": false,
+  "physical_game": false,
+  "variants": 26342,
+  "commodity_variants": 1318,
+  "storage": {
+    "disks": [
+      {
+        "MediaType": "SSD",
+        "BusType": "NVMe",
+        "Size": 161061273600
+      },
+      {
+        "MediaType": "SSD",
+        "BusType": "NVMe",
+        "Size": 236223201280
+      }
+    ],
+    "os": "Microsoft Windows NT 10.0.26100.0",
+    "owner_pc": false,
+    "filesystem": "NTFS"
+  },
+  "baseline_source": {
+    "algorithm_baseline": "fe854b00a239e3aa553bf5c0b3438139f2018e65",
+    "unmodified_algorithm_sha256": {
+      "desktop/core/src/client.rs": "e1bdb3ca30eb486116a508298fd35c22124880d1dbe835d7745dcb6b8d11001b",
+      "desktop/core/src/cache.rs": "2c95b21999d8ee0d429f4956d4d16d989797a06a09554d85bb1b218da96336bc",
+      "desktop/core/src/synchronizer.rs": "7812d72b405f064ac303abfa8424bf55925ebca383d5995c919481ee59aba008",
+      "desktop/core/src/archive/store.rs": "37632699f19502b2fcd499c39892bba7289157909871971e1f001e799ff464b4",
+      "desktop/core/src/delivery.rs": "c957cc0bf733144ee57ef278fe9189bcadb4f63fc93611350b82b02ccc2d29a1",
+      "desktop/core/src/workshop_summary.rs": "dc68f6fcdb0450f1eefe84c8420d8c562c0558f5fd5b0187f7a07e028f724bcd",
+      "backend/market/workshop_summary.py": "e500f1b1d573737f7de0b986c558d9af1f6dcdc8bb98056c1a6e11ed8024fb7c",
+      "backend/market/sync_api.py": "99c5963eb69ee499994ffbc474ef6eebb6b09ba110909865616e1d8b9c96bd01"
+    },
+    "common_measurement_harness_sha256": "5b8ce0e71f410fb473b183b9ce0f7e4be18ce2cfae37f286a68a838e10637adb",
+    "changes_in_baseline": "measurement module/examples and Windows process-metrics feature only; no algorithm/protocol/cache/durability edits"
+  },
+  "groups": [
+    {
+      "dataset": "windows-prices",
+      "scenario": "full",
+      "label": "baseline",
+      "runs": 3,
+      "seconds": {
+        "median": 4.7089818,
+        "minimum": 4.3667002,
+        "maximum": 4.8125467
+      },
+      "values_sha256": "20476279c180ea2c8d1bd9d5520ae68fcd678c7e869b753963e1bfa6c36790ab",
+      "binary_sha256": "40fbb1718fa4f9343d341fecee513f929b149914fdbd39e0b4d988d423b2c84a",
+      "native_process_cpu_ms": {
+        "median": 546.875,
+        "minimum": 437.5,
+        "maximum": 562.5
+      },
+      "native_process_peak_rss_bytes": {
+        "median": 12771328,
+        "minimum": 12742656,
+        "maximum": 13307904
+      },
+      "native_counters": {
+        "http_requests": {
+          "median": 530,
+          "minimum": 530,
+          "maximum": 530
+        },
+        "pages": {
+          "median": 527,
+          "minimum": 527,
+          "maximum": 527
+        },
+        "received_records": {
+          "median": 26342,
+          "minimum": 26342,
+          "maximum": 26342
+        },
+        "response_body_bytes": {
+          "median": 8879865,
+          "minimum": 8879803,
+          "maximum": 8879865
+        },
+        "upserts": {
+          "median": 26342,
+          "minimum": 26342,
+          "maximum": 26342
+        }
+      },
+      "native_stage_ms": {
+        "activity": {
+          "median": 3.954,
+          "minimum": 3.608,
+          "maximum": 4.917
+        },
+        "bootstrap": {
+          "median": 9.668,
+          "minimum": 9.508,
+          "maximum": 114.845
+        },
+        "json_parse": {
+          "median": 24.821,
+          "minimum": 22.428,
+          "maximum": 24.912
+        },
+        "network_headers": {
+          "median": 4028.668,
+          "minimum": 3705.791,
+          "maximum": 4126.559
+        },
+        "network_transfer": {
+          "median": 32.501,
+          "minimum": 29.231,
+          "maximum": 33.086
+        },
+        "provenance": {
+          "median": 5.595,
+          "minimum": 5.511,
+          "maximum": 6.499
+        },
+        "sqlite_activation": {
+          "median": 254.881,
+          "minimum": 252.872,
+          "maximum": 260.705
+        },
+        "sqlite_commit": {
+          "median": 346.41,
+          "minimum": 338.947,
+          "maximum": 348.51
+        },
+        "sqlite_open": {
+          "median": 2.832,
+          "minimum": 2.58,
+          "maximum": 3.183
+        },
+        "sqlite_staging": {
+          "median": 150.147,
+          "minimum": 139.209,
+          "maximum": 151.243
+        },
+        "sqlite_transaction": {
+          "median": 559.622,
+          "minimum": 545.001,
+          "maximum": 561.918
+        },
+        "validation": {
+          "median": 7.014,
+          "minimum": 6.619,
+          "maximum": 7.347
+        }
+      },
+      "peak_sqlite_bytes": 22851584,
+      "peak_wal_bytes": 23867192
+    },
+    {
+      "dataset": "windows-prices",
+      "scenario": "full",
+      "label": "candidate",
+      "runs": 3,
+      "seconds": {
+        "median": 3.0247097,
+        "minimum": 2.9334444,
+        "maximum": 3.0897738
+      },
+      "values_sha256": "20476279c180ea2c8d1bd9d5520ae68fcd678c7e869b753963e1bfa6c36790ab",
+      "binary_sha256": "82eb4300453f80aaad43e04619f3f8b09b70706d771abdca80b6ad3ac67a67de",
+      "native_process_cpu_ms": {
+        "median": 500.0,
+        "minimum": 421.875,
+        "maximum": 609.375
+      },
+      "native_process_peak_rss_bytes": {
+        "median": 13053952,
+        "minimum": 12824576,
+        "maximum": 13381632
+      },
+      "native_counters": {
+        "http_requests": {
+          "median": 267,
+          "minimum": 267,
+          "maximum": 267
+        },
+        "pages": {
+          "median": 264,
+          "minimum": 264,
+          "maximum": 264
+        },
+        "received_records": {
+          "median": 26342,
+          "minimum": 26342,
+          "maximum": 26342
+        },
+        "response_body_bytes": {
+          "median": 8761515,
+          "minimum": 8761515,
+          "maximum": 8761515
+        },
+        "upserts": {
+          "median": 26342,
+          "minimum": 26342,
+          "maximum": 26342
+        }
+      },
+      "native_stage_ms": {
+        "activity": {
+          "median": 3.79,
+          "minimum": 3.658,
+          "maximum": 3.853
+        },
+        "bootstrap": {
+          "median": 10.003,
+          "minimum": 9.912,
+          "maximum": 10.096
+        },
+        "json_parse": {
+          "median": 22.611,
+          "minimum": 22.57,
+          "maximum": 23.153
+        },
+        "market_sync": {
+          "median": 3024.707,
+          "minimum": 2933.441,
+          "maximum": 3089.771
+        },
+        "network_headers": {
+          "median": 2396.96,
+          "minimum": 2368.052,
+          "maximum": 2513.891
+        },
+        "network_transfer": {
+          "median": 13.648,
+          "minimum": 13.613,
+          "maximum": 15.962
+        },
+        "provenance": {
+          "median": 5.509,
+          "minimum": 5.372,
+          "maximum": 5.697
+        },
+        "sqlite_activation": {
+          "median": 253.093,
+          "minimum": 248.899,
+          "maximum": 307.889
+        },
+        "sqlite_commit": {
+          "median": 297.028,
+          "minimum": 290.91,
+          "maximum": 322.007
+        },
+        "sqlite_open": {
+          "median": 3.003,
+          "minimum": 2.804,
+          "maximum": 3.231
+        },
+        "sqlite_staging": {
+          "median": 126.855,
+          "minimum": 126.336,
+          "maximum": 128.899
+        },
+        "sqlite_transaction": {
+          "median": 487.207,
+          "minimum": 475.319,
+          "maximum": 538.49
+        },
+        "validation": {
+          "median": 6.85,
+          "minimum": 6.725,
+          "maximum": 7.028
+        }
+      },
+      "peak_sqlite_bytes": 22851584,
+      "peak_wal_bytes": 23331592
+    },
+    {
+      "dataset": "windows-prices",
+      "scenario": "incremental",
+      "label": "baseline",
+      "runs": 3,
+      "seconds": {
+        "median": 9.60457,
+        "minimum": 9.2236903,
+        "maximum": 9.7191066
+      },
+      "values_sha256": "34a030cba4d18c7e6e8cacb46a7d723eb47c7b60387349dab49d2c025de8e955",
+      "binary_sha256": "40fbb1718fa4f9343d341fecee513f929b149914fdbd39e0b4d988d423b2c84a",
+      "native_process_cpu_ms": {
+        "median": 468.75,
+        "minimum": 453.125,
+        "maximum": 531.25
+      },
+      "native_process_peak_rss_bytes": {
+        "median": 12251136,
+        "minimum": 12242944,
+        "maximum": 12349440
+      },
+      "native_counters": {
+        "deletes": {
+          "median": 10,
+          "minimum": 10,
+          "maximum": 10
+        },
+        "http_requests": {
+          "median": 531,
+          "minimum": 531,
+          "maximum": 531
+        },
+        "pages": {
+          "median": 528,
+          "minimum": 528,
+          "maximum": 528
+        },
+        "received_records": {
+          "median": 1165,
+          "minimum": 1165,
+          "maximum": 1165
+        },
+        "response_body_bytes": {
+          "median": 620321,
+          "minimum": 620321,
+          "maximum": 620321
+        },
+        "upserts": {
+          "median": 1155,
+          "minimum": 1155,
+          "maximum": 1155
+        }
+      },
+      "native_stage_ms": {
+        "activity": {
+          "median": 3.94,
+          "minimum": 3.635,
+          "maximum": 4.223
+        },
+        "bootstrap": {
+          "median": 9.854,
+          "minimum": 9.735,
+          "maximum": 10.485
+        },
+        "json_parse": {
+          "median": 8.465,
+          "minimum": 7.402,
+          "maximum": 9.383
+        },
+        "network_headers": {
+          "median": 8894.175,
+          "minimum": 8535.562,
+          "maximum": 9008.91
+        },
+        "network_transfer": {
+          "median": 20.201,
+          "minimum": 19.808,
+          "maximum": 21.101
+        },
+        "provenance": {
+          "median": 5.693,
+          "minimum": 5.687,
+          "maximum": 5.837
+        },
+        "sqlite_activation": {
+          "median": 291.409,
+          "minimum": 288.543,
+          "maximum": 291.829
+        },
+        "sqlite_commit": {
+          "median": 405.244,
+          "minimum": 401.326,
+          "maximum": 407.563
+        },
+        "sqlite_open": {
+          "median": 0.887,
+          "minimum": 0.872,
+          "maximum": 1.158
+        },
+        "sqlite_staging": {
+          "median": 107.693,
+          "minimum": 100.441,
+          "maximum": 111.141
+        },
+        "sqlite_transaction": {
+          "median": 616.204,
+          "minimum": 600.332,
+          "maximum": 616.874
+        },
+        "validation": {
+          "median": 1.939,
+          "minimum": 1.634,
+          "maximum": 2.037
+        }
+      },
+      "peak_sqlite_bytes": 22851584,
+      "peak_wal_bytes": 25700592
+    },
+    {
+      "dataset": "windows-prices",
+      "scenario": "incremental",
+      "label": "candidate",
+      "runs": 3,
+      "seconds": {
+        "median": 6.0541723,
+        "minimum": 5.8953980999999995,
+        "maximum": 6.0558665
+      },
+      "values_sha256": "34a030cba4d18c7e6e8cacb46a7d723eb47c7b60387349dab49d2c025de8e955",
+      "binary_sha256": "82eb4300453f80aaad43e04619f3f8b09b70706d771abdca80b6ad3ac67a67de",
+      "native_process_cpu_ms": {
+        "median": 437.5,
+        "minimum": 343.75,
+        "maximum": 484.375
+      },
+      "native_process_peak_rss_bytes": {
+        "median": 12288000,
+        "minimum": 12251136,
+        "maximum": 12398592
+      },
+      "native_counters": {
+        "deletes": {
+          "median": 10,
+          "minimum": 10,
+          "maximum": 10
+        },
+        "http_requests": {
+          "median": 267,
+          "minimum": 267,
+          "maximum": 267
+        },
+        "pages": {
+          "median": 264,
+          "minimum": 264,
+          "maximum": 264
+        },
+        "received_records": {
+          "median": 1165,
+          "minimum": 1165,
+          "maximum": 1165
+        },
+        "response_body_bytes": {
+          "median": 501520,
+          "minimum": 501520,
+          "maximum": 501520
+        },
+        "upserts": {
+          "median": 1155,
+          "minimum": 1155,
+          "maximum": 1155
+        }
+      },
+      "native_stage_ms": {
+        "activity": {
+          "median": 3.815,
+          "minimum": 3.757,
+          "maximum": 3.881
+        },
+        "bootstrap": {
+          "median": 9.791,
+          "minimum": 9.513,
+          "maximum": 9.962
+        },
+        "json_parse": {
+          "median": 5.088,
+          "minimum": 4.822,
+          "maximum": 5.267
+        },
+        "market_sync": {
+          "median": 6054.17,
+          "minimum": 5895.395,
+          "maximum": 6055.864
+        },
+        "network_headers": {
+          "median": 5453.443,
+          "minimum": 5303.783,
+          "maximum": 5461.927
+        },
+        "network_transfer": {
+          "median": 4.875,
+          "minimum": 4.842,
+          "maximum": 4.91
+        },
+        "provenance": {
+          "median": 5.615,
+          "minimum": 5.562,
+          "maximum": 5.752
+        },
+        "sqlite_activation": {
+          "median": 289.17,
+          "minimum": 288.506,
+          "maximum": 293.365
+        },
+        "sqlite_commit": {
+          "median": 365.389,
+          "minimum": 360.294,
+          "maximum": 371.357
+        },
+        "sqlite_open": {
+          "median": 0.916,
+          "minimum": 0.878,
+          "maximum": 0.946
+        },
+        "sqlite_staging": {
+          "median": 77.772,
+          "minimum": 77.037,
+          "maximum": 82.452
+        },
+        "sqlite_transaction": {
+          "median": 540.412,
+          "minimum": 538.405,
+          "maximum": 547.202
+        },
+        "validation": {
+          "median": 1.348,
+          "minimum": 1.326,
+          "maximum": 1.469
+        }
+      },
+      "peak_sqlite_bytes": 22851584,
+      "peak_wal_bytes": 24596432
+    },
+    {
+      "dataset": "windows-prices",
+      "scenario": "unchanged",
+      "label": "baseline",
+      "runs": 3,
+      "seconds": {
+        "median": 0.0265655,
+        "minimum": 0.0257047,
+        "maximum": 0.0270685
+      },
+      "values_sha256": "20476279c180ea2c8d1bd9d5520ae68fcd678c7e869b753963e1bfa6c36790ab",
+      "binary_sha256": "40fbb1718fa4f9343d341fecee513f929b149914fdbd39e0b4d988d423b2c84a",
+      "native_process_cpu_ms": {
+        "median": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.0
+      },
+      "native_process_peak_rss_bytes": {
+        "median": 9777152,
+        "minimum": 9723904,
+        "maximum": 9781248
+      },
+      "native_counters": {
+        "http_requests": {
+          "median": 4,
+          "minimum": 4,
+          "maximum": 4
+        },
+        "pages": {
+          "median": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "received_records": {
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0
+        },
+        "response_body_bytes": {
+          "median": 2899,
+          "minimum": 2899,
+          "maximum": 2899
+        }
+      },
+      "native_stage_ms": {
+        "activity": {
+          "median": 3.906,
+          "minimum": 3.9,
+          "maximum": 4.067
+        },
+        "bootstrap": {
+          "median": 10.194,
+          "minimum": 9.571,
+          "maximum": 10.197
+        },
+        "json_parse": {
+          "median": 0.013,
+          "minimum": 0.013,
+          "maximum": 0.014
+        },
+        "network_headers": {
+          "median": 23.869,
+          "minimum": 23.096,
+          "maximum": 24.385
+        },
+        "network_transfer": {
+          "median": 0.141,
+          "minimum": 0.128,
+          "maximum": 0.152
+        },
+        "provenance": {
+          "median": 3.845,
+          "minimum": 3.697,
+          "maximum": 3.853
+        },
+        "sqlite_open": {
+          "median": 0.905,
+          "minimum": 0.863,
+          "maximum": 0.993
+        },
+        "sqlite_staging": {
+          "median": 0.531,
+          "minimum": 0.526,
+          "maximum": 0.587
+        },
+        "sqlite_transaction": {
+          "median": 0.531,
+          "minimum": 0.526,
+          "maximum": 0.588
+        },
+        "validation": {
+          "median": 0.002,
+          "minimum": 0.002,
+          "maximum": 0.002
+        }
+      },
+      "peak_sqlite_bytes": 22851584,
+      "peak_wal_bytes": 4152
+    },
+    {
+      "dataset": "windows-prices",
+      "scenario": "unchanged",
+      "label": "candidate",
+      "runs": 3,
+      "seconds": {
+        "median": 0.0264869,
+        "minimum": 0.0264053,
+        "maximum": 0.0267879
+      },
+      "values_sha256": "20476279c180ea2c8d1bd9d5520ae68fcd678c7e869b753963e1bfa6c36790ab",
+      "binary_sha256": "82eb4300453f80aaad43e04619f3f8b09b70706d771abdca80b6ad3ac67a67de",
+      "native_process_cpu_ms": {
+        "median": 15.625,
+        "minimum": 0.0,
+        "maximum": 15.625
+      },
+      "native_process_peak_rss_bytes": {
+        "median": 9859072,
+        "minimum": 9818112,
+        "maximum": 9867264
+      },
+      "native_counters": {
+        "http_requests": {
+          "median": 4,
+          "minimum": 4,
+          "maximum": 4
+        },
+        "pages": {
+          "median": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "received_records": {
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0
+        },
+        "response_body_bytes": {
+          "median": 2899,
+          "minimum": 2899,
+          "maximum": 2899
+        }
+      },
+      "native_stage_ms": {
+        "activity": {
+          "median": 3.849,
+          "minimum": 3.799,
+          "maximum": 3.978
+        },
+        "bootstrap": {
+          "median": 10.096,
+          "minimum": 9.893,
+          "maximum": 10.143
+        },
+        "json_parse": {
+          "median": 0.012,
+          "minimum": 0.01,
+          "maximum": 0.012
+        },
+        "market_sync": {
+          "median": 26.484,
+          "minimum": 26.403,
+          "maximum": 26.786
+        },
+        "network_headers": {
+          "median": 23.781,
+          "minimum": 23.77,
+          "maximum": 24.092
+        },
+        "network_transfer": {
+          "median": 0.12,
+          "minimum": 0.11,
+          "maximum": 0.151
+        },
+        "provenance": {
+          "median": 3.835,
+          "minimum": 3.728,
+          "maximum": 3.859
+        },
+        "sqlite_commit": {
+          "median": 0.437,
+          "minimum": 0.41,
+          "maximum": 0.438
+        },
+        "sqlite_open": {
+          "median": 0.936,
+          "minimum": 0.9,
+          "maximum": 0.944
+        },
+        "sqlite_staging": {
+          "median": 0.537,
+          "minimum": 0.517,
+          "maximum": 0.545
+        },
+        "sqlite_transaction": {
+          "median": 0.537,
+          "minimum": 0.517,
+          "maximum": 0.545
+        },
+        "validation": {
+          "median": 0.002,
+          "minimum": 0.002,
+          "maximum": 0.002
+        }
+      },
+      "peak_sqlite_bytes": 22851584,
+      "peak_wal_bytes": 4152
+    },
+    {
+      "dataset": "windows-prices",
+      "scenario": "unchanged_advance",
+      "label": "baseline",
+      "runs": 3,
+      "seconds": {
+        "median": 0.0261533,
+        "minimum": 0.0249554,
+        "maximum": 0.0276471
+      },
+      "values_sha256": "34a030cba4d18c7e6e8cacb46a7d723eb47c7b60387349dab49d2c025de8e955",
+      "binary_sha256": "40fbb1718fa4f9343d341fecee513f929b149914fdbd39e0b4d988d423b2c84a",
+      "native_process_cpu_ms": {
+        "median": 0.0,
+        "minimum": 0.0,
+        "maximum": 15.625
+      },
+      "native_process_peak_rss_bytes": {
+        "median": 9764864,
+        "minimum": 9760768,
+        "maximum": 9777152
+      },
+      "native_counters": {
+        "http_requests": {
+          "median": 4,
+          "minimum": 4,
+          "maximum": 4
+        },
+        "pages": {
+          "median": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "received_records": {
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0
+        },
+        "response_body_bytes": {
+          "median": 2899,
+          "minimum": 2899,
+          "maximum": 2899
+        }
+      },
+      "native_stage_ms": {
+        "activity": {
+          "median": 3.88,
+          "minimum": 3.806,
+          "maximum": 4.12
+        },
+        "bootstrap": {
+          "median": 9.722,
+          "minimum": 9.207,
+          "maximum": 10.133
+        },
+        "json_parse": {
+          "median": 0.014,
+          "minimum": 0.013,
+          "maximum": 0.019
+        },
+        "network_headers": {
+          "median": 23.468,
+          "minimum": 22.412,
+          "maximum": 24.88
+        },
+        "network_transfer": {
+          "median": 0.133,
+          "minimum": 0.114,
+          "maximum": 0.165
+        },
+        "provenance": {
+          "median": 3.812,
+          "minimum": 3.588,
+          "maximum": 4.059
+        },
+        "sqlite_open": {
+          "median": 0.908,
+          "minimum": 0.851,
+          "maximum": 0.968
+        },
+        "sqlite_staging": {
+          "median": 0.546,
+          "minimum": 0.518,
+          "maximum": 0.584
+        },
+        "sqlite_transaction": {
+          "median": 0.547,
+          "minimum": 0.518,
+          "maximum": 0.584
+        },
+        "validation": {
+          "median": 0.002,
+          "minimum": 0.002,
+          "maximum": 0.003
+        }
+      },
+      "peak_sqlite_bytes": 22851584,
+      "peak_wal_bytes": 4152
+    },
+    {
+      "dataset": "windows-prices",
+      "scenario": "unchanged_advance",
+      "label": "candidate",
+      "runs": 3,
+      "seconds": {
+        "median": 0.0274621,
+        "minimum": 0.02605,
+        "maximum": 0.0688506
+      },
+      "values_sha256": "34a030cba4d18c7e6e8cacb46a7d723eb47c7b60387349dab49d2c025de8e955",
+      "binary_sha256": "82eb4300453f80aaad43e04619f3f8b09b70706d771abdca80b6ad3ac67a67de",
+      "native_process_cpu_ms": {
+        "median": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.0
+      },
+      "native_process_peak_rss_bytes": {
+        "median": 9834496,
+        "minimum": 9826304,
+        "maximum": 9846784
+      },
+      "native_counters": {
+        "http_requests": {
+          "median": 4,
+          "minimum": 4,
+          "maximum": 4
+        },
+        "pages": {
+          "median": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "received_records": {
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0
+        },
+        "response_body_bytes": {
+          "median": 2899,
+          "minimum": 2899,
+          "maximum": 2899
+        }
+      },
+      "native_stage_ms": {
+        "activity": {
+          "median": 4.204,
+          "minimum": 3.963,
+          "maximum": 16.286
+        },
+        "bootstrap": {
+          "median": 10.109,
+          "minimum": 9.634,
+          "maximum": 22.348
+        },
+        "json_parse": {
+          "median": 0.013,
+          "minimum": 0.01,
+          "maximum": 0.013
+        },
+        "market_sync": {
+          "median": 27.46,
+          "minimum": 26.048,
+          "maximum": 68.848
+        },
+        "network_headers": {
+          "median": 24.712,
+          "minimum": 23.435,
+          "maximum": 56.786
+        },
+        "network_transfer": {
+          "median": 0.108,
+          "minimum": 0.089,
+          "maximum": 0.147
+        },
+        "provenance": {
+          "median": 3.966,
+          "minimum": 3.688,
+          "maximum": 4.262
+        },
+        "sqlite_commit": {
+          "median": 0.441,
+          "minimum": 0.432,
+          "maximum": 0.511
+        },
+        "sqlite_open": {
+          "median": 0.946,
+          "minimum": 0.865,
+          "maximum": 0.998
+        },
+        "sqlite_staging": {
+          "median": 0.545,
+          "minimum": 0.539,
+          "maximum": 0.648
+        },
+        "sqlite_transaction": {
+          "median": 0.545,
+          "minimum": 0.539,
+          "maximum": 0.648
+        },
+        "validation": {
+          "median": 0.002,
+          "minimum": 0.002,
+          "maximum": 0.002
+        }
+      },
+      "peak_sqlite_bytes": 22851584,
+      "peak_wal_bytes": 4152
+    },
+    {
+      "dataset": "windows-latency",
+      "scenario": "full",
+      "label": "baseline",
+      "runs": 3,
+      "seconds": {
+        "median": 17.7383294,
+        "minimum": 17.5774475,
+        "maximum": 19.215668
+      },
+      "values_sha256": "20476279c180ea2c8d1bd9d5520ae68fcd678c7e869b753963e1bfa6c36790ab",
+      "binary_sha256": "40fbb1718fa4f9343d341fecee513f929b149914fdbd39e0b4d988d423b2c84a",
+      "native_process_cpu_ms": {
+        "median": 765.625,
+        "minimum": 750.0,
+        "maximum": 828.125
+      },
+      "native_process_peak_rss_bytes": {
+        "median": 12754944,
+        "minimum": 12750848,
+        "maximum": 12800000
+      },
+      "native_counters": {
+        "http_requests": {
+          "median": 530,
+          "minimum": 530,
+          "maximum": 530
+        },
+        "pages": {
+          "median": 527,
+          "minimum": 527,
+          "maximum": 527
+        },
+        "received_records": {
+          "median": 26342,
+          "minimum": 26342,
+          "maximum": 26342
+        },
+        "response_body_bytes": {
+          "median": 8879865,
+          "minimum": 8879803,
+          "maximum": 8879865
+        },
+        "upserts": {
+          "median": 26342,
+          "minimum": 26342,
+          "maximum": 26342
+        }
+      },
+      "native_stage_ms": {
+        "activity": {
+          "median": 27.016,
+          "minimum": 26.18,
+          "maximum": 29.681
+        },
+        "bootstrap": {
+          "median": 30.897,
+          "minimum": 30.618,
+          "maximum": 74.862
+        },
+        "json_parse": {
+          "median": 31.495,
+          "minimum": 30.753,
+          "maximum": 36.413
+        },
+        "network_headers": {
+          "median": 16997.464,
+          "minimum": 16847.279,
+          "maximum": 18400.426
+        },
+        "network_transfer": {
+          "median": 26.638,
+          "minimum": 25.375,
+          "maximum": 26.689
+        },
+        "provenance": {
+          "median": 33.248,
+          "minimum": 25.351,
+          "maximum": 35.069
+        },
+        "sqlite_activation": {
+          "median": 254.899,
+          "minimum": 253.305,
+          "maximum": 273.869
+        },
+        "sqlite_commit": {
+          "median": 358.148,
+          "minimum": 349.482,
+          "maximum": 383.196
+        },
+        "sqlite_open": {
+          "median": 2.9,
+          "minimum": 2.828,
+          "maximum": 2.911
+        },
+        "sqlite_staging": {
+          "median": 183.303,
+          "minimum": 182.981,
+          "maximum": 211.994
+        },
+        "sqlite_transaction": {
+          "median": 606.945,
+          "minimum": 595.687,
+          "maximum": 669.303
+        },
+        "validation": {
+          "median": 8.718,
+          "minimum": 8.26,
+          "maximum": 10.106
+        }
+      },
+      "peak_sqlite_bytes": 22851584,
+      "peak_wal_bytes": 23867192
+    },
+    {
+      "dataset": "windows-latency",
+      "scenario": "full",
+      "label": "candidate",
+      "runs": 3,
+      "seconds": {
+        "median": 9.9156847,
+        "minimum": 9.0687302,
+        "maximum": 9.9718258
+      },
+      "values_sha256": "20476279c180ea2c8d1bd9d5520ae68fcd678c7e869b753963e1bfa6c36790ab",
+      "binary_sha256": "82eb4300453f80aaad43e04619f3f8b09b70706d771abdca80b6ad3ac67a67de",
+      "native_process_cpu_ms": {
+        "median": 468.75,
+        "minimum": 421.875,
+        "maximum": 468.75
+      },
+      "native_process_peak_rss_bytes": {
+        "median": 12861440,
+        "minimum": 12820480,
+        "maximum": 13094912
+      },
+      "native_counters": {
+        "http_requests": {
+          "median": 267,
+          "minimum": 267,
+          "maximum": 267
+        },
+        "pages": {
+          "median": 264,
+          "minimum": 264,
+          "maximum": 264
+        },
+        "received_records": {
+          "median": 26342,
+          "minimum": 26342,
+          "maximum": 26342
+        },
+        "response_body_bytes": {
+          "median": 8761515,
+          "minimum": 8761515,
+          "maximum": 8761515
+        },
+        "upserts": {
+          "median": 26342,
+          "minimum": 26342,
+          "maximum": 26342
+        }
+      },
+      "native_stage_ms": {
+        "activity": {
+          "median": 28.251,
+          "minimum": 27.444,
+          "maximum": 33.397
+        },
+        "bootstrap": {
+          "median": 35.685,
+          "minimum": 30.052,
+          "maximum": 36.407
+        },
+        "json_parse": {
+          "median": 26.852,
+          "minimum": 25.235,
+          "maximum": 28.972
+        },
+        "market_sync": {
+          "median": 9915.682,
+          "minimum": 9068.728,
+          "maximum": 9971.823
+        },
+        "network_headers": {
+          "median": 9319.054,
+          "minimum": 8483.827,
+          "maximum": 9376.364
+        },
+        "network_transfer": {
+          "median": 17.545,
+          "minimum": 14.274,
+          "maximum": 17.8
+        },
+        "provenance": {
+          "median": 26.909,
+          "minimum": 26.495,
+          "maximum": 27.03
+        },
+        "sqlite_activation": {
+          "median": 255.205,
+          "minimum": 250.243,
+          "maximum": 259.781
+        },
+        "sqlite_commit": {
+          "median": 294.924,
+          "minimum": 294.215,
+          "maximum": 301.646
+        },
+        "sqlite_open": {
+          "median": 2.961,
+          "minimum": 2.828,
+          "maximum": 3.015
+        },
+        "sqlite_staging": {
+          "median": 137.127,
+          "minimum": 129.767,
+          "maximum": 137.795
+        },
+        "sqlite_transaction": {
+          "median": 490.564,
+          "minimum": 485.779,
+          "maximum": 499.691
+        },
+        "validation": {
+          "median": 7.184,
+          "minimum": 7.01,
+          "maximum": 7.194
+        }
+      },
+      "peak_sqlite_bytes": 22851584,
+      "peak_wal_bytes": 23331592
+    },
+    {
+      "dataset": "windows-latency",
+      "scenario": "incremental",
+      "label": "baseline",
+      "runs": 3,
+      "seconds": {
+        "median": 24.3875186,
+        "minimum": 23.4222074,
+        "maximum": 24.455365
+      },
+      "values_sha256": "34a030cba4d18c7e6e8cacb46a7d723eb47c7b60387349dab49d2c025de8e955",
+      "binary_sha256": "40fbb1718fa4f9343d341fecee513f929b149914fdbd39e0b4d988d423b2c84a",
+      "native_process_cpu_ms": {
+        "median": 578.125,
+        "minimum": 515.625,
+        "maximum": 578.125
+      },
+      "native_process_peak_rss_bytes": {
+        "median": 12255232,
+        "minimum": 12234752,
+        "maximum": 12337152
+      },
+      "native_counters": {
+        "deletes": {
+          "median": 10,
+          "minimum": 10,
+          "maximum": 10
+        },
+        "http_requests": {
+          "median": 531,
+          "minimum": 531,
+          "maximum": 531
+        },
+        "pages": {
+          "median": 528,
+          "minimum": 528,
+          "maximum": 528
+        },
+        "received_records": {
+          "median": 1165,
+          "minimum": 1165,
+          "maximum": 1165
+        },
+        "response_body_bytes": {
+          "median": 620321,
+          "minimum": 620321,
+          "maximum": 620321
+        },
+        "upserts": {
+          "median": 1155,
+          "minimum": 1155,
+          "maximum": 1155
+        }
+      },
+      "native_stage_ms": {
+        "activity": {
+          "median": 27.404,
+          "minimum": 26.837,
+          "maximum": 27.6
+        },
+        "bootstrap": {
+          "median": 38.2,
+          "minimum": 31.181,
+          "maximum": 44.372
+        },
+        "json_parse": {
+          "median": 9.289,
+          "minimum": 8.905,
+          "maximum": 9.642
+        },
+        "network_headers": {
+          "median": 23627.173,
+          "minimum": 22692.369,
+          "maximum": 23720.209
+        },
+        "network_transfer": {
+          "median": 19.605,
+          "minimum": 18.852,
+          "maximum": 20.24
+        },
+        "provenance": {
+          "median": 27.122,
+          "minimum": 25.743,
+          "maximum": 36.646
+        },
+        "sqlite_activation": {
+          "median": 298.115,
+          "minimum": 291.977,
+          "maximum": 300.434
+        },
+        "sqlite_commit": {
+          "median": 419.078,
+          "minimum": 411.614,
+          "maximum": 422.836
+        },
+        "sqlite_open": {
+          "median": 1.172,
+          "minimum": 0.996,
+          "maximum": 1.181
+        },
+        "sqlite_staging": {
+          "median": 124.019,
+          "minimum": 115.812,
+          "maximum": 133.211
+        },
+        "sqlite_transaction": {
+          "median": 641.727,
+          "minimum": 635.597,
+          "maximum": 659.306
+        },
+        "validation": {
+          "median": 2.199,
+          "minimum": 2.087,
+          "maximum": 2.38
+        }
+      },
+      "peak_sqlite_bytes": 22851584,
+      "peak_wal_bytes": 25700592
+    },
+    {
+      "dataset": "windows-latency",
+      "scenario": "incremental",
+      "label": "candidate",
+      "runs": 3,
+      "seconds": {
+        "median": 12.6971947,
+        "minimum": 12.5228662,
+        "maximum": 13.2152062
+      },
+      "values_sha256": "34a030cba4d18c7e6e8cacb46a7d723eb47c7b60387349dab49d2c025de8e955",
+      "binary_sha256": "82eb4300453f80aaad43e04619f3f8b09b70706d771abdca80b6ad3ac67a67de",
+      "native_process_cpu_ms": {
+        "median": 437.5,
+        "minimum": 375.0,
+        "maximum": 453.125
+      },
+      "native_process_peak_rss_bytes": {
+        "median": 12390400,
+        "minimum": 12386304,
+        "maximum": 12410880
+      },
+      "native_counters": {
+        "deletes": {
+          "median": 10,
+          "minimum": 10,
+          "maximum": 10
+        },
+        "http_requests": {
+          "median": 267,
+          "minimum": 267,
+          "maximum": 267
+        },
+        "pages": {
+          "median": 264,
+          "minimum": 264,
+          "maximum": 264
+        },
+        "received_records": {
+          "median": 1165,
+          "minimum": 1165,
+          "maximum": 1165
+        },
+        "response_body_bytes": {
+          "median": 501520,
+          "minimum": 501520,
+          "maximum": 501520
+        },
+        "upserts": {
+          "median": 1155,
+          "minimum": 1155,
+          "maximum": 1155
+        }
+      },
+      "native_stage_ms": {
+        "activity": {
+          "median": 27.856,
+          "minimum": 25.516,
+          "maximum": 35.532
+        },
+        "bootstrap": {
+          "median": 29.826,
+          "minimum": 29.037,
+          "maximum": 45.446
+        },
+        "json_parse": {
+          "median": 5.21,
+          "minimum": 5.153,
+          "maximum": 5.276
+        },
+        "market_sync": {
+          "median": 12697.192,
+          "minimum": 12522.864,
+          "maximum": 13215.204
+        },
+        "network_headers": {
+          "median": 12090.219,
+          "minimum": 11912.045,
+          "maximum": 12606.272
+        },
+        "network_transfer": {
+          "median": 4.835,
+          "minimum": 4.819,
+          "maximum": 5.021
+        },
+        "provenance": {
+          "median": 25.468,
+          "minimum": 24.544,
+          "maximum": 27.014
+        },
+        "sqlite_activation": {
+          "median": 294.259,
+          "minimum": 294.23,
+          "maximum": 294.963
+        },
+        "sqlite_commit": {
+          "median": 373.005,
+          "minimum": 368.099,
+          "maximum": 373.005
+        },
+        "sqlite_open": {
+          "median": 0.98,
+          "minimum": 0.978,
+          "maximum": 1.008
+        },
+        "sqlite_staging": {
+          "median": 82.386,
+          "minimum": 80.794,
+          "maximum": 83.267
+        },
+        "sqlite_transaction": {
+          "median": 553.793,
+          "minimum": 551.015,
+          "maximum": 555.727
+        },
+        "validation": {
+          "median": 1.394,
+          "minimum": 1.38,
+          "maximum": 1.415
+        }
+      },
+      "peak_sqlite_bytes": 22851584,
+      "peak_wal_bytes": 24596432
+    },
+    {
+      "dataset": "windows-latency",
+      "scenario": "unchanged",
+      "label": "baseline",
+      "runs": 3,
+      "seconds": {
+        "median": 0.1258404,
+        "minimum": 0.1241973,
+        "maximum": 0.1283183
+      },
+      "values_sha256": "20476279c180ea2c8d1bd9d5520ae68fcd678c7e869b753963e1bfa6c36790ab",
+      "binary_sha256": "40fbb1718fa4f9343d341fecee513f929b149914fdbd39e0b4d988d423b2c84a",
+      "native_process_cpu_ms": {
+        "median": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.0
+      },
+      "native_process_peak_rss_bytes": {
+        "median": 9764864,
+        "minimum": 9748480,
+        "maximum": 9793536
+      },
+      "native_counters": {
+        "http_requests": {
+          "median": 4,
+          "minimum": 4,
+          "maximum": 4
+        },
+        "pages": {
+          "median": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "received_records": {
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0
+        },
+        "response_body_bytes": {
+          "median": 2899,
+          "minimum": 2899,
+          "maximum": 2899
+        }
+      },
+      "native_stage_ms": {
+        "activity": {
+          "median": 27.066,
+          "minimum": 25.839,
+          "maximum": 27.971
+        },
+        "bootstrap": {
+          "median": 37.189,
+          "minimum": 32.196,
+          "maximum": 41.188
+        },
+        "json_parse": {
+          "median": 0.015,
+          "minimum": 0.015,
+          "maximum": 0.016
+        },
+        "network_headers": {
+          "median": 122.652,
+          "minimum": 121.242,
+          "maximum": 125.31
+        },
+        "network_transfer": {
+          "median": 0.111,
+          "minimum": 0.085,
+          "maximum": 0.131
+        },
+        "provenance": {
+          "median": 27.906,
+          "minimum": 26.366,
+          "maximum": 34.456
+        },
+        "sqlite_open": {
+          "median": 0.947,
+          "minimum": 0.913,
+          "maximum": 1.105
+        },
+        "sqlite_staging": {
+          "median": 0.617,
+          "minimum": 0.547,
+          "maximum": 0.625
+        },
+        "sqlite_transaction": {
+          "median": 0.617,
+          "minimum": 0.548,
+          "maximum": 0.625
+        },
+        "validation": {
+          "median": 0.003,
+          "minimum": 0.003,
+          "maximum": 0.003
+        }
+      },
+      "peak_sqlite_bytes": 22851584,
+      "peak_wal_bytes": 4152
+    },
+    {
+      "dataset": "windows-latency",
+      "scenario": "unchanged",
+      "label": "candidate",
+      "runs": 3,
+      "seconds": {
+        "median": 0.1274355,
+        "minimum": 0.1256252,
+        "maximum": 0.1552652
+      },
+      "values_sha256": "20476279c180ea2c8d1bd9d5520ae68fcd678c7e869b753963e1bfa6c36790ab",
+      "binary_sha256": "82eb4300453f80aaad43e04619f3f8b09b70706d771abdca80b6ad3ac67a67de",
+      "native_process_cpu_ms": {
+        "median": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.0
+      },
+      "native_process_peak_rss_bytes": {
+        "median": 9830400,
+        "minimum": 9789440,
+        "maximum": 9834496
+      },
+      "native_counters": {
+        "http_requests": {
+          "median": 4,
+          "minimum": 4,
+          "maximum": 4
+        },
+        "pages": {
+          "median": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "received_records": {
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0
+        },
+        "response_body_bytes": {
+          "median": 2899,
+          "minimum": 2899,
+          "maximum": 2899
+        }
+      },
+      "native_stage_ms": {
+        "activity": {
+          "median": 31.496,
+          "minimum": 27.767,
+          "maximum": 33.594
+        },
+        "bootstrap": {
+          "median": 34.833,
+          "minimum": 30.305,
+          "maximum": 45.81
+        },
+        "json_parse": {
+          "median": 0.013,
+          "minimum": 0.012,
+          "maximum": 0.016
+        },
+        "market_sync": {
+          "median": 127.433,
+          "minimum": 125.623,
+          "maximum": 155.263
+        },
+        "network_headers": {
+          "median": 124.049,
+          "minimum": 122.745,
+          "maximum": 150.509
+        },
+        "network_transfer": {
+          "median": 0.148,
+          "minimum": 0.112,
+          "maximum": 0.178
+        },
+        "provenance": {
+          "median": 31.364,
+          "minimum": 27.098,
+          "maximum": 32.871
+        },
+        "sqlite_commit": {
+          "median": 0.474,
+          "minimum": 0.435,
+          "maximum": 1.081
+        },
+        "sqlite_open": {
+          "median": 1.115,
+          "minimum": 0.915,
+          "maximum": 1.487
+        },
+        "sqlite_staging": {
+          "median": 0.632,
+          "minimum": 0.575,
+          "maximum": 1.375
+        },
+        "sqlite_transaction": {
+          "median": 0.632,
+          "minimum": 0.575,
+          "maximum": 1.375
+        },
+        "validation": {
+          "median": 0.003,
+          "minimum": 0.002,
+          "maximum": 0.004
+        }
+      },
+      "peak_sqlite_bytes": 22851584,
+      "peak_wal_bytes": 4152
+    },
+    {
+      "dataset": "windows-latency",
+      "scenario": "unchanged_advance",
+      "label": "baseline",
+      "runs": 3,
+      "seconds": {
+        "median": 0.1245437,
+        "minimum": 0.1225765,
+        "maximum": 0.1313544
+      },
+      "values_sha256": "34a030cba4d18c7e6e8cacb46a7d723eb47c7b60387349dab49d2c025de8e955",
+      "binary_sha256": "40fbb1718fa4f9343d341fecee513f929b149914fdbd39e0b4d988d423b2c84a",
+      "native_process_cpu_ms": {
+        "median": 0.0,
+        "minimum": 0.0,
+        "maximum": 15.625
+      },
+      "native_process_peak_rss_bytes": {
+        "median": 9789440,
+        "minimum": 9719808,
+        "maximum": 9793536
+      },
+      "native_counters": {
+        "http_requests": {
+          "median": 4,
+          "minimum": 4,
+          "maximum": 4
+        },
+        "pages": {
+          "median": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "received_records": {
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0
+        },
+        "response_body_bytes": {
+          "median": 2899,
+          "minimum": 2899,
+          "maximum": 2899
+        }
+      },
+      "native_stage_ms": {
+        "activity": {
+          "median": 28.982,
+          "minimum": 28.492,
+          "maximum": 36.339
+        },
+        "bootstrap": {
+          "median": 30.85,
+          "minimum": 29.839,
+          "maximum": 31.123
+        },
+        "json_parse": {
+          "median": 0.015,
+          "minimum": 0.014,
+          "maximum": 0.018
+        },
+        "network_headers": {
+          "median": 121.336,
+          "minimum": 119.577,
+          "maximum": 128.16
+        },
+        "network_transfer": {
+          "median": 0.112,
+          "minimum": 0.082,
+          "maximum": 0.143
+        },
+        "provenance": {
+          "median": 28.128,
+          "minimum": 26.782,
+          "maximum": 32.375
+        },
+        "sqlite_open": {
+          "median": 1.017,
+          "minimum": 1.012,
+          "maximum": 1.113
+        },
+        "sqlite_staging": {
+          "median": 0.619,
+          "minimum": 0.608,
+          "maximum": 0.684
+        },
+        "sqlite_transaction": {
+          "median": 0.62,
+          "minimum": 0.608,
+          "maximum": 0.685
+        },
+        "validation": {
+          "median": 0.003,
+          "minimum": 0.003,
+          "maximum": 0.003
+        }
+      },
+      "peak_sqlite_bytes": 22851584,
+      "peak_wal_bytes": 4152
+    },
+    {
+      "dataset": "windows-latency",
+      "scenario": "unchanged_advance",
+      "label": "candidate",
+      "runs": 3,
+      "seconds": {
+        "median": 0.1251195,
+        "minimum": 0.1207721,
+        "maximum": 0.1315188
+      },
+      "values_sha256": "34a030cba4d18c7e6e8cacb46a7d723eb47c7b60387349dab49d2c025de8e955",
+      "binary_sha256": "82eb4300453f80aaad43e04619f3f8b09b70706d771abdca80b6ad3ac67a67de",
+      "native_process_cpu_ms": {
+        "median": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.0
+      },
+      "native_process_peak_rss_bytes": {
+        "median": 9838592,
+        "minimum": 9822208,
+        "maximum": 9895936
+      },
+      "native_counters": {
+        "http_requests": {
+          "median": 4,
+          "minimum": 4,
+          "maximum": 4
+        },
+        "pages": {
+          "median": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "received_records": {
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0
+        },
+        "response_body_bytes": {
+          "median": 2899,
+          "minimum": 2899,
+          "maximum": 2899
+        }
+      },
+      "native_stage_ms": {
+        "activity": {
+          "median": 31.344,
+          "minimum": 26.107,
+          "maximum": 37.992
+        },
+        "bootstrap": {
+          "median": 30.419,
+          "minimum": 29.438,
+          "maximum": 30.436
+        },
+        "json_parse": {
+          "median": 0.014,
+          "minimum": 0.013,
+          "maximum": 0.015
+        },
+        "market_sync": {
+          "median": 125.117,
+          "minimum": 120.77,
+          "maximum": 131.516
+        },
+        "network_headers": {
+          "median": 122.254,
+          "minimum": 117.775,
+          "maximum": 128.496
+        },
+        "network_transfer": {
+          "median": 0.072,
+          "minimum": 0.064,
+          "maximum": 0.126
+        },
+        "provenance": {
+          "median": 33.812,
+          "minimum": 27.551,
+          "maximum": 34.199
+        },
+        "sqlite_commit": {
+          "median": 0.449,
+          "minimum": 0.445,
+          "maximum": 0.457
+        },
+        "sqlite_open": {
+          "median": 0.949,
+          "minimum": 0.941,
+          "maximum": 0.954
+        },
+        "sqlite_staging": {
+          "median": 0.596,
+          "minimum": 0.579,
+          "maximum": 0.606
+        },
+        "sqlite_transaction": {
+          "median": 0.596,
+          "minimum": 0.579,
+          "maximum": 0.606
+        },
+        "validation": {
+          "median": 0.003,
+          "minimum": 0.003,
+          "maximum": 0.003
+        }
+      },
+      "peak_sqlite_bytes": 22851584,
+      "peak_wal_bytes": 4152
+    },
+    {
+      "dataset": "windows-archive",
+      "scenario": "archive",
+      "label": "baseline",
+      "runs": 3,
+      "seconds": {
+        "median": 21.606366,
+        "minimum": 21.5390565,
+        "maximum": 21.6825807
+      },
+      "values_sha256": "1271b03442480a2366c66e2c2ac8a9b2c03064409b573171929cfbfe397474f7",
+      "binary_sha256": "85d044d2fcbe5d58b4faf0369c4538c9ccee7cb4b95c20925b8415da1722ca7b",
+      "native_process_cpu_ms": {
+        "median": 2484.375,
+        "minimum": 2468.75,
+        "maximum": 2656.25
+      },
+      "native_process_peak_rss_bytes": {
+        "median": 19025920,
+        "minimum": 18571264,
+        "maximum": 19394560
+      },
+      "native_counters": {
+        "http_requests": {
+          "median": 1,
+          "minimum": 1,
+          "maximum": 1
+        },
+        "response_body_bytes": {
+          "median": 2094,
+          "minimum": 2094,
+          "maximum": 2094
+        }
+      },
+      "native_stage_ms": {
+        "bootstrap": {
+          "median": 10.643,
+          "minimum": 10.051,
+          "maximum": 58.711
+        },
+        "network_headers": {
+          "median": 10.45,
+          "minimum": 9.92,
+          "maximum": 58.489
+        },
+        "network_transfer": {
+          "median": 0.038,
+          "minimum": 0.037,
+          "maximum": 0.077
+        }
+      },
+      "peak_sqlite_bytes": 107573248,
+      "peak_wal_bytes": 98727592,
+      "server": {
+        "http_requests": {
+          "median": 531,
+          "minimum": 531,
+          "maximum": 531
+        },
+        "sql_queries": {
+          "median": 5872,
+          "minimum": 5872,
+          "maximum": 5872
+        },
+        "body_bytes": {
+          "median": 18876652,
+          "minimum": 18876652,
+          "maximum": 18876652
+        },
+        "request_wall_ms": {
+          "median": 17111.922099998537,
+          "minimum": 17043.857500000628,
+          "maximum": 17184.404600000336
+        },
+        "process_cpu_ms": {
+          "median": 17031.25,
+          "minimum": 16984.375,
+          "maximum": 17140.625
+        }
+      },
+      "server_operations": {
+        "archive_checkpoint": {
+          "requests": {
+            "median": 2,
+            "minimum": 2,
+            "maximum": 2
+          },
+          "body_bytes": {
+            "median": 1811,
+            "minimum": 1811,
+            "maximum": 1811
+          },
+          "request_wall_ms": {
+            "median": 7203.701000000024,
+            "minimum": 7183.079399999997,
+            "maximum": 7223.578699999962
+          },
+          "process_cpu_ms": {
+            "median": 7156.25,
+            "minimum": 7093.75,
+            "maximum": 7171.875
+          }
+        },
+        "archive_pages": {
+          "requests": {
+            "median": 527,
+            "minimum": 527,
+            "maximum": 527
+          },
+          "body_bytes": {
+            "median": 18870653,
+            "minimum": 18870653,
+            "maximum": 18870653
+          },
+          "request_wall_ms": {
+            "median": 9856.285499998421,
+            "minimum": 9846.413500000608,
+            "maximum": 9947.471200000336
+          },
+          "process_cpu_ms": {
+            "median": 9875.0,
+            "minimum": 9875.0,
+            "maximum": 9906.25
+          }
+        },
+        "bootstrap": {
+          "requests": {
+            "median": 2,
+            "minimum": 2,
+            "maximum": 2
+          },
+          "body_bytes": {
+            "median": 4188,
+            "minimum": 4188,
+            "maximum": 4188
+          },
+          "request_wall_ms": {
+            "median": 14.36460000002171,
+            "minimum": 13.354700000036246,
+            "maximum": 51.93560000009256
+          },
+          "process_cpu_ms": {
+            "median": 15.625,
+            "minimum": 0.0,
+            "maximum": 62.5
+          }
+        }
+      },
+      "detail": {
+        "archive_bytes": 107573248,
+        "archive_complete": true,
+        "archive_metrics": {
+          "final_validation_us": 292810,
+          "pages_applied": 527,
+          "promotion_us": 1112801,
+          "received_bytes": 18870653
+        },
+        "archive_records": 52684,
+        "stored_entries": 52690
+      }
+    },
+    {
+      "dataset": "windows-archive",
+      "scenario": "archive",
+      "label": "candidate",
+      "runs": 3,
+      "seconds": {
+        "median": 22.0931699,
+        "minimum": 22.0806392,
+        "maximum": 22.9789284
+      },
+      "values_sha256": "1271b03442480a2366c66e2c2ac8a9b2c03064409b573171929cfbfe397474f7",
+      "binary_sha256": "8eb37806b4b892714ea05d96ba3f511b6680bc48495bf350add50ef07483a5c3",
+      "native_process_cpu_ms": {
+        "median": 2609.375,
+        "minimum": 2593.75,
+        "maximum": 2734.375
+      },
+      "native_process_peak_rss_bytes": {
+        "median": 18894848,
+        "minimum": 18612224,
+        "maximum": 19320832
+      },
+      "native_counters": {
+        "http_requests": {
+          "median": 531,
+          "minimum": 531,
+          "maximum": 531
+        },
+        "pages": {
+          "median": 527,
+          "minimum": 527,
+          "maximum": 527
+        },
+        "received_records": {
+          "median": 52690,
+          "minimum": 52690,
+          "maximum": 52690
+        },
+        "response_body_bytes": {
+          "median": 18876652,
+          "minimum": 18876652,
+          "maximum": 18876652
+        }
+      },
+      "native_stage_ms": {
+        "archive_sync": {
+          "median": 21955.525,
+          "minimum": 21945.26,
+          "maximum": 22845.93
+        },
+        "archive_validation": {
+          "median": 2981.866,
+          "minimum": 2961.962,
+          "maximum": 3090.131
+        },
+        "bootstrap": {
+          "median": 10.442,
+          "minimum": 10.334,
+          "maximum": 10.519
+        },
+        "hash_verification": {
+          "median": 59.176,
+          "minimum": 55.292,
+          "maximum": 61.035
+        },
+        "json_parse": {
+          "median": 315.624,
+          "minimum": 311.81,
+          "maximum": 339.096
+        },
+        "network_headers": {
+          "median": 17832.128,
+          "minimum": 17825.024,
+          "maximum": 18604.624
+        },
+        "network_transfer": {
+          "median": 45.041,
+          "minimum": 43.456,
+          "maximum": 46.29
+        }
+      },
+      "peak_sqlite_bytes": 107573248,
+      "peak_wal_bytes": 98727592,
+      "server": {
+        "http_requests": {
+          "median": 531,
+          "minimum": 531,
+          "maximum": 531
+        },
+        "sql_queries": {
+          "median": 5872,
+          "minimum": 5872,
+          "maximum": 5872
+        },
+        "body_bytes": {
+          "median": 18876652,
+          "minimum": 18876652,
+          "maximum": 18876652
+        },
+        "request_wall_ms": {
+          "median": 17526.674400001866,
+          "minimum": 17504.12040000117,
+          "maximum": 18260.2236999993
+        },
+        "process_cpu_ms": {
+          "median": 17468.75,
+          "minimum": 17265.625,
+          "maximum": 18171.875
+        }
+      },
+      "server_operations": {
+        "archive_checkpoint": {
+          "requests": {
+            "median": 2,
+            "minimum": 2,
+            "maximum": 2
+          },
+          "body_bytes": {
+            "median": 1811,
+            "minimum": 1811,
+            "maximum": 1811
+          },
+          "request_wall_ms": {
+            "median": 7301.577400000156,
+            "minimum": 7077.096299999994,
+            "maximum": 7313.967600000069
+          },
+          "process_cpu_ms": {
+            "median": 7265.625,
+            "minimum": 7031.25,
+            "maximum": 7296.875
+          }
+        },
+        "archive_pages": {
+          "requests": {
+            "median": 527,
+            "minimum": 527,
+            "maximum": 527
+          },
+          "body_bytes": {
+            "median": 18870653,
+            "minimum": 18870653,
+            "maximum": 18870653
+          },
+          "request_wall_ms": {
+            "median": 10413.165000001187,
+            "minimum": 10211.619600001653,
+            "maximum": 10932.308399999216
+          },
+          "process_cpu_ms": {
+            "median": 10437.5,
+            "minimum": 10000.0,
+            "maximum": 10859.375
+          }
+        },
+        "bootstrap": {
+          "requests": {
+            "median": 2,
+            "minimum": 2,
+            "maximum": 2
+          },
+          "body_bytes": {
+            "median": 4188,
+            "minimum": 4188,
+            "maximum": 4188
+          },
+          "request_wall_ms": {
+            "median": 13.859099999990576,
+            "minimum": 13.47740000005615,
+            "maximum": 13.947700000016994
+          },
+          "process_cpu_ms": {
+            "median": 0.0,
+            "minimum": 0.0,
+            "maximum": 15.625
+          }
+        }
+      },
+      "detail": {
+        "archive_bytes": 107573248,
+        "archive_complete": true,
+        "archive_metrics": {
+          "final_validation_us": 322703,
+          "pages_applied": 527,
+          "promotion_us": 1141787,
+          "received_bytes": 18870653
+        },
+        "archive_records": 52684,
+        "stored_entries": 52690
+      }
+    },
+    {
+      "dataset": "windows-automatic-workshop",
+      "scenario": "auto",
+      "label": "baseline",
+      "runs": 3,
+      "seconds": {
+        "median": 154.5911037,
+        "minimum": 154.2483509,
+        "maximum": 155.1987615
+      },
+      "values_sha256": "9f082c463139dced2af0c8730a85d33ff74fd9f17a1cad61b96f08387ba0bdf3",
+      "binary_sha256": "85d044d2fcbe5d58b4faf0369c4538c9ccee7cb4b95c20925b8415da1722ca7b",
+      "native_process_cpu_ms": {
+        "median": 1640.625,
+        "minimum": 1468.75,
+        "maximum": 1687.5
+      },
+      "native_process_peak_rss_bytes": {
+        "median": 20369408,
+        "minimum": 20135936,
+        "maximum": 20373504
+      },
+      "native_counters": {
+        "http_requests": {
+          "median": 643,
+          "minimum": 643,
+          "maximum": 643
+        },
+        "pages": {
+          "median": 555,
+          "minimum": 555,
+          "maximum": 555
+        },
+        "received_records": {
+          "median": 26342,
+          "minimum": 26342,
+          "maximum": 26342
+        },
+        "response_body_bytes": {
+          "median": 8963204,
+          "minimum": 8963080,
+          "maximum": 8963204
+        },
+        "upserts": {
+          "median": 26342,
+          "minimum": 26342,
+          "maximum": 26342
+        }
+      },
+      "native_stage_ms": {
+        "activity": {
+          "median": 128.478,
+          "minimum": 125.39,
+          "maximum": 133.366
+        },
+        "bootstrap": {
+          "median": 282.131,
+          "minimum": 278.377,
+          "maximum": 307.243
+        },
+        "json_parse": {
+          "median": 25.7,
+          "minimum": 23.863,
+          "maximum": 29.049
+        },
+        "network_headers": {
+          "median": 4902.335,
+          "minimum": 4807.732,
+          "maximum": 5398.095
+        },
+        "network_transfer": {
+          "median": 33.877,
+          "minimum": 30.024,
+          "maximum": 38.694
+        },
+        "provenance": {
+          "median": 111.097,
+          "minimum": 110.434,
+          "maximum": 111.751
+        },
+        "sqlite_activation": {
+          "median": 254.208,
+          "minimum": 250.992,
+          "maximum": 279.08
+        },
+        "sqlite_commit": {
+          "median": 353.235,
+          "minimum": 350.545,
+          "maximum": 366.458
+        },
+        "sqlite_open": {
+          "median": 22.561,
+          "minimum": 22.342,
+          "maximum": 23.399
+        },
+        "sqlite_staging": {
+          "median": 147.431,
+          "minimum": 143.49,
+          "maximum": 165.418
+        },
+        "sqlite_transaction": {
+          "median": 575.944,
+          "minimum": 561.339,
+          "maximum": 579.994
+        },
+        "validation": {
+          "median": 7.597,
+          "minimum": 6.902,
+          "maximum": 8.467
+        }
+      },
+      "peak_sqlite_bytes": 0,
+      "peak_wal_bytes": 0,
+      "server": {
+        "http_requests": {
+          "median": 738,
+          "minimum": 738,
+          "maximum": 738
+        },
+        "sql_queries": {
+          "median": 9477,
+          "minimum": 9477,
+          "maximum": 9477
+        },
+        "body_bytes": {
+          "median": 11976397,
+          "minimum": 11976273,
+          "maximum": 11976397
+        },
+        "request_wall_ms": {
+          "median": 12615.459599995575,
+          "minimum": 12147.352900000897,
+          "maximum": 13099.638800000093
+        },
+        "process_cpu_ms": {
+          "median": 12109.375,
+          "minimum": 12093.75,
+          "maximum": 12671.875
+        }
+      },
+      "server_operations": {
+        "activity": {
+          "requests": {
+            "median": 29,
+            "minimum": 29,
+            "maximum": 29
+          },
+          "body_bytes": {
+            "median": 0,
+            "minimum": 0,
+            "maximum": 0
+          },
+          "request_wall_ms": {
+            "median": 111.45480000004682,
+            "minimum": 108.4713999999849,
+            "maximum": 116.81209999983366
+          },
+          "process_cpu_ms": {
+            "median": 109.375,
+            "minimum": 93.75,
+            "maximum": 125.0
+          }
+        },
+        "bootstrap": {
+          "requests": {
+            "median": 30,
+            "minimum": 30,
+            "maximum": 30
+          },
+          "body_bytes": {
+            "median": 64680,
+            "minimum": 64556,
+            "maximum": 64680
+          },
+          "request_wall_ms": {
+            "median": 247.59650000032707,
+            "minimum": 243.18240000047808,
+            "maximum": 262.7028999995673
+          },
+          "process_cpu_ms": {
+            "median": 234.375,
+            "minimum": 203.125,
+            "maximum": 296.875
+          }
+        },
+        "prices": {
+          "requests": {
+            "median": 555,
+            "minimum": 555,
+            "maximum": 555
+          },
+          "body_bytes": {
+            "median": 8887417,
+            "minimum": 8887417,
+            "maximum": 8887417
+          },
+          "request_wall_ms": {
+            "median": 4157.405599996991,
+            "minimum": 4029.098500000373,
+            "maximum": 4603.89590000068
+          },
+          "process_cpu_ms": {
+            "median": 3937.5,
+            "minimum": 3812.5,
+            "maximum": 4296.875
+          }
+        },
+        "provenance": {
+          "requests": {
+            "median": 29,
+            "minimum": 29,
+            "maximum": 29
+          },
+          "body_bytes": {
+            "median": 11107,
+            "minimum": 11107,
+            "maximum": 11107
+          },
+          "request_wall_ms": {
+            "median": 96.16900000014539,
+            "minimum": 95.49539999966328,
+            "maximum": 96.40229999968142
+          },
+          "process_cpu_ms": {
+            "median": 109.375,
+            "minimum": 93.75,
+            "maximum": 218.75
+          }
+        },
+        "workshop_parts": {
+          "requests": {
+            "median": 64,
+            "minimum": 64,
+            "maximum": 64
+          },
+          "body_bytes": {
+            "median": 3003052,
+            "minimum": 3003052,
+            "maximum": 3003052
+          },
+          "request_wall_ms": {
+            "median": 128.80120000068018,
+            "minimum": 128.2387999999628,
+            "maximum": 144.96889999918494
+          },
+          "process_cpu_ms": {
+            "median": 171.875,
+            "minimum": 125.0,
+            "maximum": 171.875
+          }
+        },
+        "workshop_summary": {
+          "requests": {
+            "median": 31,
+            "minimum": 31,
+            "maximum": 31
+          },
+          "body_bytes": {
+            "median": 10141,
+            "minimum": 10141,
+            "maximum": 10141
+          },
+          "request_wall_ms": {
+            "median": 7869.911199998796,
+            "minimum": 7522.109900000146,
+            "maximum": 7899.734500000022
+          },
+          "process_cpu_ms": {
+            "median": 7671.875,
+            "minimum": 7406.25,
+            "maximum": 7796.875
+          }
+        }
+      },
+      "detail": {
+        "actual_preparation_sleep_ms": 140000,
+        "attempts": 29,
+        "game_files_published": true,
+        "physical_game": false,
+        "workshop_records": 26342,
+        "zero_byte_warm_workshop": true
+      }
+    },
+    {
+      "dataset": "windows-automatic-workshop",
+      "scenario": "auto",
+      "label": "candidate",
+      "runs": 3,
+      "seconds": {
+        "median": 50.913789,
+        "minimum": 49.9653992,
+        "maximum": 51.3038868
+      },
+      "values_sha256": "9f082c463139dced2af0c8730a85d33ff74fd9f17a1cad61b96f08387ba0bdf3",
+      "binary_sha256": "8eb37806b4b892714ea05d96ba3f511b6680bc48495bf350add50ef07483a5c3",
+      "native_process_cpu_ms": {
+        "median": 1578.125,
+        "minimum": 1484.375,
+        "maximum": 1578.125
+      },
+      "native_process_peak_rss_bytes": {
+        "median": 20406272,
+        "minimum": 20209664,
+        "maximum": 20406272
+      },
+      "native_counters": {
+        "http_requests": {
+          "median": 475,
+          "minimum": 475,
+          "maximum": 475
+        },
+        "pages": {
+          "median": 356,
+          "minimum": 356,
+          "maximum": 356
+        },
+        "received_records": {
+          "median": 52684,
+          "minimum": 52684,
+          "maximum": 52684
+        },
+        "response_body_bytes": {
+          "median": 11857459,
+          "minimum": 11857459,
+          "maximum": 11857459
+        },
+        "upserts": {
+          "median": 26342,
+          "minimum": 26342,
+          "maximum": 26342
+        }
+      },
+      "native_stage_ms": {
+        "activity": {
+          "median": 138.697,
+          "minimum": 136.248,
+          "maximum": 157.841
+        },
+        "bootstrap": {
+          "median": 303.126,
+          "minimum": 299.114,
+          "maximum": 493.306
+        },
+        "file_publication": {
+          "median": 208.25,
+          "minimum": 198.534,
+          "maximum": 224.764
+        },
+        "hash_verification": {
+          "median": 11.616,
+          "minimum": 11.604,
+          "maximum": 11.628
+        },
+        "json_parse": {
+          "median": 224.46,
+          "minimum": 223.718,
+          "maximum": 226.821
+        },
+        "market_sync": {
+          "median": 4807.739,
+          "minimum": 4336.441,
+          "maximum": 5197.112
+        },
+        "network_headers": {
+          "median": 13208.275,
+          "minimum": 12170.186,
+          "maximum": 13566.111
+        },
+        "network_transfer": {
+          "median": 25.622,
+          "minimum": 24.356,
+          "maximum": 28.808
+        },
+        "provenance": {
+          "median": 134.133,
+          "minimum": 117.561,
+          "maximum": 137.66
+        },
+        "sqlite_activation": {
+          "median": 256.907,
+          "minimum": 256.426,
+          "maximum": 266.002
+        },
+        "sqlite_commit": {
+          "median": 314.839,
+          "minimum": 311.705,
+          "maximum": 317.37
+        },
+        "sqlite_open": {
+          "median": 24.217,
+          "minimum": 23.32,
+          "maximum": 25.44
+        },
+        "sqlite_staging": {
+          "median": 153.043,
+          "minimum": 138.281,
+          "maximum": 154.68
+        },
+        "sqlite_transaction": {
+          "median": 532.585,
+          "minimum": 509.13,
+          "maximum": 534.251
+        },
+        "validation": {
+          "median": 8.063,
+          "minimum": 7.12,
+          "maximum": 8.387
+        },
+        "workshop_download": {
+          "median": 9331.57,
+          "minimum": 8545.3,
+          "maximum": 9360.193
+        },
+        "workshop_publication": {
+          "median": 694.795,
+          "minimum": 678.858,
+          "maximum": 804.971
+        },
+        "workshop_sync": {
+          "median": 10008.541,
+          "minimum": 9329.389,
+          "maximum": 10020.518
+        },
+        "workshop_validation": {
+          "median": 332.464,
+          "minimum": 331.099,
+          "maximum": 336.534
+        }
+      },
+      "peak_sqlite_bytes": 22851584,
+      "peak_wal_bytes": 23331592,
+      "server": {
+        "http_requests": {
+          "median": 475,
+          "minimum": 475,
+          "maximum": 475
+        },
+        "sql_queries": {
+          "median": 6321,
+          "minimum": 6321,
+          "maximum": 6321
+        },
+        "body_bytes": {
+          "median": 11858047,
+          "minimum": 11858047,
+          "maximum": 11858047
+        },
+        "request_wall_ms": {
+          "median": 12894.658999997091,
+          "minimum": 11897.021400002814,
+          "maximum": 13248.32599999877
+        },
+        "process_cpu_ms": {
+          "median": 12687.5,
+          "minimum": 11390.625,
+          "maximum": 12890.625
+        }
+      },
+      "server_operations": {
+        "activity": {
+          "requests": {
+            "median": 29,
+            "minimum": 29,
+            "maximum": 29
+          },
+          "body_bytes": {
+            "median": 0,
+            "minimum": 0,
+            "maximum": 0
+          },
+          "request_wall_ms": {
+            "median": 119.27300000024843,
+            "minimum": 117.00760000098853,
+            "maximum": 136.31380000038007
+          },
+          "process_cpu_ms": {
+            "median": 156.25,
+            "minimum": 93.75,
+            "maximum": 156.25
+          }
+        },
+        "bootstrap": {
+          "requests": {
+            "median": 30,
+            "minimum": 30,
+            "maximum": 30
+          },
+          "body_bytes": {
+            "median": 64680,
+            "minimum": 64680,
+            "maximum": 64680
+          },
+          "request_wall_ms": {
+            "median": 268.68149999972957,
+            "minimum": 262.31829999915135,
+            "maximum": 458.12880000039513
+          },
+          "process_cpu_ms": {
+            "median": 218.75,
+            "minimum": 187.5,
+            "maximum": 281.25
+          }
+        },
+        "prices": {
+          "requests": {
+            "median": 292,
+            "minimum": 292,
+            "maximum": 292
+          },
+          "body_bytes": {
+            "median": 8769067,
+            "minimum": 8769067,
+            "maximum": 8769067
+          },
+          "request_wall_ms": {
+            "median": 3333.4199999990233,
+            "minimum": 2997.9497000024367,
+            "maximum": 3731.8247999994583
+          },
+          "process_cpu_ms": {
+            "median": 3234.375,
+            "minimum": 2781.25,
+            "maximum": 3437.5
+          }
+        },
+        "provenance": {
+          "requests": {
+            "median": 29,
+            "minimum": 29,
+            "maximum": 29
+          },
+          "body_bytes": {
+            "median": 11107,
+            "minimum": 11107,
+            "maximum": 11107
+          },
+          "request_wall_ms": {
+            "median": 115.46939999948336,
+            "minimum": 101.65839999922355,
+            "maximum": 118.67009999969014
+          },
+          "process_cpu_ms": {
+            "median": 156.25,
+            "minimum": 109.375,
+            "maximum": 203.125
+          }
+        },
+        "workshop_parts": {
+          "requests": {
+            "median": 64,
+            "minimum": 64,
+            "maximum": 64
+          },
+          "body_bytes": {
+            "median": 3003052,
+            "minimum": 3003052,
+            "maximum": 3003052
+          },
+          "request_wall_ms": {
+            "median": 168.3221999996931,
+            "minimum": 150.9118999997554,
+            "maximum": 169.64330000041627
+          },
+          "process_cpu_ms": {
+            "median": 187.5,
+            "minimum": 156.25,
+            "maximum": 218.75
+          }
+        },
+        "workshop_summary": {
+          "requests": {
+            "median": 31,
+            "minimum": 31,
+            "maximum": 31
+          },
+          "body_bytes": {
+            "median": 10141,
+            "minimum": 10141,
+            "maximum": 10141
+          },
+          "request_wall_ms": {
+            "median": 8840.233299999227,
+            "minimum": 8053.954700000077,
+            "maximum": 8896.225599999298
+          },
+          "process_cpu_ms": {
+            "median": 8687.5,
+            "minimum": 7890.625,
+            "maximum": 8812.5
+          }
+        }
+      },
+      "detail": {
+        "actual_preparation_sleep_ms": 36000,
+        "attempts": 29,
+        "game_files_published": true,
+        "physical_game": false,
+        "workshop_records": 26342,
+        "zero_byte_warm_workshop": true
+      }
+    }
+  ],
+  "raw_json_sha256": {
+    "windows-latency.json": "8b95ebd415827104f83170e9c02cec04b8be9d6fe51e7502303f0c46991cf402",
+    "windows-archive.json": "cc649f919b4b9e8e03ec5aa28d61b6c4a0d5a398760215ef1b6402fdd19f319d",
+    "baseline-source.json": "53c33e1c7f4d4fd3754aa6899c6dfc73d012d01feb655e2b3ddeb8baae69f2e1",
+    "windows-storage.json": "9d51e307915e0ffd8c7adaed9aa25af1b9950badb455c739d69a712378c7533a",
+    "windows-prices.json": "19ec45912ee03064c4bdeb55a12f0020543456bc4190491a9b790d0dd36e8876",
+    "windows-automatic-workshop.json": "04c6d14b09cbee25bb23ac9ade03079284ee9e92952fcf6092ae05731ce6eef9"
+  },
+  "notes": [
+    "Hosted Windows; disk metadata is runner-reported, not physical owner-PC acceptance; filesystem record refers to SystemDrive rather than proving temporary-fixture volume.",
+    "Price server uses portable SQLite: price comparison isolates existing 50/100 page-size effect. Genuine PostgreSQL measurements separately exercise bounded-key optimization.",
+    "Actual native retry sleeps; old 5s header reproduced in fixture; candidate route chooses 5s derivation/1s bounded projection.",
+    "Automatic timing includes common scope bootstrap, final semantic hash and warm-reuse checks.",
+    "Native CPU times have Windows scheduling-clock granularity. RSS is process-lifetime peak, stages are nested inclusive. Missing stages were not instrumented in frozen baseline; do not treat them as zero cost.",
+    "Server independent per-operation middleware counters cover both delivery binaries, including requests not hooked by the old native client."
+  ]
+}

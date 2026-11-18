@@ -1,0 +1,56 @@
+{
+  "/twichui-market-api-1": {
+    "id": "2bb52bba3dc7114bfdc44cf22e72477de9eaecc0a7bcc7be3835959163b0cd71",
+    "image": "sha256:9712cd35a1f669343d20d42598717d0fcb370a4c358d3edb4c35f807b0d9295c",
+    "env_sha256": "d5701ae84eded9b07c77b408c3b4460a5049a9c58aad7ad30819d5b36e0096f7",
+    "mounts_sha256": "407021bc79315691bf9b85c8c1367bda7771c875335a7df7f05b9e49c05e622d"
+  },
+  "/twichui-market-local-api-1": {
+    "id": "5be3eefdf11d8ab91e62ff28e30e18cb18f941eaf496c0386c2b1bd3f5da850b",
+    "image": "sha256:9712cd35a1f669343d20d42598717d0fcb370a4c358d3edb4c35f807b0d9295c",
+    "env_sha256": "664102f754613c9c8fa8b527a9a8b32700fb9647a305f0d2d0f1ace5e772431b",
+    "mounts_sha256": "407021bc79315691bf9b85c8c1367bda7771c875335a7df7f05b9e49c05e622d"
+  },
+  "/twichui-market-retention-1": {
+    "id": "225f8fba07561eda9d4f64eb8ca98f3115ab50f5b0e6e4bdc050d75e30f81d43",
+    "image": "sha256:9712cd35a1f669343d20d42598717d0fcb370a4c358d3edb4c35f807b0d9295c",
+    "env_sha256": "966142e7d0474f6cc57b6957739372da9c28927cabb1544c365a6d8ca2494e10",
+    "mounts_sha256": "40f4700f5140623d9fad3867d1ee84603c55291657ed6af05c207c118da70173"
+  },
+  "/twichui-market-monitor-1": {
+    "id": "00320ce44d3801ef902386a2f7956fe9f49e74decad5ea71782a3f8cdde1dcd5",
+    "image": "sha256:9712cd35a1f669343d20d42598717d0fcb370a4c358d3edb4c35f807b0d9295c",
+    "env_sha256": "0b432f47b535432b485399f97a3c8186445386d43905c2a1942582c6809c5ff0",
+    "mounts_sha256": "8683fe7151b9559e938c0a69ffa3d59fb74a00d6de4d735da96301e79a9ab1a0"
+  },
+  "/twichui-market-proxy-1": {
+    "id": "de1e7aceb146621a04cdea2151d46318fc3c4124b3aa4da9ac98c5282f4539ac",
+    "image": "sha256:f48f8f1a7e5a030432abde0792ee0be1aae0326950404e83036bc9c0172a6814",
+    "env_sha256": "8915a1e3427490f9cf54452f71246e7e5299294b349f263a853bd3e01bfdfe3d",
+    "mounts_sha256": "dd0707be94b548624e06a803d40cf7ee2949b3ea9d554905abdeb248de85c6da"
+  },
+  "/twichui-market-worker-1": {
+    "id": "81b36b1a230d15f0cef2edcadc53866128f302d305a662bc9a453abf203b2887",
+    "image": "sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b",
+    "env_sha256": "bc70fa96736fe57ca91b52c942c91b2f0fd5c8c2808a0e026192da865878bdbd",
+    "mounts_sha256": "acce512ee723de68ea1e327203b5d210ff513ab7c0b045ad9cd7b033b3f48e75"
+  },
+  "/twichui-market-backup-manager-1": {
+    "id": "0975558bb55d6a8216c43fdba4911b3a9cbfc46bc6f36188c3e88e88782f6ecf",
+    "image": "sha256:79cea119910ad3353f8a35ce21d079fafbcab0a757c0734bfe3bce6055c68565",
+    "env_sha256": "a3e2b991753c6baba1065656bb770f2a2744ba25351ea912fa256a35347b836c",
+    "mounts_sha256": "0a0f8fee502fade613b7f6c292a0dedaf038a8d735075407771d4b44852ec5ee"
+  },
+  "/twichui-market-enrichment-1": {
+    "id": "08ac2b64e749d094f88e9cce7157fd3c5a29ea867bb11ae24789247479a49c44",
+    "image": "sha256:3ef6f57964546a425f4c2ebe2bc44be2d9a516340325074dfb0fb2f32d7c3667",
+    "env_sha256": "d3be145adf27630b1c6f018a06ca7f104f15826c9c8e996c93d8cc86afbd9e5f",
+    "mounts_sha256": "907ee3733b8ae69396e427a58f4159963d6a861e041d8f7800afea36b8cbfb84"
+  },
+  "/twichui-market-db-1": {
+    "id": "1a138045d430554c64142f230fa1555e61d3414b2926ae9b2606f58fb8fb3642",
+    "image": "sha256:d3244e8ce3f165ee3c93d9c4a4b1d0fe48b3a89e2287b717fdcbbde92d405065",
+    "env_sha256": "620e3cb1ce9f0bf6aa4446363eeb86beb0f4dbcc1174c596105741c242afa876",
+    "mounts_sha256": "907abab6e57c6215c7660e70e910902815be56d3d791d7d0783b84c51e441440"
+  }
+}

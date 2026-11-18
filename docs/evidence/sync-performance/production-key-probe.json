@@ -1,0 +1,168 @@
+{
+  "read_only": true,
+  "statement_limit_ms": 750,
+  "plans": [
+    {
+      "query": "deployed",
+      "execution_ms": 0.631,
+      "planning_ms": 2.705,
+      "plan": {
+        "node": "Limit",
+        "rows": 47,
+        "removed": 0,
+        "shared_hits": 103,
+        "shared_reads": 0,
+        "index": null,
+        "children": [
+          {
+            "node": "Unique",
+            "rows": 47,
+            "removed": 0,
+            "shared_hits": 103,
+            "shared_reads": 0,
+            "index": null,
+            "children": [
+              {
+                "node": "Sort",
+                "rows": 89,
+                "removed": 0,
+                "shared_hits": 103,
+                "shared_reads": 0,
+                "index": null,
+                "children": [
+                  {
+                    "node": "Bitmap Heap Scan",
+                    "rows": 89,
+                    "removed": 0,
+                    "shared_hits": 100,
+                    "shared_reads": 0,
+                    "index": null,
+                    "children": [
+                      {
+                        "node": "BitmapOr",
+                        "rows": 0,
+                        "removed": 0,
+                        "shared_hits": 14,
+                        "shared_reads": 0,
+                        "index": null,
+                        "children": [
+                          {
+                            "node": "Bitmap Index Scan",
+                            "rows": 89,
+                            "removed": 0,
+                            "shared_hits": 8,
+                            "shared_reads": 0,
+                            "index": "snapshot_statistics_pkey",
+                            "children": []
+                          },
+                          {
+                            "node": "Bitmap Index Scan",
+                            "rows": 0,
+                            "removed": 0,
+                            "shared_hits": 6,
+                            "shared_reads": 0,
+                            "index": "snapshot_statistics_pkey",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "query": "candidate",
+      "execution_ms": 0.315,
+      "planning_ms": 0.201,
+      "plan": {
+        "node": "Limit",
+        "rows": 47,
+        "removed": 0,
+        "shared_hits": 99,
+        "shared_reads": 0,
+        "index": null,
+        "children": [
+          {
+            "node": "Unique",
+            "rows": 47,
+            "removed": 0,
+            "shared_hits": 99,
+            "shared_reads": 0,
+            "index": null,
+            "children": [
+              {
+                "node": "Sort",
+                "rows": 89,
+                "removed": 0,
+                "shared_hits": 99,
+                "shared_reads": 0,
+                "index": null,
+                "children": [
+                  {
+                    "node": "Append",
+                    "rows": 89,
+                    "removed": 0,
+                    "shared_hits": 99,
+                    "shared_reads": 0,
+                    "index": null,
+                    "children": [
+                      {
+                        "node": "Limit",
+                        "rows": 45,
+                        "removed": 0,
+                        "shared_hits": 50,
+                        "shared_reads": 0,
+                        "index": null,
+                        "children": [
+                          {
+                            "node": "Index Only Scan",
+                            "rows": 45,
+                            "removed": 0,
+                            "shared_hits": 50,
+                            "shared_reads": 0,
+                            "index": "snapshot_statistics_pkey",
+                            "children": []
+                          }
+                        ]
+                      },
+                      {
+                        "node": "Limit",
+                        "rows": 44,
+                        "removed": 0,
+                        "shared_hits": 49,
+                        "shared_reads": 0,
+                        "index": null,
+                        "children": [
+                          {
+                            "node": "Index Only Scan",
+                            "rows": 44,
+                            "removed": 0,
+                            "shared_hits": 49,
+                            "shared_reads": 0,
+                            "index": "snapshot_statistics_pkey",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "recent_continuation_responses": 105,
+  "adjacent_response_gap_seconds": {
+    "median": 5.260149,
+    "min": 0.052102,
+    "max": 16.805752
+  }
+}

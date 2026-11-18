@@ -3,7 +3,7 @@
   "approval_reference": "owner-20261118-retention-local-only",
   "policy_revision": 3,
   "policy_hash": "9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7",
-  "execution_hash": "da2c266215a16d1cf03a2aa1e6f965bb5a5cf104c4cd09496d5c7a41e2c8964a",
+  "execution_hash": "85251cddad6b62cb332efeffd3133c844dbff40033d889e487cb39bddfece886",
   "execution_document": {
     "policy_hash": "9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7",
     "policy_revision": 3,
@@ -25,7 +25,7 @@
       "sync": "existing 409/full refresh",
       "concurrent_executions": 1,
       "operations": "DELETE candidate rows except raw_feed_payloads, which clears compressed_payload",
-      "scheduler_sha256": "a4bf0698f2cb26410c5abf45f1453a9385cb73122e7a9be3c4ad91701884a174",
+      "scheduler_sha256": "bfb792e04559c1d44ea9e4757ee78174d0a4189a83e61cc3ce7f65278e3a59d3",
       "minimum_filesystem_reserve_bytes": 34359738368,
       "recovery_policy": {
         "mode": "local_only",
@@ -47,11 +47,12 @@
       "contention_retry_seconds": 60,
       "max_wal_bytes": 2147483648
     },
-    "execution_hash": "da2c266215a16d1cf03a2aa1e6f965bb5a5cf104c4cd09496d5c7a41e2c8964a"
+    "execution_hash": "85251cddad6b62cb332efeffd3133c844dbff40033d889e487cb39bddfece886"
   },
   "previous_reviewed_execution_hash": "3543c34bde2c8e3ed5b63c21ef645c6c6ccfbb19945b4ff7a685e37694e4d243",
-  "changed_scope": "Explicit local-only recovery exception and its enforcing scheduler source; original candidate/mutation source, policy, reserve and bounded work limits unchanged",
+  "changed_scope": "Explicit owner-approved local-only recovery exception and corrected snapshot-first listing selection; original candidate/mutation rules, rolling policy, reserve and bounded limits remain unchanged",
   "off_vm_verified": false,
   "recurring_backups_enabled": false,
-  "cold_canonical_limitation": "Existing derivations preserved. Originals not derived before raw expiry cannot be recreated from daily means; cold canonical requests retain explicit 409/provisional fallback. No broader canonical coverage or game acceptance claimed."
+  "cold_canonical_limitation": "Existing derivations preserved. Originals not derived before raw expiry cannot be recreated from daily means; cold canonical requests retain explicit 409/provisional fallback. No broader canonical coverage or game acceptance claimed.",
+  "superseded_initial_exception_hash": "da2c266215a16d1cf03a2aa1e6f965bb5a5cf104c4cd09496d5c7a41e2c8964a"
 }

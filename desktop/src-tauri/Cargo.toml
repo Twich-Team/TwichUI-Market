@@ -1,7 +1,10 @@
 [package]
 name = "twichui-market-companion"
-version = "2.0.0-beta.8"
+version = "2.0.0-beta.9"
 edition = "2021"
+
+[features]
+private-dev = ["twichui-market-core/private-dev"]
 
 [build-dependencies]
 tauri-build = "2"

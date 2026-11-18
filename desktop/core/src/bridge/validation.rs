@@ -29,6 +29,7 @@ impl<'de> Deserialize<'de> for Strict {
  }
 }
 pub fn parse(raw:&[u8],maximum:usize)->Result<Value>{
+ let _parse=crate::performance::measure(crate::performance::Stage::JsonParse);
  if raw.len()>maximum{return bad()}
  let mut d=serde_json::Deserializer::from_slice(raw);let v=Strict::deserialize(&mut d)?.0;d.end()?;
  canonical(&v)?;Ok(v)
@@ -44,7 +45,7 @@ pub fn canonical(v:&Value)->Result<Vec<u8>>{
   Value::Object(m)=>{out.push('{');let mut keys=m.keys().collect::<Vec<_>>();keys.sort();for(i,k)in keys.iter().enumerate(){if i>0{out.push(',')}quoted(k,out);out.push(':');emit(&m[*k],out,depth+1)?}out.push('}')}
  }Ok(())}let mut out=String::new();emit(v,&mut out,0)?;Ok(out.into_bytes())
 }
-pub(crate) fn hash(v:&Value)->Result<String>{Ok(format!("{:x}",Sha256::digest(canonical(v)?)))}
+pub(crate) fn hash(v:&Value)->Result<String>{let _hash=crate::performance::measure(crate::performance::Stage::HashVerification);Ok(format!("{:x}",Sha256::digest(canonical(v)?)))}
 fn integer(v:&Value)->Option<u64>{v.as_u64().filter(|n|*n<=SAFE)}
 fn money(v:&Value,positive:bool)->bool{v.as_str().is_some_and(|s|!s.is_empty()&&s.len()<=19&&s.bytes().all(|c|c.is_ascii_digit())&&(s=="0"||!s.starts_with('0'))&&s.parse::<u64>().is_ok_and(|n|n<=i64::MAX as u64&&(!positive||n>0)))}
 fn hex(s:&str)->bool{s.len()==64&&s.bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b))}

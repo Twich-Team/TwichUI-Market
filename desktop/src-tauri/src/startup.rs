@@ -5,7 +5,7 @@ mod native {
     const KEY: &str = r"Software\Microsoft\Windows\CurrentVersion\Run";
     const APPROVED: &str =
         r"Software\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run";
-    const NAME: &str = "TwichUI Market Companion";
+    const NAME: &str = if cfg!(feature = "private-dev") { "TwichUI Market Companion DEV" } else { "TwichUI Market Companion" };
     type Result<T> = std::result::Result<T, String>;
     fn command() -> Result<String> {
         Ok(format!(

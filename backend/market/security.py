@@ -44,6 +44,9 @@ def issue(db, user, kind, name="browser"):
     return token, csrf, row
 
 
+from .sync_performance import timed
+
+@timed("authentication")
 def identity(request: Request, db: Session = Depends(session)):
     authorization = request.headers.get("authorization", "")
     bearer = authorization.startswith("Bearer ")

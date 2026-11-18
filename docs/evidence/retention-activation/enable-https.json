@@ -1,0 +1,126 @@
+{
+  "actual_authenticated_https": true,
+  "response": {
+    "installed": true,
+    "enabled": true,
+    "authorized": true,
+    "authorization": {
+      "execution_hash": "85251cddad6b62cb332efeffd3133c844dbff40033d889e487cb39bddfece886",
+      "limits": {
+        "collector_margin_seconds": 30,
+        "contention_retry_seconds": 60,
+        "interval_seconds": 300,
+        "lock_ms": 250,
+        "max_batches": 12,
+        "max_seconds": 20,
+        "max_wal_bytes": 2147483648,
+        "payloads_per_batch": 25,
+        "rows_per_batch": 5000,
+        "statement_ms": 2000
+      },
+      "policy_hash": "9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7",
+      "policy_revision": 3,
+      "scope": {
+        "concurrent_executions": 1,
+        "current_heads": "all markets including disabled",
+        "daily_support_days": 60,
+        "engine_sha256": "e2f408b72f27589dcc9ff736c5da476454b8c60480a97c3cd7bef82e4ad91acb",
+        "minimum_filesystem_reserve_bytes": 34359738368,
+        "operations": "DELETE candidate rows except raw_feed_payloads, which clears compressed_payload",
+        "recovery_policy": {
+          "mode": "local_only",
+          "off_vm_required": false,
+          "owner_approval_reference": "owner-20261118-retention-local-only",
+          "valid": true
+        },
+        "scheduler_sha256": "bfb792e04559c1d44ea9e4757ee78174d0a4189a83e61cc3ce7f65278e3a59d3",
+        "shared_snapshots": "protect all retained observation dependencies",
+        "stages": [
+          "daily_references",
+          "observations",
+          "raw_listings",
+          "raw_feed_payloads",
+          "intraday_statistics",
+          "collection_logs",
+          "feed_checks",
+          "security_logs"
+        ],
+        "sync": "existing 409/full refresh",
+        "version": 1
+      }
+    },
+    "proposal": {
+      "policy_hash": "9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7",
+      "policy_revision": 3,
+      "scope": {
+        "version": 1,
+        "stages": [
+          "daily_references",
+          "observations",
+          "raw_listings",
+          "raw_feed_payloads",
+          "intraday_statistics",
+          "collection_logs",
+          "feed_checks",
+          "security_logs"
+        ],
+        "daily_support_days": 60,
+        "current_heads": "all markets including disabled",
+        "shared_snapshots": "protect all retained observation dependencies",
+        "sync": "existing 409/full refresh",
+        "concurrent_executions": 1,
+        "operations": "DELETE candidate rows except raw_feed_payloads, which clears compressed_payload",
+        "scheduler_sha256": "bfb792e04559c1d44ea9e4757ee78174d0a4189a83e61cc3ce7f65278e3a59d3",
+        "minimum_filesystem_reserve_bytes": 34359738368,
+        "recovery_policy": {
+          "mode": "local_only",
+          "valid": true,
+          "off_vm_required": false,
+          "owner_approval_reference": "owner-20261118-retention-local-only"
+        },
+        "engine_sha256": "e2f408b72f27589dcc9ff736c5da476454b8c60480a97c3cd7bef82e4ad91acb"
+      },
+      "limits": {
+        "rows_per_batch": 5000,
+        "payloads_per_batch": 25,
+        "max_batches": 12,
+        "max_seconds": 20,
+        "statement_ms": 2000,
+        "lock_ms": 250,
+        "interval_seconds": 300,
+        "collector_margin_seconds": 30,
+        "contention_retry_seconds": 60,
+        "max_wal_bytes": 2147483648
+      },
+      "execution_hash": "85251cddad6b62cb332efeffd3133c844dbff40033d889e487cb39bddfece886"
+    },
+    "recovery": {
+      "policy": {
+        "mode": "local_only",
+        "valid": true,
+        "off_vm_required": false,
+        "owner_approval_reference": "owner-20261118-retention-local-only"
+      },
+      "off_vm_required": false,
+      "local_archive_status": "Revalidated under the backup lock before execution",
+      "off_vm_verification_recent": false,
+      "required_evidence_recent": true,
+      "verified_at": "2026-11-18T14:57:52.594491+00:00",
+      "reason": null
+    },
+    "next_run_at": "2026-11-18T16:23:40.299720+00:00",
+    "last_success_at": null,
+    "rows_by_stage": {},
+    "last_run": {
+      "id": 1,
+      "started_at": "2026-11-18T16:09:11.675313+00:00",
+      "finished_at": "2026-11-18T16:09:16.637883+00:00",
+      "status": "failed",
+      "reason": "Maintenance transaction failed or timed out; batch rolled back",
+      "batches": 0,
+      "rows_processed": 0
+    },
+    "paused_reason": "Maintenance transaction failed or timed out; batch rolled back",
+    "recovery_notice": "Automatic execution requires a present, rehashed, protected restored archive within 24 hours. The owner waived off-VM recovery for now; local backups do not protect against loss of this VM."
+  }
+}

@@ -119,6 +119,7 @@ pub fn stop_background(app: &AppHandle) {
     }
 }
 pub fn start_background(app: AppHandle) -> Result<()> {
+    if cfg!(feature = "private-dev") { return Ok(()); }
     let updates = app.state::<Arc<Updates>>().inner().clone();
     if let Ok(mut state) = updates.background.0.lock() {
         state.connected = app.state::<Arc<Runtime>>().updates_eligible();
@@ -184,6 +185,9 @@ pub fn state(app: &AppHandle) -> Result<View> {
         .map_err(|_| "Update status is unavailable".into())
 }
 pub fn check(app: AppHandle) -> Result<View> {
+    if cfg!(feature = "private-dev") {
+        return app.state::<Arc<Updates>>().set(&app, View::new("unavailable", "Automatic updates are disabled in this private DEV build."));
+    }
     let updates = app.state::<Arc<Updates>>().inner().clone();
     let _busy = updates.claim()?;
     *updates
@@ -279,6 +283,7 @@ pub fn check(app: AppHandle) -> Result<View> {
     }
 }
 pub fn install(app: AppHandle, version: String) -> Result<View> {
+    if cfg!(feature = "private-dev") { return Err("Updates are disabled in this private DEV build.".into()); }
     let updates = app.state::<Arc<Updates>>().inner().clone();
     let _busy = updates.claim()?;
     let pending = updates

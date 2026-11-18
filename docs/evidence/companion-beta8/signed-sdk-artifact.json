@@ -1,0 +1,13 @@
+{
+  "id": 14447155025,
+  "name": "companion-signed-update-acceptance",
+  "digest": "sha256:a4d288001cdf0eee8ea950d9d5b506b53f2f90eddcaf106e5f0fe98773dec0ae",
+  "size_in_bytes": 7499,
+  "workflow_run": {
+    "id": 44345199307,
+    "repository_id": 1457156728,
+    "head_repository_id": 1457156728,
+    "head_branch": "integration/companion-beta8-signed-update",
+    "head_sha": "3ebd8b3c8b613ca8ed42a85614679a824ff85033"
+  }
+}

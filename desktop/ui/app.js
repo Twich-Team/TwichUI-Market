@@ -37,7 +37,13 @@ function render(next) {
   $('status-dot').className=`status-dot ${s.running?'busy':['sign_in_required','recoverable_error','offline','server_unavailable'].includes(phase)?'warning':phase==='paused'?'paused':''}`;
   text('status-tag',s.automatic_sync?'AUTOMATIC':'MANUAL');
   $('sync-progress').hidden=!s.running;$('progress-label').hidden=!s.running;
-  text('progress-label',s.pages_completed ? `${s.pages_completed} batch${s.pages_completed===1?'':'es'} safely saved` : 'Checking your account and market…');
+  const measured=view.sync_progress;
+  const operations={checking_updates:'Checking for updates',downloading_market:'Downloading market changes',updating_cache:'Updating local cache',downloading_history:'Downloading historical data',preparing_workshop:'Preparing Workshop data',installing_workshop:'Installing validated Workshop data',verifying:'Verifying data',complete:'Complete'};
+  if(measured?.active) {
+    text('status-title',operations[measured.operation]||'Synchronizing');
+    $('sync-progress').hidden=false;$('progress-label').hidden=false;
+    text('progress-label',`${operations[measured.operation]||'Synchronizing'} · ${measured.pages.toLocaleString()} pages · ${measured.records.toLocaleString()} records received · ${(measured.bytes/1048576).toFixed(2)} MiB received · ${(measured.elapsed_ms/1000).toFixed(1)}s elapsed`);
+  } else text('progress-label',s.pages_completed ? `${s.pages_completed} batch${s.pages_completed===1?'':'es'} safely saved` : 'Checking your account and market…');
   $('sync').disabled=!view.connected || view.refreshing || s.running || s.selected_market==null || phase==='sign_in_required';
   $('sync').hidden=!view.connected||phase==='sign_in_required';$('sign-in-again').hidden=view.connected&&phase!=='sign_in_required';
   $('pause').hidden=s.running;$('cancel').hidden=!s.running;$('cancel').disabled=phase==='cancelling';
@@ -66,11 +72,12 @@ function render(next) {
   const preparationMessage='Market summaries are being prepared; synchronization will retry';
   const preparing=automatic&&ds?.result==='Preparing market data.'&&!view.error&&(!view.sync.error||view.sync.error===preparationMessage);
   const issue=Boolean(workshopIssue&&workshopIssue.code!=='cancelled')||automatic&&Boolean(ds?.error)&&!waiting&&!preparing;
+  const serverMissing=automatic&&ds?.error?.startsWith('Workshop delivery is unavailable on the Market server.');
   text('workshop-installation',dc?.version===2?'World of Warcraft Forever — Found':'Not connected');
   text('workshop-market',marketName(view.settings.selected_market||s.selected_market));
-  text('workshop-state',workshopBusy?'Connecting Workshop':automatic&&s.running||preparing&&s.automatic_sync?'Updating':waiting?'Waiting for WoW to close':issue?'Needs attention':automatic&&!s.automatic_sync?'Synchronization paused':automatic&&ds?.published_generation?'Up to date':automatic?'Waiting for next sync':'Not connected');
+  text('workshop-state',workshopBusy?'Connecting Workshop':serverMissing?'Server update required':automatic&&s.running||preparing&&s.automatic_sync?'Updating':waiting?'Waiting for WoW to close':issue?'Needs attention':automatic&&!s.automatic_sync?'Synchronization paused':automatic&&ds?.published_generation?'Up to date':automatic?'Waiting for next sync':'Not connected');
   text('workshop-updated',datetime(ds?.last_successful_write));
-  text('workshop-note',workshopIssue?workshopMessage(workshopIssue):waiting?'Updates will be installed safely after World of Warcraft closes.':automatic&&!s.automatic_sync?'Resume synchronization to keep Workshop updated automatically.':preparing?'The server is preparing market data. The companion will retry automatically.':automatic?'Uses your existing sync schedule. Updated files become available on your next game login or reload.':'Connect once. The companion finds your Forever installation and uses your existing sync schedule.');
+  text('workshop-note',workshopIssue?workshopMessage(workshopIssue):serverMissing?ds.error:waiting?'Updates will be installed safely after World of Warcraft closes.':automatic&&!s.automatic_sync?'Resume synchronization to keep Workshop updated automatically.':preparing?'The server is preparing market data. The companion will retry automatically.':automatic?'Uses your existing sync schedule. Updated files become available on your next game login or reload.':'Connect once. The companion finds your Forever installation and uses your existing sync schedule.');
   $('workshop-confirmation').hidden=!workshopReview;
   $('workshop-connect').hidden=Boolean(workshopReview)||automatic&&!issue;
   $('workshop-connect').disabled=workshopBusy||s.running||!view.connected||view.refreshing;
@@ -78,7 +85,7 @@ function render(next) {
   $('workshop-authorize').disabled=workshopBusy||!workshopReview;
 
   $('disconnect').disabled=view.approving||view.refreshing;
-  if(view.error||view.sync.error&&!(preparing&&view.sync.error===preparationMessage)) {const error=view.error||view.sync.error;message(error.startsWith('Workshop delivery:')?'Workshop needs attention. Your previous market data is safe. See developer diagnostics for details.':error,true);nativeErrorShown=true;}
+  if(view.error||view.sync.error&&!(preparing&&view.sync.error===preparationMessage)) {const error=view.error||view.sync.error;message(error.startsWith('Workshop delivery:')?(serverMissing?ds.error:'Workshop needs attention. Your previous market data is safe. See developer diagnostics for details.'):error,true);nativeErrorShown=true;}
   else if(nativeErrorShown) {message('');nativeErrorShown=false;}
   else if(view.quitting) message('Closing safely…');
 }
@@ -90,7 +97,7 @@ function workshopFailure(error){
   if(reason.includes('Workshop needs an update'))return {code:'workshop_addon',stage:'workshop_addon',message:'Workshop needs an update. Install the compatible TwichUI addon, then retry.',details:'incompatible addon'};
   return {code:'internal',stage:'setup',message:'Workshop setup could not finish because of an unexpected error. Retry or save developer diagnostics. Your files were preserved.',details:'unexpected native setup failure'};
 }
-function workshopMessage(error){return error.message;}
+function workshopMessage(error){return error.check?`${error.message} (Check: ${error.check})`:error.message;}
 async function connectWorkshop(confirm=false){
   if(workshopBusy)return;const context=archiveContext;let focusTarget=null;workshopBusy=true;workshopIssue=null;render(view);
   try{
@@ -127,6 +134,7 @@ function openSettings() {
   const s=view.settings;
   const mapping={'automatic-sync':s.automatic_sync,'sync-startup':s.sync_on_startup,'launch-login':view.autostart_enabled,'start-tray':s.start_in_tray,'minimize-tray':s.minimize_to_tray,'close-tray':s.close_to_tray,'error-notifications':s.error_notifications};
   for(const [id,value] of Object.entries(mapping))$(id).checked=value;
+  $('performance-capture').checked=Boolean(view.performance_capture);
   $('server').value=s.server;$('sync-interval').value=String(s.interval_minutes);
   const choice=$('market-choice');choice.replaceChildren(new Option('Use my website choice',''));
   for(const market of view.bootstrap?.markets||[]) {
@@ -150,6 +158,7 @@ $('pause').onclick=()=>action(view.sync.sync.automatic_sync?'pause_sync':'resume
 $('refresh').onclick=()=>action('refresh_connection');$('disconnect').onclick=()=>action('disconnect');
 $('export').onclick=()=>action('export_market',{},'Export saved to your companion folder.');$('exports-open').onclick=()=>action('open_exports');
 $('website').onclick=()=>action('open_website',{page:'account'});
+$('performance-capture').onchange=()=>action('set_performance_capture',{enabled:$('performance-capture').checked});
 $('diagnostics').onclick=()=>action('save_diagnostics',{},'Redacted diagnostics saved to your companion folder.');
 $('settings-form').onsubmit=async event=>{
   event.preventDefault();

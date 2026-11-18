@@ -341,7 +341,7 @@ fn worker_loop<C: Clock + 'static>(shared: Arc<Shared<C>>, executor: Arc<dyn Exe
                 match error {
                     Error::Authentication | Error::CredentialMissing => Outcome::SignInRequired,
                     Error::Network => Outcome::Offline,
-                    Error::ServiceUnavailable => Outcome::ServerUnavailable {
+                    Error::ServiceUnavailable | Error::WorkshopUnavailable => Outcome::ServerUnavailable {
                         retry_after_ms: None,
                     },
                     Error::SummaryPreparing(seconds) => Outcome::Preparing { retry_after_ms: (seconds.clamp(1,3600)*1000) as i64 },

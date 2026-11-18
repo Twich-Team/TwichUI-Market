@@ -1,0 +1,37 @@
+{
+  "source": "6fd3537e9cd6f0afce1887d1ed6ea2598253bd09",
+  "synthetic": true,
+  "production": false,
+  "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.41",
+  "physical_game": false,
+  "repeats": 1,
+  "server_counter_note": "Earlier exploratory receipt used cumulative middleware counters; omitted here. Use corrected repeated Windows run for independent HTTP/SQL totals.",
+  "runs": [
+    {
+      "label": "baseline",
+      "seconds": 188.765299123,
+      "values_sha256": "9f082c463139dced2af0c8730a85d33ff74fd9f17a1cad61b96f08387ba0bdf3",
+      "detail": {
+        "actual_preparation_sleep_ms": 140000,
+        "attempts": 29,
+        "game_files_published": false,
+        "physical_game": false,
+        "workshop_records": 26342,
+        "zero_byte_warm_workshop": true
+      }
+    },
+    {
+      "label": "candidate",
+      "seconds": 70.107882038,
+      "values_sha256": "9f082c463139dced2af0c8730a85d33ff74fd9f17a1cad61b96f08387ba0bdf3",
+      "detail": {
+        "actual_preparation_sleep_ms": 36000,
+        "attempts": 29,
+        "game_files_published": false,
+        "physical_game": false,
+        "workshop_records": 26342,
+        "zero_byte_warm_workshop": true
+      }
+    }
+  ]
+}

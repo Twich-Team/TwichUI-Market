@@ -311,6 +311,14 @@ pub(crate) fn owned(path: &Path) -> Result<()> {
     }
     Ok(())
 }
+/// Only the summary game's known output folders/files use this policy.
+/// Private staging, downloaded banks, exports and application state use owned().
+pub(crate) fn game_owned(path: &Path) -> Result<()> {
+    #[cfg(windows)]
+    { crate::bridge::windows_owner::game_output(path) }
+    #[cfg(not(windows))]
+    owned(path)
+}
 pub(crate) fn read(path: &Path, max: usize) -> Result<Vec<u8>> {
     no_links(path)?;
     let mut b = Vec::new();
@@ -320,12 +328,15 @@ pub(crate) fn read(path: &Path, max: usize) -> Result<Vec<u8>> {
     need(b.len() <= max, "delivery file exceeds size limit")?;
     Ok(b)
 }
-pub(crate) fn atomic(path: &Path, bytes: &[u8]) -> Result<()> {
+pub(crate) fn atomic(path: &Path, bytes: &[u8]) -> Result<()> { atomic_with(path, bytes, owned) }
+pub(crate) fn game_atomic(path: &Path, bytes: &[u8]) -> Result<()> { atomic_with(path, bytes, game_owned) }
+fn atomic_with(path: &Path, bytes: &[u8], check: fn(&Path) -> Result<()>) -> Result<()> {
+    let _publication=crate::performance::measure(crate::performance::Stage::FilePublication);
     let parent = path.parent().ok_or(Error::Invalid("delivery parent"))?;
-    owned(parent)?;
+    check(parent)?;
     no_links(path)?;
     if path.exists() {
-        owned(path)?;
+        check(path)?;
     }
     let mut f = tempfile::NamedTempFile::new_in(parent)?;
     f.write_all(bytes)?;

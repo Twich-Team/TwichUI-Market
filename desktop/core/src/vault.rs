@@ -9,8 +9,9 @@ use zeroize::Zeroize;
 
 pub fn credential_target(server: &str) -> Result<String> {
     let normalized = server_url(server)?.to_string();
+    let namespace = if cfg!(feature = "private-dev") { "TwichUI-Market-DEV" } else { "TwichUI-Market" };
     Ok(format!(
-        "TwichUI-Market/{:x}",
+        "{namespace}/{:x}",
         Sha256::digest(normalized.as_bytes())
     ))
 }
@@ -134,5 +135,33 @@ mod native {
     }
     pub fn remove_blob(_: &str) -> Result<()> {
         Err(Error::Vault)
+    }
+}
+
+#[cfg(all(test, feature = "private-dev"))]
+mod dev_tests {
+    #[cfg(windows)]
+    #[test]
+    fn private_dev_vault_operations_preserve_production_credentials() {
+        use sha2::{Digest, Sha256};
+        let server = format!("https://dev-isolation-{}.invalid/", std::process::id());
+        let production = format!("TwichUI-Market/{:x}", Sha256::digest(server.as_bytes()));
+        let development = super::credential_target(&server).unwrap();
+        struct Cleanup(Vec<String>);
+        impl Drop for Cleanup { fn drop(&mut self) { for name in &self.0 { let _ = super::native::remove_blob(name); } } }
+        let _cleanup = Cleanup(vec![production.clone(), development]);
+        super::native::save_blob(&production, b"production-fixture", 256).unwrap();
+        super::save(&server, "dev-fixture").unwrap();
+        assert_eq!(super::load(&server).unwrap(), "dev-fixture");
+        super::remove(&server).unwrap();
+        assert_eq!(super::native::load_blob(&production, 256).unwrap(), b"production-fixture");
+    }
+    #[test]
+    fn private_dev_never_uses_production_credential_names() {
+        let legacy = super::credential_target("https://market.twich.gg").unwrap();
+        let session = super::session_target("https://market.twich.gg").unwrap();
+        assert!(legacy.starts_with("TwichUI-Market-DEV/"));
+        assert!(session.starts_with("TwichUI-Market-DEV/"));
+        assert!(session.ends_with(":companion-v2"));
     }
 }

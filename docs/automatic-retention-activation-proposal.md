@@ -1,5 +1,7 @@
 # Retention activation proposal — configured, not authorized
 
+**Superseded activation decision:** The owner subsequently approved activation and waived off-VM recovery for now. The exact revised execution identity, local recovery requirements, corrected selector and live acceptance are in [the activation report](retention-activation-acceptance.md). The original inactive proposal below is retained as historical review evidence.
+
 **Do not activate destructive maintenance yet.** Production deletion remains unauthorized and no batches have run. This is the exact proposal for separate owner review, subject to the recovery and compatibility prerequisites below.
 
 Preview captured **November 18, 2026 at 08:32:50 AM MST** / `2026-11-18T15:32:50.087649+00:00`. Live administrator preview is read-only. The owner concurrently saved unchanged windows at15:18UTC, advancing revision2 to3; this proposal preserves revision3. No policy values were reset.

@@ -1,0 +1,60 @@
+{
+  "at": "2026-11-18T16:27:16.816510+00:00",
+  "original_cutoffs": {
+    "snapshot": 106,
+    "observation": 1186,
+    "user": 97,
+    "credential": 286
+  },
+  "fingerprints": {
+    "observations": {
+      "rows": 1186,
+      "bytes_hashed": 322595,
+      "sha256": "3df3f04b79939a7838a95fb034c1e4734d93d2dec6209723c45577374fdc3ce7"
+    },
+    "snapshots": {
+      "rows": 106,
+      "bytes_hashed": 11734,
+      "sha256": "ef506d1f921ca5d134373d0e494e12b14dda179757941a885a3aa88fe00d7802"
+    },
+    "listings": {
+      "rows": 13318724,
+      "bytes_hashed": 1931742468,
+      "sha256": "49b5d85d743716bddea022a79f6e052489ef3c4e6e9cf516590817f16578bdc0"
+    },
+    "snapshot_statistics": {
+      "rows": 2669973,
+      "bytes_hashed": 323755215,
+      "sha256": "442e68fb37486e15c18bf1e3b2988cc8122aafbe559611afc519cbffa5586104"
+    },
+    "users": {
+      "rows": 97,
+      "bytes_hashed": 16721,
+      "sha256": "679095ee279b4bfbf3567beed7a644265932c20c83f4e82b26b1a1f67ffe5ff0"
+    },
+    "credentials": {
+      "rows": 286,
+      "bytes_hashed": 64507,
+      "sha256": "337ce504585285b3b3998cd3f7096c84b54e48a544cae363f708623bacb4faab"
+    },
+    "user_preferences": {
+      "rows": 22,
+      "bytes_hashed": 8216,
+      "sha256": "054ed1673ff2ef7667db94ce4587ec32f6f496535d587e1699bf32be257dc20a"
+    },
+    "market_verifications": {
+      "rows": 2,
+      "bytes_hashed": 5028,
+      "sha256": "e7d6d471274fb9da263bf766a53941675224876ef60df832c1194ae61fa03d17"
+    },
+    "player_market_mappings": {
+      "rows": 1,
+      "bytes_hashed": 15546,
+      "sha256": "dde78a44cad988f6801006e0263f2bc09ae209428459ef17d26f9571c3c50cdd"
+    }
+  },
+  "all_original_rows_match": true,
+  "policy_approval_fields_changed_by_explicit_owner_authorization": true,
+  "provider_settings_envelopes_and_keyring_unchanged": true,
+  "external_provider_requests_by_verification": 0
+}

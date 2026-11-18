@@ -7,13 +7,15 @@ import json
 import os
 from decimal import Decimal
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
-from sqlalchemy import and_, or_, select, text, tuple_
+from sqlalchemy import and_, or_, select, text, tuple_, union
 from sqlalchemy.orm import Session
 from .db import session
 from .market_api import MarketId, money_contract, require_market
 from .models import Observation, Snapshot, SnapshotStatistic, User
 from .pricing import ALGORITHM, HistoryUnavailable, rounded, values
 from .security import aware, identity
+
+from .sync_performance import timed,timing,count,SyncJSONResponse
 
 router=APIRouter(prefix='/api/v1/sync')
 
@@ -65,6 +67,7 @@ def compact(db,observation,item_id,variant_key,watermark):
         'supply','priced_supply','listing_count','coverage_days','market_coverage_days','synthetic')})
 
 
+@timed("pricing")
 def compact_many(db, observation, keys, generation):
     """One bounded statistics query for this page, reusing exact daily winners.
 
@@ -104,21 +107,44 @@ def compact_many(db, observation, keys, generation):
     return result
 
 
+@timed("keys")
+def page_keys(db, snapshots, after, limit):
+    """Return the next distinct variant keys without rescanning passed rows.
+
+    Each snapshot has unique keys. Any global first N key must occur within
+    its snapshot's first N keys; therefore bounding each branch preserves the
+    exact DISTINCT union (including deleted variants) and the signed cursor.
+    PostgreSQL uses the existing (snapshot,item,variant) primary-key index.
+    Keep the legacy portable query on SQLite; no schema/index change is needed.
+    """
+    columns=(SnapshotStatistic.item_id,SnapshotStatistic.variant_key)
+    ids=sorted(set(snapshots))
+    if db.bind.dialect.name=='postgresql' and ids:
+        branches=[select(*columns).where(SnapshotStatistic.snapshot_id==sid,
+            tuple_(*columns)>tuple(after)).order_by(*columns).limit(limit+1) for sid in ids]
+        query=branches[0] if len(branches)==1 else union(*branches).order_by('item_id','variant_key').limit(limit+1)
+    else:
+        query=select(*columns).where(SnapshotStatistic.snapshot_id.in_(ids),
+            or_(columns[0]>after[0],and_(columns[0]==after[0],columns[1]>after[1])))            .distinct().order_by(*columns).limit(limit+1)
+    return list(db.execute(query))
+
+
 @router.get('/markets/{market_id}')
 def synchronize(market_id: MarketId,request: Request,cursor: str | None = Query(None,max_length=2048),
                 limit: int = Query(50,ge=1,le=100),user: User = Depends(identity),db: Session = Depends(session)):
     require_market(db,market_id)
-    # No lower observation IDs may commit after selecting this download's watermark.
-    if db.bind.dialect.name=='postgresql':
-        db.execute(text('SELECT pg_advisory_xact_lock(7140232)'))
-    state=decode_cursor(cursor,market_id) if cursor else {'v':1,'market':market_id,'base':0,'target':0,'after':[0,''],'done':True}
-    if state['done']:
-        latest=db.scalar(select(Observation).where(Observation.market_id==market_id).order_by(Observation.id.desc()).limit(1))
-        state={'v':1,'market':market_id,'base':state['target'],'target':latest.id if latest else 0,'after':[0,''],'done':False}
-    # Ingest allocates observation IDs under the same lock. This prefix is
-    # now pinned; later inserts have higher IDs. Release before expensive page
-    # reads so continuous desktop downloads cannot starve scheduled collection.
-    db.commit()
+    with timing('watermark'):
+        # No lower observation IDs may commit after selecting this download's watermark.
+        if db.bind.dialect.name=='postgresql':
+            db.execute(text('SELECT pg_advisory_xact_lock(7140232)'))
+        state=decode_cursor(cursor,market_id) if cursor else {'v':1,'market':market_id,'base':0,'target':0,'after':[0,''],'done':True}
+        if state['done']:
+            latest=db.scalar(select(Observation).where(Observation.market_id==market_id).order_by(Observation.id.desc()).limit(1))
+            state={'v':1,'market':market_id,'base':state['target'],'target':latest.id if latest else 0,'after':[0,''],'done':False}
+        # Ingest allocates observation IDs under the same lock. This prefix is
+        # now pinned; later inserts have higher IDs. Release before expensive page
+        # reads so continuous desktop downloads cannot starve scheduled collection.
+        db.commit()
     target=db.get(Observation,state['target']) if state['target'] else None
     base=db.get(Observation,state['base']) if state['base'] else None
     if ((state['target'] and (not target or target.market_id!=market_id))
@@ -151,22 +177,22 @@ def synchronize(market_id: MarketId,request: Request,cursor: str | None = Query(
                 'synthetic':target_signature.synthetic}
         from .companion_devices import record_sync
         record_sync(db,request,market_id,state['target'],True)
-        return result
+        return SyncJSONResponse(result)
     snapshots=[observation.snapshot_id for observation in (target,base) if observation]
-    after_item,after_variant=state['after']
-    keys=list(db.execute(select(SnapshotStatistic.item_id,SnapshotStatistic.variant_key).where(SnapshotStatistic.snapshot_id.in_(snapshots),
-        or_(SnapshotStatistic.item_id>after_item,and_(SnapshotStatistic.item_id==after_item,SnapshotStatistic.variant_key>after_variant)))
-        .distinct().order_by(SnapshotStatistic.item_id,SnapshotStatistic.variant_key).limit(limit+1)))
+    keys=page_keys(db,snapshots,state['after'],limit)
     changes=[]
     current_values=compact_many(db,target,keys[:limit],target_signature)
     previous_values=compact_many(db,base,keys[:limit],base_signature)
-    for item_id,variant_key in keys[:limit]:
-        current=current_values[item_id,variant_key]
-        previous=previous_values[item_id,variant_key]
-        if current==previous:
-            continue
-        changes.append({'operation':'upsert' if current is not None else 'delete',
-                        'item_id':item_id,'variant_key':variant_key,'value':current})
+    count('scanned',len(keys[:limit]))
+    with timing('changes'):
+        for item_id,variant_key in keys[:limit]:
+            current=current_values[item_id,variant_key]
+            previous=previous_values[item_id,variant_key]
+            if current==previous:
+                continue
+            changes.append({'operation':'upsert' if current is not None else 'delete',
+                            'item_id':item_id,'variant_key':variant_key,'value':current})
+    count('changed',len(changes))
     state['done']=len(keys)<=limit
     if keys:
         state['after']=list(keys[min(len(keys),limit)-1])
@@ -176,4 +202,4 @@ def synchronize(market_id: MarketId,request: Request,cursor: str | None = Query(
             'synthetic':target_signature.synthetic}
     from .companion_devices import record_sync
     record_sync(db,request,market_id,state['target'],state['done'])
-    return result
+    return SyncJSONResponse(result)

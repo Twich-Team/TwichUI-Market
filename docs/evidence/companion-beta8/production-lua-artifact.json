@@ -1,0 +1,13 @@
+{
+  "id": 14445841185,
+  "name": "workshop-production-lua-acceptance",
+  "digest": "sha256:a1755961bbd18e95a20ad0d8a3962a478dd914cd13539c45a6d4867560a3dbe9",
+  "size_in_bytes": 1891613,
+  "workflow_run": {
+    "id": 44341487381,
+    "repository_id": 1457156728,
+    "head_repository_id": 1457156728,
+    "head_branch": "integration/retention-activation-companion-beta8",
+    "head_sha": "36dc204d5975f57629ca1c830d41d8b95d2ac508"
+  }
+}

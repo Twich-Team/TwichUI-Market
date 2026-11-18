@@ -38,6 +38,7 @@ pub struct MarketClient {
     server: Url,
     token: String,
     http: Client,
+    page_limit: Option<u32>,
 }
 impl Drop for MarketClient {
     fn drop(&mut self) {
@@ -55,18 +56,22 @@ impl MarketClient {
         let url=self.server.join(path).map_err(|_|Error::Invalid("summary endpoint"))?;
         let mut request=self.http.get(url).bearer_auth(&self.token);
         if let Some(id)=etag { request=request.header("If-None-Match",format!("\"{id}\"")); }
-        let response=request.send().map_err(|_|Error::Network)?;
+        let headers=crate::performance::measure(crate::performance::Stage::NetworkHeaders);
+        crate::performance::add(crate::performance::Counter::HttpRequests,1);
+        let response=request.send().map_err(|_|Error::Network)?;drop(headers);
         match response.status().as_u16() {
             304 if etag.is_some()=>return Ok(None),
             401|403=>return Err(Error::Authentication),
             202=>return Err(Error::SummaryPreparing(response.headers().get("retry-after").and_then(|s|s.to_str().ok()).and_then(|s|s.parse::<u64>().ok()).unwrap_or(5).clamp(1,3600))),
             429=>return Err(Error::RateLimited(response.headers().get("retry-after").and_then(|s|s.to_str().ok()).and_then(|s|s.parse::<u64>().ok()).unwrap_or(30).clamp(1,3600))),
             409|410=>return Err(Error::ServiceUnavailable),
+            404 if path.ends_with("/summary")=>return Err(Error::WorkshopUnavailable),
             404|502|503=>return Err(Error::ServiceUnavailable),
             200=>{},_=>return Err(Error::Network),
         }
         if response.content_length().is_some_and(|n|n>maximum as u64) {return Err(Error::Invalid("summary response size"));}
-        let mut bytes=Vec::new();response.take(maximum as u64+1).read_to_end(&mut bytes).map_err(|_|Error::Network)?;
+        let transfer=crate::performance::measure(crate::performance::Stage::NetworkTransfer);
+        let mut bytes=Vec::new();response.take(maximum as u64+1).read_to_end(&mut bytes).map_err(|_|Error::Network)?;drop(transfer);crate::performance::add(crate::performance::Counter::ResponseBodyBytes,bytes.len() as u64);
         if bytes.len()>maximum {return Err(Error::Invalid("summary response size"));}
         Ok(Some(bytes))
     }
@@ -105,7 +110,13 @@ impl MarketClient {
             server: server_url(server)?,
             token,
             http,
+            page_limit: Some(100),
         })
+    }
+    /// Compatibility/measurement override within the server's existing limit.
+    pub fn with_page_limit(mut self, limit:u32)->Result<Self> {
+        if !(1..=100).contains(&limit) {return Err(Error::Invalid("sync page limit"))}
+        self.page_limit=Some(limit);Ok(self)
     }
     fn get(&self, path: &str, cursor: Option<&str>) -> Result<Vec<u8>> {
         let mut url = self
@@ -115,12 +126,17 @@ impl MarketClient {
         if let Some(cursor) = cursor {
             url.query_pairs_mut().append_pair("cursor", cursor);
         }
-        let response = self
-            .http
-            .get(url)
-            .bearer_auth(&self.token)
-            .send()
+        if path.starts_with("api/v1/sync/markets/") {
+            if let Some(limit)=self.page_limit {url.query_pairs_mut().append_pair("limit",&limit.to_string());}
+        }
+        let headers=crate::performance::measure(crate::performance::Stage::NetworkHeaders);
+        crate::performance::add(crate::performance::Counter::HttpRequests,1);
+        let mut request=self.http.get(url).bearer_auth(&self.token);
+        if crate::performance::request_timings() {request=request.header("X-Companion-Sync-Timing","1");}
+        let response = request.send()
             .map_err(|_| Error::Network)?;
+        drop(headers);
+        if response.status().as_u16()==200 {crate::performance::server_timings(response.headers());}
         match response.status().as_u16() {
             401 | 403 => return Err(Error::Authentication),
             409 => return Err(Error::ResetRequired),
@@ -139,11 +155,13 @@ impl MarketClient {
             200 => {}
             _ => return Err(Error::Network),
         }
+        let transfer=crate::performance::measure(crate::performance::Stage::NetworkTransfer);
         let mut bytes = Vec::new();
         response
             .take(MAX_PAGE_BYTES + 1)
             .read_to_end(&mut bytes)
             .map_err(|_| Error::Network)?;
+        drop(transfer);crate::performance::add(crate::performance::Counter::ResponseBodyBytes,bytes.len() as u64);
         if bytes.len() as u64 > MAX_PAGE_BYTES {
             return Err(Error::Invalid("response exceeds 2 MiB"));
         }
@@ -179,12 +197,18 @@ impl MarketClient {
         Ok(())
     }
     pub fn page(&self, market: u32, cursor: Option<&str>) -> Result<Page> {
-        let page: Page =
-            serde_json::from_slice(&self.get(&format!("api/v1/sync/markets/{market}"), cursor)?)?;
-        page.validate(market)?;
+        let bytes=self.get(&format!("api/v1/sync/markets/{market}"),cursor)?;
+        let parse=crate::performance::measure(crate::performance::Stage::JsonParse);
+        let page:Page=serde_json::from_slice(&bytes)?;drop(parse);
+        let validation=crate::performance::measure(crate::performance::Stage::Validation);
+        page.validate(market)?;drop(validation);
+        crate::performance::add(crate::performance::Counter::Pages,1);
+        crate::performance::add(crate::performance::Counter::ReceivedRecords,page.changes.len() as u64);
+        for c in &page.changes {crate::performance::add(match c.operation {crate::protocol::Operation::Upsert=>crate::performance::Counter::Upserts,crate::protocol::Operation::Delete=>crate::performance::Counter::Deletes},1);}
         Ok(page)
     }
     pub fn bootstrap(&self) -> Result<crate::connection::Bootstrap> {
+        let _stage=crate::performance::measure(crate::performance::Stage::Bootstrap);
         let value: crate::connection::Bootstrap =
             serde_json::from_slice(&self.get("api/v1/companion/bootstrap", None)?)?;
         value.validate()?;
@@ -195,6 +219,7 @@ impl MarketClient {
         market: u32,
         watermark: &str,
     ) -> Result<crate::connection::Provenance> {
+        let _stage=crate::performance::measure(crate::performance::Stage::Provenance);
         crate::connection::observation_id(watermark)?;
         let value: crate::connection::Provenance = serde_json::from_slice(&self.get(
             &format!("api/v1/companion/markets/{market}/observations/{watermark}"),
@@ -207,6 +232,9 @@ impl MarketClient {
         Ok(value)
     }
     pub fn activity(&self, market: Option<u32>, version: &str) -> Result<()> {
+        let _stage=crate::performance::measure(crate::performance::Stage::Activity);
+        let headers=crate::performance::measure(crate::performance::Stage::NetworkHeaders);
+        crate::performance::add(crate::performance::Counter::HttpRequests,1);
         let response = self
             .http
             .post(
@@ -218,6 +246,7 @@ impl MarketClient {
             .json(&serde_json::json!({"market_id":market,"app_version":version}))
             .send()
             .map_err(|_| Error::Network)?;
+        drop(headers);
         match response.status().as_u16() {
             204 => Ok(()),
             401 | 403 => Err(Error::Authentication),
@@ -303,11 +332,14 @@ impl MarketClient {
     }
     fn bridge_request(&self,path:&str,query:&[(&str,&str)],maximum:usize)->Result<(u16,Vec<u8>)> {
         let url=self.server.join(path).map_err(|_|Error::Invalid("bridge endpoint"))?;
-        let response=self.http.get(url).query(query).bearer_auth(&self.token).send().map_err(|_|Error::Network)?;
+        let headers=crate::performance::measure(crate::performance::Stage::NetworkHeaders);
+        crate::performance::add(crate::performance::Counter::HttpRequests,1);
+        let response=self.http.get(url).query(query).bearer_auth(&self.token).send().map_err(|_|Error::Network)?;drop(headers);
         let status=response.status().as_u16();
         match status {200|202=>{},401|403=>return Err(Error::Authentication),409=>return Err(Error::ResetRequired),
             429=>return Err(Error::RateLimited(60)),404|502|503=>return Err(Error::ServiceUnavailable),_=>return Err(Error::Network)}
-        let mut bytes=Vec::new();response.take(maximum as u64+1).read_to_end(&mut bytes).map_err(|_|Error::Network)?;
+        let transfer=crate::performance::measure(crate::performance::Stage::NetworkTransfer);
+        let mut bytes=Vec::new();response.take(maximum as u64+1).read_to_end(&mut bytes).map_err(|_|Error::Network)?;drop(transfer);crate::performance::add(crate::performance::Counter::ResponseBodyBytes,bytes.len() as u64);
         if bytes.len()>maximum{return Err(Error::Invalid("bridge response size"))}Ok((status,bytes))
     }
 }
@@ -320,6 +352,8 @@ impl MarketClient {
         scope: &crate::bridge::Scope,
         cancelled: impl Fn() -> bool,
     ) -> Result<()> {
+        let _archive=crate::performance::measure(crate::performance::Stage::ArchiveSync);
+        crate::performance::operation(crate::performance::Operation::DownloadingHistory);
         if self.download_archive_pages(store, scope, cancelled, 1_100_000)? {
             Ok(())
         } else {

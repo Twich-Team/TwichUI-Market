@@ -1,0 +1,60 @@
+{
+  "pr": "https://github.com/Twich-Team/TwichUI-Market/pull/40",
+  "tested_preview": "a72de05eb39d4456b7694783bbe2d0a156eb474b",
+  "head": "34363c380496dbe0ebdf8821ec48de8b5761bffe",
+  "base": "d7fac057eecb968fd020773f48a037138b4b8fb0",
+  "release_approval": false,
+  "backend": {
+    "run": 44413175893,
+    "job": 135186590880,
+    "status": "success",
+    "postgresql_tests": 734,
+    "operational_tests": 122,
+    "contract_tests": 16,
+    "migration_preservation": true,
+    "isolated_backup_restore": true
+  },
+  "website": {
+    "run": 44413176295,
+    "job": 135186522031,
+    "status": "success",
+    "unit_tests": 132,
+    "main_browser_tests": 49,
+    "mobile_webkit": true,
+    "workshop_ui_mocked_ipc": true,
+    "production": false
+  },
+  "windows": {
+    "run": 44413175645,
+    "job": 135186557199,
+    "status": "success",
+    "core_library_tests": 64,
+    "core_integration_tests": 70,
+    "installed_native_frontend": true,
+    "legacy_installer_upgrade": true,
+    "canonical_and_provisional_archive": true,
+    "large_workshop": {
+      "synthetic": true,
+      "variants": 45125,
+      "actual_windows_publication": true,
+      "physical_game": false
+    },
+    "picker_job": 135186535944,
+    "picker": "success",
+    "consumer": "pending",
+    "signed_sdk": "selector success; optional candidate/SDK steps skipped; no new signing or publication",
+    "consumer_job": 135192068006,
+    "consumer_status": "success"
+  },
+  "performance": {
+    "run": 44413175633,
+    "job": 135186432413,
+    "status": "success",
+    "repeats_per_case": 3,
+    "artifact": 14480320586,
+    "zip_sha256": "bb6c0dc9ca53e2469941b27cf050871200ac6054c2937cc31cd5fcb514a30a31",
+    "exact_cache_and_delivery_hashes_match": true,
+    "actual_windows_fixture_publication": true,
+    "owner_pc": false
+  }
+}

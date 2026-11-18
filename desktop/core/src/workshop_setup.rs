@@ -1,11 +1,26 @@
 //! Public setup failures contain only allowlisted details, never paths or secrets.
 use crate::Error;
+
+/// Delivery retries have their own durable error, separate from the sync worker.
+/// Export fixed fields only; installation paths and account/scope IDs stay private.
+pub fn delivery_diagnostics(delivery: &serde_json::Value) -> serde_json::Value {
+    let mut safe = serde_json::Map::new();
+    if let Some(status) = delivery.get("status").and_then(|v|v.as_object()) {
+        for key in ["result","error","last_attempt","last_successful_write","download_bytes","download_requests","summary_records"] {
+            if let Some(value)=status.get(key) {safe.insert(key.into(),value.clone());}
+        }
+    }
+    serde_json::Value::Object(safe)
+}
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Failure {
     pub code: String,
     pub stage: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub check: Option<String>,
     pub message: String,
     pub details: String,
 }
@@ -16,6 +31,8 @@ impl Failure {
             "wrong_folder" => "Choose the Forever game folder containing Wow.exe and Interface/AddOns.",
             "unsupported_client" => "This Wow.exe version is not verified for Forever. Choose a supported Forever installation.",
             "workshop_addon" => "Workshop needs an update or is missing files. Install the compatible TwichUI addon, then retry.",
+            "file_busy" => "An addon file is in use by another program. Close that program and retry.",
+            "unsafe_permissions" => "Companion could not verify this folder's security rules. Save redacted diagnostics for the specific check.",
             "access_denied" => "Windows could not access this installation safely. Choose a folder where your Windows account can read the game and write addon data.",
             "ownership_conflict" => "Existing Market data could not be safely adopted. Reconnect its original Market account and market, or choose another installation. Your files were preserved.",
             "unsafe_path" => "This installation uses an unsafe linked path. Choose a local Forever folder without junctions or symbolic links.",
@@ -27,6 +44,7 @@ impl Failure {
         Self {
             code: code.into(),
             stage: stage.into(),
+            check: None,
             message: message.into(),
             details,
         }
@@ -48,6 +66,8 @@ impl Failure {
             _ => "unexpected native setup failure".into(),
         };
         let code = match &error {
+            #[cfg(windows)]
+            Error::Io(e) if matches!(e.raw_os_error(), Some(32 | 33)) => "file_busy",
             Error::Io(e) if e.kind() == std::io::ErrorKind::PermissionDenied => "access_denied",
             Error::Invalid(s) if s.contains("ownership or") || s.contains("ACL") => "access_denied",
             Error::Invalid(s) if s.contains("traversal") || s.contains("unsafe") => "unsafe_path",
@@ -68,9 +88,35 @@ pub(crate) fn at<T>(stage: &str, result: crate::Result<T>) -> crate::Result<T> {
     result.map_err(|e| Error::WorkshopSetup(Box::new(Failure::from_error(stage, e))))
 }
 
+
+/// Add only a stable check and an allowlisted explanation; never OS/file payloads.
+pub(crate) fn checked<T>(check: &str, message: &str, result: crate::Result<T>) -> crate::Result<T> {
+    result.map_err(|error| {
+        let mut failure = Failure::from_error("workshop_addon", error);
+        failure.check = Some(check.into());
+        failure.message = if failure.code == "access_denied" {
+            format!("Read permission denied. {message}")
+        } else if failure.code == "file_busy" {
+            format!("The addon file is in use by another program. Close it and retry. {message}")
+        } else if failure.code == "unsafe_path" {
+            format!("Unsafe linked addon path. {message}")
+        } else { message.into() };
+        Error::WorkshopSetup(Box::new(failure))
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn delivery_diagnostics_keep_failure_without_installation_or_scope() {
+        let value=serde_json::json!({"configuration":{"installation":"private-installation","scope":{"account_id":123}},"status":{"result":"Update failed","error":Error::WorkshopUnavailable.to_string(),"installation":"private-installation","cursor":"private-cursor","download_bytes":0}});
+        let safe=delivery_diagnostics(&value);let encoded=safe.to_string();
+        assert_eq!(safe["error"],Error::WorkshopUnavailable.to_string());
+        assert_eq!(safe["download_bytes"],0);
+        assert!(!encoded.contains("private-"));assert!(!encoded.contains("account_id"));
+        assert_eq!(delivery_diagnostics(&serde_json::json!({"notice":"off"})),serde_json::json!({}));
+    }
     #[test]
     fn diagnostics_keep_stage_and_os_code_without_io_payload() {
         let error = std::io::Error::new(

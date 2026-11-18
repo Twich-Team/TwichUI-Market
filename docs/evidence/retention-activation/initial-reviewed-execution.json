@@ -1,0 +1,57 @@
+{
+  "owner_statement": "Approve activation. we should not require off vm storage for now.",
+  "approval_reference": "owner-20261118-retention-local-only",
+  "policy_revision": 3,
+  "policy_hash": "9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7",
+  "execution_hash": "da2c266215a16d1cf03a2aa1e6f965bb5a5cf104c4cd09496d5c7a41e2c8964a",
+  "execution_document": {
+    "policy_hash": "9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7",
+    "policy_revision": 3,
+    "scope": {
+      "version": 1,
+      "stages": [
+        "daily_references",
+        "observations",
+        "raw_listings",
+        "raw_feed_payloads",
+        "intraday_statistics",
+        "collection_logs",
+        "feed_checks",
+        "security_logs"
+      ],
+      "daily_support_days": 60,
+      "current_heads": "all markets including disabled",
+      "shared_snapshots": "protect all retained observation dependencies",
+      "sync": "existing 409/full refresh",
+      "concurrent_executions": 1,
+      "operations": "DELETE candidate rows except raw_feed_payloads, which clears compressed_payload",
+      "scheduler_sha256": "a4bf0698f2cb26410c5abf45f1453a9385cb73122e7a9be3c4ad91701884a174",
+      "minimum_filesystem_reserve_bytes": 34359738368,
+      "recovery_policy": {
+        "mode": "local_only",
+        "valid": true,
+        "off_vm_required": false,
+        "owner_approval_reference": "owner-20261118-retention-local-only"
+      },
+      "engine_sha256": "e2f408b72f27589dcc9ff736c5da476454b8c60480a97c3cd7bef82e4ad91acb"
+    },
+    "limits": {
+      "rows_per_batch": 5000,
+      "payloads_per_batch": 25,
+      "max_batches": 12,
+      "max_seconds": 20,
+      "statement_ms": 2000,
+      "lock_ms": 250,
+      "interval_seconds": 300,
+      "collector_margin_seconds": 30,
+      "contention_retry_seconds": 60,
+      "max_wal_bytes": 2147483648
+    },
+    "execution_hash": "da2c266215a16d1cf03a2aa1e6f965bb5a5cf104c4cd09496d5c7a41e2c8964a"
+  },
+  "previous_reviewed_execution_hash": "3543c34bde2c8e3ed5b63c21ef645c6c6ccfbb19945b4ff7a685e37694e4d243",
+  "changed_scope": "Explicit local-only recovery exception and its enforcing scheduler source; original candidate/mutation source, policy, reserve and bounded work limits unchanged",
+  "off_vm_verified": false,
+  "recurring_backups_enabled": false,
+  "cold_canonical_limitation": "Existing derivations preserved. Originals not derived before raw expiry cannot be recreated from daily means; cold canonical requests retain explicit 409/provisional fallback. No broader canonical coverage or game acceptance claimed."
+}

@@ -1,0 +1,236 @@
+[
+  {
+    "itemId": 211780,
+    "variant": "73e8b5ce9f55622ba6331286fe1ef9a1b1b6cdef25d810614ac3e7a1670494ca",
+    "sourceKinds": [
+      "auctions"
+    ],
+    "valuation": {
+      "recent_price": "179",
+      "lowest_buyout": "100",
+      "supply": 1364,
+      "priced_supply": 1364,
+      "listing_count": 1364,
+      "algorithm": "asking-v1-provisional",
+      "market_value": "4099",
+      "historical_value": "4099",
+      "coverage_days": 5,
+      "market_coverage_days": 5,
+      "observed_at": "2026-11-18T16:22:40.476626+00:00",
+      "synthetic": false,
+      "history": [
+        {
+          "date": "2026-11-14",
+          "recent_price": "117",
+          "lowest_buyout": "100",
+          "supply": 1939,
+          "priced_supply": 1939,
+          "listing_count": 1939
+        },
+        {
+          "date": "2026-11-15",
+          "recent_price": "19889",
+          "lowest_buyout": "100",
+          "supply": 2025,
+          "priced_supply": 2025,
+          "listing_count": 2025
+        },
+        {
+          "date": "2026-11-16",
+          "recent_price": "168",
+          "lowest_buyout": "100",
+          "supply": 1439,
+          "priced_supply": 1439,
+          "listing_count": 1439
+        },
+        {
+          "date": "2026-11-17",
+          "recent_price": "142",
+          "lowest_buyout": "100",
+          "supply": 1594,
+          "priced_supply": 1594,
+          "listing_count": 1594
+        },
+        {
+          "date": "2026-11-18",
+          "recent_price": "179",
+          "lowest_buyout": "100",
+          "supply": 1364,
+          "priced_supply": 1364,
+          "listing_count": 1364
+        }
+      ]
+    },
+    "history": {
+      "contract_version": 1,
+      "market_id": 2,
+      "item_id": 211780,
+      "variant_key": "73e8b5ce9f55622ba6331286fe1ef9a1b1b6cdef25d810614ac3e7a1670494ca",
+      "algorithm": "asking-v1-provisional",
+      "points": [
+        {
+          "date": "2026-11-14",
+          "recent_price": "117",
+          "lowest_buyout": "100",
+          "supply": 1939,
+          "priced_supply": 1939,
+          "listing_count": 1939,
+          "market_value": "117",
+          "historical_value": "117",
+          "reference_synthetic": false,
+          "reference_coverage_days": 1,
+          "reference_status": "available",
+          "observed_at": "2026-11-14T23:56:45.070255+00:00",
+          "synthetic": false,
+          "algorithm": "asking-v1-provisional",
+          "observation_id": "249",
+          "namespace": "dynamic-forever-us",
+          "payload_hash": "bc9c2f5ebfb460a1a3732786f4d3e36e362dfa52cc80249016f27583c97a6b25",
+          "upstream_modified": "Sat, 14 Nov 2026 23:17:51 GMT"
+        },
+        {
+          "date": "2026-11-15",
+          "recent_price": "19889",
+          "lowest_buyout": "100",
+          "supply": 2025,
+          "priced_supply": 2025,
+          "listing_count": 2025,
+          "market_value": "10003",
+          "historical_value": "10003",
+          "reference_synthetic": false,
+          "reference_coverage_days": 2,
+          "reference_status": "available",
+          "observed_at": "2026-11-15T23:59:23.239649+00:00",
+          "synthetic": false,
+          "algorithm": "asking-v1-provisional",
+          "observation_id": "531",
+          "namespace": "dynamic-forever-us",
+          "payload_hash": "b3f1194a22bca6c6450881f31a25fabc4f4b4e4eeabc8314a2614cfe39b898b2",
+          "upstream_modified": "Sun, 15 Nov 2026 23:17:52 GMT"
+        },
+        {
+          "date": "2026-11-16",
+          "recent_price": "168",
+          "lowest_buyout": "100",
+          "supply": 1439,
+          "priced_supply": 1439,
+          "listing_count": 1439,
+          "market_value": "6725",
+          "historical_value": "6725",
+          "reference_synthetic": false,
+          "reference_coverage_days": 3,
+          "reference_status": "available",
+          "observed_at": "2026-11-16T23:55:44.148099+00:00",
+          "synthetic": false,
+          "algorithm": "asking-v1-provisional",
+          "observation_id": "792",
+          "namespace": "dynamic-forever-us",
+          "payload_hash": "46b29a68d436621e18158c32a7e02628b34880ad517b948ab6495840f87cb936",
+          "upstream_modified": "Mon, 16 Nov 2026 23:17:50 GMT"
+        },
+        {
+          "date": "2026-11-17",
+          "recent_price": "142",
+          "lowest_buyout": "100",
+          "supply": 1594,
+          "priced_supply": 1594,
+          "listing_count": 1594,
+          "market_value": "5079",
+          "historical_value": "5079",
+          "reference_synthetic": false,
+          "reference_coverage_days": 4,
+          "reference_status": "available",
+          "observed_at": "2026-11-17T23:58:07.301341+00:00",
+          "synthetic": false,
+          "algorithm": "asking-v1-provisional",
+          "observation_id": "1059",
+          "namespace": "dynamic-forever-us",
+          "payload_hash": "1cdd3742786c7c709f567840a3daece38fb4976b315006e320b0c680045cad8e",
+          "upstream_modified": "Tue, 17 Nov 2026 23:25:07 GMT"
+        },
+        {
+          "date": "2026-11-18",
+          "recent_price": "179",
+          "lowest_buyout": "100",
+          "supply": 1364,
+          "priced_supply": 1364,
+          "listing_count": 1364,
+          "market_value": "4099",
+          "historical_value": "4099",
+          "reference_synthetic": false,
+          "reference_coverage_days": 5,
+          "reference_status": "available",
+          "observed_at": "2026-11-18T16:22:40.476626+00:00",
+          "synthetic": false,
+          "algorithm": "asking-v1-provisional",
+          "observation_id": "1191",
+          "namespace": "dynamic-forever-us",
+          "payload_hash": "8f23469c6298e90475eb29b23a5dc79f7fed07748a871924bf6aaf001727fe93",
+          "upstream_modified": "Wed, 18 Nov 2026 15:25:02 GMT"
+        }
+      ],
+      "synthetic": false
+    }
+  },
+  {
+    "itemId": 4306,
+    "variant": "aeb3b00b46894159af6ed5c4031c34e8981ae6dc6704fe954f4b8d899608c6fb",
+    "sourceKinds": [
+      "commodities"
+    ],
+    "valuation": {
+      "recent_price": "960",
+      "lowest_buyout": "196",
+      "supply": 12085,
+      "priced_supply": 12085,
+      "listing_count": 438,
+      "algorithm": "asking-v1-provisional",
+      "market_value": "960",
+      "historical_value": "960",
+      "coverage_days": 1,
+      "market_coverage_days": 1,
+      "observed_at": "2026-11-18T16:22:40.476626+00:00",
+      "synthetic": false,
+      "history": [
+        {
+          "date": "2026-11-18",
+          "recent_price": "960",
+          "lowest_buyout": "196",
+          "supply": 12085,
+          "priced_supply": 12085,
+          "listing_count": 438
+        }
+      ]
+    },
+    "history": {
+      "contract_version": 1,
+      "market_id": 2,
+      "item_id": 4306,
+      "variant_key": "aeb3b00b46894159af6ed5c4031c34e8981ae6dc6704fe954f4b8d899608c6fb",
+      "algorithm": "asking-v1-provisional",
+      "points": [
+        {
+          "date": "2026-11-18",
+          "recent_price": "960",
+          "lowest_buyout": "196",
+          "supply": 12085,
+          "priced_supply": 12085,
+          "listing_count": 438,
+          "market_value": "960",
+          "historical_value": "960",
+          "reference_synthetic": false,
+          "reference_coverage_days": 1,
+          "reference_status": "available",
+          "observed_at": "2026-11-18T16:22:40.476626+00:00",
+          "synthetic": false,
+          "algorithm": "asking-v1-provisional",
+          "observation_id": "1191",
+          "namespace": "dynamic-forever-us",
+          "payload_hash": "8f23469c6298e90475eb29b23a5dc79f7fed07748a871924bf6aaf001727fe93",
+          "upstream_modified": "Wed, 18 Nov 2026 15:25:02 GMT"
+        }
+      ],
+      "synthetic": false
+    }
+  }
+]

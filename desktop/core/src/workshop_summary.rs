@@ -18,9 +18,10 @@ fn number(v:&Value,max:u64)->Result<u64>{v.as_u64().filter(|n|*n<=max).ok_or(Err
 fn identifier(v:&Value)->Result<u64>{let s=v.as_str().ok_or(Error::Invalid("summary observation identity"))?;need(!s.is_empty()&&s.len()<=19&&!s.starts_with('0')&&s.bytes().all(|c|c.is_ascii_digit()),"summary observation identity")?;s.parse::<u64>().ok().filter(|n|*n<=i64::MAX as u64).ok_or(Error::Invalid("summary observation identity"))}
 fn closed(v:&Value,keys:&[&str])->Result<()> {need(v.as_object().is_some_and(|m|m.len()==keys.len()&&keys.iter().all(|k|m.contains_key(*k))),"summary closed object")}
 fn schema()->&'static Value {static S:OnceLock<Value>=OnceLock::new();S.get_or_init(||serde_json::from_str(include_str!("../../../contracts/workshop-summary/v1/manifest.schema.json")).expect("committed summary schema"))}
-fn sha(raw:&[u8])->String {format!("{:x}",Sha256::digest(raw))}
+fn sha(raw:&[u8])->String {let _hash=crate::performance::measure(crate::performance::Stage::HashVerification);format!("{:x}",Sha256::digest(raw))}
 
 pub fn validate_manifest(h:&Value,scope:&Scope,region:Option<&str>)->Result<()> {
+    let _validation=crate::performance::measure(crate::performance::Stage::WorkshopValidation);
     scope.key()?;
     let props=schema()["properties"].as_object().unwrap();
     let object=h.as_object().ok_or(Error::Invalid("summary manifest"))?;
@@ -67,6 +68,7 @@ pub fn validate_manifest(h:&Value,scope:&Scope,region:Option<&str>)->Result<()> 
 }
 
 pub fn validate_part(h:&Value,p:&Value,raw:&[u8])->Result<()> {
+    let _validation=crate::performance::measure(crate::performance::Stage::WorkshopValidation);
     need(raw.len()<=MAX_PART&&p["bytes"]==raw.len()&&p["sha256"]==sha(raw),"summary partition integrity")?;
     let values=bridge::parse(raw,MAX_PART)?;
     need(bridge::canonical(&values)?==raw,"canonical summary partition")?;
@@ -136,6 +138,8 @@ fn cached_bundle(root:&Path,state:&Value,scope:&Scope,region:Option<&str>)->Resu
 /// Two fixed local slots retain the completed generation while interrupted
 /// downloads resume from independently validated content in the inactive slot.
 pub fn download(base:&Path,client:&MarketClient,c:&Configuration,cancelled:&impl Fn()->bool)->Result<(Bundle,u64,u32)> {
+    let _download=crate::performance::measure(crate::performance::Stage::WorkshopDownload);
+    crate::performance::operation(crate::performance::Operation::PreparingWorkshop);
     let root=cache_dir(base,&c.scope)?;let state=cache_state(&root)?;
     let active=state.as_ref().map(|s|cached_bundle(&root,s,&c.scope,c.selection["region"].as_str())).transpose()?;
     if cancelled(){return Err(Error::Cancelled)}
@@ -155,12 +159,16 @@ pub fn download(base:&Path,client:&MarketClient,c:&Configuration,cancelled:&impl
         let bucket=p["bucket"].as_u64().unwrap() as u8;let target=root.join(bank).join(format!("{bucket:02}.json"));
         let resumed=if target.try_exists()? {let b=delivery::read(&target,MAX_PART)?;if validate_part(&manifest,p,&b).is_ok(){Some(b)}else{None}}else{None};
         let reused=active.as_ref().and_then(|b|b.parts.get(&bucket)).filter(|b|validate_part(&manifest,p,b).is_ok()).cloned();
-        let raw=if let Some(raw)=resumed.or(reused){raw}else{
+        let cached=resumed.or(reused);let fetched=cached.is_none();
+        let raw=if let Some(raw)=cached{raw}else{
             let path=format!("{endpoint}/{}/parts/{bucket}",manifest["generation_id"].as_str().unwrap());
             let b=client.summary_request(&path,None,MAX_PART)?.ok_or(Error::Invalid("unbound summary part"))?;
             bytes+=b.len() as u64;requests+=1;b
         };
-        validate_part(&manifest,p,&raw)?;delivery::atomic(&target,&raw)?;parts.insert(bucket,raw);
+        validate_part(&manifest,p,&raw)?;
+        crate::performance::add(if fetched{crate::performance::Counter::ReceivedRecords}else{crate::performance::Counter::ReusedRecords},p["record_count"].as_u64().unwrap_or(0));crate::performance::add(crate::performance::Counter::Pages,1);
+        crate::performance::checkpoint();
+        delivery::atomic(&target,&raw)?;parts.insert(bucket,raw);
     }
     let bundle=Bundle{manifest,parts};bundle.validate(&c.scope,c.selection["region"].as_str())?;
     if cancelled(){return Err(Error::Cancelled)}
@@ -217,8 +225,8 @@ fn marker(c:&Configuration,folder:&Path)->Result<()> {
     }Ok(())
 }
 fn folder(folder:&Path,allowed:&[&str])->Result<()> {
-    delivery::owned(folder)?;
-    for entry in fs::read_dir(folder)? {let path=entry?.path();delivery::owned(&path)?;
+    delivery::game_owned(folder)?;
+    for entry in fs::read_dir(folder)? {let path=entry?.path();delivery::game_owned(&path)?;
         need(path.is_file()&&allowed.contains(&path.file_name().unwrap().to_string_lossy().as_ref()),"unknown files in Market addon; preserve them and review manually")?;
     }Ok(())
 }
@@ -262,10 +270,12 @@ fn write_game(path:&Path,bytes:&[u8],cancelled:&impl Fn()->bool)->Result<()> {
     if cancelled(){return Err(Error::Cancelled)}
     need(!delivery::game_running()?,"Waiting for World of Warcraft to close.")?;
     if path.try_exists()?&&delivery::read(path,bytes.len()).is_ok_and(|old|old==bytes){return Ok(())}
-    delivery::atomic(path,bytes)
+    delivery::game_atomic(path,bytes)
 }
 
 pub fn publish(c:&Configuration,bundle:&Bundle,cancelled:&impl Fn()->bool)->Result<bool> {
+    let _publication=crate::performance::measure(crate::performance::Stage::WorkshopPublication);
+    crate::performance::operation(crate::performance::Operation::InstallingWorkshop);
     c.validate()?;need(c.enabled,"Workshop delivery is disconnected")?;bundle.validate(&c.scope,c.selection["region"].as_str())?;
     inspect_destination(c)?;
     let dir=main_dir(c);let target=dir.join("Data.lua");
@@ -400,6 +410,27 @@ mod tests {
         for name in ["Summary.lua","Bridge.lua"]{fs::write(addon.join(name),b"-- Synthetic installed-file fixture only\n").unwrap();}
         fs::write(addon.join("MarketDelivery.json"),br#"{"format":"twichui-market-consumer","summary_delivery_version":1,"game":"wow-forever","interface":16001,"summary_partition_bytes":131072,"summary_total_bytes":8388608}"#).unwrap();
     }
+    #[cfg(windows)]
+    #[test]
+    fn shared_game_permissions_keep_account_markers_and_unknown_files_enforced() {
+        let d=tempfile::tempdir().unwrap();let b=fixture();let c=config(d.path(),&b);
+        let addons=c.installation.join("Interface/AddOns");fs::create_dir_all(&addons).unwrap();
+        let result=std::process::Command::new("icacls").arg(&addons).args(["/grant","*S-1-5-4:(OI)(CI)F"]).output().unwrap();
+        assert!(result.status.success(),"disposable shared-game ACL fixture failed");
+        let dir=main_dir(&c);fs::create_dir(&dir).unwrap();
+        let marker_path=dir.join(".twichui-delivery.json");let owner=identity(&c).unwrap();
+        fs::write(&marker_path,bridge::canonical(&owner).unwrap()).unwrap();
+        assert!(inspect_output(&c).is_ok());
+        let mut foreign=owner.clone();foreign["account_id"]=2.into();
+        let foreign_bytes=bridge::canonical(&foreign).unwrap();fs::write(&marker_path,&foreign_bytes).unwrap();
+        let e=crate::workshop_setup::Failure::from_error("destination",inspect_output(&c).unwrap_err());
+        assert_eq!(e.code,"ownership_conflict");assert!(e.details.contains("another account"));
+        assert_eq!(fs::read(&marker_path).unwrap(),foreign_bytes);
+        fs::write(&marker_path,bridge::canonical(&owner).unwrap()).unwrap();
+        let unknown=dir.join("unrelated-player-file.lua");fs::write(&unknown,b"preserve player file").unwrap();
+        assert!(inspect_output(&c).is_err());
+        assert_eq!(fs::read(&unknown).unwrap(),b"preserve player file");
+    }
     #[cfg(unix)]
     #[test]
     fn publication_banks_noop_partial_recovery_rollback_and_savedvariables() {
@@ -529,6 +560,16 @@ mod tests {
         assert!(client.summary_request("api/v1/workshop/markets/2/summary",None,MAX_MANIFEST).is_err());
         task.join().unwrap();
     }
+    #[test]
+    fn missing_workshop_service_is_distinct_from_expired_parts_and_authentication() {
+        let (origin,task,_)=serve(vec![(404,b"{}".to_vec(),false),(404,b"{}".to_vec(),false),(401,b"{}".to_vec(),false),(503,b"{}".to_vec(),false)]);
+        let client=MarketClient::new(&origin,"synthetic-workshop-connection".into()).unwrap();
+        assert!(matches!(client.summary_request("api/v1/workshop/markets/2/summary",None,MAX_MANIFEST),Err(Error::WorkshopUnavailable)));
+        assert!(matches!(client.summary_request("api/v1/workshop/markets/2/summary/generation/parts/0",None,MAX_PART),Err(Error::ServiceUnavailable)));
+        assert!(matches!(client.summary_request("api/v1/workshop/markets/2/summary",None,MAX_MANIFEST),Err(Error::Authentication)));
+        assert!(matches!(client.summary_request("api/v1/workshop/markets/2/summary",None,MAX_MANIFEST),Err(Error::ServiceUnavailable)));
+        task.join().unwrap();
+    }
     fn envelope(b:&Bundle,account:u32)->Vec<u8>{serde_json::to_vec(&json!({"account_id":account,"manifest":b.manifest})).unwrap()}
     #[test]
     fn partial_download_restart_content_reuse_304_and_no_history_archive() {
@@ -546,6 +587,7 @@ mod tests {
     }
 }
 pub fn synchronize(base:&Path,client:&MarketClient,c:&Configuration,cancelled:impl Fn()->bool)->Result<Status> {
+    let _workshop=crate::performance::measure(crate::performance::Stage::WorkshopSync);
     let mut s=delivery::status_for(base,c)?;s.installation=Some(c.installation.clone());
     s.last_attempt=Some(Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs,true));s.loaded_game_generation=None;
     let result=(||->Result<()> {

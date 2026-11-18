@@ -66,3 +66,21 @@ def test_batch_rejects_unsupported_historical_algorithm_even_for_missing_current
         with pytest.raises(HTTPException) as rejected:compact_many(db,head,keys,signature(db,head,head.id))
         assert rejected.value.status_code==409
         with pytest.raises(HTTPException):compact(db,head,old.item_id,old.variant_key,head.id)
+
+
+def test_bounded_page_keys_match_independent_union_across_variants_and_deletions(database):
+    from market.sync_api import page_keys
+    with database.begin() as db:
+        observations,_=fixture(db)
+        # Independently compute the complete union once, then compare each cursor
+        # boundary/limit. Mixed snapshots include missing and same-item variants.
+        snapshots=[observations[0].snapshot_id,observations[-1].snapshot_id]
+        all_keys=sorted(set(tuple(row) for row in db.execute(select(
+            SnapshotStatistic.item_id,SnapshotStatistic.variant_key).where(
+                SnapshotStatistic.snapshot_id.in_(snapshots)))))
+        for ids in [snapshots,snapshots+snapshots,[],snapshots[:1]]:
+            expected=all_keys if len(set(ids))==2 else sorted(set(tuple(row) for row in db.execute(select(
+                SnapshotStatistic.item_id,SnapshotStatistic.variant_key).where(SnapshotStatistic.snapshot_id.in_(ids)))))
+            for after in [(0,''),*expected,(2**31-1,'f'*64)]:
+                for limit in [1,2,50,100]:
+                    assert [tuple(row) for row in page_keys(db,ids,after,limit)]==[key for key in expected if key>after][:limit+1]

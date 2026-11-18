@@ -141,6 +141,8 @@ fn open_website(app: AppHandle, page: String) -> Result<(), String> {
     runtime(&app).open_website(&page)
 }
 #[tauri::command]
+fn set_performance_capture(app:AppHandle,enabled:bool)->Result<(),String>{runtime(&app).set_performance_capture(enabled)}
+#[tauri::command]
 fn save_diagnostics(app: AppHandle) -> Result<String, String> {
     runtime(&app).diagnostics()
 }
@@ -251,6 +253,7 @@ fn main() {
             open_exports,
             open_website,
             save_diagnostics,
+            set_performance_capture,
             quit,
             hide_to_tray,
             show_companion

@@ -20,6 +20,9 @@ class Signature(NamedTuple):
     daily: tuple = ()
 
 
+from .sync_performance import timed
+
+@timed("history")
 def signature(db, head, watermark):
     if head is None:
         return Signature(hashlib.sha256(json.dumps([ALGORITHM, None]).encode()).hexdigest(), False)

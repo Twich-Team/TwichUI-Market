@@ -1,0 +1,18 @@
+{
+  "original_immutable_files_unchanged": 66,
+  "prior_versions_unchanged": true,
+  "only_existing_file_changed": "current.json",
+  "new_files": [
+    "2.0.0-beta.8/TwichUI-Market-Companion-2.0.0-beta.8-windows-x64.exe",
+    "2.0.0-beta.8/installed-smoke.json",
+    "2.0.0-beta.8/launch-metrics.json",
+    "2.0.0-beta.8/legacy-upgrade.json",
+    "2.0.0-beta.8/manifest.json",
+    "2.0.0-beta.8/owner-release-approval.json",
+    "2.0.0-beta.8/performance.json",
+    "2.0.0-beta.8/signed-update-acceptance.json",
+    "2.0.0-beta.8/windows-signature.json",
+    "audit/00000007.complete.json",
+    "audit/00000007.json"
+  ]
+}

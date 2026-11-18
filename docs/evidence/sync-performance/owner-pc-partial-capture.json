@@ -1,0 +1,28 @@
+{
+  "provenance": "Owner-provided native opt-in DEV-b0fe5f0 diagnostics; partial active synchronization, not fixture timing",
+  "diagnostic_sha256": "bae444d5cc782739f62e05d43ae575dd44d4751beb7ffe4a1b486538ddfb9349",
+  "owner_pc": true,
+  "completed_run": false,
+  "sample_seconds": 14.399073,
+  "response_wait_seconds": 13.769893,
+  "response_wait_percent": 95.63041315229113,
+  "cache_transaction_seconds": 0.090188,
+  "cache_commit_seconds_included_in_transactions": 0.081268,
+  "cache_open_seconds": 0.143892,
+  "transfer_seconds": 0.185804,
+  "process_cpu_seconds": 0.375,
+  "process_lifetime_peak_rss_bytes": 45674496,
+  "counters": {
+    "deletes": 212,
+    "http_requests": 29,
+    "pages": 27,
+    "received_records": 1743,
+    "response_body_bytes": 549374,
+    "upserts": 1531
+  },
+  "previous_completed_cache_records": 26342,
+  "current_sync_error": null,
+  "server_timings_available": false,
+  "workshop_span_present": false,
+  "interpretation": "Response wait dominates this partial sample; local cache writes are not the dominant delay. Waiting for headers includes server work and network latency, which cannot be split without server timing headers. Independent bounded production SQL evidence supports the query repair; no complete ten-minute owner run or post-deployment speedup is captured. Persisted Workshop preparing status predates this active price-sync sample."
+}

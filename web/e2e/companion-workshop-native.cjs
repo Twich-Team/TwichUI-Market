@@ -35,7 +35,7 @@ module.exports=async({page,invoke,api,shots,sourceCommit})=>{
   fs.renameSync(summaryLua,summaryLua+'.fixture-backup');
   try {
    await clickPicker('ChooseFolder',game);await expect(page.locator('#workshop-state')).toHaveText('Needs attention');
-   await expect(page.locator('#workshop-note')).toContainText('Workshop needs an update or is missing files');expect(fs.existsSync(configFile)).toBe(false);
+   await expect(page.locator('#workshop-note')).toContainText('Workshop Summary.lua is missing or unreadable');await expect(page.locator('#workshop-note')).toContainText('(Check: summary_lua)');const missingDiagnostic=JSON.parse(fs.readFileSync(await invoke('save_diagnostics'),'utf8')).workshop_setup;expect(missingDiagnostic.code).toBe('workshop_addon');expect(missingDiagnostic.check).toBe('summary_lua');expect(fs.existsSync(configFile)).toBe(false);
    expect(hash(saved)).toBe(savedHash);
   } finally {fs.renameSync(summaryLua+'.fixture-backup',summaryLua);}
   // The next native selection uses the real coordinated addon source/capability.

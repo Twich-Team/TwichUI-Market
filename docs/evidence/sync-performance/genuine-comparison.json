@@ -1,0 +1,2087 @@
+{
+  "environment": "Linux native release; loopback; bounded genuine summary copy in isolated market_test; not owner-PC or Windows speedup",
+  "fixture_sha256": "63609d8703a76bec0dabc3e1c80dc8ee49f17ad934f82d0e59df59d5867991bb",
+  "groups": [
+    {
+      "label": "baseline",
+      "page_limit": 50,
+      "scenario": "full",
+      "runs": 3,
+      "seconds": {
+        "median": 10.204657208,
+        "minimum": 10.200821252,
+        "maximum": 10.428539199
+      },
+      "http_requests": {
+        "median": 495,
+        "minimum": 495,
+        "maximum": 495
+      },
+      "received_records": {
+        "median": 24584,
+        "minimum": 24584,
+        "maximum": 24584
+      },
+      "body_bytes": {
+        "median": 8392151,
+        "minimum": 8392151,
+        "maximum": 8392151
+      },
+      "sql_queries": {
+        "median": 6421,
+        "minimum": 6421,
+        "maximum": 6421
+      },
+      "sql_ms": {
+        "median": 2764.3665911164135,
+        "minimum": 2705.422929022461,
+        "maximum": 2765.963662881404
+      },
+      "native_stage_ms": {
+        "network_headers": {
+          "median": 8419.712,
+          "minimum": 8352.366,
+          "maximum": 8460.734
+        },
+        "network_transfer": {
+          "median": 16.306,
+          "minimum": 16.037,
+          "maximum": 16.544
+        },
+        "json_parse": {
+          "median": 42.88,
+          "minimum": 42.86,
+          "maximum": 43.752
+        },
+        "sqlite_transaction": {
+          "median": 1711.294,
+          "minimum": 1645.495,
+          "maximum": 1803.514
+        },
+        "sqlite_commit": {
+          "median": 1435.17,
+          "minimum": 1357.597,
+          "maximum": 1522.299
+        },
+        "sqlite_activation": {
+          "median": 154.659,
+          "minimum": 153.832,
+          "maximum": 163.209
+        }
+      },
+      "cache_sha256": [
+        "4f5d1ade7ecdae2a0e3e7ea95569050bf61a0c033363c946ebe34691923124a1"
+      ],
+      "item_count": 24584,
+      "server_cpu_ms": {
+        "median": 6512.658676999995,
+        "minimum": 6431.085485000032,
+        "maximum": 6514.984536999968
+      },
+      "server_stage_ms": {
+        "authentication": {
+          "median": 1126.5588968526572,
+          "minimum": 1103.749569505453,
+          "maximum": 1131.753118475899
+        },
+        "historical_signatures": {
+          "median": 626.8614230211824,
+          "minimum": 626.7074579373002,
+          "maximum": 628.2276932615787
+        },
+        "pricing": {
+          "median": 1920.4322549048811,
+          "minimum": 1912.8112960606813,
+          "maximum": 1929.4332365971059
+        },
+        "key_discovery": {
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0
+        }
+      },
+      "keys_scanned": {
+        "median": 24584,
+        "minimum": 24584,
+        "maximum": 24584
+      },
+      "peak_sqlite_bytes": 21327872,
+      "peak_wal_bytes": 23047312,
+      "server_pricing_excluding_sql_ms": {
+        "median": 1081.6590408794582,
+        "minimum": 1053.0108876992017,
+        "maximum": 1116.9165926985443
+      }
+    },
+    {
+      "label": "baseline",
+      "page_limit": 50,
+      "scenario": "unchanged",
+      "runs": 3,
+      "seconds": {
+        "median": 0.053553446,
+        "minimum": 0.050531754,
+        "maximum": 0.056977131
+      },
+      "http_requests": {
+        "median": 4,
+        "minimum": 4,
+        "maximum": 4
+      },
+      "received_records": {
+        "median": 0,
+        "minimum": 0,
+        "maximum": 0
+      },
+      "body_bytes": {
+        "median": 2383,
+        "minimum": 2383,
+        "maximum": 2383
+      },
+      "sql_queries": {
+        "median": 39,
+        "minimum": 39,
+        "maximum": 39
+      },
+      "sql_ms": {
+        "median": 13.152274070307612,
+        "minimum": 11.315398383885622,
+        "maximum": 13.207289855927229
+      },
+      "native_stage_ms": {
+        "network_headers": {
+          "median": 42.424,
+          "minimum": 38.549,
+          "maximum": 44.496
+        },
+        "network_transfer": {
+          "median": 0.056,
+          "minimum": 0.046,
+          "maximum": 0.108
+        },
+        "json_parse": {
+          "median": 0.009,
+          "minimum": 0.007,
+          "maximum": 0.013
+        },
+        "sqlite_transaction": {
+          "median": 5.183,
+          "minimum": 5.171,
+          "maximum": 5.367
+        },
+        "sqlite_commit": {
+          "median": 0.0,
+          "minimum": 0.0,
+          "maximum": 0.0
+        },
+        "sqlite_activation": {
+          "median": 0.0,
+          "minimum": 0.0,
+          "maximum": 0.0
+        }
+      },
+      "cache_sha256": [
+        "4f5d1ade7ecdae2a0e3e7ea95569050bf61a0c033363c946ebe34691923124a1"
+      ],
+      "item_count": 24584,
+      "server_cpu_ms": {
+        "median": 33.03151000000071,
+        "minimum": 30.712829000002273,
+        "maximum": 36.076383000001044
+      },
+      "server_stage_ms": {
+        "authentication": {
+          "median": 10.580371832475066,
+          "minimum": 9.745628805831075,
+          "maximum": 11.423679301515222
+        },
+        "historical_signatures": {
+          "median": 6.80161383934319,
+          "minimum": 6.628931034356356,
+          "maximum": 7.2498018853366375
+        },
+        "pricing": {
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0
+        },
+        "key_discovery": {
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0
+        }
+      },
+      "keys_scanned": {
+        "median": 0,
+        "minimum": 0,
+        "maximum": 0
+      },
+      "peak_sqlite_bytes": 21327872,
+      "peak_wal_bytes": 4152,
+      "server_pricing_excluding_sql_ms": {
+        "median": 0,
+        "minimum": 0,
+        "maximum": 0
+      }
+    },
+    {
+      "label": "baseline",
+      "page_limit": 50,
+      "scenario": "incremental",
+      "runs": 3,
+      "seconds": {
+        "median": 22.763250587,
+        "minimum": 22.676112531,
+        "maximum": 23.574052706
+      },
+      "http_requests": {
+        "median": 554,
+        "minimum": 554,
+        "maximum": 554
+      },
+      "received_records": {
+        "median": 11623,
+        "minimum": 11623,
+        "maximum": 11623
+      },
+      "body_bytes": {
+        "median": 3703232,
+        "minimum": 3703232,
+        "maximum": 3703232
+      },
+      "sql_queries": {
+        "median": 9943,
+        "minimum": 9943,
+        "maximum": 9943
+      },
+      "sql_ms": {
+        "median": 12714.959054952487,
+        "minimum": 12585.880274418741,
+        "maximum": 12732.49472421594
+      },
+      "native_stage_ms": {
+        "network_headers": {
+          "median": 20822.368,
+          "minimum": 20641.185,
+          "maximum": 21085.716
+        },
+        "network_transfer": {
+          "median": 21.627,
+          "minimum": 18.266,
+          "maximum": 23.67
+        },
+        "json_parse": {
+          "median": 24.64,
+          "minimum": 21.977,
+          "maximum": 25.089
+        },
+        "sqlite_transaction": {
+          "median": 2017.402,
+          "minimum": 1756.543,
+          "maximum": 2384.087
+        },
+        "sqlite_commit": {
+          "median": 1719.556,
+          "minimum": 1458.856,
+          "maximum": 2083.975
+        },
+        "sqlite_activation": {
+          "median": 187.357,
+          "minimum": 183.53,
+          "maximum": 191.817
+        }
+      },
+      "cache_sha256": [
+        "47d32caca283fe7add04abd51c10c0eaedce90e5f74c37f17d72378241f0727e"
+      ],
+      "item_count": 25426,
+      "server_cpu_ms": {
+        "median": 9671.965762999953,
+        "minimum": 9591.388923000002,
+        "maximum": 9891.537306000011
+      },
+      "server_stage_ms": {
+        "authentication": {
+          "median": 1256.1625773087144,
+          "minimum": 1247.4163412116468,
+          "maximum": 1291.1410364322364
+        },
+        "historical_signatures": {
+          "median": 1262.622504029423,
+          "minimum": 1254.5246516820043,
+          "maximum": 1331.1979637946934
+        },
+        "pricing": {
+          "median": 4425.5697801709175,
+          "minimum": 4350.975381908938,
+          "maximum": 4465.40362550877
+        },
+        "key_discovery": {
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0
+        }
+      },
+      "keys_scanned": {
+        "median": 27504,
+        "minimum": 27504,
+        "maximum": 27504
+      },
+      "peak_sqlite_bytes": 22634496,
+      "peak_wal_bytes": 18502952,
+      "server_pricing_excluding_sql_ms": {
+        "median": 2351.716546807438,
+        "minimum": 2316.3123715203255,
+        "maximum": 2415.343679720536
+      }
+    },
+    {
+      "label": "baseline",
+      "page_limit": 50,
+      "scenario": "unchanged_advance",
+      "runs": 3,
+      "seconds": {
+        "median": 0.049457073,
+        "minimum": 0.045992783,
+        "maximum": 0.050136725
+      },
+      "http_requests": {
+        "median": 4,
+        "minimum": 4,
+        "maximum": 4
+      },
+      "received_records": {
+        "median": 0,
+        "minimum": 0,
+        "maximum": 0
+      },
+      "body_bytes": {
+        "median": 2383,
+        "minimum": 2383,
+        "maximum": 2383
+      },
+      "sql_queries": {
+        "median": 40,
+        "minimum": 40,
+        "maximum": 40
+      },
+      "sql_ms": {
+        "median": 11.410617735236883,
+        "minimum": 11.190381832420826,
+        "maximum": 12.60016649030149
+      },
+      "native_stage_ms": {
+        "network_headers": {
+          "median": 39.457,
+          "minimum": 35.73,
+          "maximum": 39.476
+        },
+        "network_transfer": {
+          "median": 0.131,
+          "minimum": 0.077,
+          "maximum": 0.151
+        },
+        "json_parse": {
+          "median": 0.006,
+          "minimum": 0.005,
+          "maximum": 0.006
+        },
+        "sqlite_transaction": {
+          "median": 4.474,
+          "minimum": 4.161,
+          "maximum": 4.508
+        },
+        "sqlite_commit": {
+          "median": 0.0,
+          "minimum": 0.0,
+          "maximum": 0.0
+        },
+        "sqlite_activation": {
+          "median": 0.0,
+          "minimum": 0.0,
+          "maximum": 0.0
+        }
+      },
+      "cache_sha256": [
+        "47d32caca283fe7add04abd51c10c0eaedce90e5f74c37f17d72378241f0727e"
+      ],
+      "item_count": 25426,
+      "server_cpu_ms": {
+        "median": 30.46083899999985,
+        "minimum": 27.90209600000182,
+        "maximum": 32.94351099999915
+      },
+      "server_stage_ms": {
+        "authentication": {
+          "median": 9.880881290882826,
+          "minimum": 8.943728869780898,
+          "maximum": 10.52399817854166
+        },
+        "historical_signatures": {
+          "median": 6.253865547478199,
+          "minimum": 6.240621209144592,
+          "maximum": 6.515147164463997
+        },
+        "pricing": {
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0
+        },
+        "key_discovery": {
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0
+        }
+      },
+      "keys_scanned": {
+        "median": 0,
+        "minimum": 0,
+        "maximum": 0
+      },
+      "peak_sqlite_bytes": 22634496,
+      "peak_wal_bytes": 4152,
+      "server_pricing_excluding_sql_ms": {
+        "median": 0,
+        "minimum": 0,
+        "maximum": 0
+      }
+    },
+    {
+      "label": "baseline",
+      "page_limit": 100,
+      "scenario": "full",
+      "runs": 3,
+      "seconds": {
+        "median": 6.693561111,
+        "minimum": 6.67770663,
+        "maximum": 6.790585716
+      },
+      "http_requests": {
+        "median": 249,
+        "minimum": 249,
+        "maximum": 249
+      },
+      "received_records": {
+        "median": 24584,
+        "minimum": 24584,
+        "maximum": 24584
+      },
+      "body_bytes": {
+        "median": 8279596,
+        "minimum": 8279596,
+        "maximum": 8279596
+      },
+      "sql_queries": {
+        "median": 3223,
+        "minimum": 3223,
+        "maximum": 3223
+      },
+      "sql_ms": {
+        "median": 1887.9403911996633,
+        "minimum": 1852.4524543900043,
+        "maximum": 1894.5618642028421
+      },
+      "native_stage_ms": {
+        "network_headers": {
+          "median": 5563.061,
+          "minimum": 5534.448,
+          "maximum": 5634.923
+        },
+        "network_transfer": {
+          "median": 19.505,
+          "minimum": 14.485,
+          "maximum": 19.666
+        },
+        "json_parse": {
+          "median": 38.971,
+          "minimum": 37.903,
+          "maximum": 39.013
+        },
+        "sqlite_transaction": {
+          "median": 1024.238,
+          "minimum": 1018.754,
+          "maximum": 1033.206
+        },
+        "sqlite_commit": {
+          "median": 773.43,
+          "minimum": 766.343,
+          "maximum": 779.763
+        },
+        "sqlite_activation": {
+          "median": 170.477,
+          "minimum": 168.664,
+          "maximum": 178.698
+        }
+      },
+      "cache_sha256": [
+        "4f5d1ade7ecdae2a0e3e7ea95569050bf61a0c033363c946ebe34691923124a1"
+      ],
+      "item_count": 24584,
+      "server_cpu_ms": {
+        "median": 4226.766127000012,
+        "minimum": 4199.833514999909,
+        "maximum": 4290.217912000031
+      },
+      "server_stage_ms": {
+        "authentication": {
+          "median": 589.0268876682967,
+          "minimum": 577.4433685000986,
+          "maximum": 602.3044104222208
+        },
+        "historical_signatures": {
+          "median": 329.2531508486718,
+          "minimum": 324.8508994001895,
+          "maximum": 332.28440838865936
+        },
+        "pricing": {
+          "median": 1861.9909237604588,
+          "minimum": 1858.721176162362,
+          "maximum": 1891.648444114253
+        },
+        "key_discovery": {
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0
+        }
+      },
+      "keys_scanned": {
+        "median": 24584,
+        "minimum": 24584,
+        "maximum": 24584
+      },
+      "peak_sqlite_bytes": 21327872,
+      "peak_wal_bytes": 23088512,
+      "server_pricing_excluding_sql_ms": {
+        "median": 1025.4362209234387,
+        "minimum": 1020.0183019042015,
+        "maximum": 1106.5841307863593
+      }
+    },
+    {
+      "label": "baseline",
+      "page_limit": 100,
+      "scenario": "unchanged",
+      "runs": 3,
+      "seconds": {
+        "median": 0.049502689,
+        "minimum": 0.049272357,
+        "maximum": 0.052538847
+      },
+      "http_requests": {
+        "median": 4,
+        "minimum": 4,
+        "maximum": 4
+      },
+      "received_records": {
+        "median": 0,
+        "minimum": 0,
+        "maximum": 0
+      },
+      "body_bytes": {
+        "median": 2383,
+        "minimum": 2383,
+        "maximum": 2383
+      },
+      "sql_queries": {
+        "median": 39,
+        "minimum": 39,
+        "maximum": 39
+      },
+      "sql_ms": {
+        "median": 11.777096893638372,
+        "minimum": 11.109238024801016,
+        "maximum": 12.170731788501143
+      },
+      "native_stage_ms": {
+        "network_headers": {
+          "median": 39.614,
+          "minimum": 38.517,
+          "maximum": 41.674
+        },
+        "network_transfer": {
+          "median": 0.138,
+          "minimum": 0.056,
+          "maximum": 0.259
+        },
+        "json_parse": {
+          "median": 0.006,
+          "minimum": 0.005,
+          "maximum": 0.007
+        },
+        "sqlite_transaction": {
+          "median": 4.763,
+          "minimum": 4.259,
+          "maximum": 4.802
+        },
+        "sqlite_commit": {
+          "median": 0.0,
+          "minimum": 0.0,
+          "maximum": 0.0
+        },
+        "sqlite_activation": {
+          "median": 0.0,
+          "minimum": 0.0,
+          "maximum": 0.0
+        }
+      },
+      "cache_sha256": [
+        "4f5d1ade7ecdae2a0e3e7ea95569050bf61a0c033363c946ebe34691923124a1"
+      ],
+      "item_count": 24584,
+      "server_cpu_ms": {
+        "median": 31.931389999996895,
+        "minimum": 31.855772000000115,
+        "maximum": 33.02974499999323
+      },
+      "server_stage_ms": {
+        "authentication": {
+          "median": 10.021597146987915,
+          "minimum": 9.53882304020226,
+          "maximum": 10.158614022657275
+        },
+        "historical_signatures": {
+          "median": 6.4942361786961555,
+          "minimum": 6.207332946360111,
+          "maximum": 7.216257741674781
+        },
+        "pricing": {
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0
+        },
+        "key_discovery": {
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0
+        }
+      },
+      "keys_scanned": {
+        "median": 0,
+        "minimum": 0,
+        "maximum": 0
+      },
+      "peak_sqlite_bytes": 21327872,
+      "peak_wal_bytes": 4152,
+      "server_pricing_excluding_sql_ms": {
+        "median": 0,
+        "minimum": 0,
+        "maximum": 0
+      }
+    },
+    {
+      "label": "baseline",
+      "page_limit": 100,
+      "scenario": "incremental",
+      "runs": 3,
+      "seconds": {
+        "median": 13.848101412,
+        "minimum": 13.733514659,
+        "maximum": 14.673470377
+      },
+      "http_requests": {
+        "median": 279,
+        "minimum": 279,
+        "maximum": 279
+      },
+      "received_records": {
+        "median": 11623,
+        "minimum": 11623,
+        "maximum": 11623
+      },
+      "body_bytes": {
+        "median": 3576311,
+        "minimum": 3576311,
+        "maximum": 3576311
+      },
+      "sql_queries": {
+        "median": 4993,
+        "minimum": 4993,
+        "maximum": 4993
+      },
+      "sql_ms": {
+        "median": 7077.378150308505,
+        "minimum": 7030.556278768927,
+        "maximum": 7095.2317686751485
+      },
+      "native_stage_ms": {
+        "network_headers": {
+          "median": 12612.09,
+          "minimum": 12503.006,
+          "maximum": 12612.189
+        },
+        "network_transfer": {
+          "median": 10.635,
+          "minimum": 10.513,
+          "maximum": 11.824
+        },
+        "json_parse": {
+          "median": 20.509,
+          "minimum": 20.338,
+          "maximum": 20.622
+        },
+        "sqlite_transaction": {
+          "median": 1166.574,
+          "minimum": 1160.38,
+          "maximum": 1989.168
+        },
+        "sqlite_commit": {
+          "median": 912.96,
+          "minimum": 904.234,
+          "maximum": 1737.924
+        },
+        "sqlite_activation": {
+          "median": 184.164,
+          "minimum": 181.473,
+          "maximum": 186.238
+        }
+      },
+      "cache_sha256": [
+        "47d32caca283fe7add04abd51c10c0eaedce90e5f74c37f17d72378241f0727e"
+      ],
+      "item_count": 25426,
+      "server_cpu_ms": {
+        "median": 6348.626526000061,
+        "minimum": 6306.633769000058,
+        "maximum": 6365.626623999887
+      },
+      "server_stage_ms": {
+        "authentication": {
+          "median": 663.0462198518217,
+          "minimum": 656.6642527468503,
+          "maximum": 667.0194475445896
+        },
+        "historical_signatures": {
+          "median": 652.4306458886713,
+          "minimum": 651.6967627685517,
+          "maximum": 664.7602915763855
+        },
+        "pricing": {
+          "median": 3897.1123211085796,
+          "minimum": 3758.2799152005464,
+          "maximum": 3926.9073540344834
+        },
+        "key_discovery": {
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0
+        }
+      },
+      "keys_scanned": {
+        "median": 27504,
+        "minimum": 27504,
+        "maximum": 27504
+      },
+      "peak_sqlite_bytes": 22634496,
+      "peak_wal_bytes": 18572992,
+      "server_pricing_excluding_sql_ms": {
+        "median": 2186.3671895116568,
+        "minimum": 2085.359718417749,
+        "maximum": 2238.9036000240594
+      }
+    },
+    {
+      "label": "baseline",
+      "page_limit": 100,
+      "scenario": "unchanged_advance",
+      "runs": 3,
+      "seconds": {
+        "median": 0.048806477,
+        "minimum": 0.048006729,
+        "maximum": 0.04942326
+      },
+      "http_requests": {
+        "median": 4,
+        "minimum": 4,
+        "maximum": 4
+      },
+      "received_records": {
+        "median": 0,
+        "minimum": 0,
+        "maximum": 0
+      },
+      "body_bytes": {
+        "median": 2383,
+        "minimum": 2383,
+        "maximum": 2383
+      },
+      "sql_queries": {
+        "median": 40,
+        "minimum": 40,
+        "maximum": 40
+      },
+      "sql_ms": {
+        "median": 11.688710423186421,
+        "minimum": 11.424408992752433,
+        "maximum": 11.983397649601102
+      },
+      "native_stage_ms": {
+        "network_headers": {
+          "median": 38.272,
+          "minimum": 37.831,
+          "maximum": 38.429
+        },
+        "network_transfer": {
+          "median": 0.107,
+          "minimum": 0.072,
+          "maximum": 0.108
+        },
+        "json_parse": {
+          "median": 0.007,
+          "minimum": 0.006,
+          "maximum": 0.015
+        },
+        "sqlite_transaction": {
+          "median": 4.689,
+          "minimum": 4.544,
+          "maximum": 4.772
+        },
+        "sqlite_commit": {
+          "median": 0.0,
+          "minimum": 0.0,
+          "maximum": 0.0
+        },
+        "sqlite_activation": {
+          "median": 0.0,
+          "minimum": 0.0,
+          "maximum": 0.0
+        }
+      },
+      "cache_sha256": [
+        "47d32caca283fe7add04abd51c10c0eaedce90e5f74c37f17d72378241f0727e"
+      ],
+      "item_count": 25426,
+      "server_cpu_ms": {
+        "median": 30.399279999997475,
+        "minimum": 30.054677000009633,
+        "maximum": 30.410806999995543
+      },
+      "server_stage_ms": {
+        "authentication": {
+          "median": 9.463971946388483,
+          "minimum": 9.362563258036971,
+          "maximum": 9.480444015935063
+        },
+        "historical_signatures": {
+          "median": 6.424958119168878,
+          "minimum": 6.220418261364102,
+          "maximum": 6.992208072915673
+        },
+        "pricing": {
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0
+        },
+        "key_discovery": {
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0
+        }
+      },
+      "keys_scanned": {
+        "median": 0,
+        "minimum": 0,
+        "maximum": 0
+      },
+      "peak_sqlite_bytes": 22634496,
+      "peak_wal_bytes": 4152,
+      "server_pricing_excluding_sql_ms": {
+        "median": 0,
+        "minimum": 0,
+        "maximum": 0
+      }
+    },
+    {
+      "label": "bounded-keys",
+      "page_limit": 50,
+      "scenario": "full",
+      "runs": 3,
+      "seconds": {
+        "median": 9.768879072,
+        "minimum": 9.634381101,
+        "maximum": 9.819893383
+      },
+      "http_requests": {
+        "median": 495,
+        "minimum": 495,
+        "maximum": 495
+      },
+      "received_records": {
+        "median": 24584,
+        "minimum": 24584,
+        "maximum": 24584
+      },
+      "body_bytes": {
+        "median": 8392151,
+        "minimum": 8392087,
+        "maximum": 8392151
+      },
+      "sql_queries": {
+        "median": 6421,
+        "minimum": 6421,
+        "maximum": 6421
+      },
+      "sql_ms": {
+        "median": 2250.9211082942784,
+        "minimum": 2144.9647210538387,
+        "maximum": 2333.545631961897
+      },
+      "native_stage_ms": {
+        "network_headers": {
+          "median": 7867.301,
+          "minimum": 7844.532,
+          "maximum": 7897.092
+        },
+        "network_transfer": {
+          "median": 16.723,
+          "minimum": 16.274,
+          "maximum": 16.79
+        },
+        "json_parse": {
+          "median": 44.003,
+          "minimum": 43.808,
+          "maximum": 44.918
+        },
+        "sqlite_transaction": {
+          "median": 1778.852,
+          "minimum": 1629.983,
+          "maximum": 1781.353
+        },
+        "sqlite_commit": {
+          "median": 1491.404,
+          "minimum": 1351.914,
+          "maximum": 1493.783
+        },
+        "sqlite_activation": {
+          "median": 161.009,
+          "minimum": 158.193,
+          "maximum": 161.882
+        }
+      },
+      "cache_sha256": [
+        "4f5d1ade7ecdae2a0e3e7ea95569050bf61a0c033363c946ebe34691923124a1"
+      ],
+      "item_count": 24584,
+      "server_cpu_ms": {
+        "median": 6483.943658999994,
+        "minimum": 6466.362151000009,
+        "maximum": 6529.4498439999625
+      },
+      "server_stage_ms": {
+        "authentication": {
+          "median": 1146.906063426286,
+          "minimum": 1140.7517092302442,
+          "maximum": 1147.516614291817
+        },
+        "historical_signatures": {
+          "median": 638.4445347357541,
+          "minimum": 631.4343975391239,
+          "maximum": 642.0072563923895
+        },
+        "pricing": {
+          "median": 1913.0092214327306,
+          "minimum": 1879.822687478736,
+          "maximum": 1941.4414872881025
+        },
+        "key_discovery": {
+          "median": 359.311947831884,
+          "minimum": 358.72062807902694,
+          "maximum": 365.0842076167464
+        }
+      },
+      "keys_scanned": {
+        "median": 24584,
+        "minimum": 24584,
+        "maximum": 24584
+      },
+      "peak_sqlite_bytes": 21327872,
+      "peak_wal_bytes": 23047312,
+      "server_pricing_excluding_sql_ms": {
+        "median": 1048.3437736984342,
+        "minimum": 962.5186575576663,
+        "maximum": 1103.2187950331718
+      }
+    },
+    {
+      "label": "bounded-keys",
+      "page_limit": 50,
+      "scenario": "unchanged",
+      "runs": 3,
+      "seconds": {
+        "median": 0.053340989,
+        "minimum": 0.05241932,
+        "maximum": 0.055095522
+      },
+      "http_requests": {
+        "median": 4,
+        "minimum": 4,
+        "maximum": 4
+      },
+      "received_records": {
+        "median": 0,
+        "minimum": 0,
+        "maximum": 0
+      },
+      "body_bytes": {
+        "median": 2383,
+        "minimum": 2383,
+        "maximum": 2383
+      },
+      "sql_queries": {
+        "median": 39,
+        "minimum": 39,
+        "maximum": 39
+      },
+      "sql_ms": {
+        "median": 12.063091155141592,
+        "minimum": 11.583620216697454,
+        "maximum": 12.688563438132405
+      },
+      "native_stage_ms": {
+        "network_headers": {
+          "median": 41.332,
+          "minimum": 39.894,
+          "maximum": 42.691
+        },
+        "network_transfer": {
+          "median": 0.102,
+          "minimum": 0.059,
+          "maximum": 0.152
+        },
+        "json_parse": {
+          "median": 0.006,
+          "minimum": 0.006,
+          "maximum": 0.006
+        },
+        "sqlite_transaction": {
+          "median": 5.479,
+          "minimum": 5.322,
+          "maximum": 5.552
+        },
+        "sqlite_commit": {
+          "median": 0.0,
+          "minimum": 0.0,
+          "maximum": 0.0
+        },
+        "sqlite_activation": {
+          "median": 0.0,
+          "minimum": 0.0,
+          "maximum": 0.0
+        }
+      },
+      "cache_sha256": [
+        "4f5d1ade7ecdae2a0e3e7ea95569050bf61a0c033363c946ebe34691923124a1"
+      ],
+      "item_count": 24584,
+      "server_cpu_ms": {
+        "median": 33.95200399999965,
+        "minimum": 33.3668280000019,
+        "maximum": 34.76339299999687
+      },
+      "server_stage_ms": {
+        "authentication": {
+          "median": 9.8037279676646,
+          "minimum": 9.80275496840477,
+          "maximum": 10.893875267356634
+        },
+        "historical_signatures": {
+          "median": 6.720416015014052,
+          "minimum": 6.299568805843592,
+          "maximum": 6.728170672431588
+        },
+        "pricing": {
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0
+        },
+        "key_discovery": {
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0
+        }
+      },
+      "keys_scanned": {
+        "median": 0,
+        "minimum": 0,
+        "maximum": 0
+      },
+      "peak_sqlite_bytes": 21327872,
+      "peak_wal_bytes": 4152,
+      "server_pricing_excluding_sql_ms": {
+        "median": 0,
+        "minimum": 0,
+        "maximum": 0
+      }
+    },
+    {
+      "label": "bounded-keys",
+      "page_limit": 50,
+      "scenario": "incremental",
+      "runs": 3,
+      "seconds": {
+        "median": 13.817148695,
+        "minimum": 13.816138052,
+        "maximum": 13.911641637
+      },
+      "http_requests": {
+        "median": 554,
+        "minimum": 554,
+        "maximum": 554
+      },
+      "received_records": {
+        "median": 11623,
+        "minimum": 11623,
+        "maximum": 11623
+      },
+      "body_bytes": {
+        "median": 3703232,
+        "minimum": 3703232,
+        "maximum": 3703232
+      },
+      "sql_queries": {
+        "median": 9943,
+        "minimum": 9943,
+        "maximum": 9943
+      },
+      "sql_ms": {
+        "median": 3860.1765313651413,
+        "minimum": 3852.9580051545054,
+        "maximum": 4039.491614792496
+      },
+      "native_stage_ms": {
+        "network_headers": {
+          "median": 11859.784,
+          "minimum": 11823.762,
+          "maximum": 11951.255
+        },
+        "network_transfer": {
+          "median": 19.281,
+          "minimum": 18.211,
+          "maximum": 19.728
+        },
+        "json_parse": {
+          "median": 24.578,
+          "minimum": 24.558,
+          "maximum": 27.257
+        },
+        "sqlite_transaction": {
+          "median": 1859.168,
+          "minimum": 1857.174,
+          "maximum": 1889.221
+        },
+        "sqlite_commit": {
+          "median": 1563.406,
+          "minimum": 1563.365,
+          "maximum": 1599.04
+        },
+        "sqlite_activation": {
+          "median": 187.447,
+          "minimum": 186.048,
+          "maximum": 192.843
+        }
+      },
+      "cache_sha256": [
+        "47d32caca283fe7add04abd51c10c0eaedce90e5f74c37f17d72378241f0727e"
+      ],
+      "item_count": 25426,
+      "server_cpu_ms": {
+        "median": 9375.628257999899,
+        "minimum": 9354.519984999979,
+        "maximum": 9436.90628500002
+      },
+      "server_stage_ms": {
+        "authentication": {
+          "median": 1267.575551290065,
+          "minimum": 1259.3404341023415,
+          "maximum": 1277.351405005902
+        },
+        "historical_signatures": {
+          "median": 1281.8450354970992,
+          "minimum": 1277.6918644085526,
+          "maximum": 1295.3694346360862
+        },
+        "pricing": {
+          "median": 4124.710189877078,
+          "minimum": 4084.480067715049,
+          "maximum": 4138.171939877793
+        },
+        "key_discovery": {
+          "median": 651.1902990750968,
+          "minimum": 649.2124423384666,
+          "maximum": 651.3132737018168
+        }
+      },
+      "keys_scanned": {
+        "median": 27504,
+        "minimum": 27504,
+        "maximum": 27504
+      },
+      "peak_sqlite_bytes": 22634496,
+      "peak_wal_bytes": 18502952,
+      "server_pricing_excluding_sql_ms": {
+        "median": 2206.869575427845,
+        "minimum": 2101.970492862165,
+        "maximum": 2239.3061937764287
+      }
+    },
+    {
+      "label": "bounded-keys",
+      "page_limit": 50,
+      "scenario": "unchanged_advance",
+      "runs": 3,
+      "seconds": {
+        "median": 0.052964448,
+        "minimum": 0.052904815,
+        "maximum": 0.054096302
+      },
+      "http_requests": {
+        "median": 4,
+        "minimum": 4,
+        "maximum": 4
+      },
+      "received_records": {
+        "median": 0,
+        "minimum": 0,
+        "maximum": 0
+      },
+      "body_bytes": {
+        "median": 2383,
+        "minimum": 2383,
+        "maximum": 2383
+      },
+      "sql_queries": {
+        "median": 40,
+        "minimum": 40,
+        "maximum": 40
+      },
+      "sql_ms": {
+        "median": 12.473853072151542,
+        "minimum": 12.130964314565063,
+        "maximum": 12.763232225552201
+      },
+      "native_stage_ms": {
+        "network_headers": {
+          "median": 40.525,
+          "minimum": 39.826,
+          "maximum": 40.735
+        },
+        "network_transfer": {
+          "median": 0.062,
+          "minimum": 0.054,
+          "maximum": 0.128
+        },
+        "json_parse": {
+          "median": 0.006,
+          "minimum": 0.006,
+          "maximum": 0.006
+        },
+        "sqlite_transaction": {
+          "median": 5.332,
+          "minimum": 5.276,
+          "maximum": 5.649
+        },
+        "sqlite_commit": {
+          "median": 0.0,
+          "minimum": 0.0,
+          "maximum": 0.0
+        },
+        "sqlite_activation": {
+          "median": 0.0,
+          "minimum": 0.0,
+          "maximum": 0.0
+        }
+      },
+      "cache_sha256": [
+        "47d32caca283fe7add04abd51c10c0eaedce90e5f74c37f17d72378241f0727e"
+      ],
+      "item_count": 25426,
+      "server_cpu_ms": {
+        "median": 31.522363000000553,
+        "minimum": 31.511629999997126,
+        "maximum": 32.622887999998795
+      },
+      "server_stage_ms": {
+        "authentication": {
+          "median": 9.923119796440005,
+          "minimum": 9.55413025803864,
+          "maximum": 10.430136928334832
+        },
+        "historical_signatures": {
+          "median": 6.439621094614267,
+          "minimum": 6.2956311739981174,
+          "maximum": 6.829679012298584
+        },
+        "pricing": {
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0
+        },
+        "key_discovery": {
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0
+        }
+      },
+      "keys_scanned": {
+        "median": 0,
+        "minimum": 0,
+        "maximum": 0
+      },
+      "peak_sqlite_bytes": 22634496,
+      "peak_wal_bytes": 4152,
+      "server_pricing_excluding_sql_ms": {
+        "median": 0,
+        "minimum": 0,
+        "maximum": 0
+      }
+    },
+    {
+      "label": "bounded-keys",
+      "page_limit": 100,
+      "scenario": "full",
+      "runs": 3,
+      "seconds": {
+        "median": 6.406794686,
+        "minimum": 6.350965984,
+        "maximum": 6.484629243
+      },
+      "http_requests": {
+        "median": 249,
+        "minimum": 249,
+        "maximum": 249
+      },
+      "received_records": {
+        "median": 24584,
+        "minimum": 24584,
+        "maximum": 24584
+      },
+      "body_bytes": {
+        "median": 8279596,
+        "minimum": 8279596,
+        "maximum": 8279596
+      },
+      "sql_queries": {
+        "median": 3223,
+        "minimum": 3223,
+        "maximum": 3223
+      },
+      "sql_ms": {
+        "median": 1651.2324181385338,
+        "minimum": 1595.8949814084917,
+        "maximum": 1672.02044185251
+      },
+      "native_stage_ms": {
+        "network_headers": {
+          "median": 5219.849,
+          "minimum": 5161.976,
+          "maximum": 5280.516
+        },
+        "network_transfer": {
+          "median": 18.93,
+          "minimum": 10.522,
+          "maximum": 19.207
+        },
+        "json_parse": {
+          "median": 39.287,
+          "minimum": 39.18,
+          "maximum": 39.367
+        },
+        "sqlite_transaction": {
+          "median": 1071.099,
+          "minimum": 1066.34,
+          "maximum": 1080.437
+        },
+        "sqlite_commit": {
+          "median": 825.117,
+          "minimum": 823.483,
+          "maximum": 838.203
+        },
+        "sqlite_activation": {
+          "median": 163.83,
+          "minimum": 153.806,
+          "maximum": 165.548
+        }
+      },
+      "cache_sha256": [
+        "4f5d1ade7ecdae2a0e3e7ea95569050bf61a0c033363c946ebe34691923124a1"
+      ],
+      "item_count": 24584,
+      "server_cpu_ms": {
+        "median": 4158.906744999939,
+        "minimum": 4115.083906999964,
+        "maximum": 4212.416439000023
+      },
+      "server_stage_ms": {
+        "authentication": {
+          "median": 588.4152066428214,
+          "minimum": 572.525511495769,
+          "maximum": 595.935300225392
+        },
+        "historical_signatures": {
+          "median": 318.4392072726041,
+          "minimum": 315.90955913998187,
+          "maximum": 330.6620444636792
+        },
+        "pricing": {
+          "median": 1831.7287811078131,
+          "minimum": 1831.4732345752418,
+          "maximum": 1847.928854636848
+        },
+        "key_discovery": {
+          "median": 196.48731872439384,
+          "minimum": 193.34289547987282,
+          "maximum": 200.79709705896676
+        }
+      },
+      "keys_scanned": {
+        "median": 24584,
+        "minimum": 24584,
+        "maximum": 24584
+      },
+      "peak_sqlite_bytes": 21327872,
+      "peak_wal_bytes": 23088512,
+      "server_pricing_excluding_sql_ms": {
+        "median": 969.5095156785101,
+        "minimum": 946.382972644642,
+        "maximum": 1014.252103632316
+      }
+    },
+    {
+      "label": "bounded-keys",
+      "page_limit": 100,
+      "scenario": "unchanged",
+      "runs": 3,
+      "seconds": {
+        "median": 0.054736206,
+        "minimum": 0.052102874,
+        "maximum": 0.057114746
+      },
+      "http_requests": {
+        "median": 4,
+        "minimum": 4,
+        "maximum": 4
+      },
+      "received_records": {
+        "median": 0,
+        "minimum": 0,
+        "maximum": 0
+      },
+      "body_bytes": {
+        "median": 2383,
+        "minimum": 2383,
+        "maximum": 2383
+      },
+      "sql_queries": {
+        "median": 39,
+        "minimum": 39,
+        "maximum": 39
+      },
+      "sql_ms": {
+        "median": 11.73736248165369,
+        "minimum": 11.562441010028124,
+        "maximum": 13.047875603660941
+      },
+      "native_stage_ms": {
+        "network_headers": {
+          "median": 40.288,
+          "minimum": 36.968,
+          "maximum": 45.295
+        },
+        "network_transfer": {
+          "median": 0.097,
+          "minimum": 0.068,
+          "maximum": 0.119
+        },
+        "json_parse": {
+          "median": 0.007,
+          "minimum": 0.003,
+          "maximum": 0.008
+        },
+        "sqlite_transaction": {
+          "median": 5.088,
+          "minimum": 4.926,
+          "maximum": 5.174
+        },
+        "sqlite_commit": {
+          "median": 0.0,
+          "minimum": 0.0,
+          "maximum": 0.0
+        },
+        "sqlite_activation": {
+          "median": 0.0,
+          "minimum": 0.0,
+          "maximum": 0.0
+        }
+      },
+      "cache_sha256": [
+        "4f5d1ade7ecdae2a0e3e7ea95569050bf61a0c033363c946ebe34691923124a1"
+      ],
+      "item_count": 24584,
+      "server_cpu_ms": {
+        "median": 32.20899500000485,
+        "minimum": 29.176771999992468,
+        "maximum": 36.34957799998517
+      },
+      "server_stage_ms": {
+        "authentication": {
+          "median": 9.83117800205946,
+          "minimum": 9.157078340649605,
+          "maximum": 11.386371916159987
+        },
+        "historical_signatures": {
+          "median": 6.8533350713551044,
+          "minimum": 6.351216696202755,
+          "maximum": 7.500383071601391
+        },
+        "pricing": {
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0
+        },
+        "key_discovery": {
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0
+        }
+      },
+      "keys_scanned": {
+        "median": 0,
+        "minimum": 0,
+        "maximum": 0
+      },
+      "peak_sqlite_bytes": 21327872,
+      "peak_wal_bytes": 4152,
+      "server_pricing_excluding_sql_ms": {
+        "median": 0,
+        "minimum": 0,
+        "maximum": 0
+      }
+    },
+    {
+      "label": "bounded-keys",
+      "page_limit": 100,
+      "scenario": "incremental",
+      "runs": 3,
+      "seconds": {
+        "median": 9.59447932,
+        "minimum": 9.512145745,
+        "maximum": 9.623761489
+      },
+      "http_requests": {
+        "median": 279,
+        "minimum": 279,
+        "maximum": 279
+      },
+      "received_records": {
+        "median": 11623,
+        "minimum": 11623,
+        "maximum": 11623
+      },
+      "body_bytes": {
+        "median": 3576311,
+        "minimum": 3576311,
+        "maximum": 3576311
+      },
+      "sql_queries": {
+        "median": 4993,
+        "minimum": 4993,
+        "maximum": 4993
+      },
+      "sql_ms": {
+        "median": 2960.6215625535697,
+        "minimum": 2867.174876620993,
+        "maximum": 2989.646162604913
+      },
+      "native_stage_ms": {
+        "network_headers": {
+          "median": 8262.955,
+          "minimum": 8229.02,
+          "maximum": 8325.344
+        },
+        "network_transfer": {
+          "median": 10.928,
+          "minimum": 10.33,
+          "maximum": 11.373
+        },
+        "json_parse": {
+          "median": 21.648,
+          "minimum": 21.646,
+          "maximum": 21.795
+        },
+        "sqlite_transaction": {
+          "median": 1217.943,
+          "minimum": 1210.748,
+          "maximum": 1258.192
+        },
+        "sqlite_commit": {
+          "median": 963.428,
+          "minimum": 961.317,
+          "maximum": 1002.693
+        },
+        "sqlite_activation": {
+          "median": 185.345,
+          "minimum": 179.179,
+          "maximum": 185.534
+        }
+      },
+      "cache_sha256": [
+        "47d32caca283fe7add04abd51c10c0eaedce90e5f74c37f17d72378241f0727e"
+      ],
+      "item_count": 25426,
+      "server_cpu_ms": {
+        "median": 6245.832357999987,
+        "minimum": 6190.411444000077,
+        "maximum": 6301.437791999966
+      },
+      "server_stage_ms": {
+        "authentication": {
+          "median": 658.0753335729241,
+          "minimum": 657.2158981580287,
+          "maximum": 669.0146473702043
+        },
+        "historical_signatures": {
+          "median": 664.1260208562016,
+          "minimum": 660.3298964910209,
+          "maximum": 675.9457231964916
+        },
+        "pricing": {
+          "median": 4006.450795335695,
+          "minimum": 3971.3666529860348,
+          "maximum": 4008.4820059128106
+        },
+        "key_discovery": {
+          "median": 360.67510140128434,
+          "minimum": 360.14922452159226,
+          "maximum": 363.8882969971746
+        }
+      },
+      "keys_scanned": {
+        "median": 27504,
+        "minimum": 27504,
+        "maximum": 27504
+      },
+      "peak_sqlite_bytes": 22634496,
+      "peak_wal_bytes": 18572992,
+      "server_pricing_excluding_sql_ms": {
+        "median": 2173.820928670466,
+        "minimum": 2114.293201593682,
+        "maximum": 2280.518020503223
+      }
+    },
+    {
+      "label": "bounded-keys",
+      "page_limit": 100,
+      "scenario": "unchanged_advance",
+      "runs": 3,
+      "seconds": {
+        "median": 0.056915665,
+        "minimum": 0.054241661,
+        "maximum": 0.056999291
+      },
+      "http_requests": {
+        "median": 4,
+        "minimum": 4,
+        "maximum": 4
+      },
+      "received_records": {
+        "median": 0,
+        "minimum": 0,
+        "maximum": 0
+      },
+      "body_bytes": {
+        "median": 2383,
+        "minimum": 2383,
+        "maximum": 2383
+      },
+      "sql_queries": {
+        "median": 40,
+        "minimum": 40,
+        "maximum": 40
+      },
+      "sql_ms": {
+        "median": 12.342887464910746,
+        "minimum": 12.238889001309872,
+        "maximum": 13.263942673802376
+      },
+      "native_stage_ms": {
+        "network_headers": {
+          "median": 44.13,
+          "minimum": 42.169,
+          "maximum": 45.596
+        },
+        "network_transfer": {
+          "median": 0.085,
+          "minimum": 0.062,
+          "maximum": 0.124
+        },
+        "json_parse": {
+          "median": 0.006,
+          "minimum": 0.005,
+          "maximum": 0.006
+        },
+        "sqlite_transaction": {
+          "median": 5.118,
+          "minimum": 4.378,
+          "maximum": 5.522
+        },
+        "sqlite_commit": {
+          "median": 0.0,
+          "minimum": 0.0,
+          "maximum": 0.0
+        },
+        "sqlite_activation": {
+          "median": 0.0,
+          "minimum": 0.0,
+          "maximum": 0.0
+        }
+      },
+      "cache_sha256": [
+        "47d32caca283fe7add04abd51c10c0eaedce90e5f74c37f17d72378241f0727e"
+      ],
+      "item_count": 25426,
+      "server_cpu_ms": {
+        "median": 35.744760000028464,
+        "minimum": 35.14095999999256,
+        "maximum": 38.03893399999936
+      },
+      "server_stage_ms": {
+        "authentication": {
+          "median": 10.919370921328664,
+          "minimum": 9.97658888809383,
+          "maximum": 11.375350877642632
+        },
+        "historical_signatures": {
+          "median": 7.42126302793622,
+          "minimum": 7.417306769639254,
+          "maximum": 7.782358676195145
+        },
+        "pricing": {
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0
+        },
+        "key_discovery": {
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0
+        }
+      },
+      "keys_scanned": {
+        "median": 0,
+        "minimum": 0,
+        "maximum": 0
+      },
+      "peak_sqlite_bytes": 22634496,
+      "peak_wal_bytes": 4152,
+      "server_pricing_excluding_sql_ms": {
+        "median": 0,
+        "minimum": 0,
+        "maximum": 0
+      }
+    },
+    {
+      "label": "final-source-repeat",
+      "source": "6fd3537e9cd6f0afce1887d1ed6ea2598253bd09",
+      "page_limit": 100,
+      "scenario": "full",
+      "runs": 3,
+      "seconds": {
+        "median": 5.638891822,
+        "minimum": 5.607278014,
+        "maximum": 5.685452214
+      },
+      "native_process_cpu_ms": {
+        "median": 490.329,
+        "minimum": 481.727,
+        "maximum": 501.902
+      },
+      "native_process_peak_rss_bytes": {
+        "median": 11415552,
+        "minimum": 11415552,
+        "maximum": 11677696
+      },
+      "peak_sqlite_bytes": 21327872,
+      "peak_wal_bytes": 23088512,
+      "http_requests": 249,
+      "body_bytes": 8279597,
+      "cache_sha256": [
+        "4f5d1ade7ecdae2a0e3e7ea95569050bf61a0c033363c946ebe34691923124a1"
+      ],
+      "native_stage_ms": {
+        "network_headers": {
+          "median": 4507.347,
+          "minimum": 4452.022,
+          "maximum": 4522.869
+        },
+        "network_transfer": {
+          "median": 18.931,
+          "minimum": 18.74,
+          "maximum": 19.07
+        },
+        "json_parse": {
+          "median": 37.376,
+          "minimum": 37.369,
+          "maximum": 39.198
+        },
+        "sqlite_transaction": {
+          "median": 1014.986,
+          "minimum": 1011.878,
+          "maximum": 1034.568
+        },
+        "sqlite_commit": {
+          "median": 795.297,
+          "minimum": 788.404,
+          "maximum": 811.126
+        },
+        "sqlite_activation": {
+          "median": 159.203,
+          "minimum": 152.783,
+          "maximum": 181.037
+        }
+      },
+      "server_cpu_ms": {
+        "median": 3500.4759409999965,
+        "minimum": 3469.2751400000257,
+        "maximum": 3522.098766999985
+      },
+      "sql_ms": {
+        "median": 1506.4003402367234,
+        "minimum": 1484.498592093587,
+        "maximum": 1550.0824265182018
+      },
+      "server_pricing_excluding_sql_ms": {
+        "median": 967.9758802521974,
+        "minimum": 890.8080016262829,
+        "maximum": 992.4745273310691
+      }
+    },
+    {
+      "label": "final-source-repeat",
+      "source": "6fd3537e9cd6f0afce1887d1ed6ea2598253bd09",
+      "page_limit": 100,
+      "scenario": "unchanged",
+      "runs": 3,
+      "seconds": {
+        "median": 0.052436801,
+        "minimum": 0.052087839,
+        "maximum": 0.052828163
+      },
+      "native_process_cpu_ms": {
+        "median": 2.937,
+        "minimum": 2.727,
+        "maximum": 3.096
+      },
+      "native_process_peak_rss_bytes": {
+        "median": 11677696,
+        "minimum": 11284480,
+        "maximum": 11808768
+      },
+      "peak_sqlite_bytes": 21327872,
+      "peak_wal_bytes": 4152,
+      "http_requests": 4,
+      "body_bytes": 2384,
+      "cache_sha256": [
+        "4f5d1ade7ecdae2a0e3e7ea95569050bf61a0c033363c946ebe34691923124a1"
+      ],
+      "native_stage_ms": {
+        "network_headers": {
+          "median": 40.562,
+          "minimum": 39.701,
+          "maximum": 41.396
+        },
+        "network_transfer": {
+          "median": 0.119,
+          "minimum": 0.102,
+          "maximum": 0.149
+        },
+        "json_parse": {
+          "median": 0.005,
+          "minimum": 0.004,
+          "maximum": 0.006
+        },
+        "sqlite_transaction": {
+          "median": 5.249,
+          "minimum": 5.218,
+          "maximum": 5.605
+        },
+        "sqlite_commit": {
+          "median": 5.136,
+          "minimum": 5.117,
+          "maximum": 5.471
+        },
+        "sqlite_activation": {
+          "median": 0.0,
+          "minimum": 0.0,
+          "maximum": 0.0
+        }
+      },
+      "server_cpu_ms": {
+        "median": 33.331710999998876,
+        "minimum": 31.654699999998925,
+        "maximum": 33.88838399999994
+      },
+      "sql_ms": {
+        "median": 12.023854767903686,
+        "minimum": 11.82238943874836,
+        "maximum": 12.430982431396842
+      },
+      "server_pricing_excluding_sql_ms": {
+        "median": 0,
+        "minimum": 0,
+        "maximum": 0
+      }
+    },
+    {
+      "label": "final-source-repeat",
+      "source": "6fd3537e9cd6f0afce1887d1ed6ea2598253bd09",
+      "page_limit": 100,
+      "scenario": "incremental",
+      "runs": 3,
+      "seconds": {
+        "median": 8.847560158,
+        "minimum": 8.801199331,
+        "maximum": 8.948609749
+      },
+      "native_process_cpu_ms": {
+        "median": 491.378,
+        "minimum": 486.663,
+        "maximum": 496.199
+      },
+      "native_process_peak_rss_bytes": {
+        "median": 11415552,
+        "minimum": 11284480,
+        "maximum": 11677696
+      },
+      "peak_sqlite_bytes": 22634496,
+      "peak_wal_bytes": 18572992,
+      "http_requests": 279,
+      "body_bytes": 3576312,
+      "cache_sha256": [
+        "47d32caca283fe7add04abd51c10c0eaedce90e5f74c37f17d72378241f0727e"
+      ],
+      "native_stage_ms": {
+        "network_headers": {
+          "median": 7601.131,
+          "minimum": 7570.741,
+          "maximum": 7702.801
+        },
+        "network_transfer": {
+          "median": 11.417,
+          "minimum": 11.305,
+          "maximum": 11.769
+        },
+        "json_parse": {
+          "median": 18.194,
+          "minimum": 17.509,
+          "maximum": 18.871
+        },
+        "sqlite_transaction": {
+          "median": 1175.345,
+          "minimum": 1162.84,
+          "maximum": 1179.038
+        },
+        "sqlite_commit": {
+          "median": 936.272,
+          "minimum": 931.514,
+          "maximum": 943.365
+        },
+        "sqlite_activation": {
+          "median": 177.606,
+          "minimum": 175.695,
+          "maximum": 179.715
+        }
+      },
+      "server_cpu_ms": {
+        "median": 5724.002818000066,
+        "minimum": 5687.019676999959,
+        "maximum": 5779.661187000005
+      },
+      "sql_ms": {
+        "median": 2783.0235643777996,
+        "minimum": 2681.6522607114166,
+        "maximum": 2834.4250367954373
+      },
+      "server_pricing_excluding_sql_ms": {
+        "median": 2036.8673587217927,
+        "minimum": 2004.2388448491693,
+        "maximum": 2134.35815484263
+      }
+    },
+    {
+      "label": "final-source-repeat",
+      "source": "6fd3537e9cd6f0afce1887d1ed6ea2598253bd09",
+      "page_limit": 100,
+      "scenario": "unchanged_advance",
+      "runs": 3,
+      "seconds": {
+        "median": 0.049206797,
+        "minimum": 0.048845933,
+        "maximum": 0.049692876
+      },
+      "native_process_cpu_ms": {
+        "median": 2.753,
+        "minimum": 2.725,
+        "maximum": 2.82
+      },
+      "native_process_peak_rss_bytes": {
+        "median": 11415552,
+        "minimum": 11284480,
+        "maximum": 11677696
+      },
+      "peak_sqlite_bytes": 22634496,
+      "peak_wal_bytes": 4152,
+      "http_requests": 4,
+      "body_bytes": 2384,
+      "cache_sha256": [
+        "47d32caca283fe7add04abd51c10c0eaedce90e5f74c37f17d72378241f0727e"
+      ],
+      "native_stage_ms": {
+        "network_headers": {
+          "median": 37.807,
+          "minimum": 37.305,
+          "maximum": 38.577
+        },
+        "network_transfer": {
+          "median": 0.085,
+          "minimum": 0.07,
+          "maximum": 0.114
+        },
+        "json_parse": {
+          "median": 0.005,
+          "minimum": 0.005,
+          "maximum": 0.005
+        },
+        "sqlite_transaction": {
+          "median": 5.043,
+          "minimum": 4.767,
+          "maximum": 5.176
+        },
+        "sqlite_commit": {
+          "median": 4.928,
+          "minimum": 4.662,
+          "maximum": 5.076
+        },
+        "sqlite_activation": {
+          "median": 0.0,
+          "minimum": 0.0,
+          "maximum": 0.0
+        }
+      },
+      "server_cpu_ms": {
+        "median": 30.56364100000053,
+        "minimum": 29.848847999986106,
+        "maximum": 30.860668999999064
+      },
+      "sql_ms": {
+        "median": 11.353016598150134,
+        "minimum": 11.09100948087871,
+        "maximum": 11.792961042374372
+      },
+      "server_pricing_excluding_sql_ms": {
+        "median": 0,
+        "minimum": 0,
+        "maximum": 0
+      }
+    }
+  ],
+  "stage_note": "Inclusive wall time; not additive. Legacy query is inline, so its key_discovery timer is unavailable rather than zero cost. Initial native baseline did not expose process CPU/RSS; use final-source repeat and common-harness Windows comparison, not invented baseline memory."
+}

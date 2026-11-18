@@ -1,0 +1,15 @@
+{
+  "source": "b0fe5f023c52af9c07e398804a61e332d0aa3179",
+  "run": 44403860639,
+  "artifact": 14474777757,
+  "zip_sha256": "49f94508f5302701fc2f2962c48258eaf28d67d15b06059e92e4f83655e69188",
+  "installer_sha256": "36b306883c1a1f809c103c7d1015a484d0a2a4f7324494482fed4d6fe627b47b",
+  "smoke": {
+    "version": "2.0.0-beta.8 DEV b0fe5f023c52af9c07e398804a61e332d0aa3179",
+    "frontend": true,
+    "native": true,
+    "workshop_command": true,
+    "updater_disabled": true
+  },
+  "unsigned_private_dev": true
+}
