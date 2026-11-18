@@ -26,6 +26,7 @@ if($Worker){
             $start.Arguments='inspect "'+$case.path+'"'
             $start.UseShellExecute=$false
             $start.CreateNoWindow=$true
+            $start.WorkingDirectory=Split-Path $planData.exe
             $start.RedirectStandardOutput=$true
             $start.RedirectStandardError=$true
             $nativeProcess=[System.Diagnostics.Process]::Start($start)
@@ -132,14 +133,14 @@ foreach($probeSid in @('S-1-5-18','S-1-5-32-544')){
     $probeSecurity.AddAccessRule($rule)
 }
 Set-Acl -Path $adminProbe -AclObject $probeSecurity
-# CI build outputs inherit the elevated workspace ACL, unlike a per-user
-# installed Companion. Grant this same user RX on the test binary and cwd only;
-# the inherited game-directory permissions under test stay unchanged.
-$nativeExe=Join-Path (Get-Location) 'desktop\target\debug\examples\installation_smoke.exe'
-& icacls $nativeExe /grant "*$($userSid):RX" /Q|Out-Null
-if($LASTEXITCODE -ne 0){throw 'Restricted worker executable read/execute grant failed'}
-& icacls (Get-Location).Path /grant "*$($userSid):RX" /Q|Out-Null
-if($LASTEXITCODE -ne 0){throw 'Restricted worker cwd read/execute grant failed'}
+# Execute byte-identical code from a per-user location, matching the installer.
+# Build workspace permissions/integrity are not part of game preflight.
+$builtExe=Join-Path (Get-Location) 'desktop\target\debug\examples\installation_smoke.exe'
+$nativeExe=Join-Path $base 'installation_smoke.exe'
+Copy-Item $builtExe $nativeExe
+if((Get-FileHash $builtExe -Algorithm SHA256).Hash -ne (Get-FileHash $nativeExe -Algorithm SHA256).Hash){throw 'Native preflight copy differs from built source'}
+& icacls $nativeExe /setowner "*$($userSid)" /grant "*$($userSid):RX" /setintegritylevel M /Q|Out-Null
+if($LASTEXITCODE -ne 0){throw 'Per-user native preflight permissions failed'}
 $planFile=Join-Path $base 'plan.json'
 @{exe=$nativeExe;report=$report;admin_probe=$adminProbe;cases=$cases}|ConvertTo-Json -Depth 8|Set-Content $planFile
 $script=(Resolve-Path $PSCommandPath).Path
@@ -169,7 +170,7 @@ public static class WorkshopLimitedProcess {
  [DllImport("advapi32.dll",CharSet=CharSet.Unicode,SetLastError=true)] static extern bool CreateProcessAsUserW(IntPtr token,string app,StringBuilder command,IntPtr processAttributes,IntPtr threadAttributes,bool inherit,uint flags,IntPtr environment,string directory,ref Startup startup,out ProcessInfo info);
  static IntPtr Sid(SecurityIdentifier sid) { byte[] bytes=new byte[sid.BinaryLength];sid.GetBinaryForm(bytes,0);IntPtr p=Marshal.AllocHGlobal(bytes.Length);Marshal.Copy(bytes,0,p,bytes.Length);return p; }
  public static int Start(string app,string args,string directory,string environment) {
-  IntPtr token=IntPtr.Zero,restricted=IntPtr.Zero,env=IntPtr.Zero,admin=IntPtr.Zero,owner=IntPtr.Zero,medium=IntPtr.Zero;
+  IntPtr token=IntPtr.Zero,restricted=IntPtr.Zero,env=IntPtr.Zero,admin=IntPtr.Zero,owner=IntPtr.Zero,medium=IntPtr.Zero,dacl=IntPtr.Zero;
   try {
    if(!OpenProcessToken(GetCurrentProcess(),0x0001|0x0002|0x0008|0x0080,out token))throw new Win32Exception(Marshal.GetLastWin32Error(),"OpenProcessToken");
    admin=Sid(new SecurityIdentifier("S-1-5-32-544"));SidAndAttributes disabled=new SidAndAttributes();disabled.sid=admin;
@@ -178,6 +179,12 @@ public static class WorkshopLimitedProcess {
    if(!CreateRestrictedToken(token,1,1,ref disabled,0,IntPtr.Zero,0,IntPtr.Zero,out restricted))throw new Win32Exception(Marshal.GetLastWin32Error(),"CreateRestrictedToken");
    owner=Sid(WindowsIdentity.GetCurrent().User);
    if(!SetOwner(restricted,4,ref owner,IntPtr.Size))throw new Win32Exception(Marshal.GetLastWin32Error(),"SetTokenInformation owner");
+   // A restricted user's default ACL must allow its own process/pipe objects,
+   // rather than inheriting the elevated token's administrator-only default.
+   var descriptor=new System.Security.AccessControl.RawSecurityDescriptor("D:(A;;GA;;;SY)(A;;GA;;;"+WindowsIdentity.GetCurrent().User.Value+")");
+   byte[] acl=new byte[descriptor.DiscretionaryAcl.BinaryLength];descriptor.DiscretionaryAcl.GetBinaryForm(acl,0);
+   dacl=Marshal.AllocHGlobal(acl.Length);Marshal.Copy(acl,0,dacl,acl.Length);
+   if(!SetOwner(restricted,6,ref dacl,IntPtr.Size))throw new Win32Exception(Marshal.GetLastWin32Error(),"SetTokenInformation default DACL");
    SecurityIdentifier mediumSid=new SecurityIdentifier("S-1-16-8192");medium=Sid(mediumSid);
    SidAndAttributes label=new SidAndAttributes();label.sid=medium;label.attributes=0x20;
    if(!SetLabel(restricted,25,ref label,Marshal.SizeOf(typeof(SidAndAttributes))+mediumSid.BinaryLength))throw new Win32Exception(Marshal.GetLastWin32Error(),"SetTokenInformation integrity");
@@ -186,7 +193,7 @@ public static class WorkshopLimitedProcess {
    if(!CreateProcessAsUserW(restricted,app,new StringBuilder("\""+app+"\" "+args),IntPtr.Zero,IntPtr.Zero,false,0x400,env,directory,ref startup,out info))throw new Win32Exception(Marshal.GetLastWin32Error(),"CreateProcessAsUser");
    CloseHandle(info.process);CloseHandle(info.thread);return info.pid;
   } finally {
-   foreach(IntPtr p in new IntPtr[]{env,admin,owner,medium})if(p!=IntPtr.Zero)Marshal.FreeHGlobal(p);
+   foreach(IntPtr p in new IntPtr[]{env,admin,owner,medium,dacl})if(p!=IntPtr.Zero)Marshal.FreeHGlobal(p);
    if(restricted!=IntPtr.Zero)CloseHandle(restricted);
    if(token!=IntPtr.Zero)CloseHandle(token);
   }
