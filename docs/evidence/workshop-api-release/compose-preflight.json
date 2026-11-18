@@ -1,0 +1,12 @@
+{
+  "owner_approval": "2026-11-18 explicit Approve Workshop API rollout",
+  "old_image": "sha256:9712cd35a1f669343d20d42598717d0fcb370a4c358d3edb4c35f807b0d9295c",
+  "new_image": "sha256:631c5e03f63be93ca79bec6c2d17294284f50f5eedb28598077ddc4940952582",
+  "only_service_changes": [
+    "api.image",
+    "local-api.image"
+  ],
+  "environment_mounts_networks_limits_unchanged": true,
+  "schema_migration": false,
+  "frontend_collector_retention_and_signed_distribution_unchanged": true
+}

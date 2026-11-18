@@ -1,0 +1,23 @@
+{
+  "runtime_image": "sha256:631c5e03f63be93ca79bec6c2d17294284f50f5eedb28598077ddc4940952582",
+  "postgresql_version": 17,
+  "isolated_database": "market_test",
+  "backend_tests": 122,
+  "backend_seconds": 60.62,
+  "backend_files": [
+    "test_workshop_summary.py",
+    "test_companion_auth.py",
+    "test_sync.py",
+    "test_sync_generation.py",
+    "test_sync_batch.py",
+    "test_retention_worker.py"
+  ],
+  "native_local_workshop_tests": 13,
+  "native_local_diagnostics_tests": 2,
+  "mocked_ipc_browser_workshop": "passed",
+  "initial_harness_errors": [
+    "nonexistent test filename corrected before test run",
+    "missing test-only pg_trgm extension installed before successful run"
+  ],
+  "production_tests_synthetic": false
+}
