@@ -164,7 +164,7 @@ jobs:
           docker tag twichui-market-backend:dev twichui-market-backend:backup-review
           docker tag twichui-market-web:dev twichui-market-web:backup-review
           docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml -f compose.backup-browser.yaml build backup-manager
-          docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml -f compose.backup-browser.yaml up -d --no-deps api backup-manager
+          docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml -f compose.backup-browser.yaml up -d --no-deps --wait --wait-timeout 90 api backup-manager
       - name: Verify backup administration and actual management boundary in Chromium and WebKit
         run: |
           docker run --rm --network twichui-market-browser_default -v "$PWD:/work" -w /work/web mcr.microsoft.com/playwright:v1.65.1-noble npm run test:e2e -- backup-management.spec.ts
@@ -176,6 +176,7 @@ jobs:
           path: |
             artifacts/backup-management/screenshots
             artifacts/backup-management-webkit
+            artifacts/web-e2e
           if-no-files-found: ignore
       - if: always()
         run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml -f compose.backup-browser.yaml down --volumes --remove-orphans
