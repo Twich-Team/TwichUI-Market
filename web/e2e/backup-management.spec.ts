@@ -1,6 +1,7 @@
 import {test,expect,type Page} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import {mkdir} from 'node:fs/promises';
+test.use({timezoneId:'America/Denver'});
 const output='../artifacts/backup-management/screenshots';
 const GIB=1024**3;
 const policy={revision:1,enabled:false,interval_seconds:86400,daily:2,weekly:2,monthly:0,max_bytes:null,minimum_recovery_points:1,warning_free_bytes:3*GIB};
@@ -39,6 +40,7 @@ test('backup management: inventory, details, pagination, exact-name deletion and
   await expect(page.getByRole('meter',{name:'Backup filesystem used or unavailable'})).toBeVisible();
   const table=page.getByRole('table',{name:'Managed backup archives'});
   await expect(table.getByRole('row')).toHaveCount(11);
+  await expect(table.getByRole('row').nth(1).locator('time')).toContainText('Nov 17, 2026');
   await expect(table.getByRole('row').nth(1).getByRole('button',{name:'Delete',exact:true})).toBeDisabled();
   await page.screenshot({path:`${output}/desktop-inventory.png`,fullPage:true});
   await table.getByRole('row').nth(2).getByRole('button',{name:'Details',exact:true}).click();
@@ -87,6 +89,7 @@ test('backup management real boundary: create protect download and delete throug
   const headers={'X-CSRF-Token':me.csrf_token};
   const read=async()=>await (await page.request.get('/api/v1/admin/backups')).json();
   const before=await read();expect(before.policy.enabled).toBe(false);
+  const sourceBefore=await (await page.request.get('/api/v1/admin/storage')).json();
   const created=[];
   for(let i=0;i<2;i++){
     const queued=await page.request.post('/api/v1/admin/backups/create',{headers,data:{}});expect(queued.status(),await queued.text()).toBe(202);
@@ -106,5 +109,7 @@ test('backup management real boundary: create protect download and delete throug
   await page.getByRole('dialog').getByLabel(`Type ${older.filename} to confirm`,{exact:true}).fill(older.filename);
   await mkdir(output,{recursive:true});await page.screenshot({path:`${output}/actual-service-deletion.png`});
   await page.getByRole('dialog').getByRole('button',{name:'Confirm archive deletion'}).click();await expect(row).toHaveCount(0);
+  const sourceAfter=await (await page.request.get('/api/v1/admin/storage')).json();
+  expect(sourceAfter.snapshots).toBe(sourceBefore.snapshots);expect(sourceAfter.observations).toBe(sourceBefore.observations);
   const after=await read();expect(after.policy.enabled).toBe(false);expect(after.total).toBe(before.total+1);expect(after.receipts.some((receipt:{action:string})=>receipt.action==='deletion.result')).toBe(true);
 });

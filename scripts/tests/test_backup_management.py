@@ -51,9 +51,11 @@ class Backups(unittest.TestCase):
     def test_inventory_pagination_capacity_and_distinct_measurements(self):
         for day in range(1,13):
             self.archive(str(day),f'2026-11-{day:02d}T01:00:00+00:00')
-        data=self.manager.overview(10,2)
+        usage=os.fstatvfs(self.manager.fd)
+        with patch('management.os.fstatvfs',return_value=usage) as measurement:
+            data=self.manager.overview(10,2)
+        self.assertEqual(measurement.call_args.args[0],self.manager.fd)
         self.assertEqual((data['total'],len(data['items'])),(12,2))
-        usage=os.statvfs(self.root)
         self.assertEqual(data['filesystem']['available_bytes'],usage.f_bavail*usage.f_frsize)
         self.assertEqual(data['filesystem']['capacity_bytes'],usage.f_blocks*usage.f_frsize)
         self.assertNotIn('database_bytes',data)
@@ -226,6 +228,24 @@ class Backups(unittest.TestCase):
             self.assertEqual(result['status'],'failed')
             self.assertTrue((self.root/protected[1]).exists())
             self.assertEqual(self.manager.overview()['total'],1)
+
+    def test_failed_partial_cleanup_records_pending_receipt_without_rotation(self):
+        self.archive('protected','2026-01-01T00:00:00+00:00',protected=True)
+        original=subprocess.Popen
+        def process(*args,**kwargs):
+            return original([sys.executable,'-c',"import sys;sys.stdout.write('partial');sys.exit(1)"],**kwargs)
+        unlink=os.unlink
+        def fail_partial(name,*args,**kwargs):
+            if str(name).endswith('.partial'):raise OSError('simulated cleanup refusal')
+            return unlink(name,*args,**kwargs)
+        def output(command,**kwargs):
+            return b'170012' if command[0]=='psql' else b'pg_dump (PostgreSQL) 17.12'
+        with patch('management.subprocess.check_output',side_effect=output),patch('management.subprocess.Popen',side_effect=process),patch('management.os.unlink',side_effect=fail_partial):
+            result=self.manager.create('scheduler',origin='scheduled')
+        self.assertEqual(result['status'],'failed')
+        self.assertTrue(result['cleanup_pending'])
+        self.assertEqual(self.manager.overview()['total'],1)
+        self.assertIn('backup.cleanup_pending',[r['action'] for r in self.manager.overview()['receipts']])
 
     def test_missing_root_permissions_and_required_mount(self):
         with self.assertRaises(Refused):Manager(self.root/'missing',self.state,require_mount=False)

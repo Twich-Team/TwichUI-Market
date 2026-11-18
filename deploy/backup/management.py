@@ -358,7 +358,7 @@ class Manager:
                 raise Refused('The final intact restored recovery point must be retained')
             manifest_name = row['filename'][:-5]+'.json'
             manifest = self.read_json(manifest_name)
-            receipt = self.receipt(db, actor, 'deletion.intent', dict(backup=row, manifest=manifest, automatic=automatic))
+            receipt = self.receipt(db, actor, 'deletion.intent', dict(backup=row, manifest=manifest, automatic=automatic, policy_revision=self.get(db, 'policy')['revision']))
             db.commit()  # durable authorization and metadata survive any filesystem failure
             removed, manifest_removed = False, False
             try:
@@ -440,7 +440,7 @@ class Manager:
             self.set(db, 'job', job)
             self.receipt(db, actor, 'backup.started', job)
             db.commit()
-            name = 'market-'+origin+'-'+datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')+'.dump'
+            name = 'market-'+origin+'-'+datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')+'-'+uuid.uuid4().hex[:12]+'.dump'
             temporary = name[:-5]+'.partial'
             published = False
             try:
