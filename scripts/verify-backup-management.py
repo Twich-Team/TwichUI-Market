@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+import uuid
 sys.path.insert(0,'/app')
 from management import Manager, Refused
 
@@ -22,6 +23,8 @@ assert sql('SELECT current_database()')=='market_test'
 sql('CREATE TABLE IF NOT EXISTS backup_fixture (id integer primary key, value text); INSERT INTO backup_fixture SELECT n, md5(n::text) FROM generate_series(1,200) n ON CONFLICT DO NOTHING')
 fingerprint=sql("SELECT md5(string_agg(id::text||value,',' ORDER BY id)) FROM backup_fixture")
 manager=Manager()
+restore_database='market_restore_'+uuid.uuid4().hex[:12]
+restore_created=False
 try:
     assert manager.overview()['total']==0, 'Requires fresh disposable backup fixtures'
     assert not manager.overview()['policy']['enabled']
@@ -42,11 +45,12 @@ try:
     assert not (Path('/backups')/receipts[0]['filename']).exists()
     assert {r['id'] for r in remaining['items']}=={r['id'] for r in receipts[1:]}
     # Restore an actual surviving archive into an explicitly disposable database.
-    sql('CREATE DATABASE market_restore')
+    sql('CREATE DATABASE '+restore_database)
+    restore_created=True
     newest=remaining['items'][0]
     with (Path('/backups')/newest['filename']).open('rb') as source:
-        subprocess.run(['pg_restore','-d','market_restore','--no-owner','--no-acl','--exit-on-error'],stdin=source,check=True,stderr=subprocess.DEVNULL)
-    assert sql("SELECT md5(string_agg(id::text||value,',' ORDER BY id)) FROM backup_fixture",'market_restore')==fingerprint
+        subprocess.run(['pg_restore','-d',restore_database,'--no-owner','--no-acl','--exit-on-error'],stdin=source,check=True,stderr=subprocess.DEVNULL)
+    assert sql("SELECT md5(string_agg(id::text||value,',' ORDER BY id)) FROM backup_fixture",restore_database)==fingerprint
     manifest=manager.read_json(newest['filename'][:-5]+'.json')
     assert manifest['restoration_verified_at'] is None, 'Integrity alone must never claim restore proof'
     manifest.update(restoration_verified_at=datetime.now(timezone.utc).isoformat(),restored={'backup_fixture_rows':200},protected=True,required_by=['isolated-rehearsal'])
@@ -68,3 +72,5 @@ try:
     print(json.dumps(result,indent=2))
 finally:
     manager.close()
+    if restore_created:
+        sql('DROP DATABASE '+restore_database)
