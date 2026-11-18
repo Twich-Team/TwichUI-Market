@@ -28,7 +28,7 @@ from .market_configuration import mapping_for
 
 FORMAT = 'twichui-workshop-summary'
 ALGORITHM = 'workshop-summary-v1:' + cp.ALGORITHM
-STAGING = 'workshop-summary-stage-v1:' + cp.ALGORITHM
+STAGING = 'workshop-summary-chunks-v1:' + cp.ALGORITHM
 PROJECTION_BATCH = 1000
 BUCKETS = 64
 MAX_PART = 128 * 1024
@@ -190,7 +190,7 @@ def build(db, market):
     if stage and stage.source_signature != signature:
         raise HTTPException(409, 'Summary source identity changed during preparation; previous data is preserved')
     if stage is None:
-        progress = dict(source_at=bridge.stamp(at), cursor=None, count=0)
+        progress = dict(source_at=bridge.stamp(at), cursor=None, count=0, chunks=0, bucket_bytes={})
         stage = BridgeGeneration(generation_id=digest(['preparing', signature]), market_id=market.id,
             algorithm=STAGING, source_signature=signature, manifest_json=canonical(progress).decode(), created_at=now())
         db.add(stage)
@@ -219,45 +219,46 @@ def build(db, market):
     if progress['count'] + len(keys) > MAX_RECORDS:
         raise HTTPException(413, 'Current market exceeds summary record limit; no items were silently omitted')
     refs = {o.id: i for i, o in enumerate(observations)}
-    appended = defaultdict(list)
+    chunks = []
+    sizes = progress['bucket_bytes']
     for start in range(0, len(keys), 100):
         batch = [tuple(k) for k in keys[start:start+100]]
         values = bridge.record_batch(db, batch, list(snapshots), cp.ALGORITHM)
         for key in batch:
             row = project(bridge.assemble_record(key, values, current, daily, refs, cp.ALGORITHM, at, set()))
-            appended[row[0] % BUCKETS].append(canonical(row).decode())
-    # At most 64 bounded partials, with no visible generation until sealing.
-    partials = {r.position: r for r in db.scalars(select(BridgeRecord).where(BridgeRecord.generation_id == stage.generation_id))}
-    total = sum(len(r.record_json) for r in partials.values())
-    for bucket, chunks in appended.items():
-        existing = partials.get(bucket)
-        old = existing.record_json if existing else '[]'
-        combined = old[:-1] + (',' if old != '[]' else '') + ','.join(chunks) + ']'
-        if len(combined) > MAX_PART:
-            raise HTTPException(413, 'Summary partition exceeds 128 KiB; no generation published')
-        total += len(combined) - (len(old) if existing else 0)
-        if total > MAX_TOTAL:
-            raise HTTPException(413, 'Summary exceeds bounded coverage; no generation published')
-        if existing:
-            existing.record_json = combined
-        else:
-            existing = BridgeRecord(generation_id=stage.generation_id, position=bucket, record_json=combined)
-            db.add(existing)
-            partials[bucket] = existing
+            raw = canonical(row).decode()
+            bucket = str(row[0] % BUCKETS)
+            old = sizes.get(bucket, 2)
+            sizes[bucket] = old + len(raw) + (old > 2)
+            if sizes[bucket] > MAX_PART:
+                raise HTTPException(413, 'Summary partition exceeds 128 KiB; no generation published')
+            chunks.append(raw)
+    if sum(sizes.values()) > MAX_TOTAL:
+        raise HTTPException(413, 'Summary exceeds bounded coverage; no generation published')
+    # Append each bounded batch once. Do not rewrite all accumulated parts on
+    # every request (quadratic TOAST/WAL traffic). Final sealing streams chunks.
+    if chunks:
+        db.add(BridgeRecord(generation_id=stage.generation_id, position=progress['chunks'],
+                           record_json='[' + ','.join(chunks) + ']'))
+        progress['chunks'] += 1
     progress['count'] += len(keys)
     if keys:
         progress['cursor'] = list(keys[-1])
     stage.manifest_json = canonical(progress).decode()
     if more:
         return None
-    final_rows = sorted((row for p in partials.values() for row in json.loads(p.record_json)), key=lambda r: tuple(r[:2]))
+    db.flush()
+    def final_rows():
+        for raw in db.scalars(select(BridgeRecord.record_json).where(BridgeRecord.generation_id == stage.generation_id)
+                              .order_by(BridgeRecord.position).execution_options(yield_per=1)):
+            yield from json.loads(raw)
     metadata = dict(issuer_id=str(uuid.uuid5(uuid.NAMESPACE_URL, environment.SESSION_ORIGIN)), market=identity,
                     pricing_algorithm=cp.ALGORITHM, history_basis=cp.HISTORY_BASIS,
                     source_kind='market_server_asking_summary', source_watermark=str(watermark),
                     source_observation=dict(observation_id=str(current.id), observed_at=bridge.stamp(at), scope_complete=True),
                     generated_at=bridge.stamp(at), synthetic=any(o.synthetic for o in observations))
     try:
-        manifest, parts = seal(metadata, final_rows)
+        manifest, parts = seal(metadata, final_rows())
     except ValueError as error:
         raise HTTPException(413, str(error)) from error
     row = BridgeGeneration(generation_id=manifest['generation_id'], market_id=market.id, algorithm=ALGORITHM,

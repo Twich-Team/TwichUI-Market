@@ -183,6 +183,8 @@ def test_bounded_persisted_projection_survives_restart_and_new_observations(sour
         stage = db.scalar(select(BridgeGeneration).where(BridgeGeneration.algorithm == summary.STAGING))
         progress = json.loads(stage.manifest_json)
         assert progress['count'] == 1 and progress['cursor'] is not None
+        assert progress['chunks'] == 1
+        assert db.scalar(select(func.count()).select_from(BridgeRecord).where(BridgeRecord.generation_id == stage.generation_id)) == 1
         assert db.scalar(select(func.count()).select_from(BridgeGeneration).where(BridgeGeneration.algorithm == summary.ALGORITHM)) == 0
     with database.begin() as db:
         old = db.get(Observation, source[2][-1])
@@ -191,6 +193,6 @@ def test_bounded_persisted_projection_survives_restart_and_new_observations(sour
             payload_bytes=old.payload_bytes, synthetic=True))
     # Each HTTP request opens a fresh session; no in-memory cursor is required.
     manifest, rows, _ = download(source)
-    assert len(rows) == 3
+    assert len(rows) == 3 and manifest['source_observation']['observation_id'] == str(source[2][-1])
     with database() as db:
         assert db.scalar(select(func.count()).select_from(BridgeGeneration).where(BridgeGeneration.algorithm == summary.STAGING)) == 0

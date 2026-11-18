@@ -72,7 +72,29 @@ if(-not $dialog){throw 'Actual Companion folder dialog not found'}
 Add-Type @'
 using System;
 using System.Runtime.InteropServices;
+using System.Text;
+using System.Collections.Generic;
 public static class SummaryPickerControls {
+ public delegate bool EnumChild(IntPtr window,IntPtr data);
+ [DllImport("user32.dll")] public static extern bool EnumChildWindows(IntPtr window,EnumChild callback,IntPtr data);
+ [DllImport("user32.dll",CharSet=CharSet.Unicode)] public static extern int GetClassNameW(IntPtr window,StringBuilder name,int size);
+ [DllImport("user32.dll")] public static extern bool IsWindowVisible(IntPtr window);
+ public static IntPtr FindEdit(IntPtr parent) {
+  IntPtr found=IntPtr.Zero;int count=0;
+  EnumChildWindows(parent,delegate(IntPtr w,IntPtr data) {
+   if(++count>512)return false;
+   var name=new StringBuilder(256);GetClassNameW(w,name,256);
+   if(IsWindowVisible(w)&&name.ToString().Equals("Edit",StringComparison.OrdinalIgnoreCase)){found=w;return false;}
+   return true;
+  },IntPtr.Zero);return found;
+ }
+ public static string Classes(IntPtr parent) {
+  var items=new List<string>();
+  EnumChildWindows(parent,delegate(IntPtr w,IntPtr data) {
+   if(items.Count>=128)return false;
+   var name=new StringBuilder(256);GetClassNameW(w,name,256);items.Add(name.ToString());return true;
+  },IntPtr.Zero);return String.Join(",",items.ToArray());
+ }
  [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr window);
  [DllImport("user32.dll")] public static extern IntPtr GetDlgItem(IntPtr window,int id);
  [DllImport("user32.dll")] public static extern uint GetWindowThreadProcessId(IntPtr window,out uint pid);
@@ -83,7 +105,7 @@ public static class SummaryPickerControls {
 $dialogWindow=[IntPtr]$dialog.Current.NativeWindowHandle
 $null=[SummaryPickerControls]::SetForegroundWindow($dialogWindow)
 function CheckedWindow($element) {
-    $window=[IntPtr]$element.Current.NativeWindowHandle
+    if($element -is [IntPtr]){$window=$element}else{$window=[IntPtr]$element.Current.NativeWindowHandle}
     [uint32]$owner=0
     $null=[SummaryPickerControls]::GetWindowThreadProcessId($window,[ref]$owner)
     if($window -eq [IntPtr]::Zero -or $owner -ne [uint32]$env:MARKET_TEST_PRIMARY_PID){throw 'Native control process identity changed'}
@@ -104,11 +126,12 @@ if($Action -eq 'CancelFolder') {
     $resolved=[IO.Path]::GetFullPath($GamePath)
     if(-not $resolved.StartsWith([IO.Path]::GetFullPath($base)+'\',[StringComparison]::OrdinalIgnoreCase)){throw 'Picker fixture path escaped'}
     $edit=$dialog.FindFirst([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::ControlTypeProperty,[System.Windows.Automation.ControlType]::Edit))
-    if(-not $edit){throw 'Actual native folder edit unavailable'}
     $pattern=$null
-    if($edit.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern,[ref]$pattern)){$pattern.SetValue($resolved)}
+    if($edit -and $edit.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern,[ref]$pattern)){$pattern.SetValue($resolved)}
     else {
-        $window=CheckedWindow $edit;$result=[IntPtr]::Zero
+        $nativeEdit=[SummaryPickerControls]::FindEdit($dialogWindow)
+        if($nativeEdit -eq [IntPtr]::Zero){throw ('Actual native folder edit unavailable; classes: '+[SummaryPickerControls]::Classes($dialogWindow))}
+        $window=CheckedWindow $nativeEdit;$result=[IntPtr]::Zero
         if([SummaryPickerControls]::SetText($window,0x000C,[IntPtr]::Zero,$resolved,2,3000,[ref]$result) -eq [IntPtr]::Zero){throw 'Actual native edit timed out'}
     }
     $button=$dialog.FindFirst([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::AutomationIdProperty,'1'))

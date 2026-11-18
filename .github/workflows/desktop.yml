@@ -90,6 +90,29 @@ jobs:
           if-no-files-found: error
 
 
+  picker:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/checkout@v4
+        with:
+          repository: Twich-Team/TwichUI
+          ref: 1f437e384d0e024be9c1da2be343d79e04d49840
+          path: coordinated-addon
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.100.0
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: desktop -> target
+      - run: cargo build --manifest-path desktop/Cargo.toml --example installation_smoke --locked
+      - shell: pwsh
+        run: ./scripts/windows/verify-workshop-picker.ps1
+
   signed-update:
     uses: ./.github/workflows/companion-release.yml
     with:
