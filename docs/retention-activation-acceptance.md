@@ -29,3 +29,5 @@ Actual trusted HTTPS desktop/mobile administration and genuine ordinary/commodit
 **The current local recovery evidence expires November 19, 2026 at 14:52:45 UTC.** Maintenance will pause if a fresh protected, checksum-verified, restored local recovery point is not provided. The owner's recurring backup schedule is still disabled. Off-VM verification remains false; the explicit exception does not claim disaster recovery or unlimited future retention readiness.
 
 Final integration [PR39](https://github.com/Twich-Team/TwichUI-Market/pull/39) reconciles the approved release lineages. All application/contract/workflow trees equal fully passed integration source3ebd8b3; frozen published payload remains36dc204. [Tree equivalence](evidence/companion-beta8/final-source-equivalence.json), [complete integration CI](evidence/retention-activation/ci.json).
+
+PR39 merged as `a0f614be8b1b2aeea4dae6b1474f7ad8e16d7589`. All six application/contract/workflow trees match tested source3ebd8b3; [actual merge receipt](evidence/companion-beta8/integration.json). No additional deployment or release-pointer change was needed.
