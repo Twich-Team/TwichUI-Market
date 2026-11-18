@@ -13,9 +13,20 @@ if($Worker){
                 if($_.FullName -eq $case.unreadable){$before[$_.FullName]=@{length=$_.Length;modified=$_.LastWriteTimeUtc.Ticks}}
                 else{$before[$_.FullName]=(Get-FileHash $_.FullName -Algorithm SHA256).Hash}
             }
-            $nativeError=Join-Path (Split-Path $Plan) 'native-stderr.txt'
-            $nativeRaw=& $planData.exe inspect $case.path 2> $nativeError
-            if($LASTEXITCODE -ne 0){throw "Native preflight process failed; exit=$LASTEXITCODE; stderr=$(Get-Content $nativeError -Raw); stdout=$nativeRaw"}
+            # Explicit pipes also work when the restricted parent has no console.
+            $start=New-Object System.Diagnostics.ProcessStartInfo
+            $start.FileName=$planData.exe
+            $start.Arguments='inspect "'+$case.path+'"'
+            $start.UseShellExecute=$false
+            $start.CreateNoWindow=$true
+            $start.RedirectStandardOutput=$true
+            $start.RedirectStandardError=$true
+            $nativeProcess=[System.Diagnostics.Process]::Start($start)
+            $nativeRaw=$nativeProcess.StandardOutput.ReadToEnd()
+            $nativeError=$nativeProcess.StandardError.ReadToEnd()
+            $nativeProcess.WaitForExit()
+            if($nativeProcess.ExitCode -ne 0){throw "Native preflight process failed; exit=$($nativeProcess.ExitCode); stderr=$nativeError; stdout=$nativeRaw"}
+            $nativeProcess.Dispose()
             $native=$nativeRaw|ConvertFrom-Json
             if($null -eq $native -or $native.elevated){throw "Non-elevated native execution required: $($case.name) $($native|ConvertTo-Json -Compress -Depth 8)"}
             if($native.accepted -ne $case.accepted){throw "Unexpected acceptance: $($case.name) $($native|ConvertTo-Json -Compress -Depth 8)"}

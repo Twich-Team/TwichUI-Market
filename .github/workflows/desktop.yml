@@ -110,10 +110,12 @@ jobs:
         with:
           workspaces: desktop -> target
       - run: cargo build --manifest-path desktop/Cargo.toml --example installation_smoke --locked
+        id: installation_build
       - name: Verify inherited NTFS permissions with a non-elevated token
         shell: pwsh
         run: ./scripts/windows/verify-workshop-permissions.ps1
       - shell: pwsh
+        if: ${{ !cancelled() && steps.installation_build.outcome == 'success' }}
         run: ./scripts/windows/verify-workshop-picker.ps1
       - uses: actions/upload-artifact@v4
         if: always()

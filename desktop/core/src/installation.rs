@@ -227,8 +227,8 @@ mod version_tests {
     #[test]
     fn unsupported_or_incomplete_product_identity_still_fails_closed() {
         for version in ["Version 1.12.1.5875","Version 1.61.1.1234","Version 2.0.0.0","160.1.7095.9","Version 1.60.secret-token","1.60","1.60..1"] {
-            let mut wrong=owner();wrong.product_version=version.into();let error=validate_executable(&wrong).unwrap_err();
-            assert!(!error.to_string().contains("secret-token"));
+            let mut wrong=owner();wrong.product_version=version.into();let Error::WorkshopSetup(error)=validate_executable(&wrong).unwrap_err() else {panic!("structured executable diagnostic")};
+            assert!(!serde_json::to_string(&error).unwrap().contains("secret-token"));
         }
         let mut wrong=owner();wrong.product_name="Other game".into();assert!(validate_executable(&wrong).is_err());
         wrong=owner();wrong.original_filename="Launcher.exe".into();assert!(validate_executable(&wrong).is_err());
