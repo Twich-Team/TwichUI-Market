@@ -1,0 +1,4 @@
+{
+  "no_archive_or_docker_socket_mount": true,
+  "token_mount_read_only": true
+}
