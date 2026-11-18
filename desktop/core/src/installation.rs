@@ -376,6 +376,20 @@ mod addon_tests {
         assert!(e.details.contains("PermissionDenied")); assert!(e.message.contains("Read permission denied"));
         assert!(!serde_json::to_string(&e).unwrap().contains("secret-token"));
     }
+    #[cfg(windows)]
+    #[test]
+    fn addon_windows_denied_read_identifies_the_exact_file() {
+        use std::os::windows::fs::OpenOptionsExt;
+        let root = fixture();
+        let path = root.path().join("Interface/AddOns/TwichUI_Workshop/Summary.lua");
+        // Exclusive handle reproduces an actual native access failure without
+        // changing ACLs on any installed addon or relying on synthetic I/O.
+        let locked = fs::OpenOptions::new().read(true).share_mode(0).open(path).unwrap();
+        let e = failure(root.path());
+        assert_eq!(e.code, "access_denied"); assert_eq!(e.check.as_deref(), Some("summary_lua"));
+        assert!(e.details.contains("os_code=Some(32)"));
+        drop(locked); assert!(validate_addons(root.path()).is_ok());
+    }
     #[cfg(unix)]
     #[test]
     fn addon_linked_files_are_still_refused() {

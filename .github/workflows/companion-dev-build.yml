@@ -37,6 +37,7 @@ jobs:
           toolchain: 1.100.0
       - uses: Swatinem/rust-cache@v2
         with:
+          cache-on-failure: true
           # Same workspace/cache family as normal desktop CI.
           workspaces: |
             desktop -> target
@@ -52,9 +53,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cargo test --manifest-path desktop/Cargo.toml --locked --lib workshop_setup::
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          cargo test --manifest-path desktop/Cargo.toml --locked --lib setup_failures_preserve_previous_data
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          cargo test --manifest-path desktop/Cargo.toml --locked --lib --features private-dev private_dev_never_uses_production_credential_names
+          cargo test --manifest-path desktop/Cargo.toml --locked --lib --features private-dev vault::dev_tests::
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Prepare isolated unsigned development application
         run: python scripts/prepare-companion-dev.py
