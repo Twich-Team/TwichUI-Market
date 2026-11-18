@@ -182,3 +182,15 @@ def test_restart_records_interruption_even_when_owner_paused(database,automation
         db.add(RetentionExecution(policy_hash=automation['policy_hash'],status='running'))
     assert work_once(database)['status']=='inactive'
     with database() as db: assert db.scalar(select(RetentionExecution.status))=='interrupted'
+
+
+def test_empty_collector_yield_retries_without_phase_starvation(database,automation):
+    at=now()
+    with database.begin() as db:
+        market=db.scalar(select(Market));market.enabled=True;market.next_check=at
+    assert 'Collector due' in work_once(database,at=at)['reason']
+    with database.begin() as db:
+        assert at+timedelta(seconds=55)<db.get(RetentionAutomation,1).next_run_at<at+timedelta(seconds=65)
+        db.scalar(select(Market)).enabled=False
+    assert work_once(database,at=at+timedelta(seconds=30))['status']=='not_due'
+    assert work_once(database,at=at+timedelta(seconds=61))['rows_processed']==200

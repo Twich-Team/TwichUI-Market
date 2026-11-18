@@ -43,6 +43,7 @@ class Limits(BaseModel):
     lock_ms: int = Field(default=250, ge=1, le=500)
     interval_seconds: int = Field(default=300, ge=60, le=86400)
     collector_margin_seconds: int = Field(default=30, ge=30, le=120)
+    contention_retry_seconds: int = Field(default=60, ge=30, le=300)
     max_wal_bytes: int = Field(default=2*1024**3, ge=256*1024**2, le=8*1024**3)
 
 
@@ -240,6 +241,13 @@ def _work(factory, at, clock):
     with factory.begin() as db:
         receipt=db.get(RetentionExecution,receipt_id)
         receipt.status=outcome;receipt.reason=reason;receipt.finished_at=now()
+        # Retrying an empty contention attempt earlier prevents permanent phase
+        # alignment with the five-minute collector. A cycle that committed any
+        # rows retains its full authorized interval and cannot spend two budgets.
+        if receipt.batches==0 and reason in ('Collection or synchronization is busy','Collector due; yielding maintenance budget'):
+            row=db.get(RetentionAutomation,1)
+            if row and row.enabled:
+                row.next_run_at=at+timedelta(seconds=min(limits.contention_retry_seconds,limits.interval_seconds))
         return {'status':outcome,'reason':reason,'batches':receipt.batches,'rows_processed':receipt.rows_processed}
 
 
