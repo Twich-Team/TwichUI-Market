@@ -18,15 +18,12 @@ def migrate(*args):
 with engine.begin() as db:
     db.execute(text('DROP SCHEMA public CASCADE'));db.execute(text('CREATE SCHEMA public'))
 migrate('upgrade','fdb_20261116')
-from market.models import Market,User
-from market.ingest import ingest
-from sqlalchemy.orm import Session
-with Session(engine) as db,db.begin():
+from migration_fixtures import seed_legacy_auction
+with engine.begin() as db:
     db.execute(text("INSERT INTO users(id,username,password_hash,role,active,created_at) VALUES(1,'archive_migration','nonlogin','member',true,now())"))
-    market=Market(region='us',ruleset_id=1,house_id=114,source_kind='auctions',label='Synthetic only');db.add(market);db.flush()
-    ingest(db,market.id,b'{"auctions":[{"id":1,"item":{"id":720},"quantity":2,"buyout":400}]}',request_key='archive-migration-fixture',synthetic=True)
+    mid=seed_legacy_auction(db,ruleset_id=1,request_key='archive-migration-fixture',label='Synthetic only')
     db.execute(text("INSERT INTO user_preferences(user_id,schema_version,revision,values_json,updated_at) VALUES(1,1,3,'{}',now())"))
-    mid=market.id
+
 tables=sorted(set(inspect(engine).get_table_names())-{'alembic_version'})
 columns={t:[c['name'] for c in inspect(engine).get_columns(t)] for t in tables}
 def fingerprint():

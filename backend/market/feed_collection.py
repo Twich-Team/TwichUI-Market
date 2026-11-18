@@ -12,7 +12,7 @@ from collections import defaultdict
 from datetime import timedelta
 from email.utils import parsedate_to_datetime
 from types import SimpleNamespace
-from sqlalchemy import delete, insert, select
+from sqlalchemy import delete, insert, select, tuple_
 from .db import now
 from .ingest import canonical, normalize, record_daily
 from .models import (FeedCapture, FeedCheck, ItemSourceCoverage, Listing, MarketFeed,
@@ -29,6 +29,7 @@ def verified_identity(market, feed):
                 'house_id': market.house_id, 'source_kind': feed.source_kind,
                 'namespace': f'dynamic-forever-{market.region}', 'scope': 'ruleset_house'}
     proof = json.loads(feed.verification)
+    if not isinstance(proof, dict): raise ValueError('Invalid feed verification object')
     if feed.source_kind not in KINDS or proof.get('identity') != expected:
         raise ValueError('Feed verification does not match market')
     if not isinstance(proof.get('evidence_sha256'), str) or re.fullmatch('[0-9a-f]{64}', proof['evidence_sha256']) is None:
@@ -51,15 +52,15 @@ def decode(capture):
 
 def capture_feed(db, market, feed, client, at):
     from .worker import UpstreamFailure, retry_seconds
-    verified_identity(market, feed)
     check = FeedCheck(market_id=market.id, source_kind=feed.source_kind, checked_at=at, status='failed')
     db.add(check)
     feed.last_check = at
-    if feed.retry_after and aware(feed.retry_after) > at:
-        check.status, check.error = 'deferred', 'Feed is waiting for its persisted retry window'
-        db.flush()
-        return check
     try:
+        verified_identity(market, feed)
+        if feed.retry_after and aware(feed.retry_after) > at:
+            check.status, check.error = 'deferred', 'Feed is waiting for its persisted retry window'
+            db.flush()
+            return check
         transport = SimpleNamespace(region=market.region, ruleset_id=market.ruleset_id,
             house_id=market.house_id, source_kind=feed.source_kind, etag=feed.etag, last_modified=feed.last_modified)
         meta, body = client.fetch(transport)
@@ -71,11 +72,15 @@ def capture_feed(db, market, feed, client, at):
             if headers.get('Battlenet-Namespace') != f'dynamic-forever-{market.region}':
                 raise ValueError('Namespace mismatch')
             payload = json.loads(body)
+            if not isinstance(payload, dict): raise ValueError('Expected source object')
             # The commodity feed has no house/name fields; bind its self link to
             # the same-house commodities link established by the reviewed receipt.
             path = f'/data/wow/ruleset/{market.ruleset_id}/auctions/{market.house_id}'
             path += '/commodities' if feed.source_kind == 'commodities' else ''
-            href = payload.get('_links', {}).get('self', {}).get('href', '')
+            links = payload.get('_links')
+            source = links.get('self') if isinstance(links, dict) else None
+            href = source.get('href') if isinstance(source, dict) else None
+            if not isinstance(href, str): raise ValueError('Missing source identity link')
             from urllib.parse import urlparse, parse_qs
             parsed = urlparse(href)
             if (parsed.scheme != 'https' or parsed.netloc != f'{market.region}.api.blizzard.com'
@@ -115,7 +120,8 @@ def capture_feed(db, market, feed, client, at):
         feed.last_success, feed.failures, feed.last_error, feed.retry_after = at, 0, None, None
     except (UpstreamFailure, OSError, ValueError, KeyError, TypeError) as error:
         feed.failures += 1
-        check.error = feed.last_error = 'Feed transport, identity or payload validation failed'
+        reason = (f'Upstream HTTP {error.status}' if error.status else error.reason) if isinstance(error, UpstreamFailure) else 'Feed transport, identity or payload validation failed'
+        check.error = feed.last_error = reason
         retry = retry_seconds(error.retry_after, at) if isinstance(error, UpstreamFailure) else 0
         feed.retry_after = at + timedelta(seconds=max(300, min(300 * 2**min(feed.failures - 1, 8), 86400), retry))
     db.flush()
@@ -125,6 +131,8 @@ def capture_feed(db, market, feed, client, at):
 def publish(db, market, checks, at):
     """Normalize one feed at a time; no second copy of original listing tables."""
     captures = [db.get(FeedCapture, check.capture_id) for check in checks]
+    if any(c is None or c.market_id != market.id or c.source_kind != check.source_kind for c, check in zip(captures, checks)):
+        raise ValueError('Source capture identity mismatch')
     content_hash = hashlib.sha256(canonical([[c.source_kind, c.content_hash] for c in captures]).encode()).hexdigest()
     snapshot = db.scalar(select(Snapshot).where(Snapshot.market_id == market.id, Snapshot.content_hash == content_hash))
     needs_raw = snapshot is None or not snapshot.raw_retained
@@ -163,6 +171,12 @@ def publish(db, market, checks, at):
             if capture.source_kind == 'commodities':
                 existing = set(db.execute(select(ItemSourceCoverage.item_id, ItemSourceCoverage.variant_key).where(
                     ItemSourceCoverage.market_id == market.id)))
+                additions = sorted(current_variants - existing)
+                for offset in range(0, len(additions), 1000):
+                    prior = db.scalar(select(SnapshotStatistic.item_id).join(Snapshot, Snapshot.id==SnapshotStatistic.snapshot_id).where(
+                        Snapshot.market_id==market.id, SnapshotStatistic.source_kind=='auctions',
+                        tuple_(SnapshotStatistic.item_id, SnapshotStatistic.variant_key).in_(additions[offset:offset+1000])).limit(1))
+                    if prior is not None: raise ValueError('Unverified historical source transition')
                 db.add_all([ItemSourceCoverage(market_id=market.id, item_id=item, variant_key=variant,
                     source_kind='commodities', first_observed_at=capture.observed_at)
                     for item, variant in current_variants - existing])
@@ -170,6 +184,9 @@ def publish(db, market, checks, at):
     snapshot.raw_retained = snapshot.statistics_retained = True
     manifest = [{'source_kind': c.source_kind, 'check_id': check.id, 'capture_id': c.id,
         'payload_sha256': c.payload_hash, 'checked_at': at.isoformat(),
+        'region': market.region, 'ruleset_id': market.ruleset_id, 'house_id': market.house_id,
+        'namespace': f'dynamic-forever-{market.region}', 'status': check.status, 'http_status': check.http_status,
+        'verification_sha256': json.loads(db.get(MarketFeed, (market.id, c.source_kind)).verification)['evidence_sha256'],
         'upstream_modified': check.upstream_modified} for c, check in zip(captures, checks)]
     # The logical source time is the older feed, never the newer peer's time.
     modified = [check.upstream_modified for check in checks]
@@ -199,9 +216,10 @@ def collect_feeds(db, market, feeds, client, at, run):
                 publish(db, market, checks, at)
             run.status = 'unchanged' if all(c.status == 'unchanged' for c in checks) else 'collected'
             market.failures, market.last_error = 0, None
-        except (ValueError, OSError):
+        except (ValueError, OSError) as error:
             run.status = 'partial'
-            market.last_error = 'Source captures retained; unified publication validation failed'
+            reason = str(error) if str(error) in ('Unverified cross-feed overlap', 'Unverified historical source transition', 'Source capture identity mismatch', 'Capture integrity failure', 'Capture byte bound') else 'unified publication validation failed'
+            market.last_error = 'Source captures retained; ' + reason
             market.failures += 1
     else:
         run.status = 'partial'

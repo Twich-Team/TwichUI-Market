@@ -260,6 +260,9 @@ def test_archive_v1_stays_regular_only_and_v2_carries_coverage(client, database,
             rows.extend(page['entries'])
             cursor = page['next_cursor']
         all_rows[protocol] = rows
+    old_schema = json.loads((Path(__file__).resolve().parents[2]/'contracts/archive/v1/archive.schema.json').read_bytes())
+    with pytest.raises(jsonschema.ValidationError):
+        jsonschema.Draft202012Validator(old_schema).validate(envelopes[2])
     ordinary = [r for r in all_rows[1] if r['kind'] == 'variant']
     assert {r['item_id'] for r in ordinary} == {25}
     assert all('coverage_started_at' not in r['value'] for r in ordinary)
@@ -337,3 +340,66 @@ def test_wrong_commodity_self_link_is_not_silently_substituted(database):
         assert db.scalar(select(func.count()).select_from(Observation)) == 0
         assert db.scalar(select(func.count()).select_from(FeedCapture)) == 1
         assert db.get(MarketFeed,(2,'commodities')).failures == 1
+
+
+def test_commodity_deals_require_three_actual_priced_days_even_with_low_requested_coverage(owner,database):
+    at=configure(database)
+    start=at-timedelta(days=2)
+    with database.begin() as db: db.get(Market,2).next_check=start
+    client=Client(commodities=[row(4306,10,quantity=20,price=100),row(4306,11,quantity=20,price=400)])
+    assert collect_once(database,client,at=start)
+    path='/api/v1/markets/2/deals?minimum_coverage=1&minimum_discount=1'
+    assert owner.get(path).json()['deals']==[]
+    assert collect_once(database,client,at=start+timedelta(days=1))
+    assert owner.get(path).json()['deals']==[]
+    assert collect_once(database,client,at=at)
+    response=owner.get(path)
+    assert response.status_code==200,response.text
+    deals=response.json()['deals']
+    assert len(deals)==1 and deals[0]['item_id']==4306
+    assert deals[0]['quantity']==20 and deals[0]['total_buyout']=='2000'
+
+
+@pytest.mark.parametrize('malformed',[[],None,{'auctions':[],'_links':None},{'auctions':[],'_links':{'self':None}}])
+def test_malformed_commodity_envelope_preserves_successful_peer_capture(database,malformed):
+    at=configure(database)
+    class Malformed(Client):
+        def fetch(self,market):
+            meta,body=super().fetch(market)
+            if market.source_kind=='commodities': body=json.dumps(malformed).encode()
+            return meta,body
+    assert collect_once(database,Malformed(),at=at)
+    with database() as db:
+        assert db.scalar(select(func.count()).select_from(FeedCapture))==1
+        assert db.scalar(select(func.count()).select_from(Observation))==0
+        assert db.get(MarketFeed,(2,'commodities')).failures==1
+        assert db.get(Market,2).last_error
+
+
+def test_historical_source_transition_requires_review_without_hiding_real_history(database):
+    at=configure(database)
+    with database.begin() as db:
+        ingest(db,2,payload('auctions',[row(4306,100,quantity=20,price=2460,kind='auctions')]),
+               request_key='synthetic-previous-source',retrieved_at=at-timedelta(days=1),synthetic=True)
+    assert collect_once(database,Client(),at=at)
+    with database() as db:
+        assert db.scalar(select(func.count()).select_from(Observation))==1
+        assert db.scalar(select(func.count()).select_from(ItemSourceCoverage))==0
+        assert db.scalar(select(func.count()).select_from(FeedCapture))==2
+        assert 'historical source transition' in db.get(Market,2).last_error
+        previous=db.scalar(select(SnapshotStatistic).where(SnapshotStatistic.item_id==4306))
+        assert previous.recent_price==123 and previous.supply==20
+
+
+def test_clearing_unified_flag_cannot_publish_regular_only_false_zero(owner,database):
+    at=configure(database)
+    assert collect_once(database,Client(),at=at)
+    with database.begin() as db: db.get(Market,2).unified_coverage=False
+    client=Client()
+    assert collect_once(database,client,at=at+timedelta(seconds=300))
+    assert not client.calls
+    with database() as db:
+        assert db.scalar(select(func.count()).select_from(Observation))==1
+        assert 'compatible collector' in db.get(Market,2).last_error
+    view=owner.get('/api/v1/markets').json()['markets'][0]
+    assert view['coverage_status']=='partial' and view['freshness']=='stale'

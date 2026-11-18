@@ -2,8 +2,8 @@ import {test,expect,Page} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 async function openMarket(page:Page,width:number){
  await page.setViewportSize({width,height:900});await page.goto('/?market=1');
- await page.getByLabel('Username',{exact:true}).fill('owner');
- await page.getByLabel('Password',{exact:true}).fill('synthetic browser owner password');
+ await page.getByLabel('Username',{exact:true}).fill('commodity_fixture');
+ await page.getByLabel('Password',{exact:true}).fill('synthetic commodity browser password');
  await page.getByRole('button',{name:'Sign in',exact:true}).click();
  await expect(page.getByRole('heading',{name:'Market Explorer',exact:true})).toBeVisible();
  const response=await page.request.get('/api/v1/markets');expect(response.status()).toBe(200);

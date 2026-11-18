@@ -7,16 +7,24 @@ from sqlalchemy import select
 from market.db import Session, engine, now
 from market.ingest import canonical, ingest
 from market.metadata import store_metadata
-from market.models import Market, MarketFeed, Observation
+from market.models import Market, MarketFeed, Observation, User
+from market.security import hasher
 from market.worker import collect_once
 
 assert engine.url.database == 'market_test', 'Refusing unified fixtures outside market_test'
 at = now()-timedelta(minutes=1)
 with Session.begin() as db:
-    market = Market(region='us', ruleset_id=2, house_id=114, source_kind='auctions',
-        label='Synthetic unified coverage', unified_coverage=True, enabled=True, verified=True,
-        interval_seconds=300, next_check=at)
-    db.add(market)
+    if db.scalar(select(User.id).where(User.username=='commodity_fixture')) is None:
+        db.add(User(username='commodity_fixture', password_hash=hasher.hash('synthetic commodity browser password'), role='member'))
+    market = db.scalar(select(Market).where(Market.region=='us',Market.ruleset_id==2,
+        Market.house_id==114,Market.source_kind=='auctions'))
+    if market is None:
+        market=Market(region='us',ruleset_id=2,house_id=114,source_kind='auctions',label='Synthetic unified coverage')
+        db.add(market)
+    market.label='Synthetic unified coverage'
+    market.unified_coverage=market.enabled=market.verified=True
+    market.interval_seconds=300
+    market.next_check=at
     db.flush()
     mid = market.id
     ingest(db, mid, b'{"auctions":[{"id":1,"item":{"id":25},"quantity":1,"buyout":999}]}',

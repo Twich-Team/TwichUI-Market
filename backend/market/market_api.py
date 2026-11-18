@@ -69,7 +69,7 @@ def market_view(market, *, player_identity=False):
             except (ValueError,TypeError):pass
     from .feed_collection import feed_health
     feeds = feed_health(object_session(market), market) if market.unified_coverage and object_session(market) else []
-    partial = any(f['enabled'] and f['status'] in ('failed', 'unavailable') for f in feeds) or bool(feeds and market.last_error)
+    partial = any(f['enabled'] and f['status'] in ('failed', 'unavailable') for f in feeds) or bool(feeds and market.last_error) or market.last_error=='Unified feed configuration requires a compatible collector; collection paused'
     return {'feeds': feeds, 'coverage_status': 'partial' if partial else 'complete', 'id':market.id,'region':market.region,'ruleset_id':market.ruleset_id,'house_id':market.house_id,
             'source_kind':market.source_kind,'label':label,'enabled':market.enabled,'verified':market.verified,
             'player_identity_verified':mapping is not None,
