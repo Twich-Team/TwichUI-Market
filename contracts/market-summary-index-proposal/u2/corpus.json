@@ -12,9 +12,11 @@
       "repository": "Twich-Team/TwichUI-Market",
       "commit": "230465e1adf7c13f40344cc073383031d4a55f8d",
       "path": "backend/market/ingest.py",
-      "sha256": "057ac244be8ec33aa9ad4fd96102f17a5abd7c2078b4fedc2d80ca5b62921b6e",
+      "sha256": "14b87d1e0e5cc8fd4b1d93e80f270712ab4c0df45bebad7591c03b542a3c68ea",
       "classification": "source_verified",
-      "proves": "source behavior/API shape only; no native descriptor equivalence"
+      "proves": "source behavior/API shape only; no native descriptor equivalence",
+      "foundation_sha256": "057ac244be8ec33aa9ad4fd96102f17a5abd7c2078b4fedc2d80ca5b62921b6e",
+      "candidate_amendment": "Automatic delivery candidate reconciles merged #30 source-aware coverage and independent nonblocking derived-cache reservation; original foundation fingerprint retained. No native identity equivalence inferred."
     },
     {
       "repository": "Twich-Team/TwichUI-Market",
@@ -28,19 +30,21 @@
       "repository": "Twich-Team/TwichUI-Market",
       "commit": "230465e1adf7c13f40344cc073383031d4a55f8d",
       "path": "backend/market/market_configuration.py",
-      "sha256": "afa6cb38a0a626405ff66777363ff351db1838b17c9893f8e73f9b2b3c66cb7d",
+      "sha256": "0707f52675649c3cf8878af58fc89f41164aea8c4c9104863febf836dc43a38f",
       "classification": "source_verified",
-      "proves": "source behavior/API shape only; no native descriptor equivalence"
+      "proves": "source behavior/API shape only; no native descriptor equivalence",
+      "foundation_sha256": "afa6cb38a0a626405ff66777363ff351db1838b17c9893f8e73f9b2b3c66cb7d",
+      "candidate_amendment": "Automatic delivery candidate reconciles merged #30 source-aware coverage and independent nonblocking derived-cache reservation; original foundation fingerprint retained. No native identity equivalence inferred."
     },
     {
       "repository": "Twich-Team/TwichUI-Market",
       "commit": "230465e1adf7c13f40344cc073383031d4a55f8d",
       "path": "backend/market/bridge_api.py",
-      "sha256": "a7a7063b6d736f24dd9098e9d41687b3ef384d2174f301a236569bffa3e28896",
+      "sha256": "17d08e1812ab6d66a492396ccbd07539b286b1e28effdac2d279cca7fadf5652",
       "classification": "source_verified",
       "proves": "source behavior/API shape only; no native descriptor equivalence",
       "foundation_sha256": "c9f3c2f0c29fe166b0d444ada4a64a934da684a1776d8a98462ae8d4d3621131",
-      "candidate_amendment": "Automatic delivery: independent nonblocking derived-cache reservation only; canonical arithmetic and identity vectors unchanged."
+      "candidate_amendment": "Automatic delivery candidate reconciles merged #30 source-aware coverage and independent nonblocking derived-cache reservation; original foundation fingerprint retained. No native identity equivalence inferred."
     },
     {
       "repository": "Twich-Team/TwichUI",

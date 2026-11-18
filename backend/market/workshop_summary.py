@@ -28,7 +28,7 @@ from .market_configuration import mapping_for
 
 FORMAT = 'twichui-workshop-summary'
 ALGORITHM = 'workshop-summary-v1:' + cp.ALGORITHM
-STAGING = 'workshop-summary-chunks-v1:' + cp.ALGORITHM
+STAGING = 'workshop-summary-chunks-coverage-v1:' + cp.ALGORITHM
 PROJECTION_BATCH = 1000
 BUCKETS = 64
 MAX_PART = 128 * 1024
@@ -179,7 +179,7 @@ def build(db, market):
     if not identity['mapping_verified']:
         raise HTTPException(409, 'Verified Forever market mapping is required')
     identity['faction'] = mapping_for(db, market).faction
-    signature = digest([FORMAT, 1, bridge.REVISION, cp.HISTORY_BASIS, identity,
+    signature = digest([FORMAT, 1, 'source-coverage-v1', bridge.REVISION, cp.HISTORY_BASIS, identity,
                         [[o.id, o.snapshot_id] for o in observations]])
     cached = db.scalar(select(BridgeGeneration).where(BridgeGeneration.market_id == market.id,
                        BridgeGeneration.algorithm == ALGORITHM, BridgeGeneration.source_signature == signature))
@@ -207,7 +207,7 @@ def build(db, market):
         return None
     # Only current observed variants: historical-only identities are explicitly
     # outside this summary universe. History supports references, not daily charts.
-    from .models import BridgeDerivedRecord
+    from .models import BridgeDerivedRecord, ItemSourceCoverage
     query = select(BridgeDerivedRecord.item_id, BridgeDerivedRecord.variant_key).where(
         BridgeDerivedRecord.snapshot_id == current.snapshot_id, BridgeDerivedRecord.algorithm == cp.ALGORITHM,
         BridgeDerivedRecord.revision == bridge.REVISION)
@@ -224,8 +224,11 @@ def build(db, market):
     for start in range(0, len(keys), 100):
         batch = [tuple(k) for k in keys[start:start+100]]
         values = bridge.record_batch(db, batch, list(snapshots), cp.ALGORITHM)
+        starts = {(r.item_id, r.variant_key): r.first_observed_at for r in db.scalars(
+            select(ItemSourceCoverage).where(ItemSourceCoverage.market_id == market.id,
+                tuple_(ItemSourceCoverage.item_id, ItemSourceCoverage.variant_key).in_(batch)))}
         for key in batch:
-            row = project(bridge.assemble_record(key, values, current, daily, refs, cp.ALGORITHM, at, set()))
+            row = project(bridge.assemble_record(key, values, current, daily, refs, cp.ALGORITHM, at, set(), starts.get(key)))
             raw = canonical(row).decode()
             bucket = str(row[0] % BUCKETS)
             old = sizes.get(bucket, 2)

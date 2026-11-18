@@ -87,6 +87,19 @@ def test_native_authorization_market_binding_missing_mapping_and_expiry(source, 
     assert client.get(f'/api/v1/workshop/markets/{mid}/summary').status_code == 403
 
 
+def test_new_source_coverage_does_not_count_precoverage_days(source, database):
+    from market.models import ItemSourceCoverage
+    _, mid, observations, _ = source
+    with database.begin() as db:
+        latest = db.get(Observation, observations[-1])
+        db.add(ItemSourceCoverage(market_id=mid, item_id=2589, variant_key=key({'id': 2589}),
+            source_kind='commodities', first_observed_at=latest.retrieved_at))
+    _, rows, _ = download(source)
+    row = rows[2589, key({'id': 2589})]
+    assert row[3:6] == ['120', '120', '120']
+    assert row[9:] == [None, 1, 1, 1]
+
+
 def test_mapping_required_before_any_derivation(bridge, database):
     client, mid, _, _ = bridge
     assert client.get(f'/api/v1/workshop/markets/{mid}/summary').status_code == 409
