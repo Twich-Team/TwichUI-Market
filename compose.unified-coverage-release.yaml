@@ -1,0 +1,15 @@
+services:
+  api:
+    image: sha256:81336cb2ad0f9edc19ee9d70e5614cf052831591ff3a702099da24a75c59656e
+    environment:
+      APP_COMMIT: 70f144ca35bd7041dcf17391f9fc8c96fd3c4ef8
+  local-api:
+    image: sha256:81336cb2ad0f9edc19ee9d70e5614cf052831591ff3a702099da24a75c59656e
+    environment:
+      APP_COMMIT: 70f144ca35bd7041dcf17391f9fc8c96fd3c4ef8
+  worker:
+    image: sha256:81336cb2ad0f9edc19ee9d70e5614cf052831591ff3a702099da24a75c59656e
+    environment:
+      APP_COMMIT: 70f144ca35bd7041dcf17391f9fc8c96fd3c4ef8
+  proxy:
+    image: sha256:561f33a0a4fd253a04efd8738c5261177274688daa0b8aa732bde6c50744b186

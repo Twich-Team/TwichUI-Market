@@ -1,0 +1,25 @@
+{
+  "bounded_authenticated_https_requests": 2,
+  "provider_requests": 0,
+  "responses": [
+    {
+      "protocol": 1,
+      "status": 202,
+      "seconds": 25.776,
+      "body": {
+        "state": "preparing",
+        "retry_after_seconds": 1
+      }
+    },
+    {
+      "protocol": 2,
+      "status": 202,
+      "seconds": 20.013,
+      "body": {
+        "state": "preparing",
+        "retry_after_seconds": 1
+      }
+    }
+  ],
+  "expected_behavior": "Both protocol namespaces begin bounded cold archive preparation; no full production bootstrap or on-PC export claimed"
+}

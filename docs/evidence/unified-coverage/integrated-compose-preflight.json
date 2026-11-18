@@ -1,0 +1,28 @@
+{
+  "source_commit": "70f144ca35bd7041dcf17391f9fc8c96fd3c4ef8",
+  "changes": {
+    "api": [
+      "image",
+      "environment"
+    ],
+    "backup": [
+      "restart",
+      "profiles"
+    ],
+    "local-api": [
+      "image",
+      "environment"
+    ],
+    "proxy": [
+      "image"
+    ],
+    "worker": [
+      "image",
+      "environment"
+    ]
+  },
+  "all_other_environment_settings_identical": true,
+  "all_profiles_resolved": true,
+  "stable_overlay_paths": true,
+  "production_changed": false
+}

@@ -1,0 +1,23 @@
+[
+  {
+    "item_id": 4306,
+    "name": "Silk Cloth",
+    "quality": "COMMON",
+    "metadata_provider": "foreverdb",
+    "icon_url": "/api/v1/items/us/4306/icon?v=b9d707c63a36bc9bf9e6e3d22f4314be6e7e3ca587c5e9a7cb7941736ecc45aa"
+  },
+  {
+    "item_id": 14342,
+    "name": "Mooncloth",
+    "quality": "COMMON",
+    "metadata_provider": "foreverdb",
+    "icon_url": "/api/v1/items/us/14342/icon?v=1d2af8ca9f46b2e9277209d8d4b43d83d2f39964b6b24a66956ae129344f6e34"
+  },
+  {
+    "item_id": 6657,
+    "name": "Savory Deviate Delight",
+    "quality": "COMMON",
+    "metadata_provider": "foreverdb",
+    "icon_url": "/api/v1/items/us/6657/icon?v=37605e0a745044d9eb111868b089322eaa7cdbb733bcde0c0f56d3b5714bb155"
+  }
+]

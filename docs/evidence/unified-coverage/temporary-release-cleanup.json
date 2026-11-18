@@ -1,0 +1,72 @@
+{
+  "at": "2026-11-18T02:09:01.424192+00:00",
+  "owner_policy": "no retained database backups or recurring backups",
+  "temporary_release_dump_removed": true,
+  "backup_sha256": "87c058cb7213c076e81b9ed975347c81fb7695fa5e6a621b62bb6d1828a8cced",
+  "removed_only_known_own_temporary_files": [
+    {
+      "name": "production-before.dump",
+      "bytes": 596366938
+    },
+    {
+      "name": "restore-app.env",
+      "bytes": 119
+    },
+    {
+      "name": "restore-db.env",
+      "bytes": 104
+    },
+    {
+      "name": "downloaded-beta6.exe",
+      "bytes": 4771009
+    },
+    {
+      "name": "backend-context",
+      "bytes": 2615162
+    },
+    {
+      "name": "web-context",
+      "bytes": 1368952
+    },
+    {
+      "name": "backend-integrated",
+      "bytes": 1423
+    },
+    {
+      "name": "web-integrated",
+      "bytes": 1498
+    },
+    {
+      "name": "windows-installer",
+      "bytes": 4772288
+    },
+    {
+      "name": "windows-acceptance",
+      "bytes": 2230683
+    },
+    {
+      "name": "integrated-installer",
+      "bytes": 4771009
+    },
+    {
+      "name": "signing-input",
+      "bytes": 4772406
+    },
+    {
+      "name": "signed",
+      "bytes": 4772571
+    },
+    {
+      "name": "incoming",
+      "bytes": 4780333
+    },
+    {
+      "name": "crypto",
+      "bytes": 4773505
+    }
+  ],
+  "removed_bytes": 635998000,
+  "free_bytes_before": 5583978496,
+  "free_bytes_after": 6220959744,
+  "retained": "Live history, public receipts, production signed installers/evidence, source and rollback images, protected credentials and signing keys"
+}

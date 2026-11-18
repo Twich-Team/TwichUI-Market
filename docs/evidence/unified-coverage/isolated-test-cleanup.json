@@ -1,0 +1,10 @@
+{
+  "retired_only_own_disposable_containers": [
+    "twichui-market-coverage-proxy",
+    "twichui-market-coverage-api",
+    "twichui-market-coverage-restore-db",
+    "twichui-market-coverage-db"
+  ],
+  "restore_and_browser_receipts_retained": true,
+  "production_and_concurrent_workshop_containers_untouched": true
+}

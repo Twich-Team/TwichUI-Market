@@ -1,0 +1,18 @@
+{
+  "only_replaced_services": [
+    "api",
+    "local-api",
+    "worker",
+    "proxy"
+  ],
+  "unchanged_service_identities": [
+    "enrichment",
+    "db",
+    "monitor",
+    "backup"
+  ],
+  "provider_settings_and_encrypted_credentials_identical": true,
+  "keyring_identical": true,
+  "all_original_signed_distribution_files_identical": 47,
+  "backup_stays_disabled": true
+}
