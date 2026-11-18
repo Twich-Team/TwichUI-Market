@@ -9,6 +9,9 @@ import hashlib
 import json
 import re
 import uuid
+from functools import lru_cache
+from pathlib import Path
+import jsonschema
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import JSONResponse, Response
@@ -21,6 +24,7 @@ from .db import now, session
 from .market_api import MarketId, require_market
 from .models import BridgeGeneration, BridgeRecord, Observation, Snapshot, User
 from .security import aware
+from .market_configuration import mapping_for
 
 FORMAT = 'twichui-workshop-summary'
 ALGORITHM = 'workshop-summary-v1:' + cp.ALGORITHM
@@ -42,6 +46,13 @@ def canonical(value):
 
 def digest(value):
     return hashlib.sha256(canonical(value)).hexdigest()
+
+
+@lru_cache(maxsize=1)
+def manifest_validator():
+    bundle = Path(contract().__file__).resolve().parents[2]
+    schema = json.loads((bundle / 'workshop-summary/v1/manifest.schema.json').read_bytes())
+    return jsonschema.Draft202012Validator(schema, format_checker=jsonschema.FormatChecker())
 
 
 def need(condition, message):
@@ -70,6 +81,7 @@ def validate_row(row, bucket=None):
     for n in row[10:]:
         integer(n, 0, 60)
     need(row[10] <= row[11] <= row[12], 'reference coverage')
+    need((row[9] is None or row[11] >= 3) and (row[4] is None or row[10] > 0), 'priced reference support')
     prices = (row[3], row[4], row[5], row[9])
     if row[2] == 0:
         need(any(p is not None for p in prices) and row[8] == 0 and row[6] is not None and row[6] > 0, 'priced evidence')
@@ -137,6 +149,10 @@ def seal(metadata, rows):
                     detailed_history='not_delivered'))
     manifest['generation_id'] = digest(manifest)
     need(len(canonical(manifest)) <= MAX_MANIFEST, 'summary manifest bound')
+    try:
+        manifest_validator().validate(manifest)
+    except jsonschema.ValidationError as error:
+        raise ValueError('Summary source contract is invalid; previous data is preserved') from error
     return manifest, encoded
 
 
@@ -156,6 +172,7 @@ def build(db, market):
     identity = bridge.market_identity(db, market)
     if not identity['mapping_verified']:
         raise HTTPException(409, 'Verified Forever market mapping is required')
+    identity['faction'] = mapping_for(db, market).faction
     signature = digest([FORMAT, 1, bridge.REVISION, cp.HISTORY_BASIS, identity,
                         [[o.id, o.snapshot_id] for o in observations]])
     cached = db.scalar(select(BridgeGeneration).where(BridgeGeneration.market_id == market.id,

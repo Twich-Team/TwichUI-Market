@@ -54,6 +54,7 @@ def test_current_universe_exact_variants_prices_sparse_history_and_no_archive(so
         original = {m.__tablename__: db.scalar(select(func.count()).select_from(m)) for m in (Listing, Observation)}
     manifest, rows, etag = download(source)
     assert manifest['format'] == 'twichui-workshop-summary'
+    assert manifest['market']['faction'] == 'Horde'
     assert manifest['coverage'] == dict(scope='current_observed_exact_variants', complete=True,
         source_records=3, delivered_records=3, missing='unavailable', detailed_history='not_delivered')
     assert manifest['can_satisfy_local_competition'] is False

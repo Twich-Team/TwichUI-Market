@@ -343,7 +343,7 @@ fn worker_loop<C: Clock + 'static>(shared: Arc<Shared<C>>, executor: Arc<dyn Exe
                     Error::ServiceUnavailable => Outcome::ServerUnavailable {
                         retry_after_ms: None,
                     },
-                    Error::RateLimited(seconds) => Outcome::ServerUnavailable {
+                    Error::RateLimited(seconds) | Error::SummaryPreparing(seconds) => Outcome::ServerUnavailable {
                         retry_after_ms: Some((seconds.min(3600) * 1000) as i64),
                     },
                     Error::Cancelled => Outcome::Cancelled,

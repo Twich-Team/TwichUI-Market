@@ -105,6 +105,18 @@ async fn configure_delivery(app:AppHandle,installation:String,algorithm:String,h
     tauri::async_runtime::spawn_blocking(move ||owned.configure_delivery(installation,algorithm,history_days,operation,confirmed,variants)).await.map_err(|_|"Delivery setup interrupted".to_string())?
 }
 #[tauri::command]
+async fn prepare_workshop(app:AppHandle)->Result<serde_json::Value,String>{
+    let owned=runtime(&app);
+    tauri::async_runtime::spawn_blocking(move ||owned.prepare_workshop()).await.map_err(|_|"Workshop setup interrupted".to_string())?
+}
+#[tauri::command]
+async fn confirm_workshop(app:AppHandle,review_id:String)->Result<(),String>{
+    let owned=runtime(&app);
+    tauri::async_runtime::spawn_blocking(move ||owned.confirm_workshop(review_id)).await.map_err(|_|"Workshop setup interrupted".to_string())?
+}
+#[tauri::command]
+fn cancel_workshop(app:AppHandle)->Result<(),String>{runtime(&app).cancel_workshop()}
+#[tauri::command]
 async fn archive_workshop(
     app: AppHandle,
     algorithm: String,
@@ -233,6 +245,9 @@ fn main() {
             export_workshop,
             archive_workshop,
             configure_delivery,
+            prepare_workshop,
+            confirm_workshop,
+            cancel_workshop,
             open_exports,
             open_website,
             save_diagnostics,

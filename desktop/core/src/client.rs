@@ -46,6 +46,30 @@ impl Drop for MarketClient {
 }
 
 impl MarketClient {
+    /// Fixed same-origin summary routes only. No redirects, provider URLs or
+    /// credentials in payloads. A 304 is meaningful only with a validated cache.
+    pub(crate) fn summary_request(&self, path: &str, etag: Option<&str>, maximum: usize) -> Result<Option<Vec<u8>>> {
+        if !path.starts_with("api/v1/workshop/markets/") || path.contains(['?', '#']) {
+            return Err(Error::Invalid("Workshop summary endpoint"));
+        }
+        let url=self.server.join(path).map_err(|_|Error::Invalid("summary endpoint"))?;
+        let mut request=self.http.get(url).bearer_auth(&self.token);
+        if let Some(id)=etag { request=request.header("If-None-Match",format!("\"{id}\"")); }
+        let response=request.send().map_err(|_|Error::Network)?;
+        match response.status().as_u16() {
+            304 if etag.is_some()=>return Ok(None),
+            401|403=>return Err(Error::Authentication),
+            202=>return Err(Error::SummaryPreparing(response.headers().get("retry-after").and_then(|s|s.to_str().ok()).and_then(|s|s.parse::<u64>().ok()).unwrap_or(5).clamp(1,3600))),
+            429=>return Err(Error::RateLimited(response.headers().get("retry-after").and_then(|s|s.to_str().ok()).and_then(|s|s.parse::<u64>().ok()).unwrap_or(30).clamp(1,3600))),
+            409|410=>return Err(Error::ServiceUnavailable),
+            404|502|503=>return Err(Error::ServiceUnavailable),
+            200=>{},_=>return Err(Error::Network),
+        }
+        if response.content_length().is_some_and(|n|n>maximum as u64) {return Err(Error::Invalid("summary response size"));}
+        let mut bytes=Vec::new();response.take(maximum as u64+1).read_to_end(&mut bytes).map_err(|_|Error::Network)?;
+        if bytes.len()>maximum {return Err(Error::Invalid("summary response size"));}
+        Ok(Some(bytes))
+    }
     pub fn synchronize_page(&self, cache: &mut crate::cache::Cache, market: u32) -> Result<bool> {
         let server = self.server.as_str();
         let mut cursor = cache.cursor(server, market)?;

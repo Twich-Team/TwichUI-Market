@@ -14,6 +14,8 @@ pub mod synchronizer;
 pub mod update;
 pub mod vault;
 pub mod worker;
+pub mod workshop_summary;
+pub mod installation;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -39,6 +41,8 @@ pub enum Error {
     ServiceUnavailable,
     #[error("Please wait before trying again")]
     RateLimited(u64),
+    #[error("Market summaries are being prepared; synchronization will retry")]
+    SummaryPreparing(u64),
     #[error("Server rejected the saved cursor; reset this market to synchronize again")]
     ResetRequired,
     #[error("Delivery exceeds {limit}: {actual} bytes/records exceeds {maximum}; previous data is preserved")]

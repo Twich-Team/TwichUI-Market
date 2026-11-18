@@ -70,6 +70,13 @@
         },
         "realm_scope": {
           "const": "ruleset_house"
+        },
+        "faction": {
+          "enum": [
+            "Horde",
+            "Alliance",
+            "Blackwater"
+          ]
         }
       },
       "required": [
@@ -82,7 +89,8 @@
         "transport_ruleset_id",
         "mapping_verified",
         "mapping_evidence_sha256",
-        "realm_scope"
+        "realm_scope",
+        "faction"
       ]
     },
     "pricing_algorithm": {
