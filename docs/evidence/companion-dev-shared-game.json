@@ -22,7 +22,7 @@
   "native_reproduction": "Inherited local Users full-control rule passes game preflight and atomic create/replace; same permissions remain rejected for private cache/staging/export operations",
   "negative_controls": "Everyone/Authenticated Users, junctions, actual create denial and private staging protections retained",
   "local_focused_tests": "publication/rollback/SavedVariables; foreign account/unknown files/links; prior-data preservation; setup redaction",
-  "owner_new_result": "pending",
+  "owner_new_result": "Still blocked by inherited Interactive Users mask0x000d0156 flags0x13; the one-group game exception was too narrow and is superseded by source3ba8013",
   "full_certification": "deferred",
   "unsigned_private_test": true,
   "public_release_or_deployment": false
