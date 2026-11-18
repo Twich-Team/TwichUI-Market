@@ -400,6 +400,27 @@ mod tests {
         for name in ["Summary.lua","Bridge.lua"]{fs::write(addon.join(name),b"-- Synthetic installed-file fixture only\n").unwrap();}
         fs::write(addon.join("MarketDelivery.json"),br#"{"format":"twichui-market-consumer","summary_delivery_version":1,"game":"wow-forever","interface":16001,"summary_partition_bytes":131072,"summary_total_bytes":8388608}"#).unwrap();
     }
+    #[cfg(windows)]
+    #[test]
+    fn shared_game_permissions_keep_account_markers_and_unknown_files_enforced() {
+        let d=tempfile::tempdir().unwrap();let b=fixture();let c=config(d.path(),&b);installation(&c);
+        let addons=c.installation.join("Interface/AddOns");
+        let result=std::process::Command::new("icacls").arg(&addons).args(["/grant","*S-1-5-4:(OI)(CI)F"]).output().unwrap();
+        assert!(result.status.success(),"disposable shared-game ACL fixture failed");
+        let dir=main_dir(&c);fs::create_dir(&dir).unwrap();
+        let marker_path=dir.join(".twichui-delivery.json");let owner=identity(&c).unwrap();
+        fs::write(&marker_path,bridge::canonical(&owner).unwrap()).unwrap();
+        assert!(inspect_output(&c).is_ok());
+        let mut foreign=owner.clone();foreign["account_id"]=2.into();
+        let foreign_bytes=bridge::canonical(&foreign).unwrap();fs::write(&marker_path,&foreign_bytes).unwrap();
+        let e=crate::workshop_setup::Failure::from_error("destination",inspect_output(&c).unwrap_err());
+        assert_eq!(e.code,"ownership_conflict");assert!(e.details.contains("another account"));
+        assert_eq!(fs::read(&marker_path).unwrap(),foreign_bytes);
+        fs::write(&marker_path,bridge::canonical(&owner).unwrap()).unwrap();
+        let unknown=dir.join("unrelated-player-file.lua");fs::write(&unknown,b"preserve player file").unwrap();
+        assert!(inspect_output(&c).is_err());
+        assert_eq!(fs::read(&unknown).unwrap(),b"preserve player file");
+    }
     #[cfg(unix)]
     #[test]
     fn publication_banks_noop_partial_recovery_rollback_and_savedvariables() {

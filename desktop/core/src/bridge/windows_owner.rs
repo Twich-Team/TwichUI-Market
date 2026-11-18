@@ -43,10 +43,14 @@ unsafe fn principal(sid: *mut c_void, user: *mut c_void, default: *mut c_void) -
     "other_principal"
 }
 // Private exports/staging keep their existing user-only write policy.
-pub(crate) fn check(path: &Path) -> Result<()> { check_policy(path, false, false) }
-// Non-secret generated addon files share the game folder's local-user policy.
-// Account markers and manifest/content integrity are checked by the publisher.
-pub(crate) fn game_output(path: &Path) -> Result<()> { check_policy(path, false, true) }
+pub(crate) fn check(path: &Path) -> Result<()> { check_policy(path, false) }
+// A game directory is shared installation data, not private staging storage.
+// Do not reject its Windows owner or group grants. Windows enforces access;
+// the publisher enforces known files, account markers and content integrity.
+pub(crate) fn game_output(path: &Path) -> Result<()> {
+    crate::delivery::no_links(path)?;
+    local(path)
+}
 // Access and trust are different checks. An OPEN_EXISTING directory handle
 // verifies effective create rights without creating/changing player files.
 pub(crate) fn output_parent(path: &Path) -> Result<()> {
@@ -61,17 +65,10 @@ pub(crate) fn output_parent(path: &Path) -> Result<()> {
         if handle == windows_sys::Win32::Foundation::INVALID_HANDLE_VALUE {
             Err(std::io::Error::last_os_error().into())
         } else { Ok(Token(handle)) })?;
-    // The shared game installation is not private credential/cache storage.
-    // Only its built-in local Users rule may additionally be accepted.
-    check_policy(path, true, true).map_err(|error| match error {
-        Error::WorkshopSetup(mut failure) => {
-            failure.details = format!("effective_create_access=true; {}", failure.details);
-            Error::WorkshopSetup(failure)
-        }
-        other => other,
-    })
+    Ok(())
 }
-fn check_policy(path: &Path, parent: bool, game: bool) -> Result<()> {
+// This ACL/ownership allowlist applies only to private staging/cache/export paths.
+fn check_policy(path: &Path, parent: bool) -> Result<()> {
     local(path)?;
     let role = if parent { "output_parent" } else { "output_owned" };
     let wide = path.as_os_str().encode_wide().chain(Some(0)).collect::<Vec<_>>();
@@ -138,18 +135,7 @@ fn check_policy(path: &Path, parent: bool, game: bool) -> Result<()> {
             let writes = 0x40000000 | 0x10000000 | 0x000D0000 | 0x00000156;
             if allowed.Mask & writes != 0 && EqualSid(sid, user_sid) == 0 && EqualSid(sid, default_sid) == 0
                 && !trusted.iter().any(|s| EqualSid(sid, s.as_ptr().cast_mut().cast()) != 0) {
-                if game && IsWellKnownSid(sid, WinBuiltinUsersSid) != 0 {
-                    // Accept only the local Users group containing this effective
-                    // caller. Never extend the private staging/cache allowlist,
-                    // or accept Everyone/Authenticated Users/network groups.
-                    let mut member = 0;
-                    os_check(&format!("{role}_local_users_membership"), "Windows could not verify local Users membership.",
-                        if CheckTokenMembership(std::ptr::null_mut(), sid, &mut member) == 0 {
-                            Err(std::io::Error::last_os_error().into())
-                        } else { Ok(()) })?;
-                    if member != 0 { continue }
-                }
-                return Err(policy_error(parent, "broad_write", "Companion detected write access for another Windows principal. Your own write access may be valid; this safety check protects the delivered addon files.",
+                return Err(policy_error(parent, "broad_write", "Companion private storage has shared write permissions. Save redacted diagnostics for the specific private-storage check.",
                     format!("principal_kind={}; write_mask=0x{:08x}; ace_flags=0x{:02x}; inheritable={}; inherit_only={}", principal(sid, user_sid, default_sid),
                         allowed.Mask & writes, header.AceFlags, header.AceFlags & 3 != 0, header.AceFlags & 8 != 0)));
             }
@@ -189,16 +175,17 @@ mod tests {
         assert_eq!(fs::read_dir(dir.path()).unwrap().count(), 1);
     }
     #[test]
-    fn parent_policy_rejection_is_not_reported_as_windows_access_denied() {
-        for grant in ["*S-1-1-0:(OI)(CI)M", "*S-1-1-0:(OI)(CI)(IO)M", "*S-1-5-11:(OI)(CI)M"] {
-            let dir = fixture(); icacls(dir.path(), &["/grant", grant]);
-            let e = failure(output_parent(dir.path()).unwrap_err());
-            assert_eq!(e.code, "unsafe_permissions"); assert_eq!(e.check.as_deref(), Some("output_parent_broad_write"));
-            assert!(e.details.contains("effective_create_access=true"));
-            assert!(e.details.contains("principal_kind=")); assert!(e.details.contains("write_mask="));
+    fn shared_game_groups_do_not_block_preflight_or_change_files() {
+        for grant in ["*S-1-1-0:(OI)(CI)F", "*S-1-1-0:(OI)(CI)(IO)F", "*S-1-5-11:(OI)(CI)F", "*S-1-5-4:(OI)(CI)F"] {
+            let root = fixture(); icacls(root.path(), &["/grant", grant]);
+            let dir = root.path().join("AddOns"); fs::create_dir(&dir).unwrap();
+            output_parent(&dir).unwrap();
+            assert!(fs::read_dir(&dir).unwrap().next().is_none());
+            // The same permissions are still unsuitable for private storage.
+            let e = failure(check(&dir).unwrap_err());
+            assert_eq!(e.check.as_deref(), Some("output_owned_broad_write"));
             let redacted = serde_json::to_string(&e).unwrap();
-            assert!(!redacted.contains(&current_sid())); assert!(!redacted.contains(dir.path().to_str().unwrap()));
-            assert!(fs::read_dir(dir.path()).unwrap().next().is_none());
+            assert!(!redacted.contains(&current_sid())); assert!(!redacted.contains(dir.to_str().unwrap()));
         }
     }
     #[test]
@@ -212,42 +199,47 @@ mod tests {
         assert!(fs::read_dir(dir.path()).unwrap().next().is_none());
     }
     #[test]
-    fn inherited_local_users_rule_works_for_game_outputs_but_not_private_storage() {
-        let root = fixture();
-        // Match the owner's inherited BUILTIN\Users full-control ACE: flags
-        // OI|CI|INHERITED (0x13), with the same 0x000d0156 write-right subset.
-        icacls(root.path(), &["/grant", "*S-1-5-32-545:(OI)(CI)F"]);
-        let addons = root.path().join("AddOns"); fs::create_dir(&addons).unwrap();
-        fs::write(addons.join("existing-addon.lua"), b"unchanged unrelated addon").unwrap();
-        output_parent(&addons).unwrap();
-        assert_eq!(fs::read_dir(&addons).unwrap().count(), 1, "preflight created files");
-        let dir = addons.join("TwichUI_MarketData"); fs::create_dir(&dir).unwrap();
-        let path = dir.join("Data.lua");
-        crate::delivery::game_atomic(&path, b"synthetic generated data").unwrap();
-        game_output(&dir).unwrap(); game_output(&path).unwrap();
-        crate::delivery::game_atomic(&path, b"synthetic replacement").unwrap();
-        assert_eq!(fs::read(&path).unwrap(), b"synthetic replacement");
-        assert_eq!(fs::read(addons.join("existing-addon.lua")).unwrap(), b"unchanged unrelated addon");
-        // Exactly the same ACL remains forbidden for private caches/exports.
-        for target in [&addons, &dir, &path] {
-            let e = failure(check(target).unwrap_err());
-            assert_eq!(e.check.as_deref(), Some("output_owned_broad_write"));
-            assert!(e.details.contains("principal_kind=builtin_users"));
-            if target == &addons {
-                assert!(e.details.contains("write_mask=0x000d0156"));
-                assert!(e.details.contains("ace_flags=0x13"));
+    fn inherited_shared_rules_allow_game_outputs_but_not_private_storage() {
+        // Include the complete family of shared-folder group grants, rather
+        // than adding exceptions one principal at a time on the owner's PC.
+        for sid in ["S-1-5-32-545", "S-1-5-4", "S-1-5-11", "S-1-1-0"] {
+            let root = fixture(); let grant = format!("*{sid}:(OI)(CI)F");
+            icacls(root.path(), &["/grant", &grant]);
+            let addons = root.path().join("AddOns"); fs::create_dir(&addons).unwrap();
+            fs::write(addons.join("existing-addon.lua"), b"unchanged unrelated addon").unwrap();
+            output_parent(&addons).unwrap();
+            assert_eq!(fs::read_dir(&addons).unwrap().count(), 1, "preflight created files");
+            let dir = addons.join("TwichUI_MarketData"); fs::create_dir(&dir).unwrap();
+            let path = dir.join("Data.lua");
+            crate::delivery::game_atomic(&path, b"synthetic generated data").unwrap();
+            game_output(&dir).unwrap(); game_output(&path).unwrap();
+            crate::delivery::game_atomic(&path, b"synthetic replacement").unwrap();
+            assert_eq!(fs::read(&path).unwrap(), b"synthetic replacement");
+            assert_eq!(fs::read(addons.join("existing-addon.lua")).unwrap(), b"unchanged unrelated addon");
+            for target in [&addons, &dir, &path] {
+                let e = failure(check(target).unwrap_err());
+                assert_eq!(e.check.as_deref(), Some("output_owned_broad_write"));
+                if target == &addons {
+                    assert!(e.details.contains("write_mask=0x000d0156"));
+                    assert!(e.details.contains("ace_flags=0x13"));
+                    if sid == "S-1-5-4" { assert!(e.details.contains("principal_kind=interactive_users")); }
+                }
             }
+            assert!(crate::delivery::atomic(&path, b"private operation must fail").is_err());
+            assert_eq!(fs::read(&path).unwrap(), b"synthetic replacement");
         }
-        assert!(crate::delivery::atomic(&path, b"private operation must fail").is_err());
-        assert_eq!(fs::read(&path).unwrap(), b"synthetic replacement");
     }
     #[test]
-    fn local_users_exception_never_accepts_everyone_on_game_children() {
-        let root = fixture(); icacls(root.path(), &["/grant", "*S-1-1-0:(OI)(CI)M"]);
+    fn game_outputs_still_require_actual_windows_write_access() {
+        let root = fixture(); icacls(root.path(), &["/grant", "*S-1-1-0:(OI)(CI)F"]);
         let dir = root.path().join("TwichUI_MarketData"); fs::create_dir(&dir).unwrap();
+        let deny = format!("*{}:(WD,AD)", current_sid()); icacls(&dir, &["/deny", &deny]);
         let path = dir.join("Data.lua");
-        let e = failure(crate::delivery::game_atomic(&path, b"must not publish").unwrap_err());
-        assert_eq!(e.check.as_deref(), Some("output_owned_broad_write")); assert!(!path.exists());
+        let Error::Io(error) = crate::delivery::game_atomic(&path, b"must not publish").unwrap_err() else {
+            panic!("native file creation must fail when Windows denies it")
+        };
+        assert_eq!(error.kind(), std::io::ErrorKind::PermissionDenied);
+        assert_eq!(error.raw_os_error(), Some(5)); assert!(!path.exists());
     }
     #[test]
     fn game_output_policy_still_refuses_junctions_before_writing() {

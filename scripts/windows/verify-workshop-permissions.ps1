@@ -109,11 +109,11 @@ $cases+=@{name='unowned existing Market data';path=$conflict;accepted=$false;cod
 $broad=MakeGame 'unsafe-output-permissions'
 & icacls (Join-Path $broad 'Interface\AddOns') /grant '*S-1-1-0:(OI)(CI)M' /Q|Out-Null
 if($LASTEXITCODE -ne 0){throw 'Unsafe ACL fixture failed'}
-$cases+=@{name='unrelated principals may modify output';path=$broad;accepted=$false;code='unsafe_permissions'}
+$cases+=@{name='shared AddOns group grants allow game output';path=$broad;accepted=$true}
 $inherited=MakeGame 'unsafe-inheritable-output'
 & icacls (Join-Path $inherited 'Interface\AddOns') /grant '*S-1-1-0:(OI)(CI)(IO)M' /Q|Out-Null
 if($LASTEXITCODE -ne 0){throw 'Unsafe inheritable ACL fixture failed'}
-$cases+=@{name='unrelated principals may modify future output';path=$inherited;accepted=$false;code='unsafe_permissions'}
+$cases+=@{name='shared inheritable AddOns grants allow game output';path=$inherited;accepted=$true}
 $junction=MakeGame 'junction-parent'
 $addons=Join-Path $junction 'Interface\AddOns'
 $target=Join-Path $junction 'OriginalAddOns'

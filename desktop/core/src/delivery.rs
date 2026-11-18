@@ -315,7 +315,7 @@ pub(crate) fn owned(path: &Path) -> Result<()> {
 /// Private staging, downloaded banks, exports and application state use owned().
 pub(crate) fn game_owned(path: &Path) -> Result<()> {
     #[cfg(windows)]
-    { no_links(path)?; crate::bridge::windows_owner::game_output(path) }
+    { crate::bridge::windows_owner::game_output(path) }
     #[cfg(not(windows))]
     owned(path)
 }
