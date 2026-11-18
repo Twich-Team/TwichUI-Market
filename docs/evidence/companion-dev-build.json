@@ -1,0 +1,26 @@
+{
+  "source_commit": "59ac0f54730154faa281911e50a60bbe56f3e405",
+  "run_url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/44362345213",
+  "artifact_name": "TwichUI-Market-Companion-DEV-59ac0f5",
+  "artifact_id": 14456187850,
+  "artifact_zip_sha256": "155200cbe3af37df98e1405e6fc592624cb1005c5865fcb0194164e6761a2702",
+  "installer_sha256": "64ea46710d39d85606cfc959542ad5b3482e4e984b771dd9dc99d5aacab1eab0",
+  "installer_bytes": 4814956,
+  "windows_focused_tests": 12,
+  "installed_native_smoke": {
+    "version": "2.0.0-beta.8 DEV 59ac0f54730154faa281911e50a60bbe56f3e405",
+    "frontend": true,
+    "native": true,
+    "workshop_command": true,
+    "updater_disabled": true
+  },
+  "addon_source_commit": "f8a0fc68f24f1cf751a79044936fdbf53cb9e5c2",
+  "real_seven_addon_package": "BigWigs packager v2.6.1 transforms, ZIP finalized with Python because local zip CLI unavailable",
+  "addon_package_sha256": "a345623aa42849ba00a9908874887247b97514fa6fa1d1a53ad81fd7e7eb5876",
+  "actual_packaged_addon_probe": "compatible",
+  "owner_specific_cause": "not reproduced; precise failed check available in DEV",
+  "owner_result": "pending",
+  "full_certification": "deferred",
+  "unsigned_private_test": true,
+  "public_release_or_deployment": false
+}
