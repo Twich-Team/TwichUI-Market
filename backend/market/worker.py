@@ -125,9 +125,10 @@ def collect_once(factory=Session, client=None, *, at=None, max_database_bytes=No
         db.add(run)
         metadata = None
         try:
-            limit = max_database_bytes or int(os.environ.get('MAX_DATABASE_BYTES', str(5 * 1024**3)))
-            if db.bind.dialect.name == 'postgresql' and db.scalar(text('SELECT pg_database_size(current_database())')) >= limit:
-                raise UpstreamFailure('Database disk budget reached; collection paused')
+            from .capacity import status as capacity_status
+            capacity = capacity_status(db, limit=max_database_bytes)
+            if capacity['paused_reason']:
+                raise UpstreamFailure(capacity['paused_reason'])
             from .models import MarketFeed
             if market.unified_coverage:
                 feeds = list(db.scalars(select(MarketFeed).where(MarketFeed.market_id == market.id,
