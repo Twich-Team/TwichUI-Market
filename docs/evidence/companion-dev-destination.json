@@ -19,8 +19,8 @@
     "details": "Windows bridge staging ownership or ACL is ambiguous"
   },
   "change": "Separate actual Windows create access from internal ownership/access-rule policy; precise redacted destination checks; no policy predicates bypassed",
-  "owner_specific_rule": "unknown in previous diagnostics",
-  "owner_new_result": "pending",
+  "owner_specific_rule": "Inherited BUILTIN Users full-control rule on AddOns",
+  "owner_new_result": "Confirmed effective create access=true; output_parent_broad_write rejects inherited builtin_users mask0x000d0156 flags0x13",
   "full_certification": "deferred",
   "unsigned_private_test": true,
   "public_release_or_deployment": false

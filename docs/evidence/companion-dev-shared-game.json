@@ -1,0 +1,29 @@
+{
+  "source_commit": "ff72e3f690dc62eb5404dba25ed4e039395b82b9",
+  "run_url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/44373045102",
+  "artifact_name": "TwichUI-Market-Companion-DEV-ff72e3f",
+  "artifact_id": 14460306141,
+  "artifact_zip_sha256": "db5014002d9bfdfe478ed44fe9c2a0814064b82de9aeba854efef57c71f1f99a",
+  "installer_sha256": "1e1f4c62f36a1839bc44561d1ed1e91259f1312e339fc67bdc3087e4da0f5a3e",
+  "windows_focused_tests": 21,
+  "installed_native_smoke": {
+    "version": "2.0.0-beta.8 DEV ff72e3f690dc62eb5404dba25ed4e039395b82b9",
+    "frontend": true,
+    "native": true,
+    "workshop_command": true,
+    "updater_disabled": true
+  },
+  "owner_confirmed_rule": {
+    "effective_create_access": true,
+    "principal_kind": "builtin_users",
+    "write_mask": "0x000d0156",
+    "ace_flags": "0x13"
+  },
+  "native_reproduction": "Inherited local Users full-control rule passes game preflight and atomic create/replace; same permissions remain rejected for private cache/staging/export operations",
+  "negative_controls": "Everyone/Authenticated Users, junctions, actual create denial and private staging protections retained",
+  "local_focused_tests": "publication/rollback/SavedVariables; foreign account/unknown files/links; prior-data preservation; setup redaction",
+  "owner_new_result": "pending",
+  "full_certification": "deferred",
+  "unsigned_private_test": true,
+  "public_release_or_deployment": false
+}
