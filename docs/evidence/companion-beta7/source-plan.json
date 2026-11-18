@@ -1,0 +1,9 @@
+{
+  "payload_source_commit": "4b0ff82fbf6e38937a0727e781a8aa79efac79c6",
+  "branch": "integration/companion-beta7-release",
+  "windows_run_id": 44236143135,
+  "backend_run_id": 44236143158,
+  "website_run_id": 44236143136,
+  "why_new_producer": "Release admission requires installed receipts from the exact payload commit, not its PR preview.",
+  "scope": "Companion artifact publication; no production API or addon release without the separate scope answer."
+}

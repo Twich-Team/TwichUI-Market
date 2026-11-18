@@ -1,0 +1,35 @@
+{
+  "users": {
+    "rows": 97,
+    "sha256": "d6f150dc6b7fc2b00afa4d0934d3353c6335e46756152342482c44ebff6932e5",
+    "cutoff": 97
+  },
+  "credentials": {
+    "rows": 277,
+    "sha256": "84d79a79c231e1dfa2e9b31d92dddc12153623765f2ab4346bd244f590d5b845",
+    "cutoff": 277
+  },
+  "user_preferences": {
+    "rows": 22,
+    "sha256": "b118e2b5faab2e45456935a537831214a8bb642ea669c6f001d8dd50556458b5",
+    "cutoff": 95
+  },
+  "metadata_providers": {
+    "rows": 4,
+    "sha256": "b699ae76a69da626b6a2a709e8e4e15068d885d23eed3719afda9c698b96fe3d",
+    "cutoff": "thewowdb"
+  },
+  "schema": "coverage_20261117",
+  "markets": [
+    {
+      "id": 2,
+      "region": "us",
+      "ruleset_id": 2,
+      "house_id": 114,
+      "interval_seconds": 300,
+      "unified_coverage": true,
+      "failures": 0,
+      "last_success": "2026-11-18 04:15:20.780107+00:00"
+    }
+  ]
+}
