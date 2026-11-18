@@ -1079,7 +1079,7 @@ impl Runtime {
         let chosen=view.bootstrap.as_ref().and_then(|b|b.markets.iter().find(|m|m.id==market))
             .filter(|m|m.available_for_sync&&m.verified&&m.player_identity_verified).ok_or("Your selected market is unavailable. Retry after synchronization.")?;
         let scope=twichui_market_core::bridge::Scope{server:view.settings.server.clone(),account_id:account,market_id:market,algorithm:"twichui-pricing-v1".into()};
-        let previous=delivery::Configuration::load(&self.data.path).map_err(friendly)?
+        let previous=delivery::Configuration::load(&self.data.path).map_err(|e|setup_core("saved_configuration",e))?
             .filter(|c|c.scope.server==scope.server&&c.scope.account_id==account);
         if let Some(c)=previous.as_ref().filter(|c|c.version==2&&c.enabled&&c.scope.market_id==market) {
             if delivery::inspect_destination(c).is_ok() {self.worker.sync_now().map_err(friendly)?;return Ok(serde_json::json!({"connected":true}));}
