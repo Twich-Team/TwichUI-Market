@@ -13,7 +13,7 @@ def main():
  a=p.parse_args()
  if not 129<=a.variants<=45125 or a.publish and (os.name!='nt' or os.environ.get('GITHUB_ACTIONS')!='true'):p.error('bounded synthetic count; installed publication only on disposable Windows')
  a.out.mkdir(parents=True,exist_ok=True)
- with tempfile.TemporaryDirectory(prefix='twichui-summary-e2e-') as directory:
+ with tempfile.TemporaryDirectory(prefix='twichui-summary-e2e-',dir=os.environ.get('RUNNER_TEMP') if os.name=='nt' else None) as directory:
   temp=Path(directory);os.environ.update(DATABASE_URL='sqlite:///'+str(temp/'summary-market_test.sqlite'),APP_ORIGIN='https://synthetic-summary.invalid',SYNC_CURSOR_SECRET='synthetic-summary-authorization-'+'a'*40,BRIDGE_CONTRACT_ROOT=str(ROOT/'contracts/bridge/v1'))
   sys.path.insert(0,str(ROOT/'backend'))
   from market.app import app
@@ -55,6 +55,10 @@ def main():
   base=temp/'native';base.mkdir(mode=0o700);env=os.environ.copy();env['TWICHUI_SUMMARY_TEST_TOKEN']=token
   if os.name=='nt':
    sid=subprocess.check_output(['powershell','-NoProfile','-Command','[System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value'],text=True).strip()
+   # Reset Python's explicit mode=0700 Windows ACEs before applying the same
+   # private fixture ACL used by archive acceptance. Removing inheritance alone
+   # leaves explicit ACEs in place; production ownership checks must stay strict.
+   subprocess.run(['icacls',str(base),'/reset'],check=True,capture_output=True)
    subprocess.run(['icacls',str(base),'/inheritance:r','/grant:r',f'*{sid}:(OI)(CI)F','*S-1-5-18:(OI)(CI)F','*S-1-5-32-544:(OI)(CI)F'],check=True,capture_output=True)
   game=base/'not-a-game';publication=base/'publication'
   if a.publish:
@@ -103,5 +107,5 @@ def main():
    (a.out/'evidence.json').write_text(json.dumps(report,indent=2)+'\n')
    print(json.dumps({'synthetic':True,'variants':a.variants,'native_calls':len(calls),'http_requests':len(requests),'seconds':report['total_seconds'],'production_lua_market_passed':report['production_lua_market_passed'],'mode':report['mode']}))
   finally:
-   server.should_exit=True;thread.join(timeout=10)
+   server.should_exit=True;thread.join(timeout=10);sock.close();engine.dispose()
 if __name__=='__main__':main()
