@@ -50,7 +50,7 @@ if($Worker){
         }
         @{synthetic_executable=$true;genuine_forever_binary=$false;effective_admin_group_enabled=$false;admin_only_read_denied=$probeDenied;uac_split_token_verified=$false;token_elevation_flag=$native.elevated;results=$results}|ConvertTo-Json -Depth 12|Set-Content $planData.report
     } catch {
-        $_.ToString()|Set-Content ($Plan+'.error')
+        ($_.ToString()+"`n"+$_.ScriptStackTrace)|Set-Content ($Plan+'.error')
         exit 1
     }
     exit
@@ -132,8 +132,16 @@ foreach($probeSid in @('S-1-5-18','S-1-5-32-544')){
     $probeSecurity.AddAccessRule($rule)
 }
 Set-Acl -Path $adminProbe -AclObject $probeSecurity
+# CI build outputs inherit the elevated workspace ACL, unlike a per-user
+# installed Companion. Grant this same user RX on the test binary and cwd only;
+# the inherited game-directory permissions under test stay unchanged.
+$nativeExe=Join-Path (Get-Location) 'desktop\target\debug\examples\installation_smoke.exe'
+& icacls $nativeExe /grant "*$($userSid):RX" /Q|Out-Null
+if($LASTEXITCODE -ne 0){throw 'Restricted worker executable read/execute grant failed'}
+& icacls (Get-Location).Path /grant "*$($userSid):RX" /Q|Out-Null
+if($LASTEXITCODE -ne 0){throw 'Restricted worker cwd read/execute grant failed'}
 $planFile=Join-Path $base 'plan.json'
-@{exe=(Join-Path (Get-Location) 'desktop\target\debug\examples\installation_smoke.exe');report=$report;admin_probe=$adminProbe;cases=$cases}|ConvertTo-Json -Depth 8|Set-Content $planFile
+@{exe=$nativeExe;report=$report;admin_probe=$adminProbe;cases=$cases}|ConvertTo-Json -Depth 8|Set-Content $planFile
 $script=(Resolve-Path $PSCommandPath).Path
 # The restricted process receives only disposable markers and OS/profile paths.
 $launcher=Join-Path $base 'limited-worker.ps1'
