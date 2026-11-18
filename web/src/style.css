@@ -1945,3 +1945,8 @@ a.secondary { display:inline-block; padding:10px 14px; border:1px solid var(--bo
 .backup-empty {border:1px dashed #675035;padding:20px;color:#c8baa2;border-radius:6px;}
 @media(max-width:1000px){.backup-cards{grid-template-columns:repeat(2,minmax(0,1fr));}.backup-policy-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
 @media(max-width:600px){.backup-cards,.backup-policy-grid{grid-template-columns:minmax(0,1fr);}.backup-heading{align-items:flex-start;}.backup-heading>.backup-actions{width:100%;}.backup-heading>.backup-actions button{flex:1;}.backup-management{padding:16px;}.backup-cards strong{font-size:1.1rem;}.backup-management .table-scroll{max-width:100%;}.backup-table{min-width:780px;}.backup-pagination{justify-content:flex-start;}.backup-pagination>span{width:100%;}.backup-disk>div:first-child{display:block;}.backup-disk>div:first-child>span{display:block;margin-top:6px;}}
+.backup-management button:not(.primary) {background:#33271c;color:#e2caa5;border:1px solid #745936;border-radius:4px;padding:8px 12px;font:inherit;font-size:.8rem;cursor:pointer;}
+.backup-management button:not(.primary):hover:not(:disabled) {background:#4a3724;border-color:#b18a54;}
+.backup-management button:disabled {opacity:.45;cursor:default;}
+.backup-management .backup-row-actions button {padding:5px 8px;font-size:.75rem;}
+.backup-management .backup-actions a {color:#e3bf84;}

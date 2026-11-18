@@ -276,7 +276,7 @@ class Manager:
             restores = [r['restoration_verified_at'] for r in rows if r['restoration_verified_at']]
             job = self.get(db, 'job', {})
             next_at = self.get(db, 'next_at') if policy['enabled'] else None
-            result = dict(policy=policy, service_status='enabled' if policy['enabled'] else 'scheduled_backups_disabled',
+            result = dict(measured_at=stamp(), policy=policy, service_status='enabled' if policy['enabled'] else 'scheduled_backups_disabled',
                         last_success=successes[0]['created_at'] if successes else None,
                         last_restoration_verified_at=max(restores) if restores else None,
                         total=len(rows), total_bytes=sum(r['bytes'] or 0 for r in rows), filesystem=fs,

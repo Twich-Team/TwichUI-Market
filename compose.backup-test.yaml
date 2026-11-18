@@ -20,7 +20,7 @@ services:
     depends_on: {db: {condition: service_healthy}}
     mem_limit: 384m
     cpus: 1
-    volumes: [./backend/market:/app/market:ro, ./backend/tests:/app/tests:ro]
+    volumes: [./backend/market:/app/market:ro, ./backend/tests:/app/tests:ro, ./scripts:/scripts:ro, ./backend:/backend:ro]
     command: [pytest, -q, -p, no:cacheprovider]
   backup-check:
     build:

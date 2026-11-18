@@ -26,8 +26,7 @@ async function setup(page:Page){
   await page.goto('/');await page.getByLabel('Username',{exact:true}).fill('owner');await page.getByLabel('Password',{exact:true}).fill('synthetic browser owner password');await page.getByRole('button',{name:'Sign in',exact:true}).click();
   await expect(page.getByRole('heading',{name:'Market Explorer',exact:true})).toBeVisible();
   await page.goto('/administration');
-  if(await page.getByRole('combobox',{name:'Administration section',exact:true}).isVisible())await page.getByRole('combobox',{name:'Administration section',exact:true}).selectOption({label:'Storage & backups'});
-  else await page.getByRole('tab',{name:'Storage & backups',exact:true}).click();
+  await page.getByRole('button',{name:'Storage & backups ↗',exact:true}).click();
   await expect(page.getByRole('heading',{name:'Backup Management',exact:true})).toBeVisible();
   await mkdir(output,{recursive:true});return {data,deletions,policies};
 }
@@ -84,13 +83,13 @@ test('backup management real boundary: create protect download and delete throug
   test.setTimeout(90000);
   await page.goto('/');await page.getByLabel('Username',{exact:true}).fill('owner');await page.getByLabel('Password',{exact:true}).fill('synthetic browser owner password');await page.getByRole('button',{name:'Sign in',exact:true}).click();
   await expect(page.getByRole('heading',{name:'Market Explorer',exact:true})).toBeVisible();
-  const me=await (await page.request.get('/api/v1/auth/me')).json();
+  const me=await (await page.request.get('/api/v1/auth/session')).json();
   const headers={'X-CSRF-Token':me.csrf_token};
   const read=async()=>await (await page.request.get('/api/v1/admin/backups')).json();
   const before=await read();expect(before.policy.enabled).toBe(false);
   const created=[];
   for(let i=0;i<2;i++){
-    const queued=await page.request.post('/api/v1/admin/backups/create',{headers,data:{}});expect(queued.status()).toBe(202);
+    const queued=await page.request.post('/api/v1/admin/backups/create',{headers,data:{}});expect(queued.status(),await queued.text()).toBe(202);
     const job=await queued.json();
     await expect.poll(async()=>{const state=await read();return state.job.id===job.id?state.job.status:'waiting';},{timeout:30000}).toBe('succeeded');
     const row=(await read()).items.find((item:{id:string})=>item.id!==(created[0]?.id)&&!before.items.some((previous:{id:string})=>previous.id===item.id));
@@ -102,8 +101,7 @@ test('backup management real boundary: create protect download and delete throug
   const download=await page.request.get(`/api/v1/admin/backups/${older.id}/download`);expect(download.status()).toBe(200);expect((await download.body()).subarray(0,5).toString()).toBe('PGDMP');
   expect((await page.request.post(`/api/v1/admin/backups/${older.id}/protect`,{headers,data:{protected:false}})).status()).toBe(200);
   await page.goto('/administration');
-  if(await page.getByRole('combobox',{name:'Administration section',exact:true}).isVisible())await page.getByRole('combobox',{name:'Administration section',exact:true}).selectOption({label:'Storage & backups'});
-  else await page.getByRole('tab',{name:'Storage & backups',exact:true}).click();
+  await page.getByRole('button',{name:'Storage & backups ↗',exact:true}).click();
   const row=page.getByRole('row').filter({hasText:older.filename});await row.getByRole('button',{name:'Delete',exact:true}).click();
   await page.getByRole('dialog').getByLabel(`Type ${older.filename} to confirm`,{exact:true}).fill(older.filename);
   await mkdir(output,{recursive:true});await page.screenshot({path:`${output}/actual-service-deletion.png`});

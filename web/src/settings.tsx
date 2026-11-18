@@ -648,16 +648,17 @@ export function Administration({
               </section>
               <section className="panel padded">
                 <h3>Backups & restoration</h3>
+                <p className="small muted">Legacy operations receipts below describe the previous backup worker. Current archive availability, filesystem measurements and management controls are shown in Backup Management above.</p>
                 <dl>
-                  <dt>Backup service</dt>
+                  <dt>Legacy backup service</dt>
                   <dd>{state.storage.backup.status.replaceAll("_", " ")}</dd>
-                  <dt>Last successful dump</dt>
+                  <dt>Legacy last successful dump</dt>
                   <dd>{when(state.storage.backup.last_success)}</dd>
-                  <dt>Last restore rehearsal</dt>
+                  <dt>Legacy restore rehearsal</dt>
                   <dd>
                     {when(state.storage.backup.last_restoration_verified_at)}
                   </dd>
-                  <dt>Archive size</dt>
+                  <dt>Legacy archive size</dt>
                   <dd>{bytes(state.storage.backup.bytes)}</dd>
                 </dl>
                 <p className="muted">
