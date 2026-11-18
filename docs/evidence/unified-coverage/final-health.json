@@ -1,0 +1,141 @@
+{
+  "checked_at": "2026-11-18T02:10:00.151308+00:00",
+  "schema_revision": "coverage_20261117",
+  "market": {
+    "id": 2,
+    "region": "us",
+    "ruleset_id": 2,
+    "house_id": 114,
+    "source_kind": "auctions",
+    "enabled": true,
+    "verified": true,
+    "unified_coverage": true,
+    "interval_seconds": 300,
+    "last_success": "2026-11-18T02:09:15.945652+00:00",
+    "next_check": "2026-11-18T02:14:15.945652+00:00",
+    "failures": 0,
+    "last_error": null
+  },
+  "enabled_market_ids": [
+    2
+  ],
+  "feeds": [
+    {
+      "source_kind": "auctions",
+      "enabled": true,
+      "last_check": "2026-11-18T02:09:15.945652+00:00",
+      "last_success": "2026-11-18T02:09:15.945652+00:00",
+      "last_modified": "Wed, 18 Nov 2026 01:25:12 GMT",
+      "failures": 0,
+      "last_error": null,
+      "listing_count": 133692,
+      "item_count": 5289
+    },
+    {
+      "source_kind": "commodities",
+      "enabled": true,
+      "last_check": "2026-11-18T02:09:15.945652+00:00",
+      "last_success": "2026-11-18T02:09:15.945652+00:00",
+      "last_modified": "Wed, 18 Nov 2026 01:25:12 GMT",
+      "failures": 0,
+      "last_error": null,
+      "listing_count": 106945,
+      "item_count": 1292
+    }
+  ],
+  "recent_runs": [
+    {
+      "id": 1087,
+      "status": "unchanged",
+      "checked_at": "2026-11-18T02:09:15.945652+00:00",
+      "duration_seconds": 0,
+      "error": null
+    },
+    {
+      "id": 1086,
+      "status": "unchanged",
+      "checked_at": "2026-11-18T02:04:13.372478+00:00",
+      "duration_seconds": 0,
+      "error": null
+    },
+    {
+      "id": 1085,
+      "status": "collected",
+      "checked_at": "2026-11-18T01:59:12.245706+00:00",
+      "duration_seconds": 28,
+      "error": null
+    }
+  ],
+  "database_bytes": 4026939059,
+  "database_safety_cap_bytes": 5368709120,
+  "synthetic_observations": 0,
+  "retention_batches": 0,
+  "services": {
+    "api": {
+      "image": "sha256:81336cb2ad0f9edc19ee9d70e5614cf052831591ff3a702099da24a75c59656e",
+      "running": true,
+      "health": "healthy",
+      "oom_killed": false,
+      "restart_count": 0,
+      "revision": "70f144ca35bd7041dcf17391f9fc8c96fd3c4ef8"
+    },
+    "local-api": {
+      "image": "sha256:81336cb2ad0f9edc19ee9d70e5614cf052831591ff3a702099da24a75c59656e",
+      "running": true,
+      "health": "healthy",
+      "oom_killed": false,
+      "restart_count": 0,
+      "revision": "70f144ca35bd7041dcf17391f9fc8c96fd3c4ef8"
+    },
+    "worker": {
+      "image": "sha256:81336cb2ad0f9edc19ee9d70e5614cf052831591ff3a702099da24a75c59656e",
+      "running": true,
+      "health": null,
+      "oom_killed": false,
+      "restart_count": 0,
+      "revision": "70f144ca35bd7041dcf17391f9fc8c96fd3c4ef8"
+    },
+    "proxy": {
+      "image": "sha256:561f33a0a4fd253a04efd8738c5261177274688daa0b8aa732bde6c50744b186",
+      "running": true,
+      "health": null,
+      "oom_killed": false,
+      "restart_count": 0,
+      "revision": null
+    },
+    "enrichment": {
+      "image": "sha256:3ef6f57964546a425f4c2ebe2bc44be2d9a516340325074dfb0fb2f32d7c3667",
+      "running": true,
+      "health": null,
+      "oom_killed": false,
+      "restart_count": 0,
+      "revision": null
+    },
+    "db": {
+      "image": "sha256:d3244e8ce3f165ee3c93d9c4a4b1d0fe48b3a89e2287b717fdcbbde92d405065",
+      "running": true,
+      "health": "healthy",
+      "oom_killed": false,
+      "restart_count": 0,
+      "revision": null
+    },
+    "monitor": {
+      "image": "sha256:0323bca0334572b29d3e8d6c388b214b3c22891242b9e6eec35f4010595fd18a",
+      "running": true,
+      "health": null,
+      "oom_killed": false,
+      "restart_count": 0,
+      "revision": null
+    },
+    "backup": {
+      "image": "sha256:2669ec98d745fbb77942ed6696162436862334ebaebc71e884853226504b260b",
+      "running": false,
+      "health": null,
+      "oom_killed": false,
+      "restart_count": 0,
+      "revision": null
+    }
+  },
+  "collector_peak_memory_bytes": 341737472,
+  "free_disk_bytes": 6210904064
+}

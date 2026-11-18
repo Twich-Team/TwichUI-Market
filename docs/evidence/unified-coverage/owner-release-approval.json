@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "scope": "private-nsis-with-tauri-signed-updates",
+  "owner_approved_publication": true,
+  "owner_approved_deployment": true,
+  "owner_statement": "The attached owner goal authorizes the controlled fix and deployment and permits a new Companion release only after an independently verified requirement. The existing beta.5 protocol-1 reader cannot represent commodity coverage; protocol-2 native tests and exact-byte Windows SDK lifecycle prove the beta.6 requirement and compatibility. This bounded source-aware beta.6 publication implements that authorization; no new desktop layout or addon release. Physical-PC tray/toast remain unverified.",
+  "visual_approval_commit": "70f144ca35bd7041dcf17391f9fc8c96fd3c4ef8",
+  "source_commit": "70f144ca35bd7041dcf17391f9fc8c96fd3c4ef8",
+  "version": "2.0.0-beta.6",
+  "installer_sha256": "8383217c595d46dcc1a982f60dd500852d6402d613e261a7fd1b6e2a9c5ffb3c",
+  "windows_run_id": 44217371313,
+  "signed_update_run_id": 44218796052,
+  "updater_public_key_sha256": "5794736c840c7c09a49396e60cd569ff6b5f24f872eb0318ed95d55c16616ecf",
+  "tray_actions_verified": false,
+  "acknowledges_unverified_tray": true
+}

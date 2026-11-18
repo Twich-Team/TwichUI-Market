@@ -1,0 +1,12 @@
+{
+  "application_source": "70f144ca35bd7041dcf17391f9fc8c96fd3c4ef8",
+  "schema": "coverage_20261117",
+  "services_replaced": [
+    "api",
+    "local-api",
+    "proxy",
+    "worker"
+  ],
+  "commodity_activation": "pending fresh guarded verification",
+  "backup_policy": "owner-disabled"
+}

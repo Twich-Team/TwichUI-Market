@@ -1,0 +1,8 @@
+{
+  "only_own_temporary_grants_revoked": 2,
+  "https_after_revocation": {
+    "session": 401,
+    "device": 401
+  },
+  "existing_owner_pc_credentials_untouched": true
+}

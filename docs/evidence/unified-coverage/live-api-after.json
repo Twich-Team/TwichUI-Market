@@ -1,0 +1,95 @@
+{
+  "origin": "https://market.twich.gg",
+  "market_id": 2,
+  "snapshot_id": "97",
+  "items": [
+    {
+      "item_id": 4306,
+      "supply": 19702,
+      "listing_count": 761,
+      "minimum_unit_copper": 195,
+      "variant_key": "aeb3b00b46894159af6ed5c4031c34e8981ae6dc6704fe954f4b8d899608c6fb",
+      "coverage_started_at": "2026-11-18T01:59:12.245706+00:00",
+      "name": "Silk Cloth",
+      "name_and_id_search": true,
+      "detail_and_listings": true,
+      "minimum_unit_matches_raw_source": true,
+      "sample_listing_quantity": 2,
+      "sample_listing_total_copper": 390,
+      "intraday_points": 1,
+      "no_precoverage_intraday_points": true,
+      "history_response_keys": [
+        "contract_version",
+        "market_id",
+        "item_id",
+        "variant_key",
+        "algorithm",
+        "points",
+        "synthetic"
+      ],
+      "metadata_provider": "foreverdb",
+      "icon_available": true
+    },
+    {
+      "item_id": 14342,
+      "supply": 38,
+      "listing_count": 37,
+      "minimum_unit_copper": 300900,
+      "variant_key": "8dcaa7f204bf7bf40d84fb475fd67e4631b9ae33bdea804b7e9d2a2d29ce1a60",
+      "coverage_started_at": "2026-11-18T01:59:12.245706+00:00",
+      "name": "Mooncloth",
+      "name_and_id_search": true,
+      "detail_and_listings": true,
+      "minimum_unit_matches_raw_source": true,
+      "sample_listing_quantity": 1,
+      "sample_listing_total_copper": 300900,
+      "intraday_points": 1,
+      "no_precoverage_intraday_points": true,
+      "history_response_keys": [
+        "contract_version",
+        "market_id",
+        "item_id",
+        "variant_key",
+        "algorithm",
+        "points",
+        "synthetic"
+      ],
+      "metadata_provider": "foreverdb",
+      "icon_available": true
+    },
+    {
+      "item_id": 6657,
+      "supply": 2759,
+      "listing_count": 100,
+      "minimum_unit_copper": 113,
+      "variant_key": "e365509d90b23b3ecd5dc78ed4a598047b5a3505f831dba9c35cfb0343d2ab3f",
+      "coverage_started_at": "2026-11-18T01:59:12.245706+00:00",
+      "name": "Savory Deviate Delight",
+      "name_and_id_search": true,
+      "detail_and_listings": true,
+      "minimum_unit_matches_raw_source": true,
+      "sample_listing_quantity": 8,
+      "sample_listing_total_copper": 904,
+      "intraday_points": 1,
+      "no_precoverage_intraday_points": true,
+      "history_response_keys": [
+        "contract_version",
+        "market_id",
+        "item_id",
+        "variant_key",
+        "algorithm",
+        "points",
+        "synthetic"
+      ],
+      "metadata_provider": "foreverdb",
+      "icon_available": true
+    }
+  ],
+  "ordinary_equipment": {
+    "item_id": 85,
+    "name": "Dirty Leather Vest",
+    "current_listings_preserved": true
+  },
+  "new_commodity_deals_withheld_until_real_history": true,
+  "legacy_sync_contract": 1
+}

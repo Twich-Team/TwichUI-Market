@@ -1,0 +1,16 @@
+{
+  "source_commit": "70f144ca35bd7041dcf17391f9fc8c96fd3c4ef8",
+  "postgresql_tests_passed": 661,
+  "populated_migration_rehearsals_passed": 8,
+  "frontend_tests_passed": 132,
+  "commodity_chromium_cases_passed": 2,
+  "commodity_webkit_cases_passed": 2,
+  "real_capture_capacity": {
+    "listings": 220189,
+    "seconds": 25.089,
+    "maximum_rss_kib": 314800,
+    "container_memory_mib": 384,
+    "container_cpu": 0.5
+  },
+  "production_data_used_only_for_isolated_replay": true
+}
