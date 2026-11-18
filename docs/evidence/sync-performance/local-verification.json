@@ -23,7 +23,7 @@
   },
   "production_modified": false,
   "native_windows_comparison": "passed; repeated actual hosted Windows fixture; see ci-verification.json and windows-comparison.json",
-  "owner_pc": "pending; lightweight DEV capture already provided",
+  "owner_pc": "partial native capture received: response wait dominates; see owner-pc-partial-capture.json. Full pre/post-deployment PC timing remains unconfirmed.",
   "signed_sdk": "no fresh signed candidate; original beta.8 authority unchanged",
   "task_owned_local_services": "retired after tests; separate archive fixture removed automatically; no production changes",
   "candidate_source_repeat": {
