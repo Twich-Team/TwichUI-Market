@@ -1,0 +1,13 @@
+{
+  "id": 14445985633,
+  "name": "companion-v2-acceptance",
+  "digest": "sha256:68662593092ecb66b5deb35a0fab8f30f22646e1d1a165ecc41cd2a94082720d",
+  "size_in_bytes": 4531725,
+  "workflow_run": {
+    "id": 44341487381,
+    "repository_id": 1457156728,
+    "head_repository_id": 1457156728,
+    "head_branch": "integration/retention-activation-companion-beta8",
+    "head_sha": "36dc204d5975f57629ca1c830d41d8b95d2ac508"
+  }
+}
