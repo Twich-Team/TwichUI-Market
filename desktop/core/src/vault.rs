@@ -9,8 +9,9 @@ use zeroize::Zeroize;
 
 pub fn credential_target(server: &str) -> Result<String> {
     let normalized = server_url(server)?.to_string();
+    let namespace = if cfg!(feature = "private-dev") { "TwichUI-Market-DEV" } else { "TwichUI-Market" };
     Ok(format!(
-        "TwichUI-Market/{:x}",
+        "{namespace}/{:x}",
         Sha256::digest(normalized.as_bytes())
     ))
 }
@@ -134,5 +135,17 @@ mod native {
     }
     pub fn remove_blob(_: &str) -> Result<()> {
         Err(Error::Vault)
+    }
+}
+
+#[cfg(all(test, feature = "private-dev"))]
+mod dev_tests {
+    #[test]
+    fn private_dev_never_uses_production_credential_names() {
+        let legacy = super::credential_target("https://market.twich.gg").unwrap();
+        let session = super::session_target("https://market.twich.gg").unwrap();
+        assert!(legacy.starts_with("TwichUI-Market-DEV/"));
+        assert!(session.starts_with("TwichUI-Market-DEV/"));
+        assert!(session.ends_with(":companion-v2"));
     }
 }

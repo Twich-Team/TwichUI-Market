@@ -90,7 +90,7 @@ function workshopFailure(error){
   if(reason.includes('Workshop needs an update'))return {code:'workshop_addon',stage:'workshop_addon',message:'Workshop needs an update. Install the compatible TwichUI addon, then retry.',details:'incompatible addon'};
   return {code:'internal',stage:'setup',message:'Workshop setup could not finish because of an unexpected error. Retry or save developer diagnostics. Your files were preserved.',details:'unexpected native setup failure'};
 }
-function workshopMessage(error){return error.message;}
+function workshopMessage(error){return error.check?`${error.message} (Check: ${error.check})`:error.message;}
 async function connectWorkshop(confirm=false){
   if(workshopBusy)return;const context=archiveContext;let focusTarget=null;workshopBusy=true;workshopIssue=null;render(view);
   try{

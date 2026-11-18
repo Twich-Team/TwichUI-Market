@@ -1,0 +1,91 @@
+name: Companion private DEV build
+on:
+  workflow_dispatch:
+    inputs:
+      source:
+        description: Branch or full reviewed commit to build (blank uses selected branch)
+        required: false
+        default: ''
+  # This opt-in branch namespace works before the workflow is merged to main.
+  # Push a checkpoint here for the next owner iteration; no release pipeline dependency.
+  push:
+    branches: ['dev/companion/**', 'fix/workshop-validator-dev-build']
+permissions:
+  contents: read
+concurrency:
+  group: companion-dev-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  windows-dev:
+    runs-on: windows-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.source || github.sha }}
+          persist-credentials: false
+      - name: Record exact source and build identity
+        shell: pwsh
+        run: |
+          $sha=(git rev-parse HEAD).Trim()
+          "COMPANION_DEV_SHA=$sha" >> $env:GITHUB_ENV
+          "DEV_ARTIFACT=TwichUI-Market-Companion-DEV-$($sha.Substring(0,7))" >> $env:GITHUB_ENV
+          New-Item artifacts/companion-dev -ItemType Directory -Force | Out-Null
+          @{source_commit=$sha;run_id='${{ github.run_id }}';run_attempt='${{ github.run_attempt }}';unsigned=$true;private_test=$true;application_id='team.twich.market.dev';updates_enabled=$false} | ConvertTo-Json | Set-Content artifacts/companion-dev/build.json
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.100.0
+      - uses: Swatinem/rust-cache@v2
+        with:
+          # Same workspace/cache family as normal desktop CI.
+          workspaces: |
+            desktop -> target
+            desktop/src-tauri -> target
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: desktop/package-lock.json
+      - name: Focused validator and diagnostics checks
+        run: |
+          cargo test --manifest-path desktop/Cargo.toml --locked --lib installation::
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo test --manifest-path desktop/Cargo.toml --locked --lib workshop_setup::
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo test --manifest-path desktop/Cargo.toml --locked --lib setup_failures_preserve_previous_data
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo test --manifest-path desktop/Cargo.toml --locked --lib --features private-dev private_dev_never_uses_production_credential_names
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Prepare isolated unsigned development application
+        run: python scripts/prepare-companion-dev.py
+      - run: npm ci --prefix desktop
+      - name: Package actual Tauri frontend and native backend
+        run: npm --prefix desktop run tauri build -- --ci --features private-dev --config src-tauri/tauri.dev.conf.json
+      - name: Minimal installed Windows smoke
+        timeout-minutes: 3
+        run: ./scripts/windows/verify-companion-dev.ps1
+      - name: Freeze executable integrity and owner instructions
+        shell: pwsh
+        run: |
+          $installer=@(Get-ChildItem desktop/src-tauri/target/release/bundle/nsis/*-setup.exe)
+          if($installer.Count -ne 1){throw 'Expected one installer'}
+          $destination="artifacts/companion-dev/$env:DEV_ARTIFACT-setup.exe"
+          Copy-Item $installer[0].FullName $destination
+          $hash=(Get-FileHash $destination -Algorithm SHA256).Hash.ToLower()
+          "$hash  $env:DEV_ARTIFACT-setup.exe" | Set-Content artifacts/companion-dev/SHA256SUMS.txt
+          @"
+          UNSIGNED PRIVATE WINDOWS TEST — $env:DEV_ARTIFACT
+          Source: $env:COMPANION_DEV_SHA
+          1. Install the included DEV setup.exe. Keep the signed beta.8 installed.
+          2. Open TwichUI Market Companion DEV and sign in separately. Choose US / Normal / Horde.
+          3. Click Connect Workshop and choose the Forever folder.
+          4. Report whether installation authorization appears, or the exact error/check. Save redacted diagnostics if needed.
+          DEV uses separate credentials/storage and cannot update itself. Close the signed app while testing to avoid competing delivery workers. Close DEV and open the signed Companion to return; uninstall DEV independently if desired. No signed release or public updater publication occurred.
+          "@ | Set-Content artifacts/companion-dev/READ-ME.txt
+          "Artifact: $env:DEV_ARTIFACT`nSource: $env:COMPANION_DEV_SHA`nSHA256: $hash`nUnsigned side-by-side NSIS installer; focused checks and installed native/frontend smoke passed." >> $env:GITHUB_STEP_SUMMARY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.DEV_ARTIFACT }}
+          path: artifacts/companion-dev/
+          if-no-files-found: error
+          retention-days: 14

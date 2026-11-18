@@ -6,6 +6,8 @@ use serde::{Deserialize, Serialize};
 pub struct Failure {
     pub code: String,
     pub stage: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub check: Option<String>,
     pub message: String,
     pub details: String,
 }
@@ -27,6 +29,7 @@ impl Failure {
         Self {
             code: code.into(),
             stage: stage.into(),
+            check: None,
             message: message.into(),
             details,
         }
@@ -66,6 +69,21 @@ impl Failure {
 
 pub(crate) fn at<T>(stage: &str, result: crate::Result<T>) -> crate::Result<T> {
     result.map_err(|e| Error::WorkshopSetup(Box::new(Failure::from_error(stage, e))))
+}
+
+
+/// Add only a stable check and an allowlisted explanation; never OS/file payloads.
+pub(crate) fn checked<T>(check: &str, message: &str, result: crate::Result<T>) -> crate::Result<T> {
+    result.map_err(|error| {
+        let mut failure = Failure::from_error("workshop_addon", error);
+        failure.check = Some(check.into());
+        failure.message = if failure.code == "access_denied" {
+            format!("Read permission denied. {message}")
+        } else if failure.code == "unsafe_path" {
+            format!("Unsafe linked addon path. {message}")
+        } else { message.into() };
+        Error::WorkshopSetup(Box::new(failure))
+    })
 }
 
 #[cfg(test)]

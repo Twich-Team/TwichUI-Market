@@ -413,7 +413,7 @@ impl Runtime {
                 Ok(_)=>serde_json::json!({"notice":"Automatic delivery is off for this account and market. Review setup to enable it."}),
                 Err(_)=>serde_json::json!({"notice":"Delivery configuration is invalid; automatic installation is disabled. Review setup."}),
             },
-            version: env!("CARGO_PKG_VERSION").into(),
+            version: if cfg!(feature = "private-dev") { format!("{} DEV {}", env!("CARGO_PKG_VERSION"), option_env!("COMPANION_DEV_SHA").unwrap_or("local")) } else { env!("CARGO_PKG_VERSION").into() },
             settings,
             mode: profile.mode,
             connected,
@@ -1254,7 +1254,7 @@ impl Runtime {
         twichui_market_core::update::claim_update_notice(&self.data.path,version,background).map_err(friendly)
     }
     pub fn updates_eligible(&self) -> bool {
-        !self.quitting()
+        !cfg!(feature = "private-dev") && !self.quitting()
             && self.data.local.lock().is_ok_and(|local| {
                 local.settings_valid
                     && local.credential_available

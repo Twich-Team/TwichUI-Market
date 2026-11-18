@@ -34,28 +34,69 @@ pub fn validate_game(path:&Path)->Result<()> {
 
 pub fn validate(path:&Path)->Result<()> {
     validate_game(path)?;
-    crate::workshop_setup::at("workshop_addon", (|| {
-        let core=path.join("Interface/AddOns/!!!TwichUI");installed(&core)?;
-        need(core.is_dir(),"Workshop needs an update.")?;
-        let core_toc=String::from_utf8(read(&core.join("!!!TwichUI.toc"),65536)?).map_err(|_|Error::Invalid("Workshop needs an update."))?;
-        need(core_toc.lines().any(|l|l.trim()=="## Interface: 16001"),"Workshop needs an update.")?;
-        let folder=path.join("Interface/AddOns/TwichUI_Workshop"); installed(&folder)?;
-        need(folder.is_dir(),"Workshop needs an update.")?;
-        for name in ["TwichUI_Workshop.toc","Summary.lua","Bridge.lua","MarketDelivery.json"] {
-            let file=folder.join(name); installed(&file)?;
-            need(file.is_file(),"Workshop needs an update.")?;
-            // Existence alone misses valid files that Windows refuses to read.
-            // Read a bounded prefix for Lua files; their contents are not run.
-            if name.ends_with(".lua") { use std::io::Read; let mut byte=[0u8;1]; std::fs::File::open(file)?.read(&mut byte)?; }
-        }
-        let cap:Value=crate::bridge::parse(&read(&folder.join("MarketDelivery.json"),4096)?,4096)?;
-        need(cap["format"]=="twichui-market-consumer" && cap["summary_delivery_version"]==1
-            && cap["game"]=="wow-forever" && cap["interface"]==16001
-            && cap["summary_partition_bytes"]==131072 && cap["summary_total_bytes"]==8388608,
-            "Workshop needs an update.")?;
-        let toc=String::from_utf8(read(&folder.join("TwichUI_Workshop.toc"),32768)?).map_err(|_|Error::Invalid("Workshop needs an update."))?;
-        need(toc.lines().any(|l|l.trim()=="## Interface: 16001") && toc.lines().any(|l|l.trim()=="Summary.lua"),"Workshop needs an update.")
-    })())
+    validate_addons(path)
+}
+
+// Metadata checks preserve NotFound versus PermissionDenied; Path::is_file()
+// would collapse both into a misleading missing/update message.
+fn addon_path(path: &Path, directory: bool) -> Result<()> {
+    installed(path)?;
+    let metadata = std::fs::metadata(path)?;
+    need(if directory { metadata.is_dir() } else { metadata.is_file() }, "unexpected addon file type")
+}
+fn addon_text(path: &Path, max: usize) -> Result<String> {
+    addon_path(path, false)?;
+    let bytes = read(path, max)?;
+    String::from_utf8(bytes).map(|s| s.trim_start_matches('\u{feff}').to_owned())
+        .map_err(|_| Error::Invalid("addon text is not UTF-8"))
+}
+fn interface_matches(toc: &str) -> bool {
+    toc.lines().filter_map(|line| line.trim().strip_prefix("##"))
+        .filter_map(|line| line.split_once(':'))
+        .any(|(key, value)| key.trim() == "Interface" && value.trim() == "16001")
+}
+
+/// Read-only addon contract probe, also used against real seven-addon packages.
+/// Does not inspect or change player data, authorize accounts, or publish files.
+pub fn validate_addons(path: &Path) -> Result<()> {
+    use crate::workshop_setup::checked;
+    let core = path.join("Interface/AddOns/!!!TwichUI");
+    checked("core_folder", "The core addon folder !!!TwichUI is missing or unreadable in Interface/AddOns.", addon_path(&core, true))?;
+    let core_toc = checked("core_toc", "The core addon TOC (!!!TwichUI.toc) is missing or unreadable.", addon_text(&core.join("!!!TwichUI.toc"), 65536))?;
+    checked("core_interface", "The core addon TOC must declare Interface 16001 for Forever.", need(interface_matches(&core_toc), "core interface must be 16001"))?;
+    let folder = path.join("Interface/AddOns/TwichUI_Workshop");
+    checked("workshop_folder", "The TwichUI_Workshop folder is missing or unreadable in Interface/AddOns.", addon_path(&folder, true))?;
+    let toc = checked("workshop_toc", "TwichUI_Workshop.toc is missing or unreadable.", addon_text(&folder.join("TwichUI_Workshop.toc"), 32768))?;
+    for (name, check, message) in [
+        ("Summary.lua", "summary_lua", "Workshop Summary.lua is missing or unreadable. This addon package needs the summary consumer."),
+        ("Bridge.lua", "bridge_lua", "Workshop Bridge.lua is missing or unreadable."),
+    ] {
+        checked(check, message, (|| {
+            let file = folder.join(name); addon_path(&file, false)?;
+            use std::io::Read;
+            let mut byte = [0u8; 1]; std::fs::File::open(file)?.read(&mut byte)?;
+            Ok(())
+        })())?;
+    }
+    let cap_path = folder.join("MarketDelivery.json");
+    checked("capability_file", "Workshop MarketDelivery.json is missing or unreadable.", addon_path(&cap_path, false))?;
+    let cap: Value = checked("capability_json", "Workshop MarketDelivery.json could not be read as valid capability JSON.", (|| {
+        let bytes = read(&cap_path, 4096)?;
+        crate::bridge::parse(bytes.strip_prefix(&[0xef, 0xbb, 0xbf]).unwrap_or(&bytes), 4096)
+    })())?;
+    // Field names and expected values are static; never echo file contents.
+    for (field, expected, message, detail) in [
+        ("format", Value::from("twichui-market-consumer"), "Workshop capability format is unsupported.", "format mismatch"),
+        ("game", Value::from("wow-forever"), "Workshop capabilities must target wow-forever.", "game mismatch"),
+        ("interface", Value::from(16001), "Workshop capabilities must target Interface 16001.", "interface mismatch"),
+        ("summary_delivery_version", Value::from(1), "Workshop does not declare summary delivery version 1.", "summary_delivery_version mismatch"),
+        ("summary_partition_bytes", Value::from(131072), "Workshop summary partition limit must be 131072 bytes.", "summary_partition_bytes mismatch"),
+        ("summary_total_bytes", Value::from(8388608), "Workshop summary total limit must be 8388608 bytes.", "summary_total_bytes mismatch"),
+    ] {
+        checked("summary_contract", message, need(cap[field] == expected, detail))?;
+    }
+    checked("workshop_interface", "The Workshop TOC must declare Interface 16001 for Forever.", need(interface_matches(&toc), "Workshop interface must be 16001"))?;
+    checked("summary_toc_entry", "The Workshop TOC does not load Summary.lua. This addon package needs the summary consumer.", need(toc.lines().any(|line| line.trim() == "Summary.lua"), "Summary.lua TOC entry missing"))
 }
 
 /// Previous authorized installation wins; otherwise inspect at most 256
@@ -259,3 +300,96 @@ pub fn choose_folder()->Result<Option<PathBuf>> {
 }
 #[cfg(not(windows))]
 pub fn choose_folder()->Result<Option<PathBuf>> {Err(Error::Invalid("Use the installed Windows companion to choose a folder"))}
+
+#[cfg(test)]
+mod addon_tests {
+    use super::*;
+    use std::fs;
+    const CAP: &str = r#"{"format":"twichui-market-consumer","game":"wow-forever","interface":16001,"summary_delivery_version":1,"summary_partition_bytes":131072,"summary_total_bytes":8388608}"#;
+    fn fixture() -> tempfile::TempDir {
+        let root = tempfile::tempdir().unwrap();
+        let addons = root.path().join("Interface/AddOns");
+        let core = addons.join("!!!TwichUI"); let workshop = addons.join("TwichUI_Workshop");
+        fs::create_dir_all(&core).unwrap(); fs::create_dir_all(&workshop).unwrap();
+        fs::write(core.join("!!!TwichUI.toc"), "## Interface: 16001\n").unwrap();
+        fs::write(workshop.join("TwichUI_Workshop.toc"), "## Interface: 16001\nSummary.lua\nBridge.lua\n").unwrap();
+        for name in ["Summary.lua", "Bridge.lua"] { fs::write(workshop.join(name), "-- fixture\n").unwrap(); }
+        fs::write(workshop.join("MarketDelivery.json"), CAP).unwrap(); root
+    }
+    fn failure(root: &Path) -> crate::workshop_setup::Failure {
+        crate::workshop_setup::Failure::from_error("workshop_addon", validate_addons(root).unwrap_err())
+    }
+    #[test]
+    fn addon_failures_identify_each_missing_file_or_folder() {
+        for (relative, check) in [
+            ("!!!TwichUI", "core_folder"), ("!!!TwichUI/!!!TwichUI.toc", "core_toc"),
+            ("TwichUI_Workshop", "workshop_folder"), ("TwichUI_Workshop/TwichUI_Workshop.toc", "workshop_toc"),
+            ("TwichUI_Workshop/Summary.lua", "summary_lua"), ("TwichUI_Workshop/Bridge.lua", "bridge_lua"),
+            ("TwichUI_Workshop/MarketDelivery.json", "capability_file"),
+        ] {
+            let root = fixture(); let file = root.path().join("Interface/AddOns").join(relative);
+            if file.is_dir() { fs::remove_dir_all(file).unwrap(); } else { fs::remove_file(file).unwrap(); }
+            let e = failure(root.path()); assert_eq!(e.code, "workshop_addon"); assert_eq!(e.check.as_deref(), Some(check));
+            assert_eq!(e.stage, "workshop_addon"); assert!(!e.message.contains("needs an update"));
+        }
+    }
+    #[test]
+    fn addon_toc_and_json_failures_remain_specific_and_redacted() {
+        for (relative, content, check, detail) in [
+            ("!!!TwichUI/!!!TwichUI.toc", "## Interface: 11200\n", "core_interface", "core interface must be 16001"),
+            ("TwichUI_Workshop/TwichUI_Workshop.toc", "## Interface: 11200\nSummary.lua\n", "workshop_interface", "Workshop interface must be 16001"),
+            ("TwichUI_Workshop/TwichUI_Workshop.toc", "## Interface: 16001\n# Summary.lua\n", "summary_toc_entry", "Summary.lua TOC entry missing"),
+            ("TwichUI_Workshop/MarketDelivery.json", "{\"secret-token private-path\":", "capability_json", "json_category="),
+            ("TwichUI_Workshop/MarketDelivery.json", "{\"format\":1,\"format\":2}", "capability_json", "json_category="),
+        ] {
+            let root = fixture(); fs::write(root.path().join("Interface/AddOns").join(relative), content).unwrap();
+            let e = failure(root.path()); assert_eq!(e.check.as_deref(), Some(check)); assert!(e.details.contains(detail), "{}", e.details);
+            let diagnostic = serde_json::json!({"workshop_setup":e}).to_string();
+            assert!(!diagnostic.contains("secret-token")); assert!(!diagnostic.contains("private-path"));
+            assert!(!diagnostic.contains(root.path().to_str().unwrap()));
+        }
+    }
+    #[test]
+    fn addon_contract_identifies_every_field_without_echoing_values() {
+        for field in ["format", "game", "interface", "summary_delivery_version", "summary_partition_bytes", "summary_total_bytes"] {
+            let root = fixture(); let mut cap: Value = serde_json::from_str(CAP).unwrap();
+            cap[field] = "secret-token".into();
+            fs::write(root.path().join("Interface/AddOns/TwichUI_Workshop/MarketDelivery.json"), cap.to_string()).unwrap();
+            let e = failure(root.path()); assert_eq!(e.check.as_deref(), Some("summary_contract"));
+            assert_eq!(e.details, format!("{field} mismatch")); assert!(!serde_json::to_string(&e).unwrap().contains("secret-token"));
+        }
+    }
+    #[test]
+    fn addon_accepts_windows_text_formatting_without_relaxing_contract() {
+        let root = fixture(); let addons = root.path().join("Interface/AddOns");
+        fs::write(addons.join("!!!TwichUI/!!!TwichUI.toc"), "\u{feff}## Interface:16001\r\n").unwrap();
+        fs::write(addons.join("TwichUI_Workshop/TwichUI_Workshop.toc"), "\u{feff}## Interface:\t16001\r\nSummary.lua\r\nBridge.lua\r\n").unwrap();
+        fs::write(addons.join("TwichUI_Workshop/MarketDelivery.json"), format!("\u{feff}{CAP}\r\n")).unwrap();
+        assert!(validate_addons(root.path()).is_ok());
+    }
+    #[test]
+    fn addon_permission_failure_retains_file_check_and_safe_os_details() {
+        let error: Result<()> = Err(std::io::Error::new(std::io::ErrorKind::PermissionDenied, "secret-token private-path").into());
+        let e = crate::workshop_setup::checked("core_toc", "The core TOC is unreadable.", error).unwrap_err();
+        let e = crate::workshop_setup::Failure::from_error("workshop_addon", e);
+        assert_eq!(e.code, "access_denied"); assert_eq!(e.check.as_deref(), Some("core_toc"));
+        assert!(e.details.contains("PermissionDenied")); assert!(e.message.contains("Read permission denied"));
+        assert!(!serde_json::to_string(&e).unwrap().contains("secret-token"));
+    }
+    #[cfg(unix)]
+    #[test]
+    fn addon_linked_files_are_still_refused() {
+        let root = fixture(); let path = root.path().join("Interface/AddOns/TwichUI_Workshop/Summary.lua");
+        fs::remove_file(&path).unwrap(); std::os::unix::fs::symlink("Bridge.lua", path).unwrap();
+        let e = failure(root.path()); assert_eq!(e.code, "unsafe_path"); assert_eq!(e.check.as_deref(), Some("summary_lua"));
+    }
+    #[test]
+    fn addon_oversized_and_invalid_utf8_files_fail_closed() {
+        let root = fixture(); let addons = root.path().join("Interface/AddOns");
+        fs::write(addons.join("!!!TwichUI/!!!TwichUI.toc"), [0xff]).unwrap();
+        assert_eq!(failure(root.path()).check.as_deref(), Some("core_toc"));
+        fs::write(addons.join("!!!TwichUI/!!!TwichUI.toc"), "## Interface: 16001\n").unwrap();
+        fs::write(addons.join("TwichUI_Workshop/MarketDelivery.json"), vec![b' ';4097]).unwrap();
+        assert_eq!(failure(root.path()).check.as_deref(), Some("capability_json"));
+    }
+}
