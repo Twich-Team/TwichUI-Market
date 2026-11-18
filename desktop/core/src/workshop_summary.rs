@@ -403,8 +403,8 @@ mod tests {
     #[cfg(windows)]
     #[test]
     fn shared_game_permissions_keep_account_markers_and_unknown_files_enforced() {
-        let d=tempfile::tempdir().unwrap();let b=fixture();let c=config(d.path(),&b);installation(&c);
-        let addons=c.installation.join("Interface/AddOns");
+        let d=tempfile::tempdir().unwrap();let b=fixture();let c=config(d.path(),&b);
+        let addons=c.installation.join("Interface/AddOns");fs::create_dir_all(&addons).unwrap();
         let result=std::process::Command::new("icacls").arg(&addons).args(["/grant","*S-1-5-4:(OI)(CI)F"]).output().unwrap();
         assert!(result.status.success(),"disposable shared-game ACL fixture failed");
         let dir=main_dir(&c);fs::create_dir(&dir).unwrap();
