@@ -1,0 +1,268 @@
+{
+  "measured_at": "2026-11-18T14:08:57.176782+00:00",
+  "database_allocated_bytes": 4560524979,
+  "tables": [
+    {
+      "relname": "listings",
+      "bytes": 3319504896,
+      "n_live_tup": 12970458,
+      "n_dead_tup": 0,
+      "last_autovacuum": "2026-11-18T10:29:51.245033+00:00",
+      "last_autoanalyze": "2026-11-18T12:30:42.509417+00:00"
+    },
+    {
+      "relname": "snapshot_statistics",
+      "bytes": 832970752,
+      "n_live_tup": 2622996,
+      "n_dead_tup": 0,
+      "last_autovacuum": "2026-11-18T01:29:31.071727+00:00",
+      "last_autoanalyze": "2026-11-18T01:29:31.970361+00:00"
+    },
+    {
+      "relname": "bridge_derived_records",
+      "bytes": 205324288,
+      "n_live_tup": 172934,
+      "n_dead_tup": 0,
+      "last_autovacuum": "2026-11-17T21:11:04.924286+00:00",
+      "last_autoanalyze": "2026-11-18T02:04:30.669738+00:00"
+    },
+    {
+      "relname": "metadata_tasks",
+      "bytes": 33456128,
+      "n_live_tup": 21508,
+      "n_dead_tup": 3503,
+      "last_autovacuum": "2026-11-18T03:13:31.160271+00:00",
+      "last_autoanalyze": "2026-11-18T04:55:32.740957+00:00"
+    },
+    {
+      "relname": "metadata_sources",
+      "bytes": 28049408,
+      "n_live_tup": 18474,
+      "n_dead_tup": 2583,
+      "last_autovacuum": "2026-11-18T02:34:30.356683+00:00",
+      "last_autoanalyze": "2026-11-18T04:48:32.54123+00:00"
+    },
+    {
+      "relname": "metadata_versions",
+      "bytes": 26378240,
+      "n_live_tup": 19541,
+      "n_dead_tup": 4,
+      "last_autovacuum": "2026-11-18T02:17:29.891443+00:00",
+      "last_autoanalyze": "2026-11-18T03:12:31.102935+00:00"
+    },
+    {
+      "relname": "item_metadata",
+      "bytes": 24756224,
+      "n_live_tup": 7214,
+      "n_dead_tup": 423,
+      "last_autovacuum": "2026-11-18T04:40:32.398853+00:00",
+      "last_autoanalyze": "2026-11-18T04:39:32.245795+00:00"
+    },
+    {
+      "relname": "feed_captures",
+      "bytes": 22478848,
+      "n_live_tup": 21,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null
+    },
+    {
+      "relname": "item_media",
+      "bytes": 22274048,
+      "n_live_tup": 7213,
+      "n_dead_tup": 55,
+      "last_autovacuum": "2026-11-18T03:23:30.860994+00:00",
+      "last_autoanalyze": "2026-11-18T03:35:31.056446+00:00"
+    },
+    {
+      "relname": "metadata_recovery_items",
+      "bytes": 11091968,
+      "n_live_tup": 6903,
+      "n_dead_tup": 953,
+      "last_autovacuum": "2026-11-18T13:56:41.447088+00:00",
+      "last_autoanalyze": "2026-11-18T14:07:41.496925+00:00"
+    },
+    {
+      "relname": "security_events",
+      "bytes": 7741440,
+      "n_live_tup": 51433,
+      "n_dead_tup": 0,
+      "last_autovacuum": "2026-11-18T03:06:30.569406+00:00",
+      "last_autoanalyze": "2026-11-18T03:58:31.477908+00:00"
+    },
+    {
+      "relname": "metadata_jobs",
+      "bytes": 6807552,
+      "n_live_tup": 21189,
+      "n_dead_tup": 2305,
+      "last_autovacuum": "2026-11-18T03:14:30.768374+00:00",
+      "last_autoanalyze": "2026-11-18T04:43:32.273856+00:00"
+    }
+  ],
+  "recent_growth": [
+    {
+      "sampled_at": "2026-11-17T14:00:00+00:00",
+      "database_bytes": 3348453043
+    },
+    {
+      "sampled_at": "2026-11-17T15:00:00+00:00",
+      "database_bytes": 3381163699
+    },
+    {
+      "sampled_at": "2026-11-17T16:00:00+00:00",
+      "database_bytes": 3384325811
+    },
+    {
+      "sampled_at": "2026-11-17T17:00:00+00:00",
+      "database_bytes": 3415324339
+    },
+    {
+      "sampled_at": "2026-11-17T18:00:00+00:00",
+      "database_bytes": 3446929075
+    },
+    {
+      "sampled_at": "2026-11-17T19:00:00+00:00",
+      "database_bytes": 3479140019
+    },
+    {
+      "sampled_at": "2026-11-17T20:00:00+00:00",
+      "database_bytes": 3513235123
+    },
+    {
+      "sampled_at": "2026-11-17T21:00:00+00:00",
+      "database_bytes": 3550246579
+    },
+    {
+      "sampled_at": "2026-11-17T22:00:00+00:00",
+      "database_bytes": 3747444403
+    },
+    {
+      "sampled_at": "2026-11-17T23:00:00+00:00",
+      "database_bytes": 3789788851
+    },
+    {
+      "sampled_at": "2026-11-18T00:00:00+00:00",
+      "database_bytes": 3834992307
+    },
+    {
+      "sampled_at": "2026-11-18T01:00:00+00:00",
+      "database_bytes": 3877549747
+    },
+    {
+      "sampled_at": "2026-11-18T02:00:00+00:00",
+      "database_bytes": 3999970995
+    },
+    {
+      "sampled_at": "2026-11-18T03:00:00+00:00",
+      "database_bytes": 4117157555
+    },
+    {
+      "sampled_at": "2026-11-18T04:00:00+00:00",
+      "database_bytes": 4209948339
+    },
+    {
+      "sampled_at": "2026-11-18T05:00:00+00:00",
+      "database_bytes": 4216583859
+    },
+    {
+      "sampled_at": "2026-11-18T06:00:00+00:00",
+      "database_bytes": 4217951923
+    },
+    {
+      "sampled_at": "2026-11-18T07:00:00+00:00",
+      "database_bytes": 4219524787
+    },
+    {
+      "sampled_at": "2026-11-18T08:00:00+00:00",
+      "database_bytes": 4220663475
+    },
+    {
+      "sampled_at": "2026-11-18T09:00:00+00:00",
+      "database_bytes": 4221867699
+    },
+    {
+      "sampled_at": "2026-11-18T10:00:00+00:00",
+      "database_bytes": 4300355251
+    },
+    {
+      "sampled_at": "2026-11-18T11:00:00+00:00",
+      "database_bytes": 4372862643
+    },
+    {
+      "sampled_at": "2026-11-18T12:00:00+00:00",
+      "database_bytes": 4439709363
+    },
+    {
+      "sampled_at": "2026-11-18T13:00:00+00:00",
+      "database_bytes": 4502091443
+    },
+    {
+      "sampled_at": "2026-11-18T14:00:00+00:00",
+      "database_bytes": 4560500403
+    }
+  ],
+  "wal_bytes": 285212672,
+  "wal_generated_since_reset": 19129678666,
+  "checkpoint_stats": {
+    "num_timed": 1330,
+    "num_requested": 3,
+    "restartpoints_timed": 0,
+    "restartpoints_req": 0,
+    "restartpoints_done": 0,
+    "write_time": 44485513,
+    "sync_time": 25577,
+    "buffers_written": 788733,
+    "stats_reset": "2026-11-13T23:10:15.437079+00:00"
+  },
+  "policy": {
+    "id": 1,
+    "revision": 2,
+    "raw_days": 7,
+    "intraday_days": 90,
+    "daily_days": 365,
+    "operational_days": 90,
+    "security_days": 365,
+    "approved_hash": null,
+    "approved_at": null,
+    "updated_at": "2026-11-17T03:27:40.135414+00:00"
+  },
+  "backlog_growth_inputs": null,
+  "model": {
+    "ordinary_listing_rows_per_day_measured_prior_three_days": 2838591.3333333335,
+    "commodity_listing_rows_per_day_assumed_range": [
+      1300000,
+      2500000
+    ],
+    "statistic_rows_per_day_measured_prior_three_days": 599834.6666666666,
+    "allocated_bytes_per_listing_catalogue_estimate": 255.92811726463322,
+    "allocated_bytes_per_statistic_catalogue_estimate": 317.5646291492629,
+    "seven_day_raw_gib_range": [
+      6.905080020869241,
+      8.90723373880332
+    ],
+    "ninety_day_statistics_gib": 15.970775833409462,
+    "additional_daily_support_gib": 2.476949029718597,
+    "conditional_retained_history_plus_internal_slack_gib_range": [
+      30,
+      45
+    ],
+    "finite_total_steady_state_proven": false,
+    "excluded_growth_uncertainty": [
+      "Unpruned bridge derived records and metadata history",
+      "Future commodity update frequency and variant breadth",
+      "Index/internal free-space reuse and maintenance contention"
+    ],
+    "bounded_measured_rows_per_cycle": 60000,
+    "nominal_rows_per_day": 17280000,
+    "nominal_work_seconds_per_day": 628,
+    "wal_per_60000_listing_sample_bytes": 14607560,
+    "estimated_pruning_wal_gib_per_day_at_4m_to_6m_rows": [
+      0.9069566925366719,
+      1.360435038805008
+    ],
+    "reserve_gib": 32,
+    "cap_gib": 64,
+    "why_reserve_sufficient_initially": "At entry 149 GiB available, growth from 4.25 to 64 GiB leaves approximately 89 GiB before other workload growth. Reserve covers WAL/checkpoints/temp, a fresh dump, isolated 4.2 GiB restore, and application headroom; actual free space is separately enforced.",
+    "review_trigger": "Review after seven commodity-enabled days and again after authorized maintenance; tune only within newly reviewed scope/limits. No automatic cap increase."
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "recorded_at": "2026-11-18T14:50:50.366098+00:00",
+  "request_sha256": "07ec6b8a330d5a41e3e98f974a79ab774b0f9cfdf172ee8db3cf0cb9e769659e",
+  "owner_authorized_collection_stabilization": true,
+  "owner_authorized_automatic_retention_implementation": true,
+  "owner_authorized_isolated_destructive_rehearsal": true,
+  "owner_authorized_additive_migrations_and_verified_deployment": true,
+  "owner_authorized_production_historical_deletion": false,
+  "backup_schedule_must_remain_disabled": true,
+  "external_storage_modification_authorized": false,
+  "feature_branch": "feature/automatic-historical-retention"
+}

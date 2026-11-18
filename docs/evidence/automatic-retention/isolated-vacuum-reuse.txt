@@ -1,0 +1,5 @@
+CREATE EXTENSION
+ table_len  | dead_tuple_count | dead_tuple_len | free_space | free_percent
+------------+------------------+----------------+------------+--------------
+ 2359205888 |                0 |              0 |   32211912 |         1.37
+(1 row)

@@ -1,0 +1,5 @@
+VACUUM
+ table_len  | dead_tuple_count | dead_tuple_len | free_space | free_percent
+------------+------------------+----------------+------------+--------------
+ 2359205888 |                0 |              0 |   42819296 |         1.81
+(1 row)
