@@ -1,0 +1,10 @@
+{
+  "credential_ids": [
+    297,
+    298
+  ],
+  "existing_owner_and_device": true,
+  "ttl_minutes": 60,
+  "scope": "owner-authorized beta9 release verification",
+  "tokens_never_committed": true
+}

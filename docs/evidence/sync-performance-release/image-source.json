@@ -1,0 +1,23 @@
+{
+  "base_image": "sha256:631c5e03f63be93ca79bec6c2d17294284f50f5eedb28598077ddc4940952582",
+  "candidate_image": "sha256:a79a7f0fca9c8fb6257201d53b6509e08b7630296661b1d672a1c828bb1bd907",
+  "source": "580e2e5f34582d00ac3ba20b1440e08b55d2fdf1",
+  "changed_paths": [
+    "/app/market/app.py",
+    "/app/market/security.py",
+    "/app/market/sync_api.py",
+    "/app/market/sync_generation.py",
+    "/app/market/sync_performance.py",
+    "/app/market/workshop_summary.py",
+    "/usr/local/lib/python3.12/site-packages/market/app.py",
+    "/usr/local/lib/python3.12/site-packages/market/security.py",
+    "/usr/local/lib/python3.12/site-packages/market/sync_api.py",
+    "/usr/local/lib/python3.12/site-packages/market/sync_generation.py",
+    "/usr/local/lib/python3.12/site-packages/market/sync_performance.py",
+    "/usr/local/lib/python3.12/site-packages/market/workshop_summary.py"
+  ],
+  "all_other_runtime_and_contract_files_identical": true,
+  "new_module": "sync_performance.py",
+  "retention_and_bridge_unchanged": true,
+  "copied_modules_match_exact_source": true
+}

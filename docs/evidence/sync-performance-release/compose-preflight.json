@@ -1,0 +1,9 @@
+{
+  "source": "580e2e5f34582d00ac3ba20b1440e08b55d2fdf1",
+  "backend_ci_run": 44419178133,
+  "only_two_image_changes": true,
+  "original_environment_matches": true,
+  "original_overlay_count": 23,
+  "overlay": "/home/marketdev/.codex/worktrees/companion-sync-performance/TwichUI-Market/compose.sync-performance-release.yaml",
+  "candidate_image": "sha256:a79a7f0fca9c8fb6257201d53b6509e08b7630296661b1d672a1c828bb1bd907"
+}

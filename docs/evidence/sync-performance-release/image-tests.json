@@ -1,0 +1,17 @@
+{
+  "image": "sha256:a79a7f0fca9c8fb6257201d53b6509e08b7630296661b1d672a1c828bb1bd907",
+  "database": "isolated market_test",
+  "passed": 131,
+  "suites": [
+    "sync",
+    "sync_batch",
+    "sync_generation",
+    "sync_performance",
+    "workshop_summary",
+    "retention_policy",
+    "retention_worker",
+    "bridge_export",
+    "bridge_contract_v1"
+  ],
+  "tests_use_deployment_image_modules": true
+}

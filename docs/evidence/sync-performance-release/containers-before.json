@@ -1,0 +1,47 @@
+{
+  "api": {
+    "id": "e1262f3980c1ac7146c46c46c8c541528053f24663f5cda241e031486f3790db",
+    "image": "sha256:631c5e03f63be93ca79bec6c2d17294284f50f5eedb28598077ddc4940952582",
+    "started_at": "2026-11-18T20:44:35.239624256Z"
+  },
+  "local-api": {
+    "id": "f4d432994143f7a85fb89333dc9c0cffa5b6f60fe1bc9caa9b507fa613098f0f",
+    "image": "sha256:631c5e03f63be93ca79bec6c2d17294284f50f5eedb28598077ddc4940952582",
+    "started_at": "2026-11-18T20:44:35.499162637Z"
+  },
+  "db": {
+    "id": "1a138045d430554c64142f230fa1555e61d3414b2926ae9b2606f58fb8fb3642",
+    "image": "sha256:d3244e8ce3f165ee3c93d9c4a4b1d0fe48b3a89e2287b717fdcbbde92d405065",
+    "started_at": "2026-11-14T01:46:45.864726511Z"
+  },
+  "worker": {
+    "id": "81b36b1a230d15f0cef2edcadc53866128f302d305a662bc9a453abf203b2887",
+    "image": "sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b",
+    "started_at": "2026-11-18T15:11:38.605275169Z"
+  },
+  "retention": {
+    "id": "225f8fba07561eda9d4f64eb8ca98f3115ab50f5b0e6e4bdc050d75e30f81d43",
+    "image": "sha256:9712cd35a1f669343d20d42598717d0fcb370a4c358d3edb4c35f807b0d9295c",
+    "started_at": "2026-11-18T16:23:06.415356816Z"
+  },
+  "monitor": {
+    "id": "00320ce44d3801ef902386a2f7956fe9f49e74decad5ea71782a3f8cdde1dcd5",
+    "image": "sha256:9712cd35a1f669343d20d42598717d0fcb370a4c358d3edb4c35f807b0d9295c",
+    "started_at": "2026-11-18T16:23:06.640021525Z"
+  },
+  "proxy": {
+    "id": "de1e7aceb146621a04cdea2151d46318fc3c4124b3aa4da9ac98c5282f4539ac",
+    "image": "sha256:f48f8f1a7e5a030432abde0792ee0be1aae0326950404e83036bc9c0172a6814",
+    "started_at": "2026-11-18T15:11:55.771277769Z"
+  },
+  "enrichment": {
+    "id": "08ac2b64e749d094f88e9cce7157fd3c5a29ea867bb11ae24789247479a49c44",
+    "image": "sha256:3ef6f57964546a425f4c2ebe2bc44be2d9a516340325074dfb0fb2f32d7c3667",
+    "started_at": "2026-11-17T20:28:47.737748418Z"
+  },
+  "backup-manager": {
+    "id": "0975558bb55d6a8216c43fdba4911b3a9cbfc46bc6f36188c3e88e88782f6ecf",
+    "image": "sha256:79cea119910ad3353f8a35ce21d079fafbcab0a757c0734bfe3bce6055c68565",
+    "started_at": "2026-11-18T04:20:50.066168318Z"
+  }
+}

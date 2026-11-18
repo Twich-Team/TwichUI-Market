@@ -1,0 +1,10 @@
+{
+  "owner_statement": "okay, go ahead and deploy both the market and the new version of the companion.",
+  "scope": "Reviewed synchronization fixes in PR40; necessary integration, existing-key signing and existing private updater publication",
+  "version": "2.0.0-beta.9",
+  "payload_source": "580e2e5f34582d00ac3ba20b1440e08b55d2fdf1",
+  "existing_key_reused": true,
+  "addon_publication": false,
+  "production_preservation_required": true,
+  "physical_game_acceptance_claimed": false
+}
