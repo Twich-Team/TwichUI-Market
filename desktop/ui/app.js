@@ -60,15 +60,15 @@ function render(next) {
   const dc=view.delivery?.configuration,ds=view.delivery?.status;
   if(dc&&!$('delivery-installation').dataset.initialized){$('delivery-installation').value=dc.installation;$('workshop-pricing').value=dc.scope.algorithm;if(dc.version===1){$('delivery-days').value=String(dc.history_days);$('scope-variants').value=dc.selection.variants.map(v=>`${v.item_id} ${v.variant_key}`).join('\n');}$('delivery-installation').dataset.initialized='true';}
   for(const id of ['delivery-review','delivery-enable','delivery-disable','delivery-rollback'])$(id).disabled=deliveryBusy||archiveBusy||s.running;
-  text('delivery-status',(dc?`${dc.enabled?'Automatic delivery enabled':'Delivery disabled'} · ${dc.version===2?`Broad summaries · ${ds?.summary_records??'unknown'} records · ${ds?.download_requests??'unknown'} requests · ${ds?.download_bytes??'unknown'} transferred bytes`:`${dc.selection.variants.length} selected · ${dc.history_days} UTC days`} · ${ds?.result||'Waiting for next sync'}. Validated: ${ds?.validated_generation||'none'}. Published: ${ds?.published_generation||'none'}. Last file write: ${datetime(ds?.last_successful_write)}. ${ds?.error||''} Loaded game generation: unknown; inspect Workshop in WoW.`:view.delivery?.notice||'Automatic delivery is off.')+(workshopIssue?` Setup detail: ${workshopIssue}`:''));
+  text('delivery-status',(dc?`${dc.enabled?'Automatic delivery enabled':'Delivery disabled'} · ${dc.version===2?`Broad summaries · ${ds?.summary_records??'unknown'} records · ${ds?.download_requests??'unknown'} requests · ${ds?.download_bytes??'unknown'} transferred bytes`:`${dc.selection.variants.length} selected · ${dc.history_days} UTC days`} · ${ds?.result||'Waiting for next sync'}. Validated: ${ds?.validated_generation||'none'}. Published: ${ds?.published_generation||'none'}. Last file write: ${datetime(ds?.last_successful_write)}. ${ds?.error||''} Loaded game generation: unknown; inspect Workshop in WoW.`:view.delivery?.notice||'Automatic delivery is off.')+(workshopIssue?` Setup detail: ${workshopIssue.code} · ${workshopIssue.stage} · ${workshopIssue.details}`:''));
   const automatic=dc?.version===2&&dc.enabled;
   const waiting=automatic&&ds?.result==='Waiting for World of Warcraft to close.';
   const preparationMessage='Market summaries are being prepared; synchronization will retry';
   const preparing=automatic&&ds?.result==='Preparing market data.'&&!view.error&&(!view.sync.error||view.sync.error===preparationMessage);
-  const issue=Boolean(workshopIssue&&!workshopIssue.includes('cancelled'))||automatic&&Boolean(ds?.error)&&!waiting&&!preparing;
+  const issue=Boolean(workshopIssue&&workshopIssue.code!=='cancelled')||automatic&&Boolean(ds?.error)&&!waiting&&!preparing;
   text('workshop-installation',dc?.version===2?'World of Warcraft Forever — Found':'Not connected');
   text('workshop-market',marketName(view.settings.selected_market||s.selected_market));
-  text('workshop-state',workshopBusy||automatic&&s.running||preparing&&s.automatic_sync?'Updating':waiting?'Waiting for WoW to close':issue?'Needs attention':automatic&&!s.automatic_sync?'Synchronization paused':automatic&&ds?.published_generation?'Up to date':automatic?'Waiting for next sync':'Not connected');
+  text('workshop-state',workshopBusy?'Connecting Workshop':automatic&&s.running||preparing&&s.automatic_sync?'Updating':waiting?'Waiting for WoW to close':issue?'Needs attention':automatic&&!s.automatic_sync?'Synchronization paused':automatic&&ds?.published_generation?'Up to date':automatic?'Waiting for next sync':'Not connected');
   text('workshop-updated',datetime(ds?.last_successful_write));
   text('workshop-note',workshopIssue?workshopMessage(workshopIssue):waiting?'Updates will be installed safely after World of Warcraft closes.':automatic&&!s.automatic_sync?'Resume synchronization to keep Workshop updated automatically.':preparing?'The server is preparing market data. The companion will retry automatically.':automatic?'Uses your existing sync schedule. Updated files become available on your next game login or reload.':'Connect once. The companion finds your Forever installation and uses your existing sync schedule.');
   $('workshop-confirmation').hidden=!workshopReview;
@@ -82,12 +82,15 @@ function render(next) {
   else if(nativeErrorShown) {message('');nativeErrorShown=false;}
   else if(view.quitting) message('Closing safely…');
 }
-function workshopMessage(error){
-  if(error.includes('cancelled'))return 'Folder selection cancelled.';
-  if(error.includes('Workshop needs an update'))return 'Workshop needs an update. Install the compatible TwichUI addon, then retry.';
-  if(error.includes('Forever')||error.includes('installation')||error.includes('folder'))return "Couldn't verify your Forever installation. Retry to find it or choose a folder.";
-  return 'Could not connect Workshop. Your previous market data is safe. Retry or see developer diagnostics.';
+function workshopFailure(error){
+  try{const value=JSON.parse(String(error?.message||error));if(value&&typeof value.message==='string'&&typeof value.code==='string'&&typeof value.stage==='string')return value;}catch{}
+  // Compatibility with older native errors; never render arbitrary native text.
+  const reason=String(error?.message||error);
+  if(reason.includes('cancelled'))return {code:'cancelled',stage:'folder_picker',message:'Folder selection cancelled.',details:'native dialog cancelled'};
+  if(reason.includes('Workshop needs an update'))return {code:'workshop_addon',stage:'workshop_addon',message:'Workshop needs an update. Install the compatible TwichUI addon, then retry.',details:'incompatible addon'};
+  return {code:'internal',stage:'setup',message:'Workshop setup could not finish because of an unexpected error. Retry or save developer diagnostics. Your files were preserved.',details:'unexpected native setup failure'};
 }
+function workshopMessage(error){return error.message;}
 async function connectWorkshop(confirm=false){
   if(workshopBusy)return;const context=archiveContext;let focusTarget=null;workshopBusy=true;workshopIssue=null;render(view);
   try{
@@ -98,7 +101,7 @@ async function connectWorkshop(confirm=false){
     else{workshopReview=result;text('workshop-confirmed-folder',`${result.installation} · ${result.market}`);}
     render(await invoke('app_state'));
     focusTarget=workshopReview?'workshop-authorize':'workshop-state';
-  }catch(error){if(context===archiveContext){workshopIssue=String(error?.message||error);workshopReview=null;}}
+  }catch(error){if(context===archiveContext){workshopIssue=workshopFailure(error);workshopReview=null;}}
   finally{workshopBusy=false;render(view);if(context===archiveContext&&focusTarget)$(focusTarget).focus();}
 }
 $('workshop-connect').onclick=()=>connectWorkshop(false);

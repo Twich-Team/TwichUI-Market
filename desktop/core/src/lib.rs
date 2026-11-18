@@ -16,9 +16,12 @@ pub mod vault;
 pub mod worker;
 pub mod workshop_summary;
 pub mod installation;
+pub mod workshop_setup;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
+    #[error("{}", .0.message)]
+    WorkshopSetup(Box<workshop_setup::Failure>),
     #[error("Unsupported or invalid market data: {0}")]
     Invalid(&'static str),
     #[error("Local cache could not be read or written")]

@@ -1,35 +1,69 @@
 //! Bounded, read-only Windows discovery. No disk scans or game execution.
-use crate::{delivery::{owned,read}, Error, Result};
+use crate::{delivery::{no_links,read}, Error, Result};
 use serde_json::Value;
 use std::{collections::HashSet, path::{Path,PathBuf}};
 
 fn need(ok:bool,why:&'static str)->Result<()> {if ok {Ok(())} else {Err(Error::Invalid(why))}}
 
+// Installed code is read, never modified or executed. Do not apply the private
+// staging/output owner policy to game or addon files installed by another user.
+fn installed(path:&Path)->Result<()> {
+    no_links(path)?;
+    #[cfg(windows)]
+    crate::bridge::windows_owner::local(path)?;
+    Ok(())
+}
+
 pub fn validate_game(path:&Path)->Result<()> {
-    owned(path)?; owned(&path.join("Interface"))?; owned(&path.join("Interface/AddOns"))?;
-    let exe=path.join("Wow.exe"); owned(&exe)?;
-    need(exe.is_file(),"Couldn't find your WoW installation. Choose folder.")?;
-    let version=executable_version(&exe)?;
-    // Existing verified Forever source/Simulator profile: 1.60.1, interface
-    // 16001. Unknown editions fail closed; native acceptance remains separate.
-    need(version[..3]==[1,60,1],"This client version is not verified for Forever. Choose the supported Forever installation.")
+    use crate::workshop_setup::at;
+    at("game_folder", (|| {
+        installed(path)?;
+        need(path.is_dir(), "game root is missing")?;
+        for dir in ["Interface", "Interface/AddOns"] {
+            let child=path.join(dir); installed(&child)?;
+            need(child.is_dir(), "game Interface/AddOns is missing")?;
+        }
+        let exe=path.join("Wow.exe"); installed(&exe)?;
+        need(exe.is_file(), "game root does not contain Wow.exe")
+    })())?;
+    at("executable_version", (|| {
+        let version=executable_version(&path.join("Wow.exe"))?;
+        // Keep the existing verified profile. Genuine Forever PE metadata has
+        // not been supplied; synthetic resources are not identification proof.
+        if version[..3]!=[1,60,1] {
+            return Err(Error::WorkshopSetup(Box::new(crate::workshop_setup::Failure::new(
+                "unsupported_client", "executable_version",
+                format!("observed_file_version={}.{}.{}.{}; accepted_prefix=1.60.1",version[0],version[1],version[2],version[3]),
+            ))));
+        }
+        Ok(())
+    })())
 }
 
 pub fn validate(path:&Path)->Result<()> {
     validate_game(path)?;
-    let core=path.join("Interface/AddOns/!!!TwichUI");need(core.is_dir(),"Workshop needs an update.")?;owned(&core)?;
-    let core_toc=String::from_utf8(read(&core.join("!!!TwichUI.toc"),65536)?).map_err(|_|Error::Invalid("Workshop needs an update."))?;
-    need(core_toc.lines().any(|l|l.trim()=="## Interface: 16001"),"Workshop needs an update.")?;
-    let folder=path.join("Interface/AddOns/TwichUI_Workshop");
-    need(folder.is_dir(),"Workshop needs an update.")?;owned(&folder)?;
-    for name in ["TwichUI_Workshop.toc","Summary.lua","Bridge.lua","MarketDelivery.json"] {need(folder.join(name).is_file(),"Workshop needs an update.")?;owned(&folder.join(name))?;}
-    let cap:Value=crate::bridge::parse(&read(&folder.join("MarketDelivery.json"),4096)?,4096)?;
-    need(cap["format"]=="twichui-market-consumer" && cap["summary_delivery_version"]==1
-        && cap["game"]=="wow-forever" && cap["interface"]==16001
-        && cap["summary_partition_bytes"]==131072 && cap["summary_total_bytes"]==8388608,
-        "Workshop needs an update.")?;
-    let toc=String::from_utf8(read(&folder.join("TwichUI_Workshop.toc"),32768)?).map_err(|_|Error::Invalid("Workshop needs an update."))?;
-    need(toc.lines().any(|l|l.trim()=="## Interface: 16001") && toc.lines().any(|l|l.trim()=="Summary.lua"),"Workshop needs an update.")
+    crate::workshop_setup::at("workshop_addon", (|| {
+        let core=path.join("Interface/AddOns/!!!TwichUI");installed(&core)?;
+        need(core.is_dir(),"Workshop needs an update.")?;
+        let core_toc=String::from_utf8(read(&core.join("!!!TwichUI.toc"),65536)?).map_err(|_|Error::Invalid("Workshop needs an update."))?;
+        need(core_toc.lines().any(|l|l.trim()=="## Interface: 16001"),"Workshop needs an update.")?;
+        let folder=path.join("Interface/AddOns/TwichUI_Workshop"); installed(&folder)?;
+        need(folder.is_dir(),"Workshop needs an update.")?;
+        for name in ["TwichUI_Workshop.toc","Summary.lua","Bridge.lua","MarketDelivery.json"] {
+            let file=folder.join(name); installed(&file)?;
+            need(file.is_file(),"Workshop needs an update.")?;
+            // Existence alone misses valid files that Windows refuses to read.
+            // Read a bounded prefix for Lua files; their contents are not run.
+            if name.ends_with(".lua") { use std::io::Read; let mut byte=[0u8;1]; std::fs::File::open(file)?.read(&mut byte)?; }
+        }
+        let cap:Value=crate::bridge::parse(&read(&folder.join("MarketDelivery.json"),4096)?,4096)?;
+        need(cap["format"]=="twichui-market-consumer" && cap["summary_delivery_version"]==1
+            && cap["game"]=="wow-forever" && cap["interface"]==16001
+            && cap["summary_partition_bytes"]==131072 && cap["summary_total_bytes"]==8388608,
+            "Workshop needs an update.")?;
+        let toc=String::from_utf8(read(&folder.join("TwichUI_Workshop.toc"),32768)?).map_err(|_|Error::Invalid("Workshop needs an update."))?;
+        need(toc.lines().any(|l|l.trim()=="## Interface: 16001") && toc.lines().any(|l|l.trim()=="Summary.lua"),"Workshop needs an update.")
+    })())
 }
 
 /// Previous authorized installation wins; otherwise inspect at most 256
@@ -108,10 +142,11 @@ fn executable_version(path:&Path)->Result<[u16;4]> {
     let name=path.as_os_str().encode_wide().chain(Some(0)).collect::<Vec<_>>();
     unsafe {
         let size=GetFileVersionInfoSizeW(name.as_ptr(),std::ptr::null_mut());
-        need(size>0 && size<=1024*1024,"The Forever executable version could not be verified.")?;
+        if size==0 {return Err(std::io::Error::last_os_error().into())}
+        need(size<=1024*1024,"The Forever executable version could not be verified.")?;
         // u64 storage provides alignment for VS_FIXEDFILEINFO.
         let mut buffer=vec![0u64;(size as usize+7)/8];
-        need(GetFileVersionInfoW(name.as_ptr(),0,size,buffer.as_mut_ptr().cast())!=0,"The Forever executable version could not be verified.")?;
+        if GetFileVersionInfoW(name.as_ptr(),0,size,buffer.as_mut_ptr().cast())==0 {return Err(std::io::Error::last_os_error().into())}
         let mut result=std::ptr::null_mut();let mut length=0;
         need(VerQueryValueW(buffer.as_ptr().cast(),[b'\\' as u16,0].as_ptr(),&mut result,&mut length)!=0
             && length as usize>=std::mem::size_of::<VS_FIXEDFILEINFO>() && !result.is_null(),"The Forever executable version could not be verified.")?;
