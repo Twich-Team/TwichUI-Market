@@ -16,13 +16,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-      - name: Checkout paired addon source (source-only acceptance)
-        uses: actions/checkout@v4
-        with:
-          repository: Twich-Team/TwichUI
-          ref: c5c244a9c9e8b8e211cc3d0e86b50f8c81848fae
-          path: coordinated-addon
-          persist-credentials: false
       - uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: 1.100.0
@@ -43,6 +36,13 @@ jobs:
         env:
           CI_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           CI_PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      - name: Checkout paired addon source (source-only acceptance)
+        uses: actions/checkout@v4
+        with:
+          repository: Twich-Team/TwichUI
+          ref: c5c244a9c9e8b8e211cc3d0e86b50f8c81848fae
+          path: coordinated-addon
+          persist-credentials: false
       - run: cargo test --manifest-path desktop/Cargo.toml --workspace --locked
       - run: cargo test --manifest-path desktop/src-tauri/Cargo.toml --locked
       - run: cargo build --manifest-path desktop/Cargo.toml --example http_smoke --locked
