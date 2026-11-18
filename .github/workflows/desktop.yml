@@ -16,6 +16,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Checkout paired addon source (source-only acceptance)
+        uses: actions/checkout@v4
+        with:
+          repository: Twich-Team/TwichUI
+          ref: c5c244a9c9e8b8e211cc3d0e86b50f8c81848fae
+          path: coordinated-addon
+          persist-credentials: false
       - uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: 1.100.0
@@ -60,7 +67,7 @@ jobs:
       - name: Verify installed Windows release
         if: ${{ !cancelled() && steps.bundle.outcome == 'success' }}
         shell: pwsh
-        timeout-minutes: 5
+        timeout-minutes: 10
         run: ./scripts/windows/verify-installer.ps1
       - name: Record Windows publisher status and embedded updater key
         shell: pwsh
@@ -86,3 +93,30 @@ jobs:
       proof_path: docs/evidence/companion-v2-signed-candidate.json
       # Integration must recheck the original signed bytes against its real API.
       pending_only: ${{ !startsWith(github.ref, 'refs/heads/integration/') }}
+
+  workshop-consumer:
+    needs: windows
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: Twich-Team/TwichUI
+          ref: c5c244a9c9e8b8e211cc3d0e86b50f8c81848fae
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: companion-v2-acceptance
+          path: acceptance
+      - name: Lua 5.1 and bitop
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq lua5.1 lua-bitop
+      - name: Actual Windows publication through production Lua and Workshop Market
+        working-directory: tests
+        env:
+          WORKSHOP_SUMMARY_ARTIFACT: ${{ github.workspace }}/acceptance/workshop-installed/publication/TwichUI_MarketData/Data.lua
+          WORKSHOP_SUMMARY_PARTS: ${{ github.workspace }}/acceptance/workshop-installed/publication
+          WORKSHOP_SUMMARY_EXPECTED_ITEM: '12363'
+          WORKSHOP_SUMMARY_EXPECTED_RECENT: '100'
+          WORKSHOP_SUMMARY_EXPECTED_MARKET: unavailable
+        run: lua5.1 -e 'require("bit"); ROOT="../!!!TwichUI/"; REPO="../"; TESTS="./"' test_workshop_auction_market_summary.lua

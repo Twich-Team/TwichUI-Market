@@ -17,12 +17,12 @@ pub fn validate_game(path:&Path)->Result<()> {
 
 pub fn validate(path:&Path)->Result<()> {
     validate_game(path)?;
-    let core=path.join("Interface/AddOns/!!!TwichUI");owned(&core)?;
+    let core=path.join("Interface/AddOns/!!!TwichUI");need(core.is_dir(),"Workshop needs an update.")?;owned(&core)?;
     let core_toc=String::from_utf8(read(&core.join("!!!TwichUI.toc"),65536)?).map_err(|_|Error::Invalid("Workshop needs an update."))?;
     need(core_toc.lines().any(|l|l.trim()=="## Interface: 16001"),"Workshop needs an update.")?;
     let folder=path.join("Interface/AddOns/TwichUI_Workshop");
-    owned(&folder)?;
-    for name in ["TwichUI_Workshop.toc","Summary.lua","Bridge.lua","MarketDelivery.json"] {owned(&folder.join(name))?;}
+    need(folder.is_dir(),"Workshop needs an update.")?;owned(&folder)?;
+    for name in ["TwichUI_Workshop.toc","Summary.lua","Bridge.lua","MarketDelivery.json"] {need(folder.join(name).is_file(),"Workshop needs an update.")?;owned(&folder.join(name))?;}
     let cap:Value=crate::bridge::parse(&read(&folder.join("MarketDelivery.json"),4096)?,4096)?;
     need(cap["format"]=="twichui-market-consumer" && cap["summary_delivery_version"]==1
         && cap["game"]=="wow-forever" && cap["interface"]==16001

@@ -56,6 +56,22 @@ if os.environ.get('MARKET_NATIVE_UI_TEST')=='true':
     @app.get('/account')
     def fixture_website():
         return FileResponse(website/'index.html')
+    summary_fault={'corrupt':False}
+    from fastapi import Request
+    from fastapi.responses import JSONResponse
+    @app.post('/__fixture__/workshop-source')
+    async def fixture_workshop_source(request:Request):
+        from market.db import Session,now
+        from market.ingest import ingest
+        import json
+        action=(await request.json())['action']
+        if action=='advance':
+            with Session.begin() as db:
+                ingest(db,1,json.dumps({'auctions':[{'id':i,'item':{'id':i},'quantity':10,'buyout':1000} for i in [12363,13463]]}).encode(),request_key='summary-fixture-'+str(now().timestamp()),retrieved_at=now(),synthetic=True)
+        elif action=='corrupt':summary_fault['corrupt']=True
+        elif action=='normal':summary_fault['corrupt']=False
+        else:raise ValueError('unknown fixture action')
+        return {'synthetic':True,'action':action}
     native_network={'bearer_requests':0,'token_requests':0,'sync_requests':0}
     @app.get('/__fixture__/native-network')
     def fixture_network():
@@ -69,7 +85,11 @@ if os.environ.get('MARKET_NATIVE_UI_TEST')=='true':
             await asyncio.sleep(.5)
             query=request.scope.get('query_string',b'')
             request.scope['query_string']=query+(b'&' if query else b'')+b'limit=1'
-        return await call_next(request)
+        response=await call_next(request)
+        if request.url.path.endswith('/summary') and summary_fault['corrupt'] and response.status_code in (200,304):
+            # Test-only post-authorization corruption; positive source is unchanged.
+            return JSONResponse({'account_id':1,'manifest':{}},headers={'Cache-Control':'no-store'})
+        return response
 uvicorn.run(app,host='127.0.0.1',port=int(os.environ['MARKET_TEST_PORT']),access_log=False)
 '''
 

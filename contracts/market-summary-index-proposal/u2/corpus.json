@@ -36,9 +36,11 @@
       "repository": "Twich-Team/TwichUI-Market",
       "commit": "230465e1adf7c13f40344cc073383031d4a55f8d",
       "path": "backend/market/bridge_api.py",
-      "sha256": "c9f3c2f0c29fe166b0d444ada4a64a934da684a1776d8a98462ae8d4d3621131",
+      "sha256": "a7a7063b6d736f24dd9098e9d41687b3ef384d2174f301a236569bffa3e28896",
       "classification": "source_verified",
-      "proves": "source behavior/API shape only; no native descriptor equivalence"
+      "proves": "source behavior/API shape only; no native descriptor equivalence",
+      "foundation_sha256": "c9f3c2f0c29fe166b0d444ada4a64a934da684a1776d8a98462ae8d4d3621131",
+      "candidate_amendment": "Automatic delivery: independent nonblocking derived-cache reservation only; canonical arithmetic and identity vectors unchanged."
     },
     {
       "repository": "Twich-Team/TwichUI",

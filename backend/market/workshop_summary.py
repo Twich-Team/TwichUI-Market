@@ -4,7 +4,7 @@ U1 routing/tuple semantics, extended explicitly for historical reference coverag
 This protocol is independent of the optional retained-history archive.
 """
 from collections import defaultdict
-from datetime import timedelta
+from datetime import datetime, timedelta
 import hashlib
 import json
 import re
@@ -15,7 +15,7 @@ import jsonschema
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import JSONResponse, Response
-from sqlalchemy import delete, func, insert, select, text
+from sqlalchemy import delete, func, insert, select, text, tuple_
 from sqlalchemy.orm import Session
 
 from . import bridge_api as bridge, canonical_pricing as cp, environment
@@ -28,6 +28,8 @@ from .market_configuration import mapping_for
 
 FORMAT = 'twichui-workshop-summary'
 ALGORITHM = 'workshop-summary-v1:' + cp.ALGORITHM
+STAGING = 'workshop-summary-stage-v1:' + cp.ALGORITHM
+PROJECTION_BATCH = 1000
 BUCKETS = 64
 MAX_PART = 128 * 1024
 MAX_TOTAL = 8 * 1024 * 1024
@@ -76,9 +78,10 @@ def validate_row(row, bucket=None):
              and int(price) <= cp.MAX_COPPER, 'supported exact copper')
     if row[6] is not None:
         integer(row[6], 0, 2**53-1)
-    integer(row[7], 0, 2**31-1)
+    integer(row[7], 0, 0)
     integer(row[8], 0, 1)
-    for n in row[10:]:
+    integer(row[10], 0, 14)
+    for n in row[11:]:
         integer(n, 0, 60)
     need(row[10] <= row[11] <= row[12], 'reference coverage')
     need((row[9] is None or row[11] >= 3) and (row[4] is None or row[10] > 0), 'priced reference support')
@@ -163,11 +166,14 @@ def build(db, market):
         db.execute(text("SET LOCAL statement_timeout='10s'"))
         if not db.scalar(text('SELECT pg_try_advisory_xact_lock(7140288, :market)'), {'market': market.id}):
             raise HTTPException(409, 'Market summary is preparing; retry on the existing schedule')
+    stage = db.scalar(select(BridgeGeneration).where(BridgeGeneration.market_id == market.id, BridgeGeneration.algorithm == STAGING).limit(1))
+    progress = json.loads(stage.manifest_json) if stage else None
     latest = db.scalar(select(Observation).where(Observation.market_id == market.id)
                        .order_by(Observation.retrieved_at.desc(), Observation.id.desc()).limit(1))
     if latest is None:
         raise HTTPException(409, 'No observed market summary is available yet')
-    at = bridge.utc(latest.retrieved_at)
+    # A pinned preparation prefix survives collector arrivals and process restarts.
+    at = datetime.fromisoformat(progress['source_at'].replace('Z', '+00:00')) if progress else bridge.utc(latest.retrieved_at)
     watermark, current, daily, observations = bridge.selected_observations(db, market, at, cp.ALGORITHM)
     identity = bridge.market_identity(db, market)
     if not identity['mapping_verified']:
@@ -178,7 +184,17 @@ def build(db, market):
     cached = db.scalar(select(BridgeGeneration).where(BridgeGeneration.market_id == market.id,
                        BridgeGeneration.algorithm == ALGORITHM, BridgeGeneration.source_signature == signature))
     if cached:
+        if stage:
+            db.delete(stage)
         return cached
+    if stage and stage.source_signature != signature:
+        raise HTTPException(409, 'Summary source identity changed during preparation; previous data is preserved')
+    if stage is None:
+        progress = dict(source_at=bridge.stamp(at), cursor=None, count=0)
+        stage = BridgeGeneration(generation_id=digest(['preparing', signature]), market_id=market.id,
+            algorithm=STAGING, source_signature=signature, manifest_json=canonical(progress).decode(), created_at=now())
+        db.add(stage)
+        db.flush()
     snapshots = {s.id: s for s in db.scalars(select(Snapshot).where(Snapshot.id.in_({o.snapshot_id for o in observations})))}
     if len(snapshots) != len({o.snapshot_id for o in observations}) or any(not s.statistics_retained for s in snapshots.values()):
         raise HTTPException(409, 'Retained summary support is unavailable; previous data remains valid')
@@ -187,37 +203,68 @@ def build(db, market):
         raise HTTPException(409, 'Canonical source support is unavailable; no substitute pricing is activated')
     for snapshot in missing[:1]:
         bridge.prepare_snapshot(db, snapshot, cp.ALGORITHM, market.source_kind)
-    if len(missing) > 1:
+    if missing:
         return None
     # Only current observed variants: historical-only identities are explicitly
     # outside this summary universe. History supports references, not daily charts.
     from .models import BridgeDerivedRecord
-    keys = db.execute(select(BridgeDerivedRecord.item_id, BridgeDerivedRecord.variant_key).where(
+    query = select(BridgeDerivedRecord.item_id, BridgeDerivedRecord.variant_key).where(
         BridgeDerivedRecord.snapshot_id == current.snapshot_id, BridgeDerivedRecord.algorithm == cp.ALGORITHM,
-        BridgeDerivedRecord.revision == bridge.REVISION).order_by(BridgeDerivedRecord.item_id,
-        BridgeDerivedRecord.variant_key).limit(MAX_RECORDS + 1)).all()
-    if len(keys) > MAX_RECORDS:
+        BridgeDerivedRecord.revision == bridge.REVISION)
+    if progress['cursor']:
+        query = query.where(tuple_(BridgeDerivedRecord.item_id, BridgeDerivedRecord.variant_key) > tuple(progress['cursor']))
+    keys = db.execute(query.order_by(BridgeDerivedRecord.item_id, BridgeDerivedRecord.variant_key).limit(PROJECTION_BATCH + 1)).all()
+    more = len(keys) > PROJECTION_BATCH
+    keys = keys[:PROJECTION_BATCH]
+    if progress['count'] + len(keys) > MAX_RECORDS:
         raise HTTPException(413, 'Current market exceeds summary record limit; no items were silently omitted')
     refs = {o.id: i for i, o in enumerate(observations)}
-    def rows():
-        for start in range(0, len(keys), 100):
-            batch = [tuple(k) for k in keys[start:start+100]]
-            values = bridge.record_batch(db, batch, list(snapshots), cp.ALGORITHM)
-            for key in batch:
-                yield project(bridge.assemble_record(key, values, current, daily, refs, cp.ALGORITHM, at, set()))
+    appended = defaultdict(list)
+    for start in range(0, len(keys), 100):
+        batch = [tuple(k) for k in keys[start:start+100]]
+        values = bridge.record_batch(db, batch, list(snapshots), cp.ALGORITHM)
+        for key in batch:
+            row = project(bridge.assemble_record(key, values, current, daily, refs, cp.ALGORITHM, at, set()))
+            appended[row[0] % BUCKETS].append(canonical(row).decode())
+    # At most 64 bounded partials, with no visible generation until sealing.
+    partials = {r.position: r for r in db.scalars(select(BridgeRecord).where(BridgeRecord.generation_id == stage.generation_id))}
+    total = sum(len(r.record_json) for r in partials.values())
+    for bucket, chunks in appended.items():
+        existing = partials.get(bucket)
+        old = existing.record_json if existing else '[]'
+        combined = old[:-1] + (',' if old != '[]' else '') + ','.join(chunks) + ']'
+        if len(combined) > MAX_PART:
+            raise HTTPException(413, 'Summary partition exceeds 128 KiB; no generation published')
+        total += len(combined) - (len(old) if existing else 0)
+        if total > MAX_TOTAL:
+            raise HTTPException(413, 'Summary exceeds bounded coverage; no generation published')
+        if existing:
+            existing.record_json = combined
+        else:
+            existing = BridgeRecord(generation_id=stage.generation_id, position=bucket, record_json=combined)
+            db.add(existing)
+            partials[bucket] = existing
+    progress['count'] += len(keys)
+    if keys:
+        progress['cursor'] = list(keys[-1])
+    stage.manifest_json = canonical(progress).decode()
+    if more:
+        return None
+    final_rows = sorted((row for p in partials.values() for row in json.loads(p.record_json)), key=lambda r: tuple(r[:2]))
     metadata = dict(issuer_id=str(uuid.uuid5(uuid.NAMESPACE_URL, environment.SESSION_ORIGIN)), market=identity,
                     pricing_algorithm=cp.ALGORITHM, history_basis=cp.HISTORY_BASIS,
                     source_kind='market_server_asking_summary', source_watermark=str(watermark),
                     source_observation=dict(observation_id=str(current.id), observed_at=bridge.stamp(at), scope_complete=True),
                     generated_at=bridge.stamp(at), synthetic=any(o.synthetic for o in observations))
     try:
-        manifest, parts = seal(metadata, rows())
+        manifest, parts = seal(metadata, final_rows)
     except ValueError as error:
         raise HTTPException(413, str(error)) from error
     row = BridgeGeneration(generation_id=manifest['generation_id'], market_id=market.id, algorithm=ALGORITHM,
                            source_signature=signature, manifest_json=canonical(manifest).decode(), created_at=now())
     db.add(row)
     db.flush()
+    db.delete(stage)
     if parts:
         db.execute(insert(BridgeRecord), [dict(generation_id=row.generation_id, position=b, record_json=raw.decode()) for b, raw in parts.items()])
     # Two disposable exports per market; never delete observations or user data.

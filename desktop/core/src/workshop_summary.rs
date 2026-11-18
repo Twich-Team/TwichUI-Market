@@ -92,7 +92,7 @@ pub fn validate_part(h:&Value,p:&Value,raw:&[u8])->Result<()> {
             2=>need(!prices&&confidence==1&&row[6]==0,"summary observed absence")?,
             _=>need(!prices&&confidence==1&&row[6].is_null(),"summary unavailable evidence")?,
         }
-        let a=number(&row[10],60)?;let b=number(&row[11],60)?;let c=number(&row[12],60)?;
+        let a=number(&row[10],14)?;let b=number(&row[11],60)?;let c=number(&row[12],60)?;
         need(a<=b&&b<=c&&(!row[9].is_string()||b>=3)&&(!row[4].is_string()||a>0),"summary reference coverage")?;
     }
     let _=h;Ok(())
@@ -190,7 +190,7 @@ pub fn inspect_root(raw:&[u8],scope:&Scope,region:Option<&str>)->Result<(Value,S
 }
 fn part_name(bank:&str,bucket:u8)->String {format!("TwichUI_MarketPart{bank}{bucket:02}")}
 fn part_prefix(bank:&str,bucket:u8)->Vec<u8> {format!("TwichUIMarketParts = TwichUIMarketParts or {{}}\nTwichUIMarketParts[\"{bank}{bucket:02}\"] = ").into_bytes()}
-fn part_artifact(bank:&str,bucket:u8,raw:&[u8])->Vec<u8>{let mut out=part_prefix(bank,bucket);bridge::export::literal(raw,&mut out);out.push(b'\n');out}
+pub fn part_artifact(bank:&str,bucket:u8,raw:&[u8])->Vec<u8>{let mut out=part_prefix(bank,bucket);bridge::export::literal(raw,&mut out);out.push(b'\n');out}
 fn read_part_artifact(bank:&str,bucket:u8,bytes:&[u8])->Result<Vec<u8>> {
     let prefix=part_prefix(bank,bucket);need(bytes.starts_with(&prefix)&&bytes.len()<=PART_MAX,"summary part transport")?;
     let mut i=prefix.len();let raw=bridge::export::read_literal(bytes,&mut i,MAX_PART)?;need(bytes.get(i..)==Some(b"\n"),"summary part syntax")?;Ok(raw)

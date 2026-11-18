@@ -5,6 +5,7 @@ import json
 import pytest
 import jsonschema
 from pathlib import Path
+from datetime import timedelta
 from sqlalchemy import event, func, select, text
 from market import workshop_summary as summary
 from market.models import BridgeGeneration, BridgeRecord, Listing, Observation
@@ -138,12 +139,14 @@ def test_export_and_derivation_reservations_are_independent_of_ingestion(source,
     with engine.begin() as held:
         held.execute(text('SELECT pg_advisory_xact_lock(7140232)'))
         assert client.get(path).status_code == 202
+        assert client.get(path).status_code == 202
         assert client.get(path).status_code == 200
 
 
 def test_partition_overflow_never_silently_truncates_or_publishes(source, database, monkeypatch):
     monkeypatch.setattr(summary, 'MAX_PART', 64)
     client, mid, _, _ = source
+    assert client.get(f'/api/v1/workshop/markets/{mid}/summary').status_code == 202
     assert client.get(f'/api/v1/workshop/markets/{mid}/summary').status_code == 202
     r = client.get(f'/api/v1/workshop/markets/{mid}/summary')
     assert r.status_code == 413 and 'no generation' in r.text
@@ -168,3 +171,26 @@ def test_unknown_and_unsupported_never_become_zero_prices():
         bad[6] = 0
         with pytest.raises(ValueError):
             summary.validate_row(bad)
+
+
+def test_bounded_persisted_projection_survives_restart_and_new_observations(source, database, monkeypatch):
+    monkeypatch.setattr(summary, 'PROJECTION_BATCH', 1)
+    client, mid, _, _ = source
+    path = f'/api/v1/workshop/markets/{mid}/summary'
+    for _ in range(3):
+        assert client.get(path).status_code == 202
+    with database() as db:
+        stage = db.scalar(select(BridgeGeneration).where(BridgeGeneration.algorithm == summary.STAGING))
+        progress = json.loads(stage.manifest_json)
+        assert progress['count'] == 1 and progress['cursor'] is not None
+        assert db.scalar(select(func.count()).select_from(BridgeGeneration).where(BridgeGeneration.algorithm == summary.ALGORITHM)) == 0
+    with database.begin() as db:
+        old = db.get(Observation, source[2][-1])
+        db.add(Observation(market_id=mid, snapshot_id=old.snapshot_id, request_key='summary-concurrent-observation',
+            retrieved_at=old.retrieved_at+timedelta(minutes=5), namespace=old.namespace, payload_hash=old.payload_hash,
+            payload_bytes=old.payload_bytes, synthetic=True))
+    # Each HTTP request opens a fresh session; no in-memory cursor is required.
+    manifest, rows, _ = download(source)
+    assert len(rows) == 3
+    with database() as db:
+        assert db.scalar(select(func.count()).select_from(BridgeGeneration).where(BridgeGeneration.algorithm == summary.STAGING)) == 0
