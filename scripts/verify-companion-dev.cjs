@@ -32,6 +32,7 @@ async function main() {
     if(!value.diagnostic.replaceAll('\\','/').includes('/team.twich.market.dev/'))throw Error('DEV storage is not isolated');
     const diagnostic=JSON.parse(fs.readFileSync(value.diagnostic,'utf8'));
     if(diagnostic.workshop_setup?.code!=='context_changed')throw Error('Native diagnostics dropped the setup failure');
+    if(!diagnostic.workshop_delivery || typeof diagnostic.workshop_delivery!=='object' || Array.isArray(diagnostic.workshop_delivery))throw Error('Native diagnostics dropped the separate delivery status');
     delete value.diagnostic; fs.writeFileSync('artifacts/companion-dev/smoke.json',JSON.stringify(value,null,2));
     console.log('Installed DEV frontend, native IPC, Workshop command, isolated diagnostics and disabled updater passed.');
   } finally {ws.close();}
