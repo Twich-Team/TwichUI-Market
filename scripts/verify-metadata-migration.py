@@ -6,7 +6,7 @@ import subprocess
 import os
 import sys
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"backend"))
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.engine import make_url
 from market.db import now
 
@@ -31,20 +31,24 @@ with engine.begin() as db:
     db.execute(text("INSERT INTO user_preferences(user_id,schema_version,revision,values_json,updated_at) VALUES (1,1,3,'{}',:at)"),{'at':at})
     db.execute(text("INSERT INTO item_metadata(region,item_id,name,status,namespace,checked_at,resolved_at,retry_after,synthetic) VALUES ('us',720,'Preserved fixture name','available','static-forever-us',:at,:at,:retry,false)"),{'at':at,'retry':at+timedelta(days=30)})
 
-# Seed nonempty asking-price/history observations using only baseline-compatible models.
-from market.models import Market
-from market.ingest import ingest
+# Seed actual old-format rows before adding future ORM columns.
+from migration_fixtures import seed_legacy_auction
 from sqlalchemy.orm import Session
-with Session(engine) as db,db.begin():
-    market=Market(region='us',ruleset_id=2,house_id=114,source_kind='auctions',label='Synthetic migration fixture')
-    db.add(market);db.flush()
-    ingest(db,market.id,b'{"auctions":[{"id":1,"item":{"id":720},"quantity":2,"buyout":400}]}',request_key='migration-fixture',synthetic=True)
+with engine.begin() as db:
+    seed_legacy_auction(db,request_key='migration-fixture',label='Synthetic migration fixture')
 
 queries={'users':'select id,username,password_hash,role,active,created_at from users order by id','credentials':'select * from credentials order by id',
     'preferences':'select * from user_preferences order by user_id',
     'names':'select region,item_id,name,status,namespace,checked_at,resolved_at,retry_after,synthetic from item_metadata order by region,item_id',
     'observations':'select * from observations order by id','listings':'select * from listings order by snapshot_id,auction_id',
     'statistics':'select * from snapshot_statistics order by snapshot_id,item_id,variant_key'}
+# Freeze every baseline source column. New optional columns are checked by their
+# own migration; they must not make an unchanged old row look rewritten.
+for table,query in list(queries.items()):
+    if 'select *' in query:
+        relation={'preferences':'user_preferences','statistics':'snapshot_statistics'}.get(table,table)
+        columns=[c['name'] for c in inspect(engine).get_columns(relation)]
+        queries[table]=query.replace('select *','select '+','.join('"'+c+'"' for c in columns),1)
 def originals():
     with engine.connect() as db:
         return {table:[dict(row) for row in db.execute(text(query)).mappings()] for table,query in queries.items()}

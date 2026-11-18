@@ -73,6 +73,7 @@ class Market(Base):
     ruleset_id: Mapped[int] = mapped_column(Integer)
     house_id: Mapped[int] = mapped_column(Integer)
     source_kind: Mapped[str] = mapped_column(String(16))
+    unified_coverage: Mapped[bool] = mapped_column(Boolean, default=False, server_default='false')
     label: Mapped[str] = mapped_column(String(100))
     enabled: Mapped[bool] = mapped_column(Boolean, default=False)
     verified: Mapped[bool] = mapped_column(Boolean, default=False)
@@ -109,6 +110,7 @@ class Observation(Base):
     payload_hash: Mapped[str] = mapped_column(String(64))
     payload_bytes: Mapped[int] = mapped_column(Integer)
     synthetic: Mapped[bool] = mapped_column(Boolean, default=False)
+    source_manifest: Mapped[str | None] = mapped_column(Text)
 
 
 class Listing(Base):
@@ -125,6 +127,7 @@ class Listing(Base):
     unit_price: Mapped[int | None] = mapped_column(BigInteger)
     bid: Mapped[int | None] = mapped_column(BigInteger)
     time_left: Mapped[str | None] = mapped_column(String(32))
+    source_kind: Mapped[str] = mapped_column(String(16), default='auctions', server_default='auctions')
 
 
 class CollectionRun(Base):
@@ -141,6 +144,7 @@ class CollectionRun(Base):
 
 class SnapshotStatistic(Base):
     __tablename__ = 'snapshot_statistics'
+    source_kind: Mapped[str] = mapped_column(String(16), default='auctions', server_default='auctions')
     __table_args__=(Index('ix_snapshot_statistics_item_variant','item_id','variant_key'),)
     snapshot_id: Mapped[int] = mapped_column(ForeignKey('snapshots.id'),primary_key=True)
     item_id: Mapped[int] = mapped_column(Integer,primary_key=True)
@@ -342,6 +346,7 @@ class BridgeDerivation(Base):
 
 class BridgeDerivedRecord(Base):
     __tablename__ = 'bridge_derived_records'
+    source_kind: Mapped[str] = mapped_column(String(16), default='auctions', server_default='auctions')
     snapshot_id: Mapped[int] = mapped_column(ForeignKey('snapshots.id', ondelete='CASCADE'), primary_key=True)
     algorithm: Mapped[str] = mapped_column(String(80), primary_key=True)
     revision: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -398,3 +403,59 @@ class ArchiveMember(Base):
     transmit: Mapped[bool] = mapped_column(Boolean)
 
 from .metadata_models import MetadataAttempt, MetadataRecoveryState, MetadataRecoveryItem
+
+
+class MarketFeed(Base):
+    """Verified transport within a logical market; never a player-selectable market."""
+    __tablename__ = 'market_feeds'
+    market_id: Mapped[int] = mapped_column(ForeignKey('markets.id'), primary_key=True)
+    source_kind: Mapped[str] = mapped_column(String(16), primary_key=True)
+    verification: Mapped[str] = mapped_column(Text)
+    retry_after: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    enabled: Mapped[bool] = mapped_column(Boolean, default=False)
+    last_check: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    last_success: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    last_modified: Mapped[str | None] = mapped_column(String(100))
+    etag: Mapped[str | None] = mapped_column(String(200))
+    failures: Mapped[int] = mapped_column(Integer, default=0)
+    last_error: Mapped[str | None] = mapped_column(String(200))
+    capture_id: Mapped[int | None] = mapped_column(ForeignKey('feed_captures.id'))
+
+
+class FeedCapture(Base):
+    __tablename__ = 'feed_captures'
+    __table_args__ = (UniqueConstraint('market_id', 'source_kind', 'payload_hash'),)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    market_id: Mapped[int] = mapped_column(ForeignKey('markets.id'), index=True)
+    source_kind: Mapped[str] = mapped_column(String(16))
+    observed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    payload_hash: Mapped[str] = mapped_column(String(64))
+    content_hash: Mapped[str] = mapped_column(String(64))
+    payload_bytes: Mapped[int] = mapped_column(Integer)
+    compressed_payload: Mapped[bytes | None] = mapped_column(LargeBinary)
+    payload_retained_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+    listing_count: Mapped[int] = mapped_column(Integer)
+    item_count: Mapped[int] = mapped_column(Integer)
+
+
+class FeedCheck(Base):
+    __tablename__ = 'feed_checks'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    market_id: Mapped[int] = mapped_column(ForeignKey('markets.id'), index=True)
+    source_kind: Mapped[str] = mapped_column(String(16))
+    checked_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
+    status: Mapped[str] = mapped_column(String(24))
+    http_status: Mapped[int | None] = mapped_column(Integer)
+    error: Mapped[str | None] = mapped_column(String(200))
+    upstream_modified: Mapped[str | None] = mapped_column(String(100))
+    etag: Mapped[str | None] = mapped_column(String(200))
+    capture_id: Mapped[int | None] = mapped_column(ForeignKey('feed_captures.id'))
+
+
+class ItemSourceCoverage(Base):
+    __tablename__ = 'item_source_coverage'
+    market_id: Mapped[int] = mapped_column(ForeignKey('markets.id'), primary_key=True)
+    item_id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    variant_key: Mapped[str] = mapped_column(String(64), primary_key=True)
+    source_kind: Mapped[str] = mapped_column(String(16))
+    first_observed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))

@@ -112,7 +112,7 @@ export function CurrentListings({
           {
             id: "unit",
             enableHiding: false,
-            header: "Unit buyout",
+            header: "Unit price",
             accessorFn: (row) => row.unit_price ?? row.buyout,
             sortingFn: (a, b) => compareUnits(a.original, b.original),
             meta: { numeric: true },
@@ -125,7 +125,7 @@ export function CurrentListings({
           },
           {
             id: "total",
-            header: "Total stack buyout",
+            header: "Total listing cost",
             accessorFn: stackBuyout,
             meta: { numeric: true },
             sortingFn: (a, b) =>

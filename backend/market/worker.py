@@ -62,6 +62,7 @@ class BlizzardClient:
         if metadata['status'] != 200:
             raise UpstreamFailure('OAuth request failed', metadata['status'], metadata['headers'].get('Retry-After'))
         result = json.loads(body)
+        if not isinstance(result, dict): raise UpstreamFailure('Invalid OAuth response')
         token, lifetime = result.get('access_token'), result.get('expires_in')
         if not isinstance(token, str) or not token or type(lifetime) is not int or lifetime < 60:
             raise UpstreamFailure('Invalid OAuth response')
@@ -127,6 +128,16 @@ def collect_once(factory=Session, client=None, *, at=None, max_database_bytes=No
             limit = max_database_bytes or int(os.environ.get('MAX_DATABASE_BYTES', str(5 * 1024**3)))
             if db.bind.dialect.name == 'postgresql' and db.scalar(text('SELECT pg_database_size(current_database())')) >= limit:
                 raise UpstreamFailure('Database disk budget reached; collection paused')
+            from .models import MarketFeed
+            if market.unified_coverage:
+                feeds = list(db.scalars(select(MarketFeed).where(MarketFeed.market_id == market.id,
+                    MarketFeed.enabled.is_(True)).order_by(MarketFeed.source_kind)))
+                from .feed_collection import collect_feeds
+                collect_feeds(db, market, feeds, client, at, run)
+                run.duration_seconds = int(time.monotonic() - started)
+                return True
+            if db.scalar(select(MarketFeed.market_id).where(MarketFeed.market_id==market.id).limit(1)) is not None:
+                raise UpstreamFailure('Unified feed configuration requires a compatible collector; collection paused')
             metadata, body = client.fetch(market)
             run.http_status = metadata['status']
             run.payload_bytes = len(body)

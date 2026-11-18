@@ -24,6 +24,9 @@ def intraday(db,market_id,item_id,variant_key,hours,*,at=None):
         .order_by(Observation.retrieved_at.desc(),Observation.id.desc()).limit(MAX_OBSERVATIONS+1)))
     if len(observations)>MAX_OBSERVATIONS:
         raise HTTPException(503,'Intraday observation limit reached; try 24H or retry later. No partial history was substituted.')
+    from .feed_collection import coverage_start
+    coverage = coverage_start(db, market_id, item_id, variant_key)
+    if coverage is not None: observations = [o for o in observations if aware(o.retrieved_at) >= coverage]
     buckets={};counts={}
     for observation in observations:
         stamp=aware(observation.retrieved_at).astimezone(timezone.utc)

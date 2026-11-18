@@ -49,7 +49,7 @@ pub fn project(
         to <= today && (today - from).num_days() < 60,
         "projection supported history window",
     )?;
-    let key = scope.key()?;
+    let key = super::coverage_key(scope, h.protocol_version)?;
     let current = read_one(store, &key, &h.checkpoint_id)?;
     let canonical_model = h.pricing_algorithm == "twichui-pricing-v1";
     let mut observations = Vec::new();
@@ -130,6 +130,15 @@ pub fn project(
             values.insert((sid, item, variant), value);
         }
     }
+    let mut coverage = BTreeMap::new();
+    for ((_, item, variant), value) in &values {
+        if let Some(start) = &value.coverage_started_at {
+            let start = time_value(&start.clone().into())?;
+            if let Some(previous) = coverage.insert((*item, variant.clone()), start) {
+                need(previous == start, "inconsistent source coverage")?;
+            }
+        }
+    }
     let mut descriptors: BTreeMap<(u32, String), Option<String>> = BTreeMap::new();
     for ((_, item, variant), v) in &values {
         let entry = descriptors.entry((*item, variant.clone())).or_default();
@@ -162,6 +171,9 @@ pub fn project(
             let entry: Entry = serde_json::from_value(ArchiveStore::checked(raw, sum)?)?;
             entry.validate(&h)?;
             if let Entry::Variant { value, .. } = entry {
+                if let Some(start) = &value.coverage_started_at {
+                    coverage.insert((item, variant.clone()), time_value(&start.clone().into())?);
+                }
                 let e = descriptors.entry((item, variant)).or_default();
                 if value.variant_json.is_some() {
                     *e = value.variant_json;
@@ -189,7 +201,7 @@ pub fn project(
                 v.item_id,
                 v.variant_key.clone(),
             ));
-            let p = point(value, o, i, &h.pricing_algorithm);
+            let p = point(value, o, i, &h.pricing_algorithm, coverage.get(&(v.item_id, v.variant_key.clone())));
             if day >= from && day <= to {
                 daily.push(p.clone());
             }
@@ -200,7 +212,7 @@ pub fn project(
                 variant_key: v.variant_key.clone(),
                 observation_id: id(o["observation_id"].as_str().unwrap())?,
                 observed_at: time_value(&o["observed_at"])?,
-                complete: o["scope_complete"] == true,
+                complete: o["scope_complete"] == true && p["state"] != "unknown",
                 state: p["state"].as_str().unwrap().into(),
                 recent_copper: p["recent_copper"].as_str().map(str::to_owned),
             });
@@ -215,7 +227,7 @@ pub fn project(
             v.item_id,
             v.variant_key.clone(),
         ));
-        let p = point(value, &current, current_ref, &h.pricing_algorithm);
+        let p = point(value, &current, current_ref, &h.pricing_algorithm, coverage.get(&(v.item_id, v.variant_key.clone())));
         let metrics = json!({"minimum_copper":p["minimum_copper"],"recent_copper":p["recent_copper"],
             "quantity_weighted_ask_copper":if current["scope_complete"]==true{value.and_then(|v|v.summary.quantity_weighted_ask_copper.clone())}else{None},
             "market_value_copper":refs.market_value_copper,"historical_value_copper":refs.historical_value_copper});
@@ -264,8 +276,10 @@ fn read_one(store: &ArchiveStore, key: &str, checkpoint: &str) -> Result<Value> 
     let(value,sum):(String,String)=store.db.query_row("SELECT value,sha256 FROM history_entries WHERE scope=?1 AND phase=0 AND source_id IN (SELECT source_id FROM history_members WHERE scope=?1 AND checkpoint=?2 AND phase=0) ORDER BY at_us DESC,source_id DESC LIMIT 1",params![key,checkpoint],|r|Ok((r.get(0)?,r.get(1)?)))?;
     Ok(ArchiveStore::checked(value, sum)?["observation"].clone())
 }
-fn point(value: Option<&Evidence>, observation: &Value, index: usize, algorithm: &str) -> Value {
-    let known = observation["scope_complete"] == true;
+fn point(value: Option<&Evidence>, observation: &Value, index: usize, algorithm: &str,
+         coverage: Option<&chrono::DateTime<chrono::Utc>>) -> Value {
+    let known = observation["scope_complete"] == true && coverage.is_none_or(|start|
+        time_value(&observation["observed_at"]).is_ok_and(|at| at >= *start));
     let s = if known {
         value.map(|v| &v.summary)
     } else {

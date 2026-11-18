@@ -22,6 +22,7 @@ def fingerprints():
     with engine.connect() as db:
         return {t:hashlib.sha256(repr(db.execute(text('SELECT '+','.join('"'+c+'"' for c in cols)+' FROM "'+t+'" ORDER BY '+','.join(str(i+1) for i in range(len(cols))))).all()).encode()).hexdigest() for t,cols in columns.items()}
 before=fingerprints();migrate('upgrade','head');migrate('check');assert before==fingerprints()
+with engine.connect() as db: protected_head=db.scalar(text('SELECT version_num FROM alembic_version'))
 migrate('downgrade','usability_20261117');assert before==fingerprints()
 migrate('upgrade','head');migrate('check');assert before==fingerprints()
 with engine.begin() as db:
@@ -30,6 +31,6 @@ p=migrate('downgrade','usability_20261117',success=False)
 assert p.returncode and 'Retain recovery evidence' in p.stderr
 with engine.connect() as db:
     assert db.scalar(text('select count(*) from metadata_attempts'))==1
-    assert db.scalar(text('select version_num from alembic_version'))=='recovery_20261117'
+    assert db.scalar(text('select version_num from alembic_version'))==protected_head
 assert before==fingerprints()
-print(json.dumps({'origin':'synthetic','database':'market_test','head':'recovery_20261117','original_tables_preserved':len(columns),'original_negative_cache_preserved':True,'empty_round_trip':True,'populated_evidence_downgrade_refused':True}))
+print(json.dumps({'origin':'synthetic','database':'market_test','head':protected_head,'original_tables_preserved':len(columns),'original_negative_cache_preserved':True,'empty_round_trip':True,'populated_evidence_downgrade_refused':True}))
