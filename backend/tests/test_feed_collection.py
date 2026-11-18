@@ -85,6 +85,7 @@ def test_unified_prices_provenance_and_idempotent_snapshots(database):
         assert db.scalar(select(func.count()).select_from(Snapshot)) == 1
         assert db.scalar(select(func.count()).select_from(Observation)) == 2
         assert db.scalar(select(func.count()).select_from(FeedCapture)) == 2
+        assert db.scalar(select(Observation.payload_bytes).order_by(Observation.id.desc()).limit(1)) == 0
         assert db.scalar(select(Observation.snapshot_id).order_by(Observation.id.desc()).limit(1)) == snapshot
 
 

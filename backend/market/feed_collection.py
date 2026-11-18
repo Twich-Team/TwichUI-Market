@@ -197,7 +197,7 @@ def publish(db, market, checks, at):
     raw_manifest = canonical(manifest)
     observation = Observation(market_id=market.id, snapshot_id=snapshot.id, request_key=uuid.uuid4().hex,
         retrieved_at=at, upstream_modified=oldest, namespace=f'dynamic-forever-{market.region}',
-        payload_hash=hashlib.sha256(raw_manifest.encode()).hexdigest(), payload_bytes=sum(c.payload_bytes for c in captures),
+        payload_hash=hashlib.sha256(raw_manifest.encode()).hexdigest(), payload_bytes=sum(c.payload_bytes for c, check in zip(captures, checks) if check.status=='collected'),
         synthetic=False, source_manifest=raw_manifest)
     db.add(observation)
     db.flush()
