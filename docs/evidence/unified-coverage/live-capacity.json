@@ -1,0 +1,74 @@
+{
+  "scope": "Genuine response replay into isolated market_test; no production ingestion",
+  "source_receipts": [
+    {
+      "source_kind": "auctions",
+      "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/114?namespace=dynamic-forever-us&locale=en_US",
+      "status": 200,
+      "retrieved_at": "2026-11-17T23:42:57.968332+00:00",
+      "duration_seconds": 0.508,
+      "bytes": 11757728,
+      "sha256": "1cdd3742786c7c709f567840a3daece38fb4976b315006e320b0c680045cad8e",
+      "headers": {
+        "Last-Modified": "Tue, 17 Nov 2026 23:25:07 GMT",
+        "ETag": null,
+        "Date": "Tue, 17 Nov 2026 23:42:57 GMT",
+        "Cache-Control": "public, max-age=86400",
+        "Retry-After": null,
+        "Battlenet-Namespace": "dynamic-forever-us",
+        "RateLimit-Limit": null,
+        "RateLimit-Remaining": null,
+        "RateLimit-Reset": null,
+        "X-RateLimit-Remaining": null
+      }
+    },
+    {
+      "source_kind": "commodities",
+      "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/114/commodities?namespace=dynamic-forever-us&locale=en_US",
+      "status": 200,
+      "retrieved_at": "2026-11-17T23:42:59.228631+00:00",
+      "duration_seconds": 0.451,
+      "bytes": 8540117,
+      "sha256": "869fca6d519f0f2740745f6d53d79d56cf641b1d79ff4e885d85d0b7b5901dae",
+      "headers": {
+        "Last-Modified": "Tue, 17 Nov 2026 23:25:07 GMT",
+        "ETag": null,
+        "Date": "Tue, 17 Nov 2026 23:42:59 GMT",
+        "Cache-Control": "public, max-age=86400",
+        "Retry-After": null,
+        "Battlenet-Namespace": "dynamic-forever-us",
+        "RateLimit-Limit": null,
+        "RateLimit-Remaining": null,
+        "RateLimit-Reset": null,
+        "X-RateLimit-Remaining": null
+      }
+    }
+  ],
+  "elapsed_seconds": 25.089,
+  "peak_rss_kib": 314800,
+  "memory_limit_mib": 384,
+  "cpu_limit": 0.5,
+  "listing_count": 220189,
+  "capture_count": 2,
+  "snapshot_count": 1,
+  "items": {
+    "4306": {
+      "recent_price": 679,
+      "lowest_buyout": 196,
+      "supply": 17173,
+      "listing_count": 639
+    },
+    "14342": {
+      "recent_price": 337674,
+      "lowest_buyout": 321087,
+      "supply": 35,
+      "listing_count": 35
+    },
+    "6657": {
+      "recent_price": 167,
+      "lowest_buyout": 119,
+      "supply": 2767,
+      "listing_count": 96
+    }
+  }
+}

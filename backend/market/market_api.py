@@ -67,12 +67,15 @@ def market_view(market, *, player_identity=False):
                 if house in ('Alliance Auction House','Horde Auction House','Blackwater Auction House'):
                     label=f'{market.region.upper()} — {house.replace(" Auction House","")} — Ruleset unverified'
             except (ValueError,TypeError):pass
-    return {'id':market.id,'region':market.region,'ruleset_id':market.ruleset_id,'house_id':market.house_id,
+    from .feed_collection import feed_health
+    feeds = feed_health(object_session(market), market) if market.unified_coverage and object_session(market) else []
+    partial = any(f['enabled'] and f['status'] in ('failed', 'unavailable') for f in feeds) or bool(feeds and market.last_error) or market.last_error=='Unified feed configuration requires a compatible collector; collection paused'
+    return {'feeds': feeds, 'coverage_status': 'partial' if partial else 'complete', 'id':market.id,'region':market.region,'ruleset_id':market.ruleset_id,'house_id':market.house_id,
             'source_kind':market.source_kind,'label':label,'enabled':market.enabled,'verified':market.verified,
             'player_identity_verified':mapping is not None,
             'interval_seconds':market.interval_seconds,'last_success':market.last_success,'next_check':market.next_check,
             'last_modified':market.last_modified,'check_age_seconds':checked_age,'source_age_seconds':source_age,
-            'freshness': 'unknown' if source_age is None else ('stale' if source_age > max(3600,market.interval_seconds*2) else 'current'),
+            'freshness': 'stale' if partial else 'unknown' if source_age is None else ('stale' if source_age > max(3600,market.interval_seconds*2) else 'current'),
             'failures':market.failures,'last_error':market.last_error}
 
 
@@ -177,7 +180,7 @@ def item_detail(market_id: MarketId, item_id: Annotated[int,Path(ge=1,le=2**31-1
     return money_contract({'contract_version':1,'market':market_view(market),'item_id':item_id,'variant_key':variant_key,
         **item_name(db,market.region,item_id),'valuation':result,'last_seen_at':last_seen,
         'listings':[{'auction_id':str(row.auction_id),'quantity':row.quantity,'buyout':row.buyout,
-                     'unit_price':row.unit_price,'bid':row.bid,'time_left':row.time_left} for row in listings[:200]],
+                     'unit_price':row.unit_price,'bid':row.bid,'time_left':row.time_left,'source_kind':row.source_kind} for row in listings[:200]],
         'listings_truncated':len(listings)>200,'provenance':'asking_listings_only'})
 
 

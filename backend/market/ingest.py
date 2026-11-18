@@ -120,7 +120,7 @@ def ingest(db, market_id, payload_bytes, *, request_key, retrieved_at=None, modi
         needs_raw = True
     if needs_raw and rows:
         for offset in range(0,len(rows),1000):
-            db.execute(insert(Listing),[{'snapshot_id':snapshot.id,**row} for row in rows[offset:offset+1000]])
+            db.execute(insert(Listing),[{'snapshot_id':snapshot.id,'source_kind':market.source_kind,**row} for row in rows[offset:offset+1000]])
     snapshot.raw_retained=True
     if not snapshot.statistics_retained or db.scalar(select(SnapshotStatistic.item_id).where(
             SnapshotStatistic.snapshot_id==snapshot.id).limit(1)) is None:
@@ -132,7 +132,7 @@ def ingest(db, market_id, payload_bytes, *, request_key, retrieved_at=None, modi
             grouped[(row['item_id'],row['variant_key'])].append(row)
         statistics=[]
         for (item_id,variant_key),entries in grouped.items():
-            statistics.append({'snapshot_id':snapshot.id,'item_id':item_id,'variant_key':variant_key,'algorithm':ALGORITHM,
+            statistics.append({'snapshot_id':snapshot.id,'item_id':item_id,'variant_key':variant_key,'algorithm':ALGORITHM,'source_kind':market.source_kind,
                                **summarize([SimpleNamespace(**row) for row in entries])})
         for offset in range(0,len(statistics),1000):
             db.execute(insert(SnapshotStatistic),statistics[offset:offset+1000])

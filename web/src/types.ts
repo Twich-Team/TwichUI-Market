@@ -15,6 +15,10 @@ export interface Market {
   freshness: "unknown" | "stale" | "current";
   last_error: string | null;
   failures: number;
+  coverage_status?: 'complete' | 'partial';
+  feeds?: { source_kind: string; enabled: boolean; status: string; last_success: string | null;
+    last_check: string | null; upstream_modified: string | null; listing_count: number | null;
+    item_count: number | null; failures: number; last_error: string | null }[];
 }
 export interface Item {
   icon_url?: string | null;

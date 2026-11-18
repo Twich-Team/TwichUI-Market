@@ -29,6 +29,11 @@ fn fixture(cp: &str) -> (Value, Vec<Value>, Value) {
     from_source(source(), cp)
 }
 fn from_source(g: Value, cp: &str) -> (Value, Vec<Value>, Value) {
+    from_source_coverage(g, cp, false)
+}
+fn from_source_coverage(g: Value, cp: &str, coverage: bool) -> (Value, Vec<Value>, Value) {
+    let protocol = if coverage { 2 } else { 1 };
+    let start = g["observations"].as_array().unwrap().last().unwrap()["observed_at"].clone();
     let obs = g["observations"]
         .as_array()
         .unwrap()
@@ -41,6 +46,10 @@ fn from_source(g: Value, cp: &str) -> (Value, Vec<Value>, Value) {
         let sid = o["snapshot_id"].as_str().unwrap();
         let mut group = Vec::new();
         for r in g["records"].as_array().unwrap() {
+            let commodity = coverage && r["item_id"] == 2589 &&
+                r["variant_json"].as_str().and_then(|raw| serde_json::from_str::<Value>(raw).ok()) == Some(json!({"id":2589}));
+            // This category was not collected in earlier snapshots.
+            if commodity && o["observed_at"] != start { continue; }
             if let Some(d) = r["daily"]
                 .as_array()
                 .unwrap()
@@ -51,6 +60,11 @@ fn from_source(g: Value, cp: &str) -> (Value, Vec<Value>, Value) {
                     "value":{"variant_json":r["variant_json"],"summary":{"state":if d["priced_supply"]==0{"unpriced"}else{"priced"},
                         "supply":d["supply"],"priced_supply":d["priced_supply"],"listing_count":d["listing_count"],
                         "minimum_listing_copper":d["minimum_copper"],"recent_copper":d["recent_copper"],"quantity_weighted_ask_copper":d["recent_copper"]}}}));
+                if commodity {
+                    let value = group.last_mut().unwrap();
+                    value["value"]["source_kind"] = "commodities".into();
+                    value["value"]["coverage_started_at"] = start.clone();
+                }
             }
         }
         let raw = group
@@ -79,8 +93,8 @@ fn from_source(g: Value, cp: &str) -> (Value, Vec<Value>, Value) {
         .chain(&variants)
         .cloned()
         .collect::<Vec<_>>();
-    let header = json!({"format":"twichui-history-archive","protocol_version":1,"checkpoint_id":cp.repeat(64),"account_id":1,
-        "issuer_id":g["issuer_id"],"market":g["market"],"pricing_algorithm":g["pricing_algorithm"],"history_basis":g["history_basis"],"evidence_revision":1,
+    let header = json!({"format":"twichui-history-archive","protocol_version":protocol,"checkpoint_id":cp.repeat(64),"account_id":1,
+        "issuer_id":g["issuer_id"],"market":g["market"],"pricing_algorithm":g["pricing_algorithm"],"history_basis":g["history_basis"],"evidence_revision":protocol,
         "watermark_observation_id":g["watermark_observation_id"],"base_checkpoint_id":null,"base_watermark_observation_id":"0",
         "generated_at":g["generated_at"],"expires_at":"2026-11-16T12:02:00Z","server_checked_at":g["server_checked_at"],"server_build":"synthetic-archive",
         "retention_basis":"all_retained_observations_and_snapshot_summaries","archive_complete":true,
@@ -101,7 +115,7 @@ fn from_source(g: Value, cp: &str) -> (Value, Vec<Value>, Value) {
         h.update(encoded(&value));
         chain = h.finalize().to_vec();
         let more = offset + part.len() < entries.len();
-        pages.push(json!({"format":"twichui-history-archive-page","protocol_version":1,"checkpoint_id":header["checkpoint_id"],"account_id":1,"market_id":2,
+        pages.push(json!({"format":"twichui-history-archive-page","protocol_version":protocol,"checkpoint_id":header["checkpoint_id"],"account_id":1,"market_id":2,
             "offset":offset,"entries":value,"previous_sha256":prev,"page_sha256":sha(&value),"chain_sha256":format!("{:x}",Hex(&chain)),
             "has_more":more,"next_cursor":if more{Some(format!("page{}",i+1))}else{None}}));
         offset += part.len();
@@ -576,4 +590,57 @@ fn authoritative_l1_negative_corpus_reseals_before_semantic_refusal() {
             case["name"]
         );
     }
+}
+
+#[test]
+fn commodity_archive_keeps_precollection_days_unknown_and_prices_exact() {
+    let (envelope, pages, request) = from_source_coverage(source(), "c", true);
+    assert_eq!(envelope["header"]["protocol_version"], 2);
+    let mut store = ArchiveStore::memory(64 * 1024 * 1024).unwrap();
+    store.begin(&scope(), &encoded(&envelope)).unwrap();
+    for (i, page) in pages.iter().enumerate() {
+        store.apply(&scope(), &format!("page{i}"), &encoded(page)).unwrap();
+    }
+    let (g, _, _) = project(&store, &scope(), &request, &DeliveryBudget::default()).unwrap();
+    validate_scoped(&g, Some(&request)).unwrap();
+    let cloth = g["records"].as_array().unwrap().iter().find(|r|
+        r["item_id"] == 2589 && r["variant_json"].as_str().and_then(|raw|
+            serde_json::from_str::<Value>(raw).ok()) == Some(json!({"id":2589}))).unwrap();
+    assert_eq!(cloth["current"]["metrics"]["recent_copper"], "120");
+    assert_eq!(cloth["daily"][0]["state"], "unknown");
+    assert!(cloth["daily"][0]["supply"].is_null());
+    assert!(cloth["daily"][0]["recent_copper"].is_null());
+    assert_eq!(cloth["daily"][1]["state"], "listed");
+}
+
+#[test]
+fn commodity_upgrade_preserves_legacy_sqlite_and_offline_projection() {
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("history.sqlite");
+    let (legacy, pages, request) = fixture("a");
+    let mut store = ArchiveStore::open(&path, 64 * 1024 * 1024).unwrap();
+    store.begin(&scope(), &encoded(&legacy)).unwrap();
+    for (i, page) in pages.iter().enumerate() {
+        store.apply(&scope(), &format!("page{i}"), &encoded(page)).unwrap();
+    }
+    store.save_selection(&scope(), &request).unwrap();
+    let original = project(&store, &scope(), &request, &DeliveryBudget::default()).unwrap().0;
+    let db = rusqlite::Connection::open(&path).unwrap();
+    let old_rows = || -> Vec<String> {
+        db.prepare("SELECT value FROM history_entries WHERE scope=?1 ORDER BY phase,source_id,item_id,variant").unwrap()
+            .query_map([scope().key().unwrap()], |row| row.get(0)).unwrap()
+            .collect::<Result<Vec<_>,_>>().unwrap()
+    };
+    let original_rows = old_rows();
+    let (unified, pages, _) = from_source_coverage(source(), "b", true);
+    store.begin(&scope(), &encoded(&unified)).unwrap();
+    assert_eq!(store.active(&scope()).unwrap().unwrap().protocol_version, 1);
+    // A partially downloaded new format never hides completed offline history.
+    assert_eq!(project(&store, &scope(), &request, &DeliveryBudget::default()).unwrap().0, original);
+    for (i, page) in pages.iter().enumerate() {
+        store.apply(&scope(), &format!("page{i}"), &encoded(page)).unwrap();
+    }
+    assert_eq!(store.active(&scope()).unwrap().unwrap().protocol_version, 2);
+    assert_eq!(store.selection(&scope()).unwrap().unwrap(), request);
+    assert_eq!(old_rows(), original_rows);
 }

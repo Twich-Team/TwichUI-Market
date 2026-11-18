@@ -11,3 +11,7 @@ pub use scoped::{
 };
 pub use store::{ArchiveMetrics, ArchiveStore, DEFAULT_DISK_BUDGET};
 pub use wire::{Entry, Envelope, Header, Page};
+
+fn coverage_key(scope: &Scope, protocol: u32) -> crate::Result<String> {
+    if protocol == 1 { scope.key() } else { Ok(format!("{}:source-coverage-v2", scope.key()?)) }
+}

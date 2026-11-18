@@ -349,7 +349,7 @@ impl MarketClient {
                     if cancelled() {
                         return Err(Error::Cancelled);
                     }
-                    let mut query = vec![("algorithm", scope.algorithm.as_str())];
+                    let mut query = vec![("algorithm", scope.algorithm.as_str()), ("protocol", "2")];
                     if !full {
                         if let Some(h) = &active {
                             query.push(("base", h.checkpoint_id.as_str()));

@@ -1,0 +1,619 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.twich.gg/history-archive/v2",
+  "title": "Retained-summary archive protocol 2 with source coverage",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/envelope"
+    },
+    {
+      "$ref": "#/$defs/page"
+    }
+  ],
+  "$defs": {
+    "header": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format",
+        "protocol_version",
+        "checkpoint_id",
+        "account_id",
+        "issuer_id",
+        "market",
+        "pricing_algorithm",
+        "history_basis",
+        "evidence_revision",
+        "watermark_observation_id",
+        "base_checkpoint_id",
+        "base_watermark_observation_id",
+        "generated_at",
+        "expires_at",
+        "server_checked_at",
+        "server_build",
+        "retention_basis",
+        "archive_complete",
+        "total_observations",
+        "total_snapshots",
+        "total_records",
+        "transfer_observations",
+        "transfer_snapshots",
+        "transfer_records",
+        "transfer_bytes",
+        "metadata_sha256",
+        "retained_from_day",
+        "retained_through_day"
+      ],
+      "properties": {
+        "format": {
+          "const": "twichui-history-archive"
+        },
+        "protocol_version": {
+          "const": 2
+        },
+        "checkpoint_id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "account_id": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "issuer_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "market": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "game": {
+              "const": "wow-forever"
+            },
+            "region": {
+              "enum": [
+                "us",
+                "eu",
+                "kr",
+                "tw"
+              ]
+            },
+            "player_ruleset": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "Normal",
+                    "PvP",
+                    "Roleplay",
+                    "Roleplay PvP"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "house_id": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            "source_kind": {
+              "enum": [
+                "auctions",
+                "commodities"
+              ]
+            },
+            "server_market_id": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            "transport_ruleset_id": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            "mapping_verified": {
+              "type": "boolean"
+            },
+            "mapping_evidence_sha256": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "realm_scope": {
+              "const": "ruleset_house"
+            }
+          },
+          "required": [
+            "game",
+            "region",
+            "player_ruleset",
+            "house_id",
+            "source_kind",
+            "server_market_id",
+            "transport_ruleset_id",
+            "mapping_verified",
+            "mapping_evidence_sha256",
+            "realm_scope"
+          ]
+        },
+        "pricing_algorithm": {
+          "enum": [
+            "twichui-pricing-v1",
+            "asking-v1-provisional"
+          ]
+        },
+        "history_basis": {
+          "enum": [
+            "canonical_complete_scope_close",
+            "market_rolling_daily_means"
+          ]
+        },
+        "evidence_revision": {
+          "const": 2
+        },
+        "watermark_observation_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "base_checkpoint_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "base_watermark_observation_id": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]{0,18})$"
+        },
+        "generated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "server_checked_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "server_build": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "retention_basis": {
+          "const": "all_retained_observations_and_snapshot_summaries"
+        },
+        "archive_complete": {
+          "const": true
+        },
+        "total_observations": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100000
+        },
+        "total_snapshots": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4096
+        },
+        "total_records": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000
+        },
+        "transfer_observations": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "transfer_snapshots": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4096
+        },
+        "transfer_records": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000
+        },
+        "transfer_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1099511627776
+        },
+        "metadata_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "retained_from_day": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "format": "date"
+        },
+        "retained_through_day": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "format": "date"
+        }
+      }
+    },
+    "envelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "header",
+        "cursor"
+      ],
+      "properties": {
+        "header": {
+          "$ref": "#/$defs/header"
+        },
+        "cursor": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        }
+      }
+    },
+    "entry": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "observation"
+          ],
+          "properties": {
+            "kind": {
+              "const": "observation"
+            },
+            "observation": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "observation_id": {
+                  "type": "string",
+                  "pattern": "^[1-9][0-9]{0,18}$",
+                  "format": "positive-i64"
+                },
+                "snapshot_id": {
+                  "type": "string",
+                  "pattern": "^[1-9][0-9]{0,18}$",
+                  "format": "positive-i64"
+                },
+                "utc_day": {
+                  "type": "string",
+                  "format": "date",
+                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+                },
+                "observed_at": {
+                  "type": "string",
+                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,6})?Z$",
+                  "format": "date-time"
+                },
+                "upstream_updated_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,6})?Z$",
+                      "format": "date-time"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "upstream_modified_raw": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "maxLength": 100,
+                      "minLength": 1
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "namespace": {
+                  "type": "string",
+                  "maxLength": 80,
+                  "minLength": 1
+                },
+                "payload_sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "snapshot_content_sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "synthetic": {
+                  "type": "boolean"
+                },
+                "scope_complete": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "observation_id",
+                "snapshot_id",
+                "utc_day",
+                "observed_at",
+                "upstream_updated_at",
+                "upstream_modified_raw",
+                "namespace",
+                "payload_sha256",
+                "snapshot_content_sha256",
+                "synthetic",
+                "scope_complete"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "snapshot_id",
+            "content_sha256",
+            "record_count",
+            "records_sha256",
+            "records_bytes"
+          ],
+          "properties": {
+            "kind": {
+              "const": "snapshot"
+            },
+            "snapshot_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            },
+            "content_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "record_count": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 150000
+            },
+            "records_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "records_bytes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9830550000
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "snapshot_id",
+            "item_id",
+            "variant_key",
+            "value"
+          ],
+          "properties": {
+            "kind": {
+              "const": "variant"
+            },
+            "snapshot_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            },
+            "item_id": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            "variant_key": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "value": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "variant_json",
+                "summary"
+              ],
+              "properties": {
+                "variant_json": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 4096
+                },
+                "summary": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "state",
+                    "supply",
+                    "priced_supply",
+                    "listing_count",
+                    "minimum_listing_copper",
+                    "recent_copper",
+                    "quantity_weighted_ask_copper"
+                  ],
+                  "properties": {
+                    "state": {
+                      "enum": [
+                        "priced",
+                        "unpriced",
+                        "unsupported"
+                      ]
+                    },
+                    "supply": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "priced_supply": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "listing_count": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 150000
+                    },
+                    "minimum_listing_copper": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "pattern": "^(0|[1-9][0-9]{0,18})$"
+                    },
+                    "recent_copper": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "pattern": "^(0|[1-9][0-9]{0,18})$"
+                    },
+                    "quantity_weighted_ask_copper": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "pattern": "^(0|[1-9][0-9]{0,18})$"
+                    }
+                  }
+                },
+                "source_kind": {
+                  "const": "commodities"
+                },
+                "coverage_started_at": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "dependentRequired": {
+                "source_kind": [
+                  "coverage_started_at"
+                ],
+                "coverage_started_at": [
+                  "source_kind"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "page": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format",
+        "protocol_version",
+        "checkpoint_id",
+        "account_id",
+        "market_id",
+        "offset",
+        "entries",
+        "previous_sha256",
+        "page_sha256",
+        "chain_sha256",
+        "has_more",
+        "next_cursor"
+      ],
+      "properties": {
+        "format": {
+          "const": "twichui-history-archive-page"
+        },
+        "protocol_version": {
+          "const": 2
+        },
+        "checkpoint_id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "account_id": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "market_id": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100104096
+        },
+        "entries": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/$defs/entry"
+          }
+        },
+        "previous_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "page_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "chain_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "has_more": {
+          "type": "boolean"
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

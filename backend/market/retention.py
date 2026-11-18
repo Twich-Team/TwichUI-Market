@@ -13,7 +13,7 @@ from sqlalchemy import delete, func, select, text, tuple_, update
 from sqlalchemy.orm import Session
 from .db import now, session
 from .ingest import canonical
-from .models import (CollectionRun, DailyObservation, Listing, Market, Observation,
+from .models import (CollectionRun, DailyObservation, Listing, Market, Observation, FeedCapture, FeedCheck, MarketFeed,
                      RetentionBatch, RetentionPolicy, RetentionPolicyChange, SecurityEvent, Snapshot, SnapshotStatistic, User)
 from .security import admin, audit, aware
 
@@ -66,8 +66,10 @@ def candidates(db, policy, at):
         ('daily_references',DailyObservation,DailyObservation.day<daily_cutoff),
         ('observations',Observation,(Observation.retrieved_at<at-timedelta(days=policy['intraday_days'])) & Observation.id.not_in(heads) & Observation.id.not_in(surviving_daily)),
         ('raw_listings',Listing,Listing.snapshot_id.in_(raw_snapshots)),
+        ('raw_feed_payloads', FeedCapture, (FeedCapture.payload_retained_at < at-timedelta(days=policy['raw_days'])) & FeedCapture.compressed_payload.is_not(None) & FeedCapture.id.not_in(select(MarketFeed.capture_id).where(MarketFeed.capture_id.is_not(None)))),
         ('intraday_statistics',SnapshotStatistic,SnapshotStatistic.snapshot_id.in_(stat_snapshots)),
         ('collection_logs',CollectionRun,CollectionRun.checked_at<at-timedelta(days=policy['operational_days'])),
+        ('feed_checks', FeedCheck, FeedCheck.checked_at < at-timedelta(days=policy['operational_days'])),
         ('security_logs',SecurityEvent,(SecurityEvent.created_at<at-timedelta(days=policy['security_days'])) & ~SecurityEvent.action.like('retention.%')),
     ]
 
@@ -189,7 +191,8 @@ def apply_batch(body:ApplyInput,user:User=Depends(admin),db:Session=Depends(sess
         snapshot_ids=list(db.scalars(select(model.snapshot_id).where(predicate).distinct()))
         flag=Snapshot.raw_retained if model is Listing else Snapshot.statistics_retained
         db.execute(update(Snapshot).where(Snapshot.id.in_(snapshot_ids)).values({flag:False}))
-    removed=db.execute(delete(model).where(predicate)).rowcount
+    removed = (db.execute(update(FeedCapture).where(predicate).values(compressed_payload=None)).rowcount
+        if model is FeedCapture else db.execute(delete(model).where(predicate)).rowcount)
     db.add(RetentionBatch(actor_id=user.id,policy_hash=policy['policy_hash'],stage=name,rows_removed=removed,cutoff=at,history_floor=at-timedelta(days=policy["daily_days"]) if name=="daily_references" else None))
     audit(db,user.id,'retention.batch.applied',f'stage={name} rows={removed} policy={policy["policy_hash"]}')
     db.commit()

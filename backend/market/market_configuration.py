@@ -96,7 +96,8 @@ def create(body:GuidedMarket,user:User=Depends(admin),db:Session=Depends(session
 def diagnostics(market_id:int,user:User=Depends(admin),db:Session=Depends(session)):
     from .market_api import require_market,verifications
     market=require_market(db,market_id);mapping=mapping_for(db,market)
-    return {'region':market.region,'transport_ruleset_id':market.ruleset_id,'house_id':market.house_id,
+    from .feed_collection import feed_health
+    return {'feeds': feed_health(db, market), 'region':market.region,'transport_ruleset_id':market.ruleset_id,'house_id':market.house_id,
         'namespace':f'dynamic-forever-{market.region}','source_kind':market.source_kind,
         'player_identity':{'ruleset':mapping.ruleset,'faction':mapping.faction,'confidence':mapping.confidence,
             'verified_at':mapping.verified_at,'evidence':json.loads(mapping.evidence),'evidence_hash':mapping.evidence_hash} if mapping else None,

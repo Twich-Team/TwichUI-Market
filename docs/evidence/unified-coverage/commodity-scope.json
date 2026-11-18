@@ -1,0 +1,114 @@
+{
+  "scope": "Bounded US ruleset-2 Horde commodity scope comparison",
+  "responses": [
+    {
+      "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/113/commodities?namespace=dynamic-forever-us&locale=en_US",
+      "status": 200,
+      "retrieved_at": "2026-11-17T23:59:52.418095+00:00",
+      "duration_seconds": 0.418,
+      "bytes": 8710447,
+      "sha256": "50c8b123231c266abcfc0367187903eabedfcd17846864bf09f25f1b49822568",
+      "headers": {
+        "Last-Modified": "Tue, 17 Nov 2026 23:25:07 GMT",
+        "ETag": null,
+        "Date": "Tue, 17 Nov 2026 23:59:52 GMT",
+        "Cache-Control": "public, max-age=86400",
+        "Retry-After": null,
+        "Battlenet-Namespace": "dynamic-forever-us",
+        "RateLimit-Limit": null,
+        "RateLimit-Remaining": null,
+        "RateLimit-Reset": null,
+        "X-RateLimit-Remaining": null
+      },
+      "house_id": 113,
+      "self_link": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/113/commodities?namespace=dynamic-forever-us",
+      "listing_count": 100153,
+      "item_count": 1308,
+      "samples": {
+        "4306": {
+          "supply": 20489,
+          "minimum_unit_copper": 189
+        },
+        "14342": {
+          "supply": 33,
+          "minimum_unit_copper": 325709
+        },
+        "6657": {
+          "supply": 6515,
+          "minimum_unit_copper": 600
+        },
+        "2589": {
+          "supply": 9726,
+          "minimum_unit_copper": 30
+        },
+        "2592": {
+          "supply": 9403,
+          "minimum_unit_copper": 200
+        },
+        "2318": {
+          "supply": 4140,
+          "minimum_unit_copper": 89
+        },
+        "2770": {
+          "supply": 3254,
+          "minimum_unit_copper": 185
+        }
+      }
+    },
+    {
+      "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/114/commodities?namespace=dynamic-forever-us&locale=en_US",
+      "status": 200,
+      "retrieved_at": "2026-11-17T23:59:53.243894+00:00",
+      "duration_seconds": 0.446,
+      "bytes": 8540117,
+      "sha256": "869fca6d519f0f2740745f6d53d79d56cf641b1d79ff4e885d85d0b7b5901dae",
+      "headers": {
+        "Last-Modified": "Tue, 17 Nov 2026 23:25:07 GMT",
+        "ETag": null,
+        "Date": "Tue, 17 Nov 2026 23:59:52 GMT",
+        "Cache-Control": "public, max-age=86400",
+        "Retry-After": null,
+        "Battlenet-Namespace": "dynamic-forever-us",
+        "RateLimit-Limit": null,
+        "RateLimit-Remaining": null,
+        "RateLimit-Reset": null,
+        "X-RateLimit-Remaining": null
+      },
+      "house_id": 114,
+      "self_link": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/114/commodities?namespace=dynamic-forever-us",
+      "listing_count": 98247,
+      "item_count": 1283,
+      "samples": {
+        "4306": {
+          "supply": 17173,
+          "minimum_unit_copper": 196
+        },
+        "14342": {
+          "supply": 35,
+          "minimum_unit_copper": 321087
+        },
+        "6657": {
+          "supply": 2767,
+          "minimum_unit_copper": 119
+        },
+        "2589": {
+          "supply": 20134,
+          "minimum_unit_copper": 24
+        },
+        "2592": {
+          "supply": 5913,
+          "minimum_unit_copper": 160
+        },
+        "2318": {
+          "supply": 19960,
+          "minimum_unit_copper": 34
+        },
+        "2770": {
+          "supply": 6624,
+          "minimum_unit_copper": 134
+        }
+      }
+    }
+  ],
+  "overlapping_listing_ids": 0
+}

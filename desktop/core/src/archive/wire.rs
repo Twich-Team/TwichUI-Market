@@ -84,8 +84,8 @@ impl Header {
         scope.key()?;
         need(
             self.format == "twichui-history-archive"
-                && self.protocol_version == 1
-                && self.evidence_revision == 1
+                && (self.protocol_version == 1 || self.protocol_version == 2)
+                && self.evidence_revision == self.protocol_version
                 && self.archive_complete,
             "archive protocol/version/completeness",
         )?;
@@ -209,6 +209,10 @@ pub struct Evidence {
     #[serde(deserialize_with = "nullable")]
     pub variant_json: Option<String>,
     pub summary: Summary,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub source_kind: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub coverage_started_at: Option<String>,
 }
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(tag = "kind", deny_unknown_fields)]
@@ -310,6 +314,13 @@ impl Entry {
                                 == *variant_key,
                         "archive variant descriptor",
                     )?;
+                }
+                match (&value.source_kind, &value.coverage_started_at) {
+                    (None, None) => {},
+                    (Some(kind), Some(start)) => {
+                        need(h.protocol_version == 2 && kind == "commodities" && time(&start.clone().into())? <= h.at()?, "archive source coverage")?;
+                    },
+                    _ => return Err(Error::Invalid("archive source coverage pair")),
                 }
                 let s = &value.summary;
                 need(

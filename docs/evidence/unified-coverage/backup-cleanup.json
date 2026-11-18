@@ -1,0 +1,147 @@
+{
+  "authorization": "Owner requested removing unneeded database backup copies to recover free space; live database/history and keys are excluded.",
+  "backup_count": 33,
+  "backup_bytes": 5275491574,
+  "backup_gib": 4.913,
+  "files": [
+    {
+      "path": "/home/marketdev/projects/TwichUI-Market/backups/market-development-20261114T165413439364Z.dump",
+      "bytes": 91521915
+    },
+    {
+      "path": "/home/marketdev/projects/TwichUI-Market/backups/market-development-20261115T022538566306Z.dump",
+      "bytes": 154437027
+    },
+    {
+      "path": "/home/marketdev/projects/TwichUI-Market/backups/market-development-20261115T052439755689Z.dump",
+      "bytes": 177056249
+    },
+    {
+      "path": "/home/marketdev/projects/TwichUI-Market/backups/market-development-20261114T041234852184Z.dump",
+      "bytes": 10860376
+    },
+    {
+      "path": "/home/marketdev/projects/TwichUI-Market/backups/market-development-20261114T142845676029Z.dump",
+      "bytes": 76786153
+    },
+    {
+      "path": "/home/marketdev/projects/TwichUI-Market/backups/market-development-20261115T022523797350Z.dump",
+      "bytes": 154434459
+    },
+    {
+      "path": "/home/marketdev/projects/TwichUI-Market/backups/market-development-20261115T031227463979Z.dump",
+      "bytes": 155526654
+    },
+    {
+      "path": "/home/marketdev/projects/TwichUI-Market/backups/market-development-20261114T044255979749Z.dump",
+      "bytes": 16879477
+    },
+    {
+      "path": "/home/marketdev/projects/TwichUI-Market/backups/market-development-20261115T093350867055Z.dump",
+      "bytes": 204783629
+    },
+    {
+      "path": "/home/marketdev/projects/TwichUI-Market/backups/market-development-20261114T143748051831Z.dump",
+      "bytes": 76916961
+    },
+    {
+      "path": "/home/marketdev/projects/TwichUI-Market/backups/market-development-20261115T010501853878Z.dump",
+      "bytes": 141074272
+    },
+    {
+      "path": "/home/marketdev/projects/TwichUI-Market/backups/market-recovery-20261114T141243667398Z.dump",
+      "bytes": 57361
+    },
+    {
+      "path": "/home/marketdev/projects/TwichUI-Market/backups/market-development-20261116T053407650838Z.dump",
+      "bytes": 329130127
+    },
+    {
+      "path": "/home/marketdev/projects/TwichUI-Market/backups/market-test-20261113T233410595426Z.dump",
+      "bytes": 31831
+    },
+    {
+      "path": "/home/marketdev/projects/TwichUI-Market/backups/market-development-20261115T144140952029Z.dump",
+      "bytes": 232493758
+    },
+    {
+      "path": "/home/marketdev/projects/TwichUI-Market/backups/market-recovery-20261114T003722062298Z.dump",
+      "bytes": 35978
+    },
+    {
+      "path": "/home/marketdev/projects/TwichUI-Market/backups/market-development-20261114T032256003545Z.dump",
+      "bytes": 10849641
+    },
+    {
+      "path": "/home/marketdev/projects/TwichUI-Market/backups/market-development-20261115T031130139561Z.dump",
+      "bytes": 155612338
+    },
+    {
+      "path": "/home/marketdev/projects/TwichUI-Market/backups/market-recovery-20261114T013607846546Z.dump",
+      "bytes": 39027
+    },
+    {
+      "path": "/home/marketdev/projects/TwichUI-Market/backups/market-test-20261113T233847732467Z.dump",
+      "bytes": 31829
+    },
+    {
+      "path": "/home/marketdev/projects/TwichUI-Market/backups/market-recovery-20261113T233953939295Z.dump",
+      "bytes": 31828
+    },
+    {
+      "path": "/home/marketdev/projects/TwichUI-Market/backups/market-development-20261115T024914842493Z.dump",
+      "bytes": 155519147
+    },
+    {
+      "path": "/home/marketdev/projects/TwichUI-Market/backups/market-development-20261114T160815982254Z.dump",
+      "bytes": 86633969
+    },
+    {
+      "path": "/home/marketdev/projects/TwichUI-Market/backups/market-development-20261114T141320585884Z.dump",
+      "bytes": 72007473
+    },
+    {
+      "path": "/home/marketdev/projects/TwichUI-Market/backups/market-development-20261116T033956666546Z.dump",
+      "bytes": 314364523
+    },
+    {
+      "path": "/home/marketdev/projects/TwichUI-Market/backups/market-development-20261116T024547046843Z.dump",
+      "bytes": 307046545
+    },
+    {
+      "path": "/home/marketdev/projects/TwichUI-Market/backups/market-development-20261114T161622641394Z.dump",
+      "bytes": 86711170
+    },
+    {
+      "path": "/home/marketdev/projects/TwichUI-Market/backups/market-development-20261114T151409719774Z.dump",
+      "bytes": 77159054
+    },
+    {
+      "path": "/home/marketdev/projects/TwichUI-Market/backups/market-development-20261114T123543922718Z.dump",
+      "bytes": 66440746
+    },
+    {
+      "path": "/home/marketdev/projects/TwichUI-Market/.worktrees/usability-release/artifacts/usability-release/market-usability-20261117T030531Z.dump",
+      "bytes": 453697171
+    },
+    {
+      "path": "/home/marketdev/projects/TwichUI-Market/.worktrees/mobile-release/artifacts/mobile-release/market-mobile-20261117T164140Z.dump",
+      "bytes": 537544711
+    },
+    {
+      "path": "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/artifacts/metadata-release/market-metadata-20261117T213552Z.dump",
+      "bytes": 577150314
+    },
+    {
+      "path": "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/artifacts/metadata-release/market-metadata-20261117T193818Z.dump",
+      "bytes": 552625861
+    }
+  ],
+  "status": "deleted_at_owner_request",
+  "deleted_at": "2026-11-18T00:12:12.371259+00:00",
+  "bytes_removed": 5275491574,
+  "free_bytes_before": 1429241856,
+  "free_bytes_after": 6704816128,
+  "scheduled_backups": "stopped; restart policy no",
+  "live_database_and_history": "unchanged"
+}
