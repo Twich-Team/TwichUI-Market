@@ -5,7 +5,7 @@ separate processes so fixture allocation is not attributed to API generation.
 import argparse,hashlib,json,os,resource,time
 from pathlib import Path
 from datetime import timedelta
-from sqlalchemy import select
+from sqlalchemy import select,event
 from market.db import Base,engine,Session,now
 from market.models import Market,PlayerMarketMapping
 from market.ingest import ingest
@@ -23,12 +23,20 @@ if a.action=='seed':
    ingest(db,m.id,json.dumps({'auctions':auctions}).encode(),request_key=f'summary-capacity-{day}',retrieved_at=now()-timedelta(days=day,minutes=1),synthetic=True)
  print(json.dumps({'synthetic':True,'variants':a.variants,'raw_listings_per_snapshot':3*a.variants,'seed_complete':True}))
 else:
- out=[]
+ out=[];stats={'sql':0,'record_payload_written_bytes':0}
+ @event.listens_for(engine,'before_cursor_execute')
+ def observed_sql(connection,cursor,statement,parameters,context,many):
+  stats['sql']+=1
+  if 'bridge_records' in statement and statement.lstrip().upper().startswith(('INSERT','UPDATE')):
+   groups=parameters if isinstance(parameters,(list,tuple)) else [parameters]
+   for values in groups:
+    if isinstance(values,dict):
+     stats['record_payload_written_bytes']+=sum(len(v.encode())for k,v in values.items()if 'record_json' in k and isinstance(v,str))
  for iteration in range(100):
-  started=time.perf_counter();cpu=time.process_time()
+  before=stats.copy();started=time.perf_counter();cpu=time.process_time()
   with Session.begin() as db:
    m=db.scalar(select(Market));g=summary.build(db,m)
    h=json.loads(g.manifest_json)if g else None
-  out.append({'iteration':iteration,'wall_seconds':time.perf_counter()-started,'cpu_seconds':time.process_time()-cpu,'peak_rss_bytes':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,'ready':g is not None,'records':h['record_count']if h else None,'part_bytes':sum(x['bytes']for x in h['partitions'])if h else None,'largest_part_bytes':max((x['bytes']for x in h['partitions']),default=0)if h else None})
+  out.append({'sql':stats['sql']-before['sql'],'record_payload_written_bytes':stats['record_payload_written_bytes']-before['record_payload_written_bytes'],'iteration':iteration,'wall_seconds':time.perf_counter()-started,'cpu_seconds':time.process_time()-cpu,'peak_rss_bytes':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,'ready':g is not None,'records':h['record_count']if h else None,'part_bytes':sum(x['bytes']for x in h['partitions'])if h else None,'largest_part_bytes':max((x['bytes']for x in h['partitions']),default=0)if h else None})
   if len(out)>2 and all(v['ready']for v in out[-3:]):break
  print(json.dumps({'synthetic':True,'variants':a.variants,'measurements':out},indent=2))

@@ -196,3 +196,17 @@ def test_bounded_persisted_projection_survives_restart_and_new_observations(sour
     assert len(rows) == 3 and manifest['source_observation']['observation_id'] == str(source[2][-1])
     with database() as db:
         assert db.scalar(select(func.count()).select_from(BridgeGeneration).where(BridgeGeneration.algorithm == summary.STAGING)) == 0
+
+
+def test_real_scoped_companion_access_can_read_only_summary_routes(source, owner):
+    from test_companion_auth import authorize
+    client, mid, _, _ = source
+    client.headers.pop('Authorization', None)
+    tokens = authorize(owner)
+    client.headers['Authorization'] = 'Bearer ' + tokens['access_token']
+    manifest, rows, _ = download(source)
+    assert manifest['record_count'] == len(rows) == 3
+    for path in ['/api/v1/admin/users', '/api/v1/me/preferences', '/api/v1/companion/admin/devices']:
+        assert client.get(path).status_code == 403
+    assert client.post('/api/v1/devices', json={'name':'forbidden'}).status_code == 403
+    assert client.get(f'/api/v1/workshop/markets/{mid}/summary/'+'f'*64+'/parts/64').status_code == 403

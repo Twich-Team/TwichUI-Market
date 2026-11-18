@@ -68,5 +68,8 @@ module.exports=async({page,invoke,api,shots,sourceCommit})=>{
   await expect(page.locator('#workshop-confirmation')).toBeVisible();await expect(page.locator('#workshop-confirmed-folder')).toContainText(fixture.second);
   await page.locator('#workshop-cancel').click();expect(fs.existsSync(configFile)).toBe(false);fs.renameSync(backup,configFile);
   facts.multiple_candidates_native_choice=true;fs.writeFileSync(path.join(root,'evidence.json'),JSON.stringify(facts,null,2));
+ } catch(error){
+  const state=await invoke('app_state').catch(()=>null);if(state)fs.writeFileSync(path.join(root,'failure-state.json'),JSON.stringify({version:state.version,connected:state.connected,error:state.error,sync:state.sync,delivery:state.delivery,automatic_sync:state.settings.automatic_sync},null,2));
+  await page.screenshot({path:path.join(root,'failure-state.png'),fullPage:true}).catch(()=>{});throw error;
  } finally {await helper('StopGame').catch(()=>{});await helper('ClearRegistry').catch(()=>{});}
 };

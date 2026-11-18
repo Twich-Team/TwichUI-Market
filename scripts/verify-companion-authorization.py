@@ -9,6 +9,7 @@ import json
 import os
 from pathlib import Path
 import socket
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -159,6 +160,9 @@ def main():
             finally:
                 if native is not None and native.poll() is None:
                     native.kill();native.wait()
+                if env.get('MARKET_NATIVE_UI_TEST')=='true':
+                    evidence=ROOT/'artifacts/companion-v2';evidence.mkdir(parents=True,exist_ok=True)
+                    shutil.copyfile(Path(directory)/'api.log',evidence/'synthetic-native-api.log')
                 api.terminate()
                 try:api.wait(timeout=10)
                 except subprocess.TimeoutExpired:api.kill();api.wait()

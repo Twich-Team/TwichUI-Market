@@ -3,7 +3,7 @@ No provider calls, collection, production DB, credentials or real game files.
 Windows publication mode uses the real versioned-PE/paired-addon fixture, not a
 product validation bypass. Linux staging is explicitly not installed acceptance.
 """
-import argparse,gc,hashlib,json,os,platform,shutil,socket,subprocess,sys,tempfile,threading,time
+import argparse,gc,hashlib,json,os,platform,secrets,shutil,socket,subprocess,sys,tempfile,threading,time
 from datetime import datetime,timedelta,timezone
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
@@ -18,9 +18,9 @@ def main():
   sys.path.insert(0,str(ROOT/'backend'))
   from market.app import app
   from market.db import Base,engine,Session
-  from market.models import User,Market,PlayerMarketMapping
+  from market.models import User,Market,PlayerMarketMapping,CompanionDevice
   from market.ingest import ingest
-  from market.security import issue
+  from market.companion_auth import _access
   import uvicorn
   assert engine.url.database.endswith('summary-market_test.sqlite')
   Base.metadata.create_all(engine);at=datetime.now(timezone.utc)-timedelta(minutes=1)
@@ -31,7 +31,9 @@ def main():
    rows +=[{'id':1000+i,'item':{'id':10000+i},'quantity':10,'buyout':10*price}for i in range(a.variants-3)]
    return json.dumps({'auctions':rows}).encode()
   with Session.begin() as db:
-   u=User(username='synthetic_summary',password_hash='not-a-login',role='member');db.add(u);db.flush();token,_,_=issue(db,u,'device');account=u.id
+   u=User(username='synthetic_summary',password_hash='not-a-login',role='member');db.add(u);db.flush();account=u.id
+   device=CompanionDevice(user_id=account,name='Synthetic scoped summary fixture',platform='Windows',app_version='2.0.0-beta.6',issuer_origin='https://synthetic-summary.invalid',expires_at=at+timedelta(days=1),refresh_expires_at=at+timedelta(days=1),refresh_hash=hashlib.sha256(b'fixture-unused-refresh').hexdigest())
+   db.add(device);db.flush();token=secrets.token_urlsafe(32);_access(db,device,token)
    m=Market(region='us',ruleset_id=1,house_id=114,source_kind='auctions',label='Synthetic summary E2E only',verified=True,enabled=True);db.add(m);db.flush();mid=m.id
    proof=json.dumps({'region':'us','house_id':114,'ruleset':'Normal','faction':'Horde','upstream_receipt':'synthetic','independent_observation':'synthetic','independent_source_url':'https://example.invalid/fixture'})
    db.add(PlayerMarketMapping(region='us',ruleset='Normal',faction='Horde',house_id=114,source_kind='auctions',transport_ruleset_id=1,confidence='verified',evidence=proof,evidence_hash=hashlib.sha256(proof.encode()).hexdigest(),verified_at=at))
@@ -73,6 +75,17 @@ def main():
     assert info['status']['summary_records']==a.variants
     raw=(publication/'TwichUI_MarketData/Data.lua').read_text();assert raw.startswith('TwichUIMarketData = { summary_version = 1')
    else:assert info['manifest']['record_count']==a.variants
+   original=info
+   before_hash=hashlib.sha256((publication/'TwichUI_MarketData/Data.lua').read_bytes()).hexdigest()
+   before_mtime=(publication/'TwichUI_MarketData/Data.lua').stat().st_mtime_ns
+   warm=subprocess.run([str(a.rust_client.resolve()),f'http://127.0.0.1:{port}',str(account),str(mid),str(base),str(game),'publish'if a.publish else'stage'],env=env,capture_output=True,text=True,timeout=90)
+   if warm.returncode:raise RuntimeError('Native no-change verification failed: '+warm.stderr[:2000])
+   info=json.loads(warm.stdout);calls.append(info);assert info['ready']
+   if a.publish:
+    assert info['status']['download_requests']==1 and info['status']['download_bytes']==0
+    assert (publication/'TwichUI_MarketData/Data.lua').stat().st_mtime_ns==before_mtime
+    assert hashlib.sha256((publication/'TwichUI_MarketData/Data.lua').read_bytes()).hexdigest()==before_hash
+   else:assert info['requests']==1 and info['download_bytes']==0 and info['manifest']==original['manifest']
    destination=a.out/'publication';destination.mkdir(exist_ok=True)
    for folder in publication.iterdir():
     if folder.name=='TwichUI_MarketData' or folder.name.startswith('TwichUI_MarketPart'):shutil.copytree(folder,destination/folder.name)
@@ -86,7 +99,7 @@ def main():
    assert any(r['path'].endswith('/summary')and r['status']==200 for r in requests)
    assert not any('/archive' in r['path'] for r in requests)
    paths=['backend/market/workshop_summary.py','backend/market/bridge_api.py','desktop/core/src/workshop_summary.rs','desktop/core/src/client.rs','contracts/workshop-summary/v1/manifest.schema.json','contracts/workshop-summary/v1/row.schema.json']
-   report={'synthetic':True,'real_game':False,'platform':platform.platform(),'mode':'actual Windows publication'if a.publish else'Linux native staging; not installed Windows acceptance','variants':a.variants,'native_calls':calls,'http_requests':requests,'total_seconds':time.perf_counter()-start,'mandatory_archive':False,'production_lua_market_passed':lua is not None and lua.returncode==0,'native_binary_sha256':hashlib.sha256(a.rust_client.read_bytes()).hexdigest(),'source_sha256':{q:hashlib.sha256((ROOT/q).read_bytes()).hexdigest()for q in paths},'game_consumption':'pending actual Forever'}
+   report={'credential_kind':'companion','synthetic':True,'real_game':False,'platform':platform.platform(),'mode':'actual Windows publication'if a.publish else'Linux native staging; not installed Windows acceptance','variants':a.variants,'native_calls':calls,'http_requests':requests,'total_seconds':time.perf_counter()-start,'mandatory_archive':False,'no_change_http_304':True,'no_change_game_mtime_preserved':True if a.publish else None,'production_lua_market_passed':lua is not None and lua.returncode==0,'native_binary_sha256':hashlib.sha256(a.rust_client.read_bytes()).hexdigest(),'source_sha256':{q:hashlib.sha256((ROOT/q).read_bytes()).hexdigest()for q in paths},'game_consumption':'pending actual Forever'}
    (a.out/'evidence.json').write_text(json.dumps(report,indent=2)+'\n')
    print(json.dumps({'synthetic':True,'variants':a.variants,'native_calls':len(calls),'http_requests':len(requests),'seconds':report['total_seconds'],'production_lua_market_passed':report['production_lua_market_passed'],'mode':report['mode']}))
   finally:
