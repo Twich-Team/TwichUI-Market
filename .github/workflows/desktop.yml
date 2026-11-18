@@ -145,7 +145,9 @@ jobs:
           WORKSHOP_SUMMARY_PARTS: ${{ github.workspace }}/acceptance/workshop-installed/publication
           WORKSHOP_SUMMARY_EXPECTED_ITEM: '12363'
           WORKSHOP_SUMMARY_EXPECTED_RECENT: '100'
-          WORKSHOP_SUMMARY_EXPECTED_MARKET: unavailable
+          # This fixture has one genuinely priced day. Canonical market value
+          # is 100; only historical value needs three priced daily closes.
+          WORKSHOP_SUMMARY_EXPECTED_MARKET: '100'
         run: lua5.1 -e 'require("bit"); ROOT="../!!!TwichUI/"; REPO="../"; TESTS="./"' test_workshop_auction_market_summary.lua
       - name: Actual large Windows publication through production Lua and Workshop Market
         working-directory: tests

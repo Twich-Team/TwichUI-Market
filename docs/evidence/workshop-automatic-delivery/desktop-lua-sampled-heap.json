@@ -1,0 +1,10 @@
+{
+  "synthetic": true,
+  "real_game": false,
+  "instrumented_timings_invalid": true,
+  "sample_instruction_interval": 10000,
+  "samples": 3156,
+  "sampled_peak_lua_heap_kib": 12733,
+  "heap_before_final_gc_kib": 5784,
+  "heap_after_final_gc_kib": 5735
+}

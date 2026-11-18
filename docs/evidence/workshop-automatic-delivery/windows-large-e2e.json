@@ -1,0 +1,61 @@
+{
+  "credential_kind": "companion",
+  "synthetic": true,
+  "real_game": false,
+  "platform": "Windows-2025Server-10.0.26100-SP0",
+  "mode": "actual Windows publication",
+  "variants": 45125,
+  "total_seconds": 33.326323499999944,
+  "mandatory_archive": false,
+  "no_change_http_304": true,
+  "no_change_game_mtime_preserved": true,
+  "production_lua_market_passed": false,
+  "native_binary_sha256": "165c11c9702731387a4e54c1a924ca43864d0909deeade6d4a4970e4032bf0f5",
+  "source_sha256": {
+    "backend/market/workshop_summary.py": "e500f1b1d573737f7de0b986c558d9af1f6dcdc8bb98056c1a6e11ed8024fb7c",
+    "backend/market/bridge_api.py": "d9a4dacbe1f661ae6afaf2433789837212ae0d291de9f18a86b5351facf0ae38",
+    "desktop/core/src/workshop_summary.rs": "923746386705cdb5218a5cd7de7897bad4200b475b248351c843346aeb31f27b",
+    "desktop/core/src/client.rs": "4fa3842d43413fbd32b0f68a40f2253e45fbc4e7e37fa4698edfabbccede08bd",
+    "contracts/workshop-summary/v1/manifest.schema.json": "667dfe1d92e32912eafb81d8771cc6c57c71f4ecfa0723b1ccdf868858327c5c",
+    "contracts/workshop-summary/v1/row.schema.json": "c24eebaff166fbdab1df89ae392ac927989287dc26218643900f4633a4d73aa9"
+  },
+  "game_consumption": "pending actual Forever",
+  "native_call_count": 49,
+  "http_request_count": 113,
+  "http_status_counts": {
+    "200": 65,
+    "202": 47,
+    "304": 1
+  },
+  "ready_call_elapsed_ms": [
+    6519.9619,
+    2923.0796
+  ],
+  "production_lua_note": "Producer skips Lua; separate workshop-consumer CI validates these exact Windows-produced files.",
+  "workflow_run": 44219771452,
+  "artifact_id": 14389778895,
+  "artifact_sha256": "67f646a8dad49684330ad1932c60a5fba19c666bdb7c324a76e9d96960027dbf",
+  "source_head": "a24cc020cb4aa9e34486bf146f6f5b1731f6e9ac",
+  "ci_preview": "a75d4c929d1e925d75749bb360570387c1f730e3",
+  "last_native_status": {
+    "elapsed_ms": 2923.0796,
+    "ready": true,
+    "status": {
+      "archive_checkpoint": null,
+      "canonical_bytes": 5099180,
+      "download_bytes": 0,
+      "download_requests": 1,
+      "error": null,
+      "installation": "D:\\a\\_temp\\twichui-summary-e2e-wvt63d4q\\native\\workshop-summary-fixtures\\Forever-A",
+      "last_attempt": "2026-11-18T02:08:34Z",
+      "last_successful_write": "2026-11-18T02:08:34Z",
+      "loaded_game_generation": null,
+      "lua_bytes": null,
+      "projection_input": null,
+      "published_generation": "9568c7617672fa9a6d39f51176ab4bdafba1e1a99015d42d91efd7c94ea5fa64",
+      "result": "Up to date.",
+      "summary_records": 45125,
+      "validated_generation": "9568c7617672fa9a6d39f51176ab4bdafba1e1a99015d42d91efd7c94ea5fa64"
+    }
+  }
+}
