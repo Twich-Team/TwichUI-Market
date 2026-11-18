@@ -133,8 +133,8 @@ pub fn choose_folder()->Result<Option<PathBuf>> {
         let _com=Com;
         let title="Choose your World of Warcraft Forever folder".encode_utf16().chain(Some(0)).collect::<Vec<_>>();
         let mut display=[0u16;260];
-        let info=BROWSEINFOW{hwndOwner:std::ptr::null_mut(),pidlRoot:std::ptr::null(),pszDisplayName:display.as_mut_ptr(),
-            lpszTitle:title.as_ptr(),ulFlags:BIF_RETURNONLYFSDIRS|BIF_USENEWUI|BIF_EDITBOX,lpfn:None,lParam:0,iImage:0};
+        let info=BROWSEINFOW{hwndOwner:std::ptr::null_mut(),pidlRoot:std::ptr::null_mut(),pszDisplayName:display.as_mut_ptr(),
+            lpszTitle:title.as_ptr(),ulFlags:BIF_RETURNONLYFSDIRS|BIF_NEWDIALOGSTYLE|BIF_EDITBOX,lpfn:None,lParam:0,iImage:0};
         let selected=SHBrowseForFolderW(&info);
         if selected.is_null(){return Ok(None)}
         let mut path=[0u16;260];let success=SHGetPathFromIDListW(selected,path.as_mut_ptr());

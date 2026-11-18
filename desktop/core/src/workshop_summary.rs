@@ -233,7 +233,7 @@ pub fn inspect_destination(c:&Configuration)->Result<Value> {
     crate::installation::validate(&c.installation)?;let dir=main_dir(c);let mut existing=None;
     if dir.try_exists()? {
         folder(&dir,&["TwichUI_MarketData.toc","Data.lua","Previous.lua",".twichui-delivery.json"])?;marker(c,&dir)?;
-        let toc=dir.join("TwichUI_MarketData.toc");if toc.try_exists()? {need(delivery::read(&toc,1024)?==delivery::TOC,"incompatible Market data TOC")?;}
+        let toc=dir.join("TwichUI_MarketData.toc");if toc.try_exists()? {need(delivery::known_toc(&delivery::read(&toc,1024)?),"incompatible Market data TOC")?;}
         let data=dir.join("Data.lua");if data.try_exists()? {existing=Some(root_header(c,&delivery::read(&data,3*1024*1024)?)?.0);}
         if !dir.join(".twichui-delivery.json").try_exists()? {need(fs::read_dir(&dir)?.next().is_none()||toc.is_file()&&data.is_file(),"unowned incomplete Market folder")?;}
     }
@@ -270,7 +270,7 @@ pub fn publish(c:&Configuration,bundle:&Bundle,cancelled:&impl Fn()->bool)->Resu
     }
     if let Some((h,Some(bank)))=&current {verify_bank(c,h,bank)?;if h["generation_id"]==bundle.manifest["generation_id"] {
         let toc=dir.join("TwichUI_MarketData.toc");
-        if !toc.try_exists()? {write_game(&toc,delivery::TOC,cancelled)?;return Ok(true);}
+        if !toc.try_exists()? || delivery::read(&toc,1024)?!=delivery::SUMMARY_TOC {write_game(&toc,delivery::SUMMARY_TOC,cancelled)?;return Ok(true);}
         return Ok(false);
     }}
     need(!delivery::game_running()?,"Waiting for World of Warcraft to close.")?;
@@ -302,7 +302,7 @@ pub fn publish(c:&Configuration,bundle:&Bundle,cancelled:&impl Fn()->bool)->Resu
     if let Some(raw)=&old {write_game(&dir.join("Previous.lua"),raw,cancelled)?;}
     write_game(&target,&bytes,cancelled)?;
     if delivery::read(&target,ROOT_MAX)?!=bytes {if let Some(raw)=&old{write_game(&target,raw,cancelled)?;}return Err(Error::Invalid("summary root readback; previous preserved"));}
-    let toc=dir.join("TwichUI_MarketData.toc");if !toc.try_exists()?{write_game(&toc,delivery::TOC,cancelled)?;}
+    let toc=dir.join("TwichUI_MarketData.toc");if !toc.try_exists()? || delivery::read(&toc,1024)?!=delivery::SUMMARY_TOC {write_game(&toc,delivery::SUMMARY_TOC,cancelled)?;}
     Ok(true)
 }
 
@@ -325,7 +325,7 @@ pub fn restore_previous(base:&Path,c:&Configuration)->Result<Status> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::{io::{Read,Write},net::TcpListener,sync::{Arc,Mutex,atomic::{AtomicUsize,Ordering}},thread,time::{Duration,Instant}};
+    use std::{io::{Read,Write},net::TcpListener,sync::{Arc,Mutex},thread,time::{Duration,Instant}};
     fn fixture()->Bundle {
         let value:Value=serde_json::from_str(include_str!("../../../contracts/workshop-summary/v1/fixtures/synthetic.json")).unwrap();
         Bundle{manifest:value["manifest"].clone(),parts:value["parts"].as_object().unwrap().iter().map(|(k,v)|(k.parse().unwrap(),v.as_str().unwrap().as_bytes().to_vec())).collect()}
@@ -338,6 +338,8 @@ mod tests {
         reseal(&mut b.manifest);
     }
     fn reseal(h:&mut Value){h.as_object_mut().unwrap().remove("generation_id");h["generation_id"]=sha(&bridge::canonical(h).unwrap()).into();}
+    #[cfg(unix)]
+    use std::sync::atomic::{AtomicUsize,Ordering};
     fn config(base:&Path,b:&Bundle)->Configuration {Configuration{version:2,enabled:true,scope:Scope{server:"http://127.0.0.1:18888/".into(),account_id:1,market_id:b.manifest["market"]["server_market_id"].as_u64().unwrap() as u32,algorithm:"twichui-pricing-v1".into()},installation:base.join("Forever"),selection:json!({"kind":"broad_summary","market_id":b.manifest["market"]["server_market_id"],"region":b.manifest["market"]["region"]}),history_days:0}}
     fn alternate(b:&Bundle)->Bundle {let mut b=b.clone();let raw=b.parts.values_mut().next().unwrap();let mut rows:Value=serde_json::from_slice(raw).unwrap();rows[0][3]="121".into();*raw=bridge::canonical(&rows).unwrap();
         b.manifest["source_watermark"]="999999".into();b.manifest["source_observation"]["observation_id"]="999999".into();seal(&mut b);b}
