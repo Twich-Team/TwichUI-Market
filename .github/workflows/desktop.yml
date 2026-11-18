@@ -48,6 +48,7 @@ jobs:
       - run: cargo build --manifest-path desktop/Cargo.toml --example http_smoke --locked
       - run: cargo build --manifest-path desktop/Cargo.toml --example authorization_smoke --locked
       - run: cargo build --manifest-path desktop/Cargo.toml --example archive_smoke --locked
+      - run: cargo build --manifest-path desktop/Cargo.toml --example workshop_smoke --locked
       - run: pip install -r backend/requirements.lock
       - run: python scripts/verify-companion-http.py
       - run: python scripts/verify-companion-authorization.py
@@ -69,6 +70,9 @@ jobs:
         shell: pwsh
         timeout-minutes: 10
         run: ./scripts/windows/verify-installer.ps1
+      - name: Actual authenticated large-market native summary publication
+        timeout-minutes: 10
+        run: python scripts/verify-workshop-e2e.py --rust-client desktop/target/debug/examples/workshop_smoke.exe --addon-root coordinated-addon --variants 45125 --publish --skip-lua --out artifacts/companion-v2/workshop-large
       - name: Record Windows publisher status and embedded updater key
         shell: pwsh
         run: ./scripts/windows/record-private-beta-candidate.ps1
@@ -119,4 +123,11 @@ jobs:
           WORKSHOP_SUMMARY_EXPECTED_ITEM: '12363'
           WORKSHOP_SUMMARY_EXPECTED_RECENT: '100'
           WORKSHOP_SUMMARY_EXPECTED_MARKET: unavailable
+        run: lua5.1 -e 'require("bit"); ROOT="../!!!TwichUI/"; REPO="../"; TESTS="./"' test_workshop_auction_market_summary.lua
+      - name: Actual large Windows publication through production Lua and Workshop Market
+        working-directory: tests
+        env:
+          WORKSHOP_SUMMARY_ARTIFACT: ${{ github.workspace }}/acceptance/workshop-large/publication/TwichUI_MarketData/Data.lua
+          WORKSHOP_SUMMARY_PARTS: ${{ github.workspace }}/acceptance/workshop-large/publication
+          WORKSHOP_SUMMARY_EXPECTED_ITEM: '10000'
         run: lua5.1 -e 'require("bit"); ROOT="../!!!TwichUI/"; REPO="../"; TESTS="./"' test_workshop_auction_market_summary.lua

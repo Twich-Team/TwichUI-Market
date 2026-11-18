@@ -51,7 +51,10 @@ def main():
    time.sleep(.01)
   else:raise RuntimeError('Synthetic API startup deadline')
   base=temp/'native';base.mkdir(mode=0o700);env=os.environ.copy();env['TWICHUI_SUMMARY_TEST_TOKEN']=token
-  game=base/'not-a-game';publication=base/'publication'
+  if os.name=='nt':
+   sid=subprocess.check_output(['powershell','-NoProfile','-Command','[System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value'],text=True).strip()
+   subprocess.run(['icacls',str(base),'/inheritance:r','/grant:r',f'*{sid}:(OI)(CI)F','*S-1-5-18:(OI)(CI)F','*S-1-5-32-544:(OI)(CI)F'],check=True,capture_output=True)
+  game=base/'not-a-game';publication=base/'publication' 
   if a.publish:
    env['MARKET_TEST_APP_DATA']=str(base)
    fixture=json.loads(subprocess.check_output(['powershell','-NoProfile','-File',str(ROOT/'scripts/windows/workshop-fixtures.ps1'),'-Action','Setup'],env=env,text=True))
@@ -67,6 +70,7 @@ def main():
    else:raise RuntimeError('Bounded source preparation did not complete')
    assert not(base/'history-archive-v1.sqlite').exists()
    if a.publish:
+    assert info['status']['summary_records']==a.variants
     raw=(publication/'TwichUI_MarketData/Data.lua').read_text();assert raw.startswith('TwichUIMarketData = { summary_version = 1')
    else:assert info['manifest']['record_count']==a.variants
    destination=a.out/'publication';destination.mkdir(exist_ok=True)

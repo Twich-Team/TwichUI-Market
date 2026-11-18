@@ -312,7 +312,10 @@ pub fn rollback(c:&Configuration)->Result<()> {
     let raw=delivery::read(&dir.join("Previous.lua"),3*1024*1024)?;let(h,bank)=root_header(c,&raw)?;
     need(h["market"]["server_market_id"]==c.scope.market_id&&h["market"]["region"]==c.selection["region"],"Select the previous generation's market before restoring it")?;
     if let Some(bank)=bank {verify_bank(c,&h,&bank)?;}
-    write_game(&dir.join("Data.lua"),&raw,&||false)?;need(delivery::read(&dir.join("Data.lua"),3*1024*1024)?==raw,"summary rollback readback")
+    write_game(&dir.join("Data.lua"),&raw,&||false)?;
+    let toc=if bank.is_some(){delivery::SUMMARY_TOC}else{delivery::TOC};
+    write_game(&dir.join("TwichUI_MarketData.toc"),toc,&||false)?;
+    need(delivery::read(&dir.join("Data.lua"),3*1024*1024)?==raw,"summary rollback readback")
 }
 pub fn restore_previous(base:&Path,c:&Configuration)->Result<Status> {
     need(!c.enabled,"Disconnect Workshop before restoring previous data")?;

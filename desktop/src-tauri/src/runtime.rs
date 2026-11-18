@@ -154,7 +154,10 @@ impl Executor for NativeTask {
                         // is never represented as successful game-file delivery.
                         match twichui_market_core::delivery::synchronize(&self.0.path,client,&config,||run.cancelled()||self.0.quitting.load(Ordering::Acquire)) {
                             Err(e)=>{
-                                if matches!(&e,Error::SummaryPreparing(_)) {return Err(e);}
+                                if matches!(&e,Error::SummaryPreparing(_)) {
+                                    if let Ok(mut local)=self.0.local.lock(){if local.error.as_deref().is_some_and(|e|e.starts_with("Workshop delivery:")){local.error=None;}}
+                                    return Err(e);
+                                }
                                 if matches!(&e,Error::Invalid("Waiting for World of Warcraft to close.")) {
                                     if let Ok(mut local)=self.0.local.lock(){if local.error.as_deref().is_some_and(|e|e.starts_with("Workshop delivery:")){local.error=None;}}
                                 } else {
