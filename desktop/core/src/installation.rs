@@ -378,7 +378,7 @@ mod addon_tests {
     }
     #[cfg(windows)]
     #[test]
-    fn addon_windows_denied_read_identifies_the_exact_file() {
+    fn addon_windows_busy_file_identifies_the_exact_file() {
         use std::os::windows::fs::OpenOptionsExt;
         let root = fixture();
         let path = root.path().join("Interface/AddOns/TwichUI_Workshop/Summary.lua");
@@ -386,7 +386,7 @@ mod addon_tests {
         // changing ACLs on any installed addon or relying on synthetic I/O.
         let locked = fs::OpenOptions::new().read(true).share_mode(0).open(path).unwrap();
         let e = failure(root.path());
-        assert_eq!(e.code, "access_denied"); assert_eq!(e.check.as_deref(), Some("summary_lua"));
+        assert_eq!(e.code, "file_busy", "{}", e.details); assert_eq!(e.check.as_deref(), Some("summary_lua"));
         assert!(e.details.contains("os_code=Some(32)"));
         drop(locked); assert!(validate_addons(root.path()).is_ok());
     }

@@ -18,6 +18,7 @@ impl Failure {
             "wrong_folder" => "Choose the Forever game folder containing Wow.exe and Interface/AddOns.",
             "unsupported_client" => "This Wow.exe version is not verified for Forever. Choose a supported Forever installation.",
             "workshop_addon" => "Workshop needs an update or is missing files. Install the compatible TwichUI addon, then retry.",
+            "file_busy" => "An addon file is in use by another program. Close that program and retry.",
             "access_denied" => "Windows could not access this installation safely. Choose a folder where your Windows account can read the game and write addon data.",
             "ownership_conflict" => "Existing Market data could not be safely adopted. Reconnect its original Market account and market, or choose another installation. Your files were preserved.",
             "unsafe_path" => "This installation uses an unsafe linked path. Choose a local Forever folder without junctions or symbolic links.",
@@ -51,6 +52,8 @@ impl Failure {
             _ => "unexpected native setup failure".into(),
         };
         let code = match &error {
+            #[cfg(windows)]
+            Error::Io(e) if matches!(e.raw_os_error(), Some(32 | 33)) => "file_busy",
             Error::Io(e) if e.kind() == std::io::ErrorKind::PermissionDenied => "access_denied",
             Error::Invalid(s) if s.contains("ownership or") || s.contains("ACL") => "access_denied",
             Error::Invalid(s) if s.contains("traversal") || s.contains("unsafe") => "unsafe_path",
@@ -79,6 +82,8 @@ pub(crate) fn checked<T>(check: &str, message: &str, result: crate::Result<T>) -
         failure.check = Some(check.into());
         failure.message = if failure.code == "access_denied" {
             format!("Read permission denied. {message}")
+        } else if failure.code == "file_busy" {
+            format!("The addon file is in use by another program. Close it and retry. {message}")
         } else if failure.code == "unsafe_path" {
             format!("Unsafe linked addon path. {message}")
         } else { message.into() };

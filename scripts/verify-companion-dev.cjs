@@ -3,16 +3,17 @@ const fs = require('node:fs');
 async function main() {
   let targets;
   for (let n=0;n<100;n++) {
-    try { targets=await (await fetch(`http://127.0.0.1:${process.env.DEV_CDP_PORT}/json/list`)).json(); if(targets.some(t=>t.type==='page')) break; } catch {}
+    try { targets=await (await fetch(`http://127.0.0.1:${process.env.DEV_CDP_PORT}/json/list`)).json(); if(targets.some(t=>t.type==='page' && t.url?.includes('tauri.localhost'))) break; } catch {}
     await new Promise(r=>setTimeout(r,200));
   }
-  const target=targets?.find(t=>t.type==='page'); if(!target)throw Error('Installed WebView frontend did not start');
+  const target=targets?.find(t=>t.type==='page' && t.url?.includes('tauri.localhost')); if(!target)throw Error('Installed WebView frontend did not start');
   const ws=new WebSocket(target.webSocketDebuggerUrl); await new Promise((resolve,reject)=>{ws.onopen=resolve;ws.onerror=reject;});
   let id=0;const pending=new Map();
   ws.onmessage=({data})=>{const v=JSON.parse(String(data));if(v.id){const p=pending.get(v.id);pending.delete(v.id);v.error?p.reject(Error(v.error.message)):p.resolve(v.result);}};
   const call=(method,params)=>new Promise((resolve,reject)=>{const n=++id;pending.set(n,{resolve,reject});ws.send(JSON.stringify({id:n,method,params}));});
   try {
     const response=await call('Runtime.evaluate',{awaitPromise:true,returnByValue:true,expression:`(async()=>{
+      for(let n=0;n<100&&!document.querySelector('h1');n++)await new Promise(r=>setTimeout(r,100));
       if(!document.querySelector('h1')?.textContent.includes('DEV'))throw Error('Real DEV frontend missing');
       if(!document.querySelector('#workshop-connect'))throw Error('Workshop control missing');
       const invoke=window.__TAURI__.core.invoke;
