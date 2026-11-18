@@ -24,15 +24,27 @@ impl Failure {
             "cancelled" => "Folder selection cancelled.",
             _ => "Workshop setup could not finish because of an unexpected error. Retry or save developer diagnostics. Your files were preserved.",
         };
-        Self { code: code.into(), stage: stage.into(), message: message.into(), details }
+        Self {
+            code: code.into(),
+            stage: stage.into(),
+            message: message.into(),
+            details,
+        }
     }
 
     pub fn from_error(stage: &str, error: Error) -> Self {
-        if let Error::WorkshopSetup(failure) = error { return *failure; }
+        if let Error::WorkshopSetup(failure) = error {
+            return *failure;
+        }
         let details = match &error {
             Error::Invalid(reason) => (*reason).to_owned(),
             Error::Io(e) => format!("io_kind={:?}; os_code={:?}", e.kind(), e.raw_os_error()),
-            Error::Json(e) => format!("json_category={:?}; line={}; column={}", e.classify(), e.line(), e.column()),
+            Error::Json(e) => format!(
+                "json_category={:?}; line={}; column={}",
+                e.classify(),
+                e.line(),
+                e.column()
+            ),
             _ => "unexpected native setup failure".into(),
         };
         let code = match &error {
@@ -61,12 +73,31 @@ mod tests {
     use super::*;
     #[test]
     fn diagnostics_keep_stage_and_os_code_without_io_payload() {
-        let error = std::io::Error::new(std::io::ErrorKind::PermissionDenied, "secret-token private-path");
+        let error = std::io::Error::new(
+            std::io::ErrorKind::PermissionDenied,
+            "secret-token private-path",
+        );
         let failure = Failure::from_error("workshop_addon", Error::Io(error));
         assert_eq!(failure.code, "access_denied");
         assert_eq!(failure.stage, "workshop_addon");
-        assert!(!serde_json::to_string(&failure).unwrap().contains("secret-token"));
-        assert_eq!(Failure::from_error("destination", Error::Invalid("destination belongs to another account or market")).code, "ownership_conflict");
-        assert_eq!(Failure::from_error("game_folder", Error::Invalid("junction/reparse traversal refused")).code, "unsafe_path");
+        assert!(!serde_json::to_string(&failure)
+            .unwrap()
+            .contains("secret-token"));
+        assert_eq!(
+            Failure::from_error(
+                "destination",
+                Error::Invalid("destination belongs to another account or market")
+            )
+            .code,
+            "ownership_conflict"
+        );
+        assert_eq!(
+            Failure::from_error(
+                "game_folder",
+                Error::Invalid("junction/reparse traversal refused")
+            )
+            .code,
+            "unsafe_path"
+        );
     }
 }

@@ -84,6 +84,10 @@ $broad=MakeGame 'unsafe-output-permissions'
 & icacls (Join-Path $broad 'Interface\AddOns') /grant '*S-1-1-0:(OI)(CI)M' /Q|Out-Null
 if($LASTEXITCODE -ne 0){throw 'Unsafe ACL fixture failed'}
 $cases+=@{name='unrelated principals may modify output';path=$broad;accepted=$false;code='access_denied'}
+$inherited=MakeGame 'unsafe-inheritable-output'
+& icacls (Join-Path $inherited 'Interface\AddOns') /grant '*S-1-1-0:(OI)(CI)(IO)M' /Q|Out-Null
+if($LASTEXITCODE -ne 0){throw 'Unsafe inheritable ACL fixture failed'}
+$cases+=@{name='unrelated principals may modify future output';path=$inherited;accepted=$false;code='access_denied'}
 $junction=MakeGame 'junction-parent'
 $addons=Join-Path $junction 'Interface\AddOns'
 $target=Join-Path $junction 'OriginalAddOns'
@@ -94,10 +98,14 @@ $report=Join-Path (Get-Location) 'artifacts\companion-v2\workshop-permissions.js
 $null=New-Item (Split-Path $report) -ItemType Directory -Force
 & icacls (Split-Path $report) /grant "*$($userSid):(OI)(CI)M" /Q|Out-Null
 if($LASTEXITCODE -ne 0){throw 'Limited worker report grant failed'}
-$planFile=Join-Path $base 'plan.json' 
+$planFile=Join-Path $base 'plan.json'
 @{exe=(Join-Path (Get-Location) 'desktop\target\debug\examples\installation_smoke.exe');report=$report;cases=$cases}|ConvertTo-Json -Depth 8|Set-Content $planFile
 $script=(Resolve-Path $PSCommandPath).Path
-$arguments='-NoProfile -File "'+$script+'" -Worker -Plan "'+$planFile+'"'
+# Task Scheduler starts a fresh environment, so carry only the two disposable
+# runner markers, never the parent process's credentials or other environment.
+$launcher=Join-Path $base 'limited-worker.ps1'
+@("`$env:GITHUB_ACTIONS='true'", "`$env:RUNNER_OS='Windows'", ("& '"+$script.Replace("'","''")+"' -Worker -Plan '"+$planFile.Replace("'","''")+"'"))|Set-Content $launcher
+$arguments='-NoProfile -File "'+$launcher+'"'
 $principal=New-ScheduledTaskPrincipal -UserId ([System.Security.Principal.WindowsIdentity]::GetCurrent().Name) -LogonType Interactive -RunLevel Limited
 $action=New-ScheduledTaskAction -Execute (Join-Path $env:WINDIR 'System32\WindowsPowerShell\v1.0\powershell.exe') -Argument $arguments -WorkingDirectory (Get-Location).Path
 try {

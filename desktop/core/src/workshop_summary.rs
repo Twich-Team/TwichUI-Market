@@ -419,6 +419,27 @@ mod tests {
     }
     #[cfg(unix)]
     #[test]
+    fn legacy_market_receipt_migrates_only_for_its_original_scope() {
+        let d=tempfile::tempdir().unwrap();let b=fixture();let c=config(d.path(),&b);installation(&c);
+        let g:Value=serde_json::from_str(include_str!("../../../contracts/bridge/scoped-l1/fixtures/scoped.json")).unwrap();
+        let receipt:Value=serde_json::from_str(include_str!("../../../contracts/bridge/scoped-l1/fixtures/receipt.json")).unwrap();
+        let old=bridge::export::artifact(&g,&receipt).unwrap();let folder=main_dir(&c);fs::create_dir(&folder).unwrap();
+        fs::write(folder.join("Data.lua"),&old).unwrap();fs::write(folder.join("TwichUI_MarketData.toc"),delivery::TOC).unwrap();
+        let marker=json!({"version":1,"scope":c.scope.key().unwrap(),"installation":fs::canonicalize(&c.installation).unwrap(),"market":g["market"],"issuer_id":g["issuer_id"]});
+        fs::write(folder.join(".twichui-delivery.json"),bridge::canonical(&marker).unwrap()).unwrap();
+        let mut wrong=c.clone();wrong.scope.account_id+=1;
+        assert!(inspect_destination(&wrong).is_err());
+        wrong=c.clone();wrong.scope.market_id+=1;wrong.selection["market_id"]=wrong.scope.market_id.into();
+        assert!(inspect_destination(&wrong).is_err());
+        assert_eq!(fs::read(folder.join("Data.lua")).unwrap(),old);
+        assert!(inspect_destination(&c).is_ok());
+        assert!(!d.path().join(delivery::CONFIG).exists());
+        assert!(c.save_confirmed(d.path(),false).is_err());
+        c.save_confirmed(d.path(),true).unwrap();publish(&c,&b,&||false).unwrap();
+        assert_eq!(fs::read(folder.join("Previous.lua")).unwrap(),old);
+    }
+    #[cfg(unix)]
+    #[test]
     fn setup_failures_preserve_previous_data_and_distinguish_validation_stages() {
         use std::os::unix::fs::PermissionsExt;
         let d=tempfile::tempdir().unwrap();let b=fixture();let c=config(d.path(),&b);installation(&c);
