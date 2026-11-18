@@ -6,7 +6,7 @@ const fs=require('node:fs'),path=require('node:path'),http=require('node:http');
  const root=path.resolve(__dirname,'../../desktop/ui');
  const server=http.createServer((req,res)=>{const file=({'/':'index.html','/app.js':'app.js','/style.css':'style.css','/icon.png':'icon.png'})[req.url];if(!file){res.writeHead(404).end();return;}res.setHeader('Content-Type',file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':file.endsWith('.png')?'image/png':'text/html');res.end(fs.readFileSync(path.join(root,file)));});
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
- const browser=await chromium.launch({headless:true});
+ const browser=await chromium.launch({headless:true,...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH?{executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH}:{})});
  try{
   const context=await browser.newContext({viewport:{width:520,height:850},reducedMotion:'reduce'});
   const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
@@ -58,13 +58,36 @@ const fs=require('node:fs'),path=require('node:path'),http=require('node:http');
   await page.screenshot({path:path.join(output,'workshop-phone.png'),fullPage:true});
   const audit=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa']).analyze();expect(audit.violations).toEqual([]);
   await page.evaluate(()=>{window.__state.delivery={notice:'Not connected'};window.__defer=true;window.__emit();});
-  await page.locator('#workshop-connect').click();await expect.poll(()=>page.evaluate(()=>Boolean(window.__resolveReview))).toBe(true);
+  await page.locator('#workshop-connect').click();await expect.poll(()=>page.evaluate(()=>Boolean(window.__resolveReview))).toBe(true);await expect(page.locator('#workshop-state')).toHaveText('Connecting Workshop');
   await page.evaluate(()=>{window.__state.account.id=2;window.__state.bootstrap.account.id=2;window.__emit();window.__resolveReview({review_id:'stale',installation:'C:\\PrivateOldAccount',market:'old'});});
   await expect(page.locator('#workshop-connect')).toBeEnabled();await expect(page.locator('#workshop-confirmation')).toBeHidden();await expect(page.locator('#workshop-note')).not.toContainText('PrivateOldAccount');
   await page.evaluate(()=>{window.__resolveReview=null;window.__rejectReview=null;});await page.locator('#workshop-connect').click();await expect.poll(()=>page.evaluate(()=>Boolean(window.__rejectReview))).toBe(true);
   await page.evaluate(()=>{window.__state.account.id=3;window.__state.bootstrap.account.id=3;window.__emit();window.__rejectReview(new Error('old account failure'));});await expect(page.locator('#workshop-connect')).toBeEnabled();await expect(page.locator('#workshop-note')).not.toContainText('old account failure');
+  await expect(page.locator('#workshop-note')).toHaveText('Your account or market changed during setup. Connect Workshop again.');
+  await page.evaluate(()=>{window.__resolveReview=null;window.__rejectReview=null;});await page.locator('#workshop-connect').click();await expect.poll(()=>page.evaluate(()=>Boolean(window.__resolveReview))).toBe(true);
+  await page.evaluate(()=>{window.__state.settings.selected_market=3;window.__emit();window.__resolveReview({review_id:'stale-market',installation:'C:\\PrivateOldMarket',market:'old'});});
+  await expect(page.locator('#workshop-connect')).toBeEnabled();await expect(page.locator('#workshop-confirmation')).toBeHidden();await expect(page.locator('#workshop-note')).toHaveText('Your account or market changed during setup. Connect Workshop again.');
   await page.evaluate(()=>{window.__defer=false;window.__fail='Unsupported or invalid market data: Workshop needs an update.';});await page.locator('#workshop-connect').click();await expect(page.locator('#workshop-note')).toContainText('Workshop needs an update');
-  await page.locator('.more > summary').click();await expect(page.locator('#delivery-status')).toContainText('Setup detail');
+  const failures=[
+   ['wrong_folder','game_folder','Choose the Forever game folder containing Wow.exe and Interface/AddOns.'],
+   ['unsupported_client','executable_version','This Wow.exe version is not verified for Forever. Choose a supported Forever installation.'],
+   ['workshop_addon','workshop_addon','Workshop needs an update or is missing files. Install the compatible TwichUI addon, then retry.'],
+   ['access_denied','destination','Windows could not access this installation safely. Choose a folder where your Windows account can read the game and write addon data.'],
+   ['ownership_conflict','destination','Existing Market data could not be safely adopted. Reconnect its original Market account and market, or choose another installation. Your files were preserved.'],
+   ['context_changed','setup_context','Your account or market changed during setup. Connect Workshop again.'],
+   ['folder_picker','folder_picker','Windows could not open or read the folder picker. Close the dialog and retry Connect Workshop.'],
+   ['internal','setup','Workshop setup could not finish because of an unexpected error. Retry or save developer diagnostics. Your files were preserved.'],
+   ['cancelled','folder_picker','Folder selection cancelled.'],
+  ];
+  for(const [code,stage,message] of failures){
+   await page.evaluate(value=>{window.__fail=JSON.stringify(value);},{code,stage,message,details:'sanitized fixture detail'});
+   await page.locator('#workshop-connect').click();
+   await expect(page.locator('#workshop-note')).toHaveText(message);
+   await expect(page.locator('#workshop-state')).toHaveText(code==='cancelled'?'Not connected':'Needs attention');
+   await expect(page.locator('#message')).toBeHidden();
+  }
+  await page.locator('.more > summary').click();await expect(page.locator('#delivery-status')).toContainText('Setup detail: cancelled · folder_picker');
+  await page.evaluate(()=>{window.__fail=null;});await page.locator('#workshop-connect').click();await expect(page.locator('#workshop-confirmation')).toBeVisible();
   expect(errors).toEqual([]);console.log('PASS mocked IPC: simple connection, one native confirmation, retry, no archive, safe status, Escape/focus, mobile, WCAG A/AA and delayed account isolation. Not native evidence.');
  }finally{await browser.close();await new Promise(resolve=>server.close(resolve));}
 })().catch(error=>{console.error(error);process.exitCode=1;});

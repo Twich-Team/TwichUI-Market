@@ -28,6 +28,10 @@ use twichui_market_core::{
 };
 
 type Result<T> = std::result::Result<T, String>;
+fn setup_core(stage:&str,error:Error)->String {
+    serde_json::to_string(&twichui_market_core::workshop_setup::Failure::from_error(stage,error))
+        .unwrap_or_else(|_|"Workshop setup interrupted".into())
+}
 fn friendly(error: impl std::fmt::Display) -> String {
     error.to_string()
 }
@@ -91,6 +95,7 @@ struct Data {
     quitting: AtomicBool,
     workshop_review: Mutex<Option<(String,twichui_market_core::delivery::Configuration,chrono::DateTime<Utc>)>>,
     workshop_setup: AtomicBool,
+    workshop_failure: Mutex<Option<twichui_market_core::workshop_setup::Failure>>,
 }
 pub struct Runtime {
     data: Arc<Data>,
@@ -329,6 +334,7 @@ impl Runtime {
             quitting: AtomicBool::new(false),
             workshop_review: Mutex::new(None),
             workshop_setup: AtomicBool::new(false),
+            workshop_failure: Mutex::new(None),
         });
         let observer = data.clone();
         let worker = Arc::new(
@@ -1035,6 +1041,29 @@ impl Runtime {
     }
     /// The ordinary WebView supplies intent, never an installation path.
     pub fn prepare_workshop(&self) -> Result<serde_json::Value> {
+        self.workshop_result(self.prepare_workshop_inner())
+    }
+    fn workshop_result<T>(&self, result:Result<T>)->Result<T> {
+        use twichui_market_core::workshop_setup::Failure;
+        match result {
+            Ok(value)=>{if let Ok(mut last)=self.data.workshop_failure.lock(){*last=None;} Ok(value)}
+            Err(error)=>{
+                let failure=serde_json::from_str::<Failure>(&error).unwrap_or_else(|_|{
+                    let (code,stage,detail)=match error.as_str() {
+                        "Folder selection cancelled." => ("cancelled","folder_picker","native dialog cancelled"),
+                        "Connection changed. Connect Workshop again." => ("context_changed","setup_context","account, origin or market changed"),
+                        "Workshop confirmation expired. Connect again." | "Connect Workshop again to confirm its installation." => ("context_changed","confirmation","review expired or already consumed"),
+                        "Finish signing in before connecting Workshop." | "Sign in before connecting Workshop." | "Choose your market first." | "Your selected market is unavailable. Retry after synchronization." => ("context_changed","setup_context","authenticated market is not ready"),
+                        _ => ("internal","setup","unexpected native setup failure"),
+                    };
+                    Failure::new(code,stage,detail.into())
+                });
+                if let Ok(mut last)=self.data.workshop_failure.lock(){*last=Some(failure.clone());}
+                Err(serde_json::to_string(&failure).unwrap_or_else(|_|"Workshop setup interrupted".into()))
+            }
+        }
+    }
+    fn prepare_workshop_inner(&self) -> Result<serde_json::Value> {
         use twichui_market_core::{delivery::{self,Configuration},installation};
         if self.data.workshop_setup.compare_exchange(false,true,Ordering::AcqRel,Ordering::Acquire).is_err() {
             return Err("Workshop setup is already open.".into());
@@ -1050,15 +1079,20 @@ impl Runtime {
         let chosen=view.bootstrap.as_ref().and_then(|b|b.markets.iter().find(|m|m.id==market))
             .filter(|m|m.available_for_sync&&m.verified&&m.player_identity_verified).ok_or("Your selected market is unavailable. Retry after synchronization.")?;
         let scope=twichui_market_core::bridge::Scope{server:view.settings.server.clone(),account_id:account,market_id:market,algorithm:"twichui-pricing-v1".into()};
-        let previous=delivery::Configuration::load(&self.data.path).map_err(friendly)?
+        let previous=delivery::Configuration::load(&self.data.path).map_err(|e|setup_core("saved_configuration",e))?
             .filter(|c|c.scope.server==scope.server&&c.scope.account_id==account);
         if let Some(c)=previous.as_ref().filter(|c|c.version==2&&c.enabled&&c.scope.market_id==market) {
             if delivery::inspect_destination(c).is_ok() {self.worker.sync_now().map_err(friendly)?;return Ok(serde_json::json!({"connected":true}));}
         }
         let found=installation::discover(previous.as_ref().map(|c|c.installation.as_path()));
         let installation=if found.len()==1 {found[0].clone()}else{
-            installation::choose_folder().map_err(friendly)?.ok_or("Folder selection cancelled.")?
+            installation::choose_folder().map_err(|e|setup_core("folder_picker",e))?.ok_or("Folder selection cancelled.")?
         };
+        let current=self.view()?;
+        if !current.connected||current.approving||current.refreshing||current.account.as_ref().map(|a|a.id)!=Some(account)
+            ||current.settings.server!=scope.server||current.settings.selected_market.or(current.sync.sync.selected_market)!=Some(market) {
+            return Err("Connection changed. Connect Workshop again.".into());
+        }
         let mut config=Configuration{version:2,enabled:true,scope,installation,
             selection:serde_json::json!({"kind":"broad_summary","market_id":market,"region":chosen.region}),history_days:0};
         if let Some(old)=previous.as_ref().filter(|old|old.installation!=config.installation) {
@@ -1075,15 +1109,15 @@ impl Runtime {
                 // existing account/origin's native configuration, never IPC.
                 if let Some(original)=previous.as_ref().and_then(|c|c.selection.get("previous_installation")) {
                     config.selection["previous_installation"]=original.clone();
-                    delivery::inspect_destination(&config).map_err(friendly)?
-                } else {return Err(friendly(first));}
+                    delivery::inspect_destination(&config).map_err(|e|setup_core("destination",e))?
+                } else {return Err(setup_core("destination",first));}
             }
         };
         // Discovery/dialog may outlive account changes. Do not authorize or
         // retain a path for a different account/origin/market context.
         let _gate=self.data.gate.lock().map_err(|_|"Connection operation interrupted")?;
         let current=self.view()?;
-        if !current.connected||current.account.as_ref().map(|a|a.id)!=Some(account)||current.settings.server!=config.scope.server
+        if !current.connected||current.approving||current.refreshing||current.account.as_ref().map(|a|a.id)!=Some(account)||current.settings.server!=config.scope.server
             ||current.settings.selected_market.or(current.sync.sync.selected_market)!=Some(market) {
             return Err("Connection changed. Connect Workshop again.".into());
         }
@@ -1096,6 +1130,9 @@ impl Runtime {
         *self.data.workshop_review.lock().map_err(|_|"Workshop setup interrupted")?=None;Ok(())
     }
     pub fn confirm_workshop(&self,review_id:String)->Result<()> {
+        self.workshop_result(self.confirm_workshop_inner(review_id))
+    }
+    fn confirm_workshop_inner(&self,review_id:String)->Result<()> {
         let _gate=self.data.gate.lock().map_err(|_|"Connection operation interrupted")?;
         let review=self.data.workshop_review.lock().map_err(|_|"Workshop setup interrupted")?.take().ok_or("Connect Workshop again to confirm its installation.")?;
         if review.0!=review_id||review.2<Utc::now() {return Err("Workshop confirmation expired. Connect again.".into());}
@@ -1104,7 +1141,7 @@ impl Runtime {
             ||view.settings.server!=config.scope.server||view.settings.selected_market.or(view.sync.sync.selected_market)!=Some(config.scope.market_id) {
             return Err("Connection changed. Connect Workshop again.".into());
         }
-        config.save_confirmed(&self.data.path,true).map_err(friendly)?;
+        config.save_confirmed(&self.data.path,true).map_err(|e|setup_core("confirmation",e))?;
         self.data.emit();self.worker.sync_now().map_err(friendly)?;Ok(())
     }
     pub fn configure_delivery(&self, installation: String, algorithm: String, history_days: u32, operation: String, confirmed: bool, variants: serde_json::Value) -> Result<serde_json::Value> {
@@ -1326,7 +1363,7 @@ impl Runtime {
     }
     pub fn diagnostics(&self) -> Result<String> {
         let view = self.view()?;
-        let document = serde_json::json!({"schema_version":1,"version":view.version,"server":view.settings.server,
+        let document = serde_json::json!({"schema_version":1,"version":view.version,"server":view.settings.server,"workshop_setup":self.data.workshop_failure.lock().ok().and_then(|last|last.clone()),
         "phase":view.sync.sync.phase,"last_sync_ms":view.sync.sync.last_sync_ms,"last_server_check_ms":view.sync.sync.last_server_check_ms,
         "upstream_update_ms":view.sync.sync.upstream_update_ms,"cache":view.cache,"error":view.sync.error,"automatic_sync":view.settings.automatic_sync,"interval_minutes":view.settings.interval_minutes});
         let dir = self.data.path.join("exports");

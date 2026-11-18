@@ -26,6 +26,18 @@ module.exports=async({page,invoke,api,shots,sourceCommit})=>{
   await clickPicker('CancelFolder');await expect(page.locator('#workshop-connect')).toBeEnabled();expect(fs.existsSync(configFile)).toBe(false);
   const wrong=path.join(fixture.base,'WrongGame');fs.mkdirSync(wrong);fs.writeFileSync(path.join(wrong,'Wow.exe'),'not a PE/game');
   await clickPicker('ChooseFolder',wrong);await expect(page.locator('#workshop-state')).toHaveText('Needs attention');expect(fs.existsSync(configFile)).toBe(false);
+  await expect(page.locator('#workshop-note')).toHaveText('Choose the Forever game folder containing Wow.exe and Interface/AddOns.');
+  const diagnosticPath=await invoke('save_diagnostics');const diagnostic=JSON.parse(fs.readFileSync(diagnosticPath,'utf8')).workshop_setup;
+  expect(diagnostic.code).toBe('wrong_folder');expect(diagnostic.stage).toBe('game_folder');expect(JSON.stringify(diagnostic)).not.toContain(wrong);
+  fs.writeFileSync(path.join(root,'setup-failure-diagnostics.json'),JSON.stringify(diagnostic,null,2));
+  await page.screenshot({path:path.join(root,'native-setup-wrong-folder.png'),fullPage:true});
+  const summaryLua=path.join(game,'Interface','AddOns','TwichUI_Workshop','Summary.lua');
+  fs.renameSync(summaryLua,summaryLua+'.fixture-backup');
+  try {
+   await clickPicker('ChooseFolder',game);await expect(page.locator('#workshop-state')).toHaveText('Needs attention');
+   await expect(page.locator('#workshop-note')).toContainText('Workshop needs an update or is missing files');expect(fs.existsSync(configFile)).toBe(false);
+   expect(hash(saved)).toBe(savedHash);
+  } finally {fs.renameSync(summaryLua+'.fixture-backup',summaryLua);}
   // The next native selection uses the real coordinated addon source/capability.
   await clickPicker('ChooseFolder',game);await expect(page.locator('#workshop-confirmation')).toBeVisible();
   await expect(page.locator('#workshop-confirmed-folder')).toContainText(game);

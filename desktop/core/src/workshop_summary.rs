@@ -230,7 +230,18 @@ fn root_header(c:&Configuration,raw:&[u8])->Result<(Value,Option<String>)> {
     } else {let(g,_)=bridge::inspect_artifact(raw)?;Ok((g,None))}
 }
 pub fn inspect_destination(c:&Configuration)->Result<Value> {
-    crate::installation::validate(&c.installation)?;let dir=main_dir(c);let mut existing=None;
+    crate::installation::validate(&c.installation)?;
+    crate::workshop_setup::at("destination", inspect_output(c))
+}
+fn inspect_output(c:&Configuration)->Result<Value> {
+    let addons=c.installation.join("Interface/AddOns");
+    // Parent ACLs govern creating output; game executable/addon ownership does not.
+    delivery::no_links(&addons)?;
+    #[cfg(windows)]
+    crate::bridge::windows_owner::output_parent(&addons)?;
+    #[cfg(unix)]
+    delivery::owned(&addons)?;
+    let dir=main_dir(c);let mut existing=None;
     if dir.try_exists()? {
         folder(&dir,&["TwichUI_MarketData.toc","Data.lua","Previous.lua",".twichui-delivery.json"])?;marker(c,&dir)?;
         let toc=dir.join("TwichUI_MarketData.toc");if toc.try_exists()? {need(delivery::known_toc(&delivery::read(&toc,1024)?),"incompatible Market data TOC")?;}
@@ -405,6 +416,60 @@ mod tests {
         assert_eq!(fs::read(main_dir(&c).join("Previous.lua")).unwrap(),before);
         assert!(restore_previous(d.path(),&c).is_err());c.enabled=false;c.save_confirmed(d.path(),false).unwrap();let status=restore_previous(d.path(),&c).unwrap();assert!(status.loaded_game_generation.is_none());assert_eq!(fs::read(path).unwrap(),before);
         assert_eq!(fs::read(saved.join("TwichUI.lua")).unwrap(),b"synthetic player data remains byte-identical");assert!(!d.path().join("history-archive-v1.sqlite").exists());
+    }
+    #[cfg(unix)]
+    #[test]
+    fn legacy_market_receipt_migrates_only_for_its_original_scope() {
+        let d=tempfile::tempdir().unwrap();let b=fixture();let c=config(d.path(),&b);installation(&c);
+        let g:Value=serde_json::from_str(include_str!("../../../contracts/bridge/scoped-l1/fixtures/scoped.json")).unwrap();
+        let receipt:Value=serde_json::from_str(include_str!("../../../contracts/bridge/scoped-l1/fixtures/receipt.json")).unwrap();
+        let old=bridge::export::artifact(&g,&receipt).unwrap();let folder=main_dir(&c);fs::create_dir(&folder).unwrap();
+        fs::write(folder.join("Data.lua"),&old).unwrap();fs::write(folder.join("TwichUI_MarketData.toc"),delivery::TOC).unwrap();
+        let marker=json!({"version":1,"scope":c.scope.key().unwrap(),"installation":fs::canonicalize(&c.installation).unwrap(),"market":g["market"],"issuer_id":g["issuer_id"]});
+        fs::write(folder.join(".twichui-delivery.json"),bridge::canonical(&marker).unwrap()).unwrap();
+        let mut wrong=c.clone();wrong.scope.account_id+=1;
+        assert!(inspect_destination(&wrong).is_err());
+        wrong=c.clone();wrong.scope.market_id+=1;wrong.selection["market_id"]=wrong.scope.market_id.into();
+        assert!(inspect_destination(&wrong).is_err());
+        assert_eq!(fs::read(folder.join("Data.lua")).unwrap(),old);
+        assert!(inspect_destination(&c).is_ok());
+        assert!(!d.path().join(delivery::CONFIG).exists());
+        assert!(c.save_confirmed(d.path(),false).is_err());
+        c.save_confirmed(d.path(),true).unwrap();publish(&c,&b,&||false).unwrap();
+        assert_eq!(fs::read(folder.join("Previous.lua")).unwrap(),old);
+    }
+    #[cfg(unix)]
+    #[test]
+    fn setup_failures_preserve_previous_data_and_distinguish_validation_stages() {
+        use std::os::unix::fs::PermissionsExt;
+        let d=tempfile::tempdir().unwrap();let b=fixture();let c=config(d.path(),&b);installation(&c);
+        c.save_confirmed(d.path(),true).unwrap();publish(&c,&b,&||false).unwrap();
+        let data=main_dir(&c).join("Data.lua");let before=fs::read(&data).unwrap();
+        let settings=fs::read(d.path().join(delivery::CONFIG)).unwrap();
+        // Read-only inputs may have broader permissions than private output.
+        let exe=c.installation.join("Wow.exe");fs::set_permissions(&exe,fs::Permissions::from_mode(0o644)).unwrap();
+        assert!(inspect_destination(&c).is_ok());
+        let fail=|expected:&str,stage:&str| {
+            let Error::WorkshopSetup(e)=inspect_destination(&c).unwrap_err() else {panic!("structured setup failure required")};
+            assert_eq!(e.code,expected);assert_eq!(e.stage,stage);
+            assert_eq!(fs::read(&data).unwrap(),before);
+            assert_eq!(fs::read(d.path().join(delivery::CONFIG)).unwrap(),settings);
+        };
+        fs::rename(&exe,c.installation.join("Wow.saved")).unwrap();fail("wrong_folder","game_folder");
+        fs::rename(c.installation.join("Wow.saved"),&exe).unwrap();
+        fs::write(&exe,b"unsupported executable").unwrap();fail("unsupported_client","executable_version");
+        fs::write(&exe,b"TWICHUI SYNTHETIC FOREVER 1.60.1").unwrap();
+        let lua=c.installation.join("Interface/AddOns/TwichUI_Workshop/Summary.lua");
+        fs::rename(&lua,lua.with_extension("saved")).unwrap();fail("workshop_addon","workshop_addon");
+        fs::rename(lua.with_extension("saved"),&lua).unwrap();
+        fs::set_permissions(&lua,fs::Permissions::from_mode(0)).unwrap();fail("access_denied","workshop_addon");
+        fs::set_permissions(&lua,fs::Permissions::from_mode(0o644)).unwrap();
+        let unknown=main_dir(&c).join("unrelated.lua");fs::write(&unknown,b"preserve me").unwrap();fail("ownership_conflict","destination");
+        fs::remove_file(unknown).unwrap();
+        // Retrying after repair reaches review without changing any prior data.
+        assert!(inspect_destination(&c).is_ok());
+        assert_eq!(fs::read(&data).unwrap(),before);
+        assert_eq!(fs::read(d.path().join(delivery::CONFIG)).unwrap(),settings);
     }
     #[cfg(unix)]
     #[test]

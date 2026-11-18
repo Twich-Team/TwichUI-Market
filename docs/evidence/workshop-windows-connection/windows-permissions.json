@@ -1,0 +1,163 @@
+{
+  "source_commit": "b5e4adeb43d4a9af23e8ad6aea3dc8a0112a7712",
+  "run_id": 44326868360,
+  "job_id": 134880495613,
+  "source": "Parsed JSON from successful Windows job stdout; original artifact retained in GitHub Actions",
+  "receipt": {
+    "uac_split_token_verified": false,
+    "token_elevation_flag": true,
+    "results": [
+      {
+        "name": "normal inherited permissions",
+        "native": {
+          "accepted": true,
+          "admin_enabled": false,
+          "elevated": true
+        },
+        "prior_files_unchanged": true
+      },
+      {
+        "name": "future compatible patch and build",
+        "native": {
+          "accepted": true,
+          "admin_enabled": false,
+          "elevated": true
+        },
+        "prior_files_unchanged": true
+      },
+      {
+        "name": "administrator owned installed files",
+        "native": {
+          "accepted": true,
+          "admin_enabled": false,
+          "elevated": true
+        },
+        "prior_files_unchanged": true
+      },
+      {
+        "name": "missing Workshop file",
+        "native": {
+          "accepted": false,
+          "admin_enabled": false,
+          "elevated": true,
+          "failure": {
+            "code": "workshop_addon",
+            "details": "Workshop needs an update.",
+            "message": "Workshop needs an update or is missing files. Install the compatible TwichUI addon, then retry.",
+            "stage": "workshop_addon"
+          }
+        },
+        "prior_files_unchanged": true
+      },
+      {
+        "name": "Windows refuses installed addon read",
+        "native": {
+          "accepted": false,
+          "admin_enabled": false,
+          "elevated": true,
+          "failure": {
+            "code": "access_denied",
+            "details": "io_kind=PermissionDenied; os_code=Some(5)",
+            "message": "Windows could not access this installation safely. Choose a folder where your Windows account can read the game and write addon data.",
+            "stage": "workshop_addon"
+          }
+        },
+        "prior_files_unchanged": true
+      },
+      {
+        "name": "wrong game folder",
+        "native": {
+          "accepted": false,
+          "admin_enabled": false,
+          "elevated": true,
+          "failure": {
+            "code": "wrong_folder",
+            "details": "game root does not contain Wow.exe",
+            "message": "Choose the Forever game folder containing Wow.exe and Interface/AddOns.",
+            "stage": "game_folder"
+          }
+        },
+        "prior_files_unchanged": true
+      },
+      {
+        "name": "unsupported native version resource",
+        "native": {
+          "accepted": false,
+          "admin_enabled": false,
+          "elevated": true,
+          "failure": {
+            "code": "unsupported_client",
+            "details": "observed_file_version=1.12.1.5875; numeric_product_version=Some([1, 12, 1, 5875]); product_name_matches=true; original_filename_matches=true; accepted_product_family=1.60",
+            "message": "This Wow.exe version is not verified for Forever. Choose a supported Forever installation.",
+            "stage": "executable_version"
+          }
+        },
+        "prior_files_unchanged": true
+      },
+      {
+        "name": "unowned existing Market data",
+        "native": {
+          "accepted": false,
+          "admin_enabled": false,
+          "elevated": true,
+          "failure": {
+            "code": "ownership_conflict",
+            "details": "unknown files in Market addon; preserve them and review manually",
+            "message": "Existing Market data could not be safely adopted. Reconnect its original Market account and market, or choose another installation. Your files were preserved.",
+            "stage": "destination"
+          }
+        },
+        "prior_files_unchanged": true
+      },
+      {
+        "name": "unrelated principals may modify output",
+        "native": {
+          "accepted": false,
+          "admin_enabled": false,
+          "elevated": true,
+          "failure": {
+            "code": "access_denied",
+            "details": "Windows bridge staging ownership or ACL is ambiguous",
+            "message": "Windows could not access this installation safely. Choose a folder where your Windows account can read the game and write addon data.",
+            "stage": "destination"
+          }
+        },
+        "prior_files_unchanged": true
+      },
+      {
+        "name": "unrelated principals may modify future output",
+        "native": {
+          "accepted": false,
+          "admin_enabled": false,
+          "elevated": true,
+          "failure": {
+            "code": "access_denied",
+            "details": "Windows bridge staging ownership or ACL is ambiguous",
+            "message": "Windows could not access this installation safely. Choose a folder where your Windows account can read the game and write addon data.",
+            "stage": "destination"
+          }
+        },
+        "prior_files_unchanged": true
+      },
+      {
+        "name": "junction in installed path",
+        "native": {
+          "accepted": false,
+          "admin_enabled": false,
+          "elevated": true,
+          "failure": {
+            "code": "unsafe_path",
+            "details": "symlink traversal refused",
+            "message": "This installation uses an unsafe linked path. Choose a local Forever folder without junctions or symbolic links.",
+            "stage": "game_folder"
+          }
+        },
+        "prior_files_unchanged": true
+      }
+    ],
+    "effective_admin_group_enabled": false,
+    "genuine_forever_binary": false,
+    "admin_only_read_denied": true,
+    "synthetic_executable": true
+  }
+}

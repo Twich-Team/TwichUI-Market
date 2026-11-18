@@ -258,7 +258,7 @@ pub fn synchronize(
     Ok(s)
 }
 
-fn no_links(path: &Path) -> Result<()> {
+pub(crate) fn no_links(path: &Path) -> Result<()> {
     need(path.is_absolute(), "absolute local installation required")?;
     let mut p = PathBuf::new();
     for part in path.components() {

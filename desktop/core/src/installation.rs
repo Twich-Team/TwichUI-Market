@@ -1,35 +1,61 @@
 //! Bounded, read-only Windows discovery. No disk scans or game execution.
-use crate::{delivery::{owned,read}, Error, Result};
+use crate::{delivery::{no_links,read}, Error, Result};
 use serde_json::Value;
 use std::{collections::HashSet, path::{Path,PathBuf}};
 
 fn need(ok:bool,why:&'static str)->Result<()> {if ok {Ok(())} else {Err(Error::Invalid(why))}}
 
+// Installed code is read, never modified or executed. Do not apply the private
+// staging/output owner policy to game or addon files installed by another user.
+fn installed(path:&Path)->Result<()> {
+    no_links(path)?;
+    #[cfg(windows)]
+    crate::bridge::windows_owner::local(path)?;
+    Ok(())
+}
+
 pub fn validate_game(path:&Path)->Result<()> {
-    owned(path)?; owned(&path.join("Interface"))?; owned(&path.join("Interface/AddOns"))?;
-    let exe=path.join("Wow.exe"); owned(&exe)?;
-    need(exe.is_file(),"Couldn't find your WoW installation. Choose folder.")?;
-    let version=executable_version(&exe)?;
-    // Existing verified Forever source/Simulator profile: 1.60.1, interface
-    // 16001. Unknown editions fail closed; native acceptance remains separate.
-    need(version[..3]==[1,60,1],"This client version is not verified for Forever. Choose the supported Forever installation.")
+    use crate::workshop_setup::at;
+    at("game_folder", (|| {
+        installed(path)?;
+        need(path.is_dir(), "game root is missing")?;
+        for dir in ["Interface", "Interface/AddOns"] {
+            let child=path.join(dir); installed(&child)?;
+            need(child.is_dir(), "game Interface/AddOns is missing")?;
+        }
+        let exe=path.join("Wow.exe"); installed(&exe)?;
+        need(exe.is_file(), "game root does not contain Wow.exe")
+    })())?;
+    at("executable_version", (|| {
+        let identity=executable_identity(&path.join("Wow.exe"))?;
+        validate_executable(&identity)
+    })())
 }
 
 pub fn validate(path:&Path)->Result<()> {
     validate_game(path)?;
-    let core=path.join("Interface/AddOns/!!!TwichUI");need(core.is_dir(),"Workshop needs an update.")?;owned(&core)?;
-    let core_toc=String::from_utf8(read(&core.join("!!!TwichUI.toc"),65536)?).map_err(|_|Error::Invalid("Workshop needs an update."))?;
-    need(core_toc.lines().any(|l|l.trim()=="## Interface: 16001"),"Workshop needs an update.")?;
-    let folder=path.join("Interface/AddOns/TwichUI_Workshop");
-    need(folder.is_dir(),"Workshop needs an update.")?;owned(&folder)?;
-    for name in ["TwichUI_Workshop.toc","Summary.lua","Bridge.lua","MarketDelivery.json"] {need(folder.join(name).is_file(),"Workshop needs an update.")?;owned(&folder.join(name))?;}
-    let cap:Value=crate::bridge::parse(&read(&folder.join("MarketDelivery.json"),4096)?,4096)?;
-    need(cap["format"]=="twichui-market-consumer" && cap["summary_delivery_version"]==1
-        && cap["game"]=="wow-forever" && cap["interface"]==16001
-        && cap["summary_partition_bytes"]==131072 && cap["summary_total_bytes"]==8388608,
-        "Workshop needs an update.")?;
-    let toc=String::from_utf8(read(&folder.join("TwichUI_Workshop.toc"),32768)?).map_err(|_|Error::Invalid("Workshop needs an update."))?;
-    need(toc.lines().any(|l|l.trim()=="## Interface: 16001") && toc.lines().any(|l|l.trim()=="Summary.lua"),"Workshop needs an update.")
+    crate::workshop_setup::at("workshop_addon", (|| {
+        let core=path.join("Interface/AddOns/!!!TwichUI");installed(&core)?;
+        need(core.is_dir(),"Workshop needs an update.")?;
+        let core_toc=String::from_utf8(read(&core.join("!!!TwichUI.toc"),65536)?).map_err(|_|Error::Invalid("Workshop needs an update."))?;
+        need(core_toc.lines().any(|l|l.trim()=="## Interface: 16001"),"Workshop needs an update.")?;
+        let folder=path.join("Interface/AddOns/TwichUI_Workshop"); installed(&folder)?;
+        need(folder.is_dir(),"Workshop needs an update.")?;
+        for name in ["TwichUI_Workshop.toc","Summary.lua","Bridge.lua","MarketDelivery.json"] {
+            let file=folder.join(name); installed(&file)?;
+            need(file.is_file(),"Workshop needs an update.")?;
+            // Existence alone misses valid files that Windows refuses to read.
+            // Read a bounded prefix for Lua files; their contents are not run.
+            if name.ends_with(".lua") { use std::io::Read; let mut byte=[0u8;1]; std::fs::File::open(file)?.read(&mut byte)?; }
+        }
+        let cap:Value=crate::bridge::parse(&read(&folder.join("MarketDelivery.json"),4096)?,4096)?;
+        need(cap["format"]=="twichui-market-consumer" && cap["summary_delivery_version"]==1
+            && cap["game"]=="wow-forever" && cap["interface"]==16001
+            && cap["summary_partition_bytes"]==131072 && cap["summary_total_bytes"]==8388608,
+            "Workshop needs an update.")?;
+        let toc=String::from_utf8(read(&folder.join("TwichUI_Workshop.toc"),32768)?).map_err(|_|Error::Invalid("Workshop needs an update."))?;
+        need(toc.lines().any(|l|l.trim()=="## Interface: 16001") && toc.lines().any(|l|l.trim()=="Summary.lua"),"Workshop needs an update.")
+    })())
 }
 
 /// Previous authorized installation wins; otherwise inspect at most 256
@@ -93,32 +119,119 @@ fn registry_candidates()->Vec<PathBuf> {
     out
 }
 
+#[derive(Debug)]
+struct ExecutableIdentity {
+    file_version:[u16;4],
+    product_name:String,
+    product_version:String,
+    original_filename:String,
+}
+fn product_version(value:&str)->Option<Vec<u32>> {
+    let value=value.trim().strip_prefix("Version ").unwrap_or(value.trim());
+    if value.len()>64 {return None}
+    let numbers=value.split('.').map(|part| {
+        if part.is_empty()||!part.bytes().all(|b|b.is_ascii_digit()){return None}
+        part.parse::<u32>().ok()
+    }).collect::<Option<Vec<_>>>()?;
+    (numbers.len()==3||numbers.len()==4).then_some(numbers)
+}
+fn validate_executable(identity:&ExecutableIdentity)->Result<()> {
+    let product=product_version(&identity.product_version);
+    // Owner's Windows Properties screenshot: file 160.1.7095.9, product
+    // "Version 1.60.1.70959", World of Warcraft, Wow.exe. File-version fields
+    // encode that release differently. Identify the supported product family,
+    // not an exact build or the synthetic PE's old 1.60.1 file prefix.
+    // Patch/build updates are accepted; unrelated client families fail closed.
+    if identity.product_name.trim()=="World of Warcraft"
+        && identity.original_filename.trim().eq_ignore_ascii_case("Wow.exe")
+        && product.as_ref().is_some_and(|v|v[..2]==[1,60]) {return Ok(())}
+    Err(Error::WorkshopSetup(Box::new(crate::workshop_setup::Failure::new(
+        "unsupported_client", "executable_version",
+        format!("observed_file_version={}.{}.{}.{}; numeric_product_version={product:?}; product_name_matches={}; original_filename_matches={}; accepted_product_family=1.60",
+            identity.file_version[0],identity.file_version[1],identity.file_version[2],identity.file_version[3],
+            identity.product_name.trim()=="World of Warcraft",identity.original_filename.trim().eq_ignore_ascii_case("Wow.exe")),
+    ))))
+}
+
 #[cfg(not(windows))]
-fn executable_version(path:&Path)->Result<[u16;4]> {
+fn executable_identity(path:&Path)->Result<ExecutableIdentity> {
     #[cfg(test)]
-    if read(path,128).ok().as_deref()==Some(b"TWICHUI SYNTHETIC FOREVER 1.60.1".as_slice()) {return Ok([1,60,1,7053])}
+    if read(path,128).ok().as_deref()==Some(b"TWICHUI SYNTHETIC FOREVER 1.60.1".as_slice()) {
+        return Ok(ExecutableIdentity{file_version:[160,1,7095,9],product_name:"World of Warcraft".into(),product_version:"Version 1.60.1.70959".into(),original_filename:"Wow.exe".into()})
+    }
     let _=path;
     Err(Error::Invalid("Forever installation verification requires Windows"))
 }
 
 #[cfg(windows)]
-fn executable_version(path:&Path)->Result<[u16;4]> {
+fn executable_identity(path:&Path)->Result<ExecutableIdentity> {
     use std::os::windows::ffi::OsStrExt;
     use windows_sys::Win32::Storage::FileSystem::*;
     let name=path.as_os_str().encode_wide().chain(Some(0)).collect::<Vec<_>>();
     unsafe {
         let size=GetFileVersionInfoSizeW(name.as_ptr(),std::ptr::null_mut());
-        need(size>0 && size<=1024*1024,"The Forever executable version could not be verified.")?;
-        // u64 storage provides alignment for VS_FIXEDFILEINFO.
+        if size==0 {return Err(std::io::Error::last_os_error().into())}
+        need(size<=1024*1024,"The Forever executable version could not be verified.")?;
         let mut buffer=vec![0u64;(size as usize+7)/8];
-        need(GetFileVersionInfoW(name.as_ptr(),0,size,buffer.as_mut_ptr().cast())!=0,"The Forever executable version could not be verified.")?;
-        let mut result=std::ptr::null_mut();let mut length=0;
-        need(VerQueryValueW(buffer.as_ptr().cast(),[b'\\' as u16,0].as_ptr(),&mut result,&mut length)!=0
-            && length as usize>=std::mem::size_of::<VS_FIXEDFILEINFO>() && !result.is_null(),"The Forever executable version could not be verified.")?;
-        let info=&*(result as *const VS_FIXEDFILEINFO);
-        need(info.dwSignature==0xfeef04bd,"The Forever executable version could not be verified.")?;
-        Ok([(info.dwFileVersionMS>>16) as u16,info.dwFileVersionMS as u16,
-            (info.dwFileVersionLS>>16) as u16,info.dwFileVersionLS as u16])
+        if GetFileVersionInfoW(name.as_ptr(),0,size,buffer.as_mut_ptr().cast())==0 {return Err(std::io::Error::last_os_error().into())}
+        let query=|key:&str|->Result<(*mut std::ffi::c_void,u32)> {
+            let wide=key.encode_utf16().chain(Some(0)).collect::<Vec<_>>();
+            let mut result=std::ptr::null_mut();let mut length=0;
+            need(VerQueryValueW(buffer.as_ptr().cast(),wide.as_ptr(),&mut result,&mut length)!=0&&!result.is_null(),"executable version metadata field missing")?;
+            Ok((result,length))
+        };
+        let inside=|pointer:*mut std::ffi::c_void,bytes:usize|->Result<()> {
+            let start=buffer.as_ptr() as usize;let address=pointer as usize;
+            need(address>=start&&address.checked_add(bytes).is_some_and(|end|end<=start+size as usize),"executable version metadata bounds")
+        };
+        let (root,length)=query("\\")?;inside(root,std::mem::size_of::<VS_FIXEDFILEINFO>())?;
+        need(length as usize>=std::mem::size_of::<VS_FIXEDFILEINFO>(),"executable fixed version metadata")?;
+        let info=std::ptr::read_unaligned(root.cast::<VS_FIXEDFILEINFO>());
+        need(info.dwSignature==0xfeef04bd,"executable fixed version signature")?;
+        let file_version=[(info.dwFileVersionMS>>16) as u16,info.dwFileVersionMS as u16,(info.dwFileVersionLS>>16) as u16,info.dwFileVersionLS as u16];
+        let (translations,length)=query(r"\VarFileInfo\Translation")?;
+        need(length>=4&&length<=128&&length%4==0,"executable language table bound")?;inside(translations,length as usize)?;
+        let translations=std::slice::from_raw_parts(translations.cast::<u8>(),length as usize);
+        let mut observed=None;
+        for pair in translations.chunks_exact(4) {
+            let language=u16::from_le_bytes([pair[0],pair[1]]);let codepage=u16::from_le_bytes([pair[2],pair[3]]);
+            let string=|field:&str|->Result<String> {
+                let (pointer,length)=query(&format!(r"\StringFileInfo\{language:04x}{codepage:04x}\{field}"))?;
+                need(length>0&&length<=256&&(pointer as usize)%2==0,"executable string metadata bound")?;inside(pointer,length as usize*2)?;
+                let units=std::slice::from_raw_parts(pointer.cast::<u16>(),length as usize);
+                need(units.last()==Some(&0),"executable string metadata terminator")?;
+                String::from_utf16(&units[..units.len()-1]).map_err(|_|Error::Invalid("executable string metadata encoding"))
+            };
+            if let (Ok(product_name),Ok(product_version),Ok(original_filename))=(string("ProductName"),string("ProductVersion"),string("OriginalFilename")) {
+                let identity=ExecutableIdentity{file_version,product_name,product_version,original_filename};
+                if validate_executable(&identity).is_ok(){return Ok(identity)}
+                if observed.is_none(){observed=Some(identity);}
+            }
+        }
+        Ok(observed.unwrap_or(ExecutableIdentity{file_version,product_name:String::new(),product_version:String::new(),original_filename:String::new()}))
+    }
+}
+
+#[cfg(test)]
+mod version_tests {
+    use super::*;
+    fn owner()->ExecutableIdentity {ExecutableIdentity{file_version:[160,1,7095,9],product_name:"World of Warcraft".into(),product_version:"Version 1.60.1.70959".into(),original_filename:"Wow.exe".into()}}
+    #[test]
+    fn owner_reported_metadata_and_future_patch_builds_use_product_family() {
+        assert!(validate_executable(&owner()).is_ok());
+        let mut next=owner();next.file_version=[160,2,8123,4];next.product_version="Version 1.60.2.81234".into();
+        assert!(validate_executable(&next).is_ok());
+        // Native file-version packing is not the compatibility identifier.
+        next.file_version=[1,60,3,1234];next.product_version="1.60.3.123456".into();assert!(validate_executable(&next).is_ok());
+    }
+    #[test]
+    fn unsupported_or_incomplete_product_identity_still_fails_closed() {
+        for version in ["Version 1.12.1.5875","Version 1.61.1.1234","Version 2.0.0.0","160.1.7095.9","Version 1.60.secret-token","1.60","1.60..1"] {
+            let mut wrong=owner();wrong.product_version=version.into();let Error::WorkshopSetup(error)=validate_executable(&wrong).unwrap_err() else {panic!("structured executable diagnostic")};
+            assert!(!serde_json::to_string(&error).unwrap().contains("secret-token"));
+        }
+        let mut wrong=owner();wrong.product_name="Other game".into();assert!(validate_executable(&wrong).is_err());
+        wrong=owner();wrong.original_filename="Launcher.exe".into();assert!(validate_executable(&wrong).is_err());
     }
 }
 

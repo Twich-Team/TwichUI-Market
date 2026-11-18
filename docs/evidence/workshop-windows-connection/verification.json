@@ -1,0 +1,67 @@
+{
+  "code_commit": "a85c0fb78c4d4aaa038b2364079e7b739006c85c",
+  "pr": "https://github.com/Twich-Team/TwichUI-Market/pull/37",
+  "base": "integration/companion-beta7-release",
+  "workflows": [
+    {
+      "name": "Windows companion",
+      "run_id": 44328882818,
+      "conclusion": "success",
+      "jobs": {
+        "windows": 134887531932,
+        "picker": 134887532332,
+        "signed_update_selector": 134887533564,
+        "workshop_consumer": 134892307872
+      }
+    },
+    {
+      "name": "Backend",
+      "run_id": 44328882601,
+      "conclusion": "success"
+    },
+    {
+      "name": "Private website",
+      "run_id": 44328882844,
+      "conclusion": "success"
+    }
+  ],
+  "tested_product_git_objects": {
+    "desktop/core/src": "d7a0156157d0a4f9f340a54f1ff343bfbd6cf669",
+    "desktop/src-tauri": "fc08371a4231c04f8d7523a584ebfa47e0034351",
+    "desktop/ui": "b011be912513792c16e1a5e1b7ed3494ee6f5dc1",
+    "scripts/windows/workshop-fixtures.ps1": "4aadda41c7fbf0b582daddda09aea410bc7d2894",
+    "web/e2e/companion-workshop-native.cjs": "89d6087680ccba872f2df48f1a0e142bcd4f34de"
+  },
+  "local_checks": {
+    "rust_passed": 113,
+    "existing_optional_profiler_ignored": 1,
+    "workshop_mocked_ipc_accessibility": "passed",
+    "legacy_archive_mocked_ipc_accessibility": "passed"
+  },
+  "windows_evidence": {
+    "ntfs_cases_passed": 11,
+    "administrators_membership_enabled": false,
+    "administrator_only_read_denied": true,
+    "token_elevation_flag": true,
+    "uac_split_token_verified": false,
+    "actual_native_picker_registry": "passed",
+    "actual_installed_setup_reasons_and_sanitized_export": "passed",
+    "one_authorization_and_automatic_publication_recovery": "passed",
+    "legacy_upgrade_and_uninstall_retention": "passed",
+    "large_synthetic_variants": 45125,
+    "windows_produced_small_and_large_artifacts_in_production_lua": "passed",
+    "signed_sdk_lifecycle_rerun": false
+  },
+  "limitations": {
+    "genuine_forever_binary_available": false,
+    "genuine_game_consumption_verified": false,
+    "owner_first_failing_native_stage_captured": false,
+    "normal_owner_pc_acceptance": "required"
+  },
+  "production_operations": {
+    "deployment": false,
+    "release_publication": false,
+    "signed_installer_replaced": false,
+    "production_data_modified": false
+  }
+}
