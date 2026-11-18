@@ -55,6 +55,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cargo test --manifest-path desktop/Cargo.toml --locked --lib windows_owner::tests::
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo test --manifest-path desktop/Cargo.toml --locked --test bridge windows_junction_and_broad_write_acl_are_refused
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cargo test --manifest-path desktop/Cargo.toml --locked --lib workshop_setup::
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cargo test --manifest-path desktop/Cargo.toml --locked --lib --features private-dev vault::dev_tests::

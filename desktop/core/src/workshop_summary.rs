@@ -217,8 +217,8 @@ fn marker(c:&Configuration,folder:&Path)->Result<()> {
     }Ok(())
 }
 fn folder(folder:&Path,allowed:&[&str])->Result<()> {
-    delivery::owned(folder)?;
-    for entry in fs::read_dir(folder)? {let path=entry?.path();delivery::owned(&path)?;
+    delivery::game_owned(folder)?;
+    for entry in fs::read_dir(folder)? {let path=entry?.path();delivery::game_owned(&path)?;
         need(path.is_file()&&allowed.contains(&path.file_name().unwrap().to_string_lossy().as_ref()),"unknown files in Market addon; preserve them and review manually")?;
     }Ok(())
 }
@@ -262,7 +262,7 @@ fn write_game(path:&Path,bytes:&[u8],cancelled:&impl Fn()->bool)->Result<()> {
     if cancelled(){return Err(Error::Cancelled)}
     need(!delivery::game_running()?,"Waiting for World of Warcraft to close.")?;
     if path.try_exists()?&&delivery::read(path,bytes.len()).is_ok_and(|old|old==bytes){return Ok(())}
-    delivery::atomic(path,bytes)
+    delivery::game_atomic(path,bytes)
 }
 
 pub fn publish(c:&Configuration,bundle:&Bundle,cancelled:&impl Fn()->bool)->Result<bool> {
