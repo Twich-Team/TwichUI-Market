@@ -30,6 +30,8 @@ SCOPE = {'version': 1, 'stages': ['daily_references','observations','raw_listing
     'shared_snapshots':'protect all retained observation dependencies',
     'sync':'existing 409/full refresh', 'concurrent_executions':1,
     'operations':'DELETE candidate rows except raw_feed_payloads, which clears compressed_payload',
+    'scheduler_sha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+    'minimum_filesystem_reserve_bytes':int(os.environ.get('MIN_DATABASE_FREE_BYTES',str(2*1024**3))),
     'engine_sha256':hashlib.sha256((inspect.getsource(retention.candidates)+inspect.getsource(retention.execute_selected)).encode()).hexdigest()}
 
 
@@ -196,11 +198,14 @@ def _work(factory, at, clock):
         row.next_run_at=at+timedelta(seconds=limits.interval_seconds)
         receipt=RetentionExecution(policy_hash=document['policy_hash'],status='running')
         db.add(receipt);db.flush(); receipt_id=receipt.id; actor_id=row.actor_id
-    started=clock(); outcome='budget_exhausted'; reason=None
+    outcome='budget_exhausted'; reason=None
     try:
         if not recovery_ready(actor_id):
             outcome='paused'; reason='Protected backup/restore or off-VM recovery verification unavailable'
         else:
+            # Recovery hashing has its own bounded 30-second HTTP deadline and
+            # holds no collector lock. Give deletion work its reviewed budget.
+            started=clock()
             for _ in range(limits.max_batches):
                 remaining=limits.max_seconds-(clock()-started)
                 if remaining <= 0: break
@@ -220,7 +225,7 @@ def _work(factory, at, clock):
                         outcome='paused'; reason='Collector due; yielding maintenance budget'; break
                     from .capacity import filesystem
                     disk=filesystem()
-                    if disk['available_bytes'] is None or disk['available_bytes']<=disk['reserve_bytes']:
+                    if disk['available_bytes'] is None or disk['available_bytes']<=max(disk['reserve_bytes'],document['scope']['minimum_filesystem_reserve_bytes']):
                         outcome='paused'; reason='PostgreSQL filesystem safety reserve unavailable or reached'; break
                     wal=db.scalar(text('SELECT coalesce(sum(size),0) FROM pg_ls_waldir()'))
                     if wal>limits.max_wal_bytes:

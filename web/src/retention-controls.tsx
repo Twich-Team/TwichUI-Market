@@ -223,8 +223,8 @@ export function RetentionControls({ readOnly }: { readOnly: boolean }) {
                 meta: { numeric: true },
                 cell: ({ row }) => row.original.eligible_rows.toLocaleString(),
               },
-              {accessorKey:"oldest_affected_at",header:"Oldest affected",cell:({row})=>row.original.oldest_affected_at?<LocalTime value={row.original.oldest_affected_at}/>: 'None'},
-              {accessorKey:"newest_affected_at",header:"Newest affected",cell:({row})=>row.original.newest_affected_at?<LocalTime value={row.original.newest_affected_at}/>: 'None'},
+              {accessorKey:"oldest_affected_at",header:"Oldest affected",cell:({row})=>row.original.oldest_affected_at?(row.original.oldest_affected_at.length===10?row.original.oldest_affected_at:<LocalTime value={row.original.oldest_affected_at}/>): 'None'},
+              {accessorKey:"newest_affected_at",header:"Newest affected",cell:({row})=>row.original.newest_affected_at?(row.original.newest_affected_at.length===10?row.original.newest_affected_at:<LocalTime value={row.original.newest_affected_at}/>): 'None'},
               {
                 accessorKey: "estimated_logical_bytes",
                 header: "Estimated logical impact",
