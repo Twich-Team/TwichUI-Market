@@ -1,0 +1,16 @@
+{
+  "base_source": "fe92999cc969a23684f3023638673c656efb3bce",
+  "patch_source": "36dc204d5975f57629ca1c830d41d8b95d2ac508",
+  "image": "sha256:0c3476af5bdcd7c4123b91841ed172584883419b45544a16154258a8bfb353c2",
+  "only_changed_modules": [
+    "retention_worker.py",
+    "retention.py"
+  ],
+  "sha256": {
+    "retention_worker.py": "a4bf0698f2cb26410c5abf45f1453a9385cb73122e7a9be3c4ad91701884a174",
+    "retention.py": "126e4df4257c9fda19e3403d368ac817b82804111c647284eddca8476b84131a"
+  },
+  "remaining_modules_byte_identical": 60,
+  "no_workshop_api_rollout": true,
+  "both_app_and_installed_package_patched": true
+}

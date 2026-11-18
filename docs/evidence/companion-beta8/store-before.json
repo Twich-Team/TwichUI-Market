@@ -1,0 +1,270 @@
+{
+  "2.0.0-beta.2/TwichUI-Market-Companion-2.0.0-beta.2-windows-x64.exe": {
+    "bytes": 4426483,
+    "sha256": "0fbc53603c218ffa85c8ee7b4e54f25e53c52a6fc3b2330ae914337714d41869"
+  },
+  "2.0.0-beta.2/installed-smoke.json": {
+    "bytes": 1486,
+    "sha256": "d792d3e684d2c48567857b91911ebbd6d9b46ca02304183a3b8ffe6e6af4f141"
+  },
+  "2.0.0-beta.2/launch-metrics.json": {
+    "bytes": 132,
+    "sha256": "f247db2f5e2c5cefb917dcc7bc227a37e464cfe57aea12857fa2e37f034c73e3"
+  },
+  "2.0.0-beta.2/legacy-upgrade.json": {
+    "bytes": 529,
+    "sha256": "50126f28df22a3ca2597a2fdfac8dc78b2ad987c5ae045739cf30c59ec4ea1bf"
+  },
+  "2.0.0-beta.2/manifest.json": {
+    "bytes": 3356,
+    "sha256": "9159ec57ca866e7180fdede628cee55edd0f82247387122eb7ac6629c0649b42"
+  },
+  "2.0.0-beta.2/owner-release-approval.json": {
+    "bytes": 1485,
+    "sha256": "cdb456eacadbe91f137942fc2b8ea7a359ebfddd53591b6a686bf0bff8dda6c8"
+  },
+  "2.0.0-beta.2/performance.json": {
+    "bytes": 947,
+    "sha256": "99d28a2a36da0925b308f50e7edd921bc67a239807ded7b2837d8e17d178517d"
+  },
+  "2.0.0-beta.2/signed-update-acceptance.json": {
+    "bytes": 966,
+    "sha256": "eca821ed6a004211519e0050d6a2464fabde160af5a224096eb4170b199151c9"
+  },
+  "2.0.0-beta.2/windows-signature.json": {
+    "bytes": 577,
+    "sha256": "0acea317fe126fb32490853aac51cba756c354f4660378695feafcfa80502752"
+  },
+  "2.0.0-beta.3/TwichUI-Market-Companion-2.0.0-beta.3-windows-x64.exe": {
+    "bytes": 4515855,
+    "sha256": "d31efbb8a6611cad107f8b368eb8c16585125e269fae180bfabdd9ae6c287183"
+  },
+  "2.0.0-beta.3/installed-smoke.json": {
+    "bytes": 1486,
+    "sha256": "2fe885f321f82e870737b480dfe19ded05aab1d1238cecd08e730332869d9c14"
+  },
+  "2.0.0-beta.3/launch-metrics.json": {
+    "bytes": 131,
+    "sha256": "618a50832705d18e3604ded209dba56828523af05098c1ec91b36f8f70b4a393"
+  },
+  "2.0.0-beta.3/legacy-upgrade.json": {
+    "bytes": 529,
+    "sha256": "fe2e15e597a4459b54b035c077a7a5aab93e7d6e3138e8c6672cb4fd3a6baed8"
+  },
+  "2.0.0-beta.3/manifest.json": {
+    "bytes": 3361,
+    "sha256": "5e129ec870c4c413232255ff08f3aa5335b02b30d7dbb07ad6137386eefb4116"
+  },
+  "2.0.0-beta.3/owner-release-approval.json": {
+    "bytes": 1601,
+    "sha256": "5f12d4a5bbc08c2effe422554a3cebfb5f7d31a3357d82c339e964326e41d400"
+  },
+  "2.0.0-beta.3/performance.json": {
+    "bytes": 958,
+    "sha256": "35b4cb083ed11e95146293dbf6b4e79021febc26b2577bd35463043c0bce7350"
+  },
+  "2.0.0-beta.3/signed-update-acceptance.json": {
+    "bytes": 966,
+    "sha256": "5fd6697800324d33917aa8809ada3202872bf9684ca08794d49631ffe78c7fd2"
+  },
+  "2.0.0-beta.3/windows-signature.json": {
+    "bytes": 577,
+    "sha256": "db2140235bf7405e27d2f6d914af877897f72222d5f53bf3f68cae07a55add48"
+  },
+  "2.0.0-beta.4/TwichUI-Market-Companion-2.0.0-beta.4-windows-x64.exe": {
+    "bytes": 4715921,
+    "sha256": "6a64493b795577b23503af86a1ff8d79181a157f233272a2247703c2059689af"
+  },
+  "2.0.0-beta.4/installed-smoke.json": {
+    "bytes": 1552,
+    "sha256": "182cb3f7d98505a80b16aa652028afeb93266574b364fda40cd8a938d2b942f1"
+  },
+  "2.0.0-beta.4/launch-metrics.json": {
+    "bytes": 132,
+    "sha256": "4e2c056adba3854aaf46f8f1c44e3b45e0d88e308700868ac2a2d34a03a16a4e"
+  },
+  "2.0.0-beta.4/legacy-upgrade.json": {
+    "bytes": 529,
+    "sha256": "94c47160e95368b9b5023511e1c4ab3f07ebfafe3d113494f1ab81cf38e93ae0"
+  },
+  "2.0.0-beta.4/manifest.json": {
+    "bytes": 3511,
+    "sha256": "3a0cb056ae11bfb02383ef43403ee9a2b7b1fd9829a2e0688aa3e03d5983711f"
+  },
+  "2.0.0-beta.4/owner-release-approval.json": {
+    "bytes": 1081,
+    "sha256": "6cfdb2762effec896b52a5bf1b059c419fec65a1d6d7bf090e87a5ac43175bd6"
+  },
+  "2.0.0-beta.4/performance.json": {
+    "bytes": 957,
+    "sha256": "04ea33999491a583b91f22223c0ef2d83c196fed509a9a617032bafe989d8846"
+  },
+  "2.0.0-beta.4/signed-update-acceptance.json": {
+    "bytes": 966,
+    "sha256": "55f3329b5becf962a9531292a59626e99b307fbbc4ee64ac0d63115a5a25797b"
+  },
+  "2.0.0-beta.4/windows-signature.json": {
+    "bytes": 577,
+    "sha256": "6c6dae8096ed9e7f3ab57e62832013f080579dffb31019df645903659c189230"
+  },
+  "2.0.0-beta.5/TwichUI-Market-Companion-2.0.0-beta.5-windows-x64.exe": {
+    "bytes": 4762861,
+    "sha256": "6124b9472b03c1ee53a83e3a8e7570a9f3621834c77624cd9aa48bc005465de1"
+  },
+  "2.0.0-beta.5/installed-smoke.json": {
+    "bytes": 1552,
+    "sha256": "a245542a3b9c838adc238682f3c80ae2385827b96c5eb19fa3dd052e052dcaf0"
+  },
+  "2.0.0-beta.5/launch-metrics.json": {
+    "bytes": 132,
+    "sha256": "7b01675a039ed7a5527f7f86557ce0fdbefa0ef6b4b388c56c579457ef35ba2e"
+  },
+  "2.0.0-beta.5/legacy-upgrade.json": {
+    "bytes": 529,
+    "sha256": "7749a94e2a2ad0ab73cd9f767fd005d2495f802d39a2b80d4a0e2f9a0c50850d"
+  },
+  "2.0.0-beta.5/manifest.json": {
+    "bytes": 3479,
+    "sha256": "912e0cf1ca7b51f8ddca6a5fe54c52e006503cbd06ed069fe7f065b1cffd1675"
+  },
+  "2.0.0-beta.5/owner-release-approval.json": {
+    "bytes": 1116,
+    "sha256": "3df363c2fa10bbcce8a607f36557c811899e285c76138c2536223980bd78a64e"
+  },
+  "2.0.0-beta.5/performance.json": {
+    "bytes": 955,
+    "sha256": "02e279523b5455f4e947399da1535b01ccf656888b67d54aaa96dc328bf8fde8"
+  },
+  "2.0.0-beta.5/signed-update-acceptance.json": {
+    "bytes": 966,
+    "sha256": "ab381a1debb2a830bdba517ee63e9dbff96c494594c4d20d6ef439f88ea8b4db"
+  },
+  "2.0.0-beta.5/windows-signature.json": {
+    "bytes": 577,
+    "sha256": "47d2ad3ddeeb9f0a61b0292e3f610c1848c55ca0c7e92aad536fde9f9653ab9f"
+  },
+  "2.0.0-beta.6/TwichUI-Market-Companion-2.0.0-beta.6-windows-x64.exe": {
+    "bytes": 4771009,
+    "sha256": "8383217c595d46dcc1a982f60dd500852d6402d613e261a7fd1b6e2a9c5ffb3c"
+  },
+  "2.0.0-beta.6/installed-smoke.json": {
+    "bytes": 1552,
+    "sha256": "c77402d61a1f4efbd1ff7bf809b00145405647102d0a5e5a79d04c654474ff1e"
+  },
+  "2.0.0-beta.6/launch-metrics.json": {
+    "bytes": 132,
+    "sha256": "3773bc6c19bcd4a985fe96addfff52018398456b84d8e65b7c4c3c333cb0b3a3"
+  },
+  "2.0.0-beta.6/legacy-upgrade.json": {
+    "bytes": 529,
+    "sha256": "5cc4185830d39d42741540adc3ae059dc8052242678eac9a936fa78f3bc2291d"
+  },
+  "2.0.0-beta.6/manifest.json": {
+    "bytes": 3439,
+    "sha256": "793151e9cb3036cc6a2085e0f03d2b9a30d72ad07b763bb0686dc606fabe0b55"
+  },
+  "2.0.0-beta.6/owner-release-approval.json": {
+    "bytes": 1173,
+    "sha256": "c47dd9c6a0874e8db203e4d040ca6196d7ccee29dcb32c8f757552608fc277b2"
+  },
+  "2.0.0-beta.6/performance.json": {
+    "bytes": 956,
+    "sha256": "b92a19c8690a3fa5e30aa3bb9ab0f209fc7267e79b7f1cc60729e18b1a09147e"
+  },
+  "2.0.0-beta.6/signed-update-acceptance.json": {
+    "bytes": 966,
+    "sha256": "b546f221264be96b68a360c27e06d66bdbb729d2d58b08eca336020580d44ffa"
+  },
+  "2.0.0-beta.6/windows-signature.json": {
+    "bytes": 577,
+    "sha256": "7ecdaa68e4797b9174987d21dea0c14d124594d94860e067ffbbdd0aed8149f2"
+  },
+  "2.0.0-beta.7/TwichUI-Market-Companion-2.0.0-beta.7-windows-x64.exe": {
+    "bytes": 4834587,
+    "sha256": "ef770b95dab2240605f133ce78d63c55cd6be5689a8f2aa65789905f1eb1a3c8"
+  },
+  "2.0.0-beta.7/installed-smoke.json": {
+    "bytes": 1552,
+    "sha256": "fbd9eaa8a68471faf0d82b7565dc8a3ed17b6c9d1c452cf4e9fb173578cffbba"
+  },
+  "2.0.0-beta.7/launch-metrics.json": {
+    "bytes": 132,
+    "sha256": "494cb5f60a89fe278fec4c2bc2b5b52faad61ae30c320648b906fae825f3002a"
+  },
+  "2.0.0-beta.7/legacy-upgrade.json": {
+    "bytes": 529,
+    "sha256": "8f47e6e5ae1b903aa9c57f50eac0d2d498d1ec95c4e31acd029ca05c7724dcd9"
+  },
+  "2.0.0-beta.7/manifest.json": {
+    "bytes": 3399,
+    "sha256": "17a4b063d2cca7e6658bde3e9ee58413a5869d3eed0d83ee46a156c89592bd18"
+  },
+  "2.0.0-beta.7/owner-release-approval.json": {
+    "bytes": 966,
+    "sha256": "5dcc68ea6308b58e162ee38da5fa034a38a9fae953ef45a5e8df9f2d5876d0f0"
+  },
+  "2.0.0-beta.7/performance.json": {
+    "bytes": 957,
+    "sha256": "c314f7b0a61d6dc6cd69fd57ec972f5c18a4128d9d2b97d4d9684b2b8f03cb26"
+  },
+  "2.0.0-beta.7/signed-update-acceptance.json": {
+    "bytes": 966,
+    "sha256": "aad5337978154cf813eb0f393221303a2171a8c81b1ee4724709dfd973fc92f1"
+  },
+  "2.0.0-beta.7/windows-signature.json": {
+    "bytes": 577,
+    "sha256": "307b0d3ab0ce1977bd7695b50d5ec3627fee422617f0c736f7179e008685b663"
+  },
+  "audit/00000001.complete.json": {
+    "bytes": 158,
+    "sha256": "685207f635d82bc987d4d13db8906af6b957f53cd5786b800c195b800ac0cf14"
+  },
+  "audit/00000001.json": {
+    "bytes": 1313,
+    "sha256": "eb80fd0e0a7531d2d752908265e39fdd9990cfa855e5b0729e763653d9470730"
+  },
+  "audit/00000002.complete.json": {
+    "bytes": 158,
+    "sha256": "af1b8d4368bbb8f9fa7d2289002e77911de4505f1524d0097ef8161c059dad24"
+  },
+  "audit/00000002.json": {
+    "bytes": 1325,
+    "sha256": "92e077e2b52af5f3fd952d7879edde6d5dfe9778ae853fe6e877267e6379e3af"
+  },
+  "audit/00000003.complete.json": {
+    "bytes": 158,
+    "sha256": "014c997efb8d2d0f4d137da3398ca529935a2d0d143ecb6a3bcde19f29e080a0"
+  },
+  "audit/00000003.json": {
+    "bytes": 1332,
+    "sha256": "9a18a7bed2e83e0c86ab117977451a973b541ee0a95d853fd67487602bc89ba7"
+  },
+  "audit/00000004.complete.json": {
+    "bytes": 158,
+    "sha256": "28c90c0be1665ea85e68ebf53e13dcf35e0a4f9fcd7a5398e0baa6449f99e8a4"
+  },
+  "audit/00000004.json": {
+    "bytes": 1334,
+    "sha256": "c2f857e110fdbe2839eecf1d2faf1c39135dd9a536ba71be540ddfe56282afa8"
+  },
+  "audit/00000005.complete.json": {
+    "bytes": 158,
+    "sha256": "e47026fd39d9061a068e6af6ba46d47f03884a7c7cd0d92d492499975e1ca0f1"
+  },
+  "audit/00000005.json": {
+    "bytes": 1330,
+    "sha256": "9f730332567f6593dc110d7099b6d8140e07789c94d8c614bb6149bbd21c3dc1"
+  },
+  "audit/00000006.complete.json": {
+    "bytes": 158,
+    "sha256": "7679e9d4d9f77da60894cb1e6c5fa6bf7c793f23d14dab5915210e7cafe1d701"
+  },
+  "audit/00000006.json": {
+    "bytes": 1331,
+    "sha256": "b7dc634e8acca322b2ff52ccaaf3f5afa3f1962ba9dc667ce5ed06d7baca19c5"
+  },
+  "current.json": {
+    "bytes": 46,
+    "sha256": "acbffc5fb1a9614b8de23d10c35fc0f7a75f5a253943184fe4bf564eacab2ac5"
+  }
+}
