@@ -15,3 +15,5 @@ Delivered source **59ac0f54730154faa281911e50a60bbe56f3e405**: [completed fast W
 Native Windows locking is specifically classified as `file_busy`, separate from read-permission denial and incompatible addon content. The actual owner's underlying failure remains unconfirmed; no addon reinstall is prescribed.
 
 Owner result: pending real Windows test. No signed/public release or production change is authorized or performed.
+
+Owner follow-up: DEV59ac0f5 reaches `core_interface`; the owner reports the TOC is already set to 16001 and explicitly requests removing that strict gate. Core and Workshop TOC Interface-version assertions are removed. TOC existence/readability, Summary.lua loading, capability JSON (including the explicit consumer contract), local safe paths, permissions and authorization remain enforced. The focused regression accepts alternate/listed/absent TOC Interface metadata only with a compatible delivery contract. A new fast Windows artifact is pending; no signed/public release is authorized.

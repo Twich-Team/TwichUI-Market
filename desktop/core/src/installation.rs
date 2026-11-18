@@ -50,20 +50,13 @@ fn addon_text(path: &Path, max: usize) -> Result<String> {
     String::from_utf8(bytes).map(|s| s.trim_start_matches('\u{feff}').to_owned())
         .map_err(|_| Error::Invalid("addon text is not UTF-8"))
 }
-fn interface_matches(toc: &str) -> bool {
-    toc.lines().filter_map(|line| line.trim().strip_prefix("##"))
-        .filter_map(|line| line.split_once(':'))
-        .any(|(key, value)| key.trim() == "Interface" && value.trim() == "16001")
-}
-
 /// Read-only addon contract probe, also used against real seven-addon packages.
 /// Does not inspect or change player data, authorize accounts, or publish files.
 pub fn validate_addons(path: &Path) -> Result<()> {
     use crate::workshop_setup::checked;
     let core = path.join("Interface/AddOns/!!!TwichUI");
     checked("core_folder", "The core addon folder !!!TwichUI is missing or unreadable in Interface/AddOns.", addon_path(&core, true))?;
-    let core_toc = checked("core_toc", "The core addon TOC (!!!TwichUI.toc) is missing or unreadable.", addon_text(&core.join("!!!TwichUI.toc"), 65536))?;
-    checked("core_interface", "The core addon TOC must declare Interface 16001 for Forever.", need(interface_matches(&core_toc), "core interface must be 16001"))?;
+    checked("core_toc", "The core addon TOC (!!!TwichUI.toc) is missing or unreadable.", addon_text(&core.join("!!!TwichUI.toc"), 65536))?;
     let folder = path.join("Interface/AddOns/TwichUI_Workshop");
     checked("workshop_folder", "The TwichUI_Workshop folder is missing or unreadable in Interface/AddOns.", addon_path(&folder, true))?;
     let toc = checked("workshop_toc", "TwichUI_Workshop.toc is missing or unreadable.", addon_text(&folder.join("TwichUI_Workshop.toc"), 32768))?;
@@ -95,7 +88,6 @@ pub fn validate_addons(path: &Path) -> Result<()> {
     ] {
         checked("summary_contract", message, need(cap[field] == expected, detail))?;
     }
-    checked("workshop_interface", "The Workshop TOC must declare Interface 16001 for Forever.", need(interface_matches(&toc), "Workshop interface must be 16001"))?;
     checked("summary_toc_entry", "The Workshop TOC does not load Summary.lua. This addon package needs the summary consumer.", need(toc.lines().any(|line| line.trim() == "Summary.lua"), "Summary.lua TOC entry missing"))
 }
 
@@ -336,8 +328,6 @@ mod addon_tests {
     #[test]
     fn addon_toc_and_json_failures_remain_specific_and_redacted() {
         for (relative, content, check, detail) in [
-            ("!!!TwichUI/!!!TwichUI.toc", "## Interface: 11200\n", "core_interface", "core interface must be 16001"),
-            ("TwichUI_Workshop/TwichUI_Workshop.toc", "## Interface: 11200\nSummary.lua\n", "workshop_interface", "Workshop interface must be 16001"),
             ("TwichUI_Workshop/TwichUI_Workshop.toc", "## Interface: 16001\n# Summary.lua\n", "summary_toc_entry", "Summary.lua TOC entry missing"),
             ("TwichUI_Workshop/MarketDelivery.json", "{\"secret-token private-path\":", "capability_json", "json_category="),
             ("TwichUI_Workshop/MarketDelivery.json", "{\"format\":1,\"format\":2}", "capability_json", "json_category="),
@@ -357,6 +347,23 @@ mod addon_tests {
             fs::write(root.path().join("Interface/AddOns/TwichUI_Workshop/MarketDelivery.json"), cap.to_string()).unwrap();
             let e = failure(root.path()); assert_eq!(e.check.as_deref(), Some("summary_contract"));
             assert_eq!(e.details, format!("{field} mismatch")); assert!(!serde_json::to_string(&e).unwrap().contains("secret-token"));
+        }
+    }
+    #[test]
+    fn addon_toc_interface_metadata_is_not_a_delivery_gate() {
+        // Delivery compatibility comes from MarketDelivery.json, not the
+        // game loader's TOC Interface metadata (which can vary by client).
+        for header in ["## Interface: 16001\n", "## Interface: 11200\n", "## Interface: 16001, 16002\n", "## Title: TwichUI\n"] {
+            let root = fixture(); let addons = root.path().join("Interface/AddOns");
+            fs::write(addons.join("!!!TwichUI/!!!TwichUI.toc"), header).unwrap();
+            fs::write(addons.join("TwichUI_Workshop/TwichUI_Workshop.toc"), format!("{header}Summary.lua\nBridge.lua\n")).unwrap();
+            assert!(validate_addons(root.path()).is_ok(), "TOC metadata blocked compatible delivery: {header}");
+            // Removing an irrelevant header gate must not allow a consumer
+            // with a different summary-delivery contract through setup.
+            let mut cap: Value = serde_json::from_str(CAP).unwrap(); cap["summary_delivery_version"] = 2.into();
+            fs::write(addons.join("TwichUI_Workshop/MarketDelivery.json"), cap.to_string()).unwrap();
+            let e = failure(root.path()); assert_eq!(e.check.as_deref(), Some("summary_contract"));
+            assert_eq!(e.details, "summary_delivery_version mismatch");
         }
     }
     #[test]
