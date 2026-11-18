@@ -7,8 +7,8 @@
       "id": 44345199307,
       "name": "Windows companion",
       "head_sha": "3ebd8b3c8b613ca8ed42a85614679a824ff85033",
-      "status": "in_progress",
-      "conclusion": null,
+      "status": "completed",
+      "conclusion": "success",
       "html_url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/44345199307",
       "path": ".github/workflows/desktop.yml"
     },
