@@ -97,6 +97,7 @@ def operational_status(db):
         if due and now()>aware_date(due)+timedelta(minutes=10): warnings.append('Scheduled historical maintenance has stopped or is overdue')
         if automation['last_run'] and automation['last_run']['status'] in ('paused','failed','interrupted'): warnings.append(automation['last_run']['reason'])
     if not backup_ready(): warnings.append('Fresh backup and successful restoration evidence are missing')
+    if automation['recovery']['reason']: warnings.append(automation['recovery']['reason']+'; historical pruning is blocked')
     backlog=throughput(list(db.scalars(select(StorageMeasurement).order_by(StorageMeasurement.sampled_at))))
     if backlog['status']=='falling_behind':warnings.append('Eligible history is accumulating faster than maintenance processes it')
     vacuum=[];wal=None;reusable=None;live=None;checkpoints=None

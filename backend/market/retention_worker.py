@@ -125,6 +125,7 @@ def state_view(db):
     return {'installed':os.environ.get('RETENTION_SCHEDULER_INSTALLED')=='true',
         'enabled':bool(row and row.enabled), 'authorized':bool(document),
         'authorization':document, 'proposal':authorization_document(db, Limits()),
+        'recovery':recovery_evidence_view(),
         'next_run_at':row.next_run_at if row and row.enabled else None,
         'last_success_at':success, 'rows_by_stage':stages,
         'last_run': {'id':last.id,'started_at':last.started_at,'finished_at':last.finished_at,
@@ -253,6 +254,23 @@ def main():
         for _ in range(15):
             if stopping:break
             time.sleep(1)
+
+
+
+
+def recovery_evidence_view():
+    """Cheap, honest status; live execution separately rehashes the local archive."""
+    try:
+        path=Path(os.environ.get('RETENTION_RECOVERY_EVIDENCE','/retention-recovery/evidence.json'))
+        if not path.is_file() or path.stat().st_size>16384:raise ValueError()
+        evidence=json.loads(path.read_text())
+        stamp=aware(datetime.fromisoformat(evidence['off_vm_verified_at']))
+        recent=evidence.get('off_vm_verified') is True and bool(evidence.get('failure_domain')) and now()-timedelta(hours=24)<=stamp<=now()
+        return {'off_vm_verification_recent':recent,'verified_at':stamp,'local_archive_status':'Revalidated under the backup lock before execution',
+                'reason':None if recent else 'Off-VM recovery verification is missing or stale'}
+    except (OSError,KeyError,TypeError,ValueError):
+        return {'off_vm_verification_recent':False,'verified_at':None,'local_archive_status':'Live validation required',
+                'reason':'Off-VM recovery verification is missing or stale'}
 
 
 if __name__=='__main__': main()

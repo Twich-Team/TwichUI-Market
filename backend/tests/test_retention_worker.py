@@ -167,3 +167,10 @@ def test_recovery_requires_present_rehashed_protected_local_and_off_vm(tmp_path,
     assert not recovery_ready(1)
     data['off_vm_verified']=True;data['off_vm_verified_at']=(now()-timedelta(days=2)).isoformat();path.write_text(json.dumps(data))
     assert not recovery_ready(1)
+
+
+def test_off_vm_readiness_status_cannot_claim_missing_receipts(tmp_path,monkeypatch):
+    from market.retention_worker import recovery_evidence_view
+    monkeypatch.setenv('RETENTION_RECOVERY_EVIDENCE',str(tmp_path/'missing.json'))
+    state=recovery_evidence_view()
+    assert not state['off_vm_verification_recent'] and 'missing' in state['reason']

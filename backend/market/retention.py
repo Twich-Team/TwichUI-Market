@@ -139,7 +139,8 @@ def backup_ready():
 
 @router.get('')
 def get_policy(user:User=Depends(admin),db:Session=Depends(session)):
-    return {**policy_view(db),'backup_restore_ready':backup_ready(),
+    from .retention_worker import recovery_evidence_view
+    return {**policy_view(db),'backup_restore_ready':backup_ready() and recovery_evidence_view()['off_vm_verification_recent'],
             'policy_configured':db.get(RetentionPolicy,1) is not None, **automation_view(db),
             'completed_batches':db.scalar(select(func.count()).select_from(RetentionBatch)),
             'last_completed_at':db.scalar(select(func.max(RetentionBatch.created_at))),
