@@ -1,0 +1,12 @@
+{
+  "verifier_source": "580e2e5f34582d00ac3ba20b1440e08b55d2fdf1",
+  "verifier_binary_sha256": "4958c5e6015ad6863543281990a652755536d40ea03603490758f324fafb9e46",
+  "existing_operator_image": "sha256:c8686b5be272bcef4589df5a99a539cf9311dc111d0ba31ac8eee6c31f3802ec",
+  "override": "read-only current native verifier via supported COMPANION_RELEASE_VERIFIER setting",
+  "reason": "Old operator verifier refuses valid private beta metadata; current verifier independently checks the exact bytes, unchanged key and signed version. SDK independently passes signature/corruption/version checks.",
+  "validation_bypassed": false,
+  "operator_python_workdir": "/work",
+  "operator_pythonpath": "/work/backend",
+  "operator_sources": "current verified repository policy, bound read-only; avoid old manual-schema package under default /app",
+  "schema_version": 2
+}

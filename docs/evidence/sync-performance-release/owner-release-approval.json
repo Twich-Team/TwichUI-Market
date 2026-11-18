@@ -1,0 +1,19 @@
+{
+  "schema_version": 2,
+  "scope": "private-nsis-with-tauri-signed-updates",
+  "owner_statement": "okay, go ahead and deploy both the market and the new version of the companion.",
+  "owner_approved_publication": true,
+  "owner_approved_deployment": true,
+  "source_commit": "580e2e5f34582d00ac3ba20b1440e08b55d2fdf1",
+  "visual_approval_commit": "66ef7c371c101e4a0f3075fba12ad6bd32b94911",
+  "version": "2.0.0-beta.9",
+  "installer_sha256": "1ff6a6b25c71b539dba8ad1045012355cfb24e0ee1cb1dc70ef651d4ef6f6b4f",
+  "windows_run_id": 44419177982,
+  "signed_update_run_id": 44421444780,
+  "updater_public_key_sha256": "5794736c840c7c09a49396e60cd569ff6b5f24f872eb0318ed95d55c16616ecf",
+  "tray_actions_verified": false,
+  "acknowledges_unverified_tray": true,
+  "retained_private_beta_policy": "Existing unverified tray/normal-UAC/physical-game limits remain; this record does not invent owner-PC observations.",
+  "deployment_scope": "Reviewed PR40 synchronization fixes; exact verified signed beta9 through existing private download/updater; preserve every prior release, original data/settings and existing trust key.",
+  "addon_publication": false
+}

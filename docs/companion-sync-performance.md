@@ -1,3 +1,5 @@
+**Owner-approved release is live:** [Market deployment and signed Companion beta.9 acceptance/rollback](companion-sync-performance-release.md). The review-only state below is historical for this completed release. The owner-provided short capture was exactly the requested diagnostic; no full ten-minute export was required.
+
 # Companion synchronization performance investigation
 
 Owner requested measurement before optimization, comparable repeated runs, exact cache equality, correctness/durability preservation, separate standard/archive/Workshop stages, real progress, Windows verification and a draft review PR. No automatic performance deployment, signing or publication. Resume authorized after the separate Workshop server repair; that deployed image and all production policies remain preserved.

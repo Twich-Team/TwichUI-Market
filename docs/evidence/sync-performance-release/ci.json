@@ -1,0 +1,57 @@
+{
+  "payload_source": "580e2e5f34582d00ac3ba20b1440e08b55d2fdf1",
+  "sdk_harness_source": "2571ac54bcf111550e8cb1b1fe591825a62647b6",
+  "runs": [
+    {
+      "id": 44419177982,
+      "head_sha": "580e2e5f34582d00ac3ba20b1440e08b55d2fdf1",
+      "path": ".github/workflows/desktop.yml",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 44419178133,
+      "head_sha": "580e2e5f34582d00ac3ba20b1440e08b55d2fdf1",
+      "path": ".github/workflows/backend.yml",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 44419178066,
+      "head_sha": "580e2e5f34582d00ac3ba20b1440e08b55d2fdf1",
+      "path": ".github/workflows/web.yml",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 44421444780,
+      "head_sha": "2571ac54bcf111550e8cb1b1fe591825a62647b6",
+      "path": ".github/workflows/desktop.yml",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 44421444878,
+      "head_sha": "2571ac54bcf111550e8cb1b1fe591825a62647b6",
+      "path": ".github/workflows/backend.yml",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 44421444757,
+      "head_sha": "2571ac54bcf111550e8cb1b1fe591825a62647b6",
+      "path": ".github/workflows/web.yml",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "actual_beta9_sdk_job": 135215180966,
+  "sdk_artifact": 14482612063,
+  "sdk_artifact_sha256": "ec6bf9d9077fce1160458a81d22f09831accf7f4034dedf227c75e08dc9574eb"
+}

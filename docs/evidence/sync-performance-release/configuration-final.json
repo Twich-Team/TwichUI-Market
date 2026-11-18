@@ -1,0 +1,112 @@
+{
+  "provider_guard": {
+    "keyring_sha256": "d68da13198528bb16f5eb306f3204eb27a09263fc3417d6fa051f4e92e0639b5",
+    "providers": [
+      {
+        "provider": "blizzard",
+        "enabled": true,
+        "automatic": true,
+        "hourly_budget": 240,
+        "daily_budget": 2000,
+        "rate_config": null,
+        "envelopes": {
+          "credential": {
+            "sha256": null,
+            "key_id": null,
+            "decrypts": null
+          },
+          "pending_credential": {
+            "sha256": null,
+            "key_id": null,
+            "decrypts": null
+          }
+        }
+      },
+      {
+        "provider": "everloot",
+        "enabled": false,
+        "automatic": false,
+        "hourly_budget": 240,
+        "daily_budget": 2000,
+        "rate_config": null,
+        "envelopes": {
+          "credential": {
+            "sha256": "52551096b001ed48d24195218d968f3527bbb44c75826ddf3769415be7a0b1f9",
+            "key_id": "metadata-20261115",
+            "decrypts": true
+          },
+          "pending_credential": {
+            "sha256": null,
+            "key_id": null,
+            "decrypts": null
+          }
+        }
+      },
+      {
+        "provider": "foreverdb",
+        "enabled": true,
+        "automatic": true,
+        "hourly_budget": 1200,
+        "daily_budget": 4250,
+        "rate_config": "{\"hourly_budget\": 1200, \"daily_budget\": 4250, \"minute_budget\": 30, \"minimum_interval\": 3.0, \"requests_per_second\": null, \"burst_capacity\": null, \"max_concurrent\": 1, \"page_size\": null}",
+        "envelopes": {
+          "credential": {
+            "sha256": "8580787488b322d94c4442354b033d92c2d78bfe33095c53e8e08314722dfcd0",
+            "key_id": "metadata-20261115",
+            "decrypts": true
+          },
+          "pending_credential": {
+            "sha256": null,
+            "key_id": null,
+            "decrypts": null
+          }
+        }
+      },
+      {
+        "provider": "thewowdb",
+        "enabled": true,
+        "automatic": true,
+        "hourly_budget": 1000,
+        "daily_budget": 20000,
+        "rate_config": "{\"hourly_budget\": 1000, \"daily_budget\": 20000, \"minute_budget\": null, \"minimum_interval\": 1.0, \"requests_per_second\": 2.0, \"burst_capacity\": 120, \"max_concurrent\": 1, \"page_size\": null}",
+        "envelopes": {
+          "credential": {
+            "sha256": null,
+            "key_id": null,
+            "decrypts": null
+          },
+          "pending_credential": {
+            "sha256": null,
+            "key_id": null,
+            "decrypts": null
+          }
+        }
+      }
+    ],
+    "external_requests": 0
+  },
+  "provider_configuration_envelopes_keyring_match_previous_acceptance": true,
+  "original_credential_difference": [
+    {
+      "id": 290,
+      "kind": "companion",
+      "only_changed_field": "revoked false to true",
+      "companion_device_id": 3
+    }
+  ],
+  "device_renewal_audit": [
+    {
+      "action": "companion.device.renewed",
+      "at": "2026-11-18 23:46:42.113804+00:00"
+    },
+    {
+      "action": "companion.device.renewed",
+      "at": "2026-11-18 23:03:53.203974+00:00"
+    },
+    {
+      "action": "companion.device.renewed",
+      "at": "2026-11-18 21:15:01.630765+00:00"
+    }
+  ],
+  "explanation": "A normal owner Companion renewal revoked superseded access credential290 at23:46:42UTC. Reconstructing only its prior revoked=false value exactly recovers the complete original credentials-table hash; all other original credential fields/rows are unchanged. Preserve that legitimate rotation. Active scheduler next_run_at and provider operational telemetry advanced; exact retention enabled/authorization and provider stable config/ciphertexts/keyring match."
+}
