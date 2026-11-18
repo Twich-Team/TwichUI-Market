@@ -5,6 +5,8 @@ Only authorize_automatic (operator-only) records an owner's exact reviewed scope
 """
 import hashlib
 import json
+import inspect
+import re
 import logging
 import os
 from pathlib import Path
@@ -26,7 +28,9 @@ SCOPE = {'version': 1, 'stages': ['daily_references','observations','raw_listing
     'raw_feed_payloads','intraday_statistics','collection_logs','feed_checks','security_logs'],
     'daily_support_days':60, 'current_heads':'all markets including disabled',
     'shared_snapshots':'protect all retained observation dependencies',
-    'sync':'existing 409/full refresh', 'concurrent_executions':1}
+    'sync':'existing 409/full refresh', 'concurrent_executions':1,
+    'operations':'DELETE candidate rows except raw_feed_payloads, which clears compressed_payload',
+    'engine_sha256':hashlib.sha256((inspect.getsource(retention.candidates)+inspect.getsource(retention.execute_selected)).encode()).hexdigest()}
 
 
 class Limits(BaseModel):
@@ -75,6 +79,7 @@ def recovery_ready(actor_id):
         stamp = aware(datetime.fromisoformat(evidence['off_vm_verified_at']))
         if not now()-timedelta(hours=24) <= stamp <= now(): return False
         if evidence.get('off_vm_verified') is not True or not evidence.get('failure_domain'): return False
+        if not re.fullmatch('[a-f0-9]{32}', evidence['backup_id']): return False
         from .backup_management import connect
         manifest = connect(actor_id, '/backups/'+evidence['backup_id']+'/manifest')
         dump = aware(datetime.fromisoformat(manifest['created_at']))

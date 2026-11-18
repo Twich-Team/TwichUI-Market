@@ -186,7 +186,7 @@ def preview(user:User=Depends(admin),db:Session=Depends(session)):
             'security_before':at-timedelta(days=policy['security_days'])},
         'protected':'Latest head of every market, snapshots shared by protected observations, and 60 days of supporting daily provenance/statistics.',
         'history_sync_impact':'Intraday and long-term daily history stay within configured windows; old desktop cursors return 409/full refresh. Workshop and exact price contracts are unchanged.',
-        'estimated_batches':sum((r['eligible_rows']+BATCH_ROWS-1)//BATCH_ROWS for r in stages),
+        'estimated_batches':sum((r['eligible_rows']+(25 if r['stage']=='raw_feed_payloads' else BATCH_ROWS)-1)//(25 if r['stage']=='raw_feed_payloads' else BATCH_ROWS) for r in stages),
         **automation_view(db)}
 
 
@@ -202,7 +202,8 @@ def apply_batch(body:ApplyInput,user:User=Depends(admin),db:Session=Depends(sess
     lock(db)
     at=aware(datetime.fromisoformat(data['at']))
     policy,stages,first,fingerprint=plan(db,at)
-    if not policy['application_authorized'] or not backup_ready():
+    from .retention_worker import recovery_ready
+    if not policy['application_authorized'] or not backup_ready() or not recovery_ready(user.id):
         raise HTTPException(409,'Owner/operator policy approval and fresh verified backup restoration are required')
     if not hmac.compare_digest(fingerprint,data['hash']):raise HTTPException(409,'Policy or candidates changed; preview again')
     if first is None:return {'status':'complete','rows_removed':0}
@@ -236,7 +237,8 @@ def authorize_policy(db, actor, notes):
     if not notes.strip() or len(notes)>2000 or not actor.active or actor.role!='admin':raise ValueError('Active administrator and owner approval notes required')
     lock(db)
     row=db.get(RetentionPolicy,1)
-    if row is None or not backup_ready():raise ValueError('Saved policy and fresh backup/restore verification required')
+    from .retention_worker import recovery_ready
+    if row is None or not backup_ready() or not recovery_ready(actor.id):raise ValueError('Saved policy and protected local/off-VM backup/restore verification required')
     policy=policy_view(db)
     row.approved_hash=policy['policy_hash'];row.approved_at=now()
     audit(db,actor.id,'retention.policy.authorized',f'policy={row.approved_hash}; {notes}'[:200])

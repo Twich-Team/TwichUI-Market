@@ -24,6 +24,7 @@ def seed(database):
 def authorize(database,monkeypatch):
     monkeypatch.setenv('SYNC_CURSOR_SECRET','synthetic-retention-signing-key-32-characters')
     monkeypatch.setattr(retention,'backup_ready',lambda:True)
+    monkeypatch.setattr('market.retention_worker.recovery_ready',lambda _:True)
     with database.begin() as db:
         policy=retention.policy_view(db)
         row=RetentionPolicy(id=1,revision=0,approved_hash=policy['policy_hash'])
@@ -176,3 +177,11 @@ def test_real_batch_cap_exact_removal_replay_and_resume(owner, database, monkeyp
         assert values(db,market_id,25,variant) == baseline
     state = owner.get('/api/v1/admin/retention').json()
     assert state['completed_batches'] == 2 and state['scheduled'] is False
+
+
+def test_manual_batch_also_requires_protected_off_vm_recovery(owner,database,monkeypatch):
+    seed(database);authorize(database,monkeypatch)
+    monkeypatch.setattr('market.retention_worker.recovery_ready',lambda _:False)
+    report=owner.get('/api/v1/admin/retention/preview').json()
+    assert owner.post('/api/v1/admin/retention/apply',json={'confirmation':report['confirmation'],'confirm':True}).status_code==409
+    with database() as db:assert db.scalar(select(func.count()).select_from(Observation))==16
