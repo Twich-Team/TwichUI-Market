@@ -1,0 +1,14 @@
+{
+  "source": "Owner-provided Windows Wow.exe Properties Details screenshot in this repair chat",
+  "file_version": "160.1.7095.9",
+  "product_name": "World of Warcraft",
+  "product_version": "Version 1.60.1.70959",
+  "original_filename": "WoW.exe",
+  "genuine_binary_bytes_available": false,
+  "native_acceptance_performed": false,
+  "beta7_predicate": "file_version[0..3] == [1, 60, 1]",
+  "predicate_accepts_observed_file_version": false,
+  "corrected_policy": "Bounded native product identity, supported 1.60 family, compatible Workshop contract; no exact patch/build pin",
+  "fixed_resource_words_observed": false,
+  "first_failing_native_stage": "Not captured on owner installation"
+}

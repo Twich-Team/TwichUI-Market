@@ -1,0 +1,19 @@
+{
+  "schema_version": 2,
+  "scope": "private-nsis-with-tauri-signed-updates",
+  "owner_statement": "Publish Companion beta.7 and make available for download on web page.",
+  "owner_approved_publication": true,
+  "owner_approved_deployment": true,
+  "source_commit": "4b0ff82fbf6e38937a0727e781a8aa79efac79c6",
+  "visual_approval_commit": "4b0ff82fbf6e38937a0727e781a8aa79efac79c6",
+  "version": "2.0.0-beta.7",
+  "installer_sha256": "ef770b95dab2240605f133ce78d63c55cd6be5689a8f2aa65789905f1eb1a3c8",
+  "windows_run_id": 44236143135,
+  "signed_update_run_id": 44238379159,
+  "updater_public_key_sha256": "5794736c840c7c09a49396e60cd569ff6b5f24f872eb0318ed95d55c16616ecf",
+  "tray_actions_verified": false,
+  "acknowledges_unverified_tray": true,
+  "deployment_scope": "Private Companion artifact store and website download pointer; production API deployment remains separately scoped.",
+  "native_forever_acceptance": "not performed",
+  "addon_publication": false
+}

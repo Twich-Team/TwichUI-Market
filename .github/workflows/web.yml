@@ -55,11 +55,15 @@ jobs:
         run: docker run --rm -v "$PWD:/repo" -w /repo mcr.microsoft.com/playwright:v1.65.1-noble node web/e2e/companion-layout.cjs
       - name: Verify manual archive UI intents with mocked IPC
         run: docker run --rm -e MARKET_ARCHIVE_UI_EVIDENCE=/work/artifacts/companion-v2 -v "$PWD:/work" -w /work/web mcr.microsoft.com/playwright:v1.65.1-noble node e2e/companion-archive.cjs
+      - name: Verify automatic Workshop setup and isolation with mocked IPC
+        run: docker run --rm -e MARKET_WORKSHOP_UI_EVIDENCE=/work/artifacts/workshop-delivery/browser -v "$PWD:/work" -w /work/web mcr.microsoft.com/playwright:v1.65.1-noble node e2e/companion-workshop.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: scoped-archive-ui-evidence
-          path: artifacts/companion-v2/archive-manual-controls.png
+          path: |
+            artifacts/companion-v2/archive-manual-controls.png
+            artifacts/workshop-delivery/browser
           if-no-files-found: ignore
       - name: Verify authentic ForeverDB metadata with isolated synthetic auctions
         run: |

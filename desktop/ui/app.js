@@ -4,6 +4,7 @@ const listen = window.__TAURI__?.event.listen;
 const $ = id => document.getElementById(id);
 let view = null, editing = false, latestRevision = -1, nativeErrorShown = false, workshopExporting = false, archiveBusy = false, archiveContext = null;
 let deliveryBusy=false, reviewedDelivery=null;
+let workshopReview=null, workshopBusy=false, workshopIssue=null;
 const text = (id, value) => { $(id).textContent = value; };
 function message(value, error=false) { $('message').hidden=!value; text('message', value||''); $('message').classList.toggle('error',error); }
 const datetime = value => value ? new Date(value).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}) : 'Unknown';
@@ -54,18 +55,63 @@ function render(next) {
   $('workshop-export').disabled=workshopExporting||!view.connected||view.refreshing||s.running;
   $('workshop-pricing').disabled=workshopExporting||archiveBusy;
   const historyContext=`${view.settings.server}|${view.bootstrap?.account?.id}|${view.settings.selected_market||s.selected_market}`;
-  if(archiveContext!==historyContext){archiveContext=historyContext;reviewedDelivery=null;delete $('delivery-installation').dataset.initialized;$('delivery-installation').value='';$('delivery-confirm').checked=false;text('archive-status','No completed archive selected.');text('scope-status','Choose exact variants after downloading retained history.');$('scope-variants').value='';$('scope-compatible').checked=false;}
+  if(archiveContext!==historyContext){archiveContext=historyContext;reviewedDelivery=null;workshopReview=null;workshopIssue=null;delete $('delivery-installation').dataset.initialized;$('delivery-installation').value='';$('delivery-confirm').checked=false;text('archive-status','No completed archive selected.');text('scope-status','Choose exact variants after downloading retained history.');$('scope-variants').value='';$('scope-compatible').checked=false;}
   for(const id of ['archive-sync','scope-preview','scope-export'])$(id).disabled=archiveBusy||workshopExporting;
   const dc=view.delivery?.configuration,ds=view.delivery?.status;
-  if(dc&&!$('delivery-installation').dataset.initialized){$('delivery-installation').value=dc.installation;$('delivery-days').value=String(dc.history_days);$('workshop-pricing').value=dc.scope.algorithm;$('scope-variants').value=dc.selection.variants.map(v=>`${v.item_id} ${v.variant_key}`).join('\n');$('delivery-installation').dataset.initialized='true';}
+  if(dc&&!$('delivery-installation').dataset.initialized){$('delivery-installation').value=dc.installation;$('workshop-pricing').value=dc.scope.algorithm;if(dc.version===1){$('delivery-days').value=String(dc.history_days);$('scope-variants').value=dc.selection.variants.map(v=>`${v.item_id} ${v.variant_key}`).join('\n');}$('delivery-installation').dataset.initialized='true';}
   for(const id of ['delivery-review','delivery-enable','delivery-disable','delivery-rollback'])$(id).disabled=deliveryBusy||archiveBusy||s.running;
-  text('delivery-status',dc?`${dc.enabled?'Automatic delivery enabled':'Delivery disabled'} · ${dc.selection.variants.length} selected · ${dc.history_days} UTC days · ${ds?.result||'Waiting for next sync'}. Archive: ${ds?.archive_checkpoint||'not downloaded'}. Validated: ${ds?.validated_generation||'none'}. Published: ${ds?.published_generation||'none'}. Last file write: ${datetime(ds?.last_successful_write)}. ${ds?.lua_bytes==null?'':`Lua: ${ds.lua_bytes.toLocaleString()} bytes.`} ${ds?.error||''} Loaded game generation: unknown; inspect Workshop in WoW.`:view.delivery?.notice||'Automatic delivery is off.');
+  text('delivery-status',(dc?`${dc.enabled?'Automatic delivery enabled':'Delivery disabled'} · ${dc.version===2?`Broad summaries · ${ds?.summary_records??'unknown'} records · ${ds?.download_requests??'unknown'} requests · ${ds?.download_bytes??'unknown'} transferred bytes`:`${dc.selection.variants.length} selected · ${dc.history_days} UTC days`} · ${ds?.result||'Waiting for next sync'}. Validated: ${ds?.validated_generation||'none'}. Published: ${ds?.published_generation||'none'}. Last file write: ${datetime(ds?.last_successful_write)}. ${ds?.error||''} Loaded game generation: unknown; inspect Workshop in WoW.`:view.delivery?.notice||'Automatic delivery is off.')+(workshopIssue?` Setup detail: ${workshopIssue.code} · ${workshopIssue.stage} · ${workshopIssue.details}`:''));
+  const automatic=dc?.version===2&&dc.enabled;
+  const waiting=automatic&&ds?.result==='Waiting for World of Warcraft to close.';
+  const preparationMessage='Market summaries are being prepared; synchronization will retry';
+  const preparing=automatic&&ds?.result==='Preparing market data.'&&!view.error&&(!view.sync.error||view.sync.error===preparationMessage);
+  const issue=Boolean(workshopIssue&&workshopIssue.code!=='cancelled')||automatic&&Boolean(ds?.error)&&!waiting&&!preparing;
+  text('workshop-installation',dc?.version===2?'World of Warcraft Forever — Found':'Not connected');
+  text('workshop-market',marketName(view.settings.selected_market||s.selected_market));
+  text('workshop-state',workshopBusy?'Connecting Workshop':automatic&&s.running||preparing&&s.automatic_sync?'Updating':waiting?'Waiting for WoW to close':issue?'Needs attention':automatic&&!s.automatic_sync?'Synchronization paused':automatic&&ds?.published_generation?'Up to date':automatic?'Waiting for next sync':'Not connected');
+  text('workshop-updated',datetime(ds?.last_successful_write));
+  text('workshop-note',workshopIssue?workshopMessage(workshopIssue):waiting?'Updates will be installed safely after World of Warcraft closes.':automatic&&!s.automatic_sync?'Resume synchronization to keep Workshop updated automatically.':preparing?'The server is preparing market data. The companion will retry automatically.':automatic?'Uses your existing sync schedule. Updated files become available on your next game login or reload.':'Connect once. The companion finds your Forever installation and uses your existing sync schedule.');
+  $('workshop-confirmation').hidden=!workshopReview;
+  $('workshop-connect').hidden=Boolean(workshopReview)||automatic&&!issue;
+  $('workshop-connect').disabled=workshopBusy||s.running||!view.connected||view.refreshing;
+  text('workshop-connect',automatic?'Retry':'Connect Workshop');
+  $('workshop-authorize').disabled=workshopBusy||!workshopReview;
 
   $('disconnect').disabled=view.approving||view.refreshing;
-  if(view.error||view.sync.error) {message(view.error||view.sync.error,true);nativeErrorShown=true;}
+  if(view.error||view.sync.error&&!(preparing&&view.sync.error===preparationMessage)) {const error=view.error||view.sync.error;message(error.startsWith('Workshop delivery:')?'Workshop needs attention. Your previous market data is safe. See developer diagnostics for details.':error,true);nativeErrorShown=true;}
   else if(nativeErrorShown) {message('');nativeErrorShown=false;}
   else if(view.quitting) message('Closing safely…');
 }
+function workshopFailure(error){
+  try{const value=JSON.parse(String(error?.message||error));if(value&&typeof value.message==='string'&&typeof value.code==='string'&&typeof value.stage==='string')return value;}catch{}
+  // Compatibility with older native errors; never render arbitrary native text.
+  const reason=String(error?.message||error);
+  if(reason.includes('cancelled'))return {code:'cancelled',stage:'folder_picker',message:'Folder selection cancelled.',details:'native dialog cancelled'};
+  if(reason.includes('Workshop needs an update'))return {code:'workshop_addon',stage:'workshop_addon',message:'Workshop needs an update. Install the compatible TwichUI addon, then retry.',details:'incompatible addon'};
+  return {code:'internal',stage:'setup',message:'Workshop setup could not finish because of an unexpected error. Retry or save developer diagnostics. Your files were preserved.',details:'unexpected native setup failure'};
+}
+function workshopMessage(error){return error.message;}
+async function connectWorkshop(confirm=false){
+  if(workshopBusy)return;const context=archiveContext;let focusTarget=null;workshopBusy=true;workshopIssue=null;render(view);
+  try{
+    if(!invoke)throw new Error('Use the installed Windows companion.');
+    const result=await invoke(confirm?'confirm_workshop':'prepare_workshop',confirm?{reviewId:workshopReview?.review_id}:{});
+    if(context!==archiveContext)return;
+    if(confirm||result?.connected){workshopReview=null;}
+    else{workshopReview=result;text('workshop-confirmed-folder',`${result.installation} · ${result.market}`);}
+    render(await invoke('app_state'));
+    focusTarget=workshopReview?'workshop-authorize':'workshop-state';
+  }catch(error){if(context===archiveContext){workshopIssue=workshopFailure(error);workshopReview=null;}}
+  finally{
+    workshopBusy=false;
+    if(context!==archiveContext&&view?.connected){workshopReview=null;workshopIssue={code:'context_changed',stage:'setup_context',message:'Your account or market changed during setup. Connect Workshop again.',details:'setup context changed'};}
+    render(view);if(context===archiveContext&&focusTarget)$(focusTarget).focus();
+  }
+}
+$('workshop-connect').onclick=()=>connectWorkshop(false);
+$('workshop-authorize').onclick=()=>connectWorkshop(true);
+$('workshop-cancel').onclick=async()=>{workshopReview=null;render(view);if(invoke)await invoke('cancel_workshop').catch(()=>{});$('workshop-connect').focus();};
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&workshopReview&&!editing){event.preventDefault();$('workshop-cancel').click();}});
 async function action(command, args={}, success) {
   try {
     if(!invoke)throw new Error('Use the installed Windows companion for this action.');

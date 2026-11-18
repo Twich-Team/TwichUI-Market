@@ -14,9 +14,14 @@ pub mod synchronizer;
 pub mod update;
 pub mod vault;
 pub mod worker;
+pub mod workshop_summary;
+pub mod installation;
+pub mod workshop_setup;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
+    #[error("{}", .0.message)]
+    WorkshopSetup(Box<workshop_setup::Failure>),
     #[error("Unsupported or invalid market data: {0}")]
     Invalid(&'static str),
     #[error("Local cache could not be read or written")]
@@ -39,6 +44,8 @@ pub enum Error {
     ServiceUnavailable,
     #[error("Please wait before trying again")]
     RateLimited(u64),
+    #[error("Market summaries are being prepared; synchronization will retry")]
+    SummaryPreparing(u64),
     #[error("Server rejected the saved cursor; reset this market to synchronize again")]
     ResetRequired,
     #[error("Delivery exceeds {limit}: {actual} bytes/records exceeds {maximum}; previous data is preserved")]

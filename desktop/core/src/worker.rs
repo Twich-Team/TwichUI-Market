@@ -334,7 +334,8 @@ fn worker_loop<C: Clock + 'static>(shared: Arc<Shared<C>>, executor: Arc<dyn Exe
             }
             Ok(Execution::MarketChanged(_)) => Outcome::Cancelled,
             Err(error) => {
-                if !matches!(error, Error::Cancelled) && !run.cancelled() {
+                if matches!(error, Error::SummaryPreparing(_)) { control.error = None; }
+                else if !matches!(error, Error::Cancelled) && !run.cancelled() {
                     control.error = Some(error.to_string());
                 }
                 match error {
@@ -343,6 +344,7 @@ fn worker_loop<C: Clock + 'static>(shared: Arc<Shared<C>>, executor: Arc<dyn Exe
                     Error::ServiceUnavailable => Outcome::ServerUnavailable {
                         retry_after_ms: None,
                     },
+                    Error::SummaryPreparing(seconds) => Outcome::Preparing { retry_after_ms: (seconds.clamp(1,3600)*1000) as i64 },
                     Error::RateLimited(seconds) => Outcome::ServerUnavailable {
                         retry_after_ms: Some((seconds.min(3600) * 1000) as i64),
                     },

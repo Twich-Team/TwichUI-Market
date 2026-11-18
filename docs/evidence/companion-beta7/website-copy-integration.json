@@ -1,0 +1,16 @@
+{
+  "pr": 35,
+  "merge_commit": "d71f4bd3ea41762ac01e1c154fd74847fa18e906",
+  "tested_source_commit": "16de8ea512e49d7b27c9971bacdad63010699547",
+  "application_trees_equal": {
+    "web": "f4ed0dd787a955cd42e333ac793e3817880444cd",
+    "backend": "8fea9a52f4c007181b2594fb87271e2a98de9ec2",
+    "desktop": "40bffa1e9070942cdb379704da2027638663e380",
+    "contracts": "3b53433f3978478f01bc0646267178773fdc2a17",
+    "deploy": "70ceb1ed71de64c4c941fb9ba97c7ff310caa327",
+    "scripts": "ce8347f610efde233a1481f99d7ad0460863bbfd",
+    ".github": "e86d28220610b3ff17d53fb2378c77ab5d820fa3"
+  },
+  "only_concurrent_release_documentation_differs": true,
+  "published_frontend_image": "sha256:5bc8c724c44649dc63642581cb2276fe4daa77151ec24077112aac6994e80595"
+}

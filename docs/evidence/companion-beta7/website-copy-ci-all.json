@@ -1,0 +1,26 @@
+[
+  {
+    "id": 44240717674,
+    "name": "Backend",
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "16de8ea512e49d7b27c9971bacdad63010699547",
+    "path": ".github/workflows/backend.yml"
+  },
+  {
+    "id": 44240717687,
+    "name": "Windows companion",
+    "status": "in_progress",
+    "conclusion": null,
+    "head_sha": "16de8ea512e49d7b27c9971bacdad63010699547",
+    "path": ".github/workflows/desktop.yml"
+  },
+  {
+    "id": 44240717707,
+    "name": "Private website",
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "16de8ea512e49d7b27c9971bacdad63010699547",
+    "path": ".github/workflows/web.yml"
+  }
+]

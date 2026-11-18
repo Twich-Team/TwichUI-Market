@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "owner_request": "Publish Companion beta.7 and make available for download on web page.",
+  "scope": "private-nsis-with-tauri-signed-updates",
+  "payload_source_commit": "4b0ff82fbf6e38937a0727e781a8aa79efac79c6",
+  "version": "2.0.0-beta.7",
+  "production_api_deployment": "clarification requested; not yet authorized by an answer",
+  "addon_publication": false,
+  "native_forever_acceptance": "not performed",
+  "tray_actions_verified": false
+}

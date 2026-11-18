@@ -1,0 +1,12 @@
+{
+  "source_commit": "16de8ea512e49d7b27c9971bacdad63010699547",
+  "production_base_commit": "e49de6a829b1c281e16a3da3c1baa377a1fb77d8",
+  "base_image": "sha256:ff172a984cba5d20359fc5e18d18cac226f8858e9422eb7138b0e644f8a00dc1",
+  "change": "web/src/companion.tsx permission copy only",
+  "preserves": "current backup-management frontend, Caddy binary, routes and prior hashed assets",
+  "image": "sha256:5bc8c724c44649dc63642581cb2276fe4daa77151ec24077112aac6994e80595",
+  "base_layers_preserved": true,
+  "copy_only": true,
+  "local_frontend_tests": 132,
+  "canonical_website_run": 44240717707
+}

@@ -36,11 +36,19 @@ jobs:
         env:
           CI_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           CI_PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      - name: Checkout paired addon source (source-only acceptance)
+        uses: actions/checkout@v4
+        with:
+          repository: Twich-Team/TwichUI
+          ref: cd064fe152aab79d1e6d416643c1393e6bc84eb5
+          path: coordinated-addon
+          persist-credentials: false
       - run: cargo test --manifest-path desktop/Cargo.toml --workspace --locked
       - run: cargo test --manifest-path desktop/src-tauri/Cargo.toml --locked
       - run: cargo build --manifest-path desktop/Cargo.toml --example http_smoke --locked
       - run: cargo build --manifest-path desktop/Cargo.toml --example authorization_smoke --locked
       - run: cargo build --manifest-path desktop/Cargo.toml --example archive_smoke --locked
+      - run: cargo build --manifest-path desktop/Cargo.toml --example workshop_smoke --locked
       - run: pip install -r backend/requirements.lock
       - run: python scripts/verify-companion-http.py
       - run: python scripts/verify-companion-authorization.py
@@ -60,8 +68,11 @@ jobs:
       - name: Verify installed Windows release
         if: ${{ !cancelled() && steps.bundle.outcome == 'success' }}
         shell: pwsh
-        timeout-minutes: 5
+        timeout-minutes: 10
         run: ./scripts/windows/verify-installer.ps1
+      - name: Actual authenticated large-market native summary publication
+        timeout-minutes: 10
+        run: python scripts/verify-workshop-e2e.py --rust-client desktop/target/debug/examples/workshop_smoke.exe --addon-root coordinated-addon --variants 45125 --publish --skip-lua --out artifacts/companion-v2/workshop-large
       - name: Record Windows publisher status and embedded updater key
         shell: pwsh
         run: ./scripts/windows/record-private-beta-candidate.ps1
@@ -79,6 +90,40 @@ jobs:
           if-no-files-found: error
 
 
+  picker:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/checkout@v4
+        with:
+          repository: Twich-Team/TwichUI
+          ref: cd064fe152aab79d1e6d416643c1393e6bc84eb5
+          path: coordinated-addon
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.100.0
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: desktop -> target
+      - run: cargo build --manifest-path desktop/Cargo.toml --example installation_smoke --locked
+        id: installation_build
+      - name: Verify inherited NTFS permissions with a non-elevated token
+        shell: pwsh
+        run: ./scripts/windows/verify-workshop-permissions.ps1
+      - shell: pwsh
+        if: ${{ !cancelled() && steps.installation_build.outcome == 'success' }}
+        run: ./scripts/windows/verify-workshop-picker.ps1
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: workshop-permissions-acceptance
+          path: artifacts/companion-v2/workshop-permissions.json
+          if-no-files-found: ignore
+
   signed-update:
     uses: ./.github/workflows/companion-release.yml
     with:
@@ -86,3 +131,50 @@ jobs:
       proof_path: docs/evidence/companion-v2-signed-candidate.json
       # Integration must recheck the original signed bytes against its real API.
       pending_only: ${{ !startsWith(github.ref, 'refs/heads/integration/') }}
+
+  workshop-consumer:
+    needs: windows
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: Twich-Team/TwichUI
+          ref: cd064fe152aab79d1e6d416643c1393e6bc84eb5
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: companion-v2-acceptance
+          path: acceptance
+      - name: Lua 5.1 and bitop
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq lua5.1 lua-bitop
+      - name: Actual Windows publication through production Lua and Workshop Market
+        working-directory: tests
+        env:
+          WORKSHOP_SUMMARY_ARTIFACT: ${{ github.workspace }}/acceptance/workshop-installed/publication/TwichUI_MarketData/Data.lua
+          WORKSHOP_SUMMARY_PARTS: ${{ github.workspace }}/acceptance/workshop-installed/publication
+          WORKSHOP_SUMMARY_EXPECTED_ITEM: '12363'
+          WORKSHOP_SUMMARY_EXPECTED_RECENT: '100'
+          # This fixture has one genuinely priced day. Canonical market value
+          # is 100; only historical value needs three priced daily closes.
+          WORKSHOP_SUMMARY_EXPECTED_MARKET: '100'
+        run: lua5.1 -e 'require("bit"); ROOT="../!!!TwichUI/"; REPO="../"; TESTS="./"' test_workshop_auction_market_summary.lua
+      - name: Actual large Windows publication through production Lua and Workshop Market
+        working-directory: tests
+        env:
+          WORKSHOP_SUMMARY_ARTIFACT: ${{ github.workspace }}/acceptance/workshop-large/publication/TwichUI_MarketData/Data.lua
+          WORKSHOP_SUMMARY_PARTS: ${{ github.workspace }}/acceptance/workshop-large/publication
+          WORKSHOP_SUMMARY_EXPECTED_ITEM: '10000'
+        run: lua5.1 -e 'require("bit"); ROOT="../!!!TwichUI/"; REPO="../"; TESTS="./"' test_workshop_auction_market_summary.lua
+      - name: Measure source-qualified large-publication Lua costs
+        working-directory: tests
+        env:
+          WORKSHOP_SUMMARY_ARTIFACT: ${{ github.workspace }}/acceptance/workshop-large/publication/TwichUI_MarketData/Data.lua
+          WORKSHOP_SUMMARY_PARTS: ${{ github.workspace }}/acceptance/workshop-large/publication
+          WORKSHOP_SUMMARY_EXPECTED_ITEM: '10000'
+        run: lua5.1 -e 'require("bit"); ROOT="../!!!TwichUI/"; REPO="../"; TESTS="./"' bench_workshop_summary.lua | tee ../acceptance/workshop-large/production-lua-costs.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: workshop-production-lua-acceptance
+          path: acceptance/workshop-large/

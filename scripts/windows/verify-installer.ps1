@@ -72,6 +72,12 @@ foreach ($file in @('market-v1.sqlite','settings.json','history-archive-v1.sqlit
     if (-not(Test-Path $path)) { throw 'Expected retained companion data before uninstall' }
     $retained[$path]=(Get-FileHash $path -Algorithm SHA256).Hash
 }
+# New summary caches are independent of the optional archive and must survive too.
+foreach($directory in @(Get-ChildItem $env:MARKET_TEST_APP_DATA -Directory -Filter 'workshop-summary-*')) {
+    foreach($file in @(Get-ChildItem $directory.FullName -Recurse -File)) {$retained[$file.FullName]=(Get-FileHash $file.FullName -Algorithm SHA256).Hash}
+}
+$deliveryConfig=Join-Path $env:MARKET_TEST_APP_DATA 'workshop-delivery-v1.json'
+if(Test-Path $deliveryConfig){$retained[$deliveryConfig]=(Get-FileHash $deliveryConfig -Algorithm SHA256).Hash}
 $uninstaller = Join-Path $installPath 'uninstall.exe'
 if (-not (Test-Path $uninstaller)) { throw 'Uninstaller is missing' }
 $remove = Start-Process -FilePath $uninstaller -ArgumentList @('/S', "_?=$installPath") -Wait -PassThru

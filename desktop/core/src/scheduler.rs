@@ -80,6 +80,7 @@ pub struct Receipt {
 #[derive(Clone, Debug)]
 pub enum Outcome {
     Success(Receipt),
+    Preparing { retry_after_ms: i64 },
     Offline,
     ServerUnavailable { retry_after_ms: Option<i64> },
     SignInRequired,
@@ -402,6 +403,14 @@ impl<C: Clock> Scheduler<C> {
                 self.snapshot.generation = receipt.generation;
                 self.snapshot.retry_attempts = 0;
                 self.schedule_idle(now, false);
+            }
+            Outcome::Preparing { retry_after_ms } => {
+                // Productive bounded export preparation is not a failed request.
+                // The existing worker owns this retry; pause remains authoritative.
+                self.snapshot.retry_attempts = 0;
+                self.snapshot.next_sync_ms = self.settings.automatic_sync
+                    .then_some(now.saturating_add(retry_after_ms.clamp(1_000, 3_600_000)));
+                self.snapshot.phase = if self.settings.automatic_sync { Phase::Ready } else { Phase::Paused };
             }
             Outcome::SignInRequired => {
                 self.authentication_required = true;

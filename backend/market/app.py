@@ -420,3 +420,5 @@ app.include_router(archive_router)
 
 from .recovery_tracker import router as recovery_tracker_router
 app.include_router(recovery_tracker_router)
+from .workshop_summary import router as workshop_summary_router
+app.include_router(workshop_summary_router)

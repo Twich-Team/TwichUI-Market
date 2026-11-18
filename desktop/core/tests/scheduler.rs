@@ -280,3 +280,22 @@ fn unrelated_settings_changes_preserve_deadlines_errors_and_retries() {
     scheduler.configure(settings, true).unwrap();
     assert_eq!(scheduler.wait_ms(), Some(840_000));
 }
+
+#[test]
+fn productive_summary_preparation_uses_existing_worker_without_error_backoff_or_pause_bypass() {
+    let clock = ManualClock::new();
+    let mut scheduler = Scheduler::new(clock.clone(), connected(), true).unwrap();
+    for _ in 0..70 {
+        let run=scheduler.poll().unwrap();
+        assert!(scheduler.poll().is_none());
+        scheduler.finish(run.id,Outcome::Preparing {retry_after_ms:5_000});
+        assert_eq!(scheduler.snapshot().retry_attempts,0);
+        assert_eq!(scheduler.wait_ms(),Some(5_000));
+        clock.advance(5_000);
+    }
+    scheduler.pause();assert!(scheduler.poll().is_none());
+    let run=scheduler.sync_now().unwrap();
+    scheduler.finish(run.id,Outcome::Preparing {retry_after_ms:5_000});
+    assert_eq!(scheduler.snapshot().next_sync_ms,None);
+    clock.advance(3_600_000);assert!(scheduler.poll().is_none());
+}
