@@ -1,5 +1,7 @@
 # Real NTFS/token checks, with a synthetic versioned PE and pinned addon source.
-# A limited-token child is mandatory; elevated runner success is insufficient.
+# A restricted child must lose effective admin membership and fail an admin-only
+# read. TokenElevation is recorded separately: this runner cannot prove a UAC
+# split token, even with Windows SAFER restrictions. Owner PC acceptance remains.
 param([switch]$Worker,[string]$Plan)
 $ErrorActionPreference='Stop'
 if($env:GITHUB_ACTIONS -ne 'true' -or $env:RUNNER_OS -ne 'Windows'){throw 'Disposable Windows CI only'}
@@ -7,6 +9,11 @@ if($Worker){
     try {
         $planData=Get-Content $Plan -Raw|ConvertFrom-Json
         $results=@()
+        $probeDenied=$false
+        try {$null=[System.IO.File]::ReadAllBytes($planData.admin_probe)} catch {
+            if($_.Exception.GetBaseException() -is [System.UnauthorizedAccessException]){$probeDenied=$true}else{throw}
+        }
+        if(-not $probeDenied){throw 'Restricted worker can still read administrator-only data'}
         foreach($case in $planData.cases){
             $before=@{}
             Get-ChildItem $case.path -File -Recurse|ForEach-Object{
@@ -28,7 +35,7 @@ if($Worker){
             if($nativeProcess.ExitCode -ne 0){throw "Native preflight process failed; exit=$($nativeProcess.ExitCode); stderr=$nativeError; stdout=$nativeRaw"}
             $nativeProcess.Dispose()
             $native=$nativeRaw|ConvertFrom-Json
-            if($null -eq $native -or $native.elevated){throw "Non-elevated native execution required: $($case.name) $($native|ConvertTo-Json -Compress -Depth 8)"}
+            if($null -eq $native -or $native.admin_enabled -ne $false){throw "Disabled effective administrator group required: $($case.name) $($native|ConvertTo-Json -Compress -Depth 8)"}
             if($native.accepted -ne $case.accepted){throw "Unexpected acceptance: $($case.name) $($native|ConvertTo-Json -Compress -Depth 8)"}
             if(-not $case.accepted -and $native.failure.code -ne $case.code){throw "Wrong failure code: $($case.name) $($native|ConvertTo-Json -Compress -Depth 8)"}
             foreach($file in $before.Keys){
@@ -41,7 +48,7 @@ if($Worker){
             if($after.Count -ne $before.Count){throw 'Read-only preflight changed the file inventory'}
             $results+=@{name=$case.name;native=$native;prior_files_unchanged=$true}
         }
-        @{synthetic_executable=$true;genuine_forever_binary=$false;non_elevated=$true;results=$results}|ConvertTo-Json -Depth 12|Set-Content $planData.report
+        @{synthetic_executable=$true;genuine_forever_binary=$false;effective_admin_group_enabled=$false;admin_only_read_denied=$probeDenied;uac_split_token_verified=$false;token_elevation_flag=$native.elevated;results=$results}|ConvertTo-Json -Depth 12|Set-Content $planData.report
     } catch {
         $_.ToString()|Set-Content ($Plan+'.error')
         exit 1
@@ -83,7 +90,7 @@ $cases+=@{name='missing Workshop file';path=$missing;accepted=$false;code='works
 $denied=MakeGame 'unreadable-addon'
 $unreadable=Join-Path $denied 'Interface\AddOns\TwichUI_Workshop\Summary.lua'
 $userSid=[System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value
-& icacls $unreadable /deny "*$($userSid):R" /Q|Out-Null
+& icacls $unreadable /deny "*$($userSid):(RD)" /Q|Out-Null
 if($LASTEXITCODE -ne 0){throw 'Unreadable addon fixture failed'}
 $cases+=@{name='Windows refuses installed addon read';path=$denied;unreadable=$unreadable;accepted=$false;code='access_denied'}
 $wrong=MakeGame 'wrong-folder'
@@ -95,6 +102,8 @@ $conflict=MakeGame 'unowned-market-data'
 $data=Join-Path $conflict 'Interface\AddOns\TwichUI_MarketData'
 $null=New-Item $data -ItemType Directory
 'existing unrelated player file'|Set-Content (Join-Path $data 'unrelated.lua')
+& icacls $data /setowner "*$($userSid)" /T /Q|Out-Null
+if($LASTEXITCODE -ne 0){throw 'User-owned existing data fixture failed'}
 $cases+=@{name='unowned existing Market data';path=$conflict;accepted=$false;code='ownership_conflict'}
 $broad=MakeGame 'unsafe-output-permissions'
 & icacls (Join-Path $broad 'Interface\AddOns') /grant '*S-1-1-0:(OI)(CI)M' /Q|Out-Null
@@ -114,8 +123,12 @@ $report=Join-Path (Get-Location) 'artifacts\companion-v2\workshop-permissions.js
 $null=New-Item (Split-Path $report) -ItemType Directory -Force
 & icacls (Split-Path $report) /grant "*$($userSid):(OI)(CI)M" /Q|Out-Null
 if($LASTEXITCODE -ne 0){throw 'Limited worker report grant failed'}
+$adminProbe=Join-Path $base 'admin-only.txt'
+'CI_ONLY_PRIVILEGE_PROBE'|Set-Content $adminProbe
+& icacls $adminProbe /inheritance:r /grant:r '*S-1-5-18:F' '*S-1-5-32-544:F' /Q|Out-Null
+if($LASTEXITCODE -ne 0){throw 'Administrator-only probe ACL failed'}
 $planFile=Join-Path $base 'plan.json'
-@{exe=(Join-Path (Get-Location) 'desktop\target\debug\examples\installation_smoke.exe');report=$report;cases=$cases}|ConvertTo-Json -Depth 8|Set-Content $planFile
+@{exe=(Join-Path (Get-Location) 'desktop\target\debug\examples\installation_smoke.exe');report=$report;admin_probe=$adminProbe;cases=$cases}|ConvertTo-Json -Depth 8|Set-Content $planFile
 $script=(Resolve-Path $PSCommandPath).Path
 # The restricted process receives only disposable markers and OS/profile paths.
 $launcher=Join-Path $base 'limited-worker.ps1'

@@ -6,10 +6,10 @@ fn main()->Result<(),Box<dyn std::error::Error>> {
   let path=std::env::args().nth(2).ok_or("fixture path required")?;
   let account=std::env::args().nth(3).map(|s|s.parse::<u32>()).transpose()?.unwrap_or(1);
   let config=delivery::Configuration{version:2,enabled:true,scope:Scope{server:"https://fixture.invalid/".into(),account_id:account,market_id:2,algorithm:"twichui-pricing-v1".into()},installation:path.into(),selection:serde_json::json!({"kind":"broad_summary","market_id":2,"region":"us"}),history_days:0};
-  let elevated=token_elevated()?;
+  let (elevated,admin_enabled)=token_security()?;
   let result=match delivery::inspect_destination(&config) {
-   Ok(_)=>serde_json::json!({"accepted":true,"elevated":elevated}),
-   Err(e)=>serde_json::json!({"accepted":false,"elevated":elevated,"failure":twichui_market_core::workshop_setup::Failure::from_error("destination",e)}),
+   Ok(_)=>serde_json::json!({"accepted":true,"elevated":elevated,"admin_enabled":admin_enabled}),
+   Err(e)=>serde_json::json!({"accepted":false,"elevated":elevated,"admin_enabled":admin_enabled,"failure":twichui_market_core::workshop_setup::Failure::from_error("destination",e)}),
   };
   println!("{result}");
  }
@@ -23,7 +23,7 @@ fn main()->Result<(),Box<dyn std::error::Error>> {
 }
 
 #[cfg(windows)]
-fn token_elevated()->Result<bool,Box<dyn std::error::Error>> {
+fn token_security()->Result<(bool,bool),Box<dyn std::error::Error>> {
  use windows_sys::Win32::{Foundation::CloseHandle,Security::*,System::Threading::*};
  unsafe {
   let mut token=std::ptr::null_mut();
@@ -32,8 +32,11 @@ fn token_elevated()->Result<bool,Box<dyn std::error::Error>> {
   let ok=GetTokenInformation(token,TokenElevation,(&mut elevation as *mut TOKEN_ELEVATION).cast(),std::mem::size_of::<TOKEN_ELEVATION>() as u32,&mut size);
   CloseHandle(token);
   if ok==0{return Err(std::io::Error::last_os_error().into())}
-  Ok(elevation.TokenIsElevated!=0)
+  let mut sid=[0usize;16];let mut bytes=std::mem::size_of_val(&sid) as u32;let mut admin=0;
+  if CreateWellKnownSid(WinBuiltinAdministratorsSid,std::ptr::null_mut(),sid.as_mut_ptr().cast(),&mut bytes)==0
+      || CheckTokenMembership(std::ptr::null_mut(),sid.as_mut_ptr().cast(),&mut admin)==0{return Err(std::io::Error::last_os_error().into())}
+  Ok((elevation.TokenIsElevated!=0,admin!=0))
  }
 }
 #[cfg(not(windows))]
-fn token_elevated()->Result<bool,Box<dyn std::error::Error>> {Ok(false)}
+fn token_security()->Result<(bool,bool),Box<dyn std::error::Error>> {Ok((false,false))}
