@@ -28,7 +28,7 @@ def download(source):
         response = client.get(path)
         if response.status_code != 202:
             break
-        assert response.headers['retry-after'] == '5'
+        assert response.headers['retry-after'] in ('1','5')
     assert response.status_code == 200, response.text
     envelope = response.json()
     manifest = envelope['manifest']
@@ -223,3 +223,19 @@ def test_real_scoped_companion_access_can_read_only_summary_routes(source, owner
         assert client.get(path).status_code == 403
     assert client.post('/api/v1/devices', json={'name':'forbidden'}).status_code == 403
     assert client.get(f'/api/v1/workshop/markets/{mid}/summary/'+'f'*64+'/parts/64').status_code == 403
+
+
+def test_bounded_projection_uses_shorter_retry_without_changing_cold_derivation(source,monkeypatch):
+    from market import workshop_summary as summary
+    monkeypatch.setattr(summary,'PROJECTION_BATCH',1)
+    client,market,*_=source
+    retries=[]
+    for _ in range(20):
+        response=client.get(f'/api/v1/workshop/markets/{market}/summary')
+        assert response.status_code in (200,202)
+        if response.status_code==200:
+            assert response.json()['manifest']['record_count']==3
+            break
+        retries.append(int(response.headers['retry-after']))
+    else:raise AssertionError('Bounded projection did not finish')
+    assert 5 in retries and 1 in retries

@@ -335,6 +335,7 @@ pub fn checkpoint() {
             && matches!(
                 session.operation,
                 Operation::PreparingWorkshop
+                    | Operation::UpdatingCache
                     | Operation::InstallingWorkshop
                     | Operation::DownloadingHistory
                     | Operation::Complete

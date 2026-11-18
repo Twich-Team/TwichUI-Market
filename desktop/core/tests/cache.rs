@@ -413,3 +413,34 @@ fn empty_final_page_promotes_pending_changes_instead_of_treating_them_as_a_noop(
     );
     assert!(!cache.status(SERVER, 1).unwrap().downloading);
 }
+
+#[test]
+fn cache_crash_child() {
+    let Ok(directory)=std::env::var("TWICHUI_CACHE_CRASH_DIR") else{return;};
+    let root=std::path::PathBuf::from(directory);
+    assert_eq!(std::fs::read(root.join("allowed-crash-fixture")).unwrap(),b"isolated native cache crash test");
+    let mut cache=Cache::open(&root.join("cache.sqlite")).unwrap();
+    let items=(1..=100).map(|id|(id,Some("200"))).collect::<Vec<_>>();
+    let mut cursor="complete-1".to_string();
+    for n in 0..1000 {
+        let next=format!("interrupted-{n}");cache.apply(SERVER,1,Some(&cursor),&page(&next,"2",true,&items)).unwrap();cursor=next;
+        if n==0 {std::fs::write(root.join("ready"),b"first partial page committed").unwrap();}
+    }
+    panic!("Parent failed to interrupt the bounded crash fixture");
+}
+
+#[test]
+fn process_kill_preserves_completed_prices_and_resumable_cursor() {
+    let root=tempfile::tempdir().unwrap();let path=root.path().join("cache.sqlite");
+    std::fs::write(root.path().join("allowed-crash-fixture"),b"isolated native cache crash test").unwrap();
+    {let mut cache=Cache::open(&path).unwrap();cache.apply(SERVER,1,None,&page("complete-1","1",false,&[(1,Some("100"))])).unwrap();}
+    let mut child=std::process::Command::new(std::env::current_exe().unwrap()).args(["--exact","cache_crash_child","--nocapture"]).env("TWICHUI_CACHE_CRASH_DIR",root.path()).stdout(std::process::Stdio::null()).stderr(std::process::Stdio::null()).spawn().unwrap();
+    let deadline=std::time::Instant::now()+std::time::Duration::from_secs(10);
+    while !root.path().join("ready").exists(){if child.try_wait().unwrap().is_some(){panic!("Crash fixture exited before staging")};assert!(std::time::Instant::now()<deadline);std::thread::sleep(std::time::Duration::from_millis(1));}
+    assert!(child.try_wait().unwrap().is_none());child.kill().unwrap();assert!(!child.wait().unwrap().success());
+    let mut cache=Cache::open(&path).unwrap();assert_eq!(cache.items(SERVER,1).unwrap()[0].value.recent_price.as_deref(),Some("100"));
+    let cursor=cache.cursor(SERVER,1).unwrap().unwrap();assert!(cursor.starts_with("interrupted-"));
+    cache.apply(SERVER,1,Some(&cursor),&page("complete-2","2",false,&[(1,Some("200"))])).unwrap();
+    let items=cache.items(SERVER,1).unwrap();assert_eq!(items.len(),100);assert!(items.iter().all(|item|item.value.recent_price.as_deref()==Some("200")));
+    let integrity:String=rusqlite::Connection::open(path).unwrap().query_row("PRAGMA integrity_check",[],|r|r.get(0)).unwrap();assert_eq!(integrity,"ok");
+}

@@ -51,10 +51,10 @@ pub fn synchronize(
     let server = server_url(server)?.to_string();
     let mut cache = Cache::open(path)?;
     let mut finished = false;
+    crate::performance::operation(crate::performance::Operation::DownloadingMarket);
     for pages in 1..=10_000 {
         cancelled()?;
         let mut cursor = cache.cursor(&server, run.market)?;
-        crate::performance::operation(crate::performance::Operation::DownloadingMarket);
         let page = match client.page(run.market, cursor.as_deref()) {
             Err(Error::ResetRequired) if cursor.is_some() => {
                 cancelled()?;
@@ -65,7 +65,6 @@ pub fn synchronize(
             value => value?,
         };
         cancelled()?;
-        crate::performance::operation(crate::performance::Operation::UpdatingCache);
         cache.apply(&server, run.market, cursor.as_deref(), &page)?;
         crate::performance::sqlite_size(path);
         crate::performance::checkpoint();
@@ -82,6 +81,7 @@ pub fn synchronize(
     let target = cache
         .completed_target(&server, run.market)?
         .ok_or(Error::Invalid("completed cache generation"))?;
+    crate::performance::operation(crate::performance::Operation::Verifying);
     let source = if target == "0" {
         market.source.clone()
     } else {

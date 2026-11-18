@@ -1,0 +1,85 @@
+name: Companion sync performance
+on:
+  pull_request:
+    paths:
+      - 'desktop/**'
+      - 'backend/market/sync*'
+      - 'backend/market/workshop_summary.py'
+      - 'scripts/prepare-sync-baseline.py'
+      - 'scripts/*sync*performance*'
+      - 'scripts/*delivery*performance*'
+      - '.github/workflows/sync-performance.yml'
+permissions:
+  contents: read
+concurrency:
+  group: sync-performance-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  windows-comparison:
+    runs-on: windows-latest
+    timeout-minutes: 50
+    env:
+      CARGO_TARGET_DIR: ${{ github.workspace }}/.local/sync-performance/candidate-target
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - name: Verify combined PR source
+        run: python scripts/verify-ci-checkout.py
+        env:
+          CI_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.100.0
+      - name: Freeze baseline algorithms and share measurement harness
+        run: python scripts/prepare-sync-baseline.py
+      - uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: sync-performance-native-v1
+          workspaces: |
+            desktop -> ../.local/sync-performance/candidate-target
+            .local/sync-performance/baseline-source/desktop -> ../../baseline-target
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r backend/requirements.lock
+      - name: Checkout source-only addon for disposable publication fixture
+        uses: actions/checkout@v4
+        with:
+          repository: Twich-Team/TwichUI
+          ref: cd064fe152aab79d1e6d416643c1393e6bc84eb5
+          path: coordinated-addon
+          persist-credentials: false
+      - name: Build baseline and candidate native binaries
+        shell: pwsh
+        run: |
+          New-Item artifacts/sync-performance/bin -ItemType Directory -Force | Out-Null
+          cargo build --manifest-path .local/sync-performance/baseline-source/desktop/Cargo.toml --target-dir .local/sync-performance/baseline-target --locked --release --example sync_performance --example delivery_performance
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Copy-Item ".local/sync-performance/baseline-target/release/examples/sync_performance.exe" artifacts/sync-performance/bin/baseline-prices.exe
+          Copy-Item ".local/sync-performance/baseline-target/release/examples/delivery_performance.exe" artifacts/sync-performance/bin/baseline-delivery.exe
+          cargo build --manifest-path desktop/Cargo.toml --locked --release --example sync_performance --example delivery_performance
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Copy-Item "$env:CARGO_TARGET_DIR/release/examples/sync_performance.exe" artifacts/sync-performance/bin/candidate-prices.exe
+          Copy-Item "$env:CARGO_TARGET_DIR/release/examples/delivery_performance.exe" artifacts/sync-performance/bin/candidate-delivery.exe
+      - name: Record actual Windows filesystem context without assuming SSD identity
+        shell: pwsh
+        run: |
+          @{os=[Environment]::OSVersion.VersionString; filesystem=(Get-Volume -DriveLetter $env:SystemDrive.Substring(0,1)).FileSystem; disks=@(Get-PhysicalDisk | Select-Object MediaType,BusType,Size); owner_pc=$false} | ConvertTo-Json -Depth 5 | Set-Content artifacts/sync-performance/windows-storage.json
+      - name: Three comparable initial/no-op/incremental/unchanged-generation runs
+        run: python scripts/verify-sync-performance.py --baseline artifacts/sync-performance/bin/baseline-prices.exe --candidate artifacts/sync-performance/bin/candidate-prices.exe --report artifacts/sync-performance/windows-prices.json
+      - name: Three comparable runs with explicitly simulated 20ms request latency
+        run: python scripts/verify-sync-performance.py --baseline artifacts/sync-performance/bin/baseline-prices.exe --candidate artifacts/sync-performance/bin/candidate-prices.exe --delay-ms 20 --report artifacts/sync-performance/windows-latency.json
+      - name: Separate full historical archive comparison with commodities
+        run: python scripts/verify-delivery-performance.py --mode archive --baseline artifacts/sync-performance/bin/baseline-delivery.exe --candidate artifacts/sync-performance/bin/candidate-delivery.exe --report artifacts/sync-performance/windows-archive.json
+      - name: Automatic price sync through actual Windows Workshop publication and retry waits
+        run: python scripts/verify-delivery-performance.py --mode auto --baseline artifacts/sync-performance/bin/baseline-delivery.exe --candidate artifacts/sync-performance/bin/candidate-delivery.exe --report artifacts/sync-performance/windows-automatic-workshop.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: companion-sync-performance-windows
+          path: artifacts/sync-performance/*.json
+          if-no-files-found: error
+          retention-days: 14

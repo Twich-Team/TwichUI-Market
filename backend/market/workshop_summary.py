@@ -159,7 +159,7 @@ def seal(metadata, rows):
     return manifest, encoded
 
 
-def build(db, market):
+def build(db, market, preparation=None):
     # Immutable observations and derived source records permit a pinned prefix.
     # This export lock never owns the collector/global ingest lock.
     if db.bind.dialect.name == 'postgresql':
@@ -249,6 +249,10 @@ def build(db, market):
         progress['cursor'] = list(keys[-1])
     stage.manifest_json = canonical(progress).decode()
     if more:
+        # Projection is already capped at 1,000 variants and owns an independent
+        # nonblocking reservation. Continue bounded work without five idle seconds.
+        # Cold snapshot derivation retains the existing five-second retry.
+        if preparation is not None: preparation["retry_after_seconds"] = 1
         return None
     db.flush()
     def final_rows():
@@ -284,10 +288,11 @@ def summary(market_id: MarketId, request: Request, user: User = Depends(bridge.d
     market = require_market(db, market_id)
     if not market.verified:
         raise HTTPException(404, 'Verified observed market required')
-    row = build(db, market)
+    preparation = {}
+    row = build(db, market, preparation=preparation)
     db.commit()
     if row is None:
-        return JSONResponse({'state': 'preparing'}, status_code=202, headers={'Retry-After': '5', 'Cache-Control': 'no-store'})
+        return JSONResponse({'state': 'preparing'}, status_code=202, headers={'Retry-After': str(preparation.get('retry_after_seconds',5)), 'Cache-Control': 'no-store'})
     headers = {'ETag': '"' + row.generation_id + '"', 'Cache-Control': 'no-store'}
     if request.headers.get('if-none-match') == headers['ETag']:
         return Response(status_code=304, headers=headers)
