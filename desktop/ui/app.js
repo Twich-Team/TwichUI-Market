@@ -66,11 +66,12 @@ function render(next) {
   const preparationMessage='Market summaries are being prepared; synchronization will retry';
   const preparing=automatic&&ds?.result==='Preparing market data.'&&!view.error&&(!view.sync.error||view.sync.error===preparationMessage);
   const issue=Boolean(workshopIssue&&workshopIssue.code!=='cancelled')||automatic&&Boolean(ds?.error)&&!waiting&&!preparing;
+  const serverMissing=automatic&&ds?.error?.startsWith('Workshop delivery is unavailable on the Market server.');
   text('workshop-installation',dc?.version===2?'World of Warcraft Forever — Found':'Not connected');
   text('workshop-market',marketName(view.settings.selected_market||s.selected_market));
-  text('workshop-state',workshopBusy?'Connecting Workshop':automatic&&s.running||preparing&&s.automatic_sync?'Updating':waiting?'Waiting for WoW to close':issue?'Needs attention':automatic&&!s.automatic_sync?'Synchronization paused':automatic&&ds?.published_generation?'Up to date':automatic?'Waiting for next sync':'Not connected');
+  text('workshop-state',workshopBusy?'Connecting Workshop':serverMissing?'Server update required':automatic&&s.running||preparing&&s.automatic_sync?'Updating':waiting?'Waiting for WoW to close':issue?'Needs attention':automatic&&!s.automatic_sync?'Synchronization paused':automatic&&ds?.published_generation?'Up to date':automatic?'Waiting for next sync':'Not connected');
   text('workshop-updated',datetime(ds?.last_successful_write));
-  text('workshop-note',workshopIssue?workshopMessage(workshopIssue):waiting?'Updates will be installed safely after World of Warcraft closes.':automatic&&!s.automatic_sync?'Resume synchronization to keep Workshop updated automatically.':preparing?'The server is preparing market data. The companion will retry automatically.':automatic?'Uses your existing sync schedule. Updated files become available on your next game login or reload.':'Connect once. The companion finds your Forever installation and uses your existing sync schedule.');
+  text('workshop-note',workshopIssue?workshopMessage(workshopIssue):serverMissing?ds.error:waiting?'Updates will be installed safely after World of Warcraft closes.':automatic&&!s.automatic_sync?'Resume synchronization to keep Workshop updated automatically.':preparing?'The server is preparing market data. The companion will retry automatically.':automatic?'Uses your existing sync schedule. Updated files become available on your next game login or reload.':'Connect once. The companion finds your Forever installation and uses your existing sync schedule.');
   $('workshop-confirmation').hidden=!workshopReview;
   $('workshop-connect').hidden=Boolean(workshopReview)||automatic&&!issue;
   $('workshop-connect').disabled=workshopBusy||s.running||!view.connected||view.refreshing;
@@ -78,7 +79,7 @@ function render(next) {
   $('workshop-authorize').disabled=workshopBusy||!workshopReview;
 
   $('disconnect').disabled=view.approving||view.refreshing;
-  if(view.error||view.sync.error&&!(preparing&&view.sync.error===preparationMessage)) {const error=view.error||view.sync.error;message(error.startsWith('Workshop delivery:')?'Workshop needs attention. Your previous market data is safe. See developer diagnostics for details.':error,true);nativeErrorShown=true;}
+  if(view.error||view.sync.error&&!(preparing&&view.sync.error===preparationMessage)) {const error=view.error||view.sync.error;message(error.startsWith('Workshop delivery:')?(serverMissing?ds.error:'Workshop needs attention. Your previous market data is safe. See developer diagnostics for details.'):error,true);nativeErrorShown=true;}
   else if(nativeErrorShown) {message('');nativeErrorShown=false;}
   else if(view.quitting) message('Closing safely…');
 }

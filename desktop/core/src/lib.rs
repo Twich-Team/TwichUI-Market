@@ -42,6 +42,8 @@ pub enum Error {
     AuthorizationExpired,
     #[error("Desktop connection is temporarily unavailable; please try again later")]
     ServiceUnavailable,
+    #[error("Workshop delivery is unavailable on the Market server. The server needs the Workshop API update; your folder permissions are not the cause.")]
+    WorkshopUnavailable,
     #[error("Please wait before trying again")]
     RateLimited(u64),
     #[error("Market summaries are being prepared; synchronization will retry")]

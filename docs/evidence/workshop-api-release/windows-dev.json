@@ -1,0 +1,17 @@
+{
+  "source_commit": "47ab3cf52b58cafb3006523fc4e96e11943d2c9d",
+  "run_id": 44393003571,
+  "artifact_id": 14468013647,
+  "zip_sha256": "4563ee747af58fb4818001a5a9e4b424282c4ea75fc1d3cf3bdd7c70cf2f9ae4",
+  "installer_sha256": "9e0c2cedc270479d82ff8960acf9f0c9ecff1e2ada066b2b963beb9c48558d08",
+  "smoke": {
+    "version": "2.0.0-beta.8 DEV 47ab3cf52b58cafb3006523fc4e96e11943d2c9d",
+    "frontend": true,
+    "native": true,
+    "workshop_command": true,
+    "updater_disabled": true
+  },
+  "windows_focused_and_installed_smoke": "passed",
+  "unsigned_dev": true,
+  "server_fix_requires_installer_update": false
+}

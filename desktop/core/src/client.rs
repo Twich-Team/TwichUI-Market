@@ -63,6 +63,7 @@ impl MarketClient {
             202=>return Err(Error::SummaryPreparing(response.headers().get("retry-after").and_then(|s|s.to_str().ok()).and_then(|s|s.parse::<u64>().ok()).unwrap_or(5).clamp(1,3600))),
             429=>return Err(Error::RateLimited(response.headers().get("retry-after").and_then(|s|s.to_str().ok()).and_then(|s|s.parse::<u64>().ok()).unwrap_or(30).clamp(1,3600))),
             409|410=>return Err(Error::ServiceUnavailable),
+            404 if path.ends_with("/summary")=>return Err(Error::WorkshopUnavailable),
             404|502|503=>return Err(Error::ServiceUnavailable),
             200=>{},_=>return Err(Error::Network),
         }

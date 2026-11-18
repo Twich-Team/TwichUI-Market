@@ -1,0 +1,33 @@
+{
+  "public_health_status": 200,
+  "bounded_api_log_window_start": "2026-11-18T20:42:00Z",
+  "max_lines": 2000,
+  "request_counts": [
+    {
+      "operation": "price_sync",
+      "status": 200,
+      "count": 219
+    },
+    {
+      "operation": "workshop_part",
+      "status": 200,
+      "count": 128
+    },
+    {
+      "operation": "workshop_summary",
+      "status": 200,
+      "count": 2
+    },
+    {
+      "operation": "workshop_summary",
+      "status": 202,
+      "count": 58
+    },
+    {
+      "operation": "workshop_summary",
+      "status": 401,
+      "count": 2
+    }
+  ],
+  "owner_pc_acceptance": false
+}

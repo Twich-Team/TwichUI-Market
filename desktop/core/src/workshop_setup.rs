@@ -1,5 +1,18 @@
 //! Public setup failures contain only allowlisted details, never paths or secrets.
 use crate::Error;
+
+/// Delivery retries have their own durable error, separate from the sync worker.
+/// Export fixed fields only; installation paths and account/scope IDs stay private.
+pub fn delivery_diagnostics(delivery: &serde_json::Value) -> serde_json::Value {
+    let mut safe = serde_json::Map::new();
+    if let Some(status) = delivery.get("status").and_then(|v|v.as_object()) {
+        for key in ["result","error","last_attempt","last_successful_write","download_bytes","download_requests","summary_records"] {
+            if let Some(value)=status.get(key) {safe.insert(key.into(),value.clone());}
+        }
+    }
+    serde_json::Value::Object(safe)
+}
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -95,6 +108,15 @@ pub(crate) fn checked<T>(check: &str, message: &str, result: crate::Result<T>) -
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn delivery_diagnostics_keep_failure_without_installation_or_scope() {
+        let value=serde_json::json!({"configuration":{"installation":"private-installation","scope":{"account_id":123}},"status":{"result":"Update failed","error":Error::WorkshopUnavailable.to_string(),"installation":"private-installation","cursor":"private-cursor","download_bytes":0}});
+        let safe=delivery_diagnostics(&value);let encoded=safe.to_string();
+        assert_eq!(safe["error"],Error::WorkshopUnavailable.to_string());
+        assert_eq!(safe["download_bytes"],0);
+        assert!(!encoded.contains("private-"));assert!(!encoded.contains("account_id"));
+        assert_eq!(delivery_diagnostics(&serde_json::json!({"notice":"off"})),serde_json::json!({}));
+    }
     #[test]
     fn diagnostics_keep_stage_and_os_code_without_io_payload() {
         let error = std::io::Error::new(

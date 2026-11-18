@@ -51,6 +51,10 @@ jobs:
           cache-dependency-path: desktop/package-lock.json
       - name: Focused validator and diagnostics checks
         run: |
+          cargo test --manifest-path desktop/Cargo.toml --locked --lib missing_workshop_service_is_distinct
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo test --manifest-path desktop/Cargo.toml --locked --lib workshop_setup::tests::
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cargo test --manifest-path desktop/Cargo.toml --locked --lib installation::
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cargo test --manifest-path desktop/Cargo.toml --locked --lib windows_owner::tests::

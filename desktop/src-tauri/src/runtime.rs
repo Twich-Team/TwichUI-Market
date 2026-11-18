@@ -1364,6 +1364,7 @@ impl Runtime {
     pub fn diagnostics(&self) -> Result<String> {
         let view = self.view()?;
         let document = serde_json::json!({"schema_version":1,"version":view.version,"server":view.settings.server,"workshop_setup":self.data.workshop_failure.lock().ok().and_then(|last|last.clone()),
+        "workshop_delivery":twichui_market_core::workshop_setup::delivery_diagnostics(&view.delivery),
         "phase":view.sync.sync.phase,"last_sync_ms":view.sync.sync.last_sync_ms,"last_server_check_ms":view.sync.sync.last_server_check_ms,
         "upstream_update_ms":view.sync.sync.upstream_update_ms,"cache":view.cache,"error":view.sync.error,"automatic_sync":view.settings.automatic_sync,"interval_minutes":view.settings.interval_minutes});
         let dir = self.data.path.join("exports");

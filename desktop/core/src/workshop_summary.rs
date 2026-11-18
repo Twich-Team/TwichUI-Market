@@ -550,6 +550,16 @@ mod tests {
         assert!(client.summary_request("api/v1/workshop/markets/2/summary",None,MAX_MANIFEST).is_err());
         task.join().unwrap();
     }
+    #[test]
+    fn missing_workshop_service_is_distinct_from_expired_parts_and_authentication() {
+        let (origin,task,_)=serve(vec![(404,b"{}".to_vec(),false),(404,b"{}".to_vec(),false),(401,b"{}".to_vec(),false),(503,b"{}".to_vec(),false)]);
+        let client=MarketClient::new(&origin,"synthetic-workshop-connection".into()).unwrap();
+        assert!(matches!(client.summary_request("api/v1/workshop/markets/2/summary",None,MAX_MANIFEST),Err(Error::WorkshopUnavailable)));
+        assert!(matches!(client.summary_request("api/v1/workshop/markets/2/summary/generation/parts/0",None,MAX_PART),Err(Error::ServiceUnavailable)));
+        assert!(matches!(client.summary_request("api/v1/workshop/markets/2/summary",None,MAX_MANIFEST),Err(Error::Authentication)));
+        assert!(matches!(client.summary_request("api/v1/workshop/markets/2/summary",None,MAX_MANIFEST),Err(Error::ServiceUnavailable)));
+        task.join().unwrap();
+    }
     fn envelope(b:&Bundle,account:u32)->Vec<u8>{serde_json::to_vec(&json!({"account_id":account,"manifest":b.manifest})).unwrap()}
     #[test]
     fn partial_download_restart_content_reuse_304_and_no_history_archive() {
