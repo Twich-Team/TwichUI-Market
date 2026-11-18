@@ -54,7 +54,7 @@ def main():
   if os.name=='nt':
    sid=subprocess.check_output(['powershell','-NoProfile','-Command','[System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value'],text=True).strip()
    subprocess.run(['icacls',str(base),'/inheritance:r','/grant:r',f'*{sid}:(OI)(CI)F','*S-1-5-18:(OI)(CI)F','*S-1-5-32-544:(OI)(CI)F'],check=True,capture_output=True)
-  game=base/'not-a-game';publication=base/'publication' 
+  game=base/'not-a-game';publication=base/'publication'
   if a.publish:
    env['MARKET_TEST_APP_DATA']=str(base)
    fixture=json.loads(subprocess.check_output(['powershell','-NoProfile','-File',str(ROOT/'scripts/windows/workshop-fixtures.ps1'),'-Action','Setup'],env=env,text=True))

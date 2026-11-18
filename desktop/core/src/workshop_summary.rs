@@ -311,7 +311,7 @@ pub fn rollback(c:&Configuration)->Result<()> {
     folder(&dir,&["TwichUI_MarketData.toc","Data.lua","Previous.lua",".twichui-delivery.json"])?;marker(c,&dir)?;
     let raw=delivery::read(&dir.join("Previous.lua"),3*1024*1024)?;let(h,bank)=root_header(c,&raw)?;
     need(h["market"]["server_market_id"]==c.scope.market_id&&h["market"]["region"]==c.selection["region"],"Select the previous generation's market before restoring it")?;
-    if let Some(bank)=bank {verify_bank(c,&h,&bank)?;}
+    if let Some(ref bank)=bank {verify_bank(c,&h,bank)?;}
     write_game(&dir.join("Data.lua"),&raw,&||false)?;
     let toc=if bank.is_some(){delivery::SUMMARY_TOC}else{delivery::TOC};
     write_game(&dir.join("TwichUI_MarketData.toc"),toc,&||false)?;
@@ -452,8 +452,17 @@ mod tests {
             let deadline=Instant::now()+Duration::from_secs(10);let(mut stream,_)=loop {match listener.accept(){Ok(v)=>break v,Err(e) if e.kind()==std::io::ErrorKind::WouldBlock&&Instant::now()<deadline=>thread::sleep(Duration::from_millis(5)),Err(e)=>panic!("missing summary test request: {e}")}};
             stream.set_nonblocking(false).unwrap();stream.set_read_timeout(Some(Duration::from_secs(5))).unwrap();let mut request=Vec::new();while !request.ends_with(b"\r\n\r\n") {let mut byte=[0];assert_eq!(stream.read(&mut byte).unwrap(),1);request.push(byte[0]);assert!(request.len()<8192);}
             let request=String::from_utf8(request).unwrap();assert!(request.to_lowercase().contains("authorization: bearer synthetic-workshop-connection"));seen.lock().unwrap().push(request);
-            write!(stream,"HTTP/1.1 {status} Test\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",body.len()+if truncated{100}else{0}).unwrap();stream.write_all(&body).unwrap();
+            write!(stream,"HTTP/1.1 {status} Test\r\nContent-Type: application/json\r\nRetry-After: 7\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",body.len()+if truncated{100}else{0}).unwrap();stream.write_all(&body).unwrap();
         }});(origin,task,requests)
+    }
+    #[test]
+    fn preparation_and_quota_retry_after_keep_distinct_typed_outcomes() {
+        let (origin,task,_)=serve(vec![(202,b"{}".to_vec(),false),(429,b"{}".to_vec(),false),(304,vec![],false)]);
+        let client=MarketClient::new(&origin,"synthetic-workshop-connection".into()).unwrap();
+        assert!(matches!(client.summary_request("api/v1/workshop/markets/2/summary",None,MAX_MANIFEST),Err(Error::SummaryPreparing(7))));
+        assert!(matches!(client.summary_request("api/v1/workshop/markets/2/summary",None,MAX_MANIFEST),Err(Error::RateLimited(7))));
+        assert!(client.summary_request("api/v1/workshop/markets/2/summary",None,MAX_MANIFEST).is_err());
+        task.join().unwrap();
     }
     fn envelope(b:&Bundle,account:u32)->Vec<u8>{serde_json::to_vec(&json!({"account_id":account,"manifest":b.manifest})).unwrap()}
     #[test]
