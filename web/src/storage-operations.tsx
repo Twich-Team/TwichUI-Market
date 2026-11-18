@@ -18,7 +18,7 @@ export function StorageOperationsPanel({value}:{value?:StorageOperations}) {
   const capacity=value.capacity;
   return <section className="panel padded" aria-label="Storage safeguards">
     <h3>Storage safeguards</h3>
-    {value.warnings.length>0&&<div className="notice" role="status"><strong>Needs attention</strong><ul>{value.warnings.map(warning=><li key={warning}>{warning}</li>)}</ul></div>}
+    {value.warnings.length>0&&<div className="notice" role="status" style={{display:"block"}}><strong>Needs attention</strong><ul>{value.warnings.map(warning=><li key={warning}>{warning}</li>)}</ul></div>}
     <dl className="stats">
       <div><dt>Database allocation</dt><dd>{formatBytes(capacity.database_allocated_bytes)}</dd></div>
       <div><dt>Collector allocation cap</dt><dd>{formatBytes(capacity.database_limit_bytes)}</dd></div>

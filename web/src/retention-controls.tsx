@@ -206,7 +206,7 @@ export function RetentionControls({ readOnly }: { readOnly: boolean }) {
             {preview.next_batch_rows.toLocaleString()} rows.
           </p>
           <p className="small muted">{preview.estimate_notice}</p>
-          {preview.cutoffs&&<details open><summary>Historical cutoffs (UTC)</summary><dl>{Object.entries(preview.cutoffs).map(([key,value])=><div key={key}><dt>{key.replaceAll('_',' ')}</dt><dd>{value}</dd></div>)}</dl><p>{preview.protected}</p><p>{preview.history_sync_impact}</p></details>}
+          {preview.cutoffs&&<details open><summary>Historical cutoffs (UTC)</summary><dl>{Object.entries(preview.cutoffs).map(([key,value])=><div key={key}><dt>{key.replaceAll('_',' ')}</dt><dd>{value.includes("T") ? new Date(value).toLocaleString("en-US",{timeZone:"UTC",year:"numeric",month:"short",day:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit"})+" UTC" : value}</dd></div>)}</dl><p>{preview.protected}</p><p>{preview.history_sync_impact}</p></details>}
           <DataTable<Stage>
             label="retention preview"
             data={preview.stages}
@@ -223,8 +223,8 @@ export function RetentionControls({ readOnly }: { readOnly: boolean }) {
                 meta: { numeric: true },
                 cell: ({ row }) => row.original.eligible_rows.toLocaleString(),
               },
-              {accessorKey:"oldest_affected_at",header:"Oldest affected",cell:({row})=>row.original.oldest_affected_at||'None'},
-              {accessorKey:"newest_affected_at",header:"Newest affected",cell:({row})=>row.original.newest_affected_at||'None'},
+              {accessorKey:"oldest_affected_at",header:"Oldest affected",cell:({row})=>row.original.oldest_affected_at?<LocalTime value={row.original.oldest_affected_at}/>: 'None'},
+              {accessorKey:"newest_affected_at",header:"Newest affected",cell:({row})=>row.original.newest_affected_at?<LocalTime value={row.original.newest_affected_at}/>: 'None'},
               {
                 accessorKey: "estimated_logical_bytes",
                 header: "Estimated logical impact",
