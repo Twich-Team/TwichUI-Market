@@ -1,0 +1,23 @@
+[
+  {
+    "name": "production-desktop",
+    "title": "Actual production desktop",
+    "bytes": 566441,
+    "sha256": "afb0d810972a07385e6f56d58be615a2b4ef1a403ea24d94d8592bdb873786c4",
+    "synthetic": false
+  },
+  {
+    "name": "production-mobile",
+    "title": "Actual production mobile",
+    "bytes": 363397,
+    "sha256": "5462ce49a31a14707aa41f0894339cc6b9f87153e72a30e9a38ec84d6ab5ec0a",
+    "synthetic": false
+  },
+  {
+    "name": "production-details",
+    "title": "Actual production details and cleanup preview",
+    "bytes": 882694,
+    "sha256": "0a250a9717a42bd4f2efe43156a43600a0c963dfb561ed90a70c36f87d6a10c0",
+    "synthetic": false
+  }
+]

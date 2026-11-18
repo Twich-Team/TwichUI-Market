@@ -1,3 +1,5 @@
+**Released after owner approval:** PR #33 is merged/deployed at `e49de6a`. [Current production acceptance and rollback](backup-management-release-acceptance.md). The candidate-stage audit and stop boundary below describe the earlier review stage and are superseded only for this completed release.
+
 # Backup Management — owner review candidate
 
 Draft [Market #33](https://github.com/Twich-Team/TwichUI-Market/pull/33), branch `feature/backup-management-retention`, targets the current `integration/companion-v2-metadata-recovery` (`177ea99`). Reviewed runtime source: `2796e70e622ef0f5c3270e7aef4d4428eabeef70`; CI fixture-directory/readiness repair: `20b99f5a0bc792e81e84be329f7beeaa84002fce` (runtime trees unchanged). Production is unchanged. Stop at owner review; no merge, deployment, schedule enablement, production retention edit or production archive deletion is authorized.

@@ -1,3 +1,5 @@
+**Owner-approved deployment complete:** [production acceptance, exact images, preservation, schedule and rollback](backup-management-release-acceptance.md). PR #33 merged and deployed at `e49de6a`. The review-stage record below is historical; recurring backups remain disabled.
+
 # Backup management review candidate
 
 Owner scope: implement on `feature/backup-management-retention` from integration `177ea99`; draft PR against `integration/companion-v2-metadata-recovery`. No production deployment, schedule activation, policy change or backup deletion. Archive retention is independent of historical record retention.

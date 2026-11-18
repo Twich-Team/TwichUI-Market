@@ -1,0 +1,14 @@
+{
+  "at": "2026-11-18T04:28:22.543482+00:00",
+  "authorization": "Owner-approved deployment; existing owner policy permits temporary release rehearsals without accumulating retained dumps",
+  "only_task_created_temporary_release_archive_removed": true,
+  "filename": "production-before.dump",
+  "sha256": "8f6fc1fb5eda8ce19f31b4b6fafa9b529506905f994724abf78d0e0011d1ee29",
+  "archive_bytes_removed": 653148210,
+  "available_bytes_before": 4986191872,
+  "available_bytes_after": 5639368704,
+  "production_managed_archives": 0,
+  "all_existing_backup_root_files_unchanged": true,
+  "private_restore_credentials_and_verification_cookie_removed": true,
+  "retained_original_rollback_images": true
+}

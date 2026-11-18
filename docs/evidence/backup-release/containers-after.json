@@ -1,0 +1,218 @@
+[
+  {
+    "name": "twichui-market-api-1",
+    "id": "8529a6eaca72cc7ed77c46a6abf5c2a27c41527e7a91c91956223f531ce978d1",
+    "image": "sha256:6d764fbe8581680a4da806015d6a7f6f05483f0c57b8d64b89d55bd5a1812d86",
+    "started": "2026-11-18T04:19:28.000614834Z",
+    "running": true,
+    "mounts": [
+      {
+        "Type": "bind",
+        "Source": "/home/marketdev/projects/TwichUI-Market/artifacts/backup-status",
+        "Destination": "/backup-status",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "volume",
+        "Name": "twichui-market_companion-private-beta",
+        "Source": "/home/marketdev/.local/share/docker/volumes/twichui-market_companion-private-beta/_data",
+        "Destination": "/private-beta",
+        "Driver": "local",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": ""
+      },
+      {
+        "Type": "bind",
+        "Source": "/home/marketdev/.local/share/twichui-market-metadata/keyring.json",
+        "Destination": "/run/metadata/keyring.json",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/home/marketdev/projects/TwichUI-Market/.local/backup-management/token",
+        "Destination": "/run/secrets/backup-manager-token",
+        "Mode": "",
+        "RW": false,
+        "Propagation": "rprivate"
+      }
+    ]
+  },
+  {
+    "name": "twichui-market-local-api-1",
+    "id": "b4b47f747c7042d5d5c9d667a8711e9e4236bd4806cf69080f2e114c641586ce",
+    "image": "sha256:6d764fbe8581680a4da806015d6a7f6f05483f0c57b8d64b89d55bd5a1812d86",
+    "started": "2026-11-18T04:19:28.223155464Z",
+    "running": true,
+    "mounts": [
+      {
+        "Type": "bind",
+        "Source": "/home/marketdev/projects/TwichUI-Market/artifacts/backup-status",
+        "Destination": "/backup-status",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "volume",
+        "Name": "twichui-market_companion-private-beta",
+        "Source": "/home/marketdev/.local/share/docker/volumes/twichui-market_companion-private-beta/_data",
+        "Destination": "/private-beta",
+        "Driver": "local",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": ""
+      },
+      {
+        "Type": "bind",
+        "Source": "/home/marketdev/.local/share/twichui-market-metadata/keyring.json",
+        "Destination": "/run/metadata/keyring.json",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/home/marketdev/projects/TwichUI-Market/.local/backup-management/token",
+        "Destination": "/run/secrets/backup-manager-token",
+        "Mode": "",
+        "RW": false,
+        "Propagation": "rprivate"
+      }
+    ]
+  },
+  {
+    "name": "twichui-market-proxy-1",
+    "id": "2120489308eeeb3aa2bbcced0c21144722505fa065ab242d6d127352fa828cea",
+    "image": "sha256:ff172a984cba5d20359fc5e18d18cac226f8858e9422eb7138b0e644f8a00dc1",
+    "started": "2026-11-18T04:19:44.226805347Z",
+    "running": true,
+    "mounts": [
+      {
+        "Type": "volume",
+        "Name": "twichui-market_caddy-data",
+        "Source": "/home/marketdev/.local/share/docker/volumes/twichui-market_caddy-data/_data",
+        "Destination": "/data",
+        "Driver": "local",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": ""
+      },
+      {
+        "Type": "bind",
+        "Source": "/home/marketdev/projects/TwichUI-Market/deploy/Caddyfile.production",
+        "Destination": "/etc/caddy/Caddyfile",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/home/marketdev/projects/TwichUI-Market/deploy/routes.local.caddy",
+        "Destination": "/etc/caddy/routes.local.caddy",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/home/marketdev/projects/TwichUI-Market/deploy/routes.production.caddy",
+        "Destination": "/etc/caddy/routes.production.caddy",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": "rprivate"
+      }
+    ]
+  },
+  {
+    "name": "twichui-market-worker-1",
+    "id": "dbe5d3433f32574557008d8062b3be7dbda18d763b6695485906a78fd8505758",
+    "image": "sha256:81336cb2ad0f9edc19ee9d70e5614cf052831591ff3a702099da24a75c59656e",
+    "started": "2026-11-18T01:55:54.768580641Z",
+    "running": true,
+    "mounts": []
+  },
+  {
+    "name": "twichui-market-enrichment-1",
+    "id": "08ac2b64e749d094f88e9cce7157fd3c5a29ea867bb11ae24789247479a49c44",
+    "image": "sha256:3ef6f57964546a425f4c2ebe2bc44be2d9a516340325074dfb0fb2f32d7c3667",
+    "started": "2026-11-17T20:28:47.737748418Z",
+    "running": true,
+    "mounts": [
+      {
+        "Type": "bind",
+        "Source": "/home/marketdev/.local/share/twichui-market-metadata/keyring.json",
+        "Destination": "/run/metadata/keyring.json",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": "rprivate"
+      }
+    ]
+  },
+  {
+    "name": "twichui-market-monitor-1",
+    "id": "295cc3e09e4927f38ffa1a221ef3f199f6e065561fb14fca859a8ce6de9228e2",
+    "image": "sha256:0323bca0334572b29d3e8d6c388b214b3c22891242b9e6eec35f4010595fd18a",
+    "started": "2026-11-14T04:42:59.157272882Z",
+    "running": true,
+    "mounts": []
+  },
+  {
+    "name": "twichui-market-db-1",
+    "id": "1a138045d430554c64142f230fa1555e61d3414b2926ae9b2606f58fb8fb3642",
+    "image": "sha256:d3244e8ce3f165ee3c93d9c4a4b1d0fe48b3a89e2287b717fdcbbde92d405065",
+    "started": "2026-11-14T01:46:45.864726511Z",
+    "running": true,
+    "mounts": [
+      {
+        "Type": "volume",
+        "Name": "twichui-market_market-data",
+        "Source": "/home/marketdev/.local/share/docker/volumes/twichui-market_market-data/_data",
+        "Destination": "/var/lib/postgresql/data",
+        "Driver": "local",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": ""
+      }
+    ]
+  },
+  {
+    "name": "twichui-market-backup-1",
+    "id": "1f1cbba535e2cd64cf900099a5fe92ee662fa9ced84f5f2ae4fa5b28b32d5f9c",
+    "image": "sha256:2669ec98d745fbb77942ed6696162436862334ebaebc71e884853226504b260b",
+    "started": "2026-11-15T03:11:29.671470444Z",
+    "running": false,
+    "mounts": [
+      {
+        "Type": "bind",
+        "Source": "/home/marketdev/projects/TwichUI-Market/backups",
+        "Destination": "/backups",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/home/marketdev/projects/TwichUI-Market/artifacts/backup-status",
+        "Destination": "/status",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "volume",
+        "Name": "f0357311d282d678539ad27e670eda8d698b15e2c93af14392d1a99755b31a2a",
+        "Source": "/home/marketdev/.local/share/docker/volumes/f0357311d282d678539ad27e670eda8d698b15e2c93af14392d1a99755b31a2a/_data",
+        "Destination": "/var/lib/postgresql/data",
+        "Driver": "local",
+        "Mode": "z",
+        "RW": true,
+        "Propagation": ""
+      }
+    ]
+  }
+]

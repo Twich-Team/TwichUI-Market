@@ -1,0 +1,57 @@
+{
+  "source": "e49de6a829b1c281e16a3da3c1baa377a1fb77d8",
+  "files": [
+    "/home/marketdev/projects/TwichUI-Market/compose.yaml",
+    "/home/marketdev/projects/TwichUI-Market/compose.tls.yaml",
+    "/home/marketdev/projects/TwichUI-Market/compose.traefik.yaml",
+    "/home/marketdev/projects/TwichUI-Market/compose.companion-private-beta.yaml",
+    "/home/marketdev/projects/TwichUI-Market/compose.combined-release.yaml",
+    "/home/marketdev/projects/TwichUI-Market/compose.admin-release.yaml",
+    "/home/marketdev/projects/TwichUI-Market/compose.explorer-release.yaml",
+    "/home/marketdev/projects/TwichUI-Market/compose.polish-release.yaml",
+    "/home/marketdev/projects/TwichUI-Market/compose.foreverdb-release.yaml",
+    "/home/marketdev/projects/TwichUI-Market/.worktrees/usability-release/compose.usability-release.yaml",
+    "/home/marketdev/projects/TwichUI-Market/.worktrees/mobile-release/compose.mobile-release.yaml",
+    "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-release.yaml",
+    "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-chart.yaml",
+    "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-api.yaml",
+    "/home/marketdev/projects/TwichUI-Market/compose.owner-backup-policy.yaml",
+    "/home/marketdev/projects/TwichUI-Market/compose.unified-coverage-release.yaml",
+    "/home/marketdev/.codex/worktrees/backup-management-retention/TwichUI-Market/compose.backup-management.yaml",
+    "/home/marketdev/.codex/worktrees/backup-management-retention/TwichUI-Market/compose.backup-review-images.yaml"
+  ],
+  "environment_files": [
+    "/home/marketdev/projects/TwichUI-Market/.env",
+    "/home/marketdev/projects/TwichUI-Market/.env.combined-release"
+  ],
+  "scoped_services": [
+    "backup-manager",
+    "api",
+    "local-api",
+    "proxy"
+  ],
+  "scheduled_backup_worker_preserved_disabled": true,
+  "manager_has_no_host_ports": true,
+  "api_has_no_archive_or_socket_mount": true,
+  "original_configuration": {
+    "api": {
+      "original_environment_preserved": true,
+      "existing_mounts_preserved": true,
+      "new_environment_keys": [
+        "BACKUP_MANAGEMENT_ENABLED"
+      ]
+    },
+    "local-api": {
+      "original_environment_preserved": true,
+      "existing_mounts_preserved": true,
+      "new_environment_keys": [
+        "BACKUP_MANAGEMENT_ENABLED"
+      ]
+    },
+    "proxy": {
+      "original_environment_preserved": true,
+      "existing_mounts_preserved": true,
+      "new_environment_keys": []
+    }
+  }
+}
