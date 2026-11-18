@@ -23,6 +23,18 @@ from .security import admin, audit, aware
 from . import retention
 
 SCHEDULER_LOCK = 7140238
+
+
+def recovery_policy():
+    """Local-only recovery is an explicit operator exception, never a UI default."""
+    mode = os.environ.get('RETENTION_RECOVERY_MODE', 'off_vm')
+    approval = os.environ.get('RETENTION_LOCAL_RECOVERY_APPROVAL', '').strip()
+    valid = mode == 'off_vm' or (mode == 'local_only' and 1 <= len(approval) <= 500)
+    return {'mode': mode, 'valid': valid,
+            'off_vm_required': mode != 'local_only',
+            'owner_approval_reference': approval if mode == 'local_only' else None}
+
+
 # A changed scope/version invalidates prior automatic authorization.
 SCOPE = {'version': 1, 'stages': ['daily_references','observations','raw_listings',
     'raw_feed_payloads','intraday_statistics','collection_logs','feed_checks','security_logs'],
@@ -32,6 +44,7 @@ SCOPE = {'version': 1, 'stages': ['daily_references','observations','raw_listing
     'operations':'DELETE candidate rows except raw_feed_payloads, which clears compressed_payload',
     'scheduler_sha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
     'minimum_filesystem_reserve_bytes':int(os.environ.get('MIN_DATABASE_FREE_BYTES',str(2*1024**3))),
+    'recovery_policy':recovery_policy(),
     'engine_sha256':hashlib.sha256((inspect.getsource(retention.candidates)+inspect.getsource(retention.execute_selected)).encode()).hexdigest()}
 
 
@@ -70,23 +83,30 @@ def approved_document(db, row):
 
 
 def recovery_ready(actor_id):
-    """Rehash a present protected manager archive; require matching off-VM evidence.
+    """Rehash a protected restored archive and enforce the reviewed recovery mode.
 
     The operator-owned receipt is mounted read-only; it cannot be written by API
     policy saves. No configured path or absent external evidence is ready.
     """
     try:
+        policy = recovery_policy()
+        if not policy['valid']: return False
         path = Path(os.environ.get('RETENTION_RECOVERY_EVIDENCE', '/retention-recovery/evidence.json'))
         if not path.is_file() or path.stat().st_size > 16384: return False
         evidence = json.loads(path.read_text())
-        stamp = aware(datetime.fromisoformat(evidence['off_vm_verified_at']))
-        if not now()-timedelta(hours=24) <= stamp <= now(): return False
-        if evidence.get('off_vm_verified') is not True or not evidence.get('failure_domain'): return False
+        if policy['off_vm_required']:
+            stamp = aware(datetime.fromisoformat(evidence['off_vm_verified_at']))
+            if not now()-timedelta(hours=24) <= stamp <= now(): return False
+            if evidence.get('off_vm_verified') is not True or not evidence.get('failure_domain'): return False
         if not re.fullmatch('[a-f0-9]{32}', evidence['backup_id']): return False
         from .backup_management import connect
         manifest = connect(actor_id, '/backups/'+evidence['backup_id']+'/manifest')
         dump = aware(datetime.fromisoformat(manifest['created_at']))
         restored = aware(datetime.fromisoformat(manifest['restoration_verified_at']))
+        if not policy['off_vm_required']:
+            stamp = aware(datetime.fromisoformat(evidence['local_restoration_verified_at']))
+            if (stamp != restored or evidence.get('owner_approval_reference') != policy['owner_approval_reference']):
+                return False
         return (manifest['sha256'] == evidence['sha256'] and manifest['filename'] == evidence['filename']
             and manifest['protected'] is True and bool(manifest['required_by'])
             and manifest['verification'] == 'archive_integrity_verified' and bool(manifest['restored'])
@@ -107,7 +127,7 @@ def authorize_automatic(db, actor, notes, *, limits=None, expected_execution_has
     document = authorization_document(db, limits)
     if expected_execution_hash != document['execution_hash']:
         raise ValueError('Reviewed execution hash no longer matches policy, scope and limits')
-    if not recovery_ready(actor.id): raise ValueError('Protected local restore and off-VM recovery evidence required')
+    if not recovery_ready(actor.id): raise ValueError('Protected restored archive and reviewed recovery evidence required')
     retention.authorize_policy(db, actor, notes)
     row = db.get(RetentionAutomation, 1)
     if row is None:
@@ -136,7 +156,9 @@ def state_view(db):
                      'status':last.status,'reason':last.reason,'batches':last.batches,
                      'rows_processed':last.rows_processed} if last else None,
         'paused_reason':reason,
-        'recovery_notice':'Automatic execution requires a present, rehashed, protected restored archive and matching off-VM verification within 24 hours.'}
+        'recovery_notice':('Automatic execution requires a present, rehashed, protected restored archive within 24 hours. '
+            + ('Off-VM recovery is required.' if recovery_policy()['off_vm_required'] else
+               'The owner waived off-VM recovery for now; local backups do not protect against loss of this VM.'))}
 
 
 class EnableInput(BaseModel):
@@ -149,7 +171,7 @@ def enable(body:EnableInput, user:User=Depends(admin), db=Depends(session)):
     retention.lock(db)
     row = db.get(RetentionAutomation, 1)
     if body.enabled and (not approved_document(db,row) or not recovery_ready(user.id)):
-        raise HTTPException(409,'Exact automatic policy authorization and protected local/off-VM recovery evidence required')
+        raise HTTPException(409,'Exact automatic policy authorization and reviewed protected recovery evidence required')
     if row:
         row.enabled=body.enabled; row.next_run_at=now() if body.enabled else None
     audit(db,user.id,'retention.automatic.enabled' if body.enabled else 'retention.automatic.paused')
@@ -201,7 +223,7 @@ def _work(factory, at, clock):
     outcome='budget_exhausted'; reason=None
     try:
         if not recovery_ready(actor_id):
-            outcome='paused'; reason='Protected backup/restore or off-VM recovery verification unavailable'
+            outcome='paused'; reason='Protected backup/restore or reviewed recovery verification unavailable'
         else:
             # Recovery hashing has its own bounded 30-second HTTP deadline and
             # holds no collector lock. Give deletion work its reviewed budget.
@@ -275,17 +297,23 @@ def main():
 
 def recovery_evidence_view():
     """Cheap, honest status; live execution separately rehashes the local archive."""
+    policy = recovery_policy()
+    base = {'policy':policy, 'off_vm_required':policy['off_vm_required'],
+            'local_archive_status':'Revalidated under the backup lock before execution'}
     try:
+        if not policy['valid']: raise ValueError()
         path=Path(os.environ.get('RETENTION_RECOVERY_EVIDENCE','/retention-recovery/evidence.json'))
         if not path.is_file() or path.stat().st_size>16384:raise ValueError()
         evidence=json.loads(path.read_text())
-        stamp=aware(datetime.fromisoformat(evidence['off_vm_verified_at']))
-        recent=evidence.get('off_vm_verified') is True and bool(evidence.get('failure_domain')) and now()-timedelta(hours=24)<=stamp<=now()
-        return {'off_vm_verification_recent':recent,'verified_at':stamp,'local_archive_status':'Revalidated under the backup lock before execution',
-                'reason':None if recent else 'Off-VM recovery verification is missing or stale'}
+        off_stamp=aware(datetime.fromisoformat(evidence['off_vm_verified_at'])) if evidence.get('off_vm_verified_at') else None
+        off_recent=bool(off_stamp and evidence.get('off_vm_verified') is True and evidence.get('failure_domain') and now()-timedelta(hours=24)<=off_stamp<=now())
+        stamp=off_stamp if policy['off_vm_required'] else aware(datetime.fromisoformat(evidence['local_restoration_verified_at']))
+        recent=off_recent if policy['off_vm_required'] else (evidence.get('owner_approval_reference')==policy['owner_approval_reference'] and now()-timedelta(hours=24)<=stamp<=now())
+        return {**base,'off_vm_verification_recent':off_recent,'required_evidence_recent':bool(recent),'verified_at':stamp,
+                'reason':None if recent else 'Required recovery verification is missing or stale'}
     except (OSError,KeyError,TypeError,ValueError):
-        return {'off_vm_verification_recent':False,'verified_at':None,'local_archive_status':'Live validation required',
-                'reason':'Off-VM recovery verification is missing or stale'}
+        return {**base,'off_vm_verification_recent':False,'required_evidence_recent':False,'verified_at':None,
+                'reason':'Required recovery verification is missing or stale'}
 
 
 if __name__=='__main__': main()

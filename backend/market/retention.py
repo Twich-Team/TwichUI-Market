@@ -140,7 +140,7 @@ def backup_ready():
 @router.get('')
 def get_policy(user:User=Depends(admin),db:Session=Depends(session)):
     from .retention_worker import recovery_evidence_view
-    return {**policy_view(db),'backup_restore_ready':backup_ready() and recovery_evidence_view()['off_vm_verification_recent'],
+    return {**policy_view(db),'backup_restore_ready':backup_ready() and recovery_evidence_view()['required_evidence_recent'],
             'policy_configured':db.get(RetentionPolicy,1) is not None, **automation_view(db),
             'completed_batches':db.scalar(select(func.count()).select_from(RetentionBatch)),
             'last_completed_at':db.scalar(select(func.max(RetentionBatch.created_at))),
@@ -239,7 +239,7 @@ def authorize_policy(db, actor, notes):
     lock(db)
     row=db.get(RetentionPolicy,1)
     from .retention_worker import recovery_ready
-    if row is None or not backup_ready() or not recovery_ready(actor.id):raise ValueError('Saved policy and protected local/off-VM backup/restore verification required')
+    if row is None or not backup_ready() or not recovery_ready(actor.id):raise ValueError('Saved policy and protected backup/restore verification under the reviewed recovery policy required')
     policy=policy_view(db)
     row.approved_hash=policy['policy_hash'];row.approved_at=now()
     audit(db,actor.id,'retention.policy.authorized',f'policy={row.approved_hash}; {notes}'[:200])

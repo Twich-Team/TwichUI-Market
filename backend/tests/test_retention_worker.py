@@ -213,3 +213,52 @@ def test_changed_scheduler_source_invalidates_durable_authorization(database,aut
     from market.retention_worker import SCOPE
     monkeypatch.setitem(SCOPE,'scheduler_sha256','0'*64)
     assert work_once(database)['status']=='inactive'
+
+
+@pytest.mark.parametrize('failure', [None, 'unprotected', 'missing_file', 'wrong_hash', 'not_restored', 'stale', 'future', 'wrong_approval', 'no_approval', 'invalid_mode'])
+def test_explicit_local_only_exception_keeps_protected_restore_gates(tmp_path, monkeypatch, failure):
+    from market.retention_worker import recovery_ready, recovery_evidence_view
+    path = tmp_path/'local-receipt.json'
+    approval = 'owner-request-2026-11-18-local-only'
+    monkeypatch.setenv('RETENTION_RECOVERY_EVIDENCE', str(path))
+    monkeypatch.setenv('RETENTION_RECOVERY_MODE', 'local_only')
+    monkeypatch.setenv('RETENTION_LOCAL_RECOVERY_APPROVAL', approval)
+    stamp = now().isoformat()
+    digest = 'a'*64
+    manifest = {'sha256':digest, 'filename':'synthetic.dump', 'created_at':stamp,
+                'restoration_verified_at':stamp, 'protected':True, 'required_by':['restore-recovery-gate'],
+                'verification':'archive_integrity_verified', 'restored':{'fixture':True}}
+    evidence = {'backup_id':'b'*32, 'sha256':digest, 'filename':'synthetic.dump',
+                'restored_archive_sha256':digest, 'local_restoration_verified_at':stamp,
+                'owner_approval_reference':approval, 'off_vm_verified':False}
+    if failure == 'unprotected': manifest['protected'] = False
+    if failure == 'wrong_hash': manifest['sha256'] = 'c'*64
+    if failure == 'not_restored': manifest['restored'] = None
+    if failure in ('stale', 'future'):
+        stamp = (now()+timedelta(days=-2 if failure=='stale' else 2)).isoformat()
+        manifest.update(created_at=stamp, restoration_verified_at=stamp)
+        evidence['local_restoration_verified_at'] = stamp
+    if failure == 'wrong_approval': evidence['owner_approval_reference'] = 'another-request'
+    if failure == 'no_approval': monkeypatch.delenv('RETENTION_LOCAL_RECOVERY_APPROVAL')
+    if failure == 'invalid_mode': monkeypatch.setenv('RETENTION_RECOVERY_MODE', 'skip')
+    path.write_text(json.dumps(evidence))
+    def connect(*args):
+        if failure == 'missing_file': raise HTTPException(409, 'missing or corrupt archive')
+        return manifest
+    monkeypatch.setattr('market.backup_management.connect', connect)
+    assert recovery_ready(1) is (failure is None)
+    state = recovery_evidence_view()
+    assert state['off_vm_verification_recent'] is False
+    if failure is None:
+        assert state['required_evidence_recent'] is True
+        assert state['off_vm_required'] is False
+        # A local receipt cannot silently satisfy the unchanged default mode.
+        monkeypatch.delenv('RETENTION_RECOVERY_MODE')
+        assert recovery_ready(1) is False
+
+
+def test_recovery_policy_change_invalidates_exact_execution_approval(database, automation, monkeypatch):
+    from market.retention_worker import SCOPE
+    monkeypatch.setitem(SCOPE, 'recovery_policy', {'mode':'local_only', 'valid':True,
+        'off_vm_required':False, 'owner_approval_reference':'new-owner-exception'})
+    assert work_once(database)['status'] == 'inactive'
