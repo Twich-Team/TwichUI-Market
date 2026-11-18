@@ -51,6 +51,7 @@ assert before == fingerprints()
 migrate('upgrade', 'head');migrate('check')
 assert before == fingerprints()
 with engine.begin() as db:
+    expected_head = db.scalar(text('SELECT version_num FROM alembic_version'))
     db.execute(text("INSERT INTO market_feeds(market_id,source_kind,verification,enabled,failures) VALUES(2,'commodities','synthetic-evidence',false,0)"))
 result = migrate('downgrade', 'recovery_20261117', success=False)
 assert result.returncode and 'Retain feed evidence' in result.stderr
@@ -58,7 +59,10 @@ assert before == fingerprints()
 with engine.connect() as db:
     assert db.scalar(text('SELECT count(*) FROM market_feeds')) == 1
     head = db.scalar(text('SELECT version_num FROM alembic_version'))
-    assert head == 'coverage_20261117'
+    # PostgreSQL rolls back the entire rejected downgrade, including any newer
+    # additive migrations preceding the protected feed-evidence migration.
+    assert head == expected_head
+migrate('check')
 print(json.dumps({'origin':'synthetic','database':'market_test','head':head,'preserved_original_tables':len(columns),
     'preserved_original_column_hashes':before,'history_and_large_auction_id_preserved':True,
     'collection_not_activated_by_migration':True,'empty_feed_round_trip':True,'populated_evidence_downgrade_refused':True}))
