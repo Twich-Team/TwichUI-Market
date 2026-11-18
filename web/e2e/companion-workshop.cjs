@@ -63,6 +63,10 @@ const fs=require('node:fs'),path=require('node:path'),http=require('node:http');
   await expect(page.locator('#workshop-connect')).toBeEnabled();await expect(page.locator('#workshop-confirmation')).toBeHidden();await expect(page.locator('#workshop-note')).not.toContainText('PrivateOldAccount');
   await page.evaluate(()=>{window.__resolveReview=null;window.__rejectReview=null;});await page.locator('#workshop-connect').click();await expect.poll(()=>page.evaluate(()=>Boolean(window.__rejectReview))).toBe(true);
   await page.evaluate(()=>{window.__state.account.id=3;window.__state.bootstrap.account.id=3;window.__emit();window.__rejectReview(new Error('old account failure'));});await expect(page.locator('#workshop-connect')).toBeEnabled();await expect(page.locator('#workshop-note')).not.toContainText('old account failure');
+  await expect(page.locator('#workshop-note')).toHaveText('Your account or market changed during setup. Connect Workshop again.');
+  await page.evaluate(()=>{window.__resolveReview=null;window.__rejectReview=null;});await page.locator('#workshop-connect').click();await expect.poll(()=>page.evaluate(()=>Boolean(window.__resolveReview))).toBe(true);
+  await page.evaluate(()=>{window.__state.settings.selected_market=3;window.__emit();window.__resolveReview({review_id:'stale-market',installation:'C:\\PrivateOldMarket',market:'old'});});
+  await expect(page.locator('#workshop-connect')).toBeEnabled();await expect(page.locator('#workshop-confirmation')).toBeHidden();await expect(page.locator('#workshop-note')).toHaveText('Your account or market changed during setup. Connect Workshop again.');
   await page.evaluate(()=>{window.__defer=false;window.__fail='Unsupported or invalid market data: Workshop needs an update.';});await page.locator('#workshop-connect').click();await expect(page.locator('#workshop-note')).toContainText('Workshop needs an update');
   const failures=[
    ['wrong_folder','game_folder','Choose the Forever game folder containing Wow.exe and Interface/AddOns.'],

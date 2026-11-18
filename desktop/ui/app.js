@@ -102,7 +102,11 @@ async function connectWorkshop(confirm=false){
     render(await invoke('app_state'));
     focusTarget=workshopReview?'workshop-authorize':'workshop-state';
   }catch(error){if(context===archiveContext){workshopIssue=workshopFailure(error);workshopReview=null;}}
-  finally{workshopBusy=false;render(view);if(context===archiveContext&&focusTarget)$(focusTarget).focus();}
+  finally{
+    workshopBusy=false;
+    if(context!==archiveContext&&view?.connected){workshopReview=null;workshopIssue={code:'context_changed',stage:'setup_context',message:'Your account or market changed during setup. Connect Workshop again.',details:'setup context changed'};}
+    render(view);if(context===archiveContext&&focusTarget)$(focusTarget).focus();
+  }
 }
 $('workshop-connect').onclick=()=>connectWorkshop(false);
 $('workshop-authorize').onclick=()=>connectWorkshop(true);

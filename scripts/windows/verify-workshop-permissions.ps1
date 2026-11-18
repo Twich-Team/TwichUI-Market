@@ -14,7 +14,7 @@ if($Worker){
                 else{$before[$_.FullName]=(Get-FileHash $_.FullName -Algorithm SHA256).Hash}
             }
             $native=(& $planData.exe inspect $case.path)|ConvertFrom-Json
-            if($LASTEXITCODE -ne 0 -or $native.elevated){throw "Non-elevated native execution required: $($case.name)"}
+            if($LASTEXITCODE -ne 0 -or $native.elevated){throw "Non-elevated native execution required: $($case.name) $($native|ConvertTo-Json -Compress -Depth 8)"}
             if($native.accepted -ne $case.accepted){throw "Unexpected acceptance: $($case.name) $($native|ConvertTo-Json -Compress -Depth 8)"}
             if(-not $case.accepted -and $native.failure.code -ne $case.code){throw "Wrong failure code: $($case.name) $($native|ConvertTo-Json -Compress -Depth 8)"}
             foreach($file in $before.Keys){
@@ -101,23 +101,59 @@ if($LASTEXITCODE -ne 0){throw 'Limited worker report grant failed'}
 $planFile=Join-Path $base 'plan.json'
 @{exe=(Join-Path (Get-Location) 'desktop\target\debug\examples\installation_smoke.exe');report=$report;cases=$cases}|ConvertTo-Json -Depth 8|Set-Content $planFile
 $script=(Resolve-Path $PSCommandPath).Path
-# Task Scheduler starts a fresh environment, so carry only the two disposable
-# runner markers, never the parent process's credentials or other environment.
+# The restricted process receives only disposable markers and OS/profile paths.
 $launcher=Join-Path $base 'limited-worker.ps1'
 @("`$env:GITHUB_ACTIONS='true'", "`$env:RUNNER_OS='Windows'", ("& '"+$script.Replace("'","''")+"' -Worker -Plan '"+$planFile.Replace("'","''")+"'"))|Set-Content $launcher
 $arguments='-NoProfile -File "'+$launcher+'"'
-$principal=New-ScheduledTaskPrincipal -UserId ([System.Security.Principal.WindowsIdentity]::GetCurrent().Name) -LogonType Interactive -RunLevel Limited
-$action=New-ScheduledTaskAction -Execute (Join-Path $env:WINDIR 'System32\WindowsPowerShell\v1.0\powershell.exe') -Argument $arguments -WorkingDirectory (Get-Location).Path
+# This runner's Limited scheduled task still produced an elevated native token. Use Windows SAFER's NormalUser restriction instead
+# of changing UAC, users, registry or host policies. The child proves its token.
+Add-Type @'
+using System;
+using System.Text;
+using System.Runtime.InteropServices;
+using System.ComponentModel;
+public static class WorkshopLimitedProcess {
+ [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Unicode)]
+ struct Startup { public int cb; public string reserved, desktop, title; public int x,y,cx,cy,charsX,charsY,fill,flags; public short show,reservedBytes; public IntPtr reservedData,input,output,error; }
+ [StructLayout(LayoutKind.Sequential)] struct ProcessInfo { public IntPtr process,thread; public int pid,tid; }
+ [DllImport("advapi32.dll",SetLastError=true)] static extern bool OpenProcessToken(IntPtr process,uint access,out IntPtr token);
+ [DllImport("kernel32.dll")] static extern IntPtr GetCurrentProcess();
+ [DllImport("kernel32.dll")] static extern bool CloseHandle(IntPtr handle);
+ [DllImport("advapi32.dll",SetLastError=true)] static extern bool SaferCreateLevel(uint scope,uint level,uint flags,out IntPtr handle,IntPtr reserved);
+ [DllImport("advapi32.dll",SetLastError=true)] static extern bool SaferComputeTokenFromLevel(IntPtr level,IntPtr token,out IntPtr result,uint flags,IntPtr reserved);
+ [DllImport("advapi32.dll")] static extern bool SaferCloseLevel(IntPtr level);
+ [DllImport("advapi32.dll",CharSet=CharSet.Unicode,SetLastError=true)] static extern bool CreateProcessAsUserW(IntPtr token,string app,StringBuilder command,IntPtr processAttributes,IntPtr threadAttributes,bool inherit,uint flags,IntPtr environment,string directory,ref Startup startup,out ProcessInfo info);
+ public static int Start(string app,string args,string directory,string environment) {
+  IntPtr token=IntPtr.Zero,level=IntPtr.Zero,restricted=IntPtr.Zero,env=IntPtr.Zero;
+  try {
+   if(!OpenProcessToken(GetCurrentProcess(),0x0002|0x0008,out token))throw new Win32Exception();
+   if(!SaferCreateLevel(1,0x20000,1,out level,IntPtr.Zero))throw new Win32Exception();
+   if(!SaferComputeTokenFromLevel(level,token,out restricted,0,IntPtr.Zero))throw new Win32Exception();
+   env=Marshal.StringToHGlobalUni(environment);
+   Startup startup=new Startup();startup.cb=Marshal.SizeOf(typeof(Startup));ProcessInfo info;
+   if(!CreateProcessAsUserW(restricted,app,new StringBuilder("\""+app+"\" "+args),IntPtr.Zero,IntPtr.Zero,false,0x400,env,directory,ref startup,out info))throw new Win32Exception();
+   CloseHandle(info.process);CloseHandle(info.thread);return info.pid;
+  } finally {
+   if(env!=IntPtr.Zero)Marshal.FreeHGlobal(env);
+   if(restricted!=IntPtr.Zero)CloseHandle(restricted);
+   if(level!=IntPtr.Zero)SaferCloseLevel(level);
+   if(token!=IntPtr.Zero)CloseHandle(token);
+  }
+ }
+}
+'@
+$workerProcess=$null
 try {
-    $null=Register-ScheduledTask -TaskName $taskName -Action $action -Principal $principal
-    Start-ScheduledTask -TaskName $taskName
-    $deadline=[DateTime]::UtcNow.AddSeconds(90)
-    while(-not(Test-Path $report) -and -not(Test-Path ($planFile+'.error')) -and [DateTime]::UtcNow -lt $deadline){Start-Sleep -Milliseconds 250}
+    # Pass only OS/profile paths and disposable markers, with no credentials.
+    $environment=@('GITHUB_ACTIONS=true','RUNNER_OS=Windows',('SystemRoot='+$env:SystemRoot),('WINDIR='+$env:WINDIR),('USERPROFILE='+$env:USERPROFILE),('LOCALAPPDATA='+$env:LOCALAPPDATA),('TEMP='+$env:TEMP),('TMP='+$env:TMP),('PATH='+$env:WINDIR+'\System32;'+$env:WINDIR)) -join "`0"
+    $environment+="`0`0"
+    $workerId=[WorkshopLimitedProcess]::Start((Join-Path $env:WINDIR 'System32\WindowsPowerShell\v1.0\powershell.exe'),$arguments,(Get-Location).Path,$environment)
+    $workerProcess=Get-Process -Id $workerId
+    if(-not $workerProcess.WaitForExit(90000)){throw 'Limited-token Windows acceptance did not complete'}
     if(Test-Path ($planFile+'.error')){throw (Get-Content ($planFile+'.error') -Raw)}
-    if(-not(Test-Path $report)){throw 'Limited-token Windows acceptance did not complete'}
+    if(-not(Test-Path $report)){throw 'Limited-token worker did not produce acceptance'}
     Get-Content $report -Raw|Write-Output
 } finally {
-    Stop-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue
-    Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction SilentlyContinue
+    if($workerProcess -and -not $workerProcess.HasExited){$workerProcess.Kill();$workerProcess.WaitForExit()}
     # Retain fixture files on the disposable runner for failure inspection.
 }
