@@ -1,0 +1,526 @@
+"""Private backup boundary. Only this service sees archives or PostgreSQL credentials.
+
+The shared flock also coordinates the operator's backup/restore helpers. All archive
+access is relative to a pinned directory descriptor, never to a client supplied path.
+"""
+from contextlib import contextmanager
+from datetime import datetime, timezone, timedelta
+import fcntl
+import hashlib
+import json
+import math
+import os
+from pathlib import Path
+import re
+import selectors
+import sqlite3
+import stat
+import subprocess
+import time
+import uuid
+
+GIB = 1024**3
+RESERVE = 2 * GIB
+NAME = re.compile(r'[A-Za-z0-9][A-Za-z0-9_.-]{0,180}\.dump\Z')
+ID = re.compile(r'[a-f0-9]{32}\Z')
+DEFAULT = dict(enabled=False, interval_seconds=86400, daily=2, weekly=0, monthly=0,
+               max_bytes=None, minimum_recovery_points=1, warning_free_bytes=3*GIB)
+
+
+class Refused(Exception):
+    pass
+
+
+def stamp():
+    return datetime.now(timezone.utc).isoformat()
+
+
+def date(value):
+    result = datetime.fromisoformat(value)
+    if result.tzinfo is None:
+        raise ValueError('Timezone required')
+    return result.astimezone(timezone.utc)
+
+
+def identifier(name):
+    return hashlib.sha256(name.encode()).hexdigest()[:32]
+
+
+def validate_policy(value):
+    if not isinstance(value, dict) or set(value) != set(DEFAULT):
+        raise Refused('Specify the complete backup policy')
+    if type(value['enabled']) is not bool:
+        raise Refused('Invalid schedule')
+    bounds = dict(interval_seconds=(3600, 31*86400), daily=(1, 365), weekly=(0, 104),
+                  monthly=(0, 120), minimum_recovery_points=(1, 30), warning_free_bytes=(RESERVE, 1024**5))
+    for key, (low, high) in bounds.items():
+        if type(value[key]) is not int or not low <= value[key] <= high:
+            raise Refused('Invalid backup policy: ' + key)
+    if value['max_bytes'] is not None and (type(value['max_bytes']) is not int or not 1024**2 <= value['max_bytes'] <= 1024**5):
+        raise Refused('Invalid managed archive budget')
+    return dict(value)
+
+
+class Manager:
+    def __init__(self, root='/backups', state='/state', *, require_mount=True):
+        self.root = Path(root).absolute()
+        self.state = Path(state).absolute()
+        if self.root.resolve() != self.root or self.root.is_symlink() or not self.root.is_dir():
+            raise Refused('Managed backup directory is missing or unsafe')
+        if require_mount:
+            mounts = [line.split()[4] for line in Path('/proc/self/mountinfo').read_text().splitlines()]
+            if str(self.root) not in mounts:
+                raise Refused('Backup directory must be a dedicated verified mount')
+        self.fd = os.open(self.root, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+        info = os.fstat(self.fd)
+        if info.st_uid != os.geteuid() or info.st_mode & 0o077:
+            os.close(self.fd)
+            raise Refused('Backup root must be owned by this service with mode 0700')
+        if self.state.resolve() != self.state or self.state.is_symlink():
+            raise Refused('Unsafe management state directory')
+        self.state.mkdir(mode=0o700, parents=True, exist_ok=True)
+        if (self.state/'management.sqlite').is_symlink():
+            raise Refused('Unsafe management database')
+        self.db_path = self.state/'management.sqlite'
+        with self.lock():
+            with self.db() as db:
+                db.executescript('CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT NOT NULL);'
+                                 'CREATE TABLE IF NOT EXISTS receipts (id TEXT PRIMARY KEY, at TEXT NOT NULL, actor TEXT NOT NULL, action TEXT NOT NULL, detail TEXT NOT NULL);')
+                if not db.execute("SELECT 1 FROM settings WHERE key='policy'").fetchone():
+                    self.set(db, 'policy', dict(revision=1, **DEFAULT))
+                    self.receipt(db, 'migration', 'policy.initialized', {'policy': DEFAULT, 'notice': 'Schedule disabled; no legacy archives adopted or deleted'})
+                # A crash is never treated as a completed backup or a deletion authorization.
+                job = self.get(db, 'job', {})
+                if job.get('status') in ('queued', 'running'):
+                    self.set(db, 'job', {**job, 'status': 'interrupted', 'finished_at': stamp()})
+            self.reconcile()
+
+    def close(self):
+        os.close(self.fd)
+
+    @contextmanager
+    def db(self):
+        db = sqlite3.connect(self.db_path, timeout=5)
+        try:
+            db.execute('PRAGMA synchronous=FULL')
+            with db:
+                yield db
+        finally:
+            db.close()
+
+    @staticmethod
+    def get(db, key, default=None):
+        row = db.execute('SELECT value FROM settings WHERE key=?', (key,)).fetchone()
+        return json.loads(row[0]) if row else default
+
+    @staticmethod
+    def set(db, key, value):
+        db.execute('INSERT OR REPLACE INTO settings VALUES (?, ?)', (key, json.dumps(value)))
+
+    @staticmethod
+    def receipt(db, actor, action, detail):
+        key = uuid.uuid4().hex
+        db.execute('INSERT INTO receipts VALUES (?,?,?,?,?)', (key, stamp(), str(actor)[:80], action, json.dumps(detail)))
+        return key
+
+    @contextmanager
+    def lock(self):
+        fd = self.open('.backup.lock', os.O_CREAT | os.O_WRONLY)
+        try:
+            try:
+                fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BlockingIOError:
+                raise Refused('Backup, download, deletion or restore operation is busy') from None
+            yield
+        finally:
+            os.close(fd)
+
+    def open(self, name, flags=os.O_RDONLY):
+        fd = os.open(name, flags | os.O_NOFOLLOW | os.O_NONBLOCK, 0o600, dir_fd=self.fd)
+        info = os.fstat(fd)
+        if not stat.S_ISREG(info.st_mode) or info.st_nlink != 1 or info.st_uid != os.geteuid():
+            os.close(fd)
+            raise Refused('Unsafe managed file')
+        return fd
+
+    def read_json(self, name):
+        with os.fdopen(self.open(name), 'rb') as stream:
+            if os.fstat(stream.fileno()).st_size > 65536:
+                raise ValueError('Oversized metadata')
+            return json.load(stream)
+
+    def write_json(self, name, value):
+        temporary = '.metadata-' + uuid.uuid4().hex
+        try:
+            with os.fdopen(self.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL), 'w') as stream:
+                json.dump(value, stream)
+                stream.flush()
+                os.fsync(stream.fileno())
+            os.replace(temporary, name, src_dir_fd=self.fd, dst_dir_fd=self.fd)
+            os.fsync(self.fd)
+        finally:
+            try:
+                os.unlink(temporary, dir_fd=self.fd)
+            except FileNotFoundError:
+                pass
+
+    def filesystem(self):
+        usage = os.fstatvfs(self.fd)
+        return dict(capacity_bytes=usage.f_blocks*usage.f_frsize, available_bytes=usage.f_bavail*usage.f_frsize,
+                    free_bytes=usage.f_bfree*usage.f_frsize, reserve_bytes=RESERVE,
+                    filesystem_id=str(os.fstat(self.fd).st_dev), measurement='backup mount; available excludes filesystem privileged reserve')
+
+    def rows(self):
+        rows, other = [], []
+        names = set(os.listdir(self.fd))
+        for name in sorted(names):
+            if name == '.backup.lock':
+                continue
+            if not NAME.fullmatch(name):
+                if name.endswith(('.json', '.partial')) or name.startswith('.metadata-'):
+                    kind = 'orphan_manifest' if name.endswith('.json') and name[:-5]+'.dump' not in names else 'incomplete'
+                    if name.endswith('.json') and any(r['filename'] == name[:-5]+'.dump' for r in rows):
+                        continue
+                    other.append(dict(name=name[:190], type=kind))
+                continue
+            row = dict(id=identifier(name), filename=name, type='legacy', origin='unknown', created_at=None,
+                       bytes=None, sha256=None, verification='unknown', restoration_verified_at=None,
+                       protected=True, required_by=[], eligible=False, reason='Legacy archive requires separate operator classification')
+            try:
+                with os.fdopen(self.open(name), 'rb') as stream:
+                    info = os.fstat(stream.fileno())
+                row['bytes'] = info.st_size
+                manifest = self.read_json(name[:-5]+'.json')
+                row['created_at'] = date(manifest['created_at']).isoformat()
+                if manifest.get('filename') != name or manifest.get('bytes') != info.st_size or not re.fullmatch('[a-f0-9]{64}', manifest.get('sha256', '')):
+                    raise ValueError('Inconsistent metadata')
+                row['sha256'] = manifest['sha256']
+                if manifest.get('version') != 2 or manifest.get('manager') != 'market-backups-v2':
+                    row['verification'] = 'legacy_metadata_only'
+                else:
+                    if manifest['origin'] not in ('scheduled', 'manual', 'release', 'restore-verification'):
+                        raise ValueError('Unknown origin')
+                    if (not isinstance(manifest['protected'], bool) or not isinstance(manifest.get('required_by'), list)
+                            or any(not isinstance(value, str) or not re.fullmatch('[A-Za-z0-9_:-]{1,80}', value) for value in manifest['required_by'])):
+                        raise ValueError('Invalid protection metadata')
+                    if manifest.get('restoration_verified_at'):
+                        date(manifest['restoration_verified_at'])
+                        if not isinstance(manifest.get('restored'), dict) or not manifest['restored']:
+                            raise ValueError('Restore evidence missing')
+                    row.update(type=manifest['origin'], origin=manifest['origin'], protected=manifest['protected'],
+                               required_by=manifest['required_by'], verification=manifest.get('verification', 'unknown'),
+                               restoration_verified_at=manifest.get('restoration_verified_at'))
+                    # Only files generated by this manager and fully decoded by pg_restore are owned.
+                    if (row['verification'] == 'archive_integrity_verified' and type(manifest.get('postgres_major')) is int
+                            and manifest.get('file_identity') == [info.st_ino, info.st_size, info.st_mtime_ns]):
+                        row['eligible'] = not row['protected'] and not row['required_by']
+                        row['reason'] = 'Protected or required by a recovery operation' if not row['eligible'] else 'Eligible for explicit deletion'
+                    else:
+                        row.update(reason='Archive changed or integrity verification is incomplete', verification='unavailable', restoration_verified_at=None)
+            except (OSError, ValueError, TypeError, KeyError, Refused):
+                row.update(eligible=False, reason='Missing, unsafe or inconsistent archive/manifest', verification='unavailable')
+            rows.append(row)
+        archive_manifests = {r['filename'][:-5]+'.json' for r in rows}
+        return sorted(rows, key=lambda r: (r['created_at'] or '', r['filename']), reverse=True), [o for o in other if o['name'] not in archive_manifests]
+
+    def guarded_rows(self, db):
+        rows, other = self.rows()
+        minimum = self.get(db, 'policy')['minimum_recovery_points']
+        # Preserve the newest N archive-integrity points AND restored recovery points.
+        for points in ([r for r in rows if r['verification'] == 'archive_integrity_verified'],
+                       [r for r in rows if r['restoration_verified_at']]):
+            for row in points[:minimum]:
+                row.update(eligible=False, reason='Minimum recovery-point safeguard')
+        return rows, other
+
+    def preview(self, db, rows):
+        policy = self.get(db, 'policy')
+        scheduled = [r for r in rows if r['origin'] == 'scheduled' and r['verification'] == 'archive_integrity_verified']
+        keep = set()
+        for tier, pattern in [('daily', '%Y-%m-%d'), ('weekly', '%G-%V'), ('monthly', '%Y-%m')]:
+            buckets = set()
+            for row in scheduled:
+                bucket = date(row['created_at']).strftime(pattern)
+                if bucket not in buckets and len(buckets) < policy[tier]:
+                    buckets.add(bucket)
+                    keep.add(row['id'])
+        candidates = [r for r in reversed(scheduled) if r['eligible'] and r['id'] not in keep]
+        used = sum(r['bytes'] or 0 for r in rows)
+        return dict(candidates=[dict(id=r['id'], filename=r['filename'], bytes=r['bytes']) for r in candidates],
+                    reclaimable_bytes=sum(r['bytes'] for r in candidates),
+                    budget_exceeded=bool(policy['max_bytes'] and used > policy['max_bytes']),
+                    scope='Only scheduled v2 archives outside retained UTC day/week/month buckets. Manual, release, legacy and protected archives are excluded. Saving never deletes files; rotation follows a successful new scheduled backup.')
+
+    def overview(self, offset=0, limit=20):
+        try:
+            result = self.measured_overview(offset, limit)
+            result['inventory_stale'] = False
+            return result
+        except Refused:
+            with self.db() as db:
+                cached = self.get(db, 'overview:'+str(offset)+':'+str(limit))
+                if cached is None:
+                    raise Refused('Backup operation is busy; inventory measurements unavailable') from None
+                cached['service_status'] = 'operation_busy'
+                cached['inventory_stale'] = True
+                cached['job'] = self.get(db, 'job', {})
+                cached['items'] = [dict(row, eligible=False, reason='Operation busy; refresh after completion') for row in cached['items']]
+                return cached
+
+    def measured_overview(self, offset=0, limit=20):
+        with self.lock(), self.db() as db:
+            rows, other = self.guarded_rows(db)
+            policy = self.get(db, 'policy')
+            fs = self.filesystem()
+            successes = [r for r in rows if r['verification'] == 'archive_integrity_verified']
+            restores = [r['restoration_verified_at'] for r in rows if r['restoration_verified_at']]
+            job = self.get(db, 'job', {})
+            next_at = self.get(db, 'next_at') if policy['enabled'] else None
+            result = dict(measured_at=stamp(), policy=policy, service_status='enabled' if policy['enabled'] else 'scheduled_backups_disabled',
+                        last_success=successes[0]['created_at'] if successes else None,
+                        last_restoration_verified_at=max(restores) if restores else None,
+                        total=len(rows), total_bytes=sum(r['bytes'] or 0 for r in rows), filesystem=fs,
+                        storage_pressure=fs['available_bytes'] < policy['warning_free_bytes'], next_scheduled_at=next_at,
+                        estimate_bytes=self.estimate(rows), job=job, items=rows[offset:offset+limit], offset=offset, limit=limit,
+                        artifacts=other[:100], artifact_count=len(other), preview=self.preview(db, rows),
+                        receipts=[dict(id=r[0], at=r[1], actor=r[2], action=r[3], detail=json.loads(r[4]))
+                                  for r in db.execute('SELECT * FROM receipts ORDER BY at DESC LIMIT 20')])
+            self.set(db, 'overview:'+str(offset)+':'+str(limit), result)
+            # Bound cached pages; the immutable audit ledger is stored separately.
+            db.execute("DELETE FROM settings WHERE key LIKE 'overview:%' AND rowid NOT IN (SELECT rowid FROM settings WHERE key LIKE 'overview:%' ORDER BY rowid DESC LIMIT 20)")
+            return result
+
+    def policy(self, actor, revision, values):
+        values = validate_policy(values)
+        with self.lock(), self.db() as db:
+            previous = self.get(db, 'policy')
+            if revision != previous['revision']:
+                raise Refused('Policy changed; refresh and review it again')
+            updated = dict(revision=revision+1, **values)
+            self.receipt(db, actor, 'policy.updated', dict(before=previous, after=updated))
+            self.set(db, 'policy', updated)
+            # Saving an enabled schedule starts only after a full cadence, never on service startup.
+            self.set(db, 'next_at', (datetime.now(timezone.utc)+timedelta(seconds=values['interval_seconds'])).isoformat() if values['enabled'] else None)
+            return updated
+
+    def find(self, db, key):
+        if not isinstance(key, str) or not ID.fullmatch(key):
+            raise Refused('Invalid backup identifier')
+        rows, _ = self.guarded_rows(db)
+        row = next((r for r in rows if r['id'] == key), None)
+        if row is None:
+            raise Refused('Backup is no longer available')
+        return row
+
+    def protect(self, actor, key, protected):
+        with self.lock(), self.db() as db:
+            row = self.find(db, key)
+            if row['type'] == 'legacy' or row['verification'] != 'archive_integrity_verified':
+                raise Refused('Unknown ownership or verification; protection cannot be changed')
+            if not protected and row['required_by']:
+                raise Refused('Recovery operation still requires this archive')
+            manifest = self.read_json(row['filename'][:-5]+'.json')
+            self.receipt(db, actor, 'protection.intent', dict(id=key, protected=protected))
+            db.commit()
+            manifest['protected'] = protected
+            self.write_json(row['filename'][:-5]+'.json', manifest)
+            self.receipt(db, actor, 'protection.updated', dict(id=key, protected=protected))
+            return dict(protected=protected)
+
+    def checksum(self, name):
+        digest = hashlib.sha256()
+        with os.fdopen(self.open(name), 'rb') as stream:
+            for chunk in iter(lambda: stream.read(1024**2), b''):
+                digest.update(chunk)
+        return digest.hexdigest()
+
+    def delete(self, actor, key, confirmation, *, automatic=False):
+        with self.lock(), self.db() as db:
+            row = self.find(db, key)
+            if confirmation != row['filename'] or not row['eligible']:
+                raise Refused(row['reason'] if confirmation == row['filename'] else 'Type the exact backup filename to confirm')
+            if automatic and key not in {r['id'] for r in self.preview(db, self.guarded_rows(db)[0])['candidates']}:
+                raise Refused('Retention candidates changed')
+            if self.checksum(row['filename']) != row['sha256']:
+                raise Refused('Archive checksum changed; deletion refused')
+            survivors, _ = self.guarded_rows(db)
+            intact = []
+            for survivor in survivors:
+                if survivor['id'] != key and survivor['verification'] == 'archive_integrity_verified':
+                    try:
+                        if self.checksum(survivor['filename']) == survivor['sha256']:
+                            intact.append(survivor)
+                    except (OSError, Refused):
+                        pass
+            if len(intact) < self.get(db, 'policy')['minimum_recovery_points']:
+                raise Refused('Too few intact recovery points would remain')
+            if row['restoration_verified_at'] and not any(point['restoration_verified_at'] for point in intact):
+                raise Refused('The final intact restored recovery point must be retained')
+            manifest_name = row['filename'][:-5]+'.json'
+            manifest = self.read_json(manifest_name)
+            receipt = self.receipt(db, actor, 'deletion.intent', dict(backup=row, manifest=manifest, automatic=automatic, policy_revision=self.get(db, 'policy')['revision']))
+            db.commit()  # durable authorization and metadata survive any filesystem failure
+            removed, manifest_removed = False, False
+            try:
+                os.unlink(row['filename'], dir_fd=self.fd)
+                removed = True
+                os.fsync(self.fd)
+                os.unlink(manifest_name, dir_fd=self.fd)
+                manifest_removed = True
+                os.fsync(self.fd)
+            except OSError:
+                pass
+            result = dict(receipt_id=receipt, archive_removed=removed, manifest_removed=manifest_removed,
+                          unlinked_bytes=row['bytes'] if removed else 0, status='deleted' if removed and manifest_removed else 'partial_failure')
+            self.receipt(db, actor, 'deletion.result', result)
+            return result
+
+    def reconcile(self):
+        # Called on restart under the same lock. Only remove a leftover manifest when
+        # a durable deletion intent names it, the archive is gone, and metadata matches.
+        with self.db() as db:
+            for key, payload in db.execute("SELECT id,detail FROM receipts WHERE action='deletion.intent'").fetchall():
+                data = json.loads(payload)
+                name = data['backup']['filename']
+                if name in os.listdir(self.fd):
+                    continue
+                try:
+                    if self.read_json(name[:-5]+'.json') != data['manifest']:
+                        continue
+                    os.unlink(name[:-5]+'.json', dir_fd=self.fd)
+                    os.fsync(self.fd)
+                    self.receipt(db, 'restart', 'deletion.reconciled', {'receipt_id': key, 'manifest_removed': True})
+                except (OSError, ValueError, Refused):
+                    pass
+
+    @contextmanager
+    def download(self, actor, key):
+        with self.lock(), self.db() as db:
+            row = self.find(db, key)
+            if row['verification'] != 'archive_integrity_verified' or self.checksum(row['filename']) != row['sha256']:
+                raise Refused('Verified ownership and matching SHA-256 are required to download')
+            self.receipt(db, actor, 'download.authorized', dict(id=key, sha256=row['sha256']))
+            db.commit()
+            with os.fdopen(self.open(row['filename']), 'rb') as stream:
+                yield row, stream
+
+    @staticmethod
+    def estimate(rows):
+        measured = [r['bytes'] for r in rows if r['verification'] == 'archive_integrity_verified'][:5]
+        return math.ceil(max(measured)*1.5)+64*1024**2 if measured else GIB
+
+    def queue(self, actor):
+        with self.lock(), self.db() as db:
+            previous = self.get(db, 'job', {})
+            if previous.get('status') in ('queued', 'running'):
+                raise Refused('A backup is already queued or running')
+            rows, _ = self.rows()
+            self.capacity(db, rows, self.estimate(rows))
+            job = dict(id=uuid.uuid4().hex, status='queued', actor=str(actor), requested_at=stamp())
+            self.set(db, 'job', job)
+            self.receipt(db, actor, 'backup.queued', job)
+            return job
+
+    def capacity(self, db, rows, allowance):
+        policy = self.get(db, 'policy')
+        if self.filesystem()['available_bytes'] < allowance+RESERVE:
+            raise Refused('Insufficient space for a new full backup and safe reserve; review emergency cleanup preview')
+        if policy['max_bytes'] and sum(r['bytes'] or 0 for r in rows)+allowance > policy['max_bytes']:
+            raise Refused('Managed backup budget cannot accommodate a replacement; no recovery point was deleted')
+
+    def create(self, actor, origin='manual', job_id=None):
+        if origin not in ('scheduled', 'manual', 'release', 'restore-verification'):
+            raise Refused('Invalid backup origin')
+        with self.lock(), self.db() as db:
+            rows, _ = self.rows()
+            job = self.get(db, 'job', {})
+            if (job_id and (job.get('id') != job_id or job.get('status') != 'queued')) or (not job_id and job.get('status') in ('queued', 'running')):
+                raise Refused('Backup job changed')
+            job = dict(id=job_id or uuid.uuid4().hex, status='running', actor=str(actor), started_at=stamp())
+            self.set(db, 'job', job)
+            self.receipt(db, actor, 'backup.started', job)
+            db.commit()
+            name = 'market-'+origin+'-'+datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')+'-'+uuid.uuid4().hex[:12]+'.dump'
+            temporary = name[:-5]+'.partial'
+            published = False
+            try:
+                estimate = self.estimate(rows)
+                self.capacity(db, rows, estimate)
+                server = subprocess.check_output(['psql', '-Atc', 'SHOW server_version_num'], timeout=20, stderr=subprocess.DEVNULL).decode().strip()
+                major = int(server)//10000
+                client = subprocess.check_output(['pg_dump', '--version'], timeout=10).decode()
+                if int(re.search(r'(\d+)\.', client)[1]) != major:
+                    raise Refused('PostgreSQL client/server major versions must match')
+                with os.fdopen(self.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL), 'wb') as stream:
+                    process = subprocess.Popen(['pg_dump', '--format=custom', '--no-owner', '--no-acl'], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+                    started = time.monotonic()
+                    written = 0
+                    selector = selectors.DefaultSelector()
+                    selector.register(process.stdout, selectors.EVENT_READ)
+                    try:
+                        while True:
+                            if time.monotonic()-started > 7200 or self.filesystem()['available_bytes'] < 1024**2+RESERVE:
+                                raise Refused('Backup exceeded disk reserve or operational deadline')
+                            if not selector.select(timeout=2):
+                                continue
+                            chunk = os.read(process.stdout.fileno(), 1024**2)
+                            if not chunk:
+                                break
+                            written += len(chunk)
+                            budget = self.get(db, 'policy')['max_bytes']
+                            if budget and sum(r['bytes'] or 0 for r in rows)+written > budget:
+                                raise Refused('Backup exceeded managed archive budget')
+                            stream.write(chunk)
+                            stream.flush()
+                        if process.wait(timeout=30) != 0:
+                            raise Refused('pg_dump failed')
+                    finally:
+                        if process.poll() is None:
+                            process.kill()
+                            process.wait()
+                        process.stdout.close()
+                        selector.close()
+                    stream.flush()
+                    os.fsync(stream.fileno())
+                # Decode the ENTIRE custom archive; listing its TOC alone misses corrupt data.
+                with os.fdopen(self.open(temporary), 'rb') as source:
+                    subprocess.run(['pg_restore', '--file=/dev/null'], stdin=source, check=True, timeout=7200, stderr=subprocess.DEVNULL)
+                info = os.stat(temporary, dir_fd=self.fd, follow_symlinks=False)
+                manifest = dict(version=2, manager='market-backups-v2', filename=name, source='development', origin=origin,
+                                created_at=stamp(), bytes=info.st_size, sha256=self.checksum(temporary), postgres_major=major,
+                                verification='archive_integrity_verified', restoration_verified_at=None,
+                                protected=origin != 'scheduled', required_by=[], file_identity=[info.st_ino, info.st_size, info.st_mtime_ns])
+                # Manifest first; inventory publishes the pair only when the completed archive appears.
+                self.write_json(name[:-5]+'.json', manifest)
+                os.rename(temporary, name, src_dir_fd=self.fd, dst_dir_fd=self.fd)
+                os.fsync(self.fd)
+                published = True
+                job.update(status='succeeded', finished_at=stamp(), backup_id=identifier(name))
+                self.set(db, 'job', job)
+                self.receipt(db, actor, 'backup.published', dict(id=identifier(name), manifest=manifest))
+            except Exception:
+                job.update(status='failed', finished_at=stamp(), error='Backup creation or integrity verification failed; valid recovery points retained')
+                self.set(db, 'job', job)
+                self.receipt(db, actor, 'backup.failed', job)
+            finally:
+                try:
+                    os.unlink(temporary, dir_fd=self.fd)
+                except FileNotFoundError:
+                    pass
+                except OSError:
+                    job['cleanup_pending'] = True
+                    self.set(db, 'job', job)
+                    self.receipt(db, actor, 'backup.cleanup_pending', {'id': job['id']})
+            db.commit()
+        # Each deletion takes the global lock and re-evaluates the latest policy/protection.
+        if published and job['status'] == 'succeeded' and origin == 'scheduled':
+            overview = self.overview()
+            results = []
+            for candidate in overview['preview']['candidates']:
+                try:
+                    results.append(self.delete('rotation', candidate['id'], candidate['filename'], automatic=True))
+                except Refused:
+                    break
+            with self.lock(), self.db() as db:
+                self.receipt(db, 'rotation', 'retention.receipt', dict(replacement=identifier(name), results=results, policy_revision=overview['policy']['revision']))
+        return job

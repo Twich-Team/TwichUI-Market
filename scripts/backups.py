@@ -20,7 +20,7 @@ def locked(function):
     @wraps(function)
     def wrapper(*args,**kwargs):
         DIRECTORY.mkdir(mode=0o700,exist_ok=True)
-        with (DIRECTORY/'.backup.lock').open('a') as lock:
+        with os.fdopen(os.open(DIRECTORY/'.backup.lock', os.O_CREAT|os.O_WRONLY|os.O_NOFOLLOW, 0o600), 'a') as lock:
             fcntl.flock(lock,fcntl.LOCK_EX)
             return function(*args,**kwargs)
     return wrapper
@@ -80,10 +80,8 @@ def backup(project='development', keep=7):
         manifest = {'version':1,'filename':filename,'source':project,'created_at':datetime.now(timezone.utc).isoformat(),
                     'bytes':target.stat().st_size,'sha256':sha256(target),'restoration_verified_at':None}
         write_manifest(target,manifest)
-        # Rotate only this helper's archives from the same source, after successful backup.
-        for old in sorted(DIRECTORY.glob(f'market-{project}-*.dump'),reverse=True)[keep:]:
-            old.unlink()
-            old.with_suffix('.json').unlink(missing_ok=True)
+        # Retention belongs to the management service. Operator/release archives
+        # are retained conservatively; --keep never authorizes filename-only deletion.
         return target
     finally:
         temporary.unlink(missing_ok=True)
@@ -101,11 +99,13 @@ def write_manifest(path,manifest):
 
 @locked
 def restore_check(path):
+    if Path(path).is_symlink():
+        raise ValueError('Symlink archives are not accepted')
     path = Path(path).resolve()
     if path.parent != DIRECTORY.resolve() or not path.name.startswith('market-') or path.suffix!='.dump':
         raise ValueError('Restore rehearsal accepts only project backup archives')
     manifest = json.loads(path.with_suffix('.json').read_text())
-    if manifest.get('version')!=1 or manifest.get('sha256') != sha256(path) or manifest.get('bytes')!=path.stat().st_size:
+    if manifest.get('version') not in (1,2) or manifest.get('sha256') != sha256(path) or manifest.get('bytes')!=path.stat().st_size:
         raise ValueError('Backup integrity verification failed')
     command = compose('restore')
     # Always disposable; --no-clean restores only into the freshly created database.
@@ -141,6 +141,9 @@ def restore_check(path):
         # PostgreSQL also restores and validates foreign-key/unique constraints through pg_restore.
         manifest['restoration_verified_at'] = datetime.now(timezone.utc).isoformat()
         manifest['restored'] = evidence
+        if manifest.get('version') == 2:
+            manifest['protected'] = True  # restore/retention gate points need explicit release
+            manifest['required_by'] = sorted(set(manifest.get('required_by', [])) | {'restore-recovery-gate'})
         write_manifest(path,manifest)
         if manifest['source']=='development':
             status_directory=ROOT/'artifacts'/'backup-status'

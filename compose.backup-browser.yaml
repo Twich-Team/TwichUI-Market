@@ -1,0 +1,36 @@
+# Review-only overlay for the isolated browser project. No collector or host ports.
+services:
+  api:
+    image: twichui-market-backend:backup-review
+    environment:
+      BACKUP_MANAGEMENT_ENABLED: "true"
+    volumes: !override [./artifacts/backup-management/synthetic-token:/run/secrets/backup-manager-token:ro]
+  migrate:
+    image: twichui-market-backend:backup-review
+  proxy:
+    image: twichui-market-web:backup-review
+  backup-manager:
+    user: "${BACKUP_TEST_UID:-0}:${BACKUP_TEST_GID:-0}"
+    image: twichui-market-backup-manager:review
+    build:
+      context: ./deploy/backup
+      dockerfile: Management.Dockerfile
+    environment:
+      PGHOST: db
+      PGUSER: market
+      PGDATABASE: market_test
+      PGPASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      PGCONNECT_TIMEOUT: "10"
+    volumes:
+      - ./artifacts/backup-management/browser-fixtures:/backups
+      - ./artifacts/backup-management/synthetic-token:/run/secrets/backup-manager-token:ro
+    tmpfs:
+      - "/state:size=16m,mode=0700,uid=${BACKUP_TEST_UID:-0},gid=${BACKUP_TEST_GID:-0}"
+      - /tmp:size=16m
+    read_only: true
+    mem_limit: 256m
+    cpus: 0.25
+    pids_limit: 64
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    logging: {driver: json-file, options: {max-size: "2m", max-file: "1"}}

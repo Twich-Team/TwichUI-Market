@@ -22,6 +22,8 @@ from .security import DUMMY_HASH, admin, audit, aware, digest, hasher, identity,
 app = FastAPI(title="TwichUI Market", version="0.1.0", docs_url=None, redoc_url=None)
 from .market_api import router as market_router
 app.include_router(market_router)
+from .backup_management import router as backup_management_router
+app.include_router(backup_management_router)
 from .catalogue import router as catalogue_router
 app.include_router(catalogue_router)
 from .item_profiles import router as profile_router

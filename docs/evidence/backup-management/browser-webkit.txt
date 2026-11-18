@@ -1,0 +1,17 @@
+> twichui-market-web@0.1.0 test:e2e
+> playwright test --config playwright.backup-webkit.config.ts
+
+
+Running 4 tests using 1 worker
+
+  ✓  1 e2e/backup-management.spec.ts:36:1 › backup management: inventory, details, pagination, exact-name deletion and policy review (11.5s)
+  ✓  2 e2e/backup-management.spec.ts:64:1 › backup management: mobile storage pressure, safeguards and disclosures (5.1s)
+  ✓  3 e2e/backup-management.spec.ts:75:1 › backup management: unavailable and empty states show no fabricated measurements (3.9s)
+  ✓  4 e2e/backup-management.spec.ts:84:1 › backup management real boundary: create protect download and delete through actual API and service (5.0s)
+
+  4 passed (27.0s)
+npm notice
+npm notice New major version of npm available! 11.20.0 -> 12.2.3
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+npm notice To update run: npm install -g npm@12.2.3
+npm notice

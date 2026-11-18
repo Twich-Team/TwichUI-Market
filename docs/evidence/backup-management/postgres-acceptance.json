@@ -1,0 +1,27 @@
+{
+  "synthetic": true,
+  "postgres_major": 17,
+  "archive_integrity": "full pg_restore decode and SHA-256",
+  "keep_two": {
+    "created": [
+      "market-scheduled-20261118T032935084758Z-42fef00bce07.dump",
+      "market-scheduled-20261118T032935336842Z-9344e5b7ddf8.dump",
+      "market-scheduled-20261118T032935548748Z-277300f31a90.dump"
+    ],
+    "removed": "market-scheduled-20261118T032935084758Z-42fef00bce07.dump",
+    "remaining_after_rotation": [
+      "market-scheduled-20261118T032935548748Z-277300f31a90.dump",
+      "market-scheduled-20261118T032935336842Z-9344e5b7ddf8.dump"
+    ]
+  },
+  "isolated_restore_rows": 200,
+  "source_fingerprint_unchanged": true,
+  "manual_deletion": {
+    "receipt_id": "6c975930f81d4798b324451604a1456e",
+    "archive_removed": true,
+    "manifest_removed": true,
+    "unlinked_bytes": 129243,
+    "status": "deleted"
+  },
+  "protected_point_retained": true
+}

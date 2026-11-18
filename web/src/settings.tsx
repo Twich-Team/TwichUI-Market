@@ -1,6 +1,7 @@
 import { Loading } from "./loading";
 import { AdministrationOverview } from "./admin-overview";
 import type { MetadataOverview } from "./metadata-admin";
+import { BackupManagement } from "./backup-management";
 import { DatabaseGrowth } from "./storage-growth";
 import { formatBytes as bytes } from "./size";
 import { MemberArchive } from "./member-archive";
@@ -594,6 +595,7 @@ export function Administration({
           {tab === "collection" && <CollectionHistory markets={markets}/>}
           {tab === "storage" && (
             <>
+              <BackupManagement readOnly={readOnly}/>
               <DatabaseGrowth samples={state.storage.growth.samples} current={state.storage.database_bytes}/>
               <RetentionControls readOnly={readOnly} />
               <section className="panel padded">
@@ -646,16 +648,17 @@ export function Administration({
               </section>
               <section className="panel padded">
                 <h3>Backups & restoration</h3>
+                <p className="small muted">Legacy operations receipts below describe the previous backup worker. Current archive availability, filesystem measurements and management controls are shown in Backup Management above.</p>
                 <dl>
-                  <dt>Backup service</dt>
+                  <dt>Legacy backup service</dt>
                   <dd>{state.storage.backup.status.replaceAll("_", " ")}</dd>
-                  <dt>Last successful dump</dt>
+                  <dt>Legacy last successful dump</dt>
                   <dd>{when(state.storage.backup.last_success)}</dd>
-                  <dt>Last restore rehearsal</dt>
+                  <dt>Legacy restore rehearsal</dt>
                   <dd>
                     {when(state.storage.backup.last_restoration_verified_at)}
                   </dd>
-                  <dt>Archive size</dt>
+                  <dt>Legacy archive size</dt>
                   <dd>{bytes(state.storage.backup.bytes)}</dd>
                 </dl>
                 <p className="muted">

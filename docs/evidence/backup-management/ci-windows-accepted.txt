@@ -1,0 +1,16 @@
+2026-11-18T03:51:10.2593690Z test result: ok. 33 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 1.16s
+2026-11-18T03:51:22.0545152Z test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 11.78s
+2026-11-18T03:51:22.4156888Z test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.35s
+2026-11-18T03:51:23.1078777Z test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.68s
+2026-11-18T03:51:23.2228168Z test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+2026-11-18T03:51:23.2351315Z test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-11-18T03:51:23.2780967Z test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+2026-11-18T03:51:23.2904983Z test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-11-18T03:51:23.3938916Z test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+2026-11-18T03:51:23.5191889Z test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s
+2026-11-18T03:51:23.8647611Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-11-18T03:51:46.0885016Z test result: ok. 1 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-11-18T03:55:13.1629212Z Installed v2 native UI/API authorization and background synchronization smoke passed.
+2026-11-18T03:55:13.7273404Z Actual legacy upgrade and uninstall retention acceptance passed.
+2026-11-18T03:55:56.3448125Z Installed v2: actual Edge website approval, real Rust hidden-window sync, preference save, single-instance restore, export, revocation and offline cache passed.
+2026-11-18T03:55:56.9151902Z Installed v2 native UI/API authorization and background synchronization smoke passed.

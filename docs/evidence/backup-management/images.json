@@ -1,0 +1,10 @@
+{
+  "source": "2796e70e622ef0f5c3270e7aef4d4428eabeef70",
+  "images": {
+    "backend": "sha256:6d764fbe8581680a4da806015d6a7f6f05483f0c57b8d64b89d55bd5a1812d86",
+    "frontend": "sha256:ff172a984cba5d20359fc5e18d18cac226f8858e9422eb7138b0e644f8a00dc1",
+    "manager": "sha256:79cea119910ad3353f8a35ce21d079fafbcab0a757c0734bfe3bce6055c68565"
+  },
+  "note": "Prepared locally; not deployed. Runtime source equivalence checked below.",
+  "ci_workflow_revision": "20b99f5a0bc792e81e84be329f7beeaa84002fce"
+}

@@ -1,0 +1,10 @@
+{
+  "source": "2796e70e622ef0f5c3270e7aef4d4428eabeef70",
+  "image": "sha256:79cea119910ad3353f8a35ce21d079fafbcab0a757c0734bfe3bce6055c68565",
+  "files": {
+    "management.py": "aeee767b4bc462aa740003324da20d3be8d42880bdce8185b80ae37513ce7f98",
+    "service.py": "b7fc859150a0c14955c37585b673452dcdd837db59d1025db82986e4ff4ed273"
+  },
+  "exact": true,
+  "ci_workflow_revision": "20b99f5a0bc792e81e84be329f7beeaa84002fce"
+}
