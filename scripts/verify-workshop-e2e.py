@@ -32,7 +32,7 @@ def main():
    return json.dumps({'auctions':rows}).encode()
   with Session.begin() as db:
    u=User(username='synthetic_summary',password_hash='not-a-login',role='member');db.add(u);db.flush();account=u.id
-   device=CompanionDevice(user_id=account,name='Synthetic scoped summary fixture',platform='Windows',app_version='2.0.0-beta.6',issuer_origin='https://synthetic-summary.invalid',expires_at=at+timedelta(days=1),refresh_expires_at=at+timedelta(days=1),refresh_hash=hashlib.sha256(b'fixture-unused-refresh').hexdigest())
+   device=CompanionDevice(user_id=account,name='Synthetic scoped summary fixture',platform='Windows',app_version='2.0.0-beta.7',issuer_origin='https://synthetic-summary.invalid',expires_at=at+timedelta(days=1),refresh_expires_at=at+timedelta(days=1),refresh_hash=hashlib.sha256(b'fixture-unused-refresh').hexdigest())
    db.add(device);db.flush();token=secrets.token_urlsafe(32);_access(db,device,token)
    m=Market(region='us',ruleset_id=1,house_id=114,source_kind='auctions',label='Synthetic summary E2E only',verified=True,enabled=True);db.add(m);db.flush();mid=m.id
    proof=json.dumps({'region':'us','house_id':114,'ruleset':'Normal','faction':'Horde','upstream_receipt':'synthetic','independent_observation':'synthetic','independent_source_url':'https://example.invalid/fixture'})

@@ -1,6 +1,6 @@
 # Automatic Workshop delivery review candidate
 
-Market draft [#31](https://github.com/Twich-Team/TwichUI-Market/pull/31) and addon draft [#55](https://github.com/Twich-Team/TwichUI/pull/55) implement archive-free automatic Workshop summaries. No merge, deployment, signing or public release is performed. The signed beta.5 release remains intact.
+Market draft [#31](https://github.com/Twich-Team/TwichUI-Market/pull/31) and addon draft [#55](https://github.com/Twich-Team/TwichUI/pull/55) implement archive-free automatic Workshop summaries. No merge, deployment, signing or public release is performed. Signed beta.5 and the concurrently published source-aware beta.6 remain intact. This unpublished source candidate is beta.7.
 
 ## Player experience and boundaries
 
@@ -16,7 +16,7 @@ Transport trust is authenticated configured HTTPS (loopback only in fixtures), c
 
 ## Measurements
 
-All capacity figures below are synthetic isolated tests, not production performance or native Forever acceptance. Source-qualified JSON receipts are in [evidence](evidence/workshop-automatic-delivery/server-capacity.json).
+All capacity figures below are synthetic isolated tests, not production performance or native Forever acceptance. The PostgreSQL CPU/RSS receipt predates the final source-coverage reconciliation; the later actual Windows producer measures the reconciled path independently. Source-qualified JSON receipts are in [evidence](evidence/workshop-automatic-delivery/server-capacity.json).
 
 | Measurement | Result |
 |---|---:|
@@ -38,7 +38,7 @@ Desktop Lua 5.1 measurement of that actual native output: root compile 51 μs; a
 
 A separate instrumented run samples Lua heap every 10,000 VM instructions: 12,733 KiB sampled peak across 3,156 samples, 5,784 KiB before final GC and 5,735 KiB afterward. This is a sampled heap bound observation, not an exact allocation peak or native game measurement; instrumentation timings are deliberately excluded. Reproduce from the paired addon tests directory with the same artifact environment and `lua5.1 -e 'REPO="../"' <market>/scripts/measure-workshop-lua-heap.lua`.
 
-A read-only production observation at 2026-11-18 01:04 UTC contained 127,670 listings, 5,260 item IDs and 25,872 exact variants (observation 1072 / snapshot 95, genuine source). Those are source counts, not a deployed summary measurement. No production summary generation or provider campaign was performed.
+A final read-only production observation at 2026-11-18 02:14 UTC contained 240,637 listings, 6,581 item IDs and 28,293 exact variants (observation 1086 / snapshot 97, genuine source). The separate owner-authorized unified-coverage release is live at 70f144c / coverage_20261117; this candidate preserves its history and published beta.6 via reconciliation with integration 177ea99. Those are source counts, not a deployed summary measurement. No production summary generation or provider campaign was performed.
 
 ## Verification and review gates
 
