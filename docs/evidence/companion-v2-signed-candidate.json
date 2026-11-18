@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
-  "version": "2.0.0-beta.4",
-  "payload_source_commit": "2920f366f7b5cd32178ae06ae94cea84701ff87f",
-  "windows_run_id": 44007355418,
-  "backend_run_id": 44007355463,
-  "website_run_id": 44007355538,
-  "installer_artifact_id": 14294729360,
-  "installer_sha256": "6a64493b795577b23503af86a1ff8d79181a157f233272a2247703c2059689af",
-  "installer_bytes": 4715921,
-  "executable_sha256": "6acb8f7cd1e10b1291c7eee09040b8662b3212cc648b6e3c576060178c771916",
+  "version": "2.0.0-beta.6",
+  "payload_source_commit": "70f144ca35bd7041dcf17391f9fc8c96fd3c4ef8",
+  "windows_run_id": 44217371313,
+  "backend_run_id": 44217371235,
+  "website_run_id": 44217371290,
+  "installer_artifact_id": 14389536653,
+  "installer_sha256": "8383217c595d46dcc1a982f60dd500852d6402d613e261a7fd1b6e2a9c5ffb3c",
+  "installer_bytes": 4771009,
+  "executable_sha256": "dbd2354c6943bc5a36304994f989b2a3d0858e91e893319fa95d04a51896272b",
   "updater_public_key_sha256": "5794736c840c7c09a49396e60cd569ff6b5f24f872eb0318ed95d55c16616ecf",
-  "updater_signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTSTBwUk5ybTY3SmFCdnMyTmljdi9ETzhoZGlOSDNhUWl4dWNRMEpFMWxJdDBFNStybjNmSjg0TmlMcmI0eC8xYVN3dEIwb2UxeHpwbFZDOEdpRGFqWmlmcmd1WnVyZ0FNPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzk0ODg1MDk1CWZpbGU6VHdpY2hVSS1NYXJrZXQtQ29tcGFuaW9uLTIuMC4wLWJldGEuNC13aW5kb3dzLXg2NC5leGUJdmVyc2lvbjoyLjAuMC1iZXRhLjQKMHZXOHBqOStpSCtIcEQ4dGtSQUJPbEJZM1dIK2tjVzR1Zjd4cG9HSUFSYzZsQ283WGlwT0R2WURlTW83QUQ4NTNoSENaajl5ZjVBbmVsKzFxVXk0RFE9PQo="
+  "updater_signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTSTBwUk5ybTY3SmNaSDN2eFFlWUIvc1BYTHlJNFJXdHdiWmRHNWoyR2lyeFFWcW44TlF0UjYwMmR4U3Z4TFdoeHVIcDVvZkRCSGJ5V1NIU3lGVjhBa0p1NEZLUVQ5aFFJPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzk0OTY2NTQ0CWZpbGU6VHdpY2hVSS1NYXJrZXQtQ29tcGFuaW9uLTIuMC4wLWJldGEuNi13aW5kb3dzLXg2NC5leGUJdmVyc2lvbjoyLjAuMC1iZXRhLjYKdG5FZ2xiWUJYQ3N5Vy9HZG9ENlA3MnY0dnV4OGdxeGd6QnM4RXppdVh1WFdZOVU3YW5ZWmZ2U1pTcnA5S21nYWtoRjF0WTNBem1sUTd3dThrMVFrQWc9PQo="
 }
