@@ -1,0 +1,9 @@
+{
+  "backup_id": "24a79defbf4791f00cb88f6078009421",
+  "filename": "market-release-20261118T144809003060Z-df8c8cd2a368.dump",
+  "sha256": "a8fda36e26ecb839427952bab75b14b3b2862d21e731153b1ca4328cb6c69d66",
+  "restored_archive_sha256": "a8fda36e26ecb839427952bab75b14b3b2862d21e731153b1ca4328cb6c69d66",
+  "local_restoration_verified_at": "2026-11-18T14:57:52.594491+00:00",
+  "owner_approval_reference": "owner-20261118-retention-local-only",
+  "off_vm_verified": false
+}
