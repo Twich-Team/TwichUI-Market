@@ -5,7 +5,7 @@
     "enabled": true,
     "authorized": true,
     "authorization": {
-      "execution_hash": "da2c266215a16d1cf03a2aa1e6f965bb5a5cf104c4cd09496d5c7a41e2c8964a",
+      "execution_hash": "85251cddad6b62cb332efeffd3133c844dbff40033d889e487cb39bddfece886",
       "limits": {
         "collector_margin_seconds": 30,
         "contention_retry_seconds": 60,
@@ -33,7 +33,7 @@
           "owner_approval_reference": "owner-20261118-retention-local-only",
           "valid": true
         },
-        "scheduler_sha256": "a4bf0698f2cb26410c5abf45f1453a9385cb73122e7a9be3c4ad91701884a174",
+        "scheduler_sha256": "bfb792e04559c1d44ea9e4757ee78174d0a4189a83e61cc3ce7f65278e3a59d3",
         "shared_snapshots": "protect all retained observation dependencies",
         "stages": [
           "daily_references",
@@ -70,7 +70,7 @@
         "sync": "existing 409/full refresh",
         "concurrent_executions": 1,
         "operations": "DELETE candidate rows except raw_feed_payloads, which clears compressed_payload",
-        "scheduler_sha256": "a4bf0698f2cb26410c5abf45f1453a9385cb73122e7a9be3c4ad91701884a174",
+        "scheduler_sha256": "bfb792e04559c1d44ea9e4757ee78174d0a4189a83e61cc3ce7f65278e3a59d3",
         "minimum_filesystem_reserve_bytes": 34359738368,
         "recovery_policy": {
           "mode": "local_only",
@@ -92,7 +92,7 @@
         "contention_retry_seconds": 60,
         "max_wal_bytes": 2147483648
       },
-      "execution_hash": "da2c266215a16d1cf03a2aa1e6f965bb5a5cf104c4cd09496d5c7a41e2c8964a"
+      "execution_hash": "85251cddad6b62cb332efeffd3133c844dbff40033d889e487cb39bddfece886"
     },
     "recovery": {
       "policy": {
@@ -108,11 +108,19 @@
       "verified_at": "2026-11-18T14:57:52.594491+00:00",
       "reason": null
     },
-    "next_run_at": "2026-11-18T16:09:06.605856+00:00",
+    "next_run_at": "2026-11-18T16:23:40.299720+00:00",
     "last_success_at": null,
     "rows_by_stage": {},
-    "last_run": null,
-    "paused_reason": "Awaiting first execution",
+    "last_run": {
+      "id": 1,
+      "started_at": "2026-11-18T16:09:11.675313+00:00",
+      "finished_at": "2026-11-18T16:09:16.637883+00:00",
+      "status": "failed",
+      "reason": "Maintenance transaction failed or timed out; batch rolled back",
+      "batches": 0,
+      "rows_processed": 0
+    },
+    "paused_reason": "Maintenance transaction failed or timed out; batch rolled back",
     "recovery_notice": "Automatic execution requires a present, rehashed, protected restored archive within 24 hours. The owner waived off-VM recovery for now; local backups do not protect against loss of this VM."
   }
 }

@@ -1,0 +1,18 @@
+{
+  "base_source_sha": "fe92999cc969a23684f3023638673c656efb3bce",
+  "patch_source_sha": "3ebd8b3c8b613ca8ed42a85614679a824ff85033",
+  "scheduler_source_sha256": "bfb792e04559c1d44ea9e4757ee78174d0a4189a83e61cc3ce7f65278e3a59d3",
+  "synthetic": false,
+  "tls_errors_ignored": false,
+  "desktop_mobile_pass": true,
+  "no_mobile_overflow": true,
+  "zero_retention_batches": true,
+  "policy_authorized": true,
+  "scheduler_enabled": true,
+  "backup_schedule_disabled": true,
+  "protected_restore_present": true,
+  "off_vm_unverified": true,
+  "anonymous_status": 401,
+  "missing_csrf_status": 403,
+  "page_errors": []
+}

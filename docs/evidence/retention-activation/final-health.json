@@ -1,0 +1,279 @@
+{
+  "measured_at": "2026-11-18 16:28:55.034285+00:00",
+  "schema": "retention_20261118",
+  "markets": [
+    {
+      "id": 2,
+      "house_id": 114,
+      "interval_seconds": 300,
+      "unified_coverage": true,
+      "last_success": "2026-11-18 16:27:43.045463+00:00",
+      "next_check": "2026-11-18 16:32:43.045463+00:00"
+    }
+  ],
+  "feeds": [
+    {
+      "source_kind": "auctions",
+      "enabled": true,
+      "last_success": "2026-11-18 16:27:43.045463+00:00",
+      "failures": 0,
+      "last_error": null
+    },
+    {
+      "source_kind": "commodities",
+      "enabled": true,
+      "last_success": "2026-11-18 16:27:43.045463+00:00",
+      "failures": 0,
+      "last_error": null
+    }
+  ],
+  "recent_feed_checks": [
+    {
+      "source_kind": "commodities",
+      "checked_at": "2026-11-18 16:27:43.045463+00:00",
+      "http_status": 200,
+      "status": "collected",
+      "error": null
+    },
+    {
+      "source_kind": "auctions",
+      "checked_at": "2026-11-18 16:27:43.045463+00:00",
+      "http_status": 200,
+      "status": "collected",
+      "error": null
+    },
+    {
+      "source_kind": "commodities",
+      "checked_at": "2026-11-18 16:22:40.476626+00:00",
+      "http_status": 304,
+      "status": "unchanged",
+      "error": null
+    },
+    {
+      "source_kind": "auctions",
+      "checked_at": "2026-11-18 16:22:40.476626+00:00",
+      "http_status": 304,
+      "status": "unchanged",
+      "error": null
+    },
+    {
+      "source_kind": "commodities",
+      "checked_at": "2026-11-18 16:17:37.917997+00:00",
+      "http_status": 304,
+      "status": "unchanged",
+      "error": null
+    },
+    {
+      "source_kind": "auctions",
+      "checked_at": "2026-11-18 16:17:37.917997+00:00",
+      "http_status": 304,
+      "status": "unchanged",
+      "error": null
+    },
+    {
+      "source_kind": "commodities",
+      "checked_at": "2026-11-18 16:12:35.320490+00:00",
+      "http_status": 304,
+      "status": "unchanged",
+      "error": null
+    },
+    {
+      "source_kind": "auctions",
+      "checked_at": "2026-11-18 16:12:35.320490+00:00",
+      "http_status": 304,
+      "status": "unchanged",
+      "error": null
+    },
+    {
+      "source_kind": "commodities",
+      "checked_at": "2026-11-18 16:07:32.632079+00:00",
+      "http_status": 304,
+      "status": "unchanged",
+      "error": null
+    },
+    {
+      "source_kind": "auctions",
+      "checked_at": "2026-11-18 16:07:32.632079+00:00",
+      "http_status": 304,
+      "status": "unchanged",
+      "error": null
+    },
+    {
+      "source_kind": "commodities",
+      "checked_at": "2026-11-18 16:02:29.979737+00:00",
+      "http_status": 304,
+      "status": "unchanged",
+      "error": null
+    },
+    {
+      "source_kind": "auctions",
+      "checked_at": "2026-11-18 16:02:29.979737+00:00",
+      "http_status": 304,
+      "status": "unchanged",
+      "error": null
+    }
+  ],
+  "policy": {
+    "raw_days": 7,
+    "intraday_days": 90,
+    "daily_days": 365,
+    "operational_days": 90,
+    "security_days": 365,
+    "revision": 3,
+    "policy_hash": "9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7",
+    "application_authorized": true,
+    "daily_support_days": 60,
+    "batch_row_limit": 5000
+  },
+  "automation": {
+    "installed": true,
+    "enabled": true,
+    "authorized": true,
+    "authorization": {
+      "execution_hash": "85251cddad6b62cb332efeffd3133c844dbff40033d889e487cb39bddfece886",
+      "limits": {
+        "collector_margin_seconds": 30,
+        "contention_retry_seconds": 60,
+        "interval_seconds": 300,
+        "lock_ms": 250,
+        "max_batches": 12,
+        "max_seconds": 20,
+        "max_wal_bytes": 2147483648,
+        "payloads_per_batch": 25,
+        "rows_per_batch": 5000,
+        "statement_ms": 2000
+      },
+      "policy_hash": "9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7",
+      "policy_revision": 3,
+      "scope": {
+        "concurrent_executions": 1,
+        "current_heads": "all markets including disabled",
+        "daily_support_days": 60,
+        "engine_sha256": "e2f408b72f27589dcc9ff736c5da476454b8c60480a97c3cd7bef82e4ad91acb",
+        "minimum_filesystem_reserve_bytes": 34359738368,
+        "operations": "DELETE candidate rows except raw_feed_payloads, which clears compressed_payload",
+        "recovery_policy": {
+          "mode": "local_only",
+          "off_vm_required": false,
+          "owner_approval_reference": "owner-20261118-retention-local-only",
+          "valid": true
+        },
+        "scheduler_sha256": "bfb792e04559c1d44ea9e4757ee78174d0a4189a83e61cc3ce7f65278e3a59d3",
+        "shared_snapshots": "protect all retained observation dependencies",
+        "stages": [
+          "daily_references",
+          "observations",
+          "raw_listings",
+          "raw_feed_payloads",
+          "intraday_statistics",
+          "collection_logs",
+          "feed_checks",
+          "security_logs"
+        ],
+        "sync": "existing 409/full refresh",
+        "version": 1
+      }
+    },
+    "proposal": {
+      "policy_hash": "9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7",
+      "policy_revision": 3,
+      "scope": {
+        "version": 1,
+        "stages": [
+          "daily_references",
+          "observations",
+          "raw_listings",
+          "raw_feed_payloads",
+          "intraday_statistics",
+          "collection_logs",
+          "feed_checks",
+          "security_logs"
+        ],
+        "daily_support_days": 60,
+        "current_heads": "all markets including disabled",
+        "shared_snapshots": "protect all retained observation dependencies",
+        "sync": "existing 409/full refresh",
+        "concurrent_executions": 1,
+        "operations": "DELETE candidate rows except raw_feed_payloads, which clears compressed_payload",
+        "scheduler_sha256": "bfb792e04559c1d44ea9e4757ee78174d0a4189a83e61cc3ce7f65278e3a59d3",
+        "minimum_filesystem_reserve_bytes": 34359738368,
+        "recovery_policy": {
+          "mode": "local_only",
+          "valid": true,
+          "off_vm_required": false,
+          "owner_approval_reference": "owner-20261118-retention-local-only"
+        },
+        "engine_sha256": "e2f408b72f27589dcc9ff736c5da476454b8c60480a97c3cd7bef82e4ad91acb"
+      },
+      "limits": {
+        "rows_per_batch": 5000,
+        "payloads_per_batch": 25,
+        "max_batches": 12,
+        "max_seconds": 20,
+        "statement_ms": 2000,
+        "lock_ms": 250,
+        "interval_seconds": 300,
+        "collector_margin_seconds": 30,
+        "contention_retry_seconds": 60,
+        "max_wal_bytes": 2147483648
+      },
+      "execution_hash": "85251cddad6b62cb332efeffd3133c844dbff40033d889e487cb39bddfece886"
+    },
+    "recovery": {
+      "policy": {
+        "mode": "local_only",
+        "valid": true,
+        "off_vm_required": false,
+        "owner_approval_reference": "owner-20261118-retention-local-only"
+      },
+      "off_vm_required": false,
+      "local_archive_status": "Revalidated under the backup lock before execution",
+      "off_vm_verification_recent": false,
+      "required_evidence_recent": true,
+      "verified_at": "2026-11-18 14:57:52.594491+00:00",
+      "reason": null
+    },
+    "next_run_at": "2026-11-18 16:33:44.182508+00:00",
+    "last_success_at": "2026-11-18 16:28:47.207763+00:00",
+    "rows_by_stage": {},
+    "last_run": {
+      "id": 3,
+      "started_at": "2026-11-18 16:28:44.187387+00:00",
+      "finished_at": "2026-11-18 16:28:47.207763+00:00",
+      "status": "complete",
+      "reason": null,
+      "batches": 0,
+      "rows_processed": 0
+    },
+    "paused_reason": null,
+    "recovery_notice": "Automatic execution requires a present, rehashed, protected restored archive within 24 hours. The owner waived off-VM recovery for now; local backups do not protect against loss of this VM."
+  },
+  "retention_batches": 0,
+  "capacity": {
+    "database_allocated_bytes": 4731549363,
+    "database_limit_bytes": 68719476736,
+    "filesystem": {
+      "available_bytes": 158782320640,
+      "total_bytes": 266736099328,
+      "reserve_bytes": 34359738368
+    },
+    "paused_reason": null
+  },
+  "wal_bytes": "268435456",
+  "backup_schedule_enabled": false,
+  "managed_archive_count": 2,
+  "protected_archives": [
+    {
+      "filename": "market-release-20261118T144809003060Z-df8c8cd2a368.dump",
+      "sha256": "a8fda36e26ecb839427952bab75b14b3b2862d21e731153b1ca4328cb6c69d66",
+      "protected": true,
+      "restoration_verified_at": "2026-11-18T14:57:52.594491+00:00"
+    },
+    {
+      "filename": "market-release-20261118T133835118331Z-a0d03457794e.dump",
+      "sha256": "55ac4af5da2731c61b4bbc5fb3902147528990882132311412de3b9f9ddaa802",
+      "protected": true,
+      "restoration_verified_at": "2026-11-18T13:58:54.996085+00:00"
+    }
+  ]
+}

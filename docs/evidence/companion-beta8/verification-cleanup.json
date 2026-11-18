@@ -1,0 +1,17 @@
+{
+  "at": "2026-11-18T16:28:27.994217+00:00",
+  "credential_ids": [
+    287,
+    288
+  ],
+  "owner_id": 1,
+  "existing_device_id": 3,
+  "revoked": true,
+  "actual_https_post_revocation_status": {
+    "browser": 401,
+    "native": 401
+  },
+  "private_grant_file_removed": true,
+  "no_account_or_device_created": true,
+  "owner_password_unchanged": true
+}
