@@ -1,0 +1,21 @@
+test_budget_exact_preflight_and_last_good (test_reference.Conformance.test_budget_exact_preflight_and_last_good) ... ok
+test_cross_account_device_and_issuer (test_reference.Conformance.test_cross_account_device_and_issuer) ... ok
+test_equivalent_order_and_duplicates (test_reference.Conformance.test_equivalent_order_and_duplicates) ... ok
+test_fixture_reproducibility (test_reference.Conformance.test_fixture_reproducibility) ... ok
+test_independent_hashes (test_reference.Conformance.test_independent_hashes) ... ok
+test_independent_semantics (test_reference.Conformance.test_independent_semantics) ... ok
+test_legacy_and_future_fail_closed (test_reference.Conformance.test_legacy_and_future_fail_closed) ... ok
+test_negative_fixtures (test_reference.Conformance.test_negative_fixtures) ... ok
+test_previous_after_interruption_and_corruption (test_reference.Conformance.test_previous_after_interruption_and_corruption) ... ok
+test_receipt_is_independent_and_bound (test_reference.Conformance.test_receipt_is_independent_and_bound) ... ok
+test_same_item_distinct_variant_is_not_aggregate (test_reference.Conformance.test_same_item_distinct_variant_is_not_aggregate) ... ok
+test_strict_json_read (test_reference.Conformance.test_strict_json_read) ... ok
+test_supported_strings_unsupported_lua_number (test_reference.Conformance.test_supported_strings_unsupported_lua_number) ... ok
+test_unknown_cannot_turn_into_zero (test_reference.Conformance.test_unknown_cannot_turn_into_zero) ... ok
+test_unknown_is_not_absent (test_reference.Conformance.test_unknown_is_not_absent) ... ok
+test_window_identity_and_reuse (test_reference.Conformance.test_window_identity_and_reuse) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.713s
+
+OK

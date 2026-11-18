@@ -34,6 +34,7 @@ Deletion commits a durable intent with original metadata before unlinking. It re
 
 1. Reconfirm current integration/production versions, active overlays, rootless context, available disk and collector state. Re-run the read-only inventory. The review evidence must match the commit being promoted. Keep original compatible source-aware APIs/collector and all signed releases.
 2. Obtain owner approval for **this release only**, including whether any new retained backup/rehearsal is now authorized under the current no-retained-dumps policy. If an archive is authorized, use the existing consistent release backup/isolated restore procedure and preservation fingerprints; never restore over live PostgreSQL. This implementation task creates no production archive. A schedule enablement is a separate explicit policy decision.
+   Capacity gate: the source currently allocates about 3.8 GiB, with about 5.4 GiB filesystem availability at the recorded check. A full restored copy, a fresh compressed archive, restore/WAL overhead and the 2 GiB production reserve may not fit together. Before a production rehearsal, obtain reviewed additional headroom or use an isolated off-host restore target; never reuse the 512 MiB synthetic-fixture tmpfs for this live dataset. The older one-off helper still uses conservative database-allocation/budget preflight; do not override it by deleting recovery points. The reviewed manager can create a separately authorized protected manual/release point with measured-size safeguards, but starting that operation and arranging adequate restore capacity remain owner release decisions.
 3. Build reviewed immutable backend/frontend/manager images from the approved commit. Pin their digests in a release overlay. No database migration is needed. Prepare the existing absolute host backup directory at mode 0700 and a private random token file under the owner's project-managed secrets location. Token: at least 32 random bytes; API uid 10001 must be able to read the mounted secret without exposing the host directory. Docker Compose file secrets do not implement uid/mode remapping: validate read access in the candidate API with no token output; use a dedicated read-only file accessible only through the intended mounts. Do not print rendered Compose environment/secrets.
 4. Preserve the **complete current production chain**, including metadata release → chart → API overlays, the current usability/mobile overlays, `compose.owner-backup-policy.yaml` and `compose.unified-coverage-release.yaml`. Append `compose.backup-management.yaml`, then the new immutable-image overlay. Set `MARKET_MANAGED_BACKUP_ROOT=/home/marketdev/projects/TwichUI-Market/backups` and `MARKET_BACKUP_TOKEN_FILE` to the reviewed private token file. Do not change the Compose project or database volume. Preflight `config --quiet` and inspect sanitized service/mount/resource differences. Confirm backup-manager has no published ports, API has no archive/socket mount, and the old `backup` remains stopped/restart no.
 5. Explicitly start **only** `backup-manager` using `--profile backup-management up -d --no-deps --no-build --pull never backup-manager`, then replace **only** `api local-api proxy` from the exact prepared images with `--no-deps --no-build --pull never`. No collector, database, monitor, enrichment, provider, bridge or desktop restart/configuration belongs to this feature. The manager starts with its schedule disabled. Do not invoke bare `compose up` or the old operations profile.
@@ -44,3 +45,46 @@ Rollback: stop only backup-manager, restore the pre-feature pinned API/local-API
 ## Proposed production cleanup
 
 Actual discovery: zero managed archives and zero reclaimable archive bytes. Preserve the 29 orphan manifests, stale status and empty lock (16,809 bytes total). These are historical receipts with negligible space impact; deleting them needs explicit file selection/confirmation and is outside the automated v2 policy. No other Market dump was found in repository/worktree artifact roots. No unrelated volume/host cleanup is proposed. Off-host backup/keyring durability remains unverified.
+
+## Prepared commands (not executed on production)
+
+The current production environment files and full overlay list were read from the live container's Compose labels. [Prepared immutable candidate pins](../compose.backup-review-images.yaml), [prior-image rollback pins](../compose.backup-review-rollback.yaml) and [image/source receipts](evidence/backup-management/images.json) are review artifacts. Candidate images are local to this rootless host; no registry publication is implied. Reconfirm all paths and image IDs after owner approval, especially if another release has intervened.
+
+```bash
+MARKET_PROD_ROOT=/home/marketdev/projects/TwichUI-Market
+MARKET_REVIEW_ROOT=/home/marketdev/.codex/worktrees/backup-management-retention/TwichUI-Market
+# Set MARKET_BACKUP_TOKEN_FILE privately after approval; do not echo the token.
+export MARKET_MANAGED_BACKUP_ROOT="$MARKET_PROD_ROOT/backups"
+export MARKET_BACKUP_TOKEN_FILE
+MARKET_BACKUP_DC=(docker --context rootless compose -p twichui-market
+  --project-directory "$MARKET_PROD_ROOT"
+  --env-file "$MARKET_PROD_ROOT/.env"
+  --env-file "$MARKET_PROD_ROOT/.env.combined-release"
+  -f "$MARKET_PROD_ROOT/compose.yaml"
+  -f "$MARKET_PROD_ROOT/compose.tls.yaml"
+  -f "$MARKET_PROD_ROOT/compose.traefik.yaml"
+  -f "$MARKET_PROD_ROOT/compose.companion-private-beta.yaml"
+  -f "$MARKET_PROD_ROOT/compose.combined-release.yaml"
+  -f "$MARKET_PROD_ROOT/compose.admin-release.yaml"
+  -f "$MARKET_PROD_ROOT/compose.explorer-release.yaml"
+  -f "$MARKET_PROD_ROOT/compose.polish-release.yaml"
+  -f "$MARKET_PROD_ROOT/compose.foreverdb-release.yaml"
+  -f "$MARKET_PROD_ROOT/.worktrees/usability-release/compose.usability-release.yaml"
+  -f "$MARKET_PROD_ROOT/.worktrees/mobile-release/compose.mobile-release.yaml"
+  -f "$MARKET_PROD_ROOT/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-release.yaml"
+  -f "$MARKET_PROD_ROOT/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-chart.yaml"
+  -f "$MARKET_PROD_ROOT/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-api.yaml"
+  -f "$MARKET_PROD_ROOT/compose.owner-backup-policy.yaml"
+  -f "$MARKET_PROD_ROOT/compose.unified-coverage-release.yaml"
+  -f "$MARKET_REVIEW_ROOT/compose.backup-management.yaml"
+  -f "$MARKET_REVIEW_ROOT/compose.backup-review-images.yaml")
+"${MARKET_BACKUP_DC[@]}" --profile backup-management config --quiet
+# OWNER-APPROVED RELEASE ONLY; the commands below are not executed by this task.
+"${MARKET_BACKUP_DC[@]}" --profile backup-management up -d --no-deps --no-build --pull never backup-manager
+"${MARKET_BACKUP_DC[@]}" up -d --no-deps --no-build --pull never api local-api proxy
+# Compatible code rollback, only if needed after that approved release:
+"${MARKET_BACKUP_DC[@]}" --profile backup-management stop backup-manager
+"${MARKET_BACKUP_DC[@]}" -f "$MARKET_REVIEW_ROOT/compose.backup-review-rollback.yaml" up -d --no-deps --no-build --pull never api local-api proxy
+```
+
+Keep the token mount and state volume during rollback; the prior API ignores the feature. No command removes a volume, runs migrations, starts the old backup worker, enables the manager schedule or removes an archive. Retain the explicit owner-disabled policy. A later management-service restart is safe only while its persisted schedule remains in the owner-approved state.

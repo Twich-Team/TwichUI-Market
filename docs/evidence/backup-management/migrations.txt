@@ -1,0 +1,21 @@
+Container twichui-market-backup-test-db-1 Running
+ Container twichui-market-backup-test-db-1 Waiting
+ Container twichui-market-backup-test-db-1 Healthy
+ Container twichui-market-backup-test-test-run-3f9122a6eebc Creating
+ Container twichui-market-backup-test-test-run-3f9122a6eebc Created
+ Container twichui-market-backup-test-db-1 Running
+ Container twichui-market-backup-test-db-1 Waiting
+ Container twichui-market-backup-test-db-1 Healthy
+ Container twichui-market-backup-test-test-run-b15733d1d594 Creating
+ Container twichui-market-backup-test-test-run-b15733d1d594 Created
+No new upgrade operations detected.
+ Container twichui-market-backup-test-db-1 Running
+ Container twichui-market-backup-test-db-1 Waiting
+ Container twichui-market-backup-test-db-1 Healthy
+ Container twichui-market-backup-test-test-run-ac12325ac8ea Creating
+ Container twichui-market-backup-test-test-run-ac12325ac8ea Created
+ Container twichui-market-backup-test-db-1 Running
+ Container twichui-market-backup-test-db-1 Waiting
+ Container twichui-market-backup-test-db-1 Healthy
+ Container twichui-market-backup-test-test-run-b9ce7868a104 Creating
+ Container twichui-market-backup-test-test-run-b9ce7868a104 Created

@@ -1,0 +1,6 @@
+{
+  "exit_code": 0,
+  "command": "docker compose -f compose.yaml -f compose.tls.yaml -f compose.traefik.yaml -f compose.backup-management.yaml -f compose.backup-review-images.yaml config --quiet",
+  "configuration": "Synthetic environment, fixture backup root and synthetic token file; no production env files or service mutations",
+  "prepared_rollback_images": "Existing production API/local API/proxy immutable IDs captured read-only; no collector change"
+}
