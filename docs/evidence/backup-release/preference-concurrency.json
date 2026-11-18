@@ -1,0 +1,22 @@
+{
+  "independent_preference_save": true,
+  "changed_at": "2026-11-18 04:14:12.699228+00",
+  "verification_session_issued_at": "2026-11-18 04:20:52.861221+00",
+  "change_predates_verification_session": true,
+  "changed_user_id": 1,
+  "changed_fields": [
+    {
+      "path": ".item_sort.desc"
+    },
+    {
+      "path": ".item_sort.id"
+    }
+  ],
+  "before_revision": 16,
+  "after_revision": 20,
+  "original_preference_sha256": "b5e36ad92afd9818f7db162c02f5ef9050ac152face46c5d87bbb72fdff44ba8",
+  "retained_concurrent_preference_sha256": "222faaa11590fddb311fa659b2bbfc3601c2e0ef02f53ee9234eec5b273cebc7",
+  "original_baseline_retained": true,
+  "production_preferences_written_by_operator": false,
+  "other_small_original_tables_match": true
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "version": "2.0.0-beta.8",
+  "payload_source_commit": "36dc204d5975f57629ca1c830d41d8b95d2ac508",
+  "windows_run_id": 44341487381,
+  "backend_run_id": 44341487229,
+  "website_run_id": 44341487210,
+  "installer_artifact_id": 14444802753,
+  "installer_sha256": "60ed1c13b96fe5cc8601343ce7efb1d1730891bedaeb5a30eb060b31fe3dc9d1",
+  "installer_bytes": 4849411,
+  "executable_sha256": "faad54c5183014aaec07dee65023f1d489c372bfbc99f36dd1ab9b83187edd92",
+  "updater_public_key_sha256": "5794736c840c7c09a49396e60cd569ff6b5f24f872eb0318ed95d55c16616ecf",
+  "updater_signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTSTBwUk5ybTY3SlhwaHZCTVpBWmt6U2pTOFFoV0JYVWxCTExLcTkwcDJ5Q1NTZ0h3S1g2RDBydU9JVkh5cTV6VGFGeFpZeHpWa2hvbWh2M3N1RWthZUtNMVB3QlNwUVFvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzk1MDE4NTMzCWZpbGU6VHdpY2hVSS1NYXJrZXQtQ29tcGFuaW9uLTIuMC4wLWJldGEuOC13aW5kb3dzLXg2NC5leGUJdmVyc2lvbjoyLjAuMC1iZXRhLjgKWHFZNm1EeXRRbWUxL2tsUVkrWDZhbDRyRTVleGZkK3JhTUVySzFZRnVhcFBrSDRrQ2txTDE2bWg1YWVwK3J0c05HSzR6R2NtQ2pjUUd0djhtblNKRHc9PQo="
+}

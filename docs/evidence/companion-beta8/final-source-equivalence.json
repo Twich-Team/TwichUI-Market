@@ -1,0 +1,14 @@
+{
+  "tested_integration_source": "3ebd8b3c8b613ca8ed42a85614679a824ff85033",
+  "closing_checkpoint": "f9a0b1b1d78545705a861841c225f5249fb73342",
+  "application_contract_and_workflow_trees_identical": {
+    "backend": "316c4f6339f7e9177a03b7addd12411f205b2702",
+    "desktop": "99cffbc035dba4237c88196f172d80259ea268ca",
+    "web": "9c07edbb08c4d83008ffe99e1724aa99a0de7e54",
+    "scripts": "822988dc286f6a06bfc813d7ffcbb85cc2919a1d",
+    "contracts": "6c146cc25208996b24186288e155cd3a5f949693",
+    ".github": "7095aa90365b2e450869fe170c7f22b99b1679e1"
+  },
+  "production_runtime_package_copies_verified_separately": true,
+  "pr": "https://github.com/Twich-Team/TwichUI-Market/pull/39"
+}

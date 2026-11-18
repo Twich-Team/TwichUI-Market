@@ -1,6 +1,8 @@
+import { StorageOperationsPanel, type StorageOperations } from "./storage-operations";
 import { Loading } from "./loading";
 import { AdministrationOverview } from "./admin-overview";
 import type { MetadataOverview } from "./metadata-admin";
+import { BackupManagement } from "./backup-management";
 import { DatabaseGrowth } from "./storage-growth";
 import { formatBytes as bytes } from "./size";
 import { MemberArchive } from "./member-archive";
@@ -70,6 +72,7 @@ interface Event {
   created_at: string;
 }
 export interface Storage {
+  operations?: StorageOperations;
   growth: {
     samples: { sampled_at: string; database_bytes: number }[];
     delta_bytes: number | null;
@@ -594,7 +597,9 @@ export function Administration({
           {tab === "collection" && <CollectionHistory markets={markets}/>}
           {tab === "storage" && (
             <>
+              <BackupManagement readOnly={readOnly}/>
               <DatabaseGrowth samples={state.storage.growth.samples} current={state.storage.database_bytes}/>
+              <StorageOperationsPanel value={state.storage.operations} />
               <RetentionControls readOnly={readOnly} />
               <section className="panel padded">
                 <h3>Database & historical retention</h3>
@@ -619,21 +624,10 @@ export function Administration({
                   <dd>{state.storage.observations.toLocaleString()}</dd>
                   <dt>Historical retention</dt>
                   <dd>
-                    Policy proposals are shown above; live historical pruning
-                    remains disabled until authorized.
+                    The saved policy and current maintenance state are shown
+                    above. Saving a proposal does not start deletion.
                   </dd>
-                  <dt>Raw listing details</dt>
-                  <dd>
-                    {state.storage.retention.compaction_enabled
-                      ? `${state.storage.retention.raw_listing_days} days plus the current snapshot`
-                      : "Compaction disabled; raw details preserved"}
-                  </dd>
-                  <dt>Detailed price samples</dt>
-                  <dd>
-                    {state.storage.retention.compaction_enabled
-                      ? `${state.storage.retention.detailed_statistics_days} days; daily policy protects valuation support`
-                      : "Historical compaction is disabled"}
-                  </dd>
+
                 </dl>
                 <p>
                   Operational logs have separate configurable retention.
@@ -646,16 +640,17 @@ export function Administration({
               </section>
               <section className="panel padded">
                 <h3>Backups & restoration</h3>
+                <p className="small muted">Legacy operations receipts below describe the previous backup worker. Current archive availability, filesystem measurements and management controls are shown in Backup Management above.</p>
                 <dl>
-                  <dt>Backup service</dt>
+                  <dt>Legacy backup service</dt>
                   <dd>{state.storage.backup.status.replaceAll("_", " ")}</dd>
-                  <dt>Last successful dump</dt>
+                  <dt>Legacy last successful dump</dt>
                   <dd>{when(state.storage.backup.last_success)}</dd>
-                  <dt>Last restore rehearsal</dt>
+                  <dt>Legacy restore rehearsal</dt>
                   <dd>
                     {when(state.storage.backup.last_restoration_verified_at)}
                   </dd>
-                  <dt>Archive size</dt>
+                  <dt>Legacy archive size</dt>
                   <dd>{bytes(state.storage.backup.bytes)}</dd>
                 </dl>
                 <p className="muted">

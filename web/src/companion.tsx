@@ -244,8 +244,8 @@ export function CompanionSetup({ user }: { user: User }) {
                 I already have the companion →
               </button>
               <p className="small muted">
-                The companion never changes game files or writes into WoW
-                SavedVariables.
+                Workshop data updates need your permission and wait until WoW is
+                closed. Your WoW SavedVariables stay untouched.
               </p>
             </div>
           )}

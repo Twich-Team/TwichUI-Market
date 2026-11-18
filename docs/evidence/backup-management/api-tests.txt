@@ -1,0 +1,7 @@
+Container twichui-market-backup-test-db-1 Running
+ Container twichui-market-backup-test-db-1 Waiting
+ Container twichui-market-backup-test-db-1 Healthy
+ Container twichui-market-backup-test-test-run-1a0e4b0550f2 Creating
+ Container twichui-market-backup-test-test-run-1a0e4b0550f2 Created
+.........                                                                [100%]
+9 passed in 6.24s

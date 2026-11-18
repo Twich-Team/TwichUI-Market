@@ -1,0 +1,26 @@
+test_concurrent_operation_blocks_delete_backup_and_policy (test_backup_management.Backups.test_concurrent_operation_blocks_delete_backup_and_policy) ... ok
+test_disabled_initialization_and_interrupted_job (test_backup_management.Backups.test_disabled_initialization_and_interrupted_job) ... ok
+test_estimate_uses_archive_sizes_not_database_allocation (test_backup_management.Backups.test_estimate_uses_archive_sizes_not_database_allocation) ... ok
+test_failed_dump_and_failed_verification_do_not_rotate (test_backup_management.Backups.test_failed_dump_and_failed_verification_do_not_rotate) ... ok
+test_failed_partial_cleanup_records_pending_receipt_without_rotation (test_backup_management.Backups.test_failed_partial_cleanup_records_pending_receipt_without_rotation) ... ok
+test_http_authentication_routes_and_no_unrestricted_listing (test_backup_management.Backups.test_http_authentication_routes_and_no_unrestricted_listing) ... ok
+test_incomplete_orphan_legacy_and_corrupt_manifests_are_not_adopted (test_backup_management.Backups.test_incomplete_orphan_legacy_and_corrupt_manifests_are_not_adopted) ... ok
+test_inventory_pagination_capacity_and_distinct_measurements (test_backup_management.Backups.test_inventory_pagination_capacity_and_distinct_measurements) ... ok
+test_keep_two_preview_and_rotation_deletes_only_a (test_backup_management.Backups.test_keep_two_preview_and_rotation_deletes_only_a) ... ok
+test_last_restored_point_survives_new_integrity_only_points (test_backup_management.Backups.test_last_restored_point_survives_new_integrity_only_points) ... ok
+test_low_storage_and_budget_never_predelete (test_backup_management.Backups.test_low_storage_and_budget_never_predelete) ... ok
+test_manual_deletion_corrupt_archive_is_refused (test_backup_management.Backups.test_manual_deletion_corrupt_archive_is_refused) ... ok
+test_missing_root_permissions_and_required_mount (test_backup_management.Backups.test_missing_root_permissions_and_required_mount) ... ok
+test_partial_failure_is_audited_and_restart_reconciles_only_matching_manifest (test_backup_management.Backups.test_partial_failure_is_audited_and_restart_reconciles_only_matching_manifest) ... ok
+test_policy_bounds (test_backup_management.Backups.test_policy_bounds) ... ok
+test_policy_persistence_optimistic_revision_and_restart_no_backup (test_backup_management.Backups.test_policy_persistence_optimistic_revision_and_restart_no_backup) ... ok
+test_protection_release_manual_legacy_and_required_recovery (test_backup_management.Backups.test_protection_release_manual_legacy_and_required_recovery) ... ok
+test_silent_corruption_of_surviving_point_prevents_deleting_valid_archive (test_backup_management.Backups.test_silent_corruption_of_surviving_point_prevents_deleting_valid_archive) ... ok
+test_strong_confirmation_and_actual_deletion_result (test_backup_management.Backups.test_strong_confirmation_and_actual_deletion_result) ... ok
+test_symlinks_hardlinks_and_path_traversal_fail_closed (test_backup_management.Backups.test_symlinks_hardlinks_and_path_traversal_fail_closed) ... ok
+test_weekly_and_monthly_union_preserves_representatives (test_backup_management.Backups.test_weekly_and_monthly_union_preserves_representatives) ... ok
+
+----------------------------------------------------------------------
+Ran 21 tests in 1.343s
+
+OK

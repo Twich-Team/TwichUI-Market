@@ -1,0 +1,11 @@
+{
+  "id": 134945589542,
+  "run_id": 44345199307,
+  "head_sha": "3ebd8b3c8b613ca8ed42a85614679a824ff85033",
+  "name": "signed-update / verify",
+  "status": "completed",
+  "conclusion": "success",
+  "html_url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/44345199307/job/134945589542",
+  "started_at": "2026-11-18T16:16:01Z",
+  "completed_at": "2026-11-18T16:22:20Z"
+}

@@ -1,0 +1,38 @@
+{
+  "at": "2026-11-18T04:21:00.713Z",
+  "real_public_https": true,
+  "synthetic": false,
+  "public_health": 200,
+  "authenticated_inventory": 200,
+  "anonymous_refusal": 401,
+  "csrf_refusal": 403,
+  "unknown_download_refusal": 409,
+  "policy": {
+    "revision": 1,
+    "enabled": false,
+    "interval_seconds": 86400,
+    "daily": 2,
+    "weekly": 0,
+    "monthly": 0,
+    "max_bytes": null,
+    "minimum_recovery_points": 1,
+    "warning_free_bytes": 3221225472
+  },
+  "total": 0,
+  "total_bytes": 0,
+  "artifact_count": 30,
+  "filesystem": {
+    "capacity_bytes": 105089261568,
+    "available_bytes": 4973989888,
+    "free_bytes": 10359476224,
+    "reserve_bytes": 2147483648,
+    "filesystem_id": "64512",
+    "measurement": "backup mount; available excludes filesystem privileged reserve"
+  },
+  "desktop": true,
+  "mobile": true,
+  "mobile_no_overflow": true,
+  "page_errors": [],
+  "archive_creation": false,
+  "policy_changes": false
+}

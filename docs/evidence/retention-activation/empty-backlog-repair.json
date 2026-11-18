@@ -1,0 +1,359 @@
+{
+  "actual_production_queries_read_only": true,
+  "initial_live_execution_status": "failed",
+  "initial_committed_batches": 0,
+  "initial_rows_deleted": 0,
+  "maintenance_paused_during_repair": true,
+  "original_selection": [
+    {
+      "stage": "daily_references",
+      "seconds": 0.008,
+      "rows": 0
+    },
+    {
+      "stage": "observations",
+      "seconds": 0.005,
+      "rows": 0
+    },
+    {
+      "stage": "raw_listings",
+      "seconds": 4.725,
+      "rows": 0
+    },
+    {
+      "stage": "raw_feed_payloads",
+      "seconds": 0.005,
+      "rows": 0
+    },
+    {
+      "stage": "intraday_statistics",
+      "seconds": 0.009,
+      "rows": 0
+    },
+    {
+      "stage": "collection_logs",
+      "seconds": 0.004,
+      "rows": 0
+    },
+    {
+      "stage": "feed_checks",
+      "seconds": 0.003,
+      "rows": 0
+    },
+    {
+      "stage": "security_logs",
+      "seconds": 0.005,
+      "rows": 0
+    }
+  ],
+  "alternatives": [
+    {
+      "variant": "snapshot_first",
+      "seconds": 0.017,
+      "rows": 0,
+      "plan": [
+        {
+          "Plan": {
+            "Node Type": "Limit",
+            "Parallel Aware": false,
+            "Async Capable": false,
+            "Startup Cost": 5296.62,
+            "Total Cost": 6114.92,
+            "Plan Rows": 5000,
+            "Plan Width": 8,
+            "Plans": [
+              {
+                "Node Type": "Incremental Sort",
+                "Parent Relationship": "Outer",
+                "Parallel Aware": false,
+                "Async Capable": false,
+                "Startup Cost": 5296.62,
+                "Total Cost": 561378.34,
+                "Plan Rows": 3397776,
+                "Plan Width": 8,
+                "Sort Key": [
+                  "listings.snapshot_id",
+                  "listings.id"
+                ],
+                "Presorted Key": [
+                  "listings.snapshot_id"
+                ],
+                "Plans": [
+                  {
+                    "Node Type": "Merge Join",
+                    "Parent Relationship": "Outer",
+                    "Parallel Aware": false,
+                    "Async Capable": false,
+                    "Join Type": "Inner",
+                    "Startup Cost": 261.25,
+                    "Total Cost": 293160.73,
+                    "Plan Rows": 3397776,
+                    "Plan Width": 8,
+                    "Inner Unique": true,
+                    "Merge Cond": "(listings.snapshot_id = snapshots.id)",
+                    "Plans": [
+                      {
+                        "Node Type": "Index Scan",
+                        "Parent Relationship": "Outer",
+                        "Parallel Aware": false,
+                        "Async Capable": false,
+                        "Scan Direction": "Forward",
+                        "Index Name": "ix_listings_snapshot_id",
+                        "Relation Name": "listings",
+                        "Alias": "listings",
+                        "Startup Cost": 0.43,
+                        "Total Cost": 526425.46,
+                        "Plan Rows": 13329735,
+                        "Plan Width": 8
+                      },
+                      {
+                        "Node Type": "Index Only Scan",
+                        "Parent Relationship": "Inner",
+                        "Parallel Aware": false,
+                        "Async Capable": false,
+                        "Scan Direction": "Forward",
+                        "Index Name": "snapshots_pkey",
+                        "Relation Name": "snapshots",
+                        "Alias": "snapshots",
+                        "Startup Cost": 260.82,
+                        "Total Cost": 275.86,
+                        "Plan Rows": 26,
+                        "Plan Width": 4,
+                        "Filter": "((NOT (ANY (id = (hashed SubPlan 1).col1))) AND (NOT (ANY (id = (hashed SubPlan 2).col1))))",
+                        "Plans": [
+                          {
+                            "Node Type": "Subquery Scan",
+                            "Parent Relationship": "SubPlan",
+                            "Subplan Name": "SubPlan 1",
+                            "Parallel Aware": false,
+                            "Async Capable": false,
+                            "Alias": "anon_1",
+                            "Startup Cost": 68.72,
+                            "Total Cost": 196.78,
+                            "Plan Rows": 7,
+                            "Plan Width": 4,
+                            "Filter": "(anon_1.\"position\" = 1)",
+                            "Plans": [
+                              {
+                                "Node Type": "WindowAgg",
+                                "Parent Relationship": "Subquery",
+                                "Parallel Aware": false,
+                                "Async Capable": false,
+                                "Startup Cost": 68.72,
+                                "Total Cost": 180.22,
+                                "Plan Rows": 1325,
+                                "Plan Width": 28,
+                                "Run Condition": "(row_number() OVER (?) <= 1)",
+                                "Plans": [
+                                  {
+                                    "Node Type": "Incremental Sort",
+                                    "Parent Relationship": "Outer",
+                                    "Parallel Aware": false,
+                                    "Async Capable": false,
+                                    "Startup Cost": 68.63,
+                                    "Total Cost": 153.72,
+                                    "Plan Rows": 1325,
+                                    "Plan Width": 20,
+                                    "Sort Key": [
+                                      "observations.market_id",
+                                      "observations.retrieved_at DESC",
+                                      "observations.id DESC"
+                                    ],
+                                    "Presorted Key": [
+                                      "observations.market_id"
+                                    ],
+                                    "Plans": [
+                                      {
+                                        "Node Type": "Index Scan",
+                                        "Parent Relationship": "Outer",
+                                        "Parallel Aware": false,
+                                        "Async Capable": false,
+                                        "Scan Direction": "Forward",
+                                        "Index Name": "ix_observations_market_id",
+                                        "Relation Name": "observations",
+                                        "Alias": "observations",
+                                        "Startup Cost": 0.15,
+                                        "Total Cost": 75.03,
+                                        "Plan Rows": 1325,
+                                        "Plan Width": 20
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "Node Type": "Seq Scan",
+                            "Parent Relationship": "SubPlan",
+                            "Subplan Name": "SubPlan 2",
+                            "Parallel Aware": false,
+                            "Async Capable": false,
+                            "Relation Name": "observations",
+                            "Alias": "observations_1",
+                            "Startup Cost": 0.0,
+                            "Total Cost": 60.56,
+                            "Plan Rows": 1325,
+                            "Plan Width": 4,
+                            "Filter": "(retrieved_at >= '2026-11-11 16:11:33.221403+00'::timestamp with time zone)"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "variant": "unordered",
+      "seconds": 0.005,
+      "rows": 0,
+      "plan": [
+        {
+          "Plan": {
+            "Node Type": "Limit",
+            "Parallel Aware": false,
+            "Async Capable": false,
+            "Startup Cost": 261.25,
+            "Total Cost": 692.27,
+            "Plan Rows": 5000,
+            "Plan Width": 4,
+            "Plans": [
+              {
+                "Node Type": "Merge Join",
+                "Parent Relationship": "Outer",
+                "Parallel Aware": false,
+                "Async Capable": false,
+                "Join Type": "Inner",
+                "Startup Cost": 261.25,
+                "Total Cost": 293160.73,
+                "Plan Rows": 3397776,
+                "Plan Width": 4,
+                "Inner Unique": true,
+                "Merge Cond": "(listings.snapshot_id = snapshots.id)",
+                "Plans": [
+                  {
+                    "Node Type": "Index Scan",
+                    "Parent Relationship": "Outer",
+                    "Parallel Aware": false,
+                    "Async Capable": false,
+                    "Scan Direction": "Forward",
+                    "Index Name": "ix_listings_snapshot_id",
+                    "Relation Name": "listings",
+                    "Alias": "listings",
+                    "Startup Cost": 0.43,
+                    "Total Cost": 526425.46,
+                    "Plan Rows": 13329735,
+                    "Plan Width": 8
+                  },
+                  {
+                    "Node Type": "Index Only Scan",
+                    "Parent Relationship": "Inner",
+                    "Parallel Aware": false,
+                    "Async Capable": false,
+                    "Scan Direction": "Forward",
+                    "Index Name": "snapshots_pkey",
+                    "Relation Name": "snapshots",
+                    "Alias": "snapshots",
+                    "Startup Cost": 260.82,
+                    "Total Cost": 275.86,
+                    "Plan Rows": 26,
+                    "Plan Width": 4,
+                    "Filter": "((NOT (ANY (id = (hashed SubPlan 1).col1))) AND (NOT (ANY (id = (hashed SubPlan 2).col1))))",
+                    "Plans": [
+                      {
+                        "Node Type": "Subquery Scan",
+                        "Parent Relationship": "SubPlan",
+                        "Subplan Name": "SubPlan 1",
+                        "Parallel Aware": false,
+                        "Async Capable": false,
+                        "Alias": "anon_1",
+                        "Startup Cost": 68.72,
+                        "Total Cost": 196.78,
+                        "Plan Rows": 7,
+                        "Plan Width": 4,
+                        "Filter": "(anon_1.\"position\" = 1)",
+                        "Plans": [
+                          {
+                            "Node Type": "WindowAgg",
+                            "Parent Relationship": "Subquery",
+                            "Parallel Aware": false,
+                            "Async Capable": false,
+                            "Startup Cost": 68.72,
+                            "Total Cost": 180.22,
+                            "Plan Rows": 1325,
+                            "Plan Width": 28,
+                            "Run Condition": "(row_number() OVER (?) <= 1)",
+                            "Plans": [
+                              {
+                                "Node Type": "Incremental Sort",
+                                "Parent Relationship": "Outer",
+                                "Parallel Aware": false,
+                                "Async Capable": false,
+                                "Startup Cost": 68.63,
+                                "Total Cost": 153.72,
+                                "Plan Rows": 1325,
+                                "Plan Width": 20,
+                                "Sort Key": [
+                                  "observations.market_id",
+                                  "observations.retrieved_at DESC",
+                                  "observations.id DESC"
+                                ],
+                                "Presorted Key": [
+                                  "observations.market_id"
+                                ],
+                                "Plans": [
+                                  {
+                                    "Node Type": "Index Scan",
+                                    "Parent Relationship": "Outer",
+                                    "Parallel Aware": false,
+                                    "Async Capable": false,
+                                    "Scan Direction": "Forward",
+                                    "Index Name": "ix_observations_market_id",
+                                    "Relation Name": "observations",
+                                    "Alias": "observations",
+                                    "Startup Cost": 0.15,
+                                    "Total Cost": 75.03,
+                                    "Plan Rows": 1325,
+                                    "Plan Width": 20
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "Node Type": "Seq Scan",
+                        "Parent Relationship": "SubPlan",
+                        "Subplan Name": "SubPlan 2",
+                        "Parallel Aware": false,
+                        "Async Capable": false,
+                        "Relation Name": "observations",
+                        "Alias": "observations_1",
+                        "Startup Cost": 0.0,
+                        "Total Cost": 60.56,
+                        "Plan Rows": 1325,
+                        "Plan Width": 4,
+                        "Filter": "(retrieved_at >= '2026-11-11 16:11:33.221403+00'::timestamp with time zone)"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "new_selection": "Order eligible listings by existing snapshot_id index, then id; same candidate predicates, mutation engine, scope and budgets",
+  "local_regression_passed": 33,
+  "negative_control_old_listing_rows_visited": 101001,
+  "new_regression_maximum_listing_rows_visited": 99,
+  "new_regression_retained_listing_rows": 101001
+}

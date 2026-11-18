@@ -22,6 +22,8 @@ from .security import DUMMY_HASH, admin, audit, aware, digest, hasher, identity,
 app = FastAPI(title="TwichUI Market", version="0.1.0", docs_url=None, redoc_url=None)
 from .market_api import router as market_router
 app.include_router(market_router)
+from .backup_management import router as backup_management_router
+app.include_router(backup_management_router)
 from .catalogue import router as catalogue_router
 app.include_router(catalogue_router)
 from .item_profiles import router as profile_router
@@ -37,6 +39,7 @@ app.include_router(distribution_router)
 from .sync_api import router as sync_router
 app.include_router(sync_router)
 from .retention import router as retention_router
+from . import retention_worker  # Register the separate enable/pause control before mounting routes.
 app.include_router(retention_router)
 from .market_configuration import router as configuration_router
 app.include_router(configuration_router)

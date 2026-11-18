@@ -1902,3 +1902,51 @@ a.secondary { display:inline-block; padding:10px 14px; border:1px solid var(--bo
 .recovery-tracker > *, .recovery-desktop {min-width:0;max-width:100%}
 
 .recovery-card small {display:block}
+
+/* Archive management uses the existing espresso, walnut and bronze palette. */
+.backup-management {min-width:0;}
+.backup-heading,.backup-inventory-heading,.backup-actions,.backup-pagination {display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.backup-heading h2 {margin:5px 0;font-size:1.55rem;}
+.backup-heading p {margin:6px 0 0;}
+.backup-heading .eyebrow {font-size:.65rem;letter-spacing:.13em;color:#c5ab83;}
+.backup-actions {justify-content:flex-start;}
+.backup-cards {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:24px 0 20px;}
+.backup-cards article {background:#271f18;border:1px solid #59452f;border-radius:6px;padding:16px;min-width:0;}
+.backup-cards article>span,.backup-cards article>small {display:block;color:#c3b59e;font-size:.76rem;}
+.backup-cards strong {display:block;font-size:1.2rem;color:#f0dfbe;margin:8px 0;}
+.backup-cards strong small {font-size:.85rem;}
+.backup-cards time {font-size:.85rem;}
+.backup-disk {background:#201a14;border:1px solid #59452f;padding:15px;border-radius:6px;}
+.backup-disk>div:first-child {display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap;font-size:.83rem;}
+.backup-capacity {height:10px;background:#100e0b;border-radius:8px;overflow:hidden;margin-top:12px;}
+.backup-capacity>span {height:100%;display:block;background:linear-gradient(90deg,#876944,#c29a64);}
+.backup-disk p {margin-bottom:0;}
+.backup-inventory-heading {margin-top:24px;}
+.backup-inventory-heading h3 {margin:0 0 12px;}
+.backup-table {width:100%;font-size:.82rem;}
+.backup-table td {vertical-align:top;}
+.backup-table td:first-child {min-width:190px;max-width:270px;}
+.backup-filename,.backup-hash {overflow-wrap:anywhere;}
+.backup-table td>span,.backup-table td>time {display:block;margin-top:6px;}
+.backup-row-actions {display:flex;gap:5px;flex-wrap:wrap;min-width:180px;}
+.backup-row-actions button {font-size:.75rem;padding:5px 9px;}
+.backup-pagination {justify-content:flex-end;margin:12px 0;}
+.backup-pagination>span {margin-right:auto;}
+.backup-policy,.backup-disclosure {border-top:1px solid #59452f;margin-top:20px;padding-top:18px;}
+.backup-policy-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:18px 0;}
+.backup-policy-grid label {display:flex;flex-direction:column;gap:7px;font-size:.82rem;min-width:0;}
+.backup-policy-grid input {width:100%;min-width:0;box-sizing:border-box;}
+.backup-policy-grid .backup-check {flex-direction:row;align-items:center;gap:10px;}
+.backup-check input {width:auto;}
+.backup-policy summary,.backup-disclosure summary {cursor:pointer;color:#dec19a;}
+.backup-policy>button {margin-top:18px;}
+.backup-disclosure ul,.backup-receipts {font-size:.78rem;overflow-wrap:anywhere;padding-left:20px;}
+.backup-receipts {max-height:200px;overflow:auto;}
+.backup-empty {border:1px dashed #675035;padding:20px;color:#c8baa2;border-radius:6px;}
+@media(max-width:1000px){.backup-cards{grid-template-columns:repeat(2,minmax(0,1fr));}.backup-policy-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:600px){.backup-cards,.backup-policy-grid{grid-template-columns:minmax(0,1fr);}.backup-heading{align-items:flex-start;}.backup-heading>.backup-actions{width:100%;}.backup-heading>.backup-actions button{flex:1;}.backup-management{padding:16px;}.backup-cards strong{font-size:1.1rem;}.backup-management .table-scroll{max-width:100%;}.backup-table{min-width:780px;}.backup-pagination{justify-content:flex-start;}.backup-pagination>span{width:100%;}.backup-disk>div:first-child{display:block;}.backup-disk>div:first-child>span{display:block;margin-top:6px;}}
+.backup-management button:not(.primary) {background:#33271c;color:#e2caa5;border:1px solid #745936;border-radius:4px;padding:8px 12px;font:inherit;font-size:.8rem;cursor:pointer;}
+.backup-management button:not(.primary):hover:not(:disabled) {background:#4a3724;border-color:#b18a54;}
+.backup-management button:disabled {opacity:.45;cursor:default;}
+.backup-management .backup-row-actions button {padding:5px 8px;font-size:.75rem;}
+.backup-management .backup-actions a {color:#e3bf84;}

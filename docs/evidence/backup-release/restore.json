@@ -1,0 +1,13 @@
+{
+  "at": "2026-11-18T04:17:41.429260+00:00",
+  "schema": "coverage_20261117",
+  "tables": 46,
+  "all_original_fields_identical": true,
+  "restore_constraints_validated": true,
+  "ram_backed": true,
+  "tmpfs_limit_bytes": 5368709120,
+  "memory_limit_bytes": 6442450944,
+  "host_ports": [],
+  "production_restore": false,
+  "backup_sha256": "8f6fc1fb5eda8ce19f31b4b6fafa9b529506905f994724abf78d0e0011d1ee29"
+}

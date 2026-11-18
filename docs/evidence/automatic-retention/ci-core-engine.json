@@ -1,0 +1,31 @@
+{
+  "source_sha": "4a0a44a037d1c870e3c21b1a24e0970c4bca506c",
+  "workflows": [
+    {
+      "name": "Backend",
+      "id": 44325741411,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/44325741411"
+    },
+    {
+      "name": "Private website",
+      "id": 44325741652,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/44325741652"
+    },
+    {
+      "name": "Windows companion",
+      "id": 44325741662,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/44325741662"
+    }
+  ],
+  "backend_tests": 696,
+  "frontend_tests": 132,
+  "operational_tests": 65,
+  "scoped_contract_checks": 16,
+  "source_preservation": "All 62 runtime modules match the built image; pending release evidence does not change runtime source."
+}

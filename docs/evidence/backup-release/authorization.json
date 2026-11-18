@@ -1,0 +1,8 @@
+{
+  "owner_instruction": "Merge and deploy.",
+  "received_in_current_chat": true,
+  "scope": "Merge PR #33 and deploy the reviewed backup management API/frontend/service; preserve the disabled schedule and existing retention/history/collector settings. Required bounded temporary release backup/isolated restore and verification are included; no retained dump accumulation.",
+  "recorded_at": "2026-11-18T04:27:20.106392+00:00",
+  "new_scheduled_backups_authorized": false,
+  "production_backup_cleanup_authorized": false
+}

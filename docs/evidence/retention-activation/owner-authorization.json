@@ -1,0 +1,19 @@
+{
+  "owner_statement": "Approve activation. we should not require off vm storage for now.",
+  "recorded_at": "2026-11-18",
+  "approval_reference": "owner-20261118-retention-local-only",
+  "retention_activation_approved": true,
+  "off_vm_recovery_waived_for_now": true,
+  "required_local_controls": [
+    "protected present archive",
+    "live checksum revalidation",
+    "verified isolated restore",
+    "24-hour freshness",
+    "32 GiB physical reserve",
+    "exact rolling policy and bounded execution approval"
+  ],
+  "recurring_backups_authorized": false,
+  "external_storage_modified": false,
+  "companion_publication_separate_authorization": "Publish the verified TwichUI Market Companion Workshop repair and make it available through the existing website download and automatic updater.",
+  "owner_pc_acceptance_claimed": false
+}

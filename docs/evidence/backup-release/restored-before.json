@@ -1,0 +1,751 @@
+{
+  "alembic_version": {
+    "rows": 1,
+    "bytes": 18,
+    "sha256": "b025caa8a7a344dd110b63d14559c9b54688058eae3a4c657c083c19c56d504a",
+    "columns": [
+      "version_num"
+    ]
+  },
+  "archive_checkpoints": {
+    "rows": 0,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "columns": [
+      "checkpoint_id",
+      "market_id",
+      "user_id",
+      "credential_id",
+      "header_json",
+      "created_at",
+      "expires_at"
+    ]
+  },
+  "archive_digests": {
+    "rows": 9,
+    "bytes": 933,
+    "sha256": "6e2d014ff66b08c1207df2e4f79c136b1dbf06074d6644bfadc0f10f18211075",
+    "columns": [
+      "snapshot_id",
+      "algorithm",
+      "revision",
+      "record_count",
+      "records_sha256",
+      "records_bytes"
+    ]
+  },
+  "archive_members": {
+    "rows": 0,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "columns": [
+      "checkpoint_id",
+      "phase",
+      "source_id",
+      "value_json",
+      "transmit"
+    ]
+  },
+  "bridge_derivations": {
+    "rows": 8,
+    "bytes": 243,
+    "sha256": "174f19583bd30f81bddafd01dd98179f015005c428136a7d295188ce5cc3c251",
+    "columns": [
+      "snapshot_id",
+      "algorithm",
+      "revision",
+      "record_count"
+    ]
+  },
+  "bridge_derived_records": {
+    "rows": 172934,
+    "bytes": 164608870,
+    "sha256": "da881190c482a1f84bfe5a0a1a9e94be723996f44085fde3de9a43043f96bd7f",
+    "columns": [
+      "snapshot_id",
+      "algorithm",
+      "revision",
+      "item_id",
+      "variant_key",
+      "record_json",
+      "source_kind"
+    ]
+  },
+  "bridge_generations": {
+    "rows": 0,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "columns": [
+      "generation_id",
+      "market_id",
+      "algorithm",
+      "source_signature",
+      "manifest_json",
+      "created_at"
+    ]
+  },
+  "bridge_records": {
+    "rows": 0,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "columns": [
+      "generation_id",
+      "position",
+      "record_json"
+    ]
+  },
+  "collection_runs": {
+    "rows": 1111,
+    "bytes": 63993,
+    "sha256": "b4d7c5de74f953be1ff464c833d0837150bd975193b645d1a4ac37690b309818",
+    "columns": [
+      "id",
+      "market_id",
+      "checked_at",
+      "status",
+      "http_status",
+      "duration_seconds",
+      "payload_bytes",
+      "error"
+    ]
+  },
+  "companion_authorizations": {
+    "rows": 2,
+    "bytes": 802,
+    "sha256": "c2d401aac3e18638e2cd5713c06807998f025ff2773ae1ed27608a751be90a93",
+    "columns": [
+      "id",
+      "user_id",
+      "device_id",
+      "approved_credential_id",
+      "device_name",
+      "platform",
+      "app_version",
+      "issuer_origin",
+      "redirect_uri",
+      "state_value",
+      "state_hash",
+      "code_challenge",
+      "code_hash",
+      "code_expires_at",
+      "created_at",
+      "expires_at",
+      "status",
+      "invalid_attempts"
+    ]
+  },
+  "companion_devices": {
+    "rows": 5,
+    "bytes": 2069,
+    "sha256": "49f50dec2d3188aa724b31bc0df26fc3bb536a43dfcac005ccfbcd1b9b7e135a",
+    "columns": [
+      "id",
+      "user_id",
+      "name",
+      "platform",
+      "app_version",
+      "issuer_origin",
+      "created_at",
+      "expires_at",
+      "refresh_expires_at",
+      "revoked",
+      "refresh_hash",
+      "previous_refresh_hash",
+      "rotation_nonce_hash",
+      "rotated_at",
+      "generation",
+      "access_credential_id",
+      "last_connection_at",
+      "last_sync_at",
+      "selected_market_id",
+      "last_observation_id",
+      "archived_at"
+    ]
+  },
+  "companion_refresh_history": {
+    "rows": 36,
+    "bytes": 3484,
+    "sha256": "87b0e8d1c7d5617548b4b6d41a244fa43a6a9b9518d4e831243c8577611257dc",
+    "columns": [
+      "token_hash",
+      "device_id",
+      "consumed_at"
+    ]
+  },
+  "credentials": {
+    "rows": 277,
+    "bytes": 62437,
+    "sha256": "bad41b0cc39f8cc3e6b7b5f20e61452c9468e1ec139fff5b13d6dda96795390a",
+    "columns": [
+      "id",
+      "user_id",
+      "token_hash",
+      "kind",
+      "name",
+      "csrf_hash",
+      "created_at",
+      "expires_at",
+      "revoked",
+      "audience",
+      "companion_device_id"
+    ]
+  },
+  "daily_observations": {
+    "rows": 6,
+    "bytes": 104,
+    "sha256": "14ceb8f416439da5ab9bcb28bc1228778bb35b5a6e2d54a9fe6799365e22f6a1",
+    "columns": [
+      "market_id",
+      "day",
+      "observation_id"
+    ]
+  },
+  "feed_captures": {
+    "rows": 6,
+    "bytes": 14032329,
+    "sha256": "7650bde12aee299123a8436363bf1f595c3cb54cd69e2db0f2f27a44092770e8",
+    "columns": [
+      "id",
+      "market_id",
+      "source_kind",
+      "observed_at",
+      "payload_hash",
+      "content_hash",
+      "payload_bytes",
+      "compressed_payload",
+      "payload_retained_at",
+      "listing_count",
+      "item_count"
+    ]
+  },
+  "feed_checks": {
+    "rows": 54,
+    "bytes": 5254,
+    "sha256": "5d4210a600b44448a1fb34944687825aff71dd959c91c34868e0124e18437fe1",
+    "columns": [
+      "id",
+      "market_id",
+      "source_kind",
+      "checked_at",
+      "status",
+      "http_status",
+      "error",
+      "upstream_modified",
+      "etag",
+      "capture_id"
+    ]
+  },
+  "invitations": {
+    "rows": 2,
+    "bytes": 202,
+    "sha256": "009b43589b93a398061c5edd6279a4917ad03d53146268c494ae3c7bb7063d37",
+    "columns": [
+      "id",
+      "token_hash",
+      "created_by",
+      "expires_at",
+      "used"
+    ]
+  },
+  "item_media": {
+    "rows": 7174,
+    "bytes": 35869612,
+    "sha256": "c3d8b28f386ebe0c34f2098d585fbb7aeb2fffb45dbd7157bc19e0a5034a77e3",
+    "columns": [
+      "region",
+      "item_id",
+      "status",
+      "source",
+      "source_url",
+      "namespace",
+      "metadata_hash",
+      "asset_hash",
+      "content_type",
+      "data",
+      "byte_count",
+      "checked_at",
+      "retry_after",
+      "http_status",
+      "resolved_at"
+    ]
+  },
+  "item_metadata": {
+    "rows": 7196,
+    "bytes": 83130717,
+    "sha256": "2c9a41554362f1a93e091da16e87b53a036a5359706a3c5af61508141752fe3a",
+    "columns": [
+      "region",
+      "item_id",
+      "name",
+      "status",
+      "namespace",
+      "checked_at",
+      "resolved_at",
+      "retry_after",
+      "http_status",
+      "payload_hash",
+      "synthetic",
+      "quality",
+      "details",
+      "resolved_namespace",
+      "requested_at",
+      "fallback",
+      "fallback_name",
+      "fallback_retry_after",
+      "catalog_json",
+      "catalog_revision"
+    ]
+  },
+  "item_source_coverage": {
+    "rows": 1306,
+    "bytes": 149736,
+    "sha256": "d4a92ccf8caf8f2f82bcd0392f32b834b5a6ab44dd8e083ffbdeadea0f920fe7",
+    "columns": [
+      "market_id",
+      "item_id",
+      "variant_key",
+      "source_kind",
+      "first_observed_at"
+    ]
+  },
+  "listings": {
+    "rows": 11933839,
+    "bytes": 1733268428,
+    "sha256": "4c8fb63cff3b97027539c67670d05ee1c330d8369d603092da79fa29aeb6ad89",
+    "columns": [
+      "id",
+      "snapshot_id",
+      "auction_id",
+      "item_id",
+      "variant",
+      "variant_key",
+      "quantity",
+      "buyout",
+      "unit_price",
+      "bid",
+      "time_left",
+      "source_kind"
+    ]
+  },
+  "login_attempts": {
+    "rows": 7,
+    "bytes": 679,
+    "sha256": "a84a8c3b68906b6789058f956aa2de3dfde3016a2900ebec7b3474778224f06a",
+    "columns": [
+      "key",
+      "count",
+      "window_start"
+    ]
+  },
+  "market_feeds": {
+    "rows": 2,
+    "bytes": 4467,
+    "sha256": "93fd656b537a9a467c62be5462d5e8c2a07e4c757842b3d30f93f92f02a3173e",
+    "columns": [
+      "market_id",
+      "source_kind",
+      "verification",
+      "retry_after",
+      "enabled",
+      "last_check",
+      "last_success",
+      "last_modified",
+      "etag",
+      "failures",
+      "last_error",
+      "capture_id"
+    ]
+  },
+  "market_verifications": {
+    "rows": 2,
+    "bytes": 5028,
+    "sha256": "e7d6d471274fb9da263bf766a53941675224876ef60df832c1194ae61fa03d17",
+    "columns": [
+      "id",
+      "market_id",
+      "actor_id",
+      "created_at",
+      "evidence",
+      "evidence_hash",
+      "notes"
+    ]
+  },
+  "markets": {
+    "rows": 2,
+    "bytes": 332,
+    "sha256": "904900911c66b83c463768a7649346d550a719f1bbbc03415cba7d37c06723b4",
+    "columns": [
+      "id",
+      "region",
+      "ruleset_id",
+      "house_id",
+      "source_kind",
+      "label",
+      "enabled",
+      "verified",
+      "interval_seconds",
+      "next_check",
+      "last_success",
+      "last_modified",
+      "etag",
+      "failures",
+      "last_error",
+      "unified_coverage"
+    ]
+  },
+  "metadata_attempts": {
+    "rows": 6202,
+    "bytes": 11647131,
+    "sha256": "9ad08a61c5ca9e7376c8ca41308d531df9e719aabe4408ff4baaf3a1d923e18f",
+    "columns": [
+      "id",
+      "task_id",
+      "provider",
+      "region",
+      "item_id",
+      "kind",
+      "started_at",
+      "completed_at",
+      "state",
+      "http_status",
+      "outcome",
+      "decision_json",
+      "returned_json",
+      "new_json",
+      "updated_json"
+    ]
+  },
+  "metadata_jobs": {
+    "rows": 20606,
+    "bytes": 3533569,
+    "sha256": "428a8fb523ebb0203a33b0d39c42ff46b2bb35ff91872f83056095d26c273cc5",
+    "columns": [
+      "id",
+      "actor_id",
+      "market_id",
+      "mode",
+      "state",
+      "dedupe_key",
+      "providers_json",
+      "total",
+      "request_budget",
+      "requests_used",
+      "created_at",
+      "updated_at"
+    ]
+  },
+  "metadata_providers": {
+    "rows": 4,
+    "bytes": 2144,
+    "sha256": "572a791c50bd7aa86966cbf9d4a4c2f77f66e08280c2487411ee23c6f5228234",
+    "columns": [
+      "provider",
+      "enabled",
+      "automatic",
+      "hourly_budget",
+      "daily_budget",
+      "hour_start",
+      "day_start",
+      "hour_used",
+      "day_used",
+      "next_request_at",
+      "cooldown_until",
+      "last_success",
+      "last_error",
+      "credential",
+      "credential_key_id",
+      "expires_at",
+      "validated_at",
+      "credential_status",
+      "pending_credential",
+      "pending_key_id",
+      "pending_expires_at",
+      "validation_requested",
+      "validation_revision",
+      "validation_error",
+      "rate_config",
+      "rate_tokens",
+      "rate_token_at",
+      "rate_inflight_until",
+      "rate_streak",
+      "adaptive_until",
+      "last_rate_limit",
+      "last_http_success",
+      "last_recovery",
+      "rate_observation"
+    ]
+  },
+  "metadata_quota_buckets": {
+    "rows": 1491,
+    "bytes": 56031,
+    "sha256": "066373eef9fe0d4d403793ec6f0b6d85a22fb0b50902637ae8c9082970774379",
+    "columns": [
+      "provider",
+      "resolution",
+      "started_at",
+      "used"
+    ]
+  },
+  "metadata_recovery_items": {
+    "rows": 6758,
+    "bytes": 10083893,
+    "sha256": "6ef1cfe538bc7add93712f7248891b0fea8603731cebb46176dbf64b0b349a71",
+    "columns": [
+      "region",
+      "item_id",
+      "locale",
+      "status",
+      "decided_at",
+      "next_at",
+      "decision_json"
+    ]
+  },
+  "metadata_recovery_state": {
+    "rows": 1,
+    "bytes": 65,
+    "sha256": "5ed5495f2f56b00ec031d60a64ad55b98cbad66036acb98a92da127da1778f9e",
+    "columns": [
+      "id",
+      "turn",
+      "historical_after",
+      "audit_after"
+    ]
+  },
+  "metadata_resources": {
+    "rows": 3,
+    "bytes": 101900,
+    "sha256": "3e5e6079fa69031e61f2d0bd8127df9b75ae99b73c1a2f77048e50afaec577f3",
+    "columns": [
+      "region",
+      "resource",
+      "offset",
+      "status",
+      "fields_json",
+      "source_json",
+      "etag",
+      "checked_at",
+      "refresh_at",
+      "retry_at",
+      "http_status"
+    ]
+  },
+  "metadata_sources": {
+    "rows": 17962,
+    "bytes": 104497416,
+    "sha256": "0eb2eaa99c044a24bbbb4016c59560f54b417333744648f00d0743c2618ec3dd",
+    "columns": [
+      "region",
+      "item_id",
+      "locale",
+      "provider",
+      "status",
+      "fields_json",
+      "source_json",
+      "revision",
+      "etag",
+      "checked_at",
+      "retrieved_at",
+      "refresh_at",
+      "retry_at",
+      "http_status",
+      "recovery_json"
+    ]
+  },
+  "metadata_tasks": {
+    "rows": 20925,
+    "bytes": 29779410,
+    "sha256": "fa842d701807371c5231c6a8ee385246917f6c537c45c22f6ab53b7465dc98aa",
+    "columns": [
+      "id",
+      "job_id",
+      "provider",
+      "region",
+      "item_id",
+      "locale",
+      "state",
+      "attempts",
+      "available_at",
+      "lease_until",
+      "lease_token",
+      "result_json",
+      "updated_at",
+      "resource",
+      "decision_json",
+      "force_refresh"
+    ]
+  },
+  "metadata_versions": {
+    "rows": 19028,
+    "bytes": 122369175,
+    "sha256": "ec79658b94bf8baff8a053754371b716daf107b5400dcfdc3f015cf8d96a9989",
+    "columns": [
+      "id",
+      "region",
+      "item_id",
+      "locale",
+      "provider",
+      "revision",
+      "fields_json",
+      "source_json",
+      "created_at"
+    ]
+  },
+  "observations": {
+    "rows": 1109,
+    "bytes": 238556,
+    "sha256": "e15a3176ab54e7d7c4c1d821b541fca5ec875eff6fbce291f1a3bb256d907827",
+    "columns": [
+      "id",
+      "market_id",
+      "snapshot_id",
+      "request_key",
+      "retrieved_at",
+      "upstream_modified",
+      "namespace",
+      "payload_hash",
+      "payload_bytes",
+      "synthetic",
+      "source_manifest"
+    ]
+  },
+  "player_market_mappings": {
+    "rows": 1,
+    "bytes": 15546,
+    "sha256": "dde78a44cad988f6801006e0263f2bc09ae209428459ef17d26f9571c3c50cdd",
+    "columns": [
+      "id",
+      "region",
+      "ruleset",
+      "faction",
+      "house_id",
+      "transport_ruleset_id",
+      "source_kind",
+      "confidence",
+      "evidence",
+      "evidence_hash",
+      "verified_at"
+    ]
+  },
+  "retention_batches": {
+    "rows": 0,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "columns": [
+      "id",
+      "actor_id",
+      "policy_hash",
+      "stage",
+      "rows_removed",
+      "cutoff",
+      "history_floor",
+      "created_at"
+    ]
+  },
+  "retention_policy": {
+    "rows": 1,
+    "bytes": 56,
+    "sha256": "b13d69b12df05e5e409c8df5f3f387142f039e622f11aaf578f500c062ab03f2",
+    "columns": [
+      "id",
+      "revision",
+      "raw_days",
+      "intraday_days",
+      "daily_days",
+      "operational_days",
+      "security_days",
+      "approved_hash",
+      "approved_at",
+      "updated_at"
+    ]
+  },
+  "retention_policy_changes": {
+    "rows": 2,
+    "bytes": 440,
+    "sha256": "f911953ccd587fefb82c7c38037046db393264b6be056bf43d46cceed2955b11",
+    "columns": [
+      "id",
+      "actor_id",
+      "before",
+      "after",
+      "created_at"
+    ]
+  },
+  "security_events": {
+    "rows": 49910,
+    "bytes": 4864532,
+    "sha256": "5e8bc1d6020ae7249fe86b71c4313a4dd87a666d154018dbf67e6337ea7a8070",
+    "columns": [
+      "id",
+      "actor_id",
+      "action",
+      "detail",
+      "created_at"
+    ]
+  },
+  "snapshot_statistics": {
+    "rows": 2489096,
+    "bytes": 301580487,
+    "sha256": "75b25e6cee22c57f2ea20508052139a14c438f07a41a106444b8c3c49d4dacc7",
+    "columns": [
+      "snapshot_id",
+      "item_id",
+      "variant_key",
+      "algorithm",
+      "recent_price",
+      "lowest_buyout",
+      "supply",
+      "priced_supply",
+      "listing_count",
+      "source_kind"
+    ]
+  },
+  "snapshots": {
+    "rows": 99,
+    "bytes": 10950,
+    "sha256": "88df4ceefe2426c552192e6c0a2b72d895ed6a46a89c616fcc2f05b8d686e695",
+    "columns": [
+      "id",
+      "market_id",
+      "content_hash",
+      "created_at",
+      "listing_count",
+      "raw_retained",
+      "statistics_retained"
+    ]
+  },
+  "storage_measurements": {
+    "rows": 100,
+    "bytes": 3367,
+    "sha256": "2bab1ea9a2aebb15036bdb480eb4578a4182a1aa5d899513c60963075e102812",
+    "columns": [
+      "sampled_at",
+      "database_bytes"
+    ]
+  },
+  "user_preferences": {
+    "rows": 22,
+    "bytes": 8212,
+    "sha256": "b5e36ad92afd9818f7db162c02f5ef9050ac152face46c5d87bbb72fdff44ba8",
+    "columns": [
+      "user_id",
+      "schema_version",
+      "revision",
+      "values_json",
+      "updated_at"
+    ]
+  },
+  "users": {
+    "rows": 97,
+    "bytes": 16721,
+    "sha256": "679095ee279b4bfbf3567beed7a644265932c20c83f4e82b26b1a1f67ffe5ff0",
+    "columns": [
+      "id",
+      "username",
+      "password_hash",
+      "role",
+      "active",
+      "created_at",
+      "archived_at"
+    ]
+  }
+}

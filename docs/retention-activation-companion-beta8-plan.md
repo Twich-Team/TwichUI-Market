@@ -1,0 +1,7 @@
+# Owner-authorized activation and Companion repair publication
+
+2026-11-18: The owner approves activating the reviewed rolling retention policy and explicitly waives off-VM storage for now. Record that exception honestly; require a protected, rehashed, restored local archive and preserve freshness, storage, scope and execution limits. Do not fabricate off-VM evidence or enable recurring backups. Inspect the live policy/preview before approval. Existing cold canonical export limitations remain explicit.
+
+The attached request separately authorizes integrating PR37's verified Workshop repair, publishing a new unused Companion beta (expected beta.8), original Windows artifact verification, owner-host signing with the existing key, exact signed SDK acceptance and immutable private-beta publication. Preserve existing releases and newer production application code; no addon release or provider campaign.
+
+Sequence: inspect/integrate repaired source; implement the explicit recovery exception and tests; freeze consistent desktop version and installed Workshop version gate; run canonical Windows/backend/website checks; obtain/hash original artifacts; sign offline and independently verify; run actual signed SDK acceptance; apply only necessary verified retention/API changes; authorize/enable the exact live retention scope; publish/verify beta.8 HTTPS delivery and updater; revoke verification grants and record final evidence. Keep all preservation/resource controls and existing rollback configurations. Never claim owner-PC/game acceptance from fixtures.

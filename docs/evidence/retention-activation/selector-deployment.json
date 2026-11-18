@@ -1,0 +1,54 @@
+{
+  "at": "2026-11-18T16:23:23.940263+00:00",
+  "patch_source": "3ebd8b3c8b613ca8ed42a85614679a824ff85033",
+  "backend_ci_run": 44345199392,
+  "only_retention_selection_order_changed": true,
+  "containers": {
+    "api": {
+      "before_id": "afbc6ff761bcb8a1e4a082e0201da3fa2002ab99285bae19d394d6e906f58e65",
+      "after_id": "2bb52bba3dc7114bfdc44cf22e72477de9eaecc0a7bcc7be3835959163b0cd71",
+      "image": "sha256:9712cd35a1f669343d20d42598717d0fcb370a4c358d3edb4c35f807b0d9295c"
+    },
+    "local-api": {
+      "before_id": "3e4b2a12fa15d4bc3a82828927d18683a6457aeb71f00e8f975f7f1055cf4435",
+      "after_id": "5be3eefdf11d8ab91e62ff28e30e18cb18f941eaf496c0386c2b1bd3f5da850b",
+      "image": "sha256:9712cd35a1f669343d20d42598717d0fcb370a4c358d3edb4c35f807b0d9295c"
+    },
+    "worker": {
+      "before_id": "81b36b1a230d15f0cef2edcadc53866128f302d305a662bc9a453abf203b2887",
+      "after_id": "81b36b1a230d15f0cef2edcadc53866128f302d305a662bc9a453abf203b2887",
+      "image": "sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b"
+    },
+    "monitor": {
+      "before_id": "951a51c3f113782bc1820ea6a4f9062ee5fbc5886e99ec17caa2dcfb50e76db3",
+      "after_id": "00320ce44d3801ef902386a2f7956fe9f49e74decad5ea71782a3f8cdde1dcd5",
+      "image": "sha256:9712cd35a1f669343d20d42598717d0fcb370a4c358d3edb4c35f807b0d9295c"
+    },
+    "retention": {
+      "before_id": "cf506e338a0ade13dce9b5097a0c07ca8e6707e4d9de258711d3229a27dd9f6f",
+      "after_id": "225f8fba07561eda9d4f64eb8ca98f3115ab50f5b0e6e4bdc050d75e30f81d43",
+      "image": "sha256:9712cd35a1f669343d20d42598717d0fcb370a4c358d3edb4c35f807b0d9295c"
+    },
+    "proxy": {
+      "before_id": "de1e7aceb146621a04cdea2151d46318fc3c4124b3aa4da9ac98c5282f4539ac",
+      "after_id": "de1e7aceb146621a04cdea2151d46318fc3c4124b3aa4da9ac98c5282f4539ac",
+      "image": "sha256:f48f8f1a7e5a030432abde0792ee0be1aae0326950404e83036bc9c0172a6814"
+    },
+    "db": {
+      "before_id": "1a138045d430554c64142f230fa1555e61d3414b2926ae9b2606f58fb8fb3642",
+      "after_id": "1a138045d430554c64142f230fa1555e61d3414b2926ae9b2606f58fb8fb3642",
+      "image": "sha256:d3244e8ce3f165ee3c93d9c4a4b1d0fe48b3a89e2287b717fdcbbde92d405065"
+    },
+    "enrichment": {
+      "before_id": "08ac2b64e749d094f88e9cce7157fd3c5a29ea867bb11ae24789247479a49c44",
+      "after_id": "08ac2b64e749d094f88e9cce7157fd3c5a29ea867bb11ae24789247479a49c44",
+      "image": "sha256:3ef6f57964546a425f4c2ebe2bc44be2d9a516340325074dfb0fb2f32d7c3667"
+    },
+    "backup-manager": {
+      "before_id": "0975558bb55d6a8216c43fdba4911b3a9cbfc46bc6f36188c3e88e88782f6ecf",
+      "after_id": "0975558bb55d6a8216c43fdba4911b3a9cbfc46bc6f36188c3e88e88782f6ecf",
+      "image": "sha256:79cea119910ad3353f8a35ce21d079fafbcab0a757c0734bfe3bce6055c68565"
+    }
+  },
+  "batches_before": 0
+}

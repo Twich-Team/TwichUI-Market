@@ -36,6 +36,9 @@ services:
       DETAILED_STATISTICS_DAYS: ${DETAILED_STATISTICS_DAYS:-90}
       ITEM_COMMUNITY_FALLBACK_ENABLED: ${ITEM_COMMUNITY_FALLBACK_ENABLED:-false}
       HISTORY_COMPACTION_ENABLED: ${HISTORY_COMPACTION_ENABLED:-false}
+      MAX_DATABASE_BYTES: ${MAX_DATABASE_BYTES:-17179869184}
+      MIN_DATABASE_FREE_BYTES: ${MIN_DATABASE_FREE_BYTES:-2147483648}
+      DATABASE_FILESYSTEM_PATH: /database-filesystem
     depends_on: {db: {condition: service_healthy}}
     command: [alembic, upgrade, head]
     mem_limit: 256m
@@ -45,7 +48,7 @@ services:
     <<: *limits
     image: twichui-market-backend:dev
     environment: *api-env
-    volumes: [./artifacts/backup-status:/backup-status:ro]
+    volumes: [./artifacts/backup-status:/backup-status:ro, market-data:/database-filesystem:ro]
     depends_on: {migrate: {condition: service_completed_successfully}}
     mem_limit: 384m
     cpus: 0.5
@@ -85,12 +88,12 @@ services:
       <<: *api-env
       BLIZZARD_CLIENT_ID: ${BLIZZARD_CLIENT_ID:-}
       BLIZZARD_CLIENT_SECRET: ${BLIZZARD_CLIENT_SECRET:-}
-      MAX_DATABASE_BYTES: ${MAX_DATABASE_BYTES:-5368709120}
       ITEM_ENRICHMENT_IN_COLLECTOR: "false"
       COLLECTION_LOG_DAYS: ${COLLECTION_LOG_DAYS:-90}
       SECURITY_EVENT_DAYS: ${SECURITY_EVENT_DAYS:-365}
     depends_on: {migrate: {condition: service_completed_successfully}}
     command: [python, -m, market.worker]
+    volumes: [market-data:/database-filesystem:ro]
     mem_limit: 384m
     cpus: 0.5
     read_only: true
@@ -110,6 +113,20 @@ services:
     pids_limit: 100
     read_only: true
     tmpfs: [/tmp:size=16m]
+  retention:
+    <<: *limits
+    profiles: [retention]
+    image: twichui-market-backend:dev
+    environment: *api-env
+    depends_on: {migrate: {condition: service_completed_successfully}}
+    command: [python, -m, market.retention_worker]
+    volumes: [market-data:/database-filesystem:ro, ./artifacts/backup-status:/backup-status:ro]
+    mem_limit: 192m
+    cpus: 0.25
+    pids_limit: 64
+    read_only: true
+    tmpfs: [/tmp:size=16m]
+    cap_drop: [ALL]
   backup:
     <<: *limits
     profiles: [operations]

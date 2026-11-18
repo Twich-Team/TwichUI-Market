@@ -38,3 +38,15 @@ def test_competing_sampler_does_not_write(database):
         db.execute(text('SELECT pg_advisory_xact_lock(7140234)'))
         assert sample(database)=='busy'
         assert db.scalar(select(func.count()).select_from(StorageMeasurement))==0
+
+
+def test_retention_rate_requires_measurements_and_reports_backlog():
+    from market.storage import throughput
+    from types import SimpleNamespace
+    from market.db import now
+    from datetime import timedelta
+    assert throughput([])['status']=='insufficient_measurements'
+    points=[SimpleNamespace(sampled_at=now()-timedelta(days=1),retention_eligible_rows=100,retention_processed_rows=0),
+            SimpleNamespace(sampled_at=now(),retention_eligible_rows=200,retention_processed_rows=100)]
+    result=throughput(points)
+    assert result['status']=='falling_behind' and result['newly_eligible_rows_per_day']==200 and result['processed_rows_per_day']==100

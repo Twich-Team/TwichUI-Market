@@ -1,0 +1,7 @@
+2026-11-18T03:50:09.0367161Z No known vulnerabilities found
+2026-11-18T03:50:10.8517568Z No new upgrade operations detected.
+2026-11-18T03:53:36.7927162Z 670 passed in 202.07s (0:03:22)
+2026-11-18T03:54:22.9349893Z Ran 65 tests in 5.126s
+2026-11-18T03:54:23.6578396Z Ran 16 tests in 0.527s
+2026-11-18T03:54:32.4785853Z   "source_fingerprint_unchanged": true,
+2026-11-18T03:54:32.4788141Z   "protected_point_retained": true

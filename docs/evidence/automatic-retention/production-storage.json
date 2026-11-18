@@ -1,0 +1,695 @@
+{
+  "operations": {
+    "retention_throughput": {
+      "status": "insufficient_measurements",
+      "newly_eligible_rows_per_day": null,
+      "processed_rows_per_day": null
+    },
+    "capacity": {
+      "database_allocated_bytes": 4673722035,
+      "database_limit_bytes": 68719476736,
+      "filesystem": {
+        "available_bytes": 158928990208,
+        "total_bytes": 266736099328,
+        "reserve_bytes": 34359738368
+      },
+      "paused_reason": null
+    },
+    "automation": {
+      "installed": true,
+      "enabled": false,
+      "authorized": false,
+      "authorization": null,
+      "proposal": {
+        "policy_hash": "9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7",
+        "policy_revision": 3,
+        "scope": {
+          "version": 1,
+          "stages": [
+            "daily_references",
+            "observations",
+            "raw_listings",
+            "raw_feed_payloads",
+            "intraday_statistics",
+            "collection_logs",
+            "feed_checks",
+            "security_logs"
+          ],
+          "daily_support_days": 60,
+          "current_heads": "all markets including disabled",
+          "shared_snapshots": "protect all retained observation dependencies",
+          "sync": "existing 409/full refresh",
+          "concurrent_executions": 1,
+          "operations": "DELETE candidate rows except raw_feed_payloads, which clears compressed_payload",
+          "scheduler_sha256": "1f38819646cb84561565a5037f6579e525617973670ee0c6272eff629ca8acd8",
+          "minimum_filesystem_reserve_bytes": 34359738368,
+          "engine_sha256": "e2f408b72f27589dcc9ff736c5da476454b8c60480a97c3cd7bef82e4ad91acb"
+        },
+        "limits": {
+          "rows_per_batch": 5000,
+          "payloads_per_batch": 25,
+          "max_batches": 12,
+          "max_seconds": 20,
+          "statement_ms": 2000,
+          "lock_ms": 250,
+          "interval_seconds": 300,
+          "collector_margin_seconds": 30,
+          "contention_retry_seconds": 60,
+          "max_wal_bytes": 2147483648
+        },
+        "execution_hash": "3543c34bde2c8e3ed5b63c21ef645c6c6ccfbb19945b4ff7a685e37694e4d243"
+      },
+      "recovery": {
+        "off_vm_verification_recent": false,
+        "verified_at": null,
+        "local_archive_status": "Live validation required",
+        "reason": "Off-VM recovery verification is missing or stale"
+      },
+      "next_run_at": null,
+      "last_success_at": null,
+      "rows_by_stage": {},
+      "last_run": null,
+      "paused_reason": "Policy is not authorized for automatic maintenance",
+      "recovery_notice": "Automatic execution requires a present, rehashed, protected restored archive and matching off-VM verification within 24 hours."
+    },
+    "warnings": [
+      "Retention is configured but unauthorized for automatic execution",
+      "Off-VM recovery verification is missing or stale; historical pruning is blocked"
+    ],
+    "collection_failures": [],
+    "oldest_observation_at": "2026-11-14T02:45:34.522262+00:00",
+    "oldest_daily_day": "2026-11-14",
+    "estimated_live_heap_bytes": 3054577192,
+    "estimated_reusable_heap_bytes": 8223192,
+    "estimate_notice": "Dead-tuple heap estimate for largest tables; excludes indexes, TOAST and fragmentation. DELETE makes internal space reusable after vacuum; allocated files do not immediately shrink.",
+    "vacuum": [
+      {
+        "relname": "listings",
+        "n_live_tup": 13318613,
+        "n_dead_tup": 0,
+        "last_autovacuum": "2026-11-18T10:29:51.245033+00:00",
+        "last_autoanalyze": "2026-11-18T12:30:42.509417+00:00",
+        "allocated_bytes": 3413696512,
+        "heap_bytes": 2329640960
+      },
+      {
+        "relname": "snapshot_statistics",
+        "n_live_tup": 2669915,
+        "n_dead_tup": 0,
+        "last_autovacuum": "2026-11-18T01:29:31.071727+00:00",
+        "last_autoanalyze": "2026-11-18T14:26:42.956951+00:00",
+        "allocated_bytes": 847994880,
+        "heap_bytes": 448299008
+      },
+      {
+        "relname": "bridge_derived_records",
+        "n_live_tup": 172934,
+        "n_dead_tup": 0,
+        "last_autovacuum": "2026-11-17T21:11:04.924286+00:00",
+        "last_autoanalyze": "2026-11-18T02:04:30.669738+00:00",
+        "allocated_bytes": 205324288,
+        "heap_bytes": 179904512
+      },
+      {
+        "relname": "metadata_tasks",
+        "n_live_tup": 21558,
+        "n_dead_tup": 3637,
+        "last_autovacuum": "2026-11-18T03:13:31.160271+00:00",
+        "last_autoanalyze": "2026-11-18T04:55:32.740957+00:00",
+        "allocated_bytes": 33652736,
+        "heap_bytes": 26910720
+      },
+      {
+        "relname": "metadata_sources",
+        "n_live_tup": 18496,
+        "n_dead_tup": 2680,
+        "last_autovacuum": "2026-11-18T02:34:30.356683+00:00",
+        "last_autoanalyze": "2026-11-18T04:48:32.541230+00:00",
+        "allocated_bytes": 28221440,
+        "heap_bytes": 20414464
+      },
+      {
+        "relname": "metadata_versions",
+        "n_live_tup": 19561,
+        "n_dead_tup": 4,
+        "last_autovacuum": "2026-11-18T02:17:29.891443+00:00",
+        "last_autoanalyze": "2026-11-18T03:12:31.102935+00:00",
+        "allocated_bytes": 26402816,
+        "heap_bytes": 22732800
+      },
+      {
+        "relname": "feed_captures",
+        "n_live_tup": 25,
+        "n_dead_tup": 0,
+        "last_autovacuum": null,
+        "last_autoanalyze": null,
+        "allocated_bytes": 25714688,
+        "heap_bytes": 8192
+      },
+      {
+        "relname": "item_metadata",
+        "n_live_tup": 7223,
+        "n_dead_tup": 499,
+        "last_autovacuum": "2026-11-18T04:40:32.398853+00:00",
+        "last_autoanalyze": "2026-11-18T04:39:32.245795+00:00",
+        "allocated_bytes": 24764416,
+        "heap_bytes": 11812864
+      },
+      {
+        "relname": "item_media",
+        "n_live_tup": 7222,
+        "n_dead_tup": 59,
+        "last_autovacuum": "2026-11-18T03:23:30.860994+00:00",
+        "last_autoanalyze": "2026-11-18T03:35:31.056446+00:00",
+        "allocated_bytes": 22306816,
+        "heap_bytes": 3088384
+      },
+      {
+        "relname": "metadata_recovery_items",
+        "n_live_tup": 6921,
+        "n_dead_tup": 386,
+        "last_autovacuum": "2026-11-18T15:30:42.997332+00:00",
+        "last_autoanalyze": "2026-11-18T15:32:42.877460+00:00",
+        "allocated_bytes": 11149312,
+        "heap_bytes": 10731520
+      },
+      {
+        "relname": "security_events",
+        "n_live_tup": 51574,
+        "n_dead_tup": 0,
+        "last_autovacuum": "2026-11-18T03:06:30.569406+00:00",
+        "last_autoanalyze": "2026-11-18T03:58:31.477908+00:00",
+        "allocated_bytes": 7749632,
+        "heap_bytes": 5373952
+      },
+      {
+        "relname": "metadata_jobs",
+        "n_live_tup": 21239,
+        "n_dead_tup": 2405,
+        "last_autovacuum": "2026-11-18T03:14:30.768374+00:00",
+        "last_autoanalyze": "2026-11-18T04:43:32.273856+00:00",
+        "allocated_bytes": 6815744,
+        "heap_bytes": 3883008
+      }
+    ],
+    "wal_allocated_bytes": 285212672,
+    "checkpoints": {
+      "num_timed": 1346,
+      "num_requested": 3,
+      "write_time": 45036354,
+      "sync_time": 25827,
+      "stats_reset": "2026-11-13T23:10:15.437079+00:00"
+    },
+    "retention_policy": {
+      "raw_days": 7,
+      "intraday_days": 90,
+      "daily_days": 365,
+      "operational_days": 90,
+      "security_days": 365,
+      "revision": 3,
+      "policy_hash": "9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7",
+      "application_authorized": false,
+      "daily_support_days": 60,
+      "batch_row_limit": 5000
+    }
+  },
+  "growth": {
+    "samples": [
+      {
+        "sampled_at": "2026-11-14T01:00:00+00:00",
+        "database_bytes": 8484531
+      },
+      {
+        "sampled_at": "2026-11-14T02:00:00+00:00",
+        "database_bytes": 8517299
+      },
+      {
+        "sampled_at": "2026-11-14T03:00:00+00:00",
+        "database_bytes": 46593715
+      },
+      {
+        "sampled_at": "2026-11-14T04:00:00+00:00",
+        "database_bytes": 81409715
+      },
+      {
+        "sampled_at": "2026-11-14T05:00:00+00:00",
+        "database_bytes": 118372019
+      },
+      {
+        "sampled_at": "2026-11-14T06:00:00+00:00",
+        "database_bytes": 155883187
+      },
+      {
+        "sampled_at": "2026-11-14T07:00:00+00:00",
+        "database_bytes": 193877683
+      },
+      {
+        "sampled_at": "2026-11-14T08:00:00+00:00",
+        "database_bytes": 232355507
+      },
+      {
+        "sampled_at": "2026-11-14T09:00:00+00:00",
+        "database_bytes": 270464691
+      },
+      {
+        "sampled_at": "2026-11-14T10:00:00+00:00",
+        "database_bytes": 307721907
+      },
+      {
+        "sampled_at": "2026-11-14T11:00:00+00:00",
+        "database_bytes": 343070387
+      },
+      {
+        "sampled_at": "2026-11-14T12:00:00+00:00",
+        "database_bytes": 376526515
+      },
+      {
+        "sampled_at": "2026-11-14T13:00:00+00:00",
+        "database_bytes": 408614579
+      },
+      {
+        "sampled_at": "2026-11-14T14:00:00+00:00",
+        "database_bytes": 438949555
+      },
+      {
+        "sampled_at": "2026-11-14T15:00:00+00:00",
+        "database_bytes": 468342451
+      },
+      {
+        "sampled_at": "2026-11-14T16:00:00+00:00",
+        "database_bytes": 529880755
+      },
+      {
+        "sampled_at": "2026-11-14T17:00:00+00:00",
+        "database_bytes": 560756403
+      },
+      {
+        "sampled_at": "2026-11-14T18:00:00+00:00",
+        "database_bytes": 592828083
+      },
+      {
+        "sampled_at": "2026-11-14T19:00:00+00:00",
+        "database_bytes": 626702003
+      },
+      {
+        "sampled_at": "2026-11-14T20:00:00+00:00",
+        "database_bytes": 662615731
+      },
+      {
+        "sampled_at": "2026-11-14T21:00:00+00:00",
+        "database_bytes": 700176051
+      },
+      {
+        "sampled_at": "2026-11-14T22:00:00+00:00",
+        "database_bytes": 739735219
+      },
+      {
+        "sampled_at": "2026-11-14T23:00:00+00:00",
+        "database_bytes": 780777139
+      },
+      {
+        "sampled_at": "2026-11-15T00:00:00+00:00",
+        "database_bytes": 822875827
+      },
+      {
+        "sampled_at": "2026-11-15T01:00:00+00:00",
+        "database_bytes": 865539763
+      },
+      {
+        "sampled_at": "2026-11-15T02:00:00+00:00",
+        "database_bytes": 908539571
+      },
+      {
+        "sampled_at": "2026-11-15T03:00:00+00:00",
+        "database_bytes": 962057907
+      },
+      {
+        "sampled_at": "2026-11-15T04:00:00+00:00",
+        "database_bytes": 1006311091
+      },
+      {
+        "sampled_at": "2026-11-15T05:00:00+00:00",
+        "database_bytes": 1052219059
+      },
+      {
+        "sampled_at": "2026-11-15T06:00:00+00:00",
+        "database_bytes": 1097283251
+      },
+      {
+        "sampled_at": "2026-11-15T07:00:00+00:00",
+        "database_bytes": 1141905075
+      },
+      {
+        "sampled_at": "2026-11-15T08:00:00+00:00",
+        "database_bytes": 1186674355
+      },
+      {
+        "sampled_at": "2026-11-15T09:00:00+00:00",
+        "database_bytes": 1230247603
+      },
+      {
+        "sampled_at": "2026-11-15T10:00:00+00:00",
+        "database_bytes": 1272747699
+      },
+      {
+        "sampled_at": "2026-11-15T11:00:00+00:00",
+        "database_bytes": 1313003187
+      },
+      {
+        "sampled_at": "2026-11-15T12:00:00+00:00",
+        "database_bytes": 1350629043
+      },
+      {
+        "sampled_at": "2026-11-15T13:00:00+00:00",
+        "database_bytes": 1385846451
+      },
+      {
+        "sampled_at": "2026-11-15T14:00:00+00:00",
+        "database_bytes": 1419597491
+      },
+      {
+        "sampled_at": "2026-11-15T15:00:00+00:00",
+        "database_bytes": 1452889779
+      },
+      {
+        "sampled_at": "2026-11-15T16:00:00+00:00",
+        "database_bytes": 1485813427
+      },
+      {
+        "sampled_at": "2026-11-15T17:00:00+00:00",
+        "database_bytes": 1519146675
+      },
+      {
+        "sampled_at": "2026-11-15T18:00:00+00:00",
+        "database_bytes": 1553528499
+      },
+      {
+        "sampled_at": "2026-11-15T19:00:00+00:00",
+        "database_bytes": 1589278387
+      },
+      {
+        "sampled_at": "2026-11-15T20:00:00+00:00",
+        "database_bytes": 1627084467
+      },
+      {
+        "sampled_at": "2026-11-15T21:00:00+00:00",
+        "database_bytes": 1666373299
+      },
+      {
+        "sampled_at": "2026-11-15T22:00:00+00:00",
+        "database_bytes": 1707357875
+      },
+      {
+        "sampled_at": "2026-11-15T23:00:00+00:00",
+        "database_bytes": 1750431411
+      },
+      {
+        "sampled_at": "2026-11-16T00:00:00+00:00",
+        "database_bytes": 1794201267
+      },
+      {
+        "sampled_at": "2026-11-16T01:00:00+00:00",
+        "database_bytes": 1837840051
+      },
+      {
+        "sampled_at": "2026-11-16T02:00:00+00:00",
+        "database_bytes": 1882633907
+      },
+      {
+        "sampled_at": "2026-11-16T03:00:00+00:00",
+        "database_bytes": 1939003059
+      },
+      {
+        "sampled_at": "2026-11-16T04:00:00+00:00",
+        "database_bytes": 1996019379
+      },
+      {
+        "sampled_at": "2026-11-16T05:00:00+00:00",
+        "database_bytes": 2042631859
+      },
+      {
+        "sampled_at": "2026-11-16T06:00:00+00:00",
+        "database_bytes": 2089703091
+      },
+      {
+        "sampled_at": "2026-11-16T07:00:00+00:00",
+        "database_bytes": 2134578867
+      },
+      {
+        "sampled_at": "2026-11-16T08:00:00+00:00",
+        "database_bytes": 2178578099
+      },
+      {
+        "sampled_at": "2026-11-16T09:00:00+00:00",
+        "database_bytes": 2220512947
+      },
+      {
+        "sampled_at": "2026-11-16T10:00:00+00:00",
+        "database_bytes": 2260817587
+      },
+      {
+        "sampled_at": "2026-11-16T11:00:00+00:00",
+        "database_bytes": 2298853043
+      },
+      {
+        "sampled_at": "2026-11-16T12:00:00+00:00",
+        "database_bytes": 2334054067
+      },
+      {
+        "sampled_at": "2026-11-16T13:00:00+00:00",
+        "database_bytes": 2370434739
+      },
+      {
+        "sampled_at": "2026-11-16T14:00:00+00:00",
+        "database_bytes": 2407503539
+      },
+      {
+        "sampled_at": "2026-11-16T15:00:00+00:00",
+        "database_bytes": 2442466995
+      },
+      {
+        "sampled_at": "2026-11-16T16:00:00+00:00",
+        "database_bytes": 2478708403
+      },
+      {
+        "sampled_at": "2026-11-16T17:00:00+00:00",
+        "database_bytes": 2513942195
+      },
+      {
+        "sampled_at": "2026-11-16T18:00:00+00:00",
+        "database_bytes": 2549102259
+      },
+      {
+        "sampled_at": "2026-11-16T19:00:00+00:00",
+        "database_bytes": 2585097907
+      },
+      {
+        "sampled_at": "2026-11-16T20:00:00+00:00",
+        "database_bytes": 2621585075
+      },
+      {
+        "sampled_at": "2026-11-16T21:00:00+00:00",
+        "database_bytes": 2655442611
+      },
+      {
+        "sampled_at": "2026-11-16T22:00:00+00:00",
+        "database_bytes": 2689423027
+      },
+      {
+        "sampled_at": "2026-11-16T23:00:00+00:00",
+        "database_bytes": 2726786739
+      },
+      {
+        "sampled_at": "2026-11-17T00:00:00+00:00",
+        "database_bytes": 2764289715
+      },
+      {
+        "sampled_at": "2026-11-17T01:00:00+00:00",
+        "database_bytes": 2802931379
+      },
+      {
+        "sampled_at": "2026-11-17T02:00:00+00:00",
+        "database_bytes": 2842662579
+      },
+      {
+        "sampled_at": "2026-11-17T03:00:00+00:00",
+        "database_bytes": 2884728499
+      },
+      {
+        "sampled_at": "2026-11-17T04:00:00+00:00",
+        "database_bytes": 2930955955
+      },
+      {
+        "sampled_at": "2026-11-17T05:00:00+00:00",
+        "database_bytes": 2978772659
+      },
+      {
+        "sampled_at": "2026-11-17T06:00:00+00:00",
+        "database_bytes": 3027334835
+      },
+      {
+        "sampled_at": "2026-11-17T07:00:00+00:00",
+        "database_bytes": 3074856627
+      },
+      {
+        "sampled_at": "2026-11-17T08:00:00+00:00",
+        "database_bytes": 3120707251
+      },
+      {
+        "sampled_at": "2026-11-17T09:00:00+00:00",
+        "database_bytes": 3164591795
+      },
+      {
+        "sampled_at": "2026-11-17T10:00:00+00:00",
+        "database_bytes": 3205887667
+      },
+      {
+        "sampled_at": "2026-11-17T11:00:00+00:00",
+        "database_bytes": 3243988659
+      },
+      {
+        "sampled_at": "2026-11-17T12:00:00+00:00",
+        "database_bytes": 3280893619
+      },
+      {
+        "sampled_at": "2026-11-17T13:00:00+00:00",
+        "database_bytes": 3315168947
+      },
+      {
+        "sampled_at": "2026-11-17T14:00:00+00:00",
+        "database_bytes": 3348453043
+      },
+      {
+        "sampled_at": "2026-11-17T15:00:00+00:00",
+        "database_bytes": 3381163699
+      },
+      {
+        "sampled_at": "2026-11-17T16:00:00+00:00",
+        "database_bytes": 3384325811
+      },
+      {
+        "sampled_at": "2026-11-17T17:00:00+00:00",
+        "database_bytes": 3415324339
+      },
+      {
+        "sampled_at": "2026-11-17T18:00:00+00:00",
+        "database_bytes": 3446929075
+      },
+      {
+        "sampled_at": "2026-11-17T19:00:00+00:00",
+        "database_bytes": 3479140019
+      },
+      {
+        "sampled_at": "2026-11-17T20:00:00+00:00",
+        "database_bytes": 3513235123
+      },
+      {
+        "sampled_at": "2026-11-17T21:00:00+00:00",
+        "database_bytes": 3550246579
+      },
+      {
+        "sampled_at": "2026-11-17T22:00:00+00:00",
+        "database_bytes": 3747444403
+      },
+      {
+        "sampled_at": "2026-11-17T23:00:00+00:00",
+        "database_bytes": 3789788851
+      },
+      {
+        "sampled_at": "2026-11-18T00:00:00+00:00",
+        "database_bytes": 3834992307
+      },
+      {
+        "sampled_at": "2026-11-18T01:00:00+00:00",
+        "database_bytes": 3877549747
+      },
+      {
+        "sampled_at": "2026-11-18T02:00:00+00:00",
+        "database_bytes": 3999970995
+      },
+      {
+        "sampled_at": "2026-11-18T03:00:00+00:00",
+        "database_bytes": 4117157555
+      },
+      {
+        "sampled_at": "2026-11-18T04:00:00+00:00",
+        "database_bytes": 4209948339
+      },
+      {
+        "sampled_at": "2026-11-18T05:00:00+00:00",
+        "database_bytes": 4216583859
+      },
+      {
+        "sampled_at": "2026-11-18T06:00:00+00:00",
+        "database_bytes": 4217951923
+      },
+      {
+        "sampled_at": "2026-11-18T07:00:00+00:00",
+        "database_bytes": 4219524787
+      },
+      {
+        "sampled_at": "2026-11-18T08:00:00+00:00",
+        "database_bytes": 4220663475
+      },
+      {
+        "sampled_at": "2026-11-18T09:00:00+00:00",
+        "database_bytes": 4221867699
+      },
+      {
+        "sampled_at": "2026-11-18T10:00:00+00:00",
+        "database_bytes": 4300355251
+      },
+      {
+        "sampled_at": "2026-11-18T11:00:00+00:00",
+        "database_bytes": 4372862643
+      },
+      {
+        "sampled_at": "2026-11-18T12:00:00+00:00",
+        "database_bytes": 4439709363
+      },
+      {
+        "sampled_at": "2026-11-18T13:00:00+00:00",
+        "database_bytes": 4502091443
+      },
+      {
+        "sampled_at": "2026-11-18T14:00:00+00:00",
+        "database_bytes": 4560500403
+      },
+      {
+        "sampled_at": "2026-11-18T15:00:00+00:00",
+        "database_bytes": 4617295539
+      }
+    ],
+    "delta_bytes": 4608811008,
+    "elapsed_seconds": 396000,
+    "bytes_per_day": 1005558765,
+    "retention_days": 90,
+    "interval_seconds": 3600,
+    "retention_throughput": {
+      "status": "insufficient_measurements",
+      "newly_eligible_rows_per_day": null,
+      "processed_rows_per_day": null
+    }
+  },
+  "database_bytes": 4673722035,
+  "snapshots": 106,
+  "observations": 1181,
+  "retention": {
+    "historical_observations": "indefinite_private",
+    "guidance": "owner_provided_original_pending",
+    "raw_listing_days": 7,
+    "detailed_statistics_days": 90,
+    "daily_statistics": "indefinite_private",
+    "compaction_enabled": false
+  },
+  "backup": {
+    "status": "manual_backup_verified",
+    "last_restoration_verified_at": "2026-11-18T14:57:52.594491+00:00",
+    "last_success": "2026-11-18T14:52:45.389995+00:00",
+    "bytes": 723098027,
+    "filename": "market-release-20261118T144809003060Z-df8c8cd2a368.dump",
+    "restored_archive_filename": "market-release-20261118T144809003060Z-df8c8cd2a368.dump",
+    "restored_archive_sha256": "a8fda36e26ecb839427952bab75b14b3b2862d21e731153b1ca4328cb6c69d66",
+    "restored_archive_created_at": "2026-11-18T14:52:45.389995+00:00"
+  }
+}

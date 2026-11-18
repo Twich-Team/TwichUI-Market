@@ -1,0 +1,58 @@
+[
+  {
+    "name": "desktop-inventory",
+    "title": "Desktop inventory and retention controls",
+    "sha256": "0fd1117a6c050b9bce5cec2985e278b85d35fb305970b6b834a107aa379887c9",
+    "bytes": 975568,
+    "capture": "WebKit, America/Denver; isolated synthetic market_test. Actual service scene uses real fixture archives, not mocked management responses."
+  },
+  {
+    "name": "backup-details",
+    "title": "Archive details and SHA-256",
+    "sha256": "78462c4591bfb6bf88059c9ed69687ad28e089dc82b48fbcba3f9f863b2358c6",
+    "bytes": 154269,
+    "capture": "WebKit, America/Denver; isolated synthetic market_test. Actual service scene uses real fixture archives, not mocked management responses."
+  },
+  {
+    "name": "delete-confirmation",
+    "title": "Exact-name deletion confirmation",
+    "sha256": "fd50bb563a8b09bf0044ebcfb87e8c77b7f2e1732f7ab407b4aec382f37a0f0b",
+    "bytes": 151329,
+    "capture": "WebKit, America/Denver; isolated synthetic market_test. Actual service scene uses real fixture archives, not mocked management responses."
+  },
+  {
+    "name": "policy-confirmation",
+    "title": "Reviewed schedule and retention proposal",
+    "sha256": "e465b9699c40ca4b88e29756edabb7976fc8bdf3ada43813717a72cd6ba206a3",
+    "bytes": 132225,
+    "capture": "WebKit, America/Denver; isolated synthetic market_test. Actual service scene uses real fixture archives, not mocked management responses."
+  },
+  {
+    "name": "mobile-storage-pressure",
+    "title": "Mobile storage pressure and inventory",
+    "sha256": "7560993a6065dcbf60c4279d7a805d3717e79d06d360fcdaa81b1524ed7f30c3",
+    "bytes": 760230,
+    "capture": "WebKit, America/Denver; isolated synthetic market_test. Actual service scene uses real fixture archives, not mocked management responses."
+  },
+  {
+    "name": "mobile-manual-confirmation",
+    "title": "Mobile protected manual backup confirmation",
+    "sha256": "fd697759617eb915ff049891a372608f8f0cca9501d78c16b06a1d96fa6399b7",
+    "bytes": 73551,
+    "capture": "WebKit, America/Denver; isolated synthetic market_test. Actual service scene uses real fixture archives, not mocked management responses."
+  },
+  {
+    "name": "empty-state",
+    "title": "Empty inventory without invented recovery availability",
+    "sha256": "1b6a0e33a8df22e7b25920075045c2ff9889db5dadc15ac869c9723f87ead29e",
+    "bytes": 708661,
+    "capture": "WebKit, America/Denver; isolated synthetic market_test. Actual service scene uses real fixture archives, not mocked management responses."
+  },
+  {
+    "name": "actual-service-deletion",
+    "title": "Actual isolated service archive deletion",
+    "sha256": "d27059047bd58f9c44d7105f7a89608e348477ef4e6325fbda70a40f856158c6",
+    "bytes": 166158,
+    "capture": "WebKit, America/Denver; isolated synthetic market_test. Actual service scene uses real fixture archives, not mocked management responses."
+  }
+]

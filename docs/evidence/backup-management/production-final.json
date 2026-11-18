@@ -1,0 +1,78 @@
+{
+  "at": "2026-11-18T03:27:58.141764+00:00",
+  "production_services": [
+    {
+      "name": "/twichui-market-api-1",
+      "image": "sha256:81336cb2ad0f9edc19ee9d70e5614cf052831591ff3a702099da24a75c59656e",
+      "started_at": "2026-11-18T01:55:55.155323462Z",
+      "status": "running",
+      "restart_policy": "unless-stopped"
+    },
+    {
+      "name": "/twichui-market-local-api-1",
+      "image": "sha256:81336cb2ad0f9edc19ee9d70e5614cf052831591ff3a702099da24a75c59656e",
+      "started_at": "2026-11-18T01:55:54.95624128Z",
+      "status": "running",
+      "restart_policy": "unless-stopped"
+    },
+    {
+      "name": "/twichui-market-proxy-1",
+      "image": "sha256:561f33a0a4fd253a04efd8738c5261177274688daa0b8aa732bde6c50744b186",
+      "started_at": "2026-11-18T01:56:11.35248061Z",
+      "status": "running",
+      "restart_policy": "unless-stopped"
+    },
+    {
+      "name": "/twichui-market-worker-1",
+      "image": "sha256:81336cb2ad0f9edc19ee9d70e5614cf052831591ff3a702099da24a75c59656e",
+      "started_at": "2026-11-18T01:55:54.768580641Z",
+      "status": "running",
+      "restart_policy": "unless-stopped"
+    },
+    {
+      "name": "/twichui-market-backup-1",
+      "image": "sha256:2669ec98d745fbb77942ed6696162436862334ebaebc71e884853226504b260b",
+      "started_at": "2026-11-15T03:11:29.671470444Z",
+      "status": "exited",
+      "restart_policy": "no"
+    }
+  ],
+  "database": {
+    "schema": "coverage_20261117",
+    "database_bytes": 4121859763,
+    "markets": [
+      {
+        "id": 2,
+        "enabled": true,
+        "interval_seconds": 300,
+        "failures": 0
+      },
+      {
+        "id": 1,
+        "enabled": false,
+        "interval_seconds": 300,
+        "failures": 0
+      }
+    ]
+  },
+  "managed_archive_count": 0,
+  "remaining_files": 31,
+  "remaining_file_bytes": 16809,
+  "available_bytes": 5750120448,
+  "capacity_bytes": 105089261568,
+  "backup_status": {
+    "status": "disabled_by_owner",
+    "checked_at": "2026-11-18T00:12:12.371259+00:00",
+    "bytes": 0,
+    "keep": 0,
+    "error": null,
+    "notice": "Owner requested deleting retained database dumps and disabling scheduled backups to recover disk space. Live data is unchanged."
+  },
+  "public_https_health": {
+    "status": 200,
+    "body": {
+      "status": "ok",
+      "contract_version": 1
+    }
+  }
+}

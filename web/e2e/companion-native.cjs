@@ -140,7 +140,7 @@ const {createHash}=require('node:crypto');const fs=require('node:fs');const path
     expect(data.format).toBe('twichui-market-addon-data');expect(data.synthetic).toBe(true);expect(data.items).toHaveLength(2);expect(data.items[0].value.recent_price).toBe('100');
     // The retained signed beta.5/beta.6 SDK is independently tested with its original
     // feature set; the new source candidate must pass automatic-summary coverage.
-    if((await invoke('app_state')).version==='2.0.0-beta.7')await require('./companion-workshop-native.cjs')({page,invoke,api,shots,sourceCommit});
+    if(/^2\.0\.0-beta\.(?:[7-9]|[1-9][0-9]+)$/.test((await invoke('app_state')).version))await require('./companion-workshop-native.cjs')({page,invoke,api,shots,sourceCommit});
     // Actual installed WebView -> Rust command -> authenticated archive server ->
     // transactional SQLite -> schema-3 publisher, confined to test AppData.
     if(!await page.locator('.more').evaluate(el=>el.open))await page.locator('.more > summary').click();await page.locator('#history-panel summary').click();await page.locator('#archive-sync').click();

@@ -1,0 +1,12 @@
+{
+  "pull_request": "https://github.com/Twich-Team/TwichUI-Market/pull/36",
+  "integration_branch": "integration/companion-v2-metadata-recovery",
+  "merge_sha": "a6fe867ee6034d96f88d2d336ab48fd145446963",
+  "application_ci_sha": "4a0a44a037d1c870e3c21b1a24e0970c4bca506c",
+  "runtime_tests_workflows_and_base_compose_identical": true,
+  "release_packet_head": "1f037d37c6ebb2d39162212225f2fd49179403c8",
+  "production_pruning_authorized": false,
+  "administration_follow_up": "https://github.com/Twich-Team/TwichUI-Market/pull/38",
+  "administration_merge_sha": "4cc479cc02c6d016f90bfe07dec2ae648bbd07c7",
+  "deployed_application_sha": "fe92999cc969a23684f3023638673c656efb3bce"
+}

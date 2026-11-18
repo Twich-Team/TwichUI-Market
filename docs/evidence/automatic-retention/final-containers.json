@@ -1,0 +1,83 @@
+{
+  "api": {
+    "id": "dc793a40d14870219b263252c93ba08240bd5030439edfa48c4306e23ece7c48",
+    "image": "sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b",
+    "running": true,
+    "oom_killed": false,
+    "restarts": 0,
+    "memory_limit_bytes": 402653184,
+    "measured_memory_peak_bytes": null
+  },
+  "local-api": {
+    "id": "fff99bda1f6ac739feb92f2212b13f88a6cd05719ce04c5c68cd01a49ac283f4",
+    "image": "sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b",
+    "running": true,
+    "oom_killed": false,
+    "restarts": 0,
+    "memory_limit_bytes": 268435456,
+    "measured_memory_peak_bytes": null
+  },
+  "worker": {
+    "id": "81b36b1a230d15f0cef2edcadc53866128f302d305a662bc9a453abf203b2887",
+    "image": "sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b",
+    "running": true,
+    "oom_killed": false,
+    "restarts": 0,
+    "memory_limit_bytes": 402653184,
+    "measured_memory_peak_bytes": 256462848
+  },
+  "monitor": {
+    "id": "12d571b7e0645296321a857832169750cdb65d2727c1008da43e1973c0e88a62",
+    "image": "sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b",
+    "running": true,
+    "oom_killed": false,
+    "restarts": 0,
+    "memory_limit_bytes": 134217728,
+    "measured_memory_peak_bytes": 52510720
+  },
+  "proxy": {
+    "id": "de1e7aceb146621a04cdea2151d46318fc3c4124b3aa4da9ac98c5282f4539ac",
+    "image": "sha256:f48f8f1a7e5a030432abde0792ee0be1aae0326950404e83036bc9c0172a6814",
+    "running": true,
+    "oom_killed": false,
+    "restarts": 0,
+    "memory_limit_bytes": 134217728,
+    "measured_memory_peak_bytes": null
+  },
+  "db": {
+    "id": "1a138045d430554c64142f230fa1555e61d3414b2926ae9b2606f58fb8fb3642",
+    "image": "sha256:d3244e8ce3f165ee3c93d9c4a4b1d0fe48b3a89e2287b717fdcbbde92d405065",
+    "running": true,
+    "oom_killed": false,
+    "restarts": 0,
+    "memory_limit_bytes": 805306368,
+    "measured_memory_peak_bytes": null
+  },
+  "enrichment": {
+    "id": "08ac2b64e749d094f88e9cce7157fd3c5a29ea867bb11ae24789247479a49c44",
+    "image": "sha256:3ef6f57964546a425f4c2ebe2bc44be2d9a516340325074dfb0fb2f32d7c3667",
+    "running": true,
+    "oom_killed": false,
+    "restarts": 0,
+    "memory_limit_bytes": 201326592,
+    "measured_memory_peak_bytes": null
+  },
+  "backup-manager": {
+    "id": "0975558bb55d6a8216c43fdba4911b3a9cbfc46bc6f36188c3e88e88782f6ecf",
+    "image": "sha256:79cea119910ad3353f8a35ce21d079fafbcab0a757c0734bfe3bce6055c68565",
+    "running": true,
+    "oom_killed": false,
+    "restarts": 0,
+    "memory_limit_bytes": 268435456,
+    "measured_memory_peak_bytes": null
+  },
+  "retention": {
+    "id": "1296bbf6f52d8de0a3e31022c95bb143dad93c91d9ed81f901c9bc35857d1c49",
+    "image": "sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b",
+    "running": true,
+    "oom_killed": false,
+    "restarts": 0,
+    "memory_limit_bytes": 201326592,
+    "measured_memory_peak_bytes": 140070912
+  }
+}

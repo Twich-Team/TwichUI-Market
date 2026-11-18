@@ -1,0 +1,13 @@
+{
+  "id": 14444802753,
+  "name": "twichui-market-companion-windows-candidate",
+  "digest": "sha256:4058f58bcbb006967e1d603096b273fec65837bd5bfcc19e2f9f1bb48f08f68e",
+  "size_in_bytes": 4831796,
+  "workflow_run": {
+    "id": 44341487381,
+    "repository_id": 1457156728,
+    "head_repository_id": 1457156728,
+    "head_branch": "integration/retention-activation-companion-beta8",
+    "head_sha": "36dc204d5975f57629ca1c830d41d8b95d2ac508"
+  }
+}

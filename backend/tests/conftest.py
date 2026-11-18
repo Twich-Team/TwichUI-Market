@@ -1,6 +1,7 @@
 import os
 os.environ.setdefault("DATABASE_URL", "sqlite://")
 os.environ["COOKIE_SECURE"] = "false"
+os.environ.setdefault('DATABASE_FILESYSTEM_PATH', '/tmp')
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine

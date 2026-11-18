@@ -1,0 +1,21 @@
+{
+  "fields": [
+    "user_id",
+    "schema_version",
+    "revision",
+    "values_json",
+    "updated_at"
+  ],
+  "changes": [
+    {
+      "user_id": 1,
+      "changed_columns": [
+        "revision",
+        "values_json",
+        "updated_at"
+      ],
+      "values_equal": false
+    }
+  ],
+  "backup_reproduces_original_projection": true
+}

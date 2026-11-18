@@ -195,6 +195,9 @@ class StorageMeasurement(Base):
     __tablename__='storage_measurements'
     sampled_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),primary_key=True)
     database_bytes: Mapped[int] = mapped_column(BigInteger)
+    retention_eligible_rows: Mapped[int | None] = mapped_column(BigInteger)
+    retention_processed_rows: Mapped[int | None] = mapped_column(BigInteger)
+    filesystem_available_bytes: Mapped[int | None] = mapped_column(BigInteger)
 
 
 class MarketVerification(Base):
@@ -459,3 +462,26 @@ class ItemSourceCoverage(Base):
     variant_key: Mapped[str] = mapped_column(String(64), primary_key=True)
     source_kind: Mapped[str] = mapped_column(String(16))
     first_observed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class RetentionAutomation(Base):
+    __tablename__ = 'retention_automation'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    enabled: Mapped[bool] = mapped_column(Boolean, default=False)
+    authorization: Mapped[str | None] = mapped_column(Text)
+    actor_id: Mapped[int | None] = mapped_column(ForeignKey('users.id'))
+    authorized_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    next_run_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class RetentionExecution(Base):
+    __tablename__ = 'retention_executions'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now, index=True)
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    policy_hash: Mapped[str] = mapped_column(String(64))
+    status: Mapped[str] = mapped_column(String(32))
+    reason: Mapped[str | None] = mapped_column(String(200))
+    batches: Mapped[int] = mapped_column(Integer, default=0)
+    rows_processed: Mapped[int] = mapped_column(Integer, default=0)
+    progress: Mapped[str] = mapped_column(Text, default='{}')
