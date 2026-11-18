@@ -125,8 +125,13 @@ $null=New-Item (Split-Path $report) -ItemType Directory -Force
 if($LASTEXITCODE -ne 0){throw 'Limited worker report grant failed'}
 $adminProbe=Join-Path $base 'admin-only.txt'
 'CI_ONLY_PRIVILEGE_PROBE'|Set-Content $adminProbe
-& icacls $adminProbe /inheritance:r /grant:r '*S-1-5-18:F' '*S-1-5-32-544:F' /Q|Out-Null
-if($LASTEXITCODE -ne 0){throw 'Administrator-only probe ACL failed'}
+$probeSecurity=[System.Security.AccessControl.FileSecurity]::new()
+$probeSecurity.SetAccessRuleProtection($true,$false)
+foreach($probeSid in @('S-1-5-18','S-1-5-32-544')){
+    $rule=[System.Security.AccessControl.FileSystemAccessRule]::new([System.Security.Principal.SecurityIdentifier]::new($probeSid),[System.Security.AccessControl.FileSystemRights]::FullControl,[System.Security.AccessControl.AccessControlType]::Allow)
+    $probeSecurity.AddAccessRule($rule)
+}
+Set-Acl -Path $adminProbe -AclObject $probeSecurity
 $planFile=Join-Path $base 'plan.json'
 @{exe=(Join-Path (Get-Location) 'desktop\target\debug\examples\installation_smoke.exe');report=$report;admin_probe=$adminProbe;cases=$cases}|ConvertTo-Json -Depth 8|Set-Content $planFile
 $script=(Resolve-Path $PSCommandPath).Path
@@ -158,19 +163,19 @@ public static class WorkshopLimitedProcess {
  public static int Start(string app,string args,string directory,string environment) {
   IntPtr token=IntPtr.Zero,restricted=IntPtr.Zero,env=IntPtr.Zero,admin=IntPtr.Zero,owner=IntPtr.Zero,medium=IntPtr.Zero;
   try {
-   if(!OpenProcessToken(GetCurrentProcess(),0x0002|0x0008,out token))throw new Win32Exception();
+   if(!OpenProcessToken(GetCurrentProcess(),0x0001|0x0002|0x0008|0x0080,out token))throw new Win32Exception(Marshal.GetLastWin32Error(),"OpenProcessToken");
    admin=Sid(new SecurityIdentifier("S-1-5-32-544"));SidAndAttributes disabled=new SidAndAttributes();disabled.sid=admin;
    // DISABLE_MAX_PRIVILEGE; Administrators becomes deny-only. Keep ordinary
    // user groups and traversal, with user ownership and medium integrity.
-   if(!CreateRestrictedToken(token,1,1,ref disabled,0,IntPtr.Zero,0,IntPtr.Zero,out restricted))throw new Win32Exception();
+   if(!CreateRestrictedToken(token,1,1,ref disabled,0,IntPtr.Zero,0,IntPtr.Zero,out restricted))throw new Win32Exception(Marshal.GetLastWin32Error(),"CreateRestrictedToken");
    owner=Sid(WindowsIdentity.GetCurrent().User);
-   if(!SetOwner(restricted,4,ref owner,IntPtr.Size))throw new Win32Exception();
+   if(!SetOwner(restricted,4,ref owner,IntPtr.Size))throw new Win32Exception(Marshal.GetLastWin32Error(),"SetTokenInformation owner");
    SecurityIdentifier mediumSid=new SecurityIdentifier("S-1-16-8192");medium=Sid(mediumSid);
    SidAndAttributes label=new SidAndAttributes();label.sid=medium;label.attributes=0x20;
-   if(!SetLabel(restricted,25,ref label,Marshal.SizeOf(typeof(SidAndAttributes))+mediumSid.BinaryLength))throw new Win32Exception();
+   if(!SetLabel(restricted,25,ref label,Marshal.SizeOf(typeof(SidAndAttributes))+mediumSid.BinaryLength))throw new Win32Exception(Marshal.GetLastWin32Error(),"SetTokenInformation integrity");
    env=Marshal.StringToHGlobalUni(environment);
    Startup startup=new Startup();startup.cb=Marshal.SizeOf(typeof(Startup));ProcessInfo info;
-   if(!CreateProcessAsUserW(restricted,app,new StringBuilder("\""+app+"\" "+args),IntPtr.Zero,IntPtr.Zero,false,0x400,env,directory,ref startup,out info))throw new Win32Exception();
+   if(!CreateProcessAsUserW(restricted,app,new StringBuilder("\""+app+"\" "+args),IntPtr.Zero,IntPtr.Zero,false,0x400,env,directory,ref startup,out info))throw new Win32Exception(Marshal.GetLastWin32Error(),"CreateProcessAsUser");
    CloseHandle(info.process);CloseHandle(info.thread);return info.pid;
   } finally {
    foreach(IntPtr p in new IntPtr[]{env,admin,owner,medium})if(p!=IntPtr.Zero)Marshal.FreeHGlobal(p);
