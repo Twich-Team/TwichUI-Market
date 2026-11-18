@@ -8,5 +8,7 @@
   "native_acceptance_performed": false,
   "beta7_predicate": "file_version[0..3] == [1, 60, 1]",
   "predicate_accepts_observed_file_version": false,
-  "corrected_policy": "Bounded native product identity, supported 1.60 family, compatible Workshop contract; no exact patch/build pin"
+  "corrected_policy": "Bounded native product identity, supported 1.60 family, compatible Workshop contract; no exact patch/build pin",
+  "fixed_resource_words_observed": false,
+  "first_failing_native_stage": "Not captured on owner installation"
 }

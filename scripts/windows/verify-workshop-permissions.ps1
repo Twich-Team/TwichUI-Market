@@ -1,7 +1,7 @@
 # Real NTFS/token checks, with a synthetic versioned PE and pinned addon source.
 # A restricted child must lose effective admin membership and fail an admin-only
 # read. TokenElevation is recorded separately: this runner cannot prove a UAC
-# split token, even with Windows SAFER restrictions. Owner PC acceptance remains.
+# split-token login. Owner PC acceptance remains.
 param([switch]$Worker,[string]$Plan)
 $ErrorActionPreference='Stop'
 if($env:GITHUB_ACTIONS -ne 'true' -or $env:RUNNER_OS -ne 'Windows'){throw 'Disposable Windows CI only'}
@@ -134,38 +134,47 @@ $script=(Resolve-Path $PSCommandPath).Path
 $launcher=Join-Path $base 'limited-worker.ps1'
 @("`$env:GITHUB_ACTIONS='true'", "`$env:RUNNER_OS='Windows'", ("& '"+$script.Replace("'","''")+"' -Worker -Plan '"+$planFile.Replace("'","''")+"'"))|Set-Content $launcher
 $arguments='-NoProfile -File "'+$launcher+'"'
-# This runner's Limited scheduled task still produced an elevated native token. Use Windows SAFER's NormalUser restriction instead
-# of changing UAC, users, registry or host policies. The child proves its token.
+# Build an explicitly restricted primary token. A runner's UAC/SAFER metadata
+# alone did not remove admin access, so prove the effective boundary in Worker.
 Add-Type @'
 using System;
 using System.Text;
 using System.Runtime.InteropServices;
 using System.ComponentModel;
+using System.Security.Principal;
 public static class WorkshopLimitedProcess {
  [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Unicode)]
  struct Startup { public int cb; public string reserved, desktop, title; public int x,y,cx,cy,charsX,charsY,fill,flags; public short show,reservedBytes; public IntPtr reservedData,input,output,error; }
  [StructLayout(LayoutKind.Sequential)] struct ProcessInfo { public IntPtr process,thread; public int pid,tid; }
+ [StructLayout(LayoutKind.Sequential)] struct SidAndAttributes { public IntPtr sid; public uint attributes; }
  [DllImport("advapi32.dll",SetLastError=true)] static extern bool OpenProcessToken(IntPtr process,uint access,out IntPtr token);
  [DllImport("kernel32.dll")] static extern IntPtr GetCurrentProcess();
  [DllImport("kernel32.dll")] static extern bool CloseHandle(IntPtr handle);
- [DllImport("advapi32.dll",SetLastError=true)] static extern bool SaferCreateLevel(uint scope,uint level,uint flags,out IntPtr handle,IntPtr reserved);
- [DllImport("advapi32.dll",SetLastError=true)] static extern bool SaferComputeTokenFromLevel(IntPtr level,IntPtr token,out IntPtr result,uint flags,IntPtr reserved);
- [DllImport("advapi32.dll")] static extern bool SaferCloseLevel(IntPtr level);
+ [DllImport("advapi32.dll",SetLastError=true)] static extern bool CreateRestrictedToken(IntPtr token,uint flags,uint disableCount,ref SidAndAttributes disable,uint privilegeCount,IntPtr privileges,uint restrictCount,IntPtr restrictions,out IntPtr result);
+ [DllImport("advapi32.dll",EntryPoint="SetTokenInformation",SetLastError=true)] static extern bool SetOwner(IntPtr token,int infoClass,ref IntPtr sid,int size);
+ [DllImport("advapi32.dll",EntryPoint="SetTokenInformation",SetLastError=true)] static extern bool SetLabel(IntPtr token,int infoClass,ref SidAndAttributes label,int size);
  [DllImport("advapi32.dll",CharSet=CharSet.Unicode,SetLastError=true)] static extern bool CreateProcessAsUserW(IntPtr token,string app,StringBuilder command,IntPtr processAttributes,IntPtr threadAttributes,bool inherit,uint flags,IntPtr environment,string directory,ref Startup startup,out ProcessInfo info);
+ static IntPtr Sid(SecurityIdentifier sid) { byte[] bytes=new byte[sid.BinaryLength];sid.GetBinaryForm(bytes,0);IntPtr p=Marshal.AllocHGlobal(bytes.Length);Marshal.Copy(bytes,0,p,bytes.Length);return p; }
  public static int Start(string app,string args,string directory,string environment) {
-  IntPtr token=IntPtr.Zero,level=IntPtr.Zero,restricted=IntPtr.Zero,env=IntPtr.Zero;
+  IntPtr token=IntPtr.Zero,restricted=IntPtr.Zero,env=IntPtr.Zero,admin=IntPtr.Zero,owner=IntPtr.Zero,medium=IntPtr.Zero;
   try {
    if(!OpenProcessToken(GetCurrentProcess(),0x0002|0x0008,out token))throw new Win32Exception();
-   if(!SaferCreateLevel(1,0x20000,1,out level,IntPtr.Zero))throw new Win32Exception();
-   if(!SaferComputeTokenFromLevel(level,token,out restricted,0,IntPtr.Zero))throw new Win32Exception();
+   admin=Sid(new SecurityIdentifier("S-1-5-32-544"));SidAndAttributes disabled=new SidAndAttributes();disabled.sid=admin;
+   // DISABLE_MAX_PRIVILEGE; Administrators becomes deny-only. Keep ordinary
+   // user groups and traversal, with user ownership and medium integrity.
+   if(!CreateRestrictedToken(token,1,1,ref disabled,0,IntPtr.Zero,0,IntPtr.Zero,out restricted))throw new Win32Exception();
+   owner=Sid(WindowsIdentity.GetCurrent().User);
+   if(!SetOwner(restricted,4,ref owner,IntPtr.Size))throw new Win32Exception();
+   SecurityIdentifier mediumSid=new SecurityIdentifier("S-1-16-8192");medium=Sid(mediumSid);
+   SidAndAttributes label=new SidAndAttributes();label.sid=medium;label.attributes=0x20;
+   if(!SetLabel(restricted,25,ref label,Marshal.SizeOf(typeof(SidAndAttributes))+mediumSid.BinaryLength))throw new Win32Exception();
    env=Marshal.StringToHGlobalUni(environment);
    Startup startup=new Startup();startup.cb=Marshal.SizeOf(typeof(Startup));ProcessInfo info;
    if(!CreateProcessAsUserW(restricted,app,new StringBuilder("\""+app+"\" "+args),IntPtr.Zero,IntPtr.Zero,false,0x400,env,directory,ref startup,out info))throw new Win32Exception();
    CloseHandle(info.process);CloseHandle(info.thread);return info.pid;
   } finally {
-   if(env!=IntPtr.Zero)Marshal.FreeHGlobal(env);
+   foreach(IntPtr p in new IntPtr[]{env,admin,owner,medium})if(p!=IntPtr.Zero)Marshal.FreeHGlobal(p);
    if(restricted!=IntPtr.Zero)CloseHandle(restricted);
-   if(level!=IntPtr.Zero)SaferCloseLevel(level);
    if(token!=IntPtr.Zero)CloseHandle(token);
   }
  }
