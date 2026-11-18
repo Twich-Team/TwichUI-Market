@@ -1,0 +1,13 @@
+# Backup management review candidate
+
+Owner scope: implement on `feature/backup-management-retention` from integration `177ea99`; draft PR against `integration/companion-v2-metadata-recovery`. No production deployment, schedule activation, policy change or backup deletion. Archive retention is independent of historical record retention.
+
+Read-only discovery (2026-11-17 America/Denver): production is unified-coverage `70f144c`, PostgreSQL 17.12 / `coverage_20261117`. The former recurring backup container is exited, restart `no`, status `disabled_by_owner`. Its former 24-hour / keep-30 / 3 GiB configuration is inactive. Original archive root is the host bind `projects/TwichUI-Market/backups`; no managed archive volume exists. PostgreSQL uses `twichui-market_market-data`; private Companion release assets are a different volume and excluded. The client image's anonymous PostgreSQL data mount is not a backup store.
+
+Actual inventory: zero `.dump` archives; 29 orphan `market-*.json` manifests, one stale status file and one empty shared lock (31 files, 16,809 bytes). Filesystem capacity 105,089,261,568 bytes, available 5,924,216,832 bytes at discovery; database allocation 4,117,026,483 bytes. These measure different things. No remaining Market dump archives were found in repository/worktree artifact roots. Unrelated Docker/AMP/host backups were not inspected or managed. See `evidence/backup-management/production-audit.json`.
+
+Root cause before owner cleanup: release/rehearsal archives accumulated separately from scheduled archives; generic `development` naming obscured their origin. The old worker refused `used + pg_database_size > budget` before post-success rotation, so a full budget could stop replacements indefinitely. Its filename-only rotation did not understand recovery pins. The owner's prior cleanup removed 33 copies / 4.913 GiB, then the temporary release dump; this task performed no cleanup. Current cleanup proposal: zero archive bytes reclaimable; retain orphan receipts unless explicitly selected and confirmed.
+
+Implementation sequence: private management service and durable receipts → administrator proxy and responsive inventory/policy controls → disposable filesystem/PostgreSQL restore and security/failure tests → browser gallery and complete CI → owner review packet with exact deployment and rollback steps. Default manager policy is disabled; no automatic legacy adoption or migration-time cleanup. Original disabled-worker overlay remains authoritative.
+
+Progress: audit complete. Private service/API implementation in progress; validation and review candidate not yet complete.
