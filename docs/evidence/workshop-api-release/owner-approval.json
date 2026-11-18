@@ -1,0 +1,7 @@
+{
+  "date_utc": "2026-11-18",
+  "question": "May I deploy the Workshop server API described in docs/companion-workshop-server-gap.md after its required checks pass?",
+  "owner_answer": "Approve Workshop API rollout",
+  "scope": "API/local API only; preserve production retention patch, collector, providers, disabled backup schedule and immutable signed releases",
+  "performance_goal": "paused"
+}

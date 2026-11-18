@@ -19,5 +19,10 @@
     "nonexistent test filename corrected before test run",
     "missing test-only pg_trgm extension installed before successful run"
   ],
-  "production_tests_synthetic": false
+  "production_tests_synthetic": false,
+  "postgresql_sync_auth_workshop_retention_passed": 122,
+  "postgresql_legacy_bridge_passed": 44,
+  "windows_run": 44393003571,
+  "windows_job": 135115363287,
+  "windows_focused_and_installed_smoke": "passed"
 }
