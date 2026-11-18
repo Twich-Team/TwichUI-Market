@@ -507,9 +507,13 @@ class Manager:
                     os.unlink(temporary, dir_fd=self.fd)
                 except FileNotFoundError:
                     pass
+                except OSError:
+                    job['cleanup_pending'] = True
+                    self.set(db, 'job', job)
+                    self.receipt(db, actor, 'backup.cleanup_pending', {'id': job['id']})
             db.commit()
         # Each deletion takes the global lock and re-evaluates the latest policy/protection.
-        if published and origin == 'scheduled':
+        if published and job['status'] == 'succeeded' and origin == 'scheduled':
             overview = self.overview()
             results = []
             for candidate in overview['preview']['candidates']:
