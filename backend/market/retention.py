@@ -1,6 +1,6 @@
 """Proposed retention, signed previews and explicitly authorized bounded stages.
 
-No scheduler calls this destructive engine. Operator authorization is separate
+The scheduler uses the same predicates and batch mutation. Operator authorization is separate
 from administrator proposal/confirmation and invalidated on every policy edit.
 """
 import hashlib
@@ -44,6 +44,7 @@ def policy_view(db):
 def lock(db):
     if db.bind.dialect.name == 'postgresql':
         db.execute(text("SET LOCAL statement_timeout='8s'"))
+        db.execute(text("SET LOCAL lock_timeout='500ms'"))
         if not db.scalar(text('SELECT pg_try_advisory_xact_lock(7140232)')):
             raise HTTPException(409, 'Collection or synchronization is busy; retry the preview')
 
@@ -82,13 +83,20 @@ def plan(db, at):
     policy = policy_view(db)
     stages=[]; first=None
     for name, model, predicate in candidates(db,policy,at):
-        count=db.scalar(select(func.count()).select_from(model).where(predicate))
+        timestamp = {DailyObservation:DailyObservation.day, Observation:Observation.retrieved_at,
+            FeedCapture:FeedCapture.payload_retained_at, CollectionRun:CollectionRun.checked_at,
+            FeedCheck:FeedCheck.checked_at, SecurityEvent:SecurityEvent.created_at}.get(model)
+        query = select(func.count(),func.min(timestamp),func.max(timestamp)).select_from(model) if timestamp is not None else select(func.count(),func.min(Snapshot.created_at),func.max(Snapshot.created_at)).select_from(model).join(Snapshot,model.snapshot_id==Snapshot.id)
+        count,oldest,newest=db.execute(query.where(predicate)).one()
         estimate=None
         if db.bind.dialect.name=='postgresql':
             # PostgreSQL allocation/estimated live tuples is an approximation including index overhead.
             size, estimated_rows=db.execute(text('SELECT pg_total_relation_size(CAST(:table AS regclass)), reltuples FROM pg_class WHERE oid=CAST(:table AS regclass)'),{'table':model.__tablename__}).one()
             estimate=round(size*count/max(estimated_rows,count,1)) if count else 0
-        stages.append({'stage':name,'eligible_rows':count,'estimated_logical_bytes':estimate})
+        stages.append({'stage':name,'eligible_rows':count,'estimated_logical_bytes':estimate,
+            'oldest_affected_at':oldest,'newest_affected_at':newest,
+            'affected_date_basis':'snapshot creation time' if model in (Listing,SnapshotStatistic) else 'record timestamp',
+            'protected_rows_estimate':max(0,round(estimated_rows)-count) if db.bind.dialect.name=='postgresql' else None})
         if first is None and count:
             keys=primary_keys(model)
             ids=[list(row) for row in db.execute(select(*keys).where(predicate).order_by(*keys).limit(BATCH_ROWS))]
@@ -132,10 +140,10 @@ def backup_ready():
 @router.get('')
 def get_policy(user:User=Depends(admin),db:Session=Depends(session)):
     return {**policy_view(db),'backup_restore_ready':backup_ready(),
-            'policy_configured':db.get(RetentionPolicy,1) is not None, 'scheduled':False,
+            'policy_configured':db.get(RetentionPolicy,1) is not None, **automation_view(db),
             'completed_batches':db.scalar(select(func.count()).select_from(RetentionBatch)),
             'last_completed_at':db.scalar(select(func.max(RetentionBatch.created_at))),
-            'notice':'Proposal only. Current snapshot and 60-day valuation support are protected; live application requires separate owner/operator authorization.'}
+            'notice':'Saving is not authorization. Current snapshot and 60-day valuation support are protected; live application requires separate owner/operator authorization.'}
 
 
 @router.patch('')
@@ -148,6 +156,10 @@ def update_policy(body:PolicyInput,user:User=Depends(admin),db:Session=Depends(s
     old=policy_view(db)
     for key,value in body.model_dump().items():setattr(row,key,value)
     row.revision+=1;row.approved_hash=None;row.approved_at=None;row.updated_at=now()
+    from .models import RetentionAutomation
+    automation = db.get(RetentionAutomation, 1)
+    if automation:
+        automation.enabled=False; automation.authorization=None; automation.next_run_at=None
     db.add(RetentionPolicyChange(actor_id=user.id,before=canonical({k:old[k] for k in PolicyInput.model_fields}),after=canonical(body.model_dump())))
     audit(db,user.id,'retention.policy.updated',f'revision={row.revision}; full before/after in retention_policy_changes')
     db.commit()
@@ -165,7 +177,17 @@ def preview(user:User=Depends(admin),db:Session=Depends(session)):
         'next_batch_rows':len(first[2]) if first else 0,'confirmation':confirmation,
         'database_allocated_bytes':allocation,'estimated_logical_bytes':sum(row['estimated_logical_bytes'] or 0 for row in stages),
         'filesystem_recoverable_bytes':None,'estimate_notice':'Approximate proportional table/index allocation. DELETE permits database reuse; filesystem shrink is unknown. Daily history includes 60 days of supporting references.',
-        'backup_restore_ready':backup_ready()}
+        'backup_restore_ready':backup_ready(),
+        'cutoffs':{'raw_before':at-timedelta(days=policy['raw_days']),
+            'intraday_before':at-timedelta(days=policy['intraday_days']),
+            'daily_chart_before':(at-timedelta(days=policy['daily_days'])).date(),
+            'daily_support_before':(at-timedelta(days=policy['daily_days']+60)).date(),
+            'operational_before':at-timedelta(days=policy['operational_days']),
+            'security_before':at-timedelta(days=policy['security_days'])},
+        'protected':'Latest head of every market, snapshots shared by protected observations, and 60 days of supporting daily provenance/statistics.',
+        'history_sync_impact':'Intraday and long-term daily history stay within configured windows; old desktop cursors return 409/full refresh. Workshop and exact price contracts are unchanged.',
+        'estimated_batches':sum((r['eligible_rows']+BATCH_ROWS-1)//BATCH_ROWS for r in stages),
+        **automation_view(db)}
 
 
 class ApplyInput(BaseModel):
@@ -184,6 +206,13 @@ def apply_batch(body:ApplyInput,user:User=Depends(admin),db:Session=Depends(sess
         raise HTTPException(409,'Owner/operator policy approval and fresh verified backup restoration are required')
     if not hmac.compare_digest(fingerprint,data['hash']):raise HTTPException(409,'Policy or candidates changed; preview again')
     if first is None:return {'status':'complete','rows_removed':0}
+    result = execute_selected(db, policy, first, at, user.id)
+    db.commit()
+    return {**result, 'preview_required':True}
+
+
+def execute_selected(db, policy, first, at, actor_id):
+    """Caller holds ingestion/sync lock and authorization gates; one transaction."""
     name,model,ids=first
     keys=primary_keys(model)
     predicate=tuple_(*keys).in_([tuple(row) for row in ids])
@@ -193,10 +222,9 @@ def apply_batch(body:ApplyInput,user:User=Depends(admin),db:Session=Depends(sess
         db.execute(update(Snapshot).where(Snapshot.id.in_(snapshot_ids)).values({flag:False}))
     removed = (db.execute(update(FeedCapture).where(predicate).values(compressed_payload=None)).rowcount
         if model is FeedCapture else db.execute(delete(model).where(predicate)).rowcount)
-    db.add(RetentionBatch(actor_id=user.id,policy_hash=policy['policy_hash'],stage=name,rows_removed=removed,cutoff=at,history_floor=at-timedelta(days=policy["daily_days"]) if name=="daily_references" else None))
-    audit(db,user.id,'retention.batch.applied',f'stage={name} rows={removed} policy={policy["policy_hash"]}')
-    db.commit()
-    return {'status':'batch_applied','stage':name,'rows_removed':removed,'preview_required':True}
+    db.add(RetentionBatch(actor_id=actor_id,policy_hash=policy['policy_hash'],stage=name,rows_removed=removed,cutoff=at,history_floor=at-timedelta(days=policy["daily_days"]) if name=="daily_references" else None))
+    audit(db,actor_id,'retention.batch.applied',f'stage={name} rows={removed} policy={policy["policy_hash"]}')
+    return {'status':'batch_applied','stage':name,'rows_removed':removed}
 
 
 def history_floor(db):
@@ -213,3 +241,9 @@ def authorize_policy(db, actor, notes):
     row.approved_hash=policy['policy_hash'];row.approved_at=now()
     audit(db,actor.id,'retention.policy.authorized',f'policy={row.approved_hash}; {notes}'[:200])
     return row.approved_hash
+
+
+def automation_view(db):
+    from .retention_worker import state_view
+    state = state_view(db)
+    return {'scheduled':state['enabled'], 'automation':state}

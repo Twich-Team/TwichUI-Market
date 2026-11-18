@@ -335,8 +335,8 @@ def collection_runs(after_id: int = Query(0,ge=0),limit: int = Query(100,ge=1,le
 @router.get('/admin/storage')
 def storage(user: User = Depends(admin),db: Session = Depends(session)):
     size = db.scalar(text('SELECT pg_database_size(current_database())')) if db.bind.dialect.name=='postgresql' else None
-    from .storage import history
-    return {'growth':history(db),'database_bytes':size,'snapshots':db.scalar(select(func.count()).select_from(Snapshot)),
+    from .storage import history, operational_status
+    return {'operations':operational_status(db),'growth':history(db),'database_bytes':size,'snapshots':db.scalar(select(func.count()).select_from(Snapshot)),
             'observations':db.scalar(select(func.count()).select_from(Observation)),
             'retention':{'historical_observations':'indefinite_private','guidance':'owner_provided_original_pending',
                          'raw_listing_days':int(os.environ.get('RAW_LISTING_DAYS','7')),

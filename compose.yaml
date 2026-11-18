@@ -113,6 +113,20 @@ services:
     pids_limit: 100
     read_only: true
     tmpfs: [/tmp:size=16m]
+  retention:
+    <<: *limits
+    profiles: [retention]
+    image: twichui-market-backend:dev
+    environment: *api-env
+    depends_on: {migrate: {condition: service_completed_successfully}}
+    command: [python, -m, market.retention_worker]
+    volumes: [market-data:/database-filesystem:ro, ./artifacts/backup-status:/backup-status:ro]
+    mem_limit: 192m
+    cpus: 0.25
+    pids_limit: 64
+    read_only: true
+    tmpfs: [/tmp:size=16m]
+    cap_drop: [ALL]
   backup:
     <<: *limits
     profiles: [operations]

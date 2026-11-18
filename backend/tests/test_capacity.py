@@ -19,6 +19,7 @@ def test_filesystem_guard_and_recovery(database, scheduled, monkeypatch):
     with database() as db:
         assert 'free-space reserve' in db.get(Market, scheduled).last_error
     monkeypatch.setattr('market.capacity.os.statvfs', lambda _: SimpleNamespace(f_bavail=11, f_frsize=100, f_blocks=100))
+    monkeypatch.setattr('market.ingest.now', lambda: at+timedelta(seconds=301))
     collect_once(database, client, at=at+timedelta(seconds=301))
     with database() as db:
         assert db.get(Market, scheduled).last_error is None
