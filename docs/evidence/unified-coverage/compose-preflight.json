@@ -1,0 +1,85 @@
+{
+  "application_sha": "c60e3d110d7a8afcdadff6154fe3ca0fa7f7c8a6",
+  "images": {
+    "backend": "sha256:d1c42c66bdd9cf468103f23974f0581ad1fa433194472656b4c82b2d367560c0",
+    "web": "sha256:0f10d689285194424e0e7a5ae3191d377e00c31a64113c2532737ccbe55e159c"
+  },
+  "changes": {
+    "api": [
+      "environment",
+      "image"
+    ],
+    "backup": [
+      "profiles",
+      "restart"
+    ],
+    "local-api": [
+      "environment",
+      "image"
+    ],
+    "proxy": [
+      "image"
+    ],
+    "worker": [
+      "environment",
+      "image"
+    ]
+  },
+  "minimum_application_services": [
+    "api",
+    "local-api",
+    "proxy",
+    "worker"
+  ],
+  "backup_policy": "owner-disabled",
+  "other_services_and_environment": "identical",
+  "production_not_changed": true,
+  "compose_arguments": [
+    "docker",
+    "--context",
+    "rootless",
+    "compose",
+    "-p",
+    "twichui-market",
+    "--project-directory",
+    "/home/marketdev/projects/TwichUI-Market",
+    "--env-file",
+    "/home/marketdev/projects/TwichUI-Market/.env",
+    "--env-file",
+    "/home/marketdev/projects/TwichUI-Market/.env.combined-release",
+    "-f",
+    "/home/marketdev/projects/TwichUI-Market/compose.yaml",
+    "-f",
+    "/home/marketdev/projects/TwichUI-Market/compose.tls.yaml",
+    "-f",
+    "/home/marketdev/projects/TwichUI-Market/compose.traefik.yaml",
+    "-f",
+    "/home/marketdev/projects/TwichUI-Market/compose.companion-private-beta.yaml",
+    "-f",
+    "/home/marketdev/projects/TwichUI-Market/compose.combined-release.yaml",
+    "-f",
+    "/home/marketdev/projects/TwichUI-Market/compose.admin-release.yaml",
+    "-f",
+    "/home/marketdev/projects/TwichUI-Market/compose.explorer-release.yaml",
+    "-f",
+    "/home/marketdev/projects/TwichUI-Market/compose.polish-release.yaml",
+    "-f",
+    "/home/marketdev/projects/TwichUI-Market/compose.foreverdb-release.yaml",
+    "-f",
+    "/home/marketdev/projects/TwichUI-Market/.worktrees/usability-release/compose.usability-release.yaml",
+    "-f",
+    "/home/marketdev/projects/TwichUI-Market/.worktrees/mobile-release/compose.mobile-release.yaml",
+    "-f",
+    "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-release.yaml",
+    "-f",
+    "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-chart.yaml",
+    "-f",
+    "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-api.yaml",
+    "-f",
+    "/home/marketdev/.codex/worktrees/unified-auction-commodity-coverage/TwichUI-Market/compose.owner-backup-policy.yaml",
+    "-f",
+    "/home/marketdev/.codex/worktrees/unified-auction-commodity-coverage/TwichUI-Market/compose.unified-coverage-release.yaml"
+  ],
+  "all_profiles_resolved": true,
+  "all_service_names_preserved": true
+}

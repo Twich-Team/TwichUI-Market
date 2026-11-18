@@ -1,0 +1,12 @@
+{
+  "application_sha": "c60e3d110d7a8afcdadff6154fe3ca0fa7f7c8a6",
+  "backend_base": "sha256:d7df98deb095a74c1c1b962d113d26e463d2f5e6de2abdf3fcb47b8339b45085",
+  "web_base": "sha256:35546b89bcb231121ab77115de4410c9487dfcadd8d8da4d070a4fcbcebf0d7f",
+  "dependency_installation": "none; retained verified runtime",
+  "runtime_source_paths": [
+    "backend/market",
+    "backend/migrations",
+    "contracts"
+  ],
+  "frontend": "fresh TypeScript/Vite output"
+}

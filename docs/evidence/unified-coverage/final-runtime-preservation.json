@@ -1,0 +1,14 @@
+{
+  "provider_configuration_envelopes_and_keyring_identical": true,
+  "unchanged_original_distribution_files": 46,
+  "only_intentionally_changed_original_distribution_file": "current.json",
+  "new_current_version": "2.0.0-beta.6",
+  "unchanged_service_identities": [
+    "enrichment",
+    "db",
+    "monitor",
+    "backup"
+  ],
+  "backup_running": false,
+  "no_original_release_removed": true
+}
