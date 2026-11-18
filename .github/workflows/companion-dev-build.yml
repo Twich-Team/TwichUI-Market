@@ -37,8 +37,10 @@ jobs:
           toolchain: 1.100.0
       - uses: Swatinem/rust-cache@v2
         with:
-          cache-on-failure: true
-          # Same workspace/cache family as normal desktop CI.
+          shared-key: companion-dev-native-v2
+          cache-on-failure: false
+          # Seed only after packaging succeeds; a core-only failed run must not
+          # freeze an incomplete native dependency cache for every iteration.
           workspaces: |
             desktop -> target
             desktop/src-tauri -> target
@@ -50,6 +52,8 @@ jobs:
       - name: Focused validator and diagnostics checks
         run: |
           cargo test --manifest-path desktop/Cargo.toml --locked --lib installation::
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo test --manifest-path desktop/Cargo.toml --locked --lib windows_owner::tests::
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cargo test --manifest-path desktop/Cargo.toml --locked --lib workshop_setup::
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

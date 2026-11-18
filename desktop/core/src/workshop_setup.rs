@@ -19,6 +19,7 @@ impl Failure {
             "unsupported_client" => "This Wow.exe version is not verified for Forever. Choose a supported Forever installation.",
             "workshop_addon" => "Workshop needs an update or is missing files. Install the compatible TwichUI addon, then retry.",
             "file_busy" => "An addon file is in use by another program. Close that program and retry.",
+            "unsafe_permissions" => "Companion could not verify this folder's security rules. Save redacted diagnostics for the specific check.",
             "access_denied" => "Windows could not access this installation safely. Choose a folder where your Windows account can read the game and write addon data.",
             "ownership_conflict" => "Existing Market data could not be safely adopted. Reconnect its original Market account and market, or choose another installation. Your files were preserved.",
             "unsafe_path" => "This installation uses an unsafe linked path. Choose a local Forever folder without junctions or symbolic links.",
