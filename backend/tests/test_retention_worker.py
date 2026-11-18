@@ -262,3 +262,31 @@ def test_recovery_policy_change_invalidates_exact_execution_approval(database, a
     monkeypatch.setitem(SCOPE, 'recovery_policy', {'mode':'local_only', 'valid':True,
         'off_vm_required':False, 'owner_approval_reference':'new-owner-exception'})
     assert work_once(database)['status'] == 'inactive'
+
+
+def test_empty_raw_backlog_skips_retained_listing_heap(database, automation):
+    from sqlalchemy import update
+    from market.retention import candidates, policy_view
+    from market.retention_worker import batch_selection
+    require_pg(database)
+    with database.begin() as db:
+        db.execute(update(Observation).values(retrieved_at=now()))
+        snapshot_id = db.scalar(select(Observation.snapshot_id).limit(1))
+        db.execute(text('''INSERT INTO listings (snapshot_id,auction_id,item_id,variant,variant_key,quantity,buyout,unit_price)
+            SELECT :snapshot_id,n,123,'{}','retained-variant',3,1001,333
+            FROM generate_series(10000,110000) n'''), {'snapshot_id':snapshot_id})
+        db.execute(text('ANALYZE listings'))
+        db.execute(text('ANALYZE snapshots'))
+        for name, model, predicate in candidates(db, policy_view(db), now()):
+            if name != 'raw_listings': continue
+            query = batch_selection(model, predicate, 5000)
+            assert db.execute(query).all() == []
+            sql = str(query.compile(db.bind, compile_kwargs={'literal_binds':True}))
+            plan = db.execute(text('EXPLAIN (ANALYZE, FORMAT JSON) '+sql)).scalar()[0]['Plan']
+            def listing_visits(node):
+                own = ((node.get('Actual Rows',0)+node.get('Rows Removed by Filter',0))*node.get('Actual Loops',1)
+                       if node.get('Relation Name') == 'listings' else 0)
+                return own + sum(listing_visits(child) for child in node.get('Plans',[]))
+            # Proving that no snapshot is eligible must not scan its retained heap.
+            assert listing_visits(plan) < 100
+        assert db.scalar(select(func.count()).select_from(Listing)) == 101001

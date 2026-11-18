@@ -18,7 +18,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import func, select, text, update
 from .db import Session, now, session
 from .ingest import canonical
-from .models import (Market, RetentionAutomation, RetentionBatch, RetentionExecution, User)
+from .models import (Listing, Market, RetentionAutomation, RetentionBatch, RetentionExecution, User)
 from .security import admin, audit, aware
 from . import retention
 
@@ -179,12 +179,20 @@ def enable(body:EnableInput, user:User=Depends(admin), db=Depends(session)):
     return state_view(db)
 
 
+def batch_selection(model, predicate, maximum):
+    keys = retention.primary_keys(model)
+    # Snapshot eligibility is sparse and often empty. Ordering the whole listing
+    # heap by id makes PostgreSQL walk every retained row to prove no match.
+    # Snapshot-first order uses the existing snapshot index and skips that scan.
+    order = [model.snapshot_id, *keys] if model is Listing else keys
+    return select(*keys).where(predicate).order_by(*order).limit(maximum)
+
+
 def next_batch(db, policy, at, limits):
     # Counts/full preview are deliberately outside the repeated execution path.
     for name, model, predicate in retention.candidates(db,policy,at):
-        keys=retention.primary_keys(model)
         maximum=limits.payloads_per_batch if name=='raw_feed_payloads' else limits.rows_per_batch
-        ids=[list(row) for row in db.execute(select(*keys).where(predicate).order_by(*keys).limit(maximum))]
+        ids=[list(row) for row in db.execute(batch_selection(model, predicate, maximum))]
         if ids: return name, model, ids
     return None
 
