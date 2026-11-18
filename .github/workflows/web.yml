@@ -153,6 +153,7 @@ jobs:
           path: artifacts/web-e2e
       - name: Prepare isolated backup management service and fixtures
         run: |
+          export BACKUP_TEST_UID=$(id -u) BACKUP_TEST_GID=$(id -g)
           mkdir -p artifacts/backup-management/browser-fixtures
           chmod 700 artifacts/backup-management/browser-fixtures
           python3 -c "from pathlib import Path; Path('artifacts/backup-management/synthetic-token').write_text('synthetic-backup-browser-token-not-for-production-2026')"

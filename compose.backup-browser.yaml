@@ -10,6 +10,7 @@ services:
   proxy:
     image: twichui-market-web:backup-review
   backup-manager:
+    user: "${BACKUP_TEST_UID:-0}:${BACKUP_TEST_GID:-0}"
     image: twichui-market-backup-manager:review
     build:
       context: ./deploy/backup
@@ -23,7 +24,9 @@ services:
     volumes:
       - ./artifacts/backup-management/browser-fixtures:/backups
       - ./artifacts/backup-management/synthetic-token:/run/secrets/backup-manager-token:ro
-    tmpfs: [/state:size=16m, /tmp:size=16m]
+    tmpfs:
+      - "/state:size=16m,mode=0700,uid=${BACKUP_TEST_UID:-0},gid=${BACKUP_TEST_GID:-0}"
+      - /tmp:size=16m
     read_only: true
     mem_limit: 256m
     cpus: 0.25

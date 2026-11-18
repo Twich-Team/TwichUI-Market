@@ -23,6 +23,7 @@ services:
     volumes: [./backend/market:/app/market:ro, ./backend/tests:/app/tests:ro, ./scripts:/scripts:ro, ./backend:/backend:ro]
     command: [pytest, -q, -p, no:cacheprovider]
   backup-check:
+    user: "${BACKUP_TEST_UID:-0}:${BACKUP_TEST_GID:-0}"
     build:
       context: ./deploy/backup
       dockerfile: Management.Dockerfile
@@ -32,6 +33,8 @@ services:
     mem_limit: 256m
     cpus: 0.5
     read_only: true
-    tmpfs: [/tmp:size=16m, /state:size=16m]
+    tmpfs:
+      - /tmp:size=16m
+      - "/state:size=16m,mode=0700,uid=${BACKUP_TEST_UID:-0},gid=${BACKUP_TEST_GID:-0}"
     volumes: [./artifacts/backup-management/fixtures:/backups, ./scripts:/checks:ro]
     entrypoint: [python3, /checks/verify-backup-management.py]
