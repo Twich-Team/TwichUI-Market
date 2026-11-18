@@ -27,16 +27,8 @@ pub fn validate_game(path:&Path)->Result<()> {
         need(exe.is_file(), "game root does not contain Wow.exe")
     })())?;
     at("executable_version", (|| {
-        let version=executable_version(&path.join("Wow.exe"))?;
-        // Keep the existing verified profile. Genuine Forever PE metadata has
-        // not been supplied; synthetic resources are not identification proof.
-        if version[..3]!=[1,60,1] {
-            return Err(Error::WorkshopSetup(Box::new(crate::workshop_setup::Failure::new(
-                "unsupported_client", "executable_version",
-                format!("observed_file_version={}.{}.{}.{}; accepted_prefix=1.60.1",version[0],version[1],version[2],version[3]),
-            ))));
-        }
-        Ok(())
+        let identity=executable_identity(&path.join("Wow.exe"))?;
+        validate_executable(&identity)
     })())
 }
 
@@ -127,16 +119,52 @@ fn registry_candidates()->Vec<PathBuf> {
     out
 }
 
+#[derive(Debug)]
+struct ExecutableIdentity {
+    file_version:[u16;4],
+    product_name:String,
+    product_version:String,
+    original_filename:String,
+}
+fn product_version(value:&str)->Option<Vec<u32>> {
+    let value=value.trim().strip_prefix("Version ").unwrap_or(value.trim());
+    if value.len()>64 {return None}
+    let numbers=value.split('.').map(|part| {
+        if part.is_empty()||!part.bytes().all(|b|b.is_ascii_digit()){return None}
+        part.parse::<u32>().ok()
+    }).collect::<Option<Vec<_>>>()?;
+    (numbers.len()==3||numbers.len()==4).then_some(numbers)
+}
+fn validate_executable(identity:&ExecutableIdentity)->Result<()> {
+    let product=product_version(&identity.product_version);
+    // Owner's Windows Properties screenshot: file 160.1.7095.9, product
+    // "Version 1.60.1.70959", World of Warcraft, Wow.exe. File-version fields
+    // encode that release differently. Identify the supported product family,
+    // not an exact build or the synthetic PE's old 1.60.1 file prefix.
+    // Patch/build updates are accepted; unrelated client families fail closed.
+    if identity.product_name.trim()=="World of Warcraft"
+        && identity.original_filename.trim().eq_ignore_ascii_case("Wow.exe")
+        && product.as_ref().is_some_and(|v|v[..2]==[1,60]) {return Ok(())}
+    Err(Error::WorkshopSetup(Box::new(crate::workshop_setup::Failure::new(
+        "unsupported_client", "executable_version",
+        format!("observed_file_version={}.{}.{}.{}; numeric_product_version={product:?}; product_name_matches={}; original_filename_matches={}; accepted_product_family=1.60",
+            identity.file_version[0],identity.file_version[1],identity.file_version[2],identity.file_version[3],
+            identity.product_name.trim()=="World of Warcraft",identity.original_filename.trim().eq_ignore_ascii_case("Wow.exe")),
+    ))))
+}
+
 #[cfg(not(windows))]
-fn executable_version(path:&Path)->Result<[u16;4]> {
+fn executable_identity(path:&Path)->Result<ExecutableIdentity> {
     #[cfg(test)]
-    if read(path,128).ok().as_deref()==Some(b"TWICHUI SYNTHETIC FOREVER 1.60.1".as_slice()) {return Ok([1,60,1,7053])}
+    if read(path,128).ok().as_deref()==Some(b"TWICHUI SYNTHETIC FOREVER 1.60.1".as_slice()) {
+        return Ok(ExecutableIdentity{file_version:[160,1,7095,9],product_name:"World of Warcraft".into(),product_version:"Version 1.60.1.70959".into(),original_filename:"Wow.exe".into()})
+    }
     let _=path;
     Err(Error::Invalid("Forever installation verification requires Windows"))
 }
 
 #[cfg(windows)]
-fn executable_version(path:&Path)->Result<[u16;4]> {
+fn executable_identity(path:&Path)->Result<ExecutableIdentity> {
     use std::os::windows::ffi::OsStrExt;
     use windows_sys::Win32::Storage::FileSystem::*;
     let name=path.as_os_str().encode_wide().chain(Some(0)).collect::<Vec<_>>();
@@ -144,16 +172,66 @@ fn executable_version(path:&Path)->Result<[u16;4]> {
         let size=GetFileVersionInfoSizeW(name.as_ptr(),std::ptr::null_mut());
         if size==0 {return Err(std::io::Error::last_os_error().into())}
         need(size<=1024*1024,"The Forever executable version could not be verified.")?;
-        // u64 storage provides alignment for VS_FIXEDFILEINFO.
         let mut buffer=vec![0u64;(size as usize+7)/8];
         if GetFileVersionInfoW(name.as_ptr(),0,size,buffer.as_mut_ptr().cast())==0 {return Err(std::io::Error::last_os_error().into())}
-        let mut result=std::ptr::null_mut();let mut length=0;
-        need(VerQueryValueW(buffer.as_ptr().cast(),[b'\\' as u16,0].as_ptr(),&mut result,&mut length)!=0
-            && length as usize>=std::mem::size_of::<VS_FIXEDFILEINFO>() && !result.is_null(),"The Forever executable version could not be verified.")?;
-        let info=&*(result as *const VS_FIXEDFILEINFO);
-        need(info.dwSignature==0xfeef04bd,"The Forever executable version could not be verified.")?;
-        Ok([(info.dwFileVersionMS>>16) as u16,info.dwFileVersionMS as u16,
-            (info.dwFileVersionLS>>16) as u16,info.dwFileVersionLS as u16])
+        let query=|key:&str|->Result<(*mut std::ffi::c_void,u32)> {
+            let wide=key.encode_utf16().chain(Some(0)).collect::<Vec<_>>();
+            let mut result=std::ptr::null_mut();let mut length=0;
+            need(VerQueryValueW(buffer.as_ptr().cast(),wide.as_ptr(),&mut result,&mut length)!=0&&!result.is_null(),"executable version metadata field missing")?;
+            Ok((result,length))
+        };
+        let inside=|pointer:*mut std::ffi::c_void,bytes:usize|->Result<()> {
+            let start=buffer.as_ptr() as usize;let address=pointer as usize;
+            need(address>=start&&address.checked_add(bytes).is_some_and(|end|end<=start+size as usize),"executable version metadata bounds")
+        };
+        let (root,length)=query("\\")?;inside(root,std::mem::size_of::<VS_FIXEDFILEINFO>())?;
+        need(length as usize>=std::mem::size_of::<VS_FIXEDFILEINFO>(),"executable fixed version metadata")?;
+        let info=std::ptr::read_unaligned(root.cast::<VS_FIXEDFILEINFO>());
+        need(info.dwSignature==0xfeef04bd,"executable fixed version signature")?;
+        let file_version=[(info.dwFileVersionMS>>16) as u16,info.dwFileVersionMS as u16,(info.dwFileVersionLS>>16) as u16,info.dwFileVersionLS as u16];
+        let (translations,length)=query(r"\VarFileInfo\Translation")?;
+        need(length>=4&&length<=128&&length%4==0,"executable language table bound")?;inside(translations,length as usize)?;
+        let translations=std::slice::from_raw_parts(translations.cast::<u8>(),length as usize);
+        let mut observed=None;
+        for pair in translations.chunks_exact(4) {
+            let language=u16::from_le_bytes([pair[0],pair[1]]);let codepage=u16::from_le_bytes([pair[2],pair[3]]);
+            let string=|field:&str|->Result<String> {
+                let (pointer,length)=query(&format!(r"\StringFileInfo\{language:04x}{codepage:04x}\{field}"))?;
+                need(length>0&&length<=256&&(pointer as usize)%2==0,"executable string metadata bound")?;inside(pointer,length as usize*2)?;
+                let units=std::slice::from_raw_parts(pointer.cast::<u16>(),length as usize);
+                need(units.last()==Some(&0),"executable string metadata terminator")?;
+                String::from_utf16(&units[..units.len()-1]).map_err(|_|Error::Invalid("executable string metadata encoding"))
+            };
+            if let (Ok(product_name),Ok(product_version),Ok(original_filename))=(string("ProductName"),string("ProductVersion"),string("OriginalFilename")) {
+                let identity=ExecutableIdentity{file_version,product_name,product_version,original_filename};
+                if validate_executable(&identity).is_ok(){return Ok(identity)}
+                if observed.is_none(){observed=Some(identity);}
+            }
+        }
+        Ok(observed.unwrap_or(ExecutableIdentity{file_version,product_name:String::new(),product_version:String::new(),original_filename:String::new()}))
+    }
+}
+
+#[cfg(test)]
+mod version_tests {
+    use super::*;
+    fn owner()->ExecutableIdentity {ExecutableIdentity{file_version:[160,1,7095,9],product_name:"World of Warcraft".into(),product_version:"Version 1.60.1.70959".into(),original_filename:"Wow.exe".into()}}
+    #[test]
+    fn owner_reported_metadata_and_future_patch_builds_use_product_family() {
+        assert!(validate_executable(&owner()).is_ok());
+        let mut next=owner();next.file_version=[160,2,8123,4];next.product_version="Version 1.60.2.81234".into();
+        assert!(validate_executable(&next).is_ok());
+        // Native file-version packing is not the compatibility identifier.
+        next.file_version=[1,60,3,1234];next.product_version="1.60.3.123456".into();assert!(validate_executable(&next).is_ok());
+    }
+    #[test]
+    fn unsupported_or_incomplete_product_identity_still_fails_closed() {
+        for version in ["Version 1.12.1.5875","Version 1.61.1.1234","Version 2.0.0.0","160.1.7095.9","Version 1.60.secret-token","1.60","1.60..1"] {
+            let mut wrong=owner();wrong.product_version=version.into();let error=validate_executable(&wrong).unwrap_err();
+            assert!(!error.to_string().contains("secret-token"));
+        }
+        let mut wrong=owner();wrong.product_name="Other game".into();assert!(validate_executable(&wrong).is_err());
+        wrong=owner();wrong.original_filename="Launcher.exe".into();assert!(validate_executable(&wrong).is_err());
     }
 }
 

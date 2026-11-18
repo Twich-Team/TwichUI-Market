@@ -14,8 +14,10 @@ if ($Action -eq 'Setup') {
     @'
 using System;
 using System.Reflection;
-[assembly: AssemblyFileVersion("1.60.1.12345")]
-[assembly: AssemblyVersion("1.60.1.12345")]
+[assembly: AssemblyFileVersion("160.1.7095.9")]
+[assembly: AssemblyInformationalVersion("Version 1.60.1.70959")]
+[assembly: AssemblyProduct("World of Warcraft")]
+[assembly: AssemblyVersion("1.60.1.0")]
 [assembly: AssemblyDescription("TwichUI synthetic CI executable; not World of Warcraft")]
 class SyntheticWow { static void Main() { System.Threading.Thread.Sleep(30000); } }
 '@ | Set-Content $source

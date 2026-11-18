@@ -13,8 +13,11 @@ if($Worker){
                 if($_.FullName -eq $case.unreadable){$before[$_.FullName]=@{length=$_.Length;modified=$_.LastWriteTimeUtc.Ticks}}
                 else{$before[$_.FullName]=(Get-FileHash $_.FullName -Algorithm SHA256).Hash}
             }
-            $native=(& $planData.exe inspect $case.path)|ConvertFrom-Json
-            if($LASTEXITCODE -ne 0 -or $native.elevated){throw "Non-elevated native execution required: $($case.name) $($native|ConvertTo-Json -Compress -Depth 8)"}
+            $nativeError=Join-Path (Split-Path $Plan) 'native-stderr.txt'
+            $nativeRaw=& $planData.exe inspect $case.path 2> $nativeError
+            if($LASTEXITCODE -ne 0){throw "Native preflight process failed; exit=$LASTEXITCODE; stderr=$(Get-Content $nativeError -Raw); stdout=$nativeRaw"}
+            $native=$nativeRaw|ConvertFrom-Json
+            if($null -eq $native -or $native.elevated){throw "Non-elevated native execution required: $($case.name) $($native|ConvertTo-Json -Compress -Depth 8)"}
             if($native.accepted -ne $case.accepted){throw "Unexpected acceptance: $($case.name) $($native|ConvertTo-Json -Compress -Depth 8)"}
             if(-not $case.accepted -and $native.failure.code -ne $case.code){throw "Wrong failure code: $($case.name) $($native|ConvertTo-Json -Compress -Depth 8)"}
             foreach($file in $before.Keys){
@@ -41,12 +44,12 @@ if(Test-Path $base){throw 'NTFS fixture must begin empty'}
 $null=New-Item $base -ItemType Directory
 $addon=Join-Path (Get-Location) 'coordinated-addon'
 $compiler=Join-Path $env:WINDIR 'Microsoft.NET\Framework64\v4.0.30319\csc.exe'
-function MakeGame($name,$version='1.60.1.12345'){
+function MakeGame($name,$version='160.1.7095.9',$productVersion='Version 1.60.1.70959'){
     $game=Join-Path $base $name
     $addons=Join-Path $game 'Interface\AddOns'
     $null=New-Item $addons -ItemType Directory -Force
     $source=Join-Path $base ($name+'.cs')
-    "using System.Reflection; [assembly: AssemblyFileVersion(`"$version`")] class Fixture { static void Main() {} }"|Set-Content $source
+    "using System.Reflection; [assembly: AssemblyFileVersion(`"$version`")] [assembly: AssemblyInformationalVersion(`"$productVersion`")] [assembly: AssemblyProduct(`"World of Warcraft`")] class Fixture { static void Main() {} }"|Set-Content $source
     & $compiler /nologo /target:winexe "/out:$game\Wow.exe" $source
     if($LASTEXITCODE -ne 0){throw 'Synthetic PE compilation failed'}
     foreach($folder in @('!!!TwichUI','TwichUI_Workshop')){Copy-Item (Join-Path $addon $folder) $addons -Recurse}
@@ -55,6 +58,8 @@ function MakeGame($name,$version='1.60.1.12345'){
 $cases=@()
 $normal=MakeGame 'normal-inheritance'
 $cases+=@{name='normal inherited permissions';path=$normal;accepted=$true}
+$updated=MakeGame 'updated-game-build' '160.2.8123.4' 'Version 1.60.2.81234'
+$cases+=@{name='future compatible patch and build';path=$updated;accepted=$true}
 $admin=MakeGame 'administrator-installed'
 # Installation inputs and parent may have a trusted administrator owner. The
 # limited player still inherits its own write grant for new addon data.
@@ -73,7 +78,7 @@ $cases+=@{name='Windows refuses installed addon read';path=$denied;unreadable=$u
 $wrong=MakeGame 'wrong-folder'
 Remove-Item (Join-Path $wrong 'Wow.exe')
 $cases+=@{name='wrong game folder';path=$wrong;accepted=$false;code='wrong_folder'}
-$unsupported=MakeGame 'unsupported-version' '1.12.1.5875'
+$unsupported=MakeGame 'unsupported-version' '1.12.1.5875' 'Version 1.12.1.5875'
 $cases+=@{name='unsupported native version resource';path=$unsupported;accepted=$false;code='unsupported_client'}
 $conflict=MakeGame 'unowned-market-data'
 $data=Join-Path $conflict 'Interface\AddOns\TwichUI_MarketData'
