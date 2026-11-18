@@ -139,8 +139,12 @@ $builtExe=Join-Path (Get-Location) 'desktop\target\debug\examples\installation_s
 $nativeExe=Join-Path $base 'installation_smoke.exe'
 Copy-Item $builtExe $nativeExe
 if((Get-FileHash $builtExe -Algorithm SHA256).Hash -ne (Get-FileHash $nativeExe -Algorithm SHA256).Hash){throw 'Native preflight copy differs from built source'}
-& icacls $nativeExe /setowner "*$($userSid)" /grant "*$($userSid):RX" /setintegritylevel M /Q|Out-Null
-if($LASTEXITCODE -ne 0){throw 'Per-user native preflight permissions failed'}
+& icacls $nativeExe /setowner "*$($userSid)" /Q|Out-Null
+if($LASTEXITCODE -ne 0){throw 'Per-user native preflight owner failed'}
+& icacls $nativeExe /grant "*$($userSid):RX" /Q|Out-Null
+if($LASTEXITCODE -ne 0){throw 'Per-user native preflight access failed'}
+& icacls $nativeExe /setintegritylevel M /Q|Out-Null
+if($LASTEXITCODE -ne 0){throw 'Per-user native preflight integrity failed'}
 $planFile=Join-Path $base 'plan.json'
 @{exe=$nativeExe;report=$report;admin_probe=$adminProbe;cases=$cases}|ConvertTo-Json -Depth 8|Set-Content $planFile
 $script=(Resolve-Path $PSCommandPath).Path
