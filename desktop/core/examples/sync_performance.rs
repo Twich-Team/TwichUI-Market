@@ -1,6 +1,6 @@
 //! Actual native HTTP/SQLite benchmark. Only explicit loopback fixtures are accepted.
 use std::{path::PathBuf,time::Instant};
-use twichui_market_core::{cache::Cache,client::MarketClient,performance::{Capture,Stage,measure},scheduler::{Scheduler,SystemClock},settings::Settings,synchronizer};
+use twichui_market_core::{cache::Cache,client::MarketClient,performance::Capture,scheduler::{Scheduler,SystemClock},settings::Settings,synchronizer};
 use sha2::{Digest,Sha256};
 fn main()->Result<(),Box<dyn std::error::Error>> {
     let server=std::env::var("SYNC_PERF_SERVER")?;
@@ -14,9 +14,7 @@ fn main()->Result<(),Box<dyn std::error::Error>> {
     let mut scheduler=Scheduler::new(SystemClock,Settings{selected_market:Some(market),..Settings::default()},true)?;
     let run=scheduler.sync_now().ok_or("fixture scheduler did not begin")?;
     let started=Instant::now();
-    let all=measure(Stage::MarketSync);
     let result=synchronizer::synchronize(&client,&server,&path,&run,Some(market),&SystemClock,&|_|{twichui_market_core::performance::sqlite_size(&path);},|_|{})?;
-    drop(all);
     if !matches!(result,twichui_market_core::worker::Execution::Completed(_)){return Err("native sync did not complete".into())}
     let elapsed=started.elapsed().as_secs_f64();let report=trace.report();drop(trace);
     let cache=Cache::open(&path)?;let origin=twichui_market_core::client::server_url(&server)?.to_string();

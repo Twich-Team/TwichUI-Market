@@ -33,6 +33,7 @@ def compact(db,observation,keys,generation):
     if trace is not None:trace['keys_scanned']=max(trace.get('keys_scanned',0),len(keys))
     return _compact(db,observation,keys,generation)
 sync_api.compact_many=measured('pricing',compact)
+if hasattr(sync_api,'page_keys'):sync_api.page_keys=measured('key_discovery',sync_api.page_keys)
 JSONResponse.render=measured('json_serialization',JSONResponse.render)
 def identity(request:Request,db:OrmSession=Depends(session)):
     return measured('authentication',security.identity)(request,db)

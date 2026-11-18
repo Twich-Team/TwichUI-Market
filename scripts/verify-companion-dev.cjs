@@ -24,6 +24,8 @@ async function main() {
       const updates=await invoke('check_update');if(updates.status!=='unavailable'||!updates.message.includes('disabled'))throw Error('DEV updater not disabled');
       let installDisabled=false;try{await invoke('install_update',{version:'999.0.0'});}catch(e){installDisabled=String(e).includes('disabled');}
       if(!installDisabled)throw Error('DEV update installation not disabled');
+      await invoke('set_performance_capture',{enabled:true});
+      if(!(await invoke('app_state')).performance_capture)throw Error('Native timing capture was not enabled');
       const diagnostic=await invoke('save_diagnostics');
       return {version:state.version,diagnostic,frontend:true,native:true,workshop_command:true,updater_disabled:true};
     })()`});
@@ -32,6 +34,7 @@ async function main() {
     if(!value.diagnostic.replaceAll('\\','/').includes('/team.twich.market.dev/'))throw Error('DEV storage is not isolated');
     const diagnostic=JSON.parse(fs.readFileSync(value.diagnostic,'utf8'));
     if(diagnostic.workshop_setup?.code!=='context_changed')throw Error('Native diagnostics dropped the setup failure');
+    if(diagnostic.sync_performance?.enabled!==true || !Array.isArray(diagnostic.sync_performance.last_runs))throw Error('Native timing diagnostics missing');
     if(!diagnostic.workshop_delivery || typeof diagnostic.workshop_delivery!=='object' || Array.isArray(diagnostic.workshop_delivery))throw Error('Native diagnostics dropped the separate delivery status');
     delete value.diagnostic; fs.writeFileSync('artifacts/companion-dev/smoke.json',JSON.stringify(value,null,2));
     console.log('Installed DEV frontend, native IPC, Workshop command, isolated diagnostics and disabled updater passed.');

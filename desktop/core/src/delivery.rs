@@ -331,6 +331,7 @@ pub(crate) fn read(path: &Path, max: usize) -> Result<Vec<u8>> {
 pub(crate) fn atomic(path: &Path, bytes: &[u8]) -> Result<()> { atomic_with(path, bytes, owned) }
 pub(crate) fn game_atomic(path: &Path, bytes: &[u8]) -> Result<()> { atomic_with(path, bytes, game_owned) }
 fn atomic_with(path: &Path, bytes: &[u8], check: fn(&Path) -> Result<()>) -> Result<()> {
+    let _publication=crate::performance::measure(crate::performance::Stage::FilePublication);
     let parent = path.parent().ok_or(Error::Invalid("delivery parent"))?;
     check(parent)?;
     no_links(path)?;

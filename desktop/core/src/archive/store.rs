@@ -192,7 +192,11 @@ impl ArchiveStore {
         Ok(())
     }
     pub fn apply(&mut self, scope: &Scope, requested: &str, raw: &[u8]) -> Result<bool> {
+        let _validation=crate::performance::measure(crate::performance::Stage::ArchiveValidation);
+        crate::performance::add(crate::performance::Counter::Pages,1);
         let page: Page = serde_json::from_value(parse(raw, 1024 * 1024)?)?;
+        crate::performance::add(crate::performance::Counter::ReceivedRecords,page.entries.len() as u64);
+        crate::performance::checkpoint();
         let (header, cursor) = self
             .pending(scope)?
             .ok_or(Error::Invalid("archive pending download"))?;

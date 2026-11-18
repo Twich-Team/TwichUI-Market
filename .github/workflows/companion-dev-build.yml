@@ -9,7 +9,7 @@ on:
   # This opt-in branch namespace works before the workflow is merged to main.
   # Push a checkpoint here for the next owner iteration; no release pipeline dependency.
   push:
-    branches: ['dev/companion/**', 'fix/workshop-validator-dev-build']
+    branches: ['dev/companion/**', 'fix/workshop-validator-dev-build', 'feature/companion-sync-performance']
 permissions:
   contents: read
 concurrency:
@@ -51,6 +51,8 @@ jobs:
           cache-dependency-path: desktop/package-lock.json
       - name: Focused validator and diagnostics checks
         run: |
+          cargo test --manifest-path desktop/Cargo.toml --locked --lib performance::tests::
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cargo test --manifest-path desktop/Cargo.toml --locked --lib missing_workshop_service_is_distinct
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cargo test --manifest-path desktop/Cargo.toml --locked --lib workshop_setup::tests::

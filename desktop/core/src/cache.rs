@@ -154,6 +154,7 @@ impl Cache {
         requested_cursor: Option<&str>,
         page: &Page,
     ) -> Result<()> {
+        crate::performance::operation(crate::performance::Operation::UpdatingCache);
         let validation=crate::performance::measure(crate::performance::Stage::Validation);
         page.validate(market)?;drop(validation);
         let _transaction=crate::performance::measure(crate::performance::Stage::SqliteTransaction);
@@ -183,6 +184,7 @@ impl Cache {
             // Avoid copying and rewriting every cached item on an idle check.
             tx.execute("UPDATE state SET cursor=?3,target=?4,observed_at=?5,synthetic=?6 WHERE server=?1 AND market=?2",
                 params![server,market,page.cursor,page.target_observation_id,page.observed_at,page.synthetic])?;
+            let _commit=crate::performance::measure(crate::performance::Stage::SqliteCommit);
             tx.commit()?;
             return Ok(());
         }

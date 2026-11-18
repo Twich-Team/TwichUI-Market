@@ -27,6 +27,8 @@ pub fn synchronize(
             Ok(())
         }
     };
+    let _sync=crate::performance::measure(crate::performance::Stage::MarketSync);
+    crate::performance::operation(crate::performance::Operation::CheckingUpdates);
     cancelled()?;
     let bootstrap = client.bootstrap()?;
     cancelled()?;
@@ -52,6 +54,7 @@ pub fn synchronize(
     for pages in 1..=10_000 {
         cancelled()?;
         let mut cursor = cache.cursor(&server, run.market)?;
+        crate::performance::operation(crate::performance::Operation::DownloadingMarket);
         let page = match client.page(run.market, cursor.as_deref()) {
             Err(Error::ResetRequired) if cursor.is_some() => {
                 cancelled()?;
@@ -62,7 +65,10 @@ pub fn synchronize(
             value => value?,
         };
         cancelled()?;
+        crate::performance::operation(crate::performance::Operation::UpdatingCache);
         cache.apply(&server, run.market, cursor.as_deref(), &page)?;
+        crate::performance::sqlite_size(path);
+        crate::performance::checkpoint();
         progress(pages);
         if !page.has_more {
             finished = true;
@@ -82,6 +88,7 @@ pub fn synchronize(
         client.provenance(run.market, &target)?
     };
     cancelled()?;
+    crate::performance::operation(crate::performance::Operation::Verifying);
     let receipt = Completion {
         schema_version: 1,
         last_sync_ms: clock.now_ms(),

@@ -18,9 +18,10 @@ fn number(v:&Value,max:u64)->Result<u64>{v.as_u64().filter(|n|*n<=max).ok_or(Err
 fn identifier(v:&Value)->Result<u64>{let s=v.as_str().ok_or(Error::Invalid("summary observation identity"))?;need(!s.is_empty()&&s.len()<=19&&!s.starts_with('0')&&s.bytes().all(|c|c.is_ascii_digit()),"summary observation identity")?;s.parse::<u64>().ok().filter(|n|*n<=i64::MAX as u64).ok_or(Error::Invalid("summary observation identity"))}
 fn closed(v:&Value,keys:&[&str])->Result<()> {need(v.as_object().is_some_and(|m|m.len()==keys.len()&&keys.iter().all(|k|m.contains_key(*k))),"summary closed object")}
 fn schema()->&'static Value {static S:OnceLock<Value>=OnceLock::new();S.get_or_init(||serde_json::from_str(include_str!("../../../contracts/workshop-summary/v1/manifest.schema.json")).expect("committed summary schema"))}
-fn sha(raw:&[u8])->String {format!("{:x}",Sha256::digest(raw))}
+fn sha(raw:&[u8])->String {let _hash=crate::performance::measure(crate::performance::Stage::HashVerification);format!("{:x}",Sha256::digest(raw))}
 
 pub fn validate_manifest(h:&Value,scope:&Scope,region:Option<&str>)->Result<()> {
+    let _validation=crate::performance::measure(crate::performance::Stage::WorkshopValidation);
     scope.key()?;
     let props=schema()["properties"].as_object().unwrap();
     let object=h.as_object().ok_or(Error::Invalid("summary manifest"))?;
@@ -67,6 +68,7 @@ pub fn validate_manifest(h:&Value,scope:&Scope,region:Option<&str>)->Result<()> 
 }
 
 pub fn validate_part(h:&Value,p:&Value,raw:&[u8])->Result<()> {
+    let _validation=crate::performance::measure(crate::performance::Stage::WorkshopValidation);
     need(raw.len()<=MAX_PART&&p["bytes"]==raw.len()&&p["sha256"]==sha(raw),"summary partition integrity")?;
     let values=bridge::parse(raw,MAX_PART)?;
     need(bridge::canonical(&values)?==raw,"canonical summary partition")?;
@@ -136,6 +138,8 @@ fn cached_bundle(root:&Path,state:&Value,scope:&Scope,region:Option<&str>)->Resu
 /// Two fixed local slots retain the completed generation while interrupted
 /// downloads resume from independently validated content in the inactive slot.
 pub fn download(base:&Path,client:&MarketClient,c:&Configuration,cancelled:&impl Fn()->bool)->Result<(Bundle,u64,u32)> {
+    let _download=crate::performance::measure(crate::performance::Stage::WorkshopDownload);
+    crate::performance::operation(crate::performance::Operation::PreparingWorkshop);
     let root=cache_dir(base,&c.scope)?;let state=cache_state(&root)?;
     let active=state.as_ref().map(|s|cached_bundle(&root,s,&c.scope,c.selection["region"].as_str())).transpose()?;
     if cancelled(){return Err(Error::Cancelled)}
@@ -155,12 +159,16 @@ pub fn download(base:&Path,client:&MarketClient,c:&Configuration,cancelled:&impl
         let bucket=p["bucket"].as_u64().unwrap() as u8;let target=root.join(bank).join(format!("{bucket:02}.json"));
         let resumed=if target.try_exists()? {let b=delivery::read(&target,MAX_PART)?;if validate_part(&manifest,p,&b).is_ok(){Some(b)}else{None}}else{None};
         let reused=active.as_ref().and_then(|b|b.parts.get(&bucket)).filter(|b|validate_part(&manifest,p,b).is_ok()).cloned();
-        let raw=if let Some(raw)=resumed.or(reused){raw}else{
+        let cached=resumed.or(reused);let fetched=cached.is_none();
+        let raw=if let Some(raw)=cached{raw}else{
             let path=format!("{endpoint}/{}/parts/{bucket}",manifest["generation_id"].as_str().unwrap());
             let b=client.summary_request(&path,None,MAX_PART)?.ok_or(Error::Invalid("unbound summary part"))?;
             bytes+=b.len() as u64;requests+=1;b
         };
-        validate_part(&manifest,p,&raw)?;delivery::atomic(&target,&raw)?;parts.insert(bucket,raw);
+        validate_part(&manifest,p,&raw)?;
+        crate::performance::add(if fetched{crate::performance::Counter::ReceivedRecords}else{crate::performance::Counter::ReusedRecords},p["record_count"].as_u64().unwrap_or(0));crate::performance::add(crate::performance::Counter::Pages,1);
+        crate::performance::checkpoint();
+        delivery::atomic(&target,&raw)?;parts.insert(bucket,raw);
     }
     let bundle=Bundle{manifest,parts};bundle.validate(&c.scope,c.selection["region"].as_str())?;
     if cancelled(){return Err(Error::Cancelled)}
@@ -266,6 +274,8 @@ fn write_game(path:&Path,bytes:&[u8],cancelled:&impl Fn()->bool)->Result<()> {
 }
 
 pub fn publish(c:&Configuration,bundle:&Bundle,cancelled:&impl Fn()->bool)->Result<bool> {
+    let _publication=crate::performance::measure(crate::performance::Stage::WorkshopPublication);
+    crate::performance::operation(crate::performance::Operation::InstallingWorkshop);
     c.validate()?;need(c.enabled,"Workshop delivery is disconnected")?;bundle.validate(&c.scope,c.selection["region"].as_str())?;
     inspect_destination(c)?;
     let dir=main_dir(c);let target=dir.join("Data.lua");
@@ -577,6 +587,7 @@ mod tests {
     }
 }
 pub fn synchronize(base:&Path,client:&MarketClient,c:&Configuration,cancelled:impl Fn()->bool)->Result<Status> {
+    let _workshop=crate::performance::measure(crate::performance::Stage::WorkshopSync);
     let mut s=delivery::status_for(base,c)?;s.installation=Some(c.installation.clone());
     s.last_attempt=Some(Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs,true));s.loaded_game_generation=None;
     let result=(||->Result<()> {

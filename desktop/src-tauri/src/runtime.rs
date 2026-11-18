@@ -55,6 +55,8 @@ pub struct View {
     pub quitting: bool,
     pub window_visible: bool,
     pub delivery: serde_json::Value,
+    pub sync_progress: twichui_market_core::performance::Progress,
+    pub performance_capture: bool,
 }
 #[derive(Serialize, Clone)]
 pub struct StatusView {
@@ -95,6 +97,9 @@ struct Data {
     quitting: AtomicBool,
     workshop_review: Mutex<Option<(String,twichui_market_core::delivery::Configuration,chrono::DateTime<Utc>)>>,
     workshop_setup: AtomicBool,
+    performance_capture: AtomicBool,
+    sync_progress: Mutex<twichui_market_core::performance::Progress>,
+    performance_reports: Mutex<std::collections::VecDeque<twichui_market_core::performance::Report>>,
     workshop_failure: Mutex<Option<twichui_market_core::workshop_setup::Failure>>,
 }
 pub struct Runtime {
@@ -129,6 +134,7 @@ impl Executor for NativeTask {
         if profile.server != server_url(server)?.as_str() {
             return Err(Error::Cancelled);
         }
+        let _capture=self.0.begin_capture();
         let synchronize = |client: &MarketClient| {
             let result=synchronizer::synchronize(
                 client,
@@ -181,7 +187,7 @@ impl Executor for NativeTask {
             }
             Ok(result)
         };
-        match profile.mode {
+        let execution=match profile.mode {
             Mode::Companion => AuthorizationClient::new(server)?.authenticated(
                 &NativeCredentialStore,
                 Utc::now(),
@@ -197,10 +203,23 @@ impl Executor for NativeTask {
             ),
             Mode::Legacy => synchronize(&MarketClient::new(server, vault::load(server)?)?),
             Mode::Disconnected => Err(Error::Authentication),
-        }
+        };
+        if matches!(&execution,Ok(Execution::Completed(_))){twichui_market_core::performance::operation(twichui_market_core::performance::Operation::Complete);}
+        execution
     }
 }
 impl Data {
+    fn begin_capture(self:&Arc<Self>)->twichui_market_core::performance::Capture {
+        let data=self.clone();
+        let context=self.local.lock().ok().map(|l|(l.profile.server.clone(),l.profile.bootstrap.as_ref().map(|b|b.account.id)));
+        twichui_market_core::performance::Capture::observe(self.performance_capture.load(Ordering::Acquire),move|progress,report|{
+            let current=data.local.lock().ok().map(|l|(l.profile.server.clone(),l.profile.bootstrap.as_ref().map(|b|b.account.id)));
+            if context!=current{return;}
+            if let Ok(mut value)=data.sync_progress.lock(){*value=progress;}
+            if data.performance_capture.load(Ordering::Acquire) {if let Some(report)=report {if let Ok(mut reports)=data.performance_reports.lock(){while reports.len()>=4{reports.pop_front();}reports.push_back(report);}}}
+            data.emit();
+        })
+    }
     fn set_error(&self, error: String) {
         if let Ok(mut local) = self.local.lock() {
             local.error = Some(error);
@@ -232,6 +251,7 @@ impl Data {
                 label: market.label.clone(),
             });
         }
+        if profile.bootstrap.as_ref().is_some_and(|b|b.account.id!=bootstrap.account.id) {if let Ok(mut reports)=self.performance_reports.lock(){reports.clear();}if let Ok(mut progress)=self.sync_progress.lock(){*progress=Default::default();}}
         profile.bootstrap = Some(bootstrap.clone());
         profile.validate(&local.settings.server).map_err(friendly)?;
         profile.save(&self.path).map_err(friendly)?;
@@ -315,6 +335,7 @@ impl Runtime {
                 Err(value)=>error=Some(value.to_string()), // Never fall back after a failed/corrupt v2 vault read.
             }
         }
+        let performance_capture=twichui_market_core::performance::enabled(&path).unwrap_or(false);
         let data = Arc::new(Data {
             app: app.clone(),
             path,
@@ -334,6 +355,9 @@ impl Runtime {
             quitting: AtomicBool::new(false),
             workshop_review: Mutex::new(None),
             workshop_setup: AtomicBool::new(false),
+            performance_capture: AtomicBool::new(performance_capture),
+            sync_progress: Mutex::new(Default::default()),
+            performance_reports: Mutex::new(Default::default()),
             workshop_failure: Mutex::new(None),
         });
         let observer = data.clone();
@@ -405,6 +429,8 @@ impl Runtime {
             })
             .map(Into::into);
         Ok(View {
+            sync_progress:self.data.sync_progress.lock().map(|p|p.clone()).unwrap_or_default(),
+            performance_capture:self.data.performance_capture.load(Ordering::Acquire),
             delivery: match twichui_market_core::delivery::Configuration::load(&self.data.path) {
                 Ok(Some(c)) if c.scope.server==profile.server && Some(c.scope.market_id)==selected
                     && profile.bootstrap.as_ref().is_some_and(|b|b.account.id==c.scope.account_id)=>{
@@ -868,6 +894,7 @@ impl Runtime {
             .gate
             .lock()
             .map_err(|_| "Connection operation interrupted")?;
+        let _capture=self.data.begin_capture();
         let view = self.view()?;
         if view.approving || view.refreshing {
             return Err("Finish connecting before using history archives".into());
@@ -1361,10 +1388,17 @@ impl Runtime {
             owned.data.app.exit(0);
         });
     }
+    pub fn set_performance_capture(&self,enabled:bool)->Result<()> {
+        twichui_market_core::performance::set_enabled(&self.data.path,enabled).map_err(friendly)?;
+        self.data.performance_capture.store(enabled,Ordering::Release);
+        if !enabled {if let Ok(mut reports)=self.data.performance_reports.lock(){reports.clear();}}
+        self.data.emit();Ok(())
+    }
     pub fn diagnostics(&self) -> Result<String> {
         let view = self.view()?;
         let document = serde_json::json!({"schema_version":1,"version":view.version,"server":view.settings.server,"workshop_setup":self.data.workshop_failure.lock().ok().and_then(|last|last.clone()),
         "workshop_delivery":twichui_market_core::workshop_setup::delivery_diagnostics(&view.delivery),
+        "sync_performance":{"enabled":view.performance_capture,"last_runs":self.data.performance_reports.lock().map(|r|r.iter().cloned().collect::<Vec<_>>()).unwrap_or_default(),"timings":"nested inclusive durations; process CPU delta; process-lifetime peak RSS; no payloads, paths or cursors"},
         "phase":view.sync.sync.phase,"last_sync_ms":view.sync.sync.last_sync_ms,"last_server_check_ms":view.sync.sync.last_server_check_ms,
         "upstream_update_ms":view.sync.sync.upstream_update_ms,"cache":view.cache,"error":view.sync.error,"automatic_sync":view.settings.automatic_sync,"interval_minutes":view.settings.interval_minutes});
         let dir = self.data.path.join("exports");

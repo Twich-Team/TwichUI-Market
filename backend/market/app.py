@@ -20,6 +20,8 @@ from .models import CompanionDevice, Credential, Invitation, LoginAttempt, Secur
 from .security import DUMMY_HASH, admin, audit, aware, digest, hasher, identity, issue, verify
 
 app = FastAPI(title="TwichUI Market", version="0.1.0", docs_url=None, redoc_url=None)
+from .sync_performance import SyncTimingMiddleware
+app.add_middleware(SyncTimingMiddleware)
 from .market_api import router as market_router
 app.include_router(market_router)
 from .backup_management import router as backup_management_router
