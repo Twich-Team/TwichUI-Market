@@ -27,6 +27,10 @@ jobs:
         env:
           CI_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           CI_PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      - name: Prepare runner-owned backup fixture directories before Docker writes artifacts
+        run: |
+          mkdir -p artifacts/backup-management/browser-fixtures
+          chmod 700 artifacts/backup-management/browser-fixtures
       - run: npm ci --prefix web
       - run: npm --prefix web run build && npm --prefix web test
       - run: npm --prefix web audit --omit=dev
