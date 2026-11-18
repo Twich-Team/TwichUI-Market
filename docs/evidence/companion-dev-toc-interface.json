@@ -15,7 +15,7 @@
   },
   "owner_previous_result": "core_interface rejection; owner reports TOC is 16001",
   "change": "Remove core and Workshop TOC Interface-version gates; explicit delivery contract and safety checks retained",
-  "owner_new_result": "pending",
+  "owner_new_result": "Addon checks passed; destination rejected by ambiguous internal ownership/ACL guard, without a Windows OS denial code",
   "full_certification": "deferred",
   "unsigned_private_test": true,
   "public_release_or_deployment": false
