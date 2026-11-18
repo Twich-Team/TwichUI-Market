@@ -1,0 +1,36 @@
+{
+  "version": 2,
+  "manager": "market-backups-v2",
+  "filename": "market-release-20261118T133835118331Z-a0d03457794e.dump",
+  "source": "development",
+  "origin": "release",
+  "created_at": "2026-11-18T13:43:03.235599+00:00",
+  "bytes": 713963067,
+  "sha256": "55ac4af5da2731c61b4bbc5fb3902147528990882132311412de3b9f9ddaa802",
+  "postgres_major": 17,
+  "verification": "archive_integrity_verified",
+  "restoration_verified_at": "2026-11-18T13:58:54.996085+00:00",
+  "protected": true,
+  "required_by": [
+    "automatic-retention-owner-review",
+    "restore-recovery-gate"
+  ],
+  "file_identity": [
+    2143255,
+    713963067,
+    1795009351782932278
+  ],
+  "restored": {
+    "restored_database": "market_restore",
+    "constraints_restored": true,
+    "original_tables_preserved": 45,
+    "original_fingerprints_sha256": "d54fa4a3e7dded4718608d8f4ae72bc107843c5e0ddc984cb070fcb2c9d1cd55",
+    "users": 97,
+    "observations": 1158,
+    "listings": 12970569,
+    "snapshot_statistics": 2623020,
+    "daily_observations": 6,
+    "market_identity": "US normal / Horde / house 114 / market 2",
+    "off_vm_verified": false
+  }
+}

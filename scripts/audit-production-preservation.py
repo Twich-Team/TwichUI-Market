@@ -49,7 +49,7 @@ def main():
     parser.add_argument('action', choices=['capture', 'verify'])
     parser.add_argument('baseline', type=Path)
     parser.add_argument('--output', type=Path)
-    parser.add_argument('--expected-revision', choices=['0012', '0013', 'meta_20261114', 'bridge_20261115', 'rates_20261115', 'fdb_20261116', 'archive_20261116', 'usability_20261117', 'recovery_20261117', 'coverage_20261117'], default='0012')
+    parser.add_argument('--expected-revision', choices=['0012', '0013', 'meta_20261114', 'bridge_20261115', 'rates_20261115', 'fdb_20261116', 'archive_20261116', 'usability_20261117', 'recovery_20261117', 'coverage_20261117', 'retention_20261118'], default='0012')
     args = parser.parse_args()
     baseline = artifact(args.baseline)
     previous = json.loads(baseline.read_text()) if args.action == 'verify' else None

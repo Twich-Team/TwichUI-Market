@@ -1,0 +1,57 @@
+{
+  "source_sha": "4a0a44a037d1c870e3c21b1a24e0970c4bca506c",
+  "components": {
+    "api": {
+      "new_image": "sha256:275ef0de74104da53f50bd9359c8b2ae380583f934a6ae6ba29d3ac5944b2d40",
+      "environment_changes": {
+        "APP_COMMIT": "4a0a44a037d1c870e3c21b1a24e0970c4bca506c",
+        "DATABASE_FILESYSTEM_PATH": "/database-filesystem",
+        "MAX_DATABASE_BYTES": "68719476736",
+        "MIN_DATABASE_FREE_BYTES": "34359738368",
+        "RETENTION_SCHEDULER_INSTALLED": "true"
+      },
+      "old_mounts_preserved": true,
+      "memory_unchanged": true
+    },
+    "local-api": {
+      "new_image": "sha256:275ef0de74104da53f50bd9359c8b2ae380583f934a6ae6ba29d3ac5944b2d40",
+      "environment_changes": {
+        "APP_COMMIT": "4a0a44a037d1c870e3c21b1a24e0970c4bca506c",
+        "DATABASE_FILESYSTEM_PATH": "/database-filesystem",
+        "MAX_DATABASE_BYTES": "68719476736",
+        "MIN_DATABASE_FREE_BYTES": "34359738368",
+        "RETENTION_SCHEDULER_INSTALLED": "true"
+      },
+      "old_mounts_preserved": true,
+      "memory_unchanged": true
+    },
+    "worker": {
+      "new_image": "sha256:275ef0de74104da53f50bd9359c8b2ae380583f934a6ae6ba29d3ac5944b2d40",
+      "environment_changes": {
+        "APP_COMMIT": "4a0a44a037d1c870e3c21b1a24e0970c4bca506c",
+        "DATABASE_FILESYSTEM_PATH": "/database-filesystem",
+        "MIN_DATABASE_FREE_BYTES": "34359738368"
+      },
+      "old_mounts_preserved": true,
+      "memory_unchanged": true
+    },
+    "monitor": {
+      "new_image": "sha256:275ef0de74104da53f50bd9359c8b2ae380583f934a6ae6ba29d3ac5944b2d40",
+      "environment_changes": {
+        "APP_COMMIT": "4a0a44a037d1c870e3c21b1a24e0970c4bca506c",
+        "DATABASE_FILESYSTEM_PATH": "/database-filesystem",
+        "MAX_DATABASE_BYTES": "68719476736",
+        "MIN_DATABASE_FREE_BYTES": "34359738368"
+      },
+      "old_mounts_preserved": true,
+      "memory_unchanged": true
+    }
+  },
+  "retention_new_service": {
+    "enabled": false,
+    "authorization": false,
+    "memory_bytes": 201326592,
+    "cpu": 0.25
+  },
+  "unrelated_services_replaced": false
+}

@@ -1,0 +1,108 @@
+{
+  "isolated_restored_database": true,
+  "synthetic_future_cutoff": "2026-11-26T13:54:00.172950+00:00",
+  "production_deletion_authorized": false,
+  "real_time_preview": [
+    {
+      "stage": "daily_references",
+      "eligible_rows": 0,
+      "estimated_logical_bytes": 0,
+      "oldest_affected_at": null,
+      "newest_affected_at": null,
+      "affected_date_basis": "record timestamp",
+      "protected_rows_estimate": 6
+    },
+    {
+      "stage": "observations",
+      "eligible_rows": 0,
+      "estimated_logical_bytes": 0,
+      "oldest_affected_at": null,
+      "newest_affected_at": null,
+      "affected_date_basis": "record timestamp",
+      "protected_rows_estimate": 1158
+    },
+    {
+      "stage": "raw_listings",
+      "eligible_rows": 0,
+      "estimated_logical_bytes": 0,
+      "oldest_affected_at": null,
+      "newest_affected_at": null,
+      "affected_date_basis": "snapshot creation time",
+      "protected_rows_estimate": 12973619
+    },
+    {
+      "stage": "raw_feed_payloads",
+      "eligible_rows": 0,
+      "estimated_logical_bytes": 0,
+      "oldest_affected_at": null,
+      "newest_affected_at": null,
+      "affected_date_basis": "record timestamp",
+      "protected_rows_estimate": 21
+    },
+    {
+      "stage": "intraday_statistics",
+      "eligible_rows": 0,
+      "estimated_logical_bytes": 0,
+      "oldest_affected_at": null,
+      "newest_affected_at": null,
+      "affected_date_basis": "snapshot creation time",
+      "protected_rows_estimate": 2623020
+    },
+    {
+      "stage": "collection_logs",
+      "eligible_rows": 0,
+      "estimated_logical_bytes": 0,
+      "oldest_affected_at": null,
+      "newest_affected_at": null,
+      "affected_date_basis": "record timestamp",
+      "protected_rows_estimate": 1223
+    },
+    {
+      "stage": "feed_checks",
+      "eligible_rows": 0,
+      "estimated_logical_bytes": 0,
+      "oldest_affected_at": null,
+      "newest_affected_at": null,
+      "affected_date_basis": "record timestamp",
+      "protected_rows_estimate": 278
+    },
+    {
+      "stage": "security_logs",
+      "eligible_rows": 0,
+      "estimated_logical_bytes": 0,
+      "oldest_affected_at": null,
+      "newest_affected_at": null,
+      "affected_date_basis": "record timestamp",
+      "protected_rows_estimate": 51420
+    }
+  ],
+  "result": {
+    "status": "budget_exhausted",
+    "reason": null,
+    "batches": 12,
+    "rows_processed": 60000
+  },
+  "wall_seconds": 2.1798029420897365,
+  "rows_by_stage": {
+    "raw_listings": 60000
+  },
+  "observed_wal_bytes": 14607560,
+  "allocated_before": 4507162291,
+  "allocated_after": 4507227827,
+  "current_head_listing_rows": 179200,
+  "six_variant_exact_prices_and_daily_history_unchanged": true,
+  "row_throughput_per_second": 27525.423900235273,
+  "cadence_capacity_rows_per_day": 17280000.0,
+  "limits": {
+    "rows_per_batch": 5000,
+    "payloads_per_batch": 25,
+    "max_batches": 12,
+    "max_seconds": 20,
+    "statement_ms": 2000,
+    "lock_ms": 250,
+    "interval_seconds": 300,
+    "collector_margin_seconds": 30,
+    "max_wal_bytes": 2147483648
+  },
+  "caveat": "One bounded cold-restored sample at 1 CPU; WAL includes background activity. Not production throughput or proven steady state."
+}

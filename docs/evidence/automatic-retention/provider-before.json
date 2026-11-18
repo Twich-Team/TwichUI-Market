@@ -1,0 +1,86 @@
+{
+  "keyring_sha256": "d68da13198528bb16f5eb306f3204eb27a09263fc3417d6fa051f4e92e0639b5",
+  "providers": [
+    {
+      "provider": "blizzard",
+      "enabled": true,
+      "automatic": true,
+      "hourly_budget": 240,
+      "daily_budget": 2000,
+      "rate_config": null,
+      "envelopes": {
+        "credential": {
+          "sha256": null,
+          "key_id": null,
+          "decrypts": null
+        },
+        "pending_credential": {
+          "sha256": null,
+          "key_id": null,
+          "decrypts": null
+        }
+      }
+    },
+    {
+      "provider": "everloot",
+      "enabled": false,
+      "automatic": false,
+      "hourly_budget": 240,
+      "daily_budget": 2000,
+      "rate_config": null,
+      "envelopes": {
+        "credential": {
+          "sha256": "52551096b001ed48d24195218d968f3527bbb44c75826ddf3769415be7a0b1f9",
+          "key_id": "metadata-20261115",
+          "decrypts": true
+        },
+        "pending_credential": {
+          "sha256": null,
+          "key_id": null,
+          "decrypts": null
+        }
+      }
+    },
+    {
+      "provider": "foreverdb",
+      "enabled": true,
+      "automatic": true,
+      "hourly_budget": 1200,
+      "daily_budget": 4250,
+      "rate_config": "{\"hourly_budget\": 1200, \"daily_budget\": 4250, \"minute_budget\": 30, \"minimum_interval\": 3.0, \"requests_per_second\": null, \"burst_capacity\": null, \"max_concurrent\": 1, \"page_size\": null}",
+      "envelopes": {
+        "credential": {
+          "sha256": "8580787488b322d94c4442354b033d92c2d78bfe33095c53e8e08314722dfcd0",
+          "key_id": "metadata-20261115",
+          "decrypts": true
+        },
+        "pending_credential": {
+          "sha256": null,
+          "key_id": null,
+          "decrypts": null
+        }
+      }
+    },
+    {
+      "provider": "thewowdb",
+      "enabled": true,
+      "automatic": true,
+      "hourly_budget": 1000,
+      "daily_budget": 20000,
+      "rate_config": "{\"hourly_budget\": 1000, \"daily_budget\": 20000, \"minute_budget\": null, \"minimum_interval\": 1.0, \"requests_per_second\": 2.0, \"burst_capacity\": 120, \"max_concurrent\": 1, \"page_size\": null}",
+      "envelopes": {
+        "credential": {
+          "sha256": null,
+          "key_id": null,
+          "decrypts": null
+        },
+        "pending_credential": {
+          "sha256": null,
+          "key_id": null,
+          "decrypts": null
+        }
+      }
+    }
+  ],
+  "external_requests": 0
+}

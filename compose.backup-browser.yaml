@@ -4,7 +4,7 @@ services:
     image: twichui-market-backend:backup-review
     environment:
       BACKUP_MANAGEMENT_ENABLED: "true"
-    volumes: !override [./artifacts/backup-management/synthetic-token:/run/secrets/backup-manager-token:ro]
+    volumes: !override [market-data:/database-filesystem:ro, ./artifacts/backup-management/synthetic-token:/run/secrets/backup-manager-token:ro]
   migrate:
     image: twichui-market-backend:backup-review
   proxy:

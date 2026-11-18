@@ -1,0 +1,11 @@
+{
+  "filename": "market-release-20261118T133835118331Z-a0d03457794e.dump",
+  "sha256": "55ac4af5da2731c61b4bbc5fb3902147528990882132311412de3b9f9ddaa802",
+  "bytes": 713963067,
+  "created_at": "2026-11-18T13:43:03.235599+00:00",
+  "custom_archive_integrity_verified": true,
+  "full_restore_with_constraints": true,
+  "restored_database": "market_restore",
+  "production_modified": false,
+  "off_vm_verified": false
+}

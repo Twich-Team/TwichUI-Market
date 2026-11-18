@@ -1,3 +1,4 @@
+import { StorageOperationsPanel, type StorageOperations } from "./storage-operations";
 import { Loading } from "./loading";
 import { AdministrationOverview } from "./admin-overview";
 import type { MetadataOverview } from "./metadata-admin";
@@ -71,6 +72,7 @@ interface Event {
   created_at: string;
 }
 export interface Storage {
+  operations?: StorageOperations;
   growth: {
     samples: { sampled_at: string; database_bytes: number }[];
     delta_bytes: number | null;
@@ -597,6 +599,7 @@ export function Administration({
             <>
               <BackupManagement readOnly={readOnly}/>
               <DatabaseGrowth samples={state.storage.growth.samples} current={state.storage.database_bytes}/>
+              <StorageOperationsPanel value={state.storage.operations} />
               <RetentionControls readOnly={readOnly} />
               <section className="panel padded">
                 <h3>Database & historical retention</h3>
