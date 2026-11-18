@@ -12,6 +12,7 @@ with tempfile.TemporaryDirectory(prefix='sync-performance-',dir=os.environ.get('
     temp=Path(directory);os.environ.update(DATABASE_URL='sqlite:///'+str(temp/'market_test.sqlite'),APP_ORIGIN='https://synthetic-performance.invalid',SYNC_CURSOR_SECRET='synthetic-price-performance-secret-over32',BRIDGE_CONTRACT_ROOT=str(ROOT/'contracts/bridge/v1'),SYNC_PERFORMANCE_DIAGNOSTICS='true')
     sys.path.insert(0,str(ROOT/'backend'))
     from market.app import app
+    from market.db import engine
     from sync_performance_fixture import Fixture
     import uvicorn
     fixture=Fixture(a.variants)
@@ -42,4 +43,4 @@ with tempfile.TemporaryDirectory(prefix='sync-performance-',dir=os.environ.get('
         for scenario in ['full','unchanged','incremental','unchanged_advance']:
             hashes={r['cache_values_sha256'] for r in results if r['scenario']==scenario};assert len(hashes)==1,'Different exact cache values'
         a.report.parent.mkdir(parents=True,exist_ok=True);a.report.write_text(json.dumps({'synthetic':True,'production':False,'platform':platform.platform(),'database':'disposable SQLite market_test','variants':a.variants,'commodity_variants':(a.variants+19)//20,'injected_delay_ms':a.delay_ms,'clock_note':'Injected latency is simulated; process-lifetime peak RSS is not per-run incremental allocation','binary_sha256':{label:hashlib.sha256(b.read_bytes()).hexdigest() for label,b in [('baseline',a.baseline),('candidate',a.candidate)]},'runs':results},indent=2)+'\n')
-    finally:server.should_exit=True;thread.join(timeout=10)
+    finally:server.should_exit=True;thread.join(timeout=10);engine.dispose()

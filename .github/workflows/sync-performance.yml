@@ -37,6 +37,7 @@ jobs:
         run: python scripts/prepare-sync-baseline.py
       - uses: Swatinem/rust-cache@v2
         with:
+          cache-on-failure: true
           shared-key: sync-performance-native-v1
           workspaces: |
             desktop -> ../.local/sync-performance/candidate-target
