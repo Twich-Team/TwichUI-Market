@@ -275,6 +275,6 @@ def test_history_sealing_refuses_rehashed_missing_or_invented_daily_evidence(sou
     h,rows,_=download(source,2)
     metadata={k:v for k,v in h.items() if k in ('issuer_id','market','pricing_algorithm','history_basis','source_kind','source_watermark','source_observation','generated_at','synthetic','observations')}
     row=copy.deepcopy(next(iter(rows.values())))
-    for change in [lambda p:p.pop(),lambda p:p.append([0,'120','120',10]),lambda p:p.__setitem__(0,[0,'0','120',10]),lambda p:p.__setitem__(0,[3,None,None,0])]:
+    for change in [lambda p:p.pop(),lambda p:p.append([0,'120','120',10]),lambda p:p.__setitem__(0,[0,'0','120',10]),lambda p:p.__setitem__(0,[3,None,None,0]),lambda p:p.__setitem__(0,[True,None,None,10])]:
         bad=copy.deepcopy(row);change(bad[13])
         with pytest.raises(ValueError):summary.seal(metadata,[bad],2)

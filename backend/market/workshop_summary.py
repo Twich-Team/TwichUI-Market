@@ -96,7 +96,7 @@ def validate_row(row, bucket=None, version=1, observations=None):
     if version == 2:
         need(type(row[13]) is list and len(row[13]) == len(observations), 'complete daily coverage')
         for index, point in enumerate(row[13]):
-            need(type(point) is list and len(point) == 4 and point[0] in (0, 1, 2, 3, 4), 'daily tuple')
+            need(type(point) is list and len(point) == 4 and type(point[0]) is int and point[0] in (0, 1, 2, 3, 4), 'daily tuple')
             for price in point[1:3]:
                 need(price is None or type(price) is str and re.fullmatch('[1-9][0-9]{0,10}', price)
                      and int(price) <= cp.MAX_COPPER, 'daily exact supported copper')

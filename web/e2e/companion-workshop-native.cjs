@@ -56,10 +56,11 @@ module.exports=async({page,invoke,api,shots,sourceCommit})=>{
   await page.screenshot({path:path.join(root,'native-archive-free-connected.png'),fullPage:true});
   // Native source is advanced in the isolated fixture only. While Wow.exe is
   // running, the actual worker publishes the new generation without a game close.
-  await helper('StartGame');
+  await helper('StartGame');expect((await helper('GameRunning')).running).toBe(true);
   expect((await api.post('/__fixture__/workshop-source',{data:{action:'advance'}})).ok()).toBe(true);
   await invoke('sync_now');
   await expect.poll(async()=>(await invoke('app_state')).delivery.status?.published_generation,{timeout:60000}).not.toBe(first.status.published_generation);await waitIdle();
+  expect((await helper('GameRunning')).running).toBe(true);
   expect(hash(target)).not.toBe(beforeHash);await expect(page.locator('#workshop-state')).toHaveText('Files ready');
   await expect(page.locator('#workshop-note')).toContainText('reload');
   await page.screenshot({path:path.join(root,'native-wow-open-publication.png'),fullPage:true});
@@ -74,7 +75,7 @@ module.exports=async({page,invoke,api,shots,sourceCommit})=>{
   expect(hash(saved)).toBe(savedHash);expect(fs.existsSync(archive)).toBe(false);
   const addons=path.join(game,'Interface','AddOns');const publication=path.join(root,'publication');fs.mkdirSync(publication,{recursive:true});
   for(const name of fs.readdirSync(addons).filter(n=>/^TwichUI_Market(?:Data|Part[AB]\d\d)$/.test(n)))fs.cpSync(path.join(addons,name),path.join(publication,name),{recursive:true});
-  const facts={synthetic:true,real_game:false,source_commit:sourceCommit,coordinated_addon_commit:fs.readFileSync('contracts/workshop-summary/v1/addon-source.txt','utf8').trim(),first_status:first.status,second_status:second.status,native_picker:true,wrong_game_refused:true,one_installation_confirmation:true,no_archive:true,no_change_mtime_preserved:true,wow_running_publication:true,corrupt_http_preserved:true,savedvariables_sha256:savedHash,game_consumption:'not performed'};
+  const facts={synthetic:true,real_game:false,source_commit:sourceCommit,coordinated_addon_commit:fs.readFileSync('contracts/workshop-summary/v1/addon-source.txt','utf8').trim(),first_status:first.status,second_status:second.status,native_picker:true,wrong_game_refused:true,one_installation_confirmation:true,no_archive:true,no_change_mtime_preserved:true,wow_running_publication:true,wow_alive_after_publication:true,corrupt_http_preserved:true,savedvariables_sha256:savedHash,game_consumption:'not performed'};
   fs.writeFileSync(path.join(root,'evidence.json'),JSON.stringify(facts,null,2));
   // Stop this source candidate's delivery before the independent legacy M2 test.
   await page.locator('#pause').click();await waitIdle();
