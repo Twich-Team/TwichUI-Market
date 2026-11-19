@@ -9,7 +9,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 def main():
  p=argparse.ArgumentParser(description=__doc__)
- p.add_argument('--rust-client',type=Path,required=True);p.add_argument('--addon-root',type=Path,required=True);p.add_argument('--lua',default='lua5.1');p.add_argument('--lua-cpath');p.add_argument('--variants',type=int,default=129);p.add_argument('--out',type=Path,required=True);p.add_argument('--publish',action='store_true');p.add_argument('--skip-lua',action='store_true',help='Windows producer only; paired Linux artifact consumer is mandatory in CI')
+ p.add_argument('--rust-client',type=Path,required=True);p.add_argument('--addon-root',type=Path,required=True);p.add_argument('--lua',default='lua5.1');p.add_argument('--lua-cpath');p.add_argument('--variants',type=int,default=129);p.add_argument('--out',type=Path,required=True);p.add_argument('--publish',action='store_true');p.add_argument('--history',action='store_true',help='Negotiate the installed paired history reader in staging mode');p.add_argument('--skip-lua',action='store_true',help='Windows producer only; paired Linux artifact consumer is mandatory in CI')
  a=p.parse_args()
  if not 129<=a.variants<=45125 or a.publish and (os.name!='nt' or os.environ.get('GITHUB_ACTIONS')!='true'):p.error('bounded synthetic count; installed publication only on disposable Windows')
  a.out.mkdir(parents=True,exist_ok=True)
@@ -65,6 +65,8 @@ def main():
    env['MARKET_TEST_APP_DATA']=str(base)
    fixture=json.loads(subprocess.check_output(['powershell','-NoProfile','-File',str(ROOT/'scripts/windows/workshop-fixtures.ps1'),'-Action','Setup'],env=env,text=True))
    game=Path(fixture['first']);publication=game/'Interface/AddOns'
+  if a.history and not a.publish:
+   cap=game/'Interface/AddOns/TwichUI_Workshop/MarketDelivery.json';cap.parent.mkdir(parents=True);shutil.copyfile(a.addon_root/'TwichUI_Workshop/MarketDelivery.json',cap)
   start=time.perf_counter();calls=[]
   try:
    for _ in range(150):

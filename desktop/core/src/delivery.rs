@@ -16,8 +16,9 @@ use std::{
 };
 
 pub(crate) const TOC: &[u8] = b"## Interface: 16001\n## Title: TwichUI Market Data\n## Notes: Companion-generated market observations. No local scans or SavedVariables.\n## LoadOnDemand: 1\nData.lua\n";
-pub(crate) const SUMMARY_TOC: &[u8] = b"## Interface: 16001\n## Title: TwichUI Market Data\n## Notes: Companion-generated market observations. No local scans or SavedVariables.\n## LoadOnDemand: 1\n## X-TwichUI-Summary: 1\nData.lua\n";
-pub(crate) fn known_toc(raw:&[u8])->bool {raw==TOC||raw==SUMMARY_TOC}
+pub(crate) const LEGACY_SUMMARY_TOC: &[u8] = b"## Interface: 16001\n## Title: TwichUI Market Data\n## Notes: Companion-generated market observations. No local scans or SavedVariables.\n## LoadOnDemand: 1\n## X-TwichUI-Summary: 1\nData.lua\n";
+pub(crate) const SUMMARY_TOC: &[u8] = b"## Interface: 16001\n## Title: TwichUI Market Data\n## IconTexture: Interface\\AddOns\\!!!TwichUI\\media\\icon\n## Group: !!!TwichUI\n## Category: Interface Enhancements\n## Notes: Companion-generated market observations. No local scans or SavedVariables.\n## LoadOnDemand: 1\n## X-TwichUI-Summary: 1\nData.lua\n";
+pub(crate) fn known_toc(raw:&[u8])->bool {raw==TOC||raw==SUMMARY_TOC||raw==LEGACY_SUMMARY_TOC}
 const CAPABILITY: &str = "twichui-market-consumer";
 pub const CONFIG: &str = "workshop-delivery-v1.json";
 pub fn budget() -> DeliveryBudget {

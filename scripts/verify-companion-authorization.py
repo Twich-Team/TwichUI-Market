@@ -73,7 +73,7 @@ if os.environ.get('MARKET_NATIVE_UI_TEST')=='true':
         elif action=='normal':summary_fault['corrupt']=False
         else:raise ValueError('unknown fixture action')
         return {'synthetic':True,'action':action}
-    native_network={'bearer_requests':0,'token_requests':0,'sync_requests':0}
+    native_network={'bearer_requests':0,'token_requests':0,'sync_requests':0,'price_runs':0,'summary_preparations':0}
     @app.get('/__fixture__/native-network')
     def fixture_network():
         return native_network.copy()
@@ -86,7 +86,9 @@ if os.environ.get('MARKET_NATIVE_UI_TEST')=='true':
             await asyncio.sleep(.5)
             query=request.scope.get('query_string',b'')
             request.scope['query_string']=query+(b'&' if query else b'')+b'limit=1'
+        if request.url.path=='/api/v1/companion/activity':native_network['price_runs']+=1
         response=await call_next(request)
+        if request.url.path.endswith('/summary') and response.status_code==202:native_network['summary_preparations']+=1
         if request.url.path.endswith('/summary') and summary_fault['corrupt'] and response.status_code in (200,304):
             # Test-only post-authorization corruption; positive source is unchanged.
             return JSONResponse({'account_id':1,'manifest':{}},headers={'Cache-Control':'no-store'})

@@ -97,3 +97,45 @@ pub fn synchronize(
     cache.record_completion(&server, run.market, &receipt)?;
     Ok(Execution::Completed(receipt))
 }
+
+/// Retry preparation within the current single-flight run. Completed price
+/// downloads must not restart while Workshop is preparing its generation.
+pub fn finish_preparing<T>(mut attempt:impl FnMut()->Result<T>,mut wait:impl FnMut(u64)->Result<()>)->Result<T> {
+    loop {match attempt() {
+        Err(Error::SummaryPreparing(seconds))=>wait(seconds.clamp(1,3600))?,
+        result=>return result,
+    }}
+}
+
+pub fn wait_preparing(seconds:u64,cancelled:impl Fn()->bool)->Result<()> {
+    let until=std::time::Instant::now()+std::time::Duration::from_secs(seconds.clamp(1,3600));
+    loop {
+        if cancelled(){return Err(Error::Cancelled)}
+        let remaining=until.saturating_duration_since(std::time::Instant::now());
+        if remaining.is_zero(){return Ok(())}
+        std::thread::sleep(remaining.min(std::time::Duration::from_millis(50)));
+    }
+}
+
+#[cfg(test)]
+mod preparation_tests {
+    use super::*;
+    #[test]
+    fn preparing_retries_delivery_and_respects_server_delay() {
+        let mut attempts=0;let mut waits=Vec::new();
+        let value=finish_preparing(||{attempts+=1;if attempts<=3{Err(Error::SummaryPreparing(5))}else{Ok("published")}},|s|{waits.push(s);Ok(())}).unwrap();
+        assert_eq!(value,"published");assert_eq!(attempts,4);assert_eq!(waits,vec![5,5,5]);
+    }
+    #[test]
+    fn cancellation_stops_before_another_delivery_request() {
+        let mut attempts=0;
+        let result:Result<()>=finish_preparing(||{attempts+=1;Err(Error::SummaryPreparing(3600))},|_|Err(Error::Cancelled));
+        assert!(matches!(result,Err(Error::Cancelled)));assert_eq!(attempts,1);
+        let before=std::time::Instant::now();assert!(matches!(wait_preparing(3600,||true),Err(Error::Cancelled)));assert!(before.elapsed()<std::time::Duration::from_millis(100));
+    }
+    #[test]
+    fn other_failures_return_to_worker_backoff_without_busy_loop() {
+        let mut attempts=0;let result:Result<()>=finish_preparing(||{attempts+=1;Err(Error::Network)},|_|panic!("not preparation"));
+        assert!(matches!(result,Err(Error::Network)));assert_eq!(attempts,1);
+    }
+}

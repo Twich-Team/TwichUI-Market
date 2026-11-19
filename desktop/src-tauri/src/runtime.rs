@@ -164,20 +164,22 @@ impl Executor for NativeTask {
                         }
                         // Delivery has its own durable result. Scalar sync success
                         // is never represented as successful game-file delivery.
-                        match twichui_market_core::delivery::synchronize(&self.0.path,client,&config,||run.cancelled()||self.0.quitting.load(Ordering::Acquire)) {
+                        match synchronizer::finish_preparing(
+                            ||{
+                                let result=twichui_market_core::delivery::synchronize(&self.0.path,client,&config,||run.cancelled()||self.0.quitting.load(Ordering::Acquire));
+                                if matches!(&result,Err(Error::SummaryPreparing(_))) {
+                                    if let Ok(mut local)=self.0.local.lock(){if local.error.as_deref().is_some_and(|e|e.starts_with("Workshop delivery:")){local.error=None;}}
+                                }
+                                result
+                            },
+                            |seconds|synchronizer::wait_preparing(seconds,||run.cancelled()||self.0.quitting.load(Ordering::Acquire)),
+                        ) {
                             Err(e)=>{
-                                if matches!(&e,Error::SummaryPreparing(_)) {
-                                    if let Ok(mut local)=self.0.local.lock(){if local.error.as_deref().is_some_and(|e|e.starts_with("Workshop delivery:")){local.error=None;}}
-                                    return Err(e);
-                                }
-                                if matches!(&e,Error::Invalid("Waiting for World of Warcraft to close.")) {
-                                    if let Ok(mut local)=self.0.local.lock(){if local.error.as_deref().is_some_and(|e|e.starts_with("Workshop delivery:")){local.error=None;}}
-                                } else {
-                                    self.0.set_error(format!("Workshop delivery: {e}"));
-                                    // Use the existing worker's Retry-After/backoff, not a
-                                    // second timer. Completed scalar cache remains intact.
-                                    if config.version==2 {return Err(e);}
-                                }
+                                if matches!(&e,Error::Cancelled) {return Err(e);}
+                                self.0.set_error(format!("Workshop delivery: {e}"));
+                                // Network/rate-limit failures return to the existing
+                                // worker backoff. Preparation stays in this run.
+                                if config.version==2 {return Err(e);}
                             },
                             Ok(_)=>if let Ok(mut local)=self.0.local.lock(){if local.error.as_deref().is_some_and(|e|e.starts_with("Workshop delivery:")){local.error=None;}},
                         }

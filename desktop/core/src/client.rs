@@ -50,11 +50,21 @@ impl MarketClient {
     /// Fixed same-origin summary routes only. No redirects, provider URLs or
     /// credentials in payloads. A 304 is meaningful only with a validated cache.
     pub(crate) fn summary_request(&self, path: &str, etag: Option<&str>, maximum: usize) -> Result<Option<Vec<u8>>> {
+        self.summary_response(path,etag,maximum,false)
+    }
+    pub(crate) fn summary_history_request(&self,path:&str,etag:Option<&str>,maximum:usize)->Result<Option<Vec<u8>>> {
+        self.summary_response(path,etag,maximum,true)
+    }
+    fn summary_response(&self,path:&str,etag:Option<&str>,maximum:usize,history:bool)->Result<Option<Vec<u8>>> {
         if !path.starts_with("api/v1/workshop/markets/") || path.contains(['?', '#']) {
             return Err(Error::Invalid("Workshop summary endpoint"));
         }
         let url=self.server.join(path).map_err(|_|Error::Invalid("summary endpoint"))?;
         let mut request=self.http.get(url).bearer_auth(&self.token);
+        if history {
+            if !path.ends_with("/summary"){return Err(Error::Invalid("Workshop history endpoint"))}
+            request=request.query(&[("contract_version",2)]);
+        }
         if let Some(id)=etag { request=request.header("If-None-Match",format!("\"{id}\"")); }
         let headers=crate::performance::measure(crate::performance::Stage::NetworkHeaders);
         crate::performance::add(crate::performance::Counter::HttpRequests,1);

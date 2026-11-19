@@ -11,19 +11,31 @@ pub const MAX_MANIFEST:usize=64*1024;
 pub fn review_nonce()->Result<String> {let mut bytes=[0u8;32];getrandom::getrandom(&mut bytes).map_err(|_|Error::Invalid("Windows setup randomness unavailable"))?;Ok(bytes.iter().map(|b|format!("{b:02x}")).collect())}
 const ROOT_PREFIX:&[u8]=b"TwichUIMarketData = { summary_version = 1, manifest = ";
 const ROOT_MAX:usize=MAX_MANIFEST*4+16384;
-const PART_MAX:usize=MAX_PART*4+256;
+pub const HISTORY_PART:usize=1024*1024;
+pub const HISTORY_TOTAL:usize=64*1024*1024;
+const PART_MAX:usize=HISTORY_PART*4+256;
 fn need(ok:bool,why:&'static str)->Result<()> {if ok{Ok(())}else{Err(Error::Invalid(why))}}
 fn hex(v:&Value)->bool {v.as_str().is_some_and(|s|s.len()==64&&s.bytes().all(|c|c.is_ascii_digit()||(b'a'..=b'f').contains(&c)))}
 fn number(v:&Value,max:u64)->Result<u64>{v.as_u64().filter(|n|*n<=max).ok_or(Error::Invalid("summary integer bound"))}
 fn identifier(v:&Value)->Result<u64>{let s=v.as_str().ok_or(Error::Invalid("summary observation identity"))?;need(!s.is_empty()&&s.len()<=19&&!s.starts_with('0')&&s.bytes().all(|c|c.is_ascii_digit()),"summary observation identity")?;s.parse::<u64>().ok().filter(|n|*n<=i64::MAX as u64).ok_or(Error::Invalid("summary observation identity"))}
 fn closed(v:&Value,keys:&[&str])->Result<()> {need(v.as_object().is_some_and(|m|m.len()==keys.len()&&keys.iter().all(|k|m.contains_key(*k))),"summary closed object")}
-fn schema()->&'static Value {static S:OnceLock<Value>=OnceLock::new();S.get_or_init(||serde_json::from_str(include_str!("../../../contracts/workshop-summary/v1/manifest.schema.json")).expect("committed summary schema"))}
+fn legacy_schema()->&'static Value {static S:OnceLock<Value>=OnceLock::new();S.get_or_init(||serde_json::from_str(include_str!("../../../contracts/workshop-summary/v1/manifest.schema.json")).expect("committed summary schema"))}
+fn schema(h:&Value)->Result<&'static Value> {
+    static HISTORY:OnceLock<Value>=OnceLock::new();
+    match h["contract_version"].as_u64() {
+        Some(1)=>Ok(legacy_schema()),
+        Some(2)=>Ok(HISTORY.get_or_init(||serde_json::from_str(include_str!("../../../contracts/workshop-summary/v2/manifest.schema.json")).expect("committed history schema"))),
+        _=>Err(Error::Invalid("unsupported summary contract")),
+    }
+}
+fn part_limit(h:&Value)->usize {if h["contract_version"]==2{HISTORY_PART}else{MAX_PART}}
+fn total_limit(h:&Value)->usize {if h["contract_version"]==2{HISTORY_TOTAL}else{MAX_TOTAL}}
 fn sha(raw:&[u8])->String {let _hash=crate::performance::measure(crate::performance::Stage::HashVerification);format!("{:x}",Sha256::digest(raw))}
 
 pub fn validate_manifest(h:&Value,scope:&Scope,region:Option<&str>)->Result<()> {
     let _validation=crate::performance::measure(crate::performance::Stage::WorkshopValidation);
     scope.key()?;
-    let props=schema()["properties"].as_object().unwrap();
+    let props=schema(h)?["properties"].as_object().unwrap();
     let object=h.as_object().ok_or(Error::Invalid("summary manifest"))?;
     need(object.len()==props.len()&&object.keys().all(|k|props.contains_key(k)),"summary manifest fields")?;
     for (key,definition) in props {if let Some(constant)=definition.get("const"){need(h[key]==*constant,"summary protocol/capability")?;}}
@@ -52,8 +64,8 @@ pub fn validate_manifest(h:&Value,scope:&Scope,region:Option<&str>)->Result<()> 
     closed(coverage,&["scope","complete","source_records","delivered_records","missing","detailed_history"])?;
     need(coverage["scope"]=="current_observed_exact_variants"&&coverage["complete"]==true
         &&coverage["source_records"]==count&&coverage["delivered_records"]==count
-        &&coverage["missing"]=="unavailable"&&coverage["detailed_history"]=="not_delivered","summary coverage")?;
-    need(h["partitioning"]==Value::Object(schema()["properties"]["partitioning"]["properties"].as_object().unwrap().iter().map(|(k,v)|(k.clone(),v["const"].clone())).collect()),"summary partition policy")?;
+        &&coverage["missing"]=="unavailable"&&coverage["detailed_history"]==if h["contract_version"]==2{"daily_closings_60_days"}else{"not_delivered"},"summary coverage")?;
+    need(h["partitioning"]==Value::Object(schema(h)?["properties"]["partitioning"]["properties"].as_object().unwrap().iter().map(|(k,v)|(k.clone(),v["const"].clone())).collect()),"summary partition policy")?;
     let parts=h["partitions"].as_array().ok_or(Error::Invalid("summary partitions"))?;
     need(parts.len()<=64,"summary partition count")?;
     let(mut previous,mut rows,mut bytes)=(None,0,0);
@@ -61,22 +73,23 @@ pub fn validate_manifest(h:&Value,scope:&Scope,region:Option<&str>)->Result<()> 
         closed(p,&["bucket","bytes","record_count","sha256"])?;
         let bucket=number(&p["bucket"],63)?;
         need(previous.is_none_or(|n|n<bucket)&&hex(&p["sha256"]),"summary partition ordering/pin")?;
-        let size=number(&p["bytes"],MAX_PART as u64)?;let n=number(&p["record_count"],150000)?;
+        let size=number(&p["bytes"],part_limit(h) as u64)?;let n=number(&p["record_count"],150000)?;
         need(size>=2&&n>0,"summary partition bounds")?;previous=Some(bucket);rows+=n;bytes+=size;
     }
-    need(rows==count&&bytes<=MAX_TOTAL as u64,"summary total coverage/bytes")
+    validate_observations(h)?;
+    need(rows==count&&bytes<=total_limit(h) as u64,"summary total coverage/bytes")
 }
 
 pub fn validate_part(h:&Value,p:&Value,raw:&[u8])->Result<()> {
     let _validation=crate::performance::measure(crate::performance::Stage::WorkshopValidation);
-    need(raw.len()<=MAX_PART&&p["bytes"]==raw.len()&&p["sha256"]==sha(raw),"summary partition integrity")?;
-    let values=bridge::parse(raw,MAX_PART)?;
+    need(raw.len()<=part_limit(h)&&p["bytes"]==raw.len()&&p["sha256"]==sha(raw),"summary partition integrity")?;
+    let values=bridge::parse(raw,part_limit(h))?;
     need(bridge::canonical(&values)?==raw,"canonical summary partition")?;
     let rows=values.as_array().ok_or(Error::Invalid("summary rows"))?;
     need(p["record_count"]==rows.len(),"summary partition record count")?;
     let mut prior=None;
     for value in rows {
-        let row=value.as_array().filter(|r|r.len()==13).ok_or(Error::Invalid("summary row shape"))?;
+        let row=value.as_array().filter(|r|r.len()==if h["contract_version"]==2{14}else{13}).ok_or(Error::Invalid("summary row shape"))?;
         let item=number(&row[0],i32::MAX as u64)?;
         need(item>0&&hex(&row[1])&&item%64==p["bucket"].as_u64().unwrap(),"summary exact identity/route")?;
         let key=(item,row[1].as_str().unwrap());need(prior.is_none_or(|k|k<key),"summary row ordering")?;prior=Some(key);
@@ -94,10 +107,43 @@ pub fn validate_part(h:&Value,p:&Value,raw:&[u8])->Result<()> {
             2=>need(!prices&&confidence==1&&row[6]==0,"summary observed absence")?,
             _=>need(!prices&&confidence==1&&row[6].is_null(),"summary unavailable evidence")?,
         }
+        if h["contract_version"]==2 {validate_daily(&row[13],h)?;}
         let a=number(&row[10],14)?;let b=number(&row[11],60)?;let c=number(&row[12],60)?;
         need(a<=b&&b<=c&&(!row[9].is_string()||b>=3)&&(!row[4].is_string()||a>0),"summary reference coverage")?;
     }
     let _=h;Ok(())
+}
+
+fn validate_observations(h:&Value)->Result<()> {
+    if h["contract_version"]!=2{return Ok(())}
+    let obs=h["observations"].as_array().filter(|a|!a.is_empty()&&a.len()<=60).ok_or(Error::Invalid("history observation bound"))?;
+    let end=bridge::validation::time(&h["generated_at"])?;let mut previous=None;let mut seen=std::collections::BTreeSet::new();
+    for o in obs {
+        closed(o,&["observation_id","observed_at","scope_complete","synthetic"])?;
+        let at=bridge::validation::time(&o["observed_at"])?;
+        let day=at.date_naive();
+        need(previous.is_none_or(|d|d<day)&&at<=end&&(end.date_naive()-day).num_days()<60
+            &&o["scope_complete"]==true&&o["synthetic"].is_boolean()
+            &&(!o["synthetic"].as_bool().unwrap()||h["synthetic"]==true)
+            &&seen.insert(identifier(&o["observation_id"])?)&&identifier(&o["observation_id"])?<=identifier(&h["source_watermark"])? ,"history observation evidence")?;
+        previous=Some(day);
+    }
+    let last=obs.last().unwrap();need(["observation_id","observed_at","scope_complete"].iter().all(|k|last[*k]==h["source_observation"][*k]),"history current observation binding")
+}
+fn validate_daily(value:&Value,h:&Value)->Result<()> {
+    let rows=value.as_array().filter(|r|r.len()==h["observations"].as_array().unwrap().len()).ok_or(Error::Invalid("daily complete coverage"))?;
+    for value in rows {
+        let p=value.as_array().filter(|p|p.len()==4).ok_or(Error::Invalid("daily row shape"))?;
+        let state=number(&p[0],4)?;
+        for price in &p[1..3] {if !price.is_null(){let s=price.as_str().ok_or(Error::Invalid("daily exact copper"))?;
+            need(!s.is_empty()&&s.len()<=11&&!s.starts_with('0')&&s.bytes().all(|b|b.is_ascii_digit())&&s.parse::<u64>().is_ok_and(|n|n<=99_999_999_999),"daily supported copper")?;}}
+        match state {
+            0=>need(p[1].is_string()&&p[2].is_string()&&number(&p[3],9_007_199_254_740_991)?>0,"daily priced evidence")?,
+            1=>need(p[1].is_null()&&p[2].is_null()&&number(&p[3],9_007_199_254_740_991)?>0,"daily supply evidence")?,
+            2=>need(p[1].is_null()&&p[2].is_null()&&p[3]==0,"daily absent evidence")?,
+            _=>need(p[1].is_null()&&p[2].is_null()&&p[3].is_null(),"daily unavailable evidence")?,
+        }
+    }Ok(())
 }
 
 #[derive(Clone,Debug)]
@@ -130,7 +176,7 @@ fn cached_bundle(root:&Path,state:&Value,scope:&Scope,region:Option<&str>)->Resu
     let mut parts=BTreeMap::new();
     for p in h["partitions"].as_array().unwrap() {
         let bucket=p["bucket"].as_u64().unwrap() as u8;
-        let raw=delivery::read(&root.join(bank).join(format!("{bucket:02}.json")),MAX_PART)?;
+        let raw=delivery::read(&root.join(bank).join(format!("{bucket:02}.json")),part_limit(&h))?;
         validate_part(&h,p,&raw)?;parts.insert(bucket,raw);
     }Ok(Bundle{manifest:h,parts})
 }
@@ -144,11 +190,14 @@ pub fn download(base:&Path,client:&MarketClient,c:&Configuration,cancelled:&impl
     let active=state.as_ref().map(|s|cached_bundle(&root,s,&c.scope,c.selection["region"].as_str())).transpose()?;
     if cancelled(){return Err(Error::Cancelled)}
     let endpoint=format!("api/v1/workshop/markets/{}/summary",c.scope.market_id);
+    let version=crate::installation::summary_contract(&c.installation)?;
     let etag=active.as_ref().and_then(|b|b.manifest["generation_id"].as_str());
-    let Some(raw)=client.summary_request(&endpoint,etag,MAX_MANIFEST+128)? else {return Ok((active.ok_or(Error::Invalid("unbound summary 304"))?,0,1));};
+    let response=if version==2{client.summary_history_request(&endpoint,etag,MAX_MANIFEST+128)}else{client.summary_request(&endpoint,etag,MAX_MANIFEST+128)}?;
+    let Some(raw)=response else {
+        let b=active.ok_or(Error::Invalid("unbound summary 304"))?;need(b.manifest["contract_version"]==version,"negotiated Workshop 304 contract")?;return Ok((b,0,1));};
     let envelope=bridge::parse(&raw,MAX_MANIFEST+128)?;closed(&envelope,&["account_id","manifest"])?;
     need(envelope["account_id"]==c.scope.account_id,"summary authenticated account")?;
-    let manifest=envelope["manifest"].clone();validate_manifest(&manifest,&c.scope,c.selection["region"].as_str())?;
+    let manifest=envelope["manifest"].clone();need(manifest["contract_version"]==version,"negotiated Workshop contract")?;validate_manifest(&manifest,&c.scope,c.selection["region"].as_str())?;
     if let Some(old)=&active {need(old.manifest["market"]==manifest["market"]&&old.manifest["issuer_id"]==manifest["issuer_id"],"summary source changed; reconnect Workshop")?;}
     let bank=if state.as_ref().is_some_and(|s|s["bank"]=="A"){"B"}else{"A"};
     let pending=json!({"bank":bank,"manifest":manifest});
@@ -157,12 +206,12 @@ pub fn download(base:&Path,client:&MarketClient,c:&Configuration,cancelled:&impl
     for p in manifest["partitions"].as_array().unwrap() {
         if cancelled(){return Err(Error::Cancelled)}
         let bucket=p["bucket"].as_u64().unwrap() as u8;let target=root.join(bank).join(format!("{bucket:02}.json"));
-        let resumed=if target.try_exists()? {let b=delivery::read(&target,MAX_PART)?;if validate_part(&manifest,p,&b).is_ok(){Some(b)}else{None}}else{None};
+        let resumed=if target.try_exists()? {delivery::read(&target,HISTORY_PART).ok().filter(|b|validate_part(&manifest,p,b).is_ok())}else{None};
         let reused=active.as_ref().and_then(|b|b.parts.get(&bucket)).filter(|b|validate_part(&manifest,p,b).is_ok()).cloned();
         let cached=resumed.or(reused);let fetched=cached.is_none();
         let raw=if let Some(raw)=cached{raw}else{
             let path=format!("{endpoint}/{}/parts/{bucket}",manifest["generation_id"].as_str().unwrap());
-            let b=client.summary_request(&path,None,MAX_PART)?.ok_or(Error::Invalid("unbound summary part"))?;
+            let b=client.summary_request(&path,None,part_limit(&manifest))?.ok_or(Error::Invalid("unbound summary part"))?;
             bytes+=b.len() as u64;requests+=1;b
         };
         validate_part(&manifest,p,&raw)?;
@@ -201,9 +250,10 @@ fn part_prefix(bank:&str,bucket:u8)->Vec<u8> {format!("TwichUIMarketParts = Twic
 pub fn part_artifact(bank:&str,bucket:u8,raw:&[u8])->Vec<u8>{let mut out=part_prefix(bank,bucket);bridge::export::literal(raw,&mut out);out.push(b'\n');out}
 fn read_part_artifact(bank:&str,bucket:u8,bytes:&[u8])->Result<Vec<u8>> {
     let prefix=part_prefix(bank,bucket);need(bytes.starts_with(&prefix)&&bytes.len()<=PART_MAX,"summary part transport")?;
-    let mut i=prefix.len();let raw=bridge::export::read_literal(bytes,&mut i,MAX_PART)?;need(bytes.get(i..)==Some(b"\n"),"summary part syntax")?;Ok(raw)
+    let mut i=prefix.len();let raw=bridge::export::read_literal(bytes,&mut i,HISTORY_PART)?;need(bytes.get(i..)==Some(b"\n"),"summary part syntax")?;Ok(raw)
 }
-fn part_toc()->&'static [u8] {b"## Interface: 16001\n## Title: TwichUI Market Summary Part\n## Notes: Companion-generated bounded research data.\n## LoadOnDemand: 1\nData.lua\n"}
+fn legacy_part_toc()->&'static [u8] {b"## Interface: 16001\n## Title: TwichUI Market Summary Part\n## Notes: Companion-generated bounded research data.\n## LoadOnDemand: 1\nData.lua\n"}
+fn part_toc()->&'static [u8] {b"## Interface: 16001\n## Title: TwichUI Market Summary Part\n## IconTexture: Interface\\AddOns\\!!!TwichUI\\media\\icon\n## Group: !!!TwichUI\n## Category: Interface Enhancements\n## Notes: Companion-generated bounded research data.\n## LoadOnDemand: 1\nData.lua\n"}
 fn main_dir(c:&Configuration)->PathBuf {c.installation.join("Interface/AddOns/TwichUI_MarketData")}
 fn identity(c:&Configuration)->Result<Value> {Ok(json!({"version":2,"server":c.scope.server,"account_id":c.scope.account_id,"installation":fs::canonicalize(&c.installation)?.to_string_lossy()}))}
 fn installation_identity(path:&str)->String {
@@ -262,15 +312,35 @@ fn verify_bank(c:&Configuration,h:&Value,bank:&str)->Result<()> {
     for p in h["partitions"].as_array().unwrap() {let b=p["bucket"].as_u64().unwrap() as u8;let name=part_name(bank,b);let dir=c.installation.join("Interface/AddOns").join(&name);
         folder(&dir,&[&format!("{name}.toc"),"Data.lua",".twichui-delivery.json"])?;
         need(dir.join(".twichui-delivery.json").is_file(),"unowned summary partition")?;marker(c,&dir)?;
-        need(delivery::read(&dir.join(format!("{name}.toc")),1024)?==part_toc(),"summary part TOC")?;
+        let toc=delivery::read(&dir.join(format!("{name}.toc")),1024)?;
+        need(toc==part_toc()||toc==legacy_part_toc(),"summary part TOC")?;
         let raw=read_part_artifact(bank,b,&delivery::read(&dir.join("Data.lua"),PART_MAX)?)?;validate_part(h,p,&raw)?;
     }Ok(())
 }
 fn write_game(path:&Path,bytes:&[u8],cancelled:&impl Fn()->bool)->Result<()> {
     if cancelled(){return Err(Error::Cancelled)}
-    need(!delivery::game_running()?,"Waiting for World of Warcraft to close.")?;
+
     if path.try_exists()?&&delivery::read(path,bytes.len()).is_ok_and(|old|old==bytes){return Ok(())}
     delivery::game_atomic(path,bytes)
+}
+
+// Upgrade both fixed banks, including an inactive bank left by an older client.
+// Only exact known metadata in account-owned generated folders is replaced.
+fn repair_metadata(c:&Configuration,cancelled:&impl Fn()->bool)->Result<bool> {
+    let addons=c.installation.join("Interface/AddOns");let mut repairs=Vec::new();
+    for bank in ["A","B"] {for bucket in 0..64 {
+        let name=part_name(bank,bucket);let dir=addons.join(&name);
+        if !dir.try_exists()? {continue}
+        folder(&dir,&[&format!("{name}.toc"),"Data.lua",".twichui-delivery.json"])?;
+        need(dir.join(".twichui-delivery.json").is_file(),"unowned summary partition folder")?;marker(c,&dir)?;
+        let target=dir.join(format!("{name}.toc"));
+        if target.try_exists()? {let raw=delivery::read(&target,1024)?;
+            need(raw==part_toc()||raw==legacy_part_toc(),"summary part TOC")?;
+            if raw!=part_toc(){repairs.push(target);}
+        }
+    }}
+    for target in &repairs {write_game(target,part_toc(),cancelled)?;}
+    Ok(!repairs.is_empty())
 }
 
 pub fn publish(c:&Configuration,bundle:&Bundle,cancelled:&impl Fn()->bool)->Result<bool> {
@@ -289,12 +359,14 @@ pub fn publish(c:&Configuration,bundle:&Bundle,cancelled:&impl Fn()->bool)->Resu
             }
         }
     }
-    if let Some((h,Some(bank)))=&current {verify_bank(c,h,bank)?;if h["generation_id"]==bundle.manifest["generation_id"] {
+    if let Some((h,Some(bank)))=&current {verify_bank(c,h,bank)?;}
+    let metadata_changed=repair_metadata(c,cancelled)?;
+    if let Some((h,Some(_bank)))=&current {if h["generation_id"]==bundle.manifest["generation_id"] {
         let toc=dir.join("TwichUI_MarketData.toc");
         if !toc.try_exists()? || delivery::read(&toc,1024)?!=delivery::SUMMARY_TOC {write_game(&toc,delivery::SUMMARY_TOC,cancelled)?;return Ok(true);}
-        return Ok(false);
+        return Ok(metadata_changed);
     }}
-    need(!delivery::game_running()?,"Waiting for World of Warcraft to close.")?;
+
     let bank=if current.as_ref().is_some_and(|(_,b)|b.as_deref()==Some("A")){"B"}else{"A"};
     let addons=c.installation.join("Interface/AddOns");
     // Preflight every intended child before any replacement. Unknown folders
@@ -367,6 +439,56 @@ mod tests {
     fn config(base:&Path,b:&Bundle)->Configuration {Configuration{version:2,enabled:true,scope:Scope{server:"http://127.0.0.1:18888/".into(),account_id:1,market_id:b.manifest["market"]["server_market_id"].as_u64().unwrap() as u32,algorithm:"twichui-pricing-v1".into()},installation:base.join("Forever"),selection:json!({"kind":"broad_summary","market_id":b.manifest["market"]["server_market_id"],"region":b.manifest["market"]["region"]}),history_days:0}}
     fn alternate(b:&Bundle)->Bundle {let mut b=b.clone();let raw=b.parts.values_mut().next().unwrap();let mut rows:Value=serde_json::from_slice(raw).unwrap();rows[0][3]="121".into();*raw=bridge::canonical(&rows).unwrap();
         b.manifest["source_watermark"]="999999".into();b.manifest["source_observation"]["observation_id"]="999999".into();seal(&mut b);b}
+    fn history_fixture()->Bundle {
+        let v:Value=serde_json::from_str(include_str!("../../../contracts/workshop-summary/v2/fixtures/synthetic.json")).unwrap();
+        Bundle{manifest:v["manifest"].clone(),parts:v["parts"].as_object().unwrap().iter().map(|(k,v)|(k.parse().unwrap(),v.as_str().unwrap().as_bytes().to_vec())).collect()}
+    }
+    #[test]
+    fn negotiated_history_preserves_exact_observations_and_refuses_resealed_corruption() {
+        let b=history_fixture();let d=tempfile::tempdir().unwrap();let c=config(d.path(),&b);
+        b.validate(&c.scope,Some("us")).unwrap();
+        let rows:Value=serde_json::from_slice(b.parts.values().next().unwrap()).unwrap();
+        assert_eq!(rows[0][13][0],json!([0,"100","90",5]));assert_eq!(rows[0][13][1],json!([0,"120","120",10]));
+        for mutation in 0..7 {
+            let mut bad=b.clone();match mutation {
+                0=>bad.manifest["observations"][0]["observed_at"]="2026-11-15T13:00:00Z".into(),
+                1=>bad.manifest["observations"][0]["observation_id"]="9999999".into(),
+                2=>{bad.manifest["observations"].as_array_mut().unwrap().pop();},
+                _=>{let raw=bad.parts.values_mut().next().unwrap();let mut rows:Value=serde_json::from_slice(raw).unwrap();
+                    match mutation {3=>rows[0][13][0][1]="0".into(),4=>rows[0][13][0]=json!([3,null,null,0]),
+                        5=>{rows[0][13].as_array_mut().unwrap().pop();},_=>rows[0][13][0][3]=(-1).into()}
+                    *raw=bridge::canonical(&rows).unwrap();seal(&mut bad);}
+            }reseal(&mut bad.manifest);assert!(bad.validate(&c.scope,Some("us")).is_err(),"mutation {mutation}");
+        }
+    }
+    #[cfg(unix)]
+    #[test]
+    fn metadata_migrates_both_banks_without_republishing_or_touching_unknown_files() {
+        let d=tempfile::tempdir().unwrap();let b=fixture();let c=config(d.path(),&b);installation(&c);
+        publish(&c,&b,&||false).unwrap();let next=alternate(&b);publish(&c,&next,&||false).unwrap();
+        let root=fs::read(main_dir(&c).join("Data.lua")).unwrap();
+        fs::write(main_dir(&c).join("TwichUI_MarketData.toc"),delivery::LEGACY_SUMMARY_TOC).unwrap();
+        for bank in ["A","B"] {let name=part_name(bank,29);fs::write(c.installation.join("Interface/AddOns").join(&name).join(format!("{name}.toc")),legacy_part_toc()).unwrap();}
+        assert!(publish(&c,&next,&||false).unwrap());
+        assert_eq!(fs::read(main_dir(&c).join("Data.lua")).unwrap(),root);
+        for bank in ["A","B"] {let name=part_name(bank,29);let path=c.installation.join("Interface/AddOns").join(&name).join(format!("{name}.toc"));assert_eq!(fs::read(&path).unwrap(),part_toc());}
+        let toc=std::str::from_utf8(part_toc()).unwrap();assert!(toc.contains("## Group: !!!TwichUI\n")&&toc.contains("## IconTexture: Interface\\AddOns\\!!!TwichUI\\media\\icon\n"));
+        assert!(!publish(&c,&next,&||false).unwrap());
+    }
+    #[test]
+    fn history_negotiation_uses_fixed_query_and_validates_real_http_then_304() {
+        let d=tempfile::tempdir().unwrap();let b=history_fixture();let mut c=config(d.path(),&b);
+        let addon=c.installation.join("Interface/AddOns/TwichUI_Workshop");fs::create_dir_all(&addon).unwrap();
+        fs::write(addon.join("MarketDelivery.json"),br#"{"summary_history_contract":2,"summary_history_partition_bytes":1048576,"summary_history_total_bytes":67108864}"#).unwrap();
+        let mut responses=vec![(200,serde_json::to_vec(&json!({"account_id":1,"manifest":b.manifest})).unwrap(),false)];
+        responses.extend(b.parts.values().map(|raw|(200,raw.clone(),false)));responses.push((304,vec![],false));
+        let(origin,task,requests)=serve(responses);c.scope.server=origin;let client=MarketClient::new(&c.scope.server,"synthetic-workshop-connection".into()).unwrap();
+        let(received,bytes,count)=download(d.path(),&client,&c,&||false).unwrap();assert_eq!(received.manifest,b.manifest);assert!(bytes>0);assert_eq!(count,2);
+        let(warm,bytes,count)=download(d.path(),&client,&c,&||false).unwrap();assert_eq!(warm.manifest,b.manifest);assert_eq!((bytes,count),(0,1));
+        task.join().unwrap();let seen=requests.lock().unwrap();assert!(seen[0].starts_with("GET /api/v1/workshop/markets/2/summary?contract_version=2 HTTP/1.1"));
+        assert!(seen.last().unwrap().contains("contract_version=2"));
+        assert!(client.summary_request("api/v1/workshop/markets/2/summary?contract_version=3",None,MAX_MANIFEST).is_err());
+    }
     #[test]
     fn fixed_contract_values_identity_and_assignment_only_transport() {
         let b=fixture();let d=tempfile::tempdir().unwrap();let c=config(d.path(),&b);b.validate(&c.scope,Some("us")).unwrap();
@@ -603,6 +725,10 @@ pub fn synchronize(base:&Path,client:&MarketClient,c:&Configuration,cancelled:im
         s.result=if changed{"Market data updated. Available on your next game login or reload."}else{"Up to date."}.into();Ok(())
     })();
     if let Err(error)=result {
+        if matches!(&error,Error::Cancelled) {
+            s.result="Update paused. Previous market data remains available.".into();s.error=None;
+            delivery::save_status(base,&c.scope,&s)?;return Err(error);
+        }
         s.result=if matches!(&error,Error::SummaryPreparing(_)){"Preparing market data."}else if matches!(&error,Error::Invalid("Waiting for World of Warcraft to close.")){"Waiting for World of Warcraft to close."}else{"Update failed. Your previous market data is safe."}.into();
         s.error=Some(error.to_string());delivery::save_status(base,&c.scope,&s)?;return Err(error);
     }
