@@ -1,0 +1,7 @@
+# Resolve this local tag to the exact live image ID before building:
+# sha256:a79a7f0fca9c8fb6257201d53b6509e08b7630296661b1d672a1c828bb1bd907
+FROM twichui-market-workshop-history-base:a79a7f0fca9c
+LABEL gg.twich.market.workshop-history-source="8dfa5116397403bb93e90160e8706285f272f64f"
+COPY backend/market/workshop_summary.py /app/market/workshop_summary.py
+COPY backend/market/workshop_summary.py /usr/local/lib/python3.12/site-packages/market/workshop_summary.py
+COPY contracts/workshop-summary/v2 /contracts/workshop-summary/v2
