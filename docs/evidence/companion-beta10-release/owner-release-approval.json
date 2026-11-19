@@ -1,0 +1,21 @@
+{
+  "schema_version": 2,
+  "scope": "private-nsis-with-tauri-signed-updates",
+  "owner_statement": "Okay then do it",
+  "authorization_context": "Publish the explained repaired Companion through the existing private channel. Exact bytes derive from the frozen source and original passed Windows artifact; this is not a claim that the owner manually inspected the future hash.",
+  "owner_approved_publication": true,
+  "owner_approved_deployment": true,
+  "source_commit": "be09ff9f8adc1d5c8b8c12d04032b954863aa553",
+  "visual_approval_commit": "8dfa5116397403bb93e90160e8706285f272f64f",
+  "version": "2.0.0-beta.10",
+  "installer_sha256": "16adc59355cb99c1ec56322941f0a219f877c39fb2030584358044aa0fde527f",
+  "windows_run_id": 44453675733,
+  "signed_update_run_id": 44455793968,
+  "updater_public_key_sha256": "5794736c840c7c09a49396e60cd569ff6b5f24f872eb0318ed95d55c16616ecf",
+  "tray_actions_verified": false,
+  "acknowledges_unverified_tray": true,
+  "retained_private_beta_policy": "Continue the previously authorized private-channel tray, normal-UAC and physical-game limitations; no new real-PC acceptance is asserted.",
+  "prior_private_beta_owner_record_sha256": "f578e4aa7ee1b87bba66e0c3659af6a3d8b8e4b5220c89d821c8d50ca3af559d",
+  "actual_owner_pc_installation_observed": false,
+  "native_forever_execution_observed": false
+}

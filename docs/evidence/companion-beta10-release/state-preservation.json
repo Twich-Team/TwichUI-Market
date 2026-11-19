@@ -1,0 +1,302 @@
+{
+  "credential_cutoff": 304,
+  "original_table_guard_differences": [],
+  "before": {
+    "users": {
+      "rows": 97,
+      "sha256": "366b2f1d9d2ff0b0771f075c39002fb21b310f5dbefbf4b822af93bf1f91acdf",
+      "columns": [
+        "id",
+        "username",
+        "password_hash",
+        "role",
+        "active",
+        "archived_at",
+        "created_at"
+      ]
+    },
+    "credentials": {
+      "rows": 304,
+      "sha256": "1da9314e4e86758e9cce12d4fa4ec0a1d89b9f5af8821bdbac727385faab9e55",
+      "columns": [
+        "id",
+        "user_id",
+        "token_hash",
+        "kind",
+        "name",
+        "csrf_hash",
+        "audience",
+        "created_at",
+        "expires_at",
+        "revoked",
+        "companion_device_id"
+      ]
+    },
+    "user_preferences": {
+      "rows": 22,
+      "sha256": "1b17b396a2b4285cc18338983eeb40583b51e855a2ed262ef32d1add2d6e7c2d",
+      "columns": [
+        "user_id",
+        "schema_version",
+        "revision",
+        "values_json",
+        "updated_at"
+      ]
+    },
+    "companion_devices": {
+      "rows": 6,
+      "sha256": "92070539c4c42dbf9ed206aa3ff9919ffd69120c1450e47101efb8e89a680c28",
+      "columns": [
+        "id",
+        "user_id",
+        "name",
+        "platform",
+        "app_version",
+        "issuer_origin",
+        "created_at",
+        "expires_at",
+        "refresh_expires_at",
+        "archived_at",
+        "revoked",
+        "refresh_hash",
+        "previous_refresh_hash",
+        "rotation_nonce_hash",
+        "rotated_at",
+        "generation",
+        "access_credential_id",
+        "last_connection_at"
+      ]
+    },
+    "player_market_mappings": {
+      "rows": 1,
+      "sha256": "356d883aa73377058cfd9af537f0f6bcc8e0a5b0676038099d2859855081e1f8",
+      "columns": [
+        "id",
+        "region",
+        "ruleset",
+        "faction",
+        "house_id",
+        "transport_ruleset_id",
+        "source_kind",
+        "confidence",
+        "evidence",
+        "evidence_hash",
+        "verified_at"
+      ]
+    },
+    "market_verifications": {
+      "rows": 2,
+      "sha256": "e9dea706e51d6b7f74942fe9f3b008a438309313d2669d9d09ae6984efd0e8e0",
+      "columns": [
+        "id",
+        "market_id",
+        "actor_id",
+        "created_at",
+        "evidence",
+        "evidence_hash",
+        "notes"
+      ]
+    },
+    "retention_policy": {
+      "rows": 1,
+      "sha256": "11ced78ca912d9a96ed7eaf28e3cddeb3861baefbdbff656ae83beab876c9b8e",
+      "columns": [
+        "id",
+        "revision",
+        "raw_days",
+        "intraday_days",
+        "daily_days",
+        "operational_days",
+        "security_days",
+        "approved_hash",
+        "approved_at",
+        "updated_at"
+      ]
+    },
+    "retention_automation": {
+      "rows": 1,
+      "sha256": "c8319ccf1930c27d0e9c2321f6d42334df055cc52e972b255b0ff5b7b6c686e8",
+      "columns": [
+        "id",
+        "enabled",
+        "authorization",
+        "actor_id",
+        "authorized_at"
+      ]
+    },
+    "metadata_providers": {
+      "rows": 4,
+      "sha256": "a4e4cad2d0ca02864db9766d721490399d8e87ea0fd7e82644d7273700937b8e",
+      "columns": [
+        "provider",
+        "enabled",
+        "automatic",
+        "hourly_budget",
+        "daily_budget",
+        "credential",
+        "credential_key_id",
+        "expires_at",
+        "validated_at",
+        "credential_status",
+        "pending_credential",
+        "pending_key_id",
+        "pending_expires_at",
+        "validation_requested",
+        "validation_revision",
+        "validation_error",
+        "rate_config"
+      ]
+    }
+  },
+  "after": {
+    "users": {
+      "rows": 97,
+      "sha256": "366b2f1d9d2ff0b0771f075c39002fb21b310f5dbefbf4b822af93bf1f91acdf",
+      "columns": [
+        "id",
+        "username",
+        "password_hash",
+        "role",
+        "active",
+        "archived_at",
+        "created_at"
+      ]
+    },
+    "credentials": {
+      "rows": 304,
+      "sha256": "1da9314e4e86758e9cce12d4fa4ec0a1d89b9f5af8821bdbac727385faab9e55",
+      "columns": [
+        "id",
+        "user_id",
+        "token_hash",
+        "kind",
+        "name",
+        "csrf_hash",
+        "audience",
+        "created_at",
+        "expires_at",
+        "revoked",
+        "companion_device_id"
+      ]
+    },
+    "user_preferences": {
+      "rows": 22,
+      "sha256": "1b17b396a2b4285cc18338983eeb40583b51e855a2ed262ef32d1add2d6e7c2d",
+      "columns": [
+        "user_id",
+        "schema_version",
+        "revision",
+        "values_json",
+        "updated_at"
+      ]
+    },
+    "companion_devices": {
+      "rows": 6,
+      "sha256": "92070539c4c42dbf9ed206aa3ff9919ffd69120c1450e47101efb8e89a680c28",
+      "columns": [
+        "id",
+        "user_id",
+        "name",
+        "platform",
+        "app_version",
+        "issuer_origin",
+        "created_at",
+        "expires_at",
+        "refresh_expires_at",
+        "archived_at",
+        "revoked",
+        "refresh_hash",
+        "previous_refresh_hash",
+        "rotation_nonce_hash",
+        "rotated_at",
+        "generation",
+        "access_credential_id",
+        "last_connection_at"
+      ]
+    },
+    "player_market_mappings": {
+      "rows": 1,
+      "sha256": "356d883aa73377058cfd9af537f0f6bcc8e0a5b0676038099d2859855081e1f8",
+      "columns": [
+        "id",
+        "region",
+        "ruleset",
+        "faction",
+        "house_id",
+        "transport_ruleset_id",
+        "source_kind",
+        "confidence",
+        "evidence",
+        "evidence_hash",
+        "verified_at"
+      ]
+    },
+    "market_verifications": {
+      "rows": 2,
+      "sha256": "e9dea706e51d6b7f74942fe9f3b008a438309313d2669d9d09ae6984efd0e8e0",
+      "columns": [
+        "id",
+        "market_id",
+        "actor_id",
+        "created_at",
+        "evidence",
+        "evidence_hash",
+        "notes"
+      ]
+    },
+    "retention_policy": {
+      "rows": 1,
+      "sha256": "11ced78ca912d9a96ed7eaf28e3cddeb3861baefbdbff656ae83beab876c9b8e",
+      "columns": [
+        "id",
+        "revision",
+        "raw_days",
+        "intraday_days",
+        "daily_days",
+        "operational_days",
+        "security_days",
+        "approved_hash",
+        "approved_at",
+        "updated_at"
+      ]
+    },
+    "retention_automation": {
+      "rows": 1,
+      "sha256": "c8319ccf1930c27d0e9c2321f6d42334df055cc52e972b255b0ff5b7b6c686e8",
+      "columns": [
+        "id",
+        "enabled",
+        "authorization",
+        "actor_id",
+        "authorized_at"
+      ]
+    },
+    "metadata_providers": {
+      "rows": 4,
+      "sha256": "a4e4cad2d0ca02864db9766d721490399d8e87ea0fd7e82644d7273700937b8e",
+      "columns": [
+        "provider",
+        "enabled",
+        "automatic",
+        "hourly_budget",
+        "daily_budget",
+        "credential",
+        "credential_key_id",
+        "expires_at",
+        "validated_at",
+        "credential_status",
+        "pending_credential",
+        "pending_key_id",
+        "pending_expires_at",
+        "validation_requested",
+        "validation_revision",
+        "validation_error",
+        "rate_config"
+      ]
+    }
+  },
+  "keyring_preserved": true,
+  "feeds_preserved": true,
+  "schema": "retention_20261118",
+  "retention_batches": 0
+}

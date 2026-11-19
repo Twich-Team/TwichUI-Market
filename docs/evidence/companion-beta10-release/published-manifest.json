@@ -1,0 +1,71 @@
+{
+  "schema_version": 2,
+  "channel": "private-beta",
+  "version": "2.0.0-beta.10",
+  "filename": "TwichUI-Market-Companion-2.0.0-beta.10-windows-x64.exe",
+  "bytes": 4891346,
+  "sha256": "16adc59355cb99c1ec56322941f0a219f877c39fb2030584358044aa0fde527f",
+  "source_commit": "be09ff9f8adc1d5c8b8c12d04032b954863aa553",
+  "visual_approval_commit": "8dfa5116397403bb93e90160e8706285f272f64f",
+  "workflow_run_id": 44453675733,
+  "published_at": "2026-11-19T04:12:04.189318+00:00",
+  "authenticode_status": "NotSigned",
+  "updates": "signed",
+  "updater_public_key_sha256": "5794736c840c7c09a49396e60cd569ff6b5f24f872eb0318ed95d55c16616ecf",
+  "updater_signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTSTBwUk5ybTY3SlU2T0xCczRmalMzckNCWFhLRVY2a0xmQ3JRdXJJdkIxZGtHQ3pKMFByYmY2a1VPQktNbHErUm01TU13RkVuYzUrMkFjT3huSXBzZXNqUW1RNmN5OFE0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzk1MDYxMDYxCWZpbGU6VHdpY2hVSS1NYXJrZXQtQ29tcGFuaW9uLTIuMC4wLWJldGEuMTAtd2luZG93cy14NjQuZXhlCXZlcnNpb246Mi4wLjAtYmV0YS4xMApJTWhVcG9hejVTejVVNWVpZXdLZlEzL0dyUnVycFJKSGdFWngxUHd3T2NIbzhMcmRpRTVFOWkyOVpRUzg3QVRuejR3eHE0VWtEd0N4SlJyc2RNOEVBdz09Cg==",
+  "acceptance": {
+    "preferences": true,
+    "upgrade": true,
+    "uninstall": true,
+    "autostart": true,
+    "native_browser_approval": true,
+    "performance": true,
+    "windows_core": true,
+    "restart": true,
+    "revocation": true,
+    "installed_ui": true,
+    "offline_cache": true,
+    "tray": false,
+    "no_release_debug": true,
+    "hidden_sync": true
+  },
+  "unverified_requirements": [
+    "tray_actions"
+  ],
+  "ci": {
+    "windows": {
+      "id": 44453675733,
+      "source_commit": "be09ff9f8adc1d5c8b8c12d04032b954863aa553",
+      "repository": "Twich-Team/TwichUI-Market",
+      "path": ".github/workflows/desktop.yml",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    "backend": {
+      "id": 44453675564,
+      "source_commit": "be09ff9f8adc1d5c8b8c12d04032b954863aa553",
+      "repository": "Twich-Team/TwichUI-Market",
+      "path": ".github/workflows/backend.yml",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    "website": {
+      "id": 44453675611,
+      "source_commit": "be09ff9f8adc1d5c8b8c12d04032b954863aa553",
+      "repository": "Twich-Team/TwichUI-Market",
+      "path": ".github/workflows/web.yml",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  },
+  "evidence_sha256": {
+    "legacy-upgrade.json": "33606290e363ce0728408e0e16d746b677d4295de6d20783436dbb48878e9195",
+    "installed-smoke.json": "02c6c3c5c9e3b1261aa7b634c54ca3d814684b6abe6b01c650c723d48cde919c",
+    "windows-signature.json": "268b885c40d06134e28f8f380e566480231a297f26395f404abf1ae803768749",
+    "performance.json": "2d2038533f5bf8f325d159def6d4b3826fbbf926ac92ce49af5eb167cd1661ec",
+    "signed-update-acceptance.json": "2aed2a455d950a25e7e3fc141411d2889cdbf5162157b8c7a1b9bed4846a4876",
+    "launch-metrics.json": "38fc77a0f36a6188ee97e00c308665d3d17219a4a1a9fac49ebaa66dcce1d59b",
+    "owner-release-approval.json": "07a4995145ef717ca89b59065a6aacdb2b08a0fb939dfbd1ad056962a51d74e2"
+  },
+  "notes": "Workshop delivery repairs: one sync/preparation run, data files can be saved while WoW is open, Market history for the updated addon and generated-addon grouping/icon metadata. Install the addon from main for the integration; saved files are loaded by WoW after reload/restart. Local scans continue to work without Market data. Existing private beta limitations apply."
+}
