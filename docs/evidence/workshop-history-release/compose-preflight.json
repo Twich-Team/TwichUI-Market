@@ -1,0 +1,12 @@
+{
+  "old_overlay_count": 24,
+  "new_overlay_count": 25,
+  "only_api_images_change": true,
+  "changed_services": [
+    "api",
+    "local-api"
+  ],
+  "all_other_compose_settings_identical": true,
+  "live_api_environment_matches": true,
+  "new_overlay": "/home/marketdev/.codex/worktrees/workshop-live-status/TwichUI-Market/compose.workshop-history-release.yaml"
+}

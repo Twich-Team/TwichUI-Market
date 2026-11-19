@@ -1,0 +1,8 @@
+{
+  "both_api_services_healthy": true,
+  "both_api_restarts": 0,
+  "both_api_oom": false,
+  "other_original_container_ids_images_preserved": true,
+  "original_container_count": 11,
+  "temporary_tokens_absent": true
+}

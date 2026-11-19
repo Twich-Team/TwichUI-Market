@@ -1,5 +1,5 @@
 # Test-only native PE and shell interactions, restricted to disposable CI fixtures.
-param([Parameter(Mandatory=$true)][ValidateSet('Setup','Register','RegisterSecond','ClearRegistry','StartGame','StopGame','ChooseFolder','CancelFolder')][string]$Action,[string]$GamePath)
+param([Parameter(Mandatory=$true)][ValidateSet('Setup','Register','RegisterSecond','ClearRegistry','StartGame','StopGame','GameRunning','ChooseFolder','CancelFolder')][string]$Action,[string]$GamePath)
 $ErrorActionPreference='Stop'
 if ($env:GITHUB_ACTIONS -ne 'true' -or $env:RUNNER_OS -ne 'Windows') { throw 'Disposable Windows CI only' }
 $base=Join-Path $env:MARKET_TEST_APP_DATA 'workshop-summary-fixtures'
@@ -19,7 +19,7 @@ using System.Reflection;
 [assembly: AssemblyProduct("World of Warcraft")]
 [assembly: AssemblyVersion("1.60.1.0")]
 [assembly: AssemblyDescription("TwichUI synthetic CI executable; not World of Warcraft")]
-class SyntheticWow { static void Main() { System.Threading.Thread.Sleep(30000); } }
+class SyntheticWow { static void Main() { System.Threading.Thread.Sleep(180000); } }
 '@ | Set-Content $source
     $compiler=Join-Path $env:WINDIR 'Microsoft.NET\Framework64\v4.0.30319\csc.exe'
     $addon=Join-Path (Get-Location) 'coordinated-addon'
@@ -52,9 +52,10 @@ if($Action -eq 'ClearRegistry') {
     foreach($key in $keys){if((Get-ItemProperty -Path $key -Name TwichUIFixtureOwned -ErrorAction SilentlyContinue).TwichUIFixtureOwned -eq $base){Remove-Item $key -Recurse}}
     @{cleared=$true}|ConvertTo-Json -Compress;exit
 }
-if($Action -in @('StartGame','StopGame')) {
+if($Action -in @('StartGame','StopGame','GameRunning')) {
     $exe=Join-Path $base 'Forever-A\Wow.exe'
     if($Action -eq 'StartGame') {$p=Start-Process $exe -PassThru;@{pid=$p.Id;synthetic=$true}|ConvertTo-Json -Compress}
+    elseif($Action -eq 'GameRunning') {@{running=@(Get-Process -Name Wow -ErrorAction SilentlyContinue|Where-Object{$_.Path -eq $exe}).Count -gt 0;synthetic=$true}|ConvertTo-Json -Compress}
     else {Get-Process -Name Wow -ErrorAction SilentlyContinue|Where-Object{$_.Path -eq $exe}|Stop-Process;@{stopped=$true}|ConvertTo-Json -Compress}
     exit
 }

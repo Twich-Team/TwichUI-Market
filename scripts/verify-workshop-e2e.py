@@ -9,7 +9,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 def main():
  p=argparse.ArgumentParser(description=__doc__)
- p.add_argument('--rust-client',type=Path,required=True);p.add_argument('--addon-root',type=Path,required=True);p.add_argument('--lua',default='lua5.1');p.add_argument('--lua-cpath');p.add_argument('--variants',type=int,default=129);p.add_argument('--out',type=Path,required=True);p.add_argument('--publish',action='store_true');p.add_argument('--skip-lua',action='store_true',help='Windows producer only; paired Linux artifact consumer is mandatory in CI')
+ p.add_argument('--rust-client',type=Path,required=True);p.add_argument('--addon-root',type=Path,required=True);p.add_argument('--lua',default='lua5.1');p.add_argument('--lua-cpath');p.add_argument('--variants',type=int,default=129);p.add_argument('--out',type=Path,required=True);p.add_argument('--publish',action='store_true');p.add_argument('--history',action='store_true',help='Negotiate the installed paired history reader in staging mode');p.add_argument('--skip-lua',action='store_true',help='Windows producer only; paired Linux artifact consumer is mandatory in CI')
  a=p.parse_args()
  if not 129<=a.variants<=45125 or a.publish and (os.name!='nt' or os.environ.get('GITHUB_ACTIONS')!='true'):p.error('bounded synthetic count; installed publication only on disposable Windows')
  a.out.mkdir(parents=True,exist_ok=True)
@@ -65,6 +65,8 @@ def main():
    env['MARKET_TEST_APP_DATA']=str(base)
    fixture=json.loads(subprocess.check_output(['powershell','-NoProfile','-File',str(ROOT/'scripts/windows/workshop-fixtures.ps1'),'-Action','Setup'],env=env,text=True))
    game=Path(fixture['first']);publication=game/'Interface/AddOns'
+  if a.history and not a.publish:
+   cap=game/'Interface/AddOns/TwichUI_Workshop/MarketDelivery.json';cap.parent.mkdir(parents=True);shutil.copyfile(a.addon_root/'TwichUI_Workshop/MarketDelivery.json',cap)
   start=time.perf_counter();calls=[]
   try:
    for _ in range(150):
@@ -102,8 +104,8 @@ def main():
     if lua.returncode:raise RuntimeError('Production Workshop Market consumer failed; see production-lua.log')
    assert any(r['path'].endswith('/summary')and r['status']==200 for r in requests)
    assert not any('/archive' in r['path'] for r in requests)
-   paths=['backend/market/workshop_summary.py','backend/market/bridge_api.py','desktop/core/src/workshop_summary.rs','desktop/core/src/client.rs','contracts/workshop-summary/v1/manifest.schema.json','contracts/workshop-summary/v1/row.schema.json']
-   report={'credential_kind':'companion','synthetic':True,'real_game':False,'platform':platform.platform(),'mode':'actual Windows publication'if a.publish else'Linux native staging; not installed Windows acceptance','variants':a.variants,'native_calls':calls,'http_requests':requests,'total_seconds':time.perf_counter()-start,'mandatory_archive':False,'no_change_http_304':True,'no_change_game_mtime_preserved':True if a.publish else None,'production_lua_market_passed':lua is not None and lua.returncode==0,'native_binary_sha256':hashlib.sha256(a.rust_client.read_bytes()).hexdigest(),'source_sha256':{q:hashlib.sha256((ROOT/q).read_bytes()).hexdigest()for q in paths},'game_consumption':'pending actual Forever'}
+   paths=['backend/market/workshop_summary.py','backend/market/bridge_api.py','desktop/core/src/workshop_summary.rs','desktop/core/src/client.rs','contracts/workshop-summary/v1/manifest.schema.json','contracts/workshop-summary/v1/row.schema.json','contracts/workshop-summary/v2/manifest.schema.json','contracts/workshop-summary/v2/row.schema.json','contracts/workshop-summary/v2/addon-source.txt']
+   report={'credential_kind':'companion','synthetic':True,'real_game':False,'platform':platform.platform(),'mode':'actual Windows publication'if a.publish else'Linux native staging; not installed Windows acceptance','variants':a.variants,'native_calls':calls,'http_requests':requests,'total_seconds':time.perf_counter()-start,'mandatory_archive':False,'no_change_http_304':True,'no_change_game_mtime_preserved':True if a.publish else None,'production_lua_market_passed':lua is not None and lua.returncode==0,'native_binary_sha256':hashlib.sha256(a.rust_client.read_bytes()).hexdigest(),'source_sha256':{q:hashlib.sha256((ROOT/q).read_bytes()).hexdigest()for q in paths},'game_consumption':'pending actual Forever','paired_addon_commit':(ROOT/'contracts/workshop-summary/v2/addon-source.txt').read_text().strip(),'addon_source_sha256':{q:hashlib.sha256((a.addon_root/q).read_bytes()).hexdigest()for q in ['TwichUI_Workshop/Summary.lua','TwichUI_Workshop/SummarySchema.lua','TwichUI_Workshop/BridgeCodec.lua','TwichUI_Workshop/Bridge.lua','TwichUI_Workshop/auction/ViewMarket.lua','tests/test_workshop_auction_market_summary.lua']}}
    (a.out/'evidence.json').write_text(json.dumps(report,indent=2)+'\n')
    print(json.dumps({'synthetic':True,'variants':a.variants,'native_calls':len(calls),'http_requests':len(requests),'seconds':report['total_seconds'],'production_lua_market_passed':report['production_lua_market_passed'],'mode':report['mode']}))
   finally:

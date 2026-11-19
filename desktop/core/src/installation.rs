@@ -414,3 +414,16 @@ mod addon_tests {
         assert_eq!(failure(root.path()).check.as_deref(), Some("capability_json"));
     }
 }
+
+/// History is negotiated only when the installed addon declares the exact
+/// supported contract and bounds. Existing summary-only addons remain valid.
+pub fn summary_contract(path:&Path)->Result<u64> {
+    let capability=path.join("Interface/AddOns/TwichUI_Workshop/MarketDelivery.json");
+    if !capability.try_exists()? {return Ok(1)}
+    let raw=read(&capability,4096)?;
+    let cap=crate::bridge::parse(raw.strip_prefix(&[0xef,0xbb,0xbf]).unwrap_or(&raw),4096)?;
+    if cap["summary_history_contract"]==2 {
+        need(cap["summary_history_partition_bytes"]==1048576&&cap["summary_history_total_bytes"]==67108864,"Workshop history capability bounds")?;
+        Ok(2)
+    }else{Ok(1)}
+}

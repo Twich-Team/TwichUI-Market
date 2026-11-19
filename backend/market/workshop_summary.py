@@ -1,7 +1,8 @@
-"""Bounded current-market research summaries. No new pricing calculation.
+"""Negotiated current-market references and genuine daily history. No new pricing calculation.
 
 U1 routing/tuple semantics, extended explicitly for historical reference coverage.
-This protocol is independent of the optional retained-history archive.
+Both versions are independent of the optional retained-history archive. Contract 1
+remains frozen; contract 2 adds complete observed UTC closings within 60 days.
 """
 from collections import defaultdict
 from datetime import datetime, timedelta
@@ -50,10 +51,10 @@ def digest(value):
     return hashlib.sha256(canonical(value)).hexdigest()
 
 
-@lru_cache(maxsize=1)
-def manifest_validator():
+@lru_cache(maxsize=2)
+def manifest_validator(version=1):
     bundle = Path(contract().__file__).resolve().parents[2]
-    schema = json.loads((bundle / 'workshop-summary/v1/manifest.schema.json').read_bytes())
+    schema = json.loads((bundle / f'workshop-summary/v{version}/manifest.schema.json').read_bytes())
     return jsonschema.Draft202012Validator(schema, format_checker=jsonschema.FormatChecker())
 
 
@@ -66,8 +67,8 @@ def integer(value, low, high):
     need(type(value) is int and low <= value <= high, 'summary integer bound')
 
 
-def validate_row(row, bucket=None):
-    need(type(row) is list and len(row) == len(COLUMNS), 'summary tuple shape')
+def validate_row(row, bucket=None, version=1, observations=None):
+    need(type(row) is list and len(row) == len(COLUMNS) + (version == 2), 'summary tuple shape')
     integer(row[0], 1, 2**31-1)
     need(type(row[1]) is str and re.fullmatch('[0-9a-f]{64}', row[1]), 'exact upstream variant')
     if bucket is not None:
@@ -81,7 +82,7 @@ def validate_row(row, bucket=None):
     integer(row[7], 0, 0)
     integer(row[8], 0, 1)
     integer(row[10], 0, 14)
-    for n in row[11:]:
+    for n in row[11:13]:
         integer(n, 0, 60)
     need(row[10] <= row[11] <= row[12], 'reference coverage')
     need((row[9] is None or row[11] >= 3) and (row[4] is None or row[10] > 0), 'priced reference support')
@@ -91,6 +92,19 @@ def validate_row(row, bucket=None):
     else:
         need(all(p is None for p in prices) and row[8] == 1, 'unavailable prices')
         need(row[6] == 0 if row[2] == 2 else row[6] is not None and row[6] > 0 if row[2] == 1 else row[6] is None, 'unavailable supply')
+
+    if version == 2:
+        need(type(row[13]) is list and len(row[13]) == len(observations), 'complete daily coverage')
+        for index, point in enumerate(row[13]):
+            need(type(point) is list and len(point) == 4 and type(point[0]) is int and point[0] in (0, 1, 2, 3, 4), 'daily tuple')
+            for price in point[1:3]:
+                need(price is None or type(price) is str and re.fullmatch('[1-9][0-9]{0,10}', price)
+                     and int(price) <= cp.MAX_COPPER, 'daily exact supported copper')
+            if point[3] is not None: integer(point[3], 0, 2**53-1)
+            if point[0] == 0: need(point[1] is not None and point[2] is not None and point[3] is not None and point[3] > 0, 'daily priced evidence')
+            elif point[0] == 1: need(point[1:3] == [None,None] and point[3] is not None and point[3] > 0, 'daily supply evidence')
+            elif point[0] == 2: need(point[1:3] == [None,None] and point[3] == 0, 'daily observed absence')
+            else: need(point[1:3] == [None,None] and point[3] is None, 'daily unavailable evidence')
 
 
 def project(record):
@@ -117,22 +131,44 @@ def project(record):
     return row
 
 
-def seal(metadata, rows):
+def project_daily(record):
+    out=[]
+    for p in record['daily']:
+        state = 4 if p['arithmetic_status'] == 'unsupported' else 3 if p['state'] == 'unknown' else 2 if p['state'] == 'absent' else 0 if p['recent_copper'] is not None and p['minimum_copper'] is not None else 1
+        out.append([state, p['recent_copper'] if state == 0 else None,
+                    p['minimum_copper'] if state == 0 else None,
+                    p['supply'] if state < 3 else None])
+    return out
+
+
+def seal(metadata, rows, version=1):
+    if version==2:
+        observations=metadata.get('observations')
+        need(type(observations) is list and 1<=len(observations)<=60,'history observation bound')
+        previous=None;seen=set();end=datetime.fromisoformat(metadata['generated_at'].replace('Z','+00:00'))
+        for o in observations:
+            at=datetime.fromisoformat(o['observed_at'].replace('Z','+00:00'))
+            need((previous is None or previous<at.date()) and at<=end and 0<=(end.date()-at.date()).days<60,'history observed UTC window')
+            need(o['observation_id'] not in seen and int(o['observation_id'])<=int(metadata['source_watermark']) and (not o['synthetic'] or metadata['synthetic']),'history observation identity')
+            previous=at.date();seen.add(o['observation_id'])
+        last=observations[-1]
+        need(all(last[k]==metadata['source_observation'][k] for k in ('observation_id','observed_at','scope_complete')),'history current observation binding')
+    max_part, max_total = (MAX_PART, MAX_TOTAL) if version == 1 else (1024*1024,64*1024*1024)
     """O(one bounded part per bucket), with whole-generation refusal, no pruning."""
     parts, counts, sizes = defaultdict(list), defaultdict(int), defaultdict(lambda: 2)
     previous, total, count = None, 0, 0
     for row in rows:
-        validate_row(row)
+        validate_row(row,version=version,observations=metadata.get("observations"))
         key = tuple(row[:2])
         need(previous is None or previous < key, 'unique sorted exact identities')
         previous = key
         bucket = row[0] % BUCKETS
         raw = canonical(row)
         sizes[bucket] += len(raw) + bool(parts[bucket])
-        need(sizes[bucket] <= MAX_PART, 'summary partition exceeds 128 KiB; no generation published')
+        need(sizes[bucket] <= max_part, 'summary partition exceeds 128 KiB; no generation published')
         total += len(raw) + bool(parts[bucket])
         count += 1
-        need(count <= MAX_RECORDS and total + 2 * BUCKETS <= MAX_TOTAL, 'summary generation exceeds bounded coverage; no generation published')
+        need(count <= MAX_RECORDS and total + 2 * BUCKETS <= max_total, 'summary generation exceeds bounded coverage; no generation published')
         parts[bucket].append(raw)
         counts[bucket] += 1
     encoded, descriptors = {}, []
@@ -141,32 +177,35 @@ def seal(metadata, rows):
         encoded[bucket] = raw
         descriptors.append(dict(bucket=bucket, bytes=len(raw), record_count=counts[bucket],
                                 sha256=hashlib.sha256(raw).hexdigest()))
-    manifest = dict(metadata, format=FORMAT, schema_version=1, contract_version=1,
-                    columns=COLUMNS, states=STATES, confidence_states=['limited', 'unavailable'],
+    manifest = dict(metadata, format=FORMAT, schema_version=version, contract_version=version,
+                    columns=COLUMNS + (["daily"] if version == 2 else []), states=STATES, confidence_states=['limited', 'unavailable'],
                     confidence_ceiling='limited', can_satisfy_local_competition=False,
                     identity_basis='exact_upstream_hashes; native_link_mapping_unavailable',
                     record_count=count, partitioning=dict(algorithm='item_id_modulo', buckets=64,
-                    max_partition_bytes=MAX_PART, max_total_bytes=MAX_TOTAL), partitions=descriptors,
+                    max_partition_bytes=max_part, max_total_bytes=max_total), partitions=descriptors,
                     coverage=dict(scope='current_observed_exact_variants', complete=True,
                     source_records=count, delivered_records=count, missing='unavailable',
-                    detailed_history='not_delivered'))
+                    detailed_history='not_delivered' if version == 1 else 'daily_closings_60_days'))
     manifest['generation_id'] = digest(manifest)
     need(len(canonical(manifest)) <= MAX_MANIFEST, 'summary manifest bound')
     try:
-        manifest_validator().validate(manifest)
+        manifest_validator(version).validate(manifest)
     except jsonschema.ValidationError as error:
         raise ValueError('Summary source contract is invalid; previous data is preserved') from error
     return manifest, encoded
 
 
-def build(db, market, preparation=None):
+def build(db, market, preparation=None, version=1):
+    algorithm=ALGORITHM if version==1 else "workshop-summary-v2:"+cp.ALGORITHM
+    staging=STAGING if version==1 else "workshop-summary-chunks-coverage-v2:"+cp.ALGORITHM
+    max_part,max_total=(MAX_PART,MAX_TOTAL) if version==1 else (1024*1024,64*1024*1024)
     # Immutable observations and derived source records permit a pinned prefix.
     # This export lock never owns the collector/global ingest lock.
     if db.bind.dialect.name == 'postgresql':
         db.execute(text("SET LOCAL statement_timeout='10s'"))
         if not db.scalar(text('SELECT pg_try_advisory_xact_lock(7140288, :market)'), {'market': market.id}):
             raise HTTPException(409, 'Market summary is preparing; retry on the existing schedule')
-    stage = db.scalar(select(BridgeGeneration).where(BridgeGeneration.market_id == market.id, BridgeGeneration.algorithm == STAGING).limit(1))
+    stage = db.scalar(select(BridgeGeneration).where(BridgeGeneration.market_id == market.id, BridgeGeneration.algorithm == staging).limit(1))
     progress = json.loads(stage.manifest_json) if stage else None
     latest = db.scalar(select(Observation).where(Observation.market_id == market.id)
                        .order_by(Observation.retrieved_at.desc(), Observation.id.desc()).limit(1))
@@ -179,10 +218,10 @@ def build(db, market, preparation=None):
     if not identity['mapping_verified']:
         raise HTTPException(409, 'Verified Forever market mapping is required')
     identity['faction'] = mapping_for(db, market).faction
-    signature = digest([FORMAT, 1, 'source-coverage-v1', bridge.REVISION, cp.HISTORY_BASIS, identity,
+    signature = digest([FORMAT, version, 'source-coverage-v1', bridge.REVISION, cp.HISTORY_BASIS, identity,
                         [[o.id, o.snapshot_id] for o in observations]])
     cached = db.scalar(select(BridgeGeneration).where(BridgeGeneration.market_id == market.id,
-                       BridgeGeneration.algorithm == ALGORITHM, BridgeGeneration.source_signature == signature))
+                       BridgeGeneration.algorithm == algorithm, BridgeGeneration.source_signature == signature))
     if cached:
         if stage:
             db.delete(stage)
@@ -192,7 +231,7 @@ def build(db, market, preparation=None):
     if stage is None:
         progress = dict(source_at=bridge.stamp(at), cursor=None, count=0, chunks=0, bucket_bytes={})
         stage = BridgeGeneration(generation_id=digest(['preparing', signature]), market_id=market.id,
-            algorithm=STAGING, source_signature=signature, manifest_json=canonical(progress).decode(), created_at=now())
+            algorithm=staging, source_signature=signature, manifest_json=canonical(progress).decode(), created_at=now())
         db.add(stage)
         db.flush()
     snapshots = {s.id: s for s in db.scalars(select(Snapshot).where(Snapshot.id.in_({o.snapshot_id for o in observations})))}
@@ -228,15 +267,17 @@ def build(db, market, preparation=None):
             select(ItemSourceCoverage).where(ItemSourceCoverage.market_id == market.id,
                 tuple_(ItemSourceCoverage.item_id, ItemSourceCoverage.variant_key).in_(batch)))}
         for key in batch:
-            row = project(bridge.assemble_record(key, values, current, daily, refs, cp.ALGORITHM, at, set(), starts.get(key)))
+            record = bridge.assemble_record(key, values, current, daily, refs, cp.ALGORITHM, at, {o.id for o in daily} if version==2 else set(), starts.get(key))
+            row = project(record)
+            if version==2: row.append(project_daily(record))
             raw = canonical(row).decode()
             bucket = str(row[0] % BUCKETS)
             old = sizes.get(bucket, 2)
             sizes[bucket] = old + len(raw) + (old > 2)
-            if sizes[bucket] > MAX_PART:
+            if sizes[bucket] > max_part:
                 raise HTTPException(413, 'Summary partition exceeds 128 KiB; no generation published')
             chunks.append(raw)
-    if sum(sizes.values()) > MAX_TOTAL:
+    if sum(sizes.values()) > max_total:
         raise HTTPException(413, 'Summary exceeds bounded coverage; no generation published')
     # Append each bounded batch once. Do not rewrite all accumulated parts on
     # every request (quadratic TOAST/WAL traffic). Final sealing streams chunks.
@@ -265,10 +306,12 @@ def build(db, market, preparation=None):
                     source_observation=dict(observation_id=str(current.id), observed_at=bridge.stamp(at), scope_complete=True),
                     generated_at=bridge.stamp(at), synthetic=any(o.synthetic for o in observations))
     try:
-        manifest, parts = seal(metadata, final_rows())
+        if version==2:
+            metadata["observations"]=[dict(observation_id=str(o.id),observed_at=bridge.stamp(o.retrieved_at),scope_complete=True,synthetic=o.synthetic) for o in daily]
+        manifest, parts = seal(metadata, final_rows(),version)
     except ValueError as error:
         raise HTTPException(413, str(error)) from error
-    row = BridgeGeneration(generation_id=manifest['generation_id'], market_id=market.id, algorithm=ALGORITHM,
+    row = BridgeGeneration(generation_id=manifest['generation_id'], market_id=market.id, algorithm=algorithm,
                            source_signature=signature, manifest_json=canonical(manifest).decode(), created_at=now())
     db.add(row)
     db.flush()
@@ -277,19 +320,19 @@ def build(db, market, preparation=None):
         db.execute(insert(BridgeRecord), [dict(generation_id=row.generation_id, position=b, record_json=raw.decode()) for b, raw in parts.items()])
     # Two disposable exports per market; never delete observations or user data.
     old = list(db.scalars(select(BridgeGeneration.generation_id).where(BridgeGeneration.market_id == market.id,
-        BridgeGeneration.algorithm == ALGORITHM).order_by(BridgeGeneration.created_at.desc(), BridgeGeneration.generation_id.desc()).offset(2)))
+        BridgeGeneration.algorithm == algorithm).order_by(BridgeGeneration.created_at.desc(), BridgeGeneration.generation_id.desc()).offset(2)))
     if old:
         db.execute(delete(BridgeGeneration).where(BridgeGeneration.generation_id.in_(old)))
     return row
 
 
 @router.get('/markets/{market_id}/summary')
-def summary(market_id: MarketId, request: Request, user: User = Depends(bridge.device_identity), db: Session = Depends(session)):
+def summary(market_id: MarketId, request: Request, contract_version: int = Query(1,ge=1,le=2), user: User = Depends(bridge.device_identity), db: Session = Depends(session)):
     market = require_market(db, market_id)
     if not market.verified:
         raise HTTPException(404, 'Verified observed market required')
     preparation = {}
-    row = build(db, market, preparation=preparation)
+    row = build(db, market, preparation=preparation,version=contract_version)
     db.commit()
     if row is None:
         return JSONResponse({'state': 'preparing'}, status_code=202, headers={'Retry-After': str(preparation.get('retry_after_seconds',5)), 'Cache-Control': 'no-store'})
@@ -305,7 +348,7 @@ def part(market_id: MarketId, generation: str, bucket: int, user: User = Depends
     if re.fullmatch('[0-9a-f]{64}', generation) is None or not 0 <= bucket < BUCKETS:
         raise HTTPException(422, 'Invalid summary identity')
     row = db.get(BridgeGeneration, generation)
-    if row is None or row.market_id != market_id or row.algorithm != ALGORITHM:
+    if row is None or row.market_id != market_id or row.algorithm not in (ALGORITHM,"workshop-summary-v2:"+cp.ALGORITHM):
         raise HTTPException(410, 'Summary expired; restart the same authenticated download')
     raw = db.scalar(select(BridgeRecord.record_json).where(BridgeRecord.generation_id == generation, BridgeRecord.position == bucket))
     if raw is None:

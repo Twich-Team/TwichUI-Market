@@ -1,0 +1,30 @@
+{
+  "identical_stable_tables": [
+    "users",
+    "credentials",
+    "user_preferences",
+    "player_market_mappings",
+    "market_verifications",
+    "retention_policy",
+    "retention_automation",
+    "metadata_providers"
+  ],
+  "provider_configuration_and_encrypted_envelopes_identical": true,
+  "keyring_identical": true,
+  "all_signed_distribution_files_identical": true,
+  "signed_file_count": 90,
+  "all_original_credential_rows_identical": true,
+  "original_accounts_preferences_mappings_and_retention_authorization_identical": true,
+  "collector_feeds_identical": true,
+  "retention_batches": 0,
+  "schema": "retention_20261118",
+  "different_table": [
+    "companion_devices"
+  ],
+  "device_telemetry_explanation": "Authenticated native bootstrap updates last_connection_at on existing device6. The prior snapshot retained a whole-row checksum, not individual timestamp values; no byte-for-byte whole-device-table equality or successful reconstruction is claimed. Two bounded read-only reconstruction attempts did not match. No database values were restored. Native server code writes only connection telemetry; this is not owner-PC/game acceptance.",
+  "operational_fields_excluded": [
+    "retention_automation.next_run_at",
+    "companion_devices.last_sync_at/last_observation_id/selected_market_id",
+    "metadata_providers budget usage and transport telemetry fields listed in stable-before.json; stable configurations/envelopes included"
+  ]
+}

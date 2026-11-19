@@ -42,22 +42,29 @@ module.exports=async({page,invoke,api,shots,sourceCommit})=>{
   await clickPicker('ChooseFolder',game);await expect(page.locator('#workshop-confirmation')).toBeVisible();
   await expect(page.locator('#workshop-confirmed-folder')).toContainText(game);
   await page.screenshot({path:path.join(root,'native-one-permission.png'),fullPage:true});
+  const syncBefore=await (await api.get('/__fixture__/native-network')).json();
   await page.locator('#workshop-authorize').click();
   await expect.poll(async()=>(await invoke('app_state')).delivery.status?.published_generation,{timeout:90000}).toMatch(/^[a-f0-9]{64}$/);
-  await waitIdle();const first=(await invoke('app_state')).delivery;expect(first.configuration.version).toBe(2);
+  await waitIdle();const syncAfter=await (await api.get('/__fixture__/native-network')).json();
+  expect(syncAfter.summary_preparations-syncBefore.summary_preparations).toBeGreaterThan(0);
+  expect(syncAfter.price_runs-syncBefore.price_runs).toBe(1);
+  const first=(await invoke('app_state')).delivery;expect(first.configuration.version).toBe(2);
   expect(first.status.summary_records).toBe(2);expect(first.status.loaded_game_generation).toBeNull();expect(fs.existsSync(archive)).toBe(false);
   const beforeHash=hash(target),mtime=fs.statSync(target).mtimeMs;await invoke('sync_now');
   await expect.poll(async()=>(await invoke('app_state')).delivery.status?.result,{timeout:60000}).toBe('Up to date.');await waitIdle();
   expect(hash(target)).toBe(beforeHash);expect(fs.statSync(target).mtimeMs).toBe(mtime);expect(hash(saved)).toBe(savedHash);
   await page.screenshot({path:path.join(root,'native-archive-free-connected.png'),fullPage:true});
   // Native source is advanced in the isolated fixture only. While Wow.exe is
-  // running, the actual worker downloads safely but never changes game files.
-  await helper('StartGame');
+  // running, the actual worker publishes the new generation without a game close.
+  await helper('StartGame');expect((await helper('GameRunning')).running).toBe(true);
   expect((await api.post('/__fixture__/workshop-source',{data:{action:'advance'}})).ok()).toBe(true);
-  await invoke('sync_now');await expect(page.locator('#workshop-state')).toHaveText('Waiting for WoW to close',{timeout:60000});await waitIdle();expect(hash(target)).toBe(beforeHash);
-  await page.screenshot({path:path.join(root,'native-wow-deferral.png'),fullPage:true});
-  await helper('StopGame');await invoke('sync_now');
+  await invoke('sync_now');
   await expect.poll(async()=>(await invoke('app_state')).delivery.status?.published_generation,{timeout:60000}).not.toBe(first.status.published_generation);await waitIdle();
+  expect((await helper('GameRunning')).running).toBe(true);
+  expect(hash(target)).not.toBe(beforeHash);await expect(page.locator('#workshop-state')).toHaveText('Files ready');
+  await expect(page.locator('#workshop-note')).toContainText('reload');
+  await page.screenshot({path:path.join(root,'native-wow-open-publication.png'),fullPage:true});
+  await helper('StopGame');
   const second=(await invoke('app_state')).delivery;expect(fs.existsSync(path.join(path.dirname(target),'Previous.lua'))).toBe(true);
   // Corruption is injected on the HTTP fixture boundary. Native validation,
   // staging and installed files remain the real product implementation.
@@ -68,7 +75,7 @@ module.exports=async({page,invoke,api,shots,sourceCommit})=>{
   expect(hash(saved)).toBe(savedHash);expect(fs.existsSync(archive)).toBe(false);
   const addons=path.join(game,'Interface','AddOns');const publication=path.join(root,'publication');fs.mkdirSync(publication,{recursive:true});
   for(const name of fs.readdirSync(addons).filter(n=>/^TwichUI_Market(?:Data|Part[AB]\d\d)$/.test(n)))fs.cpSync(path.join(addons,name),path.join(publication,name),{recursive:true});
-  const facts={synthetic:true,real_game:false,source_commit:sourceCommit,coordinated_addon_commit:fs.readFileSync('contracts/workshop-summary/v1/addon-source.txt','utf8').trim(),first_status:first.status,second_status:second.status,native_picker:true,wrong_game_refused:true,one_installation_confirmation:true,no_archive:true,no_change_mtime_preserved:true,wow_running_deferred:true,corrupt_http_preserved:true,savedvariables_sha256:savedHash,game_consumption:'not performed'};
+  const facts={synthetic:true,real_game:false,source_commit:sourceCommit,coordinated_addon_commit:fs.readFileSync('contracts/workshop-summary/v1/addon-source.txt','utf8').trim(),first_status:first.status,second_status:second.status,native_picker:true,wrong_game_refused:true,one_installation_confirmation:true,no_archive:true,no_change_mtime_preserved:true,wow_running_publication:true,wow_alive_after_publication:true,corrupt_http_preserved:true,savedvariables_sha256:savedHash,game_consumption:'not performed'};
   fs.writeFileSync(path.join(root,'evidence.json'),JSON.stringify(facts,null,2));
   // Stop this source candidate's delivery before the independent legacy M2 test.
   await page.locator('#pause').click();await waitIdle();

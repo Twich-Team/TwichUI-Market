@@ -21,18 +21,18 @@ def source(bridge, database):
     return client, mid, observations, snapshots
 
 
-def download(source):
+def download(source,version=1):
     client, mid, _, _ = source
     path = f'/api/v1/workshop/markets/{mid}/summary'
     for _ in range(5):
-        response = client.get(path)
+        response = client.get(path,params={"contract_version":version})
         if response.status_code != 202:
             break
         assert response.headers['retry-after'] in ('1','5')
     assert response.status_code == 200, response.text
     envelope = response.json()
     manifest = envelope['manifest']
-    schema = json.loads((Path(__file__).resolve().parents[2] / 'contracts/workshop-summary/v1/manifest.schema.json').read_text())
+    schema = json.loads((Path(__file__).resolve().parents[2] / f'contracts/workshop-summary/v{version}/manifest.schema.json').read_text())
     jsonschema.Draft202012Validator(schema, format_checker=jsonschema.FormatChecker()).validate(manifest)
     rows = []
     for part in manifest['partitions']:
@@ -43,7 +43,7 @@ def download(source):
         values = r.json()
         assert len(values) == part['record_count']
         for row in values:
-            summary.validate_row(row, part['bucket'])
+            summary.validate_row(row, part['bucket'],version,manifest.get("observations"))
         rows.extend(values)
     assert len(rows) == manifest['record_count']
     assert summary.digest({k: v for k, v in manifest.items() if k != 'generation_id'}) == manifest['generation_id']
@@ -239,3 +239,42 @@ def test_bounded_projection_uses_shorter_retry_without_changing_cold_derivation(
         retries.append(int(response.headers['retry-after']))
     else:raise AssertionError('Bounded projection did not finish')
     assert 5 in retries and 1 in retries
+
+
+def test_negotiated_history_carries_actual_closes_and_preserves_legacy(source,database):
+    legacy,old_rows,_=download(source)
+    h,rows,etag=download(source,2)
+    assert h['contract_version']==h['schema_version']==2
+    assert h['coverage']['detailed_history']=='daily_closings_60_days'
+    assert len(h['observations'])==2
+    assert all(o['scope_complete'] and o['synthetic'] for o in h['observations'])
+    r=rows[2589,key({'id':2589})]
+    assert r[:13]==old_rows[2589,key({'id':2589})]
+    assert len(r[13])==2 and r[13][-1]==[0,'120','120',10]
+    assert r[13][0][1] != r[13][-1][1], 'daily history must not repeat current summary averages'
+    client,mid,_,_=source
+    response=client.get(f'/api/v1/workshop/markets/{mid}/summary',params={'contract_version':2},headers={'If-None-Match':etag})
+    assert response.status_code==304
+    again,again_rows,_=download(source)
+    assert again==legacy and again_rows==old_rows
+    assert client.get(f'/api/v1/workshop/markets/{mid}/summary?contract_version=3').status_code==422
+
+
+def test_history_before_source_coverage_is_unknown_and_not_zero_supply(source,database):
+    from market.models import ItemSourceCoverage
+    _,mid,observations,_=source
+    with database.begin() as db:
+        latest=db.get(Observation,observations[-1])
+        db.add(ItemSourceCoverage(market_id=mid,item_id=2589,variant_key=key({'id':2589}),source_kind='commodities',first_observed_at=latest.retrieved_at))
+    h,rows,_=download(source,2)
+    assert rows[2589,key({'id':2589})][13][0]==[3,None,None,None]
+    assert rows[2589,key({'id':2589})][13][-1]==[0,'120','120',10]
+
+
+def test_history_sealing_refuses_rehashed_missing_or_invented_daily_evidence(source):
+    h,rows,_=download(source,2)
+    metadata={k:v for k,v in h.items() if k in ('issuer_id','market','pricing_algorithm','history_basis','source_kind','source_watermark','source_observation','generated_at','synthetic','observations')}
+    row=copy.deepcopy(next(iter(rows.values())))
+    for change in [lambda p:p.pop(),lambda p:p.append([0,'120','120',10]),lambda p:p.__setitem__(0,[0,'0','120',10]),lambda p:p.__setitem__(0,[3,None,None,0]),lambda p:p.__setitem__(0,[True,None,None,10])]:
+        bad=copy.deepcopy(row);change(bad[13])
+        with pytest.raises(ValueError):summary.seal(metadata,[bad],2)

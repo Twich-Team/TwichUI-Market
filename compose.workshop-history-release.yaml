@@ -1,0 +1,6 @@
+{
+  "services": {
+    "api": {"image": "sha256:428f0acfa92ec42fcc40d467e072ad3d14f7175c02ad76303d141d6824b983af"},
+    "local-api": {"image": "sha256:428f0acfa92ec42fcc40d467e072ad3d14f7175c02ad76303d141d6824b983af"}
+  }
+}
