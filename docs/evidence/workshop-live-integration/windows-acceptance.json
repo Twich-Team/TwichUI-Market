@@ -1,0 +1,65 @@
+{
+  "synthetic": true,
+  "production": false,
+  "real_game": false,
+  "market_source": "8dfa5116397403bb93e90160e8706285f272f64f",
+  "addon_application_source": "12a55a5be0eb1282dcc9971fa178db07c1132596",
+  "workflow_run": 44443577895,
+  "result": "passed",
+  "installed_assertions": [
+    "exactly one price run across preparation responses",
+    "synthetic game alive before sync and after changed-generation publication",
+    "SavedVariables fixture preserved",
+    "late corrupt response preserves delivered generation"
+  ],
+  "production_lua_consumer_job": 135295527157,
+  "large_consumer_metrics": {
+    "all_parts_compile_execute_ms": 34,
+    "declared_parts": 64,
+    "decoded_rows": 706,
+    "enumerated_items": 45124,
+    "enumeration_and_validation_ms": 18708,
+    "generation": "303a3d54ef167799739686b4a881a4b59c88d26943e62b29088280a29c5be6c5",
+    "header_retained_kib": 58,
+    "header_validation_ms": 25,
+    "largest_part_load_us": 719,
+    "largest_validation_callback_us": 3375,
+    "loaded_parts": 64,
+    "lookup_1000_us": 7463,
+    "raw_bytes": 6914009,
+    "real_game": false,
+    "records": 45125,
+    "retained_kib": 7410,
+    "root_compile_us": 63,
+    "root_execute_us": 1,
+    "synthetic": true
+  },
+  "artifacts": [
+    {
+      "id": 14492746225,
+      "name": "workshop-permissions-acceptance",
+      "sha256": "db055a90889eba85db061eb6ec5635196083559e7a4314fd62eea119d193796e"
+    },
+    {
+      "id": 14492279484,
+      "name": "workshop-production-lua-acceptance",
+      "sha256": "2bf8f96de4067ea547368b3d4e96cb30d4c02688a0bb4af5f4bb97c99a37c099"
+    },
+    {
+      "id": 14492098473,
+      "name": "companion-v2-acceptance",
+      "sha256": "54917ae2aeb17af8601940e6b27fd562a426f51919d202106bb2cd4cc8fb508a"
+    },
+    {
+      "id": 14491858740,
+      "name": "twichui-market-companion-windows-candidate",
+      "sha256": "aca7dd824efc8a97cefa7c48f921d57fa7614b4e5cd466899b1a04b13e0ee48d"
+    },
+    {
+      "id": 14491574772,
+      "name": "companion-signed-update-acceptance",
+      "sha256": "90e69bbcc001fe5580f3101eb5dc6f8eff2e0a02e38d151e1ff253a498354084"
+    }
+  ],
+  "signed_update_scope": "Existing immutable beta.9 only; no signed new-repair candidate."
+}

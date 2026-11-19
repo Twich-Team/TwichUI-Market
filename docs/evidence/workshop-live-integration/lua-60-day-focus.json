@@ -1,0 +1,56 @@
+{
+  "synthetic": true,
+  "real_game": false,
+  "addon_source": "12a55a5be0eb1282dcc9971fa178db07c1132596",
+  "fixture_sha256": "8b7046641d83e4da53ff1145db96ab77e9397a8df24007d9a9669ae7dbcac6e3",
+  "results": [
+    {
+      "compile_execute_us": 2461,
+      "decoded_rows": 412,
+      "focused_parts": 1,
+      "focused_validation_ms": 1039,
+      "header_validation_us": 28001,
+      "history_100_us": 27222,
+      "history_days": 60,
+      "largest_validation_callback_us": 6211,
+      "loaded_raw_bytes": 510076,
+      "real_game": false,
+      "records": 26342,
+      "retained_kib": 4460,
+      "root_compile_execute_us": 72,
+      "synthetic": true
+    },
+    {
+      "compile_execute_us": 2428,
+      "decoded_rows": 412,
+      "focused_parts": 1,
+      "focused_validation_ms": 1039,
+      "header_validation_us": 27408,
+      "history_100_us": 27138,
+      "history_days": 60,
+      "largest_validation_callback_us": 7259,
+      "loaded_raw_bytes": 510076,
+      "real_game": false,
+      "records": 26342,
+      "retained_kib": 4460,
+      "root_compile_execute_us": 72,
+      "synthetic": true
+    },
+    {
+      "compile_execute_us": 2611,
+      "decoded_rows": 412,
+      "focused_parts": 1,
+      "focused_validation_ms": 1034,
+      "header_validation_us": 28936,
+      "history_100_us": 27055,
+      "history_days": 60,
+      "largest_validation_callback_us": 6042,
+      "loaded_raw_bytes": 510076,
+      "real_game": false,
+      "records": 26342,
+      "retained_kib": 4460,
+      "root_compile_execute_us": 74,
+      "synthetic": true
+    }
+  ]
+}
