@@ -1,0 +1,16 @@
+{
+  "fixture": true,
+  "source_commit": "be09ff9f8adc1d5c8b8c12d04032b954863aa553",
+  "from_version": "0.1.0",
+  "to_version": "2.0.0-beta.10",
+  "actual_old_installer": true,
+  "actual_new_installer": true,
+  "legacy_credentials_preserved": true,
+  "cache_preserved": true,
+  "connection_settings_preserved": true,
+  "legacy_metadata_migrated": true,
+  "new_native_sync": true,
+  "export_contract_preserved": true,
+  "signed_updater_sdk_install": false,
+  "uninstall_data_preservation_verified_by_parent": true
+}

@@ -1,0 +1,13 @@
+{
+  "owner_statement": "Okay then do it",
+  "context": "Owner requested publication after explanation that beta.9 lacks the reviewed Workshop repairs and beta.10 needs versioning/signing/publication.",
+  "authorizes": [
+    "publish repaired Companion through existing signed private-beta channel",
+    "retain prior immutable releases and existing updater key"
+  ],
+  "payload_source_commit": "be09ff9f8adc1d5c8b8c12d04032b954863aa553",
+  "paired_addon_main_commit": "074435e41521e97ad125e3094c45a9eb767f90e1",
+  "visual_repair_baseline": "8dfa5116397403bb93e90160e8706285f272f64f",
+  "physical_pc_acceptance": false,
+  "scope_preserves_existing_private_beta_limitations": true
+}
