@@ -18,6 +18,7 @@ fn main()->Result<(),Box<dyn std::error::Error>> {
     let started=Instant::now();let mut reports=Vec::new();
     for version in [1,2] {
         let base=root.join(format!("contract-{version}"));let installation=base.join("capability-fixture");
+        fs::create_dir_all(&base)?;
         if version==2 {
             let addon=installation.join("Interface/AddOns/TwichUI_Workshop");fs::create_dir_all(&addon)?;
             fs::write(addon.join("MarketDelivery.json"),br#"{"summary_history_contract":2,"summary_history_partition_bytes":1048576,"summary_history_total_bytes":67108864}"#)?;

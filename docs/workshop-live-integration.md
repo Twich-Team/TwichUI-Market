@@ -1,5 +1,7 @@
 # Workshop live integration repair
 
+**Current owner-authorized completion:** The server portion is deployed and addon PR62 is merged into main; [deployment acceptance and rollback](workshop-history-release.md) supersede the earlier review-only statements for those exact scopes. New Companion/addon publication remains separate. The evidence below records the earlier coordinated review candidate.
+
 Owner follow-up authorizes repairing repeated Companion sync, publishing while WoW is open, built-in AddOns grouping/icon, visible in-game consumption and actual Market history, while retaining standalone local scans. Work is isolated from the live beta.9 release and the original coordinated draft branches.
 
 ## Implementation
