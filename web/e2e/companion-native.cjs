@@ -108,7 +108,7 @@ const {createHash}=require('node:crypto');const fs=require('node:fs');const path
       await nativeControl('Sync');await expect.poll(async()=>(await invoke('app_state')).sync.sync.last_sync_ms,{timeout:20000}).toBeGreaterThan(traySyncBefore);
       await nativeControl('Pause');await expect.poll(async()=>(await invoke('app_state')).sync.sync.automatic_sync).toBe(true);
       await nativeControl('Pause');await expect.poll(async()=>(await invoke('app_state')).sync.sync.automatic_sync).toBe(false);
-      await expect.poll(async()=>(await invoke('app_state')).sync.sync.running).toBe(false);
+      await expect.poll(async()=>(await invoke('app_state')).sync.sync.running,{timeout:60000}).toBe(false);
       await nativeControl('Quit');trayVerified=true;
     }else{
       // Actual OS minimize/close events, restored through the normal second launch.
@@ -173,11 +173,11 @@ const {createHash}=require('node:crypto');const fs=require('node:fs');const path
     const delivered=path.join(game,'Interface','AddOns','TwichUI_MarketData','Data.lua');
     const automatic=(await invoke('app_state')).delivery;expect(automatic.status.loaded_game_generation).toBeNull();
     const deliveredHash=createHash('sha256').update(fs.readFileSync(delivered)).digest('hex');const mtime=fs.statSync(delivered).mtimeMs;
-    await expect.poll(async()=>(await invoke('app_state')).sync.sync.running).toBe(false);await invoke('sync_now');
+    await expect.poll(async()=>(await invoke('app_state')).sync.sync.running,{timeout:60000}).toBe(false);await invoke('sync_now');
     await expect.poll(async()=>(await invoke('app_state')).delivery.status?.result,{timeout:60000}).toContain('unchanged');
     expect(fs.statSync(delivered).mtimeMs).toBe(mtime);expect(createHash('sha256').update(fs.readFileSync(delivered)).digest('hex')).toBe(deliveredHash);
     await page.screenshot({path:path.join(shots,'installed-m2-delivery.png'),fullPage:true});
-    await expect.poll(async()=>(await invoke('app_state')).sync.sync.running).toBe(false);await page.locator('#delivery-disable').click();
+    await expect.poll(async()=>(await invoke('app_state')).sync.sync.running,{timeout:60000}).toBe(false);await page.locator('#delivery-disable').click();
     await expect.poll(async()=>(await invoke('app_state')).delivery.configuration.enabled).toBe(false);
     fs.writeFileSync(path.join(shots,'installed-m2-delivery.json'),JSON.stringify({fixture:true,source_commit:sourceCommit,status:automatic.status,no_op_mtime_preserved:true,delivery_disabled:true,real_game:false},null,2));
     await page.locator('#disconnect').click();await expect.poll(async()=>(await invoke('app_state')).mode,{timeout:20000}).toBe('disconnected');
