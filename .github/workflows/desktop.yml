@@ -40,7 +40,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: Twich-Team/TwichUI
-          ref: c1a46a5cbfb9382eb24d49fb64bd4d65ac5f27ac
+          ref: be2d0932cd247c2f5291840abb7d65af68682246
           path: coordinated-addon
           persist-credentials: false
       - run: cargo test --manifest-path desktop/Cargo.toml --workspace --locked
@@ -100,7 +100,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: Twich-Team/TwichUI
-          ref: c1a46a5cbfb9382eb24d49fb64bd4d65ac5f27ac
+          ref: be2d0932cd247c2f5291840abb7d65af68682246
           path: coordinated-addon
           persist-credentials: false
       - uses: dtolnay/rust-toolchain@stable
@@ -139,7 +139,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: Twich-Team/TwichUI
-          ref: c1a46a5cbfb9382eb24d49fb64bd4d65ac5f27ac
+          ref: be2d0932cd247c2f5291840abb7d65af68682246
           persist-credentials: false
       - uses: actions/download-artifact@v4
         with:
