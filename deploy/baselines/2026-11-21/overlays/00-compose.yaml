@@ -1,0 +1,134 @@
+name: twichui-market
+x-limits: &limits
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options: {max-size: "5m", max-file: "2"}
+  security_opt: [no-new-privileges:true]
+services:
+  db:
+    <<: *limits
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: market
+      POSTGRES_USER: market
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+    volumes: [market-data:/var/lib/postgresql/data]
+    shm_size: 128mb
+    mem_limit: 768m
+    cpus: 1
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U market -d market"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  migrate:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    image: twichui-market-backend:dev
+    environment: &api-env
+      DATABASE_URL: postgresql+psycopg://market:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@db:5432/market
+      APP_ORIGIN: ${APP_ORIGIN:-http://127.0.0.1:18780}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      SYNC_CURSOR_SECRET: ${SYNC_CURSOR_SECRET:-}
+      RAW_LISTING_DAYS: ${RAW_LISTING_DAYS:-7}
+      DETAILED_STATISTICS_DAYS: ${DETAILED_STATISTICS_DAYS:-90}
+      ITEM_COMMUNITY_FALLBACK_ENABLED: ${ITEM_COMMUNITY_FALLBACK_ENABLED:-false}
+      HISTORY_COMPACTION_ENABLED: ${HISTORY_COMPACTION_ENABLED:-false}
+    depends_on: {db: {condition: service_healthy}}
+    command: [alembic, upgrade, head]
+    mem_limit: 256m
+    cpus: 0.5
+    security_opt: [no-new-privileges:true]
+  api:
+    <<: *limits
+    image: twichui-market-backend:dev
+    environment: *api-env
+    volumes: [./artifacts/backup-status:/backup-status:ro]
+    depends_on: {migrate: {condition: service_completed_successfully}}
+    mem_limit: 384m
+    cpus: 0.5
+    read_only: true
+    tmpfs: [/tmp:size=32m]
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health',timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+  proxy:
+    <<: *limits
+    build:
+      context: .
+      dockerfile: deploy/web.Dockerfile
+    image: twichui-market-web:dev
+    ports: ["127.0.0.1:${MARKET_PORT:-18780}:80"]
+    volumes: [./deploy/Caddyfile:/etc/caddy/Caddyfile:ro, ./deploy/routes.caddy:/etc/caddy/routes.caddy:ro]
+    depends_on: {api: {condition: service_healthy}}
+    mem_limit: 128m
+    cpus: 0.25
+  monitor:
+    <<: *limits
+    image: twichui-market-backend:dev
+    environment: *api-env
+    depends_on: {migrate: {condition: service_completed_successfully}}
+    command: [python, -m, market.storage]
+    mem_limit: 128m
+    cpus: 0.25
+    read_only: true
+    tmpfs: [/tmp:size=16m]
+  worker:
+    <<: *limits
+    profiles: [collector]
+    image: twichui-market-backend:dev
+    environment:
+      <<: *api-env
+      BLIZZARD_CLIENT_ID: ${BLIZZARD_CLIENT_ID:-}
+      BLIZZARD_CLIENT_SECRET: ${BLIZZARD_CLIENT_SECRET:-}
+      MAX_DATABASE_BYTES: ${MAX_DATABASE_BYTES:-5368709120}
+      ITEM_ENRICHMENT_IN_COLLECTOR: "false"
+      COLLECTION_LOG_DAYS: ${COLLECTION_LOG_DAYS:-90}
+      SECURITY_EVENT_DAYS: ${SECURITY_EVENT_DAYS:-365}
+    depends_on: {migrate: {condition: service_completed_successfully}}
+    command: [python, -m, market.worker]
+    mem_limit: 384m
+    cpus: 0.5
+    read_only: true
+    tmpfs: [/tmp:size=32m]
+  enrichment:
+    <<: *limits
+    profiles: [collector]
+    image: twichui-market-backend:dev
+    environment:
+      <<: *api-env
+      BLIZZARD_CLIENT_ID: ${BLIZZARD_CLIENT_ID:-}
+      BLIZZARD_CLIENT_SECRET: ${BLIZZARD_CLIENT_SECRET:-}
+    depends_on: {migrate: {condition: service_completed_successfully}}
+    command: [python, -m, market.enrichment]
+    mem_limit: 192m
+    cpus: 0.25
+    pids_limit: 100
+    read_only: true
+    tmpfs: [/tmp:size=16m]
+  backup:
+    <<: *limits
+    profiles: [operations]
+    build: ./deploy/backup
+    image: twichui-market-backup:dev
+    environment:
+      PGHOST: db
+      PGUSER: market
+      PGDATABASE: market
+      PGCONNECT_TIMEOUT: 10
+      PGPASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      BACKUP_KEEP: ${BACKUP_KEEP:-7}
+      BACKUP_INTERVAL_SECONDS: ${BACKUP_INTERVAL_SECONDS:-86400}
+      MAX_BACKUP_BYTES: ${MAX_BACKUP_BYTES:-2147483648}
+    volumes: [./backups:/backups, ./artifacts/backup-status:/status]
+    depends_on: {migrate: {condition: service_completed_successfully}}
+    mem_limit: 256m
+    cpus: 0.25
+    read_only: true
+    tmpfs: [/tmp:size=32m]
+volumes:
+  market-data:

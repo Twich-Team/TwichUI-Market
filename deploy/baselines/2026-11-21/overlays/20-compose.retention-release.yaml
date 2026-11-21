@@ -1,0 +1,119 @@
+{
+  "services": {
+    "api": {
+      "image": "sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b",
+      "environment": {
+        "MAX_DATABASE_BYTES": "68719476736",
+        "MIN_DATABASE_FREE_BYTES": "34359738368",
+        "DATABASE_FILESYSTEM_PATH": "/database-filesystem",
+        "APP_COMMIT": "fe92999cc969a23684f3023638673c656efb3bce",
+        "RETENTION_SCHEDULER_INSTALLED": "true"
+      },
+      "volumes": [
+        "market-data:/database-filesystem:ro",
+        "/home/marketdev/projects/TwichUI-Market/.local/retention-recovery:/retention-recovery:ro"
+      ]
+    },
+    "local-api": {
+      "image": "sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b",
+      "environment": {
+        "MAX_DATABASE_BYTES": "68719476736",
+        "MIN_DATABASE_FREE_BYTES": "34359738368",
+        "DATABASE_FILESYSTEM_PATH": "/database-filesystem",
+        "APP_COMMIT": "fe92999cc969a23684f3023638673c656efb3bce",
+        "RETENTION_SCHEDULER_INSTALLED": "true"
+      },
+      "volumes": [
+        "market-data:/database-filesystem:ro",
+        "/home/marketdev/projects/TwichUI-Market/.local/retention-recovery:/retention-recovery:ro"
+      ]
+    },
+    "worker": {
+      "image": "sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b",
+      "environment": {
+        "MAX_DATABASE_BYTES": "68719476736",
+        "MIN_DATABASE_FREE_BYTES": "34359738368",
+        "DATABASE_FILESYSTEM_PATH": "/database-filesystem",
+        "APP_COMMIT": "fe92999cc969a23684f3023638673c656efb3bce"
+      },
+      "volumes": [
+        "market-data:/database-filesystem:ro"
+      ]
+    },
+    "monitor": {
+      "image": "sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b",
+      "environment": {
+        "MAX_DATABASE_BYTES": "68719476736",
+        "MIN_DATABASE_FREE_BYTES": "34359738368",
+        "DATABASE_FILESYSTEM_PATH": "/database-filesystem",
+        "APP_COMMIT": "fe92999cc969a23684f3023638673c656efb3bce",
+        "RAW_LISTING_DAYS": "2",
+        "DETAILED_STATISTICS_DAYS": "64"
+      },
+      "volumes": [
+        "market-data:/database-filesystem:ro"
+      ]
+    },
+    "proxy": {
+      "image": "sha256:f48f8f1a7e5a030432abde0792ee0be1aae0326950404e83036bc9c0172a6814",
+      "labels": {
+        "org.opencontainers.image.revision": "fe92999cc969a23684f3023638673c656efb3bce",
+        "gg.twich.market.change": "Authorized storage safeguards and inactive historical retention infrastructure"
+      }
+    },
+    "migrate": {
+      "image": "sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b"
+    },
+    "retention": {
+      "image": "sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b",
+      "profiles": [
+        "retention"
+      ],
+      "restart": "unless-stopped",
+      "environment": {
+        "MAX_DATABASE_BYTES": "68719476736",
+        "MIN_DATABASE_FREE_BYTES": "34359738368",
+        "DATABASE_FILESYSTEM_PATH": "/database-filesystem",
+        "DATABASE_URL": "postgresql+psycopg://market:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@db:5432/market",
+        "BACKUP_MANAGEMENT_ENABLED": "true"
+      },
+      "command": [
+        "python",
+        "-m",
+        "market.retention_worker"
+      ],
+      "secrets": [
+        "backup-manager-token"
+      ],
+      "networks": [
+        "default",
+        "backup-control"
+      ],
+      "volumes": [
+        "market-data:/database-filesystem:ro",
+        "/home/marketdev/projects/TwichUI-Market/artifacts/backup-status:/backup-status:ro",
+        "/home/marketdev/projects/TwichUI-Market/.local/retention-recovery:/retention-recovery:ro"
+      ],
+      "mem_limit": "192m",
+      "cpus": 0.25,
+      "pids_limit": 64,
+      "read_only": true,
+      "tmpfs": [
+        "/tmp:size=16m"
+      ],
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "cap_drop": [
+        "ALL"
+      ],
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "2m",
+          "max-file": "2"
+        }
+      }
+    }
+  }
+}

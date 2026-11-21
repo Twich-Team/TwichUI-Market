@@ -1,0 +1,52 @@
+# Add only after owner release review. Does not start or enable the old backup worker.
+# Keep compose.owner-backup-policy.yaml in the original production chain.
+services:
+  api:
+    environment:
+      BACKUP_MANAGEMENT_ENABLED: "true"
+    secrets: [backup-manager-token]
+    networks: [default, backup-control]
+  local-api:
+    environment:
+      BACKUP_MANAGEMENT_ENABLED: "true"
+    secrets: [backup-manager-token]
+    networks: [default, backup-control]
+  backup-manager:
+    profiles: [backup-management]
+    build:
+      context: ./deploy/backup
+      dockerfile: Management.Dockerfile
+    image: twichui-market-backup-manager:review
+    restart: unless-stopped
+    environment:
+      PGHOST: db
+      PGUSER: market
+      PGDATABASE: market
+      PGCONNECT_TIMEOUT: 10
+      PGPASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+    volumes:
+      - type: bind
+        source: ${MARKET_MANAGED_BACKUP_ROOT:?Set the reviewed absolute managed backup root}
+        target: /backups
+        bind: {create_host_path: false}
+      - backup-management-state:/state
+    secrets: [backup-manager-token]
+    networks: [default, backup-control]
+    mem_limit: 256m
+    cpus: 0.25
+    pids_limit: 64
+    read_only: true
+    tmpfs: [/tmp:size=16m]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    logging:
+      driver: json-file
+      options: {max-size: "2m", max-file: "2"}
+secrets:
+  backup-manager-token:
+    file: ${MARKET_BACKUP_TOKEN_FILE:?Set the private token file}
+volumes:
+  backup-management-state:
+networks:
+  backup-control:
+    internal: true

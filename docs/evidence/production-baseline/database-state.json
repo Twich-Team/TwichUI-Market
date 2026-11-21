@@ -1,0 +1,17 @@
+{
+  "schema": "retention_20261118",
+  "enabled_markets": [
+    {
+      "id": 2,
+      "house_id": 114,
+      "interval_seconds": 300,
+      "failures": 0
+    }
+  ],
+  "retention_automation": [
+    {
+      "enabled": true
+    }
+  ],
+  "retention_batches": 0
+}

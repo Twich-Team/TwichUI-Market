@@ -1,0 +1,360 @@
+{
+  "enrichment": {
+    "backend/market/worker.py": {
+      "sha256": "cabcb64f62c38bb8f686ce573cf4b84c7229474f376d943d3b30cfb2e1cb9237",
+      "matching_change_commits": [
+        "45f4ce0f367766086243c637824ce86fb260adda"
+      ]
+    },
+    "backend/market/storage.py": {
+      "sha256": "83c0b16d6d1f4380e43225f033eb6ef1a0352eb38b75758f31a1338aaa59d4c2",
+      "matching_change_commits": [
+        "ba8434ec845da01dfd91bf928aa1ebdf8ba79941"
+      ]
+    },
+    "backend/market/metadata_providers.py": {
+      "sha256": "b732bb11d113d6de3c1f18e066a4e1e38109646dfa46f6d99a024cb345024725",
+      "matching_change_commits": [
+        "aa289a5e22c83d703bed9ed92b01ccaefb34e1e0"
+      ]
+    },
+    "backend/market/metadata_catalog.py": {
+      "sha256": "001426a47ab36dfe7f4a15fac5ad1c211d0832f70c13198dff3f4d2cf7f7cd14",
+      "matching_change_commits": [
+        "8fb7b855709d0b88adbb4f72a9cdf08c13c842e5"
+      ]
+    },
+    "backend/market/enrichment.py": {
+      "sha256": "cc9722f7703040f0045025d386278cdc0fcede05c8ff5eade71f7bce306f9c49",
+      "matching_change_commits": [
+        "8588f1a90f5bd491acd804540f985fad4e1a8568"
+      ]
+    },
+    "backend/market/companion_private_beta.py": {
+      "sha256": "56e80e5e780dc431e790c8ce4f54e7dde7a264d0461d994b6fffc70badf5c87d",
+      "matching_change_commits": [
+        "c7bad2f5e84213e1c69e3eb66e8daa6540f05bc9"
+      ]
+    },
+    "backend/market/metadata.py": {
+      "sha256": "2b32bde1c02e1bc2f6c5c89323f085f8b337b8de5f6eadeff43e570c0fdbf5a7",
+      "matching_change_commits": [
+        "8588f1a90f5bd491acd804540f985fad4e1a8568"
+      ]
+    },
+    "backend/market/environment.py": {
+      "sha256": "d8e741cc778b18184b187e3eba2d9da0738d4ae2c5496c4e02baf28047869657",
+      "matching_change_commits": [
+        "ece9100175168f297c3d9f56a04c2ae4a7686e65"
+      ]
+    },
+    "backend/market/bridge_api.py": {
+      "sha256": "c9f3c2f0c29fe166b0d444ada4a64a934da684a1776d8a98462ae8d4d3621131",
+      "matching_change_commits": [
+        "1f76f8468722f07430acb3a10d26d6ad2d20e9cd"
+      ]
+    },
+    "backend/market/catalogue.py": {
+      "sha256": "c1c4653b41c0cf5210a761adc15c7ac53091fc73f1473ffdcd146e60298475eb",
+      "matching_change_commits": [
+        "0c883aacd1f59c5f96e5b8aadc33c15eb0a30c02"
+      ]
+    },
+    "backend/market/probe.py": {
+      "sha256": "74ce9045ba6c55934ce81700e81cbf8c6ded241a94f92c8bca5f853d719a94ec",
+      "matching_change_commits": [
+        "8588f1a90f5bd491acd804540f985fad4e1a8568"
+      ]
+    },
+    "backend/market/release_publisher.py": {
+      "sha256": "d7ecfa5c8f8c4327d368898200d1978e49173dea869cbaa5a08dfb0bc0779099",
+      "matching_change_commits": [
+        "e7d6b20906c3a3488efb4f63a38e68f385791fdc"
+      ]
+    },
+    "backend/market/intraday_history.py": {
+      "sha256": "35a86a6181d92f59e4b3bb84df2c9085f4e73c0fed8548ae3499c7ab69ca3233",
+      "matching_change_commits": [
+        "9cf6a436caa5c3385edddcf77367e7e69073679e"
+      ]
+    },
+    "backend/market/metadata_recovery.py": {
+      "sha256": "31cef446b05f30d471b5b811f79cbf3eb3554166b03d7181359b31e52abc061f",
+      "matching_change_commits": [
+        "11ff6785ef6420fac6bd48ec34cd3ce9d483db66"
+      ]
+    },
+    "backend/market/bootstrap.py": {
+      "sha256": "35af11b821c4627644b4e2c6334ac69aa2a96dcaa47e3c652df7d3c4a79a7bd8",
+      "matching_change_commits": [
+        "c34659edb35549885d6fef0288f1ed53f25403b3"
+      ]
+    },
+    "backend/market/companion_releases.py": {
+      "sha256": "c04c1cdd2bbedabd4babe22ac5a351e3aeeb7dcf203334b01217b9c642b42399",
+      "matching_change_commits": [
+        "e7d6b20906c3a3488efb4f63a38e68f385791fdc"
+      ]
+    },
+    "backend/market/retention.py": {
+      "sha256": "f2dc88cef42440af7400b172b6a275c0ad0323674d44046ba3b8ae2a32700cc0",
+      "matching_change_commits": [
+        "bdd6e4c456e1e393a8631e8eeae00dbc2e017125"
+      ]
+    },
+    "backend/market/metadata_coverage.py": {
+      "sha256": "28577c713a9cf5c4a1dd000685bb7f9d231294a0db2d573fd6b21bab8717c5b2",
+      "matching_change_commits": [
+        "af58c8f565014e170d4ce4fbfb66f69f6aeb0bf0"
+      ]
+    },
+    "backend/market/maintenance.py": {
+      "sha256": "f67abb1bf60c8d27bc934741ab05f1604442232e918884cb43ae0f60bbb96bd6",
+      "matching_change_commits": [
+        "bdd6e4c456e1e393a8631e8eeae00dbc2e017125"
+      ]
+    },
+    "backend/market/feasibility.py": {
+      "sha256": "746dfc57a543a1a1128f87d9a13da426fa2abf74574e2a0d22740855d4e84be3",
+      "matching_change_commits": [
+        "417e20422a2bf367d43ba1b934e00d05eb38f6c5"
+      ]
+    },
+    "backend/market/admin_records.py": {
+      "sha256": "c441a301496b76c4e4b7809d22c74732b9336017aef329f1ea15826c043596ad",
+      "matching_change_commits": [
+        "18ce04297b2d8096486a903c758d020afb499a0a"
+      ]
+    },
+    "backend/market/canonical_pricing.py": {
+      "sha256": "460014bf3365de0ae992f153c444d7698dac114412738dc708c0be9bb73bbdcc",
+      "matching_change_commits": [
+        "7823197ca5537467762ed62115f8df0204e3038e"
+      ]
+    },
+    "backend/market/metadata_models.py": {
+      "sha256": "29b5608186111767fd2db6fa9d7b53a92b535af8c069133428e4fc1be3713bb5",
+      "matching_change_commits": [
+        "18ce04297b2d8096486a903c758d020afb499a0a"
+      ]
+    },
+    "backend/market/item_attributes.py": {
+      "sha256": "74ff2605638cd315ddd3da5b571d8bb18906fdbe0e7851f962e71c33035a8be6",
+      "matching_change_commits": [
+        "cafa1be69a9744fb65c110bcd3723f61d8245ab0"
+      ]
+    },
+    "backend/market/provider_rates.py": {
+      "sha256": "71434f51190a243bcc3e25ce413c12fba7d20ab9e33574bb7d2c06f7193ad849",
+      "matching_change_commits": [
+        "8588f1a90f5bd491acd804540f985fad4e1a8568"
+      ]
+    },
+    "backend/market/item_profiles.py": {
+      "sha256": "3c898849202aeb1dbcb0aa217508da87964d6711f9997700459f97963c3e8ac5",
+      "matching_change_commits": [
+        "aa289a5e22c83d703bed9ed92b01ccaefb34e1e0"
+      ]
+    },
+    "backend/market/foreverdb.py": {
+      "sha256": "dacca4fb378767dd32486dfc9ab0be548723cbc4877d1a495d9d496c3a466e7d",
+      "matching_change_commits": [
+        "e3a23a6d7d108f6edaeaccb5c6faeffa21783d22"
+      ]
+    },
+    "backend/market/distribution.py": {
+      "sha256": "683177735473598f77b3ca16255963784955c19aa831a83648d47bbff196c6e5",
+      "matching_change_commits": [
+        "c1c16a4450555c6a52feade4ce180d8c938aaee9"
+      ]
+    },
+    "backend/market/current_listings.py": {
+      "sha256": "8367ab7d8074a252b1a7b5f89508409284509355a8ba7b6c39d36d4ceb0f47aa",
+      "matching_change_commits": [
+        "9cf6a436caa5c3385edddcf77367e7e69073679e"
+      ]
+    },
+    "backend/market/companion_auth.py": {
+      "sha256": "6ca0ba99cd7244c2d875391779f695f932a7dfd46b95012ff0cb10090d7bb5d5",
+      "matching_change_commits": [
+        "f1b6b4d87a07c6f0044d29034bdcd5d96d503e91"
+      ]
+    },
+    "backend/market/security.py": {
+      "sha256": "485ee4cb3b7c027b6cca698a103ff365f7ab4ff22c9e966193404cc1a831a39e",
+      "matching_change_commits": [
+        "3105b17e6fd91e7deb5b6ae354798f2b0eacba67"
+      ]
+    },
+    "backend/market/pricing.py": {
+      "sha256": "9f3f5dfa7968b29758abe8b976956a15e32ae64b20f31ef9c3cb08fbbad95afa",
+      "matching_change_commits": [
+        "42374c434a550b093ec8ec63b785e84702efc5ce"
+      ]
+    },
+    "backend/market/identity_registration.py": {
+      "sha256": "22b002ddd76d7e50358f46732128f36edd18aadb3f80104cd0fe836415dd5454",
+      "matching_change_commits": [
+        "85e74a8ff32442de67761fa9f93857a9679d77a1"
+      ]
+    },
+    "backend/market/__init__.py": {
+      "sha256": "6a7bbc88d8495bc6ec9b3d354254c2feb1cbb90e08b3b2ce6465972e8f2aa416",
+      "matching_change_commits": [
+        "8ca3c37ff6b871a56b307abb3a1905f0187c8486"
+      ]
+    },
+    "backend/market/db.py": {
+      "sha256": "c6cc74c7dde0652733e3db65aafda9cb305321c82b387ab91ce61bc6bba5d63a",
+      "matching_change_commits": [
+        "c34659edb35549885d6fef0288f1ed53f25403b3"
+      ]
+    },
+    "backend/market/companion_devices.py": {
+      "sha256": "f506b0b311b7613d355f21e97a0cdc83a19006139f097307579e1f4f7bc8e794",
+      "matching_change_commits": [
+        "bdd6e4c456e1e393a8631e8eeae00dbc2e017125"
+      ]
+    },
+    "backend/market/market_configuration.py": {
+      "sha256": "afa6cb38a0a626405ff66777363ff351db1838b17c9893f8e73f9b2b3c66cb7d",
+      "matching_change_commits": [
+        "13599b0836b20894fa539e3e69a079245f113c7a"
+      ]
+    },
+    "backend/market/provider_secrets.py": {
+      "sha256": "93eda45f47e38b0a9aed3af7c9850c2836dcf0159558c8c4b5dff776c4823b86",
+      "matching_change_commits": [
+        "cafa1be69a9744fb65c110bcd3723f61d8245ab0"
+      ]
+    },
+    "backend/market/verification.py": {
+      "sha256": "3ff3a0cd2af95d2cc32031c79648b78a38cf90446d702161f3afb12211f3ada3",
+      "matching_change_commits": [
+        "2f4a72a83d99f705cb1c44edd8775b6c6404e4ce"
+      ]
+    },
+    "backend/market/archive_api.py": {
+      "sha256": "0c5e04f81cad172656e8c6b8a9d3057b47ed4c11a5eb24e796907f24d512dcea",
+      "matching_change_commits": [
+        "2487360bb004e28ad14b6987ffbd8604c3495118"
+      ]
+    },
+    "backend/market/market_api.py": {
+      "sha256": "9b9b5ba20e5f6c177b57622fad647dd8bfd80c41e8d41549a02dc274b9880eb6",
+      "matching_change_commits": [
+        "bdd6e4c456e1e393a8631e8eeae00dbc2e017125"
+      ]
+    },
+    "backend/market/private_beta_publisher.py": {
+      "sha256": "a70cbe797b9184030d7c4b5168390272734df5a133c8f55cbb0a52ef1214c406",
+      "matching_change_commits": [
+        "e7d6b20906c3a3488efb4f63a38e68f385791fdc"
+      ]
+    },
+    "backend/market/sync_generation.py": {
+      "sha256": "52935fa07312b822dbec47401ddcf36e1339cdb99994692d6b3441aa235ee1fe",
+      "matching_change_commits": [
+        "b2f7825ab8d0e08d2f5107bc45e3e4b2c4099ba3"
+      ]
+    },
+    "backend/market/metadata_api.py": {
+      "sha256": "5fdb65b1af6ef97de85e39ecad84d836dd34c367992a6aceb369213d272e0222",
+      "matching_change_commits": [
+        "cafa1be69a9744fb65c110bcd3723f61d8245ab0"
+      ]
+    },
+    "backend/market/opportunities.py": {
+      "sha256": "6a2d511054bc2f326419b6f3eafd0b8af332e29179b1114eeeb08e2e5b4687ea",
+      "matching_change_commits": [
+        "6d0cee6472fda04163bbdb1f5cf46f23e738db8c"
+      ]
+    },
+    "backend/market/sync_api.py": {
+      "sha256": "453fb3cda2f1f933680c72e60dfcb66040acdee2da0b7d19aa29ea5b846d1cb8",
+      "matching_change_commits": [
+        "b2f7825ab8d0e08d2f5107bc45e3e4b2c4099ba3"
+      ]
+    },
+    "backend/market/models.py": {
+      "sha256": "80272bfdfbdf785a18e15c97d40e28aef26bb88965f1fd87868a60e16ec7cf11",
+      "matching_change_commits": [
+        "18ce04297b2d8096486a903c758d020afb499a0a"
+      ]
+    },
+    "backend/market/bridge_contract.py": {
+      "sha256": "e0b48cc43047702b520345a3c243a755a852a54b0a1f7fadd15a6207486ee9cd",
+      "matching_change_commits": [
+        "3d0db438137ef811450a9efe77ceadd2d708896d"
+      ]
+    },
+    "backend/market/app.py": {
+      "sha256": "075c5857ecf6e6504d861f2a03922887329efcd433dac573d4d1202cabc2990e",
+      "matching_change_commits": [
+        "8fb7b855709d0b88adbb4f72a9cdf08c13c842e5"
+      ]
+    },
+    "backend/market/ingest.py": {
+      "sha256": "057ac244be8ec33aa9ad4fd96102f17a5abd7c2078b4fedc2d80ca5b62921b6e",
+      "matching_change_commits": [
+        "13599b0836b20894fa539e3e69a079245f113c7a"
+      ]
+    },
+    "backend/market/preferences.py": {
+      "sha256": "cd190bf897ec09d4f9e093ac469c876d419cef588aa4d5d8a964f47bcfc39778",
+      "matching_change_commits": [
+        "3e794ad880cabadb96ca9274248ac521dc6fc471"
+      ]
+    },
+    "backend/market/item_media.py": {
+      "sha256": "75b04ef04823ca6efa950f8e7995f87396acb5b370a342b3df0144ba87a3bceb",
+      "matching_change_commits": [
+        "50db5f333ab8e182e3d4ed9f56aa544828f2bcd0"
+      ]
+    },
+    "backend/market/metadata_admin.py": {
+      "sha256": "5a1852bf63c2955fa86ddb4dcb7523e1ac8be4258a417b39ee5743d1385e1d5b",
+      "matching_change_commits": [
+        "8fb7b855709d0b88adbb4f72a9cdf08c13c842e5"
+      ]
+    },
+    "backend/market/community_metadata.py": {
+      "sha256": "d562af420b28762900f93af8dc7606b034d710cd6113deba5733d86d8e288a9e",
+      "matching_change_commits": [
+        "8588f1a90f5bd491acd804540f985fad4e1a8568"
+      ]
+    },
+    "backend/market/recovery_tracker.py": {
+      "sha256": "749f2245b90b8038e96644efc63b6cb58e0a001129d449155a6ab7c77274050f",
+      "matching_change_commits": [
+        "11ff6785ef6420fac6bd48ec34cd3ce9d483db66"
+      ]
+    },
+    "backend/market/recovery_planner.py": {
+      "sha256": "dc84981147d876f84b6699cd85d65a2a8220af3b041dd8e8ea707143a6834843",
+      "matching_change_commits": [
+        "11ff6785ef6420fac6bd48ec34cd3ce9d483db66"
+      ]
+    },
+    "backend/market/recovery_policy.py": {
+      "sha256": "d42751f8369a0297764f18211f6f3fe2ddeef637cc34cd3470c3a4161ec215e2",
+      "matching_change_commits": [
+        "18ce04297b2d8096486a903c758d020afb499a0a"
+      ]
+    }
+  },
+  "api": {
+    "contracts/workshop-summary/v1/addon-source.txt": {
+      "sha256": "c425c4aa7098b72c74cd5fd814af987aee90162823b589b7afedacae2cc0d9cb",
+      "matching_change_commits": [
+        "4b0ff82fbf6e38937a0727e781a8aa79efac79c6"
+      ]
+    },
+    "contracts/workshop-summary/v2/addon-source.txt": {
+      "sha256": "bdf270f82d717561be8980c72fc3b434398594f324da0b834a4c869de9d39802",
+      "matching_change_commits": [
+        "3a8ecca090240f88fa83111ea544796a60ac4015"
+      ]
+    }
+  }
+}
