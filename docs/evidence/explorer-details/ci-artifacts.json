@@ -1,0 +1,105 @@
+{
+  "total_count": 5,
+  "artifacts": [
+    {
+      "id": 14149950322,
+      "node_id": "MDg6QXJ0aWZhY3QxNDE0OTk1MDMyMg==",
+      "name": "item-modernization-browser-evidence",
+      "size_in_bytes": 5343968,
+      "url": "https://api.github.com/repos/Twich-Team/TwichUI-Market/actions/artifacts/14149950322",
+      "archive_download_url": "https://api.github.com/repos/Twich-Team/TwichUI-Market/actions/artifacts/14149950322/zip",
+      "expired": false,
+      "digest": "sha256:95cf314c8c879014feb6f48ac71bdfd7b3a851bf3e6f354275eaae4be0ab3a12",
+      "created_at": "2026-11-15T06:15:20Z",
+      "updated_at": "2026-11-15T06:15:20Z",
+      "expires_at": "2027-02-13T06:10:15Z",
+      "workflow_run": {
+        "id": 43684211813,
+        "repository_id": 1457156728,
+        "head_repository_id": 1457156728,
+        "head_branch": "feature/explorer-item-details",
+        "head_sha": "b3e48bd8408cfb7ba09115abfc3ccc12a721d480"
+      }
+    },
+    {
+      "id": 14148969065,
+      "node_id": "MDg6QXJ0aWZhY3QxNDE0ODk2OTA2NQ==",
+      "name": "metadata-recovery-browser-evidence",
+      "size_in_bytes": 17204560,
+      "url": "https://api.github.com/repos/Twich-Team/TwichUI-Market/actions/artifacts/14148969065",
+      "archive_download_url": "https://api.github.com/repos/Twich-Team/TwichUI-Market/actions/artifacts/14148969065/zip",
+      "expired": false,
+      "digest": "sha256:685055e0bb8de882e24721b1cbeef99b19d11e2808e2f13ce6473f5098b9c5b8",
+      "created_at": "2026-11-15T06:15:18Z",
+      "updated_at": "2026-11-15T06:15:18Z",
+      "expires_at": "2027-02-13T06:10:15Z",
+      "workflow_run": {
+        "id": 43684211813,
+        "repository_id": 1457156728,
+        "head_repository_id": 1457156728,
+        "head_branch": "feature/explorer-item-details",
+        "head_sha": "b3e48bd8408cfb7ba09115abfc3ccc12a721d480"
+      }
+    },
+    {
+      "id": 14148959160,
+      "node_id": "MDg6QXJ0aWZhY3QxNDE0ODk1OTE2MA==",
+      "name": "explorer-item-details-review-evidence",
+      "size_in_bytes": 9477860,
+      "url": "https://api.github.com/repos/Twich-Team/TwichUI-Market/actions/artifacts/14148959160",
+      "archive_download_url": "https://api.github.com/repos/Twich-Team/TwichUI-Market/actions/artifacts/14148959160/zip",
+      "expired": false,
+      "digest": "sha256:3fa44c98ab93a59c8598b0b696affbedec43ad0964374d56e912c6e761a626ca",
+      "created_at": "2026-11-15T06:15:24Z",
+      "updated_at": "2026-11-15T06:15:24Z",
+      "expires_at": "2027-02-13T06:10:15Z",
+      "workflow_run": {
+        "id": 43684211813,
+        "repository_id": 1457156728,
+        "head_repository_id": 1457156728,
+        "head_branch": "feature/explorer-item-details",
+        "head_sha": "b3e48bd8408cfb7ba09115abfc3ccc12a721d480"
+      }
+    },
+    {
+      "id": 14148954099,
+      "node_id": "MDg6QXJ0aWZhY3QxNDE0ODk1NDA5OQ==",
+      "name": "administration-and-quality-review-evidence",
+      "size_in_bytes": 12887407,
+      "url": "https://api.github.com/repos/Twich-Team/TwichUI-Market/actions/artifacts/14148954099",
+      "archive_download_url": "https://api.github.com/repos/Twich-Team/TwichUI-Market/actions/artifacts/14148954099/zip",
+      "expired": false,
+      "digest": "sha256:1ea1c549c1172d9ae92fef826bfdeac78ad6c62be969791d415299fb2b3a68d5",
+      "created_at": "2026-11-15T06:15:15Z",
+      "updated_at": "2026-11-15T06:15:15Z",
+      "expires_at": "2027-02-13T06:10:15Z",
+      "workflow_run": {
+        "id": 43684211813,
+        "repository_id": 1457156728,
+        "head_repository_id": 1457156728,
+        "head_branch": "feature/explorer-item-details",
+        "head_sha": "b3e48bd8408cfb7ba09115abfc3ccc12a721d480"
+      }
+    },
+    {
+      "id": 14148939012,
+      "node_id": "MDg6QXJ0aWZhY3QxNDE0ODkzOTAxMg==",
+      "name": "companion-private-beta-browser-evidence",
+      "size_in_bytes": 1117639,
+      "url": "https://api.github.com/repos/Twich-Team/TwichUI-Market/actions/artifacts/14148939012",
+      "archive_download_url": "https://api.github.com/repos/Twich-Team/TwichUI-Market/actions/artifacts/14148939012/zip",
+      "expired": false,
+      "digest": "sha256:d0b6649b1df4147588530e47f64bf0fe50fbfb8ea38a78667aad8c8a0ef3cb05",
+      "created_at": "2026-11-15T06:15:22Z",
+      "updated_at": "2026-11-15T06:15:22Z",
+      "expires_at": "2027-02-13T06:10:15Z",
+      "workflow_run": {
+        "id": 43684211813,
+        "repository_id": 1457156728,
+        "head_repository_id": 1457156728,
+        "head_branch": "feature/explorer-item-details",
+        "head_sha": "b3e48bd8408cfb7ba09115abfc3ccc12a721d480"
+      }
+    }
+  ]
+}

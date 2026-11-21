@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:twichui-market:sync-page:v1",
+  "title": "Market synchronization page v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["contract_version", "market_id", "algorithm", "changes", "cursor", "has_more", "target_observation_id", "observed_at", "synthetic"],
+  "$defs": {
+    "itemId": {"type": "integer", "minimum": 1, "maximum": 2147483647},
+    "variant": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "change": {
+      "type": "object", "additionalProperties": false,
+      "required": ["operation", "item_id", "variant_key", "value"],
+      "properties": {
+        "operation": {"enum": ["upsert", "delete"]},
+        "item_id": {"$ref": "#/$defs/itemId"},
+        "variant_key": {"$ref": "#/$defs/variant"},
+        "value": {"oneOf": [{"$ref": "urn:twichui-market:valuation:v1"}, {"type": "null"}]}
+      },
+      "allOf": [
+        {"if": {"properties": {"operation": {"const": "delete"}}}, "then": {"properties": {"value": {"type": "null"}}}},
+        {"if": {"properties": {"operation": {"const": "upsert"}}}, "then": {"properties": {"value": {"$ref": "urn:twichui-market:valuation:v1"}}}}
+      ]
+    }
+  },
+  "allOf": [{"if": {"properties": {"target_observation_id": {"const": "0"}}}, "then": {"properties": {"changes": {"maxItems": 0}, "has_more": {"const": false}, "observed_at": {"type": "null"}}}, "else": {"properties": {"observed_at": {"type": "string"}}}}],
+  "properties": {
+    "contract_version": {"const": 1},
+    "market_id": {"$ref": "#/$defs/itemId"},
+    "algorithm": {"const": "asking-v1-provisional"},
+    "changes": {"type": "array", "maxItems": 100, "items": {"$ref": "#/$defs/change"}},
+    "cursor": {"type": "string", "minLength": 1, "maxLength": 2048},
+    "has_more": {"type": "boolean"},
+    "target_observation_id": {"type": "string", "pattern": "^(0|[1-9][0-9]{0,19})$"},
+    "observed_at": {"type": ["string", "null"], "format": "date-time"},
+    "synthetic": {"type": "boolean"}
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "read_only": true,
+  "statement_limit_ms": 750,
+  "position": "representative middle page of current and prior changed observations; not an owner-PC request",
+  "snapshot_count": 2,
+  "target_variants": 27124,
+  "stages": {
+    "deployed_keys": {
+      "timeout_ms": 750
+    },
+    "candidate_keys": {
+      "elapsed_ms": 6.349609000608325,
+      "keys": 51
+    },
+    "target_history_ms": 11.199074098840356,
+    "target_pricing": {
+      "elapsed_ms": 30.728263081982732,
+      "keys": 50
+    },
+    "base_history_ms": 52.2421810310334,
+    "base_pricing": {
+      "elapsed_ms": 5.969057092443109,
+      "keys": 50
+    }
+  }
+}

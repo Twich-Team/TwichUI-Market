@@ -1,0 +1,91 @@
+{
+  "origin": "https://market.twich.gg",
+  "certificate_verification": true,
+  "all_release_assets_match": true,
+  "assets": [
+    {
+      "path": "index.html",
+      "sha256": "72b21cac8c8d1f15f6f487d35c49cb370861a22e8717f0f8f008d7bc8d652d19",
+      "bytes": 477,
+      "status": 200
+    },
+    {
+      "path": "assets/deals-BMvQ1pbw.js",
+      "sha256": "4f77cd1bb9e9d410c3a85178cf0eba65bc398412acc042e998c6db273748968c",
+      "bytes": 9789,
+      "status": 200
+    },
+    {
+      "path": "assets/data-table-Djs60-0r.js",
+      "sha256": "276c8c4fbbe6c00196b31c74c091d12e9a4240a03d92c2329125bba856c0c46d",
+      "bytes": 44670,
+      "status": 200
+    },
+    {
+      "path": "assets/settings-DEMZljCU.js",
+      "sha256": "6fcfb978286d67f6fe662a58d29dbbf0fb2c5f4cac740731e729e556fb5084b2",
+      "bytes": 58331,
+      "status": 200
+    },
+    {
+      "path": "assets/companion-devices-Bxx-yAZ4.js",
+      "sha256": "1bae2677b723538096ff60895046a0a5e2e78a6be87aa5e9c26aae61de8786ca",
+      "bytes": 8143,
+      "status": 200
+    },
+    {
+      "path": "assets/useTriggerFocusGuards-Cykp-e6y.js",
+      "sha256": "1ba8e983c5eedb30d70df4e60121a296bc222bd9320a9004df1d8030aba6c47f",
+      "bytes": 145749,
+      "status": 200
+    },
+    {
+      "path": "assets/research-D7DMhuWU.js",
+      "sha256": "d98e7fb1be2fa3b163f958f44637fe46225b1d7285e56d16113ad58573f52c56",
+      "bytes": 32491,
+      "status": 200
+    },
+    {
+      "path": "assets/companion-DwNzWcDi.js",
+      "sha256": "6b2a8aeeaae246d4c8c2e93adcad33a1cbbbe97ca951f4e2e61ffa653e5bc1de",
+      "bytes": 12630,
+      "status": 200
+    },
+    {
+      "path": "assets/index-Cwd7fUcQ.js",
+      "sha256": "1acbdfbd5216c13bcf4664b4928048e7afad7ae0b1567981976fc69e5fc64395",
+      "bytes": 267662,
+      "status": 200
+    },
+    {
+      "path": "assets/jsx-runtime-Wy9s6hX0.js",
+      "sha256": "bcb9f6586cd973c2fb2faa4a2d38d4b06660e2fe2806aaa0de1c39306ff0f69a",
+      "bytes": 8911,
+      "status": 200
+    },
+    {
+      "path": "assets/companion-approval-9kijVXm6.js",
+      "sha256": "22ab744084658b0684d886ebca77fea5c29ced3cf8b855532d2b1a441381e94a",
+      "bytes": 5018,
+      "status": 200
+    },
+    {
+      "path": "assets/chart-engine-Bzqihi_9.js",
+      "sha256": "f495c45a85be51bae393d39e5205c89230b6cdf94ad38e4079ac73da2cec1d86",
+      "bytes": 573272,
+      "status": 200
+    },
+    {
+      "path": "assets/item-details-dwLhIrGi.js",
+      "sha256": "cf4a2538234b04695e1617089cd07dd9566f6bd8ca3d4ef0f1b3c695015e804d",
+      "bytes": 57858,
+      "status": 200
+    },
+    {
+      "path": "assets/index-D98supzX.css",
+      "sha256": "c77e15639a6c0c4c0da599ac868912a36a9d4d39bb7d25ace93a044a160035b1",
+      "bytes": 29995,
+      "status": 200
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "payload_source_commit": "be09ff9f8adc1d5c8b8c12d04032b954863aa553",
+  "harness_source_commit": "216f01efd5f6488e211545b9d4d10fbb8560af99",
+  "payload_runs": {
+    "windows": 44453675733,
+    "backend": 44453675564,
+    "website": 44453675611
+  },
+  "harness_runs": {
+    "windows": 44455793968,
+    "backend": 44455793959,
+    "website": 44455793951
+  },
+  "payload_checks_passed": true,
+  "postgres_tests": 737,
+  "paired_addon_main_commit": "074435e41521e97ad125e3094c45a9eb767f90e1",
+  "large_windows_publication_fixture_variants": 45125,
+  "physical_pc_performance_claimed": false,
+  "harness_checks_passed": true,
+  "harness_canonical_ci": {
+    "windows": {
+      "id": 44455793968,
+      "source_commit": "216f01efd5f6488e211545b9d4d10fbb8560af99",
+      "repository": "Twich-Team/TwichUI-Market",
+      "path": ".github/workflows/desktop.yml",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    "backend": {
+      "id": 44455793959,
+      "source_commit": "216f01efd5f6488e211545b9d4d10fbb8560af99",
+      "repository": "Twich-Team/TwichUI-Market",
+      "path": ".github/workflows/backend.yml",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    "website": {
+      "id": 44455793951,
+      "source_commit": "216f01efd5f6488e211545b9d4d10fbb8560af99",
+      "repository": "Twich-Team/TwichUI-Market",
+      "path": ".github/workflows/web.yml",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  }
+}

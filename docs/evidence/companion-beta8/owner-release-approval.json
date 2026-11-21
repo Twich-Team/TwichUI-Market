@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "scope": "private-nsis-with-tauri-signed-updates",
+  "owner_statement": "Publish the verified TwichUI Market Companion Workshop repair and make it available through the existing website download and automatic updater. I explicitly authorize publishing this repair, including the necessary release integration, signing with the existing owner key, Windows verification, and updating the existing private-beta release pointer.",
+  "owner_approved_publication": true,
+  "owner_approved_deployment": true,
+  "source_commit": "36dc204d5975f57629ca1c830d41d8b95d2ac508",
+  "visual_approval_commit": "36dc204d5975f57629ca1c830d41d8b95d2ac508",
+  "version": "2.0.0-beta.8",
+  "installer_sha256": "60ed1c13b96fe5cc8601343ce7efb1d1730891bedaeb5a30eb060b31fe3dc9d1",
+  "windows_run_id": 44341487381,
+  "signed_update_run_id": 44345199307,
+  "updater_public_key_sha256": "5794736c840c7c09a49396e60cd569ff6b5f24f872eb0318ed95d55c16616ecf",
+  "tray_actions_verified": false,
+  "acknowledges_unverified_tray": true,
+  "deployment_scope": "Exact signed Companion beta8 immutable artifact and existing website/updater pointer; preserve previous versions, access policy, newer website/API source and all player data.",
+  "native_forever_acceptance": "not performed; generated executable metadata fixtures and restricted runner evidence only",
+  "normal_uac_owner_login_verified": false,
+  "genuine_game_consumption_verified": false,
+  "addon_publication": false,
+  "independent_retention_authorization": "Separate direct chat approval of activation with local-only recovery waiver; not inferred from Companion publication scope."
+}

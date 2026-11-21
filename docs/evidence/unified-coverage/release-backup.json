@@ -1,0 +1,9 @@
+{
+  "scope": "One temporary authorized pre-release backup; remove after isolated restore and release verification under owner policy",
+  "created_at": "2026-11-18T00:56:02.816387+00:00",
+  "bytes": 596366938,
+  "sha256": "87c058cb7213c076e81b9ed975347c81fb7695fa5e6a621b62bb6d1828a8cced",
+  "elapsed_seconds": 94.993,
+  "source": "twichui-market-db-1 / market",
+  "production_restored": false
+}

@@ -1,0 +1,30 @@
+{
+  "current": {
+    "contract_version": 1,
+    "ready": true,
+    "platform": "windows-x64",
+    "channel": "private-beta",
+    "version": "2.0.0-beta.6",
+    "download_url": "/api/v1/companion/private-beta/2.0.0-beta.6/windows-x64",
+    "bytes": 4771009,
+    "sha256": "8383217c595d46dcc1a982f60dd500852d6402d613e261a7fd1b6e2a9c5ffb3c",
+    "source_commit": "70f144ca35bd7041dcf17391f9fc8c96fd3c4ef8",
+    "published_at": "2026-11-18T01:58:02.788823+00:00",
+    "updates": "signed",
+    "signed": false,
+    "updater_signature_verified": true,
+    "updater_public_key_sha256": "5794736c840c7c09a49396e60cd569ff6b5f24f872eb0318ed95d55c16616ecf",
+    "tray_actions_verified": false,
+    "notes": "Adds source-aware commodity archive coverage while preserving the existing selected market, regular auction history and saved cache. Newly collected goods have genuine first-observation dates. Installation requires confirmation; existing downloads remain available. Physical-PC tray/toast acceptance remains separate.",
+    "message": "Private Windows beta. Unsigned Windows publisher; cryptographically verified updates require your installation consent. Tray actions are still being checked."
+  },
+  "updates": {
+    "2.0.0-beta.5": 200,
+    "2.0.0-beta.6": 204,
+    "2.0.0-beta.7": 204
+  },
+  "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTSTBwUk5ybTY3SmNaSDN2eFFlWUIvc1BYTHlJNFJXdHdiWmRHNWoyR2lyeFFWcW44TlF0UjYwMmR4U3Z4TFdoeHVIcDVvZkRCSGJ5V1NIU3lGVjhBa0p1NEZLUVQ5aFFJPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzk0OTY2NTQ0CWZpbGU6VHdpY2hVSS1NYXJrZXQtQ29tcGFuaW9uLTIuMC4wLWJldGEuNi13aW5kb3dzLXg2NC5leGUJdmVyc2lvbjoyLjAuMC1iZXRhLjYKdG5FZ2xiWUJYQ3N5Vy9HZG9ENlA3MnY0dnV4OGdxeGd6QnM4RXppdVh1WFdZOVU3YW5ZWmZ2U1pTcnA5S21nYWtoRjF0WTNBem1sUTd3dThrMVFrQWc9PQo=",
+  "previous_beta5_original_bytes_preserved": true,
+  "anonymous_download_status": 401,
+  "downloaded_original_signed_bytes": true
+}

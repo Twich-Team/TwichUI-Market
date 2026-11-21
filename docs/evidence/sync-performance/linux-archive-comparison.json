@@ -1,0 +1,141 @@
+{
+  "synthetic": true,
+  "production": false,
+  "physical_game": false,
+  "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.41",
+  "database": "disposable SQLite market_test",
+  "variants": 26342,
+  "commodity_variants": 1318,
+  "mode": "archive",
+  "preparation_wait_policy": "baseline fixed 5s; candidate 5s derivation/1s bounded projection; actual native sleeps",
+  "binary_sha256": {
+    "baseline": "bc50bc240ed1d1e0b40ebe9089644c15ea9171517115ebe27223e24c87b7fe20",
+    "candidate": "893f584e290baac1f3d64e617a6ab5b106cb82b510511c4c4da8eff97451167c"
+  },
+  "source": "6fd3537e9cd6f0afce1887d1ed6ea2598253bd09",
+  "groups": [
+    {
+      "label": "baseline",
+      "runs": 3,
+      "seconds": {
+        "median": 51.337609134,
+        "minimum": 50.349937711,
+        "maximum": 51.656907616
+      },
+      "cache_values_sha256": [
+        "8ffeb04d1899ef62d92f05b303945423db6ae5da3df5062dc12d4ea5ada9444c"
+      ],
+      "native_process_cpu_ms": {
+        "median": 3207.03,
+        "minimum": 2910.987,
+        "maximum": 3310.562
+      },
+      "native_process_peak_rss_bytes": {
+        "median": 143175680,
+        "minimum": 143175680,
+        "maximum": 143175680
+      },
+      "server": {
+        "http_requests": {
+          "median": 531,
+          "minimum": 531,
+          "maximum": 531
+        },
+        "sql_queries": {
+          "median": 5872,
+          "minimum": 5872,
+          "maximum": 5872
+        },
+        "body_bytes": {
+          "median": 18876652,
+          "minimum": 18876652,
+          "maximum": 18876652
+        },
+        "request_wall_ms": {
+          "median": 23089.06471100636,
+          "minimum": 22972.546765115112,
+          "maximum": 23141.569797648117
+        },
+        "process_cpu_ms": {
+          "median": 22919.402865999913,
+          "minimum": 22861.17450800004,
+          "maximum": 23025.16637299993
+        }
+      },
+      "detail": {
+        "archive_bytes": 107573248,
+        "archive_complete": true,
+        "archive_metrics": {
+          "final_validation_us": 277163,
+          "pages_applied": 527,
+          "promotion_us": 796176,
+          "received_bytes": 18870653
+        },
+        "archive_records": 52684,
+        "stored_entries": 52690
+      }
+    },
+    {
+      "label": "candidate",
+      "runs": 3,
+      "seconds": {
+        "median": 51.212168395,
+        "minimum": 51.14563256,
+        "maximum": 51.456286545
+      },
+      "cache_values_sha256": [
+        "8ffeb04d1899ef62d92f05b303945423db6ae5da3df5062dc12d4ea5ada9444c"
+      ],
+      "native_process_cpu_ms": {
+        "median": 2899.406,
+        "minimum": 2887.519,
+        "maximum": 3323.731
+      },
+      "native_process_peak_rss_bytes": {
+        "median": 143175680,
+        "minimum": 143175680,
+        "maximum": 143175680
+      },
+      "server": {
+        "http_requests": {
+          "median": 531,
+          "minimum": 531,
+          "maximum": 531
+        },
+        "sql_queries": {
+          "median": 5872,
+          "minimum": 5872,
+          "maximum": 5872
+        },
+        "body_bytes": {
+          "median": 18876652,
+          "minimum": 18876652,
+          "maximum": 18876652
+        },
+        "request_wall_ms": {
+          "median": 23190.16190012917,
+          "minimum": 23056.530592031777,
+          "maximum": 23232.483963482082
+        },
+        "process_cpu_ms": {
+          "median": 23068.395213000287,
+          "minimum": 22938.859801999883,
+          "maximum": 23111.823221999843
+        }
+      },
+      "detail": {
+        "archive_bytes": 107573248,
+        "archive_complete": true,
+        "archive_metrics": {
+          "final_validation_us": 281202,
+          "pages_applied": 527,
+          "promotion_us": 765199,
+          "received_bytes": 18870653
+        },
+        "archive_records": 52684,
+        "stored_entries": 52690
+      }
+    }
+  ],
+  "interpretation": "No material archive speedup; common measurement harness, same cold source records and exact semantic values; synthetic unified fixture, not full production archive or Windows game publication."
+}

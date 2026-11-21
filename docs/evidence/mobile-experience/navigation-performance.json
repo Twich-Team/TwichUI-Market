@@ -1,0 +1,33 @@
+{
+  "synthetic": true,
+  "scope": "Isolated Cloud native Chromium / synthetic loopback API, three desktop contexts; not resource-limited Docker or production.",
+  "runs": [
+    {
+      "signed_in_catalogue_including_login_ms": 614,
+      "parent_and_exact_navigation_ms": 935,
+      "back_ms": 81,
+      "catalogue_requests_on_return": 0,
+      "rendered_rows": 1,
+      "initial_js_encoded_bytes": 161527,
+      "echarts_requested_by_explorer": false
+    },
+    {
+      "signed_in_catalogue_including_login_ms": 637,
+      "parent_and_exact_navigation_ms": 884,
+      "back_ms": 53,
+      "catalogue_requests_on_return": 0,
+      "rendered_rows": 1,
+      "initial_js_encoded_bytes": 161527,
+      "echarts_requested_by_explorer": false
+    },
+    {
+      "signed_in_catalogue_including_login_ms": 628,
+      "parent_and_exact_navigation_ms": 905,
+      "back_ms": 73,
+      "catalogue_requests_on_return": 0,
+      "rendered_rows": 1,
+      "initial_js_encoded_bytes": 161527,
+      "echarts_requested_by_explorer": false
+    }
+  ]
+}

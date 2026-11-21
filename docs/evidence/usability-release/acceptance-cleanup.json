@@ -1,0 +1,26 @@
+{
+  "temporary_grants_revoked": 3,
+  "revoked_grant_ids": [
+    253,
+    255,
+    256
+  ],
+  "requests_after_revocation": [
+    {
+      "path": "/auth/session",
+      "status": 401
+    },
+    {
+      "path": "/companion/private-beta/update/windows-x86_64/2.0.0-beta.3",
+      "status": 401
+    },
+    {
+      "path": "/auth/session",
+      "status": 401,
+      "reason": "Final preview/CSRF/logout acceptance session"
+    }
+  ],
+  "new_accounts": 0,
+  "new_device_entries": 0,
+  "owner_device_revoked": false
+}

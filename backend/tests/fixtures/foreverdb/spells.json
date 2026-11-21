@@ -1,0 +1,56 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "Word of Recall (OLD)",
+      "rank": "",
+      "description": "",
+      "icon": "https://foreverdb.net/icons/136235.webp",
+      "school": "Nature",
+      "castTimeMs": 10000,
+      "rangeYards": null,
+      "cooldownMs": null,
+      "requiredLevel": null,
+      "costs": [
+        {
+          "amount": 10,
+          "resource": "Mana",
+          "percentOfBase": false,
+          "text": "10 Mana"
+        }
+      ],
+      "url": "https://foreverdb.net/spell/1"
+    },
+    {
+      "id": 3,
+      "name": "Word of Mass Recall (OLD)",
+      "rank": "",
+      "description": "",
+      "icon": "https://foreverdb.net/icons/136235.webp",
+      "school": "Nature",
+      "castTimeMs": 20000,
+      "rangeYards": null,
+      "cooldownMs": null,
+      "requiredLevel": null,
+      "costs": [
+        {
+          "amount": 10,
+          "resource": "Mana",
+          "percentOfBase": false,
+          "text": "10 Mana"
+        }
+      ],
+      "url": "https://foreverdb.net/spell/3"
+    }
+  ],
+  "meta": {
+    "build": "1.60.1.70938",
+    "total": 32121,
+    "limit": 2,
+    "offset": 0,
+    "next": "/api/v1/spells?limit=2&offset=2",
+    "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+    "attributionRequired": true,
+    "client": "dev-0255"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "origin": "synthetic",
+  "scope": "Isolated Cloud review; no production observation",
+  "backend_modules_match_workspace": true,
+  "backend_module_count": 50,
+  "source_digest": "3416aa6155a5d348c12bed8f4fd5004c449860da8e56822205e980e3a88644cb",
+  "containers": [
+    {
+      "image": "sha256:ce27d11a715df7194708ee01e17809684bdc5a16939b623e69d25736da03ef5f",
+      "memory_bytes": 402653184,
+      "nano_cpus": 500000000,
+      "name": "provider-rate-review-api-1"
+    },
+    {
+      "image": "sha256:5538db9d0c6fd9d4cd4d1afa897232515d56fbd0bff943dc232d25c15f5fe311",
+      "memory_bytes": 134217728,
+      "nano_cpus": 250000000,
+      "name": "provider-rate-review-proxy-1"
+    },
+    {
+      "image": "sha256:6b75136145ddabf3d9a4b69660402082de7c56b734cfe50555b0674774dd742a",
+      "memory_bytes": 536870912,
+      "nano_cpus": 1000000000,
+      "name": "provider-rate-review-db-1"
+    }
+  ],
+  "api_pid1": {
+    "Name": "uvicorn",
+    "VmRSS": "147184 kB",
+    "VmHWM": "147332 kB"
+  },
+  "api_cgroup_memory_max": "17179869184",
+  "resource_limit_note": "Docker HostConfig records per-container CPU/memory limits, but this Cloud host exposes a shared 16 GiB cgroup. Enforcement and per-container docker stats cannot be claimed here. Existing production/collector limits were not changed.",
+  "provider_requests": 0,
+  "collector_started": false,
+  "enrichment_worker_started": false,
+  "frontend_index_matches_workspace": true
+}

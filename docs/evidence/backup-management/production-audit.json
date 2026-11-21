@@ -1,0 +1,28 @@
+{
+  "observed_at": "2026-11-18T03:02:58.218004+00:00",
+  "production_schedule": "disabled_by_owner; container exited; restart no",
+  "prior_inactive_settings": {
+    "interval_seconds": 86400,
+    "keep": 30,
+    "max_bytes": 3221225472
+  },
+  "managed_archives": [],
+  "managed_archive_count": 0,
+  "managed_archive_bytes": 0,
+  "remaining_file_count": 31,
+  "remaining_file_bytes": 16809,
+  "orphan_manifest_count": 29,
+  "filesystem": {
+    "capacity_bytes": 105089261568,
+    "free_bytes": 11309703168,
+    "available_bytes": 5924216832
+  },
+  "other_market_archive_files": [],
+  "cleanup_proposal": {
+    "archive_count": 0,
+    "reclaimable_archive_bytes": 0,
+    "orphan_manifests": "Preserve until owner selects exact files and confirms; negligible recovery.",
+    "automatically_adopt_legacy": false
+  },
+  "safety": "Read-only discovery; no backup, production configuration or history changed."
+}

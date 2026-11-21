@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "checked_at_utc": "2026-11-15T01:03:00.929500+00:00",
+  "payload_source_commit": "40fa2dd223f9f314c465ac3ad5c265e54c1d2592",
+  "version": "2.0.0-beta.1",
+  "installer_sha256": "bbc7518e9608fdd9b1db89f14eeab842dc2f212291b1a38841eb9f6750ba4a1d",
+  "installer_bytes": 4426335,
+  "updater_public_key_sha256": "5794736c840c7c09a49396e60cd569ff6b5f24f872eb0318ed95d55c16616ecf",
+  "supported_tauri_cli": "2.12.4",
+  "actual_owner_key_signature_verified": true,
+  "changed_payload_with_updated_digest_rejected": true,
+  "wrong_authenticated_version_rejected": true,
+  "private_key_on_owner_host_only": true,
+  "supported_windows_sdk_install_verified": false,
+  "publication_approved": false,
+  "deployment_approved": false,
+  "checks": [
+    {
+      "case": "verification-manifest.json",
+      "expected_valid": true,
+      "accepted": true,
+      "public_result": {
+        "sha256": "bbc7518e9608fdd9b1db89f14eeab842dc2f212291b1a38841eb9f6750ba4a1d",
+        "signature_verified": true,
+        "signed_version": "2.0.0-beta.1"
+      }
+    },
+    {
+      "case": "changed-manifest.json",
+      "expected_valid": false,
+      "accepted": false,
+      "public_result": null
+    },
+    {
+      "case": "wrong-version-manifest.json",
+      "expected_valid": false,
+      "accepted": false,
+      "public_result": null
+    }
+  ]
+}

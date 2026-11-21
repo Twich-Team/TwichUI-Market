@@ -1,0 +1,6 @@
+# Owner requested removing database dumps and disabling scheduled backups on
+# 2026-11-18 UTC to recover space. Manual one-off release rehearsals stay explicit.
+services:
+  backup:
+    profiles: [manual-backup-only]
+    restart: "no"

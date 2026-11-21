@@ -1,0 +1,72 @@
+{
+  "verified_at": "2026-11-15T15:05:55.218Z",
+  "source_commit": "7202e07a62f1770642b50afe5a3ec671d9b488cf",
+  "public_url": "https://market.twich.gg",
+  "public_tls": {
+    "issuer": "YR1",
+    "protocol": "TLS 1.3",
+    "subjectName": "*.twich.gg",
+    "validFrom": 1791687760,
+    "validTo": 1799463759
+  },
+  "tls_errors_ignored": false,
+  "existing_public_and_local_sessions_survived": true,
+  "existing_device_and_cursor_survived": true,
+  "existing_preferences_survived": true,
+  "csrf_and_origin_rejections_verified": true,
+  "member_admin_boundary_verified": true,
+  "source_synthetic": false,
+  "explorer": {
+    "search_market_sort_pagination": true,
+    "back_forward_and_state_restored": true,
+    "browse_url": "https://market.twich.gg/?market=2&q=&sort=name&direction=desc&page=0&page_size=25"
+  },
+  "research": {
+    "parent_and_exact": true,
+    "direct_reload_new_tab_and_signin": true,
+    "multiple_variant_item": 647,
+    "exact_item": 35,
+    "exact_variant": "88d4b5c819d8059f80e4812d017b78ae23c617ebda8ce00cfdd1695e4ce4a3a3",
+    "supply": 7,
+    "recent_price": "387",
+    "history_points": 2,
+    "auctions_visible": true,
+    "qualityChecks": [
+      {
+        "item_id": 25,
+        "name": "Worn Shortsword",
+        "quality": "COMMON"
+      },
+      {
+        "item_id": 864,
+        "name": "Knightly Longsword",
+        "quality": "UNCOMMON"
+      },
+      {
+        "item_id": 935,
+        "name": "Night Watch Shortsword",
+        "quality": "RARE"
+      },
+      {
+        "item_id": 810,
+        "name": "Hammer of the Northern Wind",
+        "quality": "EPIC"
+      }
+    ],
+    "provenance_optional": true,
+    "mobile_no_overflow": true
+  },
+  "deal_finder_shared_destination_and_return": true,
+  "administration_all_sections": true,
+  "preferences_relogin": true,
+  "companion": {
+    "version": "2.0.0-beta.2",
+    "installer_sha256": "0fbc53603c218ffa85c8ee7b4e54f25e53c52a6fc3b2330ae914337714d41869",
+    "exact_existing_download_verified": true,
+    "unauthenticated_download_denied": true,
+    "new_desktop_release": false
+  },
+  "retention_authorized": false,
+  "new_recovery_jobs": 0,
+  "page_errors": []
+}

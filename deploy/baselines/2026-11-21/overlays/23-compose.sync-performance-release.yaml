@@ -1,0 +1,10 @@
+{
+  "services": {
+    "api": {
+      "image": "sha256:a79a7f0fca9c8fb6257201d53b6509e08b7630296661b1d672a1c828bb1bd907"
+    },
+    "local-api": {
+      "image": "sha256:a79a7f0fca9c8fb6257201d53b6509e08b7630296661b1d672a1c828bb1bd907"
+    }
+  }
+}

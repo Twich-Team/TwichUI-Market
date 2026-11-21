@@ -1,0 +1,16 @@
+// Read-only real-market Chromium comparison, using an audited temporary member.
+const {chromium,expect}=require('../web/node_modules/@playwright/test');
+const net=require('node:net'),fs=require('node:fs');
+let phase='startup';
+const target=process.env.MARKET_LIVE_CHECK_PROXY || 'proxy';
+const server=net.createServer(s=>{const t=net.connect(443,target);s.pipe(t);t.pipe(s);t.on('error',()=>s.destroy());s.on('error',()=>t.destroy());});
+(async()=>{await new Promise(r=>server.listen(18443,'127.0.0.1',r));const browser=await chromium.launch();const runs=[];
+try{for(let run=0;run<3;run++){
+ const context=await browser.newContext({ignoreHTTPSErrors:true,baseURL:'https://localhost:18443',viewport:{width:1440,height:1100}});const page=await context.newPage();const requests=[];page.on('request',r=>{if(r.url().includes('/api/v1/'))requests.push(r.url().split('/api/v1/')[1]);});
+ phase='login_page';await page.goto('/');await page.getByLabel('Username',{exact:true}).fill(process.env.MARKET_LIVE_CHECK_USERNAME);await page.getByLabel('Password',{exact:true}).fill(process.env.MARKET_LIVE_CHECK_PASSWORD);
+ phase='authenticated_explorer';const start=Date.now();await page.getByRole('button',{name:'Sign in',exact:true}).click();await expect(page.getByRole('heading',{name:'Current listings',exact:true})).toBeVisible();await page.waitForLoadState('networkidle');const ready=Date.now()-start;
+ phase='capture_metrics';const metrics=await page.evaluate(()=>({dom_nodes:document.getElementsByTagName('*').length,body_scroll_height:document.body.scrollHeight,resources:performance.getEntriesByType('resource').map(r=>({path:new URL(r.name).pathname,transfer_bytes:r.transferSize,decoded_bytes:r.decodedBodySize,duration_ms:r.duration}))}));const before=requests.length;
+ phase='deal_navigation';await page.getByRole('button',{name:'Deal Finder',exact:true}).click();await expect(page.getByRole('heading',{name:'Deal Finder',exact:true})).toBeVisible();await page.waitForLoadState('networkidle');phase='return_explorer';const returnStart=requests.length;await page.getByRole('button',{name:'Market Explorer',exact:true}).click();await expect(page.getByRole('heading',{name:'Current listings',exact:true})).toBeVisible();await page.waitForLoadState('networkidle');
+ runs.push({ready_ms:ready,...metrics,initial_api_calls:requests.slice(0,before),return_api_calls:requests.slice(returnStart)});await context.close();
+}fs.mkdirSync('/work/artifacts/modernization-live',{recursive:true});fs.writeFileSync('/work/artifacts/modernization-live/browser-benchmark-'+target+'.json',JSON.stringify({target,runs,synthetic:false,ui_ca_verification:false,notes:'Three fresh Chromium contexts; first-view application time includes authentication and network-idle settle; charts below the viewport are excluded, not production p95. Container 768 MiB / 1 CPU. No production market mutations.'},null,2));console.log(JSON.stringify({browser_benchmark:true,target,runs:runs.map(({ready_ms,dom_nodes,initial_api_calls,return_api_calls})=>({ready_ms,dom_nodes,initial_api_call_count:initial_api_calls.length,return_api_call_count:return_api_calls.length}))}));
+}finally{await browser.close();server.close();}})().catch(()=>{console.error('Browser benchmark failed at '+phase+'; details suppressed to protect temporary credentials.');server.close();process.exitCode=1;});

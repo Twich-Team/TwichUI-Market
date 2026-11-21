@@ -1,0 +1,8 @@
+{
+  "all_provider_settings_and_active_pending_credential_envelopes_equal": true,
+  "unexpired_usage_buckets_retained_and_not_decreased": 943,
+  "everloot_enabled": false,
+  "private_beta_files_identical": 46,
+  "provider_flags_or_limits_changed": false,
+  "retention_batches": 0
+}

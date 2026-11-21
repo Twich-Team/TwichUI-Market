@@ -1,0 +1,31 @@
+{
+  "source_sha": "fe92999cc969a23684f3023638673c656efb3bce",
+  "workflows": [
+    {
+      "name": "Backend",
+      "id": 44330664150,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/44330664150"
+    },
+    {
+      "name": "Windows companion",
+      "id": 44330664190,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/44330664190"
+    },
+    {
+      "name": "Private website",
+      "id": 44330664054,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/44330664054"
+    }
+  ],
+  "backend_tests": 696,
+  "frontend_tests": 132,
+  "operational_tests": 65,
+  "scoped_contract_checks": 16,
+  "source_preservation": "Final enabled/disabled administration states and unchanged engine passed exact-source CI."
+}

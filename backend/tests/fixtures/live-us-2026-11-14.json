@@ -1,0 +1,66 @@
+{
+  "captured_live": true,
+  "note": "Two-record excerpts of direct authenticated Blizzard responses. Original counts describe full upstream payloads, not these excerpts.",
+  "auctions": {
+    "url": "https://us.api.blizzard.com/data/wow/ruleset/1/auctions/110?namespace=dynamic-forever-us&locale=en_US",
+    "retrieved_at": "2026-11-14T02:41:15.710982+00:00",
+    "upstream_sha256": "dc907a27a3604cc710b567826735a6a72642d463af2826c1816d08714f0fb9e6",
+    "original_listing_count": 96924,
+    "payload": {
+      "auctions": [
+        {
+          "id": 61436806,
+          "item": {
+            "id": 6537,
+            "bonus_lists": [
+              12718
+            ]
+          },
+          "buyout": 4099,
+          "quantity": 1,
+          "time_left": "LONG"
+        },
+        {
+          "id": 64702326,
+          "item": {
+            "id": 14917,
+            "bonus_lists": [
+              12725
+            ]
+          },
+          "buyout": 32500,
+          "quantity": 1,
+          "time_left": "SHORT"
+        }
+      ]
+    }
+  },
+  "commodities": {
+    "url": "https://us.api.blizzard.com/data/wow/ruleset/1/auctions/110/commodities?namespace=dynamic-forever-us&locale=en_US",
+    "retrieved_at": "2026-11-14T02:41:17.605752+00:00",
+    "upstream_sha256": "3cf41266007de8a8eaf53afc9ac8bcaf5a9150862d3f08ca0a2ac6d1e75fdb95",
+    "original_listing_count": 81471,
+    "payload": {
+      "auctions": [
+        {
+          "id": 63507784,
+          "item": {
+            "id": 252437
+          },
+          "quantity": 10,
+          "unit_price": 948,
+          "time_left": "VERY_LONG"
+        },
+        {
+          "id": 64585172,
+          "item": {
+            "id": 1081
+          },
+          "quantity": 18,
+          "unit_price": 50,
+          "time_left": "VERY_LONG"
+        }
+      ]
+    }
+  }
+}

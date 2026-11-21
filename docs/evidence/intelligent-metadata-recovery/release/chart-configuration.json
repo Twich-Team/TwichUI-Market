@@ -1,0 +1,10 @@
+{
+  "changes": {
+    "proxy": [
+      "image"
+    ]
+  },
+  "api_enrichment_collector_database_environment_limits_mounts_unchanged": true,
+  "previous_frontend_image": "sha256:7bd3085484e4eaa4f61542678d98b703687ba2df4dd3bdf7a46d4ba2b1dae0d8",
+  "new_frontend_image": "sha256:35546b89bcb231121ab77115de4410c9487dfcadd8d8da4d070a4fcbcebf0d7f"
+}

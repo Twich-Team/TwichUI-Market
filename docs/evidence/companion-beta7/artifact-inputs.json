@@ -1,0 +1,12 @@
+[
+  {
+    "id": 14397612723,
+    "sha256": "8952781016de0bfbd76809ae840ccc638b52837e02b972237ce70ffa87c3917b",
+    "folder": "installer"
+  },
+  {
+    "id": 14397852215,
+    "sha256": "f41237ead7a98f2e3cb132c6672b5717e416affef6d612f7416bfee0b6e928af",
+    "folder": "acceptance"
+  }
+]

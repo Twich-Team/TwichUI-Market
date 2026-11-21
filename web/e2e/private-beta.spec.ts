@@ -1,0 +1,55 @@
+import { test, expect } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
+import { readFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
+
+test("private pilot receives an honest unsigned beta download and loses it after account change", async ({page}) => {
+  expect(new URL(process.env.BASE_URL || "http://proxy").hostname).toBe("proxy");
+  await page.goto("/companion");
+  await page.getByLabel("Username",{exact:true}).fill("private_pilot");
+  await page.getByLabel("Password",{exact:true}).fill("synthetic private pilot password");
+  await page.getByRole("button",{name:"Sign in",exact:true}).click();
+  await expect(page.getByText("Private Windows beta",{exact:true})).toBeVisible();
+  await expect(page.getByText("Updates are checked automatically and verified before installation. You choose when to install. Tray actions still need checking on your PC.",{exact:true})).toBeVisible();
+  await expect(page.getByText(/The installer is unsigned/)).toBeVisible();
+  await expect(page.getByText(/The installer is signed and this release/)).toHaveCount(0);
+  const metadata=await (await page.request.get("/api/v1/companion/private-beta/current")).json();
+  const link=page.getByRole("link",{name:"Download private beta"});
+  await expect(link).toHaveAttribute("href",metadata.download_url);
+  const pending=page.waitForEvent("download");await link.click();const download=await pending;
+  const file=await download.path();expect(file).toBeTruthy();
+  const bytes=await readFile(file!);expect(createHash("sha256").update(bytes).digest("hex")).toBe(metadata.sha256);
+  expect(bytes.length).toBe(metadata.bytes);expect(download.suggestedFilename()).toContain("2.0.0-beta.1");
+  await expect(page.locator(".companion-steps button").nth(1)).toHaveAttribute("aria-current","step");
+  await expect(page.getByText("Installation confirmed",{exact:true})).toHaveCount(0);
+  await page.locator(".companion-steps button").nth(0).click();
+  const axe=await new AxeBuilder({page}).analyze();expect(axe.violations.filter(v=>["serious","critical"].includes(v.impact||""))).toEqual([]);
+  await page.setViewportSize({width:390,height:844});
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  await page.screenshot({path:"../artifacts/companion-v2/private-beta-wizard-mobile.png",fullPage:true});
+  await page.setViewportSize({width:1240,height:900});
+  await page.screenshot({path:"../artifacts/companion-v2/private-beta-wizard.png",fullPage:true});
+  await page.reload();await expect(page.getByRole("link",{name:"Download private beta"})).toBeVisible();
+  await page.getByRole("button",{name:"Sign out",exact:true}).click();
+  await expect(page.getByLabel("Username",{exact:true})).toBeVisible();
+  expect((await page.request.get(metadata.download_url)).status()).toBe(401);
+  await page.getByLabel("Username",{exact:true}).fill("member_fixture");
+  await page.getByLabel("Password",{exact:true}).fill("synthetic browser member password");
+  await page.getByRole("button",{name:"Sign in",exact:true}).click();
+  await expect(page.getByRole("heading",{name:"Your market, ready on your PC.",exact:true})).toBeVisible();
+  await expect(page.getByRole("link",{name:"Download private beta"})).toHaveCount(0);
+  expect((await page.request.get(metadata.download_url)).status()).toBe(404);
+});
+
+test("private download metadata failure can be retried without claiming a release", async ({page}) => {
+  await page.route("**/api/v1/companion/private-beta/current",route=>route.fulfill({status:503,contentType:"application/json",body:'{"detail":"Synthetic private metadata outage"}'}));
+  await page.goto("/companion");
+  await page.getByLabel("Username",{exact:true}).fill("private_pilot");
+  await page.getByLabel("Password",{exact:true}).fill("synthetic private pilot password");
+  await page.getByRole("button",{name:"Sign in",exact:true}).click();
+  await expect(page.getByText("Private download information is unavailable. Please try again.",{exact:true})).toBeVisible();
+  await expect(page.getByRole("link",{name:"Download private beta"})).toHaveCount(0);
+  await page.unroute("**/api/v1/companion/private-beta/current");
+  await page.getByRole("button",{name:"Check private download again",exact:true}).click();
+  await expect(page.getByRole("link",{name:"Download private beta"})).toBeVisible();
+});

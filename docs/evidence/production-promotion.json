@@ -1,0 +1,854 @@
+{
+  "recorded_at": "2026-11-14T17:10:24.014429+00:00",
+  "status": "approved_promoted_verified_preview_removed",
+  "owner_approval": "Explicit website visual/usability approval including Item Experience, Market Configuration, Historical Retention controls and User Preferences; production frontend/API promotion authorized; destructive retention explicitly excluded.",
+  "deployed_commit": "c8f03c2f9af58a398f6899090e7e585432055426",
+  "public_url": "https://market.twich.gg",
+  "ci": {
+    "workflow_runs": [
+      {
+        "id": 43618823899,
+        "name": "Backend",
+        "status": "completed",
+        "conclusion": "success",
+        "run_number": 53,
+        "jobs_url": "https://api.github.com/repos/Twich-Team/TwichUI-Market/actions/runs/43618823899/jobs",
+        "logs_url": "https://api.github.com/repos/Twich-Team/TwichUI-Market/actions/runs/43618823899/logs",
+        "workflow_id": 417841759
+      },
+      {
+        "id": 43618823894,
+        "name": "Private website",
+        "status": "completed",
+        "conclusion": "success",
+        "run_number": 41,
+        "jobs_url": "https://api.github.com/repos/Twich-Team/TwichUI-Market/actions/runs/43618823894/jobs",
+        "logs_url": "https://api.github.com/repos/Twich-Team/TwichUI-Market/actions/runs/43618823894/logs",
+        "workflow_id": 417881467
+      },
+      {
+        "id": 43618823822,
+        "name": "Windows companion",
+        "status": "completed",
+        "conclusion": "success",
+        "run_number": 45,
+        "jobs_url": "https://api.github.com/repos/Twich-Team/TwichUI-Market/actions/runs/43618823822/jobs",
+        "logs_url": "https://api.github.com/repos/Twich-Team/TwichUI-Market/actions/runs/43618823822/logs",
+        "workflow_id": 417870542
+      }
+    ]
+  },
+  "tests": {
+    "postgresql_passed": 182,
+    "frontend_passed": 35,
+    "chromium_workflows_passed": 13,
+    "windows_companion_ci_passed": true
+  },
+  "deployment_start": {
+    "commit": "c8f03c2f9af58a398f6899090e7e585432055426",
+    "started_at": "2026-11-14T17:05:26.140778+00:00",
+    "scope": [
+      "api",
+      "local-api",
+      "proxy"
+    ],
+    "owner_visual_and_deployment_approval": true,
+    "historical_pruning_authorized": false
+  },
+  "deployment_completed": {
+    "completed_at": "2026-11-14T17:05:45.032983+00:00",
+    "scope": [
+      "api",
+      "local-api",
+      "proxy"
+    ]
+  },
+  "deployment_local_time": "2026-11-14T10:05:45.032983-07:00",
+  "backup": {
+    "manifest": {
+      "version": 1,
+      "filename": "market-development-20261114T165413439364Z.dump",
+      "source": "development",
+      "created_at": "2026-11-14T16:54:21.893851+00:00",
+      "bytes": 91521915,
+      "sha256": "5e940fb9034e873f3e426e9f488e72e2f31831f10a851510a9fd16157c407fb4",
+      "restoration_verified_at": "2026-11-14T16:54:36.816914+00:00",
+      "restored": {
+        "migration": "0012",
+        "users": 59,
+        "markets": 2,
+        "observations": 165,
+        "listings": 1596481,
+        "synthetic_observations": 0,
+        "buyout_total": "835842035176",
+        "snapshot_statistics": 381820,
+        "daily_observations": 2,
+        "market_verifications": 2,
+        "user_preferences": 6
+      }
+    },
+    "restored": {
+      "migration": "0012",
+      "users": 59,
+      "markets": 2,
+      "observations": 165,
+      "listings": 1596481,
+      "synthetic_observations": 0,
+      "buyout_total": "835842035176",
+      "snapshot_statistics": 381820,
+      "daily_observations": 2,
+      "market_verifications": 2,
+      "user_preferences": 6
+    },
+    "previous_archives_preserved": [
+      "market-development-20261114T032256003545Z.dump",
+      "market-development-20261114T041234852184Z.dump",
+      "market-development-20261114T044255979749Z.dump",
+      "market-development-20261114T123543922718Z.dump",
+      "market-development-20261114T141320585884Z.dump",
+      "market-development-20261114T142845676029Z.dump",
+      "market-development-20261114T143748051831Z.dump",
+      "market-development-20261114T151409719774Z.dump",
+      "market-development-20261114T160815982254Z.dump",
+      "market-development-20261114T161622641394Z.dump",
+      "market-recovery-20261113T233953939295Z.dump",
+      "market-recovery-20261114T003722062298Z.dump",
+      "market-recovery-20261114T013607846546Z.dump",
+      "market-recovery-20261114T141243667398Z.dump",
+      "market-test-20261113T233410595426Z.dump",
+      "market-test-20261113T233847732467Z.dump"
+    ]
+  },
+  "archives_final": {
+    "checked_at": "2026-11-14T17:08:59.030783+00:00",
+    "archives": [
+      {
+        "filename": "market-development-20261114T032256003545Z.dump",
+        "bytes": 10849641,
+        "sha256": "218f9286a63af1eaa49d27435b4253432892535f0baea2900dcc13405b25ba29",
+        "checksum_valid": true
+      },
+      {
+        "filename": "market-development-20261114T041234852184Z.dump",
+        "bytes": 10860376,
+        "sha256": "b953e8b6e575657044b0d55d585ef9e8f150ff8b339d29cb36f73ecf09cfb931",
+        "checksum_valid": true
+      },
+      {
+        "filename": "market-development-20261114T044255979749Z.dump",
+        "bytes": 16879477,
+        "sha256": "2fd2279dc6782089b60d93753e80387a44ef60f7d3f33a1a59b1590595951ed5",
+        "checksum_valid": true
+      },
+      {
+        "filename": "market-development-20261114T123543922718Z.dump",
+        "bytes": 66440746,
+        "sha256": "572c66d4eb8d48c4560ea64c7b01bb09b994382e013f1963f923f882d22fe977",
+        "checksum_valid": true
+      },
+      {
+        "filename": "market-development-20261114T141320585884Z.dump",
+        "bytes": 72007473,
+        "sha256": "da0f404c42f664edc1d06eb5f34d4345304beadb97776f083514daf967995601",
+        "checksum_valid": true
+      },
+      {
+        "filename": "market-development-20261114T142845676029Z.dump",
+        "bytes": 76786153,
+        "sha256": "1ff8f7c55cb338853b3d67857d6af657c405a057935847b57f5c40b08cfcaf31",
+        "checksum_valid": true
+      },
+      {
+        "filename": "market-development-20261114T143748051831Z.dump",
+        "bytes": 76916961,
+        "sha256": "01c59a394d9a159223b60f8b020fb8778fbdff6316a7a3b52ba7021859806e81",
+        "checksum_valid": true
+      },
+      {
+        "filename": "market-development-20261114T151409719774Z.dump",
+        "bytes": 77159054,
+        "sha256": "564bdfbd736f5570da43f96dde25515ea5aae88fd1ec8cb4ea0adf01614dfbd5",
+        "checksum_valid": true
+      },
+      {
+        "filename": "market-development-20261114T160815982254Z.dump",
+        "bytes": 86633969,
+        "sha256": "1f76dada9a988323bbaf63df7df4489e1333c07357b6b5e4e260a24507b38bc8",
+        "checksum_valid": true
+      },
+      {
+        "filename": "market-development-20261114T161622641394Z.dump",
+        "bytes": 86711170,
+        "sha256": "08d66ae9ed72dd567ff07170dc2296a47970ee17a0650f3f47c0d8d8a76efbc9",
+        "checksum_valid": true
+      },
+      {
+        "filename": "market-development-20261114T165413439364Z.dump",
+        "bytes": 91521915,
+        "sha256": "5e940fb9034e873f3e426e9f488e72e2f31831f10a851510a9fd16157c407fb4",
+        "checksum_valid": true
+      },
+      {
+        "filename": "market-recovery-20261113T233953939295Z.dump",
+        "bytes": 31828,
+        "sha256": "0425b0a47f8d180d03d23d811fa5163cbc0dc03d55bd25050698a266c81c4231",
+        "checksum_valid": true
+      },
+      {
+        "filename": "market-recovery-20261114T003722062298Z.dump",
+        "bytes": 35978,
+        "sha256": "884f8c56f4b3b1bce3557cf3e146522547d073d8876a4f4450207489221ef856",
+        "checksum_valid": true
+      },
+      {
+        "filename": "market-recovery-20261114T013607846546Z.dump",
+        "bytes": 39027,
+        "sha256": "7e1105803bdfff95ae8c2f726d30b39de44216859d57ae82dc5e8f66f76e44a0",
+        "checksum_valid": true
+      },
+      {
+        "filename": "market-recovery-20261114T141243667398Z.dump",
+        "bytes": 57361,
+        "sha256": "cf5cc4aed83b73c799698c77d9073e042f9bee9b6dfcbbce798a29ae49664d53",
+        "checksum_valid": true
+      },
+      {
+        "filename": "market-test-20261113T233410595426Z.dump",
+        "bytes": 31831,
+        "sha256": "367259ed8f02ba4f86205b7dfb172277bd378a7fa93bb417ea655d7c87c15883",
+        "checksum_valid": true
+      },
+      {
+        "filename": "market-test-20261113T233847732467Z.dump",
+        "bytes": 31829,
+        "sha256": "c0de0896777aba18ad276cb599197de44fab61ed5a8b15f7885b65b854fc9b64",
+        "checksum_valid": true
+      }
+    ],
+    "all_previous_archives_preserved": true,
+    "temporary_credential_files_removed": true
+  },
+  "predeployment_session_setup": {
+    "ready_at": "2026-11-14T17:00:07.711Z",
+    "nonce": "373107cd55",
+    "public_tls": {
+      "issuer": "YR1",
+      "protocol": "TLS 1.3",
+      "subjectName": "*.twich.gg",
+      "validFrom": 1791687760,
+      "validTo": 1799463759
+    },
+    "public_session_established": true,
+    "local_session_established": true,
+    "device_and_cursor_established": true,
+    "preferences_stored_before_deployment": true,
+    "continue_file": "artifacts/production-promotion/continue-373107cd55"
+  },
+  "public_browser_verification": {
+    "verified_at": "2026-11-14T17:06:02.020Z",
+    "public_url": "https://market.twich.gg",
+    "public_tls": {
+      "issuer": "YR1",
+      "protocol": "TLS 1.3",
+      "subjectName": "*.twich.gg",
+      "validFrom": 1791687760,
+      "validTo": 1799463759
+    },
+    "tls_errors_ignored": false,
+    "secure_httponly_strict_cookie": true,
+    "existing_public_and_local_sessions_survived": true,
+    "existing_device_and_cursor_survived": true,
+    "existing_preferences_survived": true,
+    "csrf_and_origin_rejections_verified": true,
+    "member_admin_boundary_verified": true,
+    "environment_read_only": false,
+    "source_synthetic": false,
+    "item": {
+      "id": 35,
+      "name": "Bent Staff",
+      "supply": 8,
+      "listings": 8,
+      "recent_price": "425"
+    },
+    "explorer_charts_verified": true,
+    "deal_finder_all_modes_verified": true,
+    "preferences_refresh_logout_login_verified": true,
+    "administration_market_configuration_verified": true,
+    "account_devices_and_revocation_verified": true,
+    "retention_dry_run_only": true,
+    "retention_application_authorized": false,
+    "market_configuration_unchanged": true,
+    "axe_violations": 0,
+    "page_errors": []
+  },
+  "preservation_before": {
+    "checked_at": "2026-11-14T16:55:44.332348+00:00",
+    "cutoffs": {
+      "snapshot": 16,
+      "observation": 165,
+      "user": 59,
+      "credential": 110
+    },
+    "fingerprints": {
+      "observations": {
+        "rows": 165,
+        "bytes_hashed": 31233,
+        "sha256": "90c0b531b741693c51b789993c9e0b8362f951ddc07abc180ded111671bfcfa0"
+      },
+      "snapshots": {
+        "rows": 16,
+        "bytes_hashed": 1757,
+        "sha256": "67f3b90f2f30a288f83e77ca586a55cdae5ecea7ec1cc3900e7d3c3ad4aa3c61"
+      },
+      "listings": {
+        "rows": 1596481,
+        "bytes_hashed": 217609205,
+        "sha256": "29e22b42716e6a6d987240d4f248a7b9fdbf0f5c1c87d5ccc7629f7a93f5196c"
+      },
+      "snapshot_statistics": {
+        "rows": 381820,
+        "bytes_hashed": 42614873,
+        "sha256": "c0acad9769961228e05ea2051df6c76c19d92ef26bde52bffa74badbe2535c03"
+      },
+      "users": {
+        "rows": 59,
+        "bytes_hashed": 9936,
+        "sha256": "8402208d096fc98beb718ac17514c43b047ae01fc6aba27dafd4b720198f571b"
+      },
+      "credentials": {
+        "rows": 110,
+        "bytes_hashed": 24455,
+        "sha256": "a6ac5e3e2b41b8ed1bce99bf039bf4d2712b2ea81f32c300fe11316fe27c4868"
+      },
+      "user_preferences": {
+        "rows": 6,
+        "bytes_hashed": 2252,
+        "sha256": "50e4d2956772379a571e41d788d2d287f48d0b6a11cec1376a75d91f0407d3d2"
+      },
+      "market_verifications": {
+        "rows": 2,
+        "bytes_hashed": 5028,
+        "sha256": "e7d6d471274fb9da263bf766a53941675224876ef60df832c1194ae61fa03d17"
+      },
+      "player_market_mappings": {
+        "rows": 1,
+        "bytes_hashed": 15546,
+        "sha256": "dde78a44cad988f6801006e0263f2bc09ae209428459ef17d26f9571c3c50cdd"
+      },
+      "retention_policy": {
+        "rows": 0,
+        "bytes_hashed": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "collection_configuration": [
+      {
+        "id": 1,
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 110,
+        "source_kind": "auctions",
+        "enabled": false,
+        "verified": true,
+        "interval_seconds": 300
+      },
+      {
+        "id": 2,
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 114,
+        "source_kind": "auctions",
+        "enabled": true,
+        "verified": true,
+        "interval_seconds": 300
+      }
+    ],
+    "all_preexisting_rows_identical": false,
+    "historical_retention_authorized": false,
+    "historical_retention_batches": 0,
+    "database_bytes": 560633523,
+    "recent_collection_runs": [
+      {
+        "id": 165,
+        "market_id": 2,
+        "checked_at": "2026-11-14T16:52:06.770453+00:00",
+        "status": "unchanged",
+        "http_status": 304,
+        "duration_seconds": 0,
+        "error": null
+      },
+      {
+        "id": 164,
+        "market_id": 2,
+        "checked_at": "2026-11-14T16:47:04.454273+00:00",
+        "status": "unchanged",
+        "http_status": 304,
+        "duration_seconds": 0,
+        "error": null
+      },
+      {
+        "id": 163,
+        "market_id": 2,
+        "checked_at": "2026-11-14T16:42:02.162719+00:00",
+        "status": "unchanged",
+        "http_status": 304,
+        "duration_seconds": 0,
+        "error": null
+      },
+      {
+        "id": 162,
+        "market_id": 2,
+        "checked_at": "2026-11-14T16:36:59.873309+00:00",
+        "status": "unchanged",
+        "http_status": 304,
+        "duration_seconds": 0,
+        "error": null
+      },
+      {
+        "id": 161,
+        "market_id": 2,
+        "checked_at": "2026-11-14T16:31:57.615104+00:00",
+        "status": "unchanged",
+        "http_status": 304,
+        "duration_seconds": 0,
+        "error": null
+      },
+      {
+        "id": 160,
+        "market_id": 2,
+        "checked_at": "2026-11-14T16:26:55.336985+00:00",
+        "status": "unchanged",
+        "http_status": 304,
+        "duration_seconds": 0,
+        "error": null
+      }
+    ]
+  },
+  "preservation_after": {
+    "checked_at": "2026-11-14T17:08:58.503301+00:00",
+    "cutoffs": {
+      "snapshot": 16,
+      "observation": 165,
+      "user": 59,
+      "credential": 110
+    },
+    "fingerprints": {
+      "observations": {
+        "rows": 165,
+        "bytes_hashed": 31233,
+        "sha256": "90c0b531b741693c51b789993c9e0b8362f951ddc07abc180ded111671bfcfa0"
+      },
+      "snapshots": {
+        "rows": 16,
+        "bytes_hashed": 1757,
+        "sha256": "67f3b90f2f30a288f83e77ca586a55cdae5ecea7ec1cc3900e7d3c3ad4aa3c61"
+      },
+      "listings": {
+        "rows": 1596481,
+        "bytes_hashed": 217609205,
+        "sha256": "29e22b42716e6a6d987240d4f248a7b9fdbf0f5c1c87d5ccc7629f7a93f5196c"
+      },
+      "snapshot_statistics": {
+        "rows": 381820,
+        "bytes_hashed": 42614873,
+        "sha256": "c0acad9769961228e05ea2051df6c76c19d92ef26bde52bffa74badbe2535c03"
+      },
+      "users": {
+        "rows": 59,
+        "bytes_hashed": 9936,
+        "sha256": "8402208d096fc98beb718ac17514c43b047ae01fc6aba27dafd4b720198f571b"
+      },
+      "credentials": {
+        "rows": 110,
+        "bytes_hashed": 24455,
+        "sha256": "a6ac5e3e2b41b8ed1bce99bf039bf4d2712b2ea81f32c300fe11316fe27c4868"
+      },
+      "user_preferences": {
+        "rows": 6,
+        "bytes_hashed": 2252,
+        "sha256": "50e4d2956772379a571e41d788d2d287f48d0b6a11cec1376a75d91f0407d3d2"
+      },
+      "market_verifications": {
+        "rows": 2,
+        "bytes_hashed": 5028,
+        "sha256": "e7d6d471274fb9da263bf766a53941675224876ef60df832c1194ae61fa03d17"
+      },
+      "player_market_mappings": {
+        "rows": 1,
+        "bytes_hashed": 15546,
+        "sha256": "dde78a44cad988f6801006e0263f2bc09ae209428459ef17d26f9571c3c50cdd"
+      },
+      "retention_policy": {
+        "rows": 0,
+        "bytes_hashed": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "collection_configuration": [
+      {
+        "id": 1,
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 110,
+        "source_kind": "auctions",
+        "enabled": false,
+        "verified": true,
+        "interval_seconds": 300
+      },
+      {
+        "id": 2,
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 114,
+        "source_kind": "auctions",
+        "enabled": true,
+        "verified": true,
+        "interval_seconds": 300
+      }
+    ],
+    "all_preexisting_rows_identical": true,
+    "historical_retention_authorized": false,
+    "historical_retention_batches": 0,
+    "database_bytes": 560961203,
+    "recent_collection_runs": [
+      {
+        "id": 168,
+        "market_id": 2,
+        "checked_at": "2026-11-14T17:07:13.603526+00:00",
+        "status": "unchanged",
+        "http_status": 304,
+        "duration_seconds": 0,
+        "error": null
+      },
+      {
+        "id": 167,
+        "market_id": 2,
+        "checked_at": "2026-11-14T17:02:11.320221+00:00",
+        "status": "unchanged",
+        "http_status": 304,
+        "duration_seconds": 0,
+        "error": null
+      },
+      {
+        "id": 166,
+        "market_id": 2,
+        "checked_at": "2026-11-14T16:57:09.036563+00:00",
+        "status": "unchanged",
+        "http_status": 304,
+        "duration_seconds": 0,
+        "error": null
+      },
+      {
+        "id": 165,
+        "market_id": 2,
+        "checked_at": "2026-11-14T16:52:06.770453+00:00",
+        "status": "unchanged",
+        "http_status": 304,
+        "duration_seconds": 0,
+        "error": null
+      },
+      {
+        "id": 164,
+        "market_id": 2,
+        "checked_at": "2026-11-14T16:47:04.454273+00:00",
+        "status": "unchanged",
+        "http_status": 304,
+        "duration_seconds": 0,
+        "error": null
+      },
+      {
+        "id": 163,
+        "market_id": 2,
+        "checked_at": "2026-11-14T16:42:02.162719+00:00",
+        "status": "unchanged",
+        "http_status": 304,
+        "duration_seconds": 0,
+        "error": null
+      }
+    ]
+  },
+  "collection_after": {
+    "checked_at": "2026-11-14T17:08:30.247026+00:00",
+    "markets": [
+      {
+        "id": 1,
+        "house_id": 110,
+        "enabled": false,
+        "interval_seconds": 300,
+        "failures": 0,
+        "last_success": "2026-11-14T15:14:21.190053+00:00",
+        "next_check": "2026-11-14T15:19:21.190053+00:00"
+      },
+      {
+        "id": 2,
+        "house_id": 114,
+        "enabled": true,
+        "interval_seconds": 300,
+        "failures": 0,
+        "last_success": "2026-11-14T17:07:13.603526+00:00",
+        "next_check": "2026-11-14T17:12:13.603526+00:00"
+      }
+    ],
+    "latest_run": {
+      "id": 168,
+      "market_id": 2,
+      "checked_at": "2026-11-14T17:07:13.603526+00:00",
+      "status": "unchanged",
+      "http_status": 304,
+      "duration_seconds": 0,
+      "error": null
+    },
+    "observation_count": 168,
+    "latest_genuine_observation": {
+      "id": 168,
+      "market_id": 2,
+      "snapshot_id": 16,
+      "retrieved_at": "2026-11-14T17:07:13.603526+00:00",
+      "namespace": "dynamic-forever-us",
+      "synthetic": false
+    },
+    "retention_batches": 0,
+    "active_test_accounts": 0,
+    "unrevoked_test_credentials": 0
+  },
+  "runtime": {
+    "checked_at": "2026-11-14T17:07:20.607541+00:00",
+    "services": {
+      "twichui-market-api-1": {
+        "id": "e18f6c2e7fcbbd29381cf16872e5ec095d325b60c969d10f5918dcfce42b1c72",
+        "image": "sha256:17d2c17591bd0ddea617fcf9018d0235a9100bd00813ea0faa025f3b83e679f2",
+        "started_at": "2026-11-14T17:05:27.563045664Z",
+        "restart_count": 0,
+        "unrelated_to_release_unchanged": false,
+        "resource_limits_preserved": true,
+        "memory_current_bytes": 94486528,
+        "memory_peak_bytes": 109895680,
+        "memory_limit_bytes": 402653184,
+        "cpu_max": "50000 100000",
+        "memory_events": {
+          "low": 0,
+          "high": 0,
+          "max": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "health": "healthy",
+        "port_bindings": {}
+      },
+      "twichui-market-local-api-1": {
+        "id": "ac80f6c73eb274a8ccc35be0456e9497d5fa02a3175c1d946395d1623d2c6363",
+        "image": "sha256:17d2c17591bd0ddea617fcf9018d0235a9100bd00813ea0faa025f3b83e679f2",
+        "started_at": "2026-11-14T17:05:27.39298023Z",
+        "restart_count": 0,
+        "unrelated_to_release_unchanged": false,
+        "resource_limits_preserved": true,
+        "memory_current_bytes": 71450624,
+        "memory_peak_bytes": 86020096,
+        "memory_limit_bytes": 268435456,
+        "cpu_max": "25000 100000",
+        "memory_events": {
+          "low": 0,
+          "high": 0,
+          "max": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "health": "healthy",
+        "port_bindings": {}
+      },
+      "twichui-market-proxy-1": {
+        "id": "2e8fac816bf58e1fa27dd765e1fcb26f8c84a502ef7cf6c198e135784874206b",
+        "image": "sha256:fb5f20db59d6a5ed92c1ea4d490e1d6af86772065b9d5be88f1096cf00cc6d0c",
+        "started_at": "2026-11-14T17:05:44.286927292Z",
+        "restart_count": 0,
+        "unrelated_to_release_unchanged": false,
+        "resource_limits_preserved": true,
+        "memory_current_bytes": 22507520,
+        "memory_peak_bytes": 26804224,
+        "memory_limit_bytes": 134217728,
+        "cpu_max": "25000 100000",
+        "memory_events": {
+          "low": 0,
+          "high": 0,
+          "max": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "health": null,
+        "port_bindings": {
+          "443/tcp": [
+            {
+              "HostIp": "127.0.0.1",
+              "HostPort": "18443"
+            }
+          ],
+          "80/tcp": [
+            {
+              "HostIp": "10.0.4.46",
+              "HostPort": "18780"
+            }
+          ]
+        }
+      },
+      "twichui-market-worker-1": {
+        "id": "dc270e9490b7ed737575b3d0cfd5840d9f13d6894cfef65e1fad1146352072bb",
+        "image": "sha256:d1ae733744b7328199f7926121c34d313027331301bcc60851451275f50a1294",
+        "started_at": "2026-11-14T14:24:43.267611827Z",
+        "restart_count": 0,
+        "unrelated_to_release_unchanged": true,
+        "resource_limits_preserved": true,
+        "memory_current_bytes": 131108864,
+        "memory_peak_bytes": 241573888,
+        "memory_limit_bytes": 402653184,
+        "cpu_max": "50000 100000",
+        "memory_events": {
+          "low": 0,
+          "high": 0,
+          "max": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "health": null,
+        "port_bindings": {}
+      },
+      "twichui-market-enrichment-1": {
+        "id": "125b82568e7a04c326b082fa7edf475dbab4e5fa75b2b54dfc89898ac481036f",
+        "image": "sha256:d1ae733744b7328199f7926121c34d313027331301bcc60851451275f50a1294",
+        "started_at": "2026-11-14T14:24:43.434562042Z",
+        "restart_count": 0,
+        "unrelated_to_release_unchanged": true,
+        "resource_limits_preserved": true,
+        "memory_current_bytes": 63115264,
+        "memory_peak_bytes": 76537856,
+        "memory_limit_bytes": 201326592,
+        "cpu_max": "25000 100000",
+        "memory_events": {
+          "low": 0,
+          "high": 0,
+          "max": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "health": null,
+        "port_bindings": {}
+      },
+      "twichui-market-monitor-1": {
+        "id": "295cc3e09e4927f38ffa1a221ef3f199f6e065561fb14fca859a8ce6de9228e2",
+        "image": "sha256:0323bca0334572b29d3e8d6c388b214b3c22891242b9e6eec35f4010595fd18a",
+        "started_at": "2026-11-14T04:42:59.157272882Z",
+        "restart_count": 0,
+        "unrelated_to_release_unchanged": true,
+        "resource_limits_preserved": true,
+        "memory_current_bytes": 45776896,
+        "memory_peak_bytes": 50233344,
+        "memory_limit_bytes": 134217728,
+        "cpu_max": "25000 100000",
+        "memory_events": {
+          "low": 0,
+          "high": 0,
+          "max": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "health": null,
+        "port_bindings": {}
+      },
+      "twichui-market-db-1": {
+        "id": "1a138045d430554c64142f230fa1555e61d3414b2926ae9b2606f58fb8fb3642",
+        "image": "sha256:d3244e8ce3f165ee3c93d9c4a4b1d0fe48b3a89e2287b717fdcbbde92d405065",
+        "started_at": "2026-11-14T01:46:45.864726511Z",
+        "restart_count": 0,
+        "unrelated_to_release_unchanged": true,
+        "resource_limits_preserved": true,
+        "memory_current_bytes": 771301376,
+        "memory_peak_bytes": 805326848,
+        "memory_limit_bytes": 805306368,
+        "cpu_max": "100000 100000",
+        "memory_events": {
+          "low": 0,
+          "high": 0,
+          "max": 4029,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "health": "healthy",
+        "port_bindings": {}
+      },
+      "twichui-market-backup-1": {
+        "id": "aad73035edabafa72c17341c3f317331526f7f3a4559326b1782ace7546ed405",
+        "image": "sha256:2669ec98d745fbb77942ed6696162436862334ebaebc71e884853226504b260b",
+        "started_at": "2026-11-14T14:37:47.669574477Z",
+        "restart_count": 0,
+        "unrelated_to_release_unchanged": true,
+        "resource_limits_preserved": true,
+        "memory_current_bytes": 88907776,
+        "memory_peak_bytes": 95375360,
+        "memory_limit_bytes": 268435456,
+        "cpu_max": "25000 100000",
+        "memory_events": {
+          "low": 0,
+          "high": 0,
+          "max": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "health": null,
+        "port_bindings": {}
+      }
+    },
+    "post_preview_removal": {
+      "https://market.twich.gg": {
+        "status": "ok",
+        "contract_version": 1
+      },
+      "https://localhost:18443": {
+        "status": "ok",
+        "contract_version": 1
+      },
+      "direct_private_listener": "connection_refused_or_blocked",
+      "preview_containers_removed": true,
+      "preview_ca_retained": "twichui-market-item-preview_preview-ca"
+    },
+    "rollback_images": {
+      "twichui-market-web:rollback-20261114": "sha256:0abc0d5ebf24b3f01dfaaaa52ffddb8c6ecc63973632289fb3f240ff9ec8da0f",
+      "twichui-market-backend:rollback-20261114": "sha256:9fe1f98e78e86eae9821d2c5e02a6e0f48cc9899cb259c63a4a05416118413a0"
+    },
+    "rootless": [
+      "name=seccomp,profile=builtin",
+      "name=rootless",
+      "name=cgroupns"
+    ],
+    "filesystem_free_bytes": 19903107072,
+    "scope": "Only api/local-api/proxy replaced; worker, enrichment, monitor, db and backup retain exact identities and limits. Existing database lifetime accounting peak/reclaim events remain visible, with zero OOMs. No host/AMP/unrelated service or network configuration changed."
+  },
+  "rollback": {
+    "status": "ready_not_executed",
+    "overlay": "compose.production-rollback.yaml",
+    "command": "docker --context rootless compose -f compose.yaml -f compose.tls.yaml -f compose.traefik.yaml -f compose.production-rollback.yaml up -d --no-deps --wait api local-api proxy",
+    "schema_downgrade": false,
+    "database_restore": false,
+    "history_pruning": false
+  },
+  "scope": "Only production api/local-api/proxy replaced. Approved layout preserved; obsolete design-review banner removed. No schema change, secret rotation, account reset, history reset, additional market, destructive retention, host ingress/firewall/SSH, AMP or unrelated service operations. Preview containers removed only after public verification; preview CA and previous images retained.",
+  "production_migrator_configuration": {
+    "image": "twichui-market-backend:production-approved",
+    "build_disabled": true,
+    "compose_configuration_validated": true,
+    "migration_executed_during_promotion": false,
+    "reason": "Schema 0012 already applied and verified; pin future migration invocations to the compatible API package without changing live schema."
+  },
+  "listeners_after_preview_removal": {
+    "added": [],
+    "removed": [
+      "127.0.0.1:18444"
+    ]
+  }
+}

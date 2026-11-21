@@ -1,0 +1,493 @@
+{
+  "already_named": 16,
+  "complete": true,
+  "data_as_of": "2026-11-15T02:10:16.615Z",
+  "investigation": "admin-provider-investigation-20261115",
+  "kind": "public_corpus_scan",
+  "named_item_groups": 942,
+  "new_names_committed": 0,
+  "note": "Inspection only. Public contributor pseudonyms stay in process memory and are never emitted. Three matching contributors required; competing name quorums rejected. Missing builds remain unknown.",
+  "observed_quorum_names": [
+    {
+      "builds": [],
+      "distinct_public_contributors": 3,
+      "item_id": 1364,
+      "name": "Ragged Leather Vest"
+    },
+    {
+      "builds": [],
+      "distinct_public_contributors": 3,
+      "item_id": 1366,
+      "name": "Ragged Leather Pants"
+    },
+    {
+      "builds": [],
+      "distinct_public_contributors": 3,
+      "item_id": 1367,
+      "name": "Ragged Leather Boots"
+    },
+    {
+      "builds": [],
+      "distinct_public_contributors": 4,
+      "item_id": 1372,
+      "name": "Ragged Cloak"
+    },
+    {
+      "builds": [],
+      "distinct_public_contributors": 4,
+      "item_id": 1374,
+      "name": "Frayed Shoes"
+    },
+    {
+      "builds": [],
+      "distinct_public_contributors": 3,
+      "item_id": 1376,
+      "name": "Frayed Cloak"
+    },
+    {
+      "builds": [],
+      "distinct_public_contributors": 3,
+      "item_id": 1377,
+      "name": "Frayed Gloves"
+    },
+    {
+      "builds": [],
+      "distinct_public_contributors": 4,
+      "item_id": 1378,
+      "name": "Frayed Pants"
+    },
+    {
+      "builds": [],
+      "distinct_public_contributors": 3,
+      "item_id": 1514,
+      "name": "Rusty Warhammer"
+    },
+    {
+      "builds": [],
+      "distinct_public_contributors": 4,
+      "item_id": 2210,
+      "name": "Battered Buckler"
+    },
+    {
+      "builds": [],
+      "distinct_public_contributors": 3,
+      "item_id": 2211,
+      "name": "Bent Large Shield"
+    },
+    {
+      "builds": [],
+      "distinct_public_contributors": 3,
+      "item_id": 2651,
+      "name": "Flimsy Chain Bracers"
+    },
+    {
+      "builds": [],
+      "distinct_public_contributors": 3,
+      "item_id": 2652,
+      "name": "Flimsy Chain Cloak"
+    },
+    {
+      "builds": [],
+      "distinct_public_contributors": 3,
+      "item_id": 2777,
+      "name": "Feeble Shortbow"
+    },
+    {
+      "builds": [],
+      "distinct_public_contributors": 3,
+      "item_id": 3283,
+      "name": "Battle Chain Tunic"
+    },
+    {
+      "builds": [],
+      "distinct_public_contributors": 3,
+      "item_id": 3308,
+      "name": "Barbaric Cloth Gloves"
+    },
+    {
+      "builds": [],
+      "distinct_public_contributors": 3,
+      "item_id": 5071,
+      "name": "Shadow Wand"
+    },
+    {
+      "builds": [],
+      "distinct_public_contributors": 3,
+      "item_id": 14727,
+      "name": "War Paint Legguards"
+    },
+    {
+      "builds": [],
+      "distinct_public_contributors": 3,
+      "item_id": 211855,
+      "name": "Scroll: STHENIC LUNATE"
+    }
+  ],
+  "potential_new_names": [
+    {
+      "builds": [],
+      "distinct_public_contributors": 3,
+      "item_id": 3283,
+      "name": "Battle Chain Tunic"
+    },
+    {
+      "builds": [],
+      "distinct_public_contributors": 3,
+      "item_id": 3308,
+      "name": "Barbaric Cloth Gloves"
+    },
+    {
+      "builds": [],
+      "distinct_public_contributors": 3,
+      "item_id": 5071,
+      "name": "Shadow Wand"
+    }
+  ],
+  "quorum_items": 96,
+  "rejected_observations": 0,
+  "request_count": 11,
+  "requests": [
+    {
+      "attempt_number": 75,
+      "body_bytes": 224342,
+      "body_sha256": "e3c1150d6f8115a632336c3171038fa383cff417fb5b53524dd85c502c123f5a",
+      "category": "observations_only",
+      "fields_returned": [],
+      "headers": {
+        "CF-Mitigated": null,
+        "Cache-Control": "no-store",
+        "Content-Type": "application/json",
+        "ETag": null,
+        "RateLimit-Limit": null,
+        "RateLimit-Remaining": null,
+        "RateLimit-Reset": null,
+        "Retry-After": null,
+        "Server": "cloudflare",
+        "X-Everloot-Credit": "Data from Everloot (https://everloot.app), CC BY-SA 4.0.",
+        "X-Everloot-Licence": "CC BY-SA 4.0",
+        "X-RateLimit-Limit": null,
+        "X-RateLimit-Remaining": null,
+        "X-RateLimit-Reset": null
+      },
+      "http_status": 200,
+      "investigation": "admin-provider-investigation-20261115",
+      "item_id": 1,
+      "kind": "corpus_page",
+      "new_fields_committed": [],
+      "new_names_committed": 0,
+      "provider": "everloot",
+      "task_id": 194
+    },
+    {
+      "attempt_number": 77,
+      "body_bytes": 222207,
+      "body_sha256": "9a681d905d0deddde80dbdada327e82d387833b65df6aa6b030d34a28ccbc69a",
+      "category": "observations_only",
+      "fields_returned": [],
+      "headers": {
+        "CF-Mitigated": null,
+        "Cache-Control": "no-store",
+        "Content-Type": "application/json",
+        "ETag": null,
+        "RateLimit-Limit": null,
+        "RateLimit-Remaining": null,
+        "RateLimit-Reset": null,
+        "Retry-After": null,
+        "Server": "cloudflare",
+        "X-Everloot-Credit": "Data from Everloot (https://everloot.app), CC BY-SA 4.0.",
+        "X-Everloot-Licence": "CC BY-SA 4.0",
+        "X-RateLimit-Limit": null,
+        "X-RateLimit-Remaining": null,
+        "X-RateLimit-Reset": null
+      },
+      "http_status": 200,
+      "investigation": "admin-provider-investigation-20261115",
+      "item_id": 1001,
+      "kind": "corpus_page",
+      "new_fields_committed": [],
+      "new_names_committed": 0,
+      "provider": "everloot",
+      "task_id": 197
+    },
+    {
+      "attempt_number": 78,
+      "body_bytes": 217139,
+      "body_sha256": "e58d70cf8957b04a94c271f59037408ec97846fa49170dd75f39b047e5159b40",
+      "category": "observations_only",
+      "fields_returned": [],
+      "headers": {
+        "CF-Mitigated": null,
+        "Cache-Control": "no-store",
+        "Content-Type": "application/json",
+        "ETag": null,
+        "RateLimit-Limit": null,
+        "RateLimit-Remaining": null,
+        "RateLimit-Reset": null,
+        "Retry-After": null,
+        "Server": "cloudflare",
+        "X-Everloot-Credit": "Data from Everloot (https://everloot.app), CC BY-SA 4.0.",
+        "X-Everloot-Licence": "CC BY-SA 4.0",
+        "X-RateLimit-Limit": null,
+        "X-RateLimit-Remaining": null,
+        "X-RateLimit-Reset": null
+      },
+      "http_status": 200,
+      "investigation": "admin-provider-investigation-20261115",
+      "item_id": 2001,
+      "kind": "corpus_page",
+      "new_fields_committed": [],
+      "new_names_committed": 0,
+      "provider": "everloot",
+      "task_id": 198
+    },
+    {
+      "attempt_number": 79,
+      "body_bytes": 224434,
+      "body_sha256": "52bec6882b9bf2d70d6359a57a29f95a5337384732d2e0199e4ac1f17bce1b46",
+      "category": "observations_only",
+      "fields_returned": [],
+      "headers": {
+        "CF-Mitigated": null,
+        "Cache-Control": "no-store",
+        "Content-Type": "application/json",
+        "ETag": null,
+        "RateLimit-Limit": null,
+        "RateLimit-Remaining": null,
+        "RateLimit-Reset": null,
+        "Retry-After": null,
+        "Server": "cloudflare",
+        "X-Everloot-Credit": "Data from Everloot (https://everloot.app), CC BY-SA 4.0.",
+        "X-Everloot-Licence": "CC BY-SA 4.0",
+        "X-RateLimit-Limit": null,
+        "X-RateLimit-Remaining": null,
+        "X-RateLimit-Reset": null
+      },
+      "http_status": 200,
+      "investigation": "admin-provider-investigation-20261115",
+      "item_id": 3001,
+      "kind": "corpus_page",
+      "new_fields_committed": [],
+      "new_names_committed": 0,
+      "provider": "everloot",
+      "task_id": 200
+    },
+    {
+      "attempt_number": 80,
+      "body_bytes": 223057,
+      "body_sha256": "365c7fc68c08bbda45b65cc768cec9c161e4bc736721bdcd4a259178d15d5e48",
+      "category": "observations_only",
+      "fields_returned": [],
+      "headers": {
+        "CF-Mitigated": null,
+        "Cache-Control": "no-store",
+        "Content-Type": "application/json",
+        "ETag": null,
+        "RateLimit-Limit": null,
+        "RateLimit-Remaining": null,
+        "RateLimit-Reset": null,
+        "Retry-After": null,
+        "Server": "cloudflare",
+        "X-Everloot-Credit": "Data from Everloot (https://everloot.app), CC BY-SA 4.0.",
+        "X-Everloot-Licence": "CC BY-SA 4.0",
+        "X-RateLimit-Limit": null,
+        "X-RateLimit-Remaining": null,
+        "X-RateLimit-Reset": null
+      },
+      "http_status": 200,
+      "investigation": "admin-provider-investigation-20261115",
+      "item_id": 4001,
+      "kind": "corpus_page",
+      "new_fields_committed": [],
+      "new_names_committed": 0,
+      "provider": "everloot",
+      "task_id": 201
+    },
+    {
+      "attempt_number": 82,
+      "body_bytes": 220282,
+      "body_sha256": "4cbac1762c3b334c6312f22f347b531cbcbe6161bf533ff76a9f9ba13ed34088",
+      "category": "observations_only",
+      "fields_returned": [],
+      "headers": {
+        "CF-Mitigated": null,
+        "Cache-Control": "no-store",
+        "Content-Type": "application/json",
+        "ETag": null,
+        "RateLimit-Limit": null,
+        "RateLimit-Remaining": null,
+        "RateLimit-Reset": null,
+        "Retry-After": null,
+        "Server": "cloudflare",
+        "X-Everloot-Credit": "Data from Everloot (https://everloot.app), CC BY-SA 4.0.",
+        "X-Everloot-Licence": "CC BY-SA 4.0",
+        "X-RateLimit-Limit": null,
+        "X-RateLimit-Remaining": null,
+        "X-RateLimit-Reset": null
+      },
+      "http_status": 200,
+      "investigation": "admin-provider-investigation-20261115",
+      "item_id": 5001,
+      "kind": "corpus_page",
+      "new_fields_committed": [],
+      "new_names_committed": 0,
+      "provider": "everloot",
+      "task_id": 203
+    },
+    {
+      "attempt_number": 83,
+      "body_bytes": 220312,
+      "body_sha256": "fef6d8cd90735d9e1b8ae7607c4c9e07dfc5ce34bb2a18dd91bf0ee571e8007e",
+      "category": "observations_only",
+      "fields_returned": [],
+      "headers": {
+        "CF-Mitigated": null,
+        "Cache-Control": "no-store",
+        "Content-Type": "application/json",
+        "ETag": null,
+        "RateLimit-Limit": null,
+        "RateLimit-Remaining": null,
+        "RateLimit-Reset": null,
+        "Retry-After": null,
+        "Server": "cloudflare",
+        "X-Everloot-Credit": "Data from Everloot (https://everloot.app), CC BY-SA 4.0.",
+        "X-Everloot-Licence": "CC BY-SA 4.0",
+        "X-RateLimit-Limit": null,
+        "X-RateLimit-Remaining": null,
+        "X-RateLimit-Reset": null
+      },
+      "http_status": 200,
+      "investigation": "admin-provider-investigation-20261115",
+      "item_id": 6001,
+      "kind": "corpus_page",
+      "new_fields_committed": [],
+      "new_names_committed": 0,
+      "provider": "everloot",
+      "task_id": 204
+    },
+    {
+      "attempt_number": 84,
+      "body_bytes": 223639,
+      "body_sha256": "3138721dabedfa3409aae46d3163b7dee0bf19b5c0ba394373250686804577ab",
+      "category": "observations_only",
+      "fields_returned": [],
+      "headers": {
+        "CF-Mitigated": null,
+        "Cache-Control": "no-store",
+        "Content-Type": "application/json",
+        "ETag": null,
+        "RateLimit-Limit": null,
+        "RateLimit-Remaining": null,
+        "RateLimit-Reset": null,
+        "Retry-After": null,
+        "Server": "cloudflare",
+        "X-Everloot-Credit": "Data from Everloot (https://everloot.app), CC BY-SA 4.0.",
+        "X-Everloot-Licence": "CC BY-SA 4.0",
+        "X-RateLimit-Limit": null,
+        "X-RateLimit-Remaining": null,
+        "X-RateLimit-Reset": null
+      },
+      "http_status": 200,
+      "investigation": "admin-provider-investigation-20261115",
+      "item_id": 7001,
+      "kind": "corpus_page",
+      "new_fields_committed": [],
+      "new_names_committed": 0,
+      "provider": "everloot",
+      "task_id": 205
+    },
+    {
+      "attempt_number": 85,
+      "body_bytes": 223480,
+      "body_sha256": "dab22f9af697e115e874b26254154aedda65185704cf355b228528895315a407",
+      "category": "observations_only",
+      "fields_returned": [],
+      "headers": {
+        "CF-Mitigated": null,
+        "Cache-Control": "no-store",
+        "Content-Type": "application/json",
+        "ETag": null,
+        "RateLimit-Limit": null,
+        "RateLimit-Remaining": null,
+        "RateLimit-Reset": null,
+        "Retry-After": null,
+        "Server": "cloudflare",
+        "X-Everloot-Credit": "Data from Everloot (https://everloot.app), CC BY-SA 4.0.",
+        "X-Everloot-Licence": "CC BY-SA 4.0",
+        "X-RateLimit-Limit": null,
+        "X-RateLimit-Remaining": null,
+        "X-RateLimit-Reset": null
+      },
+      "http_status": 200,
+      "investigation": "admin-provider-investigation-20261115",
+      "item_id": 8001,
+      "kind": "corpus_page",
+      "new_fields_committed": [],
+      "new_names_committed": 0,
+      "provider": "everloot",
+      "task_id": 207
+    },
+    {
+      "attempt_number": 87,
+      "body_bytes": 215100,
+      "body_sha256": "c7e32703aa3badaf367b3e167842f386a3b001c015603f2a536e9f95641e6a7d",
+      "category": "observations_only",
+      "fields_returned": [],
+      "headers": {
+        "CF-Mitigated": null,
+        "Cache-Control": "no-store",
+        "Content-Type": "application/json",
+        "ETag": null,
+        "RateLimit-Limit": null,
+        "RateLimit-Remaining": null,
+        "RateLimit-Reset": null,
+        "Retry-After": null,
+        "Server": "cloudflare",
+        "X-Everloot-Credit": "Data from Everloot (https://everloot.app), CC BY-SA 4.0.",
+        "X-Everloot-Licence": "CC BY-SA 4.0",
+        "X-RateLimit-Limit": null,
+        "X-RateLimit-Remaining": null,
+        "X-RateLimit-Reset": null
+      },
+      "http_status": 200,
+      "investigation": "admin-provider-investigation-20261115",
+      "item_id": 9001,
+      "kind": "corpus_page",
+      "new_fields_committed": [],
+      "new_names_committed": 0,
+      "provider": "everloot",
+      "task_id": 209
+    },
+    {
+      "attempt_number": 88,
+      "body_bytes": 212755,
+      "body_sha256": "8375aac34860f0707a6984e771278cc634f7b5aa6ffa0f4ef324cef2a54a087c",
+      "category": "observations_only",
+      "fields_returned": [],
+      "headers": {
+        "CF-Mitigated": null,
+        "Cache-Control": "no-store",
+        "Content-Type": "application/json",
+        "ETag": null,
+        "RateLimit-Limit": null,
+        "RateLimit-Remaining": null,
+        "RateLimit-Reset": null,
+        "Retry-After": null,
+        "Server": "cloudflare",
+        "X-Everloot-Credit": "Data from Everloot (https://everloot.app), CC BY-SA 4.0.",
+        "X-Everloot-Licence": "CC BY-SA 4.0",
+        "X-RateLimit-Limit": null,
+        "X-RateLimit-Remaining": null,
+        "X-RateLimit-Reset": null
+      },
+      "http_status": 200,
+      "investigation": "admin-provider-investigation-20261115",
+      "item_id": 10001,
+      "kind": "corpus_page",
+      "new_fields_committed": [],
+      "new_names_committed": 0,
+      "provider": "everloot",
+      "task_id": 211
+    }
+  ],
+  "rows_inspected": 10971
+}

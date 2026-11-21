@@ -1,0 +1,191 @@
+[
+  {
+    "original_path": "/home/marketdev/projects/TwichUI-Market/compose.yaml",
+    "snapshot_path": "deploy/baselines/2026-11-21/overlays/00-compose.yaml",
+    "sha256": "25bbdf75fc9c98b8d4db1b905c42fa53ee502fe3f796e9caef69816d4f0b860d",
+    "evidence": "live-referenced file read",
+    "source_commit": null
+  },
+  {
+    "original_path": "/home/marketdev/projects/TwichUI-Market/compose.tls.yaml",
+    "snapshot_path": "deploy/baselines/2026-11-21/overlays/01-compose.tls.yaml",
+    "sha256": "497d9ebfd5c235af29b775de3464effc50819460985313442c14e2807f03b8ca",
+    "evidence": "live-referenced file read",
+    "source_commit": null
+  },
+  {
+    "original_path": "/home/marketdev/projects/TwichUI-Market/compose.traefik.yaml",
+    "snapshot_path": "deploy/baselines/2026-11-21/overlays/02-compose.traefik.yaml",
+    "sha256": "7dc480adc712ca24eb2a63364f6556f03882e3d282f19fd2bf75b59f29f459d7",
+    "evidence": "live-referenced file read",
+    "source_commit": null
+  },
+  {
+    "original_path": "/home/marketdev/projects/TwichUI-Market/compose.companion-private-beta.yaml",
+    "snapshot_path": "deploy/baselines/2026-11-21/overlays/03-compose.companion-private-beta.yaml",
+    "sha256": "778365afd79b2a0d4aa5485e208ebfcff44f4b8117d626035b8a92ac22f08229",
+    "evidence": "live-referenced file read",
+    "source_commit": null
+  },
+  {
+    "original_path": "/home/marketdev/projects/TwichUI-Market/compose.combined-release.yaml",
+    "snapshot_path": "deploy/baselines/2026-11-21/overlays/04-compose.combined-release.yaml",
+    "sha256": "c345d697366446a4bfd1f39aba61bf40bd2a1194493a9379c212cac9df3b81c2",
+    "evidence": "live-referenced file read",
+    "source_commit": null
+  },
+  {
+    "original_path": "/home/marketdev/projects/TwichUI-Market/compose.admin-release.yaml",
+    "snapshot_path": "deploy/baselines/2026-11-21/overlays/05-compose.admin-release.yaml",
+    "sha256": "32df8b7b1b3d2ae7a17ab9a167c51be571651790fd68a82a621bcce368cc2796",
+    "evidence": "live-referenced file read",
+    "source_commit": null
+  },
+  {
+    "original_path": "/home/marketdev/projects/TwichUI-Market/compose.explorer-release.yaml",
+    "snapshot_path": "deploy/baselines/2026-11-21/overlays/06-compose.explorer-release.yaml",
+    "sha256": "2ac84004ed92aa19222cccdc6f7bd43640b9398cb6c827c5dc56b301895d49ae",
+    "evidence": "live-referenced file read",
+    "source_commit": null
+  },
+  {
+    "original_path": "/home/marketdev/projects/TwichUI-Market/compose.polish-release.yaml",
+    "snapshot_path": "deploy/baselines/2026-11-21/overlays/07-compose.polish-release.yaml",
+    "sha256": "836fae04547c1f73e5342adf629d4a9034f534d1e8f6cc1dbed9c151a6f5dd3e",
+    "evidence": "live-referenced file read",
+    "source_commit": null
+  },
+  {
+    "original_path": "/home/marketdev/projects/TwichUI-Market/compose.foreverdb-release.yaml",
+    "snapshot_path": "deploy/baselines/2026-11-21/overlays/08-compose.foreverdb-release.yaml",
+    "sha256": "cc2a40224dbd888eddd27bfe8a3c960c557006a543a422c9372d0287eee68c60",
+    "evidence": "live-referenced file read",
+    "source_commit": null
+  },
+  {
+    "original_path": "/home/marketdev/projects/TwichUI-Market/.worktrees/usability-release/compose.usability-release.yaml",
+    "snapshot_path": "deploy/baselines/2026-11-21/overlays/09-compose.usability-release.yaml",
+    "sha256": "67eccca1570a99bdd006521bf37dcf37e9db22574932cf1d3e0e389f9bc5125d",
+    "evidence": "live-referenced file read",
+    "source_commit": null
+  },
+  {
+    "original_path": "/home/marketdev/projects/TwichUI-Market/.worktrees/mobile-release/compose.mobile-release.yaml",
+    "snapshot_path": "deploy/baselines/2026-11-21/overlays/10-compose.mobile-release.yaml",
+    "sha256": "c1d41cc5484b4061e25ad49f9d37d230398941580e2c6a089bb1a904c7511e01",
+    "evidence": "live-referenced file read",
+    "source_commit": null
+  },
+  {
+    "original_path": "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-release.yaml",
+    "snapshot_path": "deploy/baselines/2026-11-21/overlays/11-compose.metadata-recovery-release.yaml",
+    "sha256": "9a199e4ba4349c6ccc0ea683737620d497293602e1d463f9ab5e65325725798e",
+    "evidence": "live-referenced file read",
+    "source_commit": null
+  },
+  {
+    "original_path": "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-chart.yaml",
+    "snapshot_path": "deploy/baselines/2026-11-21/overlays/12-compose.metadata-recovery-chart.yaml",
+    "sha256": "05ea543a730b7245ee085a50f36640fc71b357ee8f06969ff193971b49bb9977",
+    "evidence": "live-referenced file read",
+    "source_commit": null
+  },
+  {
+    "original_path": "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-api.yaml",
+    "snapshot_path": "deploy/baselines/2026-11-21/overlays/13-compose.metadata-recovery-api.yaml",
+    "sha256": "eb9d7c9d241fa6c687522c8b96aea9aa0880e06dedc70696358f08074fdf951f",
+    "evidence": "live-referenced file read",
+    "source_commit": null
+  },
+  {
+    "original_path": "/home/marketdev/projects/TwichUI-Market/compose.owner-backup-policy.yaml",
+    "snapshot_path": "deploy/baselines/2026-11-21/overlays/14-compose.owner-backup-policy.yaml",
+    "sha256": "b4bf65cf162bd74a656fc7be90dac37051c829d4b64e19357bf9fb544b53d410",
+    "evidence": "live-referenced file read",
+    "source_commit": null
+  },
+  {
+    "original_path": "/home/marketdev/projects/TwichUI-Market/compose.unified-coverage-release.yaml",
+    "snapshot_path": "deploy/baselines/2026-11-21/overlays/15-compose.unified-coverage-release.yaml",
+    "sha256": "831c1a5101201efd35800ee7903f6aae52d3ea556476aaacc9db58f297f1afdb",
+    "evidence": "live-referenced file read",
+    "source_commit": null
+  },
+  {
+    "original_path": "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.backup-management.yaml",
+    "snapshot_path": "deploy/baselines/2026-11-21/overlays/16-compose.backup-management.yaml",
+    "sha256": "19392027add62af3d8a4fd9d5a9c524c193c9b1c469b4aab63776bffadef93bb",
+    "evidence": "missing original path; reconstructed from beta10 Git tree",
+    "source_commit": "3b59f0f34617cbcf12a43baddfeed7a1e668feb2"
+  },
+  {
+    "original_path": "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.backup-review-images.yaml",
+    "snapshot_path": "deploy/baselines/2026-11-21/overlays/17-compose.backup-review-images.yaml",
+    "sha256": "4ee22ffb9d85cec1caa2125fa92bba111ad784248d65552f02c88ee30f442103",
+    "evidence": "missing original path; reconstructed from beta10 Git tree",
+    "source_commit": "3b59f0f34617cbcf12a43baddfeed7a1e668feb2"
+  },
+  {
+    "original_path": "/home/marketdev/projects/TwichUI-Market/compose.companion-beta7-web.yaml",
+    "snapshot_path": "deploy/baselines/2026-11-21/overlays/18-compose.companion-beta7-web.yaml",
+    "sha256": "06f39a426076cefea412458ad3853648fcdaf9f645187aad7ee007d3b8fc9e7c",
+    "evidence": "live-referenced file read",
+    "source_commit": null
+  },
+  {
+    "original_path": "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-cap.yaml",
+    "snapshot_path": "deploy/baselines/2026-11-21/overlays/19-compose.retention-cap.yaml",
+    "sha256": "20334dd0f071c89f58aba74c3718fb1a99ed08e47190e967bad7be4028da659e",
+    "evidence": "missing original path; reconstructed from beta10 Git tree",
+    "source_commit": "3b59f0f34617cbcf12a43baddfeed7a1e668feb2"
+  },
+  {
+    "original_path": "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-release.yaml",
+    "snapshot_path": "deploy/baselines/2026-11-21/overlays/20-compose.retention-release.yaml",
+    "sha256": "d25d9b6eb672aefd731ca759849f3051d50585f838002ecd9c0a293b26257187",
+    "evidence": "missing original path; reconstructed from beta10 Git tree",
+    "source_commit": "3b59f0f34617cbcf12a43baddfeed7a1e668feb2"
+  },
+  {
+    "original_path": "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-activation.yaml",
+    "snapshot_path": "deploy/baselines/2026-11-21/overlays/21-compose.retention-activation.yaml",
+    "sha256": "e488062573302d6d839cf795eb4cc7a39e041662c38172c4768ffe3bf823f5b4",
+    "evidence": "missing original path; reconstructed from beta10 Git tree",
+    "source_commit": "3b59f0f34617cbcf12a43baddfeed7a1e668feb2"
+  },
+  {
+    "original_path": "/home/marketdev/.codex/worktrees/workshop-dev-build/TwichUI-Market/compose.workshop-api-release.yaml",
+    "snapshot_path": "deploy/baselines/2026-11-21/overlays/22-compose.workshop-api-release.yaml",
+    "sha256": "c6bf50371c19d9922527099da088e7e038ce1c053c06e571cd3c8524f9e5d2b9",
+    "evidence": "live-referenced file read",
+    "source_commit": null
+  },
+  {
+    "original_path": "/home/marketdev/.codex/worktrees/companion-sync-performance/TwichUI-Market/compose.sync-performance-release.yaml",
+    "snapshot_path": "deploy/baselines/2026-11-21/overlays/23-compose.sync-performance-release.yaml",
+    "sha256": "c42de409840875e38e77bf6f6914be69168c58f9507cb442385d3884024aab01",
+    "evidence": "live-referenced file read",
+    "source_commit": null
+  },
+  {
+    "original_path": "/home/marketdev/.codex/worktrees/workshop-live-status/TwichUI-Market/compose.workshop-history-release.yaml",
+    "snapshot_path": "deploy/baselines/2026-11-21/overlays/24-compose.workshop-history-release.yaml",
+    "sha256": "3f4864d0c6f371c62c7aa0e122eef2b20040c26dfd4f48eddcd203d8485e86ab",
+    "evidence": "live-referenced file read",
+    "source_commit": null
+  },
+  {
+    "original_path": "/home/marketdev/.codex/worktrees/backup-management-retention/TwichUI-Market/compose.backup-management.yaml",
+    "snapshot_path": "deploy/baselines/2026-11-21/overlays/25-compose.backup-management.yaml",
+    "sha256": "19392027add62af3d8a4fd9d5a9c524c193c9b1c469b4aab63776bffadef93bb",
+    "evidence": "missing original path; reconstructed from beta10 Git tree",
+    "source_commit": "3b59f0f34617cbcf12a43baddfeed7a1e668feb2"
+  },
+  {
+    "original_path": "/home/marketdev/.codex/worktrees/backup-management-retention/TwichUI-Market/compose.backup-review-images.yaml",
+    "snapshot_path": "deploy/baselines/2026-11-21/overlays/26-compose.backup-review-images.yaml",
+    "sha256": "4ee22ffb9d85cec1caa2125fa92bba111ad784248d65552f02c88ee30f442103",
+    "evidence": "missing original path; reconstructed from beta10 Git tree",
+    "source_commit": "3b59f0f34617cbcf12a43baddfeed7a1e668feb2"
+  }
+]

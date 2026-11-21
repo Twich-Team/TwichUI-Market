@@ -1,0 +1,10 @@
+# Restore the immediately preceding release; preserve schema, credentials and every data volume.
+services:
+  api:
+    image: sha256:8e2ae844d92be60484e30a0695dd830e8d1fda5050accb4c9fa310bb9112f9ab
+  local-api:
+    image: sha256:8e2ae844d92be60484e30a0695dd830e8d1fda5050accb4c9fa310bb9112f9ab
+  proxy:
+    image: sha256:72d7a79e01b4debc1607aa72ad30a89501a3429e6545b564f1c3131e8f8b605f
+  enrichment:
+    image: sha256:8e2ae844d92be60484e30a0695dd830e8d1fda5050accb4c9fa310bb9112f9ab

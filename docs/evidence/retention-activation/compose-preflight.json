@@ -1,0 +1,30 @@
+{
+  "selected_services": [
+    "api",
+    "local-api",
+    "monitor",
+    "retention"
+  ],
+  "changes": {
+    "api": [
+      "environment",
+      "image"
+    ],
+    "local-api": [
+      "environment",
+      "image"
+    ],
+    "monitor": [
+      "environment",
+      "image",
+      "volumes"
+    ],
+    "retention": [
+      "environment",
+      "image"
+    ]
+  },
+  "all_other_services_unchanged": true,
+  "no_migration": true,
+  "collector_and_frontend_unchanged": true
+}

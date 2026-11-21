@@ -1,0 +1,42 @@
+{
+  "source": "6fd3537e9cd6f0afce1887d1ed6ea2598253bd09",
+  "platform": "Linux rootless native fixture",
+  "postgresql_focused": {
+    "passed": 44,
+    "suites": [
+      "test_workshop_summary",
+      "test_sync",
+      "test_sync_generation",
+      "test_sync_batch",
+      "test_sync_performance"
+    ]
+  },
+  "native_workspace": {
+    "library_passed": 60,
+    "integration_passed": 69,
+    "ignored_manual_profile": 1,
+    "storage_and_crash_tests": [
+      "standard_cache_disk_full_keeps_completed_values_and_cursor",
+      "standard_cache_lock_contention_preserves_previous_generation_then_retries",
+      "process_kill_preserves_completed_prices_and_resumable_cursor"
+    ]
+  },
+  "production_modified": false,
+  "native_windows_comparison": "passed; repeated actual hosted Windows fixture; see ci-verification.json and windows-comparison.json",
+  "owner_pc": "partial native capture received: response wait dominates; see owner-pc-partial-capture.json. Full pre/post-deployment PC timing remains unconfirmed.",
+  "signed_sdk": "no fresh signed candidate; original beta.8 authority unchanged",
+  "task_owned_local_services": "retired after tests; separate archive fixture removed automatically; no production changes",
+  "candidate_source_repeat": {
+    "full_seconds": [
+      5.607278014,
+      5.638891822,
+      5.685452214
+    ],
+    "incremental_seconds": [
+      8.801199331,
+      8.847560158,
+      8.948609749
+    ],
+    "cache_hashes_match_baseline": true
+  }
+}

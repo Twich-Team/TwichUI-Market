@@ -1,0 +1,26 @@
+{
+  "source_commit": "a81a4e395f8367571c6188c23dff143611fb1f1c",
+  "mounted_source": false,
+  "checks": {
+    "metadata-attempts": {
+      "status": 200,
+      "page_rows": 25
+    },
+    "jobs": {
+      "status": 200,
+      "page_rows": 3
+    },
+    "security": {
+      "status": 200,
+      "page_rows": 25
+    },
+    "collection": {
+      "status": 200,
+      "page_rows": 2
+    },
+    "unresolved?market_id=1": {
+      "status": 200,
+      "page_rows": 25
+    }
+  }
+}

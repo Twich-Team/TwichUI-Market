@@ -1,0 +1,1200 @@
+{
+  "source": "read-only production; stored metadata and actual hourly allocation measurements",
+  "captured_at": "2026-11-17 01:25:00.555494+00:00",
+  "market_id": 2,
+  "snapshot_id": 73,
+  "observation_id": 805,
+  "coverage": {
+    "snapshot_scope": "Latest recorded observation per selected market",
+    "measured_at": "2026-11-17 01:24:59.402994+00:00",
+    "observed": 5147,
+    "resolved_names": 4860,
+    "missing_names": 287,
+    "name_percent": 94.42,
+    "primary_names": 2395,
+    "supplemental_names": 2465,
+    "primary_missing_responses": 2752,
+    "primary_pending": 0,
+    "icons_available": 5147,
+    "icons_missing": 0,
+    "primary_attributes": 2395,
+    "catalog_records": 5147,
+    "provider_name_overlap": 3463,
+    "conflicting_names": 5,
+    "last_enrichment": "2026-11-17 01:23:45.947783+00:00",
+    "pending_queue": 2,
+    "active_jobs": 2,
+    "provider_records": [
+      {
+        "provider": "blizzard",
+        "checked": 5147,
+        "names_available": 2395,
+        "name_only": 0,
+        "detailed_records": 2395,
+        "fields_available": {
+          "availability": 0,
+          "binding": 65,
+          "category_ids": 0,
+          "class": 141,
+          "crafting": 0,
+          "disenchant": 0,
+          "disenchantable": 0,
+          "effects": 0,
+          "item_sets": 0,
+          "level": 2395,
+          "lines": 2395,
+          "quality": 2395,
+          "required_level": 2395,
+          "slot": 141,
+          "stats": 0,
+          "subclass": 141,
+          "unique": 0,
+          "vendor_sell": 2395,
+          "vendors": 0,
+          "weapon": 0
+        },
+        "builds": [
+          {
+            "build": "static-1.60.1_70399-forever-us",
+            "records": 2395
+          }
+        ]
+      },
+      {
+        "provider": "everloot",
+        "checked": 1277,
+        "names_available": 3,
+        "name_only": 3,
+        "detailed_records": 0,
+        "fields_available": {
+          "availability": 0,
+          "binding": 0,
+          "category_ids": 0,
+          "class": 0,
+          "crafting": 0,
+          "disenchant": 0,
+          "disenchantable": 0,
+          "effects": 0,
+          "item_sets": 0,
+          "level": 0,
+          "lines": 0,
+          "quality": 0,
+          "required_level": 0,
+          "slot": 0,
+          "stats": 0,
+          "subclass": 0,
+          "unique": 0,
+          "vendor_sell": 0,
+          "vendors": 0,
+          "weapon": 0
+        },
+        "builds": [
+          {
+            "build": null,
+            "records": 102
+          }
+        ]
+      },
+      {
+        "provider": "foreverdb",
+        "checked": 3955,
+        "names_available": 3932,
+        "name_only": 2,
+        "detailed_records": 3937,
+        "fields_available": {
+          "availability": 3930,
+          "binding": 2780,
+          "category_ids": 3930,
+          "class": 3930,
+          "crafting": 9,
+          "disenchant": 2768,
+          "disenchantable": 3930,
+          "effects": 582,
+          "item_sets": 0,
+          "level": 3930,
+          "lines": 0,
+          "quality": 3930,
+          "required_level": 3930,
+          "slot": 3930,
+          "stats": 1458,
+          "subclass": 3930,
+          "unique": 3930,
+          "vendor_sell": 3907,
+          "vendors": 7,
+          "weapon": 601
+        },
+        "builds": [
+          {
+            "build": "1.60.1.70938",
+            "records": 3939
+          }
+        ]
+      },
+      {
+        "provider": "thewowdb",
+        "checked": 2031,
+        "names_available": 1997,
+        "name_only": 0,
+        "detailed_records": 1997,
+        "fields_available": {
+          "availability": 0,
+          "binding": 0,
+          "category_ids": 0,
+          "class": 0,
+          "crafting": 0,
+          "disenchant": 0,
+          "disenchantable": 0,
+          "effects": 0,
+          "item_sets": 0,
+          "level": 1997,
+          "lines": 1949,
+          "quality": 1997,
+          "required_level": 1994,
+          "slot": 0,
+          "stats": 0,
+          "subclass": 0,
+          "unique": 0,
+          "vendor_sell": 1027,
+          "vendors": 0,
+          "weapon": 0
+        },
+        "builds": [
+          {
+            "build": "wow_classic_beta-1.60.1.70532",
+            "records": 1997
+          }
+        ]
+      }
+    ],
+    "queue_status": {
+      "cancelled": 2,
+      "completed": 9384,
+      "queued": 2,
+      "skipped": 260
+    },
+    "rate_limited_queue": 0,
+    "recent_results": [
+      {
+        "item_id": 287037,
+        "provider": "blizzard",
+        "at": "2026-11-17 01:24:15.972266+00:00",
+        "result": {
+          "provider": "blizzard",
+          "item_id": 287037,
+          "http_status": 404,
+          "status": "metadata_unavailable",
+          "recovered_fields": [],
+          "outcome": "missing"
+        }
+      },
+      {
+        "item_id": 273121,
+        "provider": "blizzard",
+        "at": "2026-11-17 01:23:45.947783+00:00",
+        "result": {
+          "provider": "blizzard",
+          "item_id": 273121,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "name",
+            "base_attributes"
+          ],
+          "new_fields": [
+            "class",
+            "level",
+            "lines",
+            "name",
+            "quality",
+            "required_level",
+            "slot",
+            "subclass",
+            "vendor_sell"
+          ],
+          "outcome": "name_recovered"
+        }
+      },
+      {
+        "item_id": 17061,
+        "provider": "blizzard",
+        "at": "2026-11-17 01:23:15.922862+00:00",
+        "result": {
+          "provider": "blizzard",
+          "item_id": 17061,
+          "http_status": 404,
+          "status": "metadata_unavailable",
+          "recovered_fields": [],
+          "outcome": "missing"
+        }
+      },
+      {
+        "item_id": 16246,
+        "provider": "blizzard",
+        "at": "2026-11-17 01:22:45.899442+00:00",
+        "result": {
+          "provider": "blizzard",
+          "item_id": 16246,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "name",
+            "base_attributes"
+          ],
+          "new_fields": [
+            "class",
+            "level",
+            "lines",
+            "name",
+            "quality",
+            "required_level",
+            "slot",
+            "subclass",
+            "vendor_sell"
+          ],
+          "outcome": "name_recovered"
+        }
+      },
+      {
+        "item_id": 14134,
+        "provider": "blizzard",
+        "at": "2026-11-17 01:22:15.875283+00:00",
+        "result": {
+          "provider": "blizzard",
+          "item_id": 14134,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "name",
+            "base_attributes"
+          ],
+          "new_fields": [
+            "binding",
+            "class",
+            "level",
+            "lines",
+            "name",
+            "quality",
+            "required_level",
+            "slot",
+            "subclass",
+            "vendor_sell"
+          ],
+          "outcome": "name_recovered"
+        }
+      },
+      {
+        "item_id": 12417,
+        "provider": "blizzard",
+        "at": "2026-11-17 01:21:45.851711+00:00",
+        "result": {
+          "provider": "blizzard",
+          "item_id": 12417,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "name",
+            "base_attributes"
+          ],
+          "new_fields": [
+            "binding",
+            "class",
+            "level",
+            "lines",
+            "name",
+            "quality",
+            "required_level",
+            "slot",
+            "subclass",
+            "vendor_sell"
+          ],
+          "outcome": "name_recovered"
+        }
+      },
+      {
+        "item_id": 15611,
+        "provider": "thewowdb",
+        "at": "2026-11-17 01:00:02.542051+00:00",
+        "result": {
+          "provider": "thewowdb",
+          "item_id": 15611,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "quality",
+            "lines",
+            "level",
+            "required_level",
+            "name"
+          ],
+          "source": {
+            "provider": "thewowdb",
+            "edition": "forever",
+            "build": "wow_classic_beta-1.60.1.70532",
+            "locale": "en_US",
+            "confidence": "community_beta",
+            "attribution": {
+              "text": "Data from TheWoWDB (thewowdb.com)",
+              "url": "https://thewowdb.com/wow-forever/item/bonelink-cape-15611/"
+            },
+            "url": "https://thewowdb.com/api/v1/forever/item/15611",
+            "retrieved_at": "2026-11-17T01:00:02.542051+00:00",
+            "payload_hash": "3909a46ae7a2d5f6a46a36c09a645069a0ba224e0a0501c2f4568ae9f1cdd439",
+            "icon_url": "https://render.worldofwarcraft.com/us/icons/56/inv_misc_cape_11.jpg"
+          },
+          "new_fields": [
+            "level",
+            "lines",
+            "name",
+            "quality",
+            "required_level"
+          ],
+          "outcome": "name_recovered"
+        }
+      },
+      {
+        "item_id": 15610,
+        "provider": "thewowdb",
+        "at": "2026-11-17 00:59:56.856034+00:00",
+        "result": {
+          "provider": "thewowdb",
+          "item_id": 15610,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "quality",
+            "lines",
+            "level",
+            "required_level",
+            "name"
+          ],
+          "source": {
+            "provider": "thewowdb",
+            "edition": "forever",
+            "build": "wow_classic_beta-1.60.1.70532",
+            "locale": "en_US",
+            "confidence": "community_beta",
+            "attribution": {
+              "text": "Data from TheWoWDB (thewowdb.com)",
+              "url": "https://thewowdb.com/wow-forever/item/bonelink-bracers-15610/"
+            },
+            "url": "https://thewowdb.com/api/v1/forever/item/15610",
+            "retrieved_at": "2026-11-17T00:59:56.856034+00:00",
+            "payload_hash": "aba4ed5abdbdf73beb42415e4cbe7f6c9b045bbabfe80b90938db6b0ffb5a290",
+            "icon_url": "https://render.worldofwarcraft.com/us/icons/56/inv_bracer_16.jpg"
+          },
+          "new_fields": [
+            "level",
+            "lines",
+            "name",
+            "quality",
+            "required_level"
+          ],
+          "outcome": "name_recovered"
+        }
+      },
+      {
+        "item_id": 15609,
+        "provider": "thewowdb",
+        "at": "2026-11-17 00:59:51.644440+00:00",
+        "result": {
+          "provider": "thewowdb",
+          "item_id": 15609,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "quality",
+            "lines",
+            "level",
+            "required_level",
+            "name"
+          ],
+          "source": {
+            "provider": "thewowdb",
+            "edition": "forever",
+            "build": "wow_classic_beta-1.60.1.70532",
+            "locale": "en_US",
+            "confidence": "community_beta",
+            "attribution": {
+              "text": "Data from TheWoWDB (thewowdb.com)",
+              "url": "https://thewowdb.com/wow-forever/item/bonelink-armor-15609/"
+            },
+            "url": "https://thewowdb.com/api/v1/forever/item/15609",
+            "retrieved_at": "2026-11-17T00:59:51.644440+00:00",
+            "payload_hash": "46376884581baec77b6ddba535d1d13624da947795953b6ef24beb5f63adc750",
+            "icon_url": "https://render.worldofwarcraft.com/us/icons/56/inv_chest_chain_05.jpg"
+          },
+          "new_fields": [
+            "level",
+            "lines",
+            "name",
+            "quality",
+            "required_level"
+          ],
+          "outcome": "name_recovered"
+        }
+      },
+      {
+        "item_id": 15608,
+        "provider": "thewowdb",
+        "at": "2026-11-17 00:59:46.294416+00:00",
+        "result": {
+          "provider": "thewowdb",
+          "item_id": 15608,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "quality",
+            "lines",
+            "level",
+            "required_level",
+            "name"
+          ],
+          "source": {
+            "provider": "thewowdb",
+            "edition": "forever",
+            "build": "wow_classic_beta-1.60.1.70532",
+            "locale": "en_US",
+            "confidence": "community_beta",
+            "attribution": {
+              "text": "Data from TheWoWDB (thewowdb.com)",
+              "url": "https://thewowdb.com/wow-forever/item/ancient-pauldrons-15608/"
+            },
+            "url": "https://thewowdb.com/api/v1/forever/item/15608",
+            "retrieved_at": "2026-11-17T00:59:46.294416+00:00",
+            "payload_hash": "07d15dc9c51abbbb34616af5babc4e3c69ba0237b8564b1df68220581d7743f8",
+            "icon_url": "https://render.worldofwarcraft.com/us/icons/56/inv_shoulder_09.jpg"
+          },
+          "new_fields": [
+            "level",
+            "lines",
+            "name",
+            "quality",
+            "required_level"
+          ],
+          "outcome": "name_recovered"
+        }
+      },
+      {
+        "item_id": 15607,
+        "provider": "thewowdb",
+        "at": "2026-11-17 00:59:39.310801+00:00",
+        "result": {
+          "provider": "thewowdb",
+          "item_id": 15607,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "quality",
+            "lines",
+            "level",
+            "required_level",
+            "name"
+          ],
+          "source": {
+            "provider": "thewowdb",
+            "edition": "forever",
+            "build": "wow_classic_beta-1.60.1.70532",
+            "locale": "en_US",
+            "confidence": "community_beta",
+            "attribution": {
+              "text": "Data from TheWoWDB (thewowdb.com)",
+              "url": "https://thewowdb.com/wow-forever/item/ancient-legguards-15607/"
+            },
+            "url": "https://thewowdb.com/api/v1/forever/item/15607",
+            "retrieved_at": "2026-11-17T00:59:39.310801+00:00",
+            "payload_hash": "9380436fdc8b4070175bdde4300ebda225b4165fb4934c60cafa12bba850e5e4",
+            "icon_url": "https://render.worldofwarcraft.com/us/icons/56/inv_pants_04.jpg"
+          },
+          "new_fields": [
+            "level",
+            "lines",
+            "name",
+            "quality",
+            "required_level"
+          ],
+          "outcome": "name_recovered"
+        }
+      },
+      {
+        "item_id": 15606,
+        "provider": "thewowdb",
+        "at": "2026-11-17 00:59:34.210471+00:00",
+        "result": {
+          "provider": "thewowdb",
+          "item_id": 15606,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "quality",
+            "lines",
+            "level",
+            "required_level",
+            "name"
+          ],
+          "source": {
+            "provider": "thewowdb",
+            "edition": "forever",
+            "build": "wow_classic_beta-1.60.1.70532",
+            "locale": "en_US",
+            "confidence": "community_beta",
+            "attribution": {
+              "text": "Data from TheWoWDB (thewowdb.com)",
+              "url": "https://thewowdb.com/wow-forever/item/ancient-belt-15606/"
+            },
+            "url": "https://thewowdb.com/api/v1/forever/item/15606",
+            "retrieved_at": "2026-11-17T00:59:34.210471+00:00",
+            "payload_hash": "63ebf147e51894400ab1574093dc8c443343f2071ae899d114be7a9ba16105c1",
+            "icon_url": "https://render.worldofwarcraft.com/us/icons/56/inv_belt_10.jpg"
+          },
+          "new_fields": [
+            "level",
+            "lines",
+            "name",
+            "quality",
+            "required_level"
+          ],
+          "outcome": "name_recovered"
+        }
+      },
+      {
+        "item_id": 15605,
+        "provider": "thewowdb",
+        "at": "2026-11-17 00:59:28.947309+00:00",
+        "result": {
+          "provider": "thewowdb",
+          "item_id": 15605,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "quality",
+            "lines",
+            "level",
+            "required_level",
+            "name"
+          ],
+          "source": {
+            "provider": "thewowdb",
+            "edition": "forever",
+            "build": "wow_classic_beta-1.60.1.70532",
+            "locale": "en_US",
+            "confidence": "community_beta",
+            "attribution": {
+              "text": "Data from TheWoWDB (thewowdb.com)",
+              "url": "https://thewowdb.com/wow-forever/item/ancient-gauntlets-15605/"
+            },
+            "url": "https://thewowdb.com/api/v1/forever/item/15605",
+            "retrieved_at": "2026-11-17T00:59:28.947309+00:00",
+            "payload_hash": "8518809b63dac98d8c2781527e844b830cfd9d7c9eafe36af28165818d4e6195",
+            "icon_url": "https://render.worldofwarcraft.com/us/icons/56/inv_gauntlets_16.jpg"
+          },
+          "new_fields": [
+            "level",
+            "lines",
+            "name",
+            "quality",
+            "required_level"
+          ],
+          "outcome": "name_recovered"
+        }
+      },
+      {
+        "item_id": 15604,
+        "provider": "thewowdb",
+        "at": "2026-11-17 00:59:23.756261+00:00",
+        "result": {
+          "provider": "thewowdb",
+          "item_id": 15604,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "quality",
+            "lines",
+            "level",
+            "required_level",
+            "name"
+          ],
+          "source": {
+            "provider": "thewowdb",
+            "edition": "forever",
+            "build": "wow_classic_beta-1.60.1.70532",
+            "locale": "en_US",
+            "confidence": "community_beta",
+            "attribution": {
+              "text": "Data from TheWoWDB (thewowdb.com)",
+              "url": "https://thewowdb.com/wow-forever/item/ancient-defender-15604/"
+            },
+            "url": "https://thewowdb.com/api/v1/forever/item/15604",
+            "retrieved_at": "2026-11-17T00:59:23.756261+00:00",
+            "payload_hash": "1dff25d1e02a672a890e655b6fa1fa1cc28fca9f464ebd9582641abdeae2beef",
+            "icon_url": "https://render.worldofwarcraft.com/us/icons/56/inv_shield_03.jpg"
+          },
+          "new_fields": [
+            "level",
+            "lines",
+            "name",
+            "quality",
+            "required_level"
+          ],
+          "outcome": "name_recovered"
+        }
+      },
+      {
+        "item_id": 15603,
+        "provider": "thewowdb",
+        "at": "2026-11-17 00:59:18.397257+00:00",
+        "result": {
+          "provider": "thewowdb",
+          "item_id": 15603,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "quality",
+            "lines",
+            "level",
+            "required_level",
+            "name"
+          ],
+          "source": {
+            "provider": "thewowdb",
+            "edition": "forever",
+            "build": "wow_classic_beta-1.60.1.70532",
+            "locale": "en_US",
+            "confidence": "community_beta",
+            "attribution": {
+              "text": "Data from TheWoWDB (thewowdb.com)",
+              "url": "https://thewowdb.com/wow-forever/item/ancient-cloak-15603/"
+            },
+            "url": "https://thewowdb.com/api/v1/forever/item/15603",
+            "retrieved_at": "2026-11-17T00:59:18.397257+00:00",
+            "payload_hash": "def71c3261e10be2548a8158aa8ce97e7d148a788bd47e693f09355bd307ce5c",
+            "icon_url": "https://render.worldofwarcraft.com/us/icons/56/inv_misc_cape_11.jpg"
+          },
+          "new_fields": [
+            "level",
+            "lines",
+            "name",
+            "quality",
+            "required_level"
+          ],
+          "outcome": "name_recovered"
+        }
+      },
+      {
+        "item_id": 15602,
+        "provider": "thewowdb",
+        "at": "2026-11-17 00:59:13.175448+00:00",
+        "result": {
+          "provider": "thewowdb",
+          "item_id": 15602,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "quality",
+            "lines",
+            "level",
+            "required_level",
+            "name"
+          ],
+          "source": {
+            "provider": "thewowdb",
+            "edition": "forever",
+            "build": "wow_classic_beta-1.60.1.70532",
+            "locale": "en_US",
+            "confidence": "community_beta",
+            "attribution": {
+              "text": "Data from TheWoWDB (thewowdb.com)",
+              "url": "https://thewowdb.com/wow-forever/item/ancient-crown-15602/"
+            },
+            "url": "https://thewowdb.com/api/v1/forever/item/15602",
+            "retrieved_at": "2026-11-17T00:59:13.175448+00:00",
+            "payload_hash": "764e6e69fe2c4b101065d950e88ad36460dda9412d9bad3955bf36b213aa9344",
+            "icon_url": "https://render.worldofwarcraft.com/us/icons/56/inv_helmet_11.jpg"
+          },
+          "new_fields": [
+            "level",
+            "lines",
+            "name",
+            "quality",
+            "required_level"
+          ],
+          "outcome": "name_recovered"
+        }
+      },
+      {
+        "item_id": 15601,
+        "provider": "thewowdb",
+        "at": "2026-11-17 00:59:07.922790+00:00",
+        "result": {
+          "provider": "thewowdb",
+          "item_id": 15601,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "quality",
+            "lines",
+            "level",
+            "required_level",
+            "name"
+          ],
+          "source": {
+            "provider": "thewowdb",
+            "edition": "forever",
+            "build": "wow_classic_beta-1.60.1.70532",
+            "locale": "en_US",
+            "confidence": "community_beta",
+            "attribution": {
+              "text": "Data from TheWoWDB (thewowdb.com)",
+              "url": "https://thewowdb.com/wow-forever/item/ancient-chestpiece-15601/"
+            },
+            "url": "https://thewowdb.com/api/v1/forever/item/15601",
+            "retrieved_at": "2026-11-17T00:59:07.922790+00:00",
+            "payload_hash": "ee59867ee602520f3a4606dc8ec0ec069678922774eb483f1ae544a42a95995a",
+            "icon_url": "https://render.worldofwarcraft.com/us/icons/56/inv_chest_chain_10.jpg"
+          },
+          "new_fields": [
+            "level",
+            "lines",
+            "name",
+            "quality",
+            "required_level"
+          ],
+          "outcome": "name_recovered"
+        }
+      },
+      {
+        "item_id": 15600,
+        "provider": "thewowdb",
+        "at": "2026-11-17 00:59:02.771132+00:00",
+        "result": {
+          "provider": "thewowdb",
+          "item_id": 15600,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "quality",
+            "lines",
+            "level",
+            "required_level",
+            "name"
+          ],
+          "source": {
+            "provider": "thewowdb",
+            "edition": "forever",
+            "build": "wow_classic_beta-1.60.1.70532",
+            "locale": "en_US",
+            "confidence": "community_beta",
+            "attribution": {
+              "text": "Data from TheWoWDB (thewowdb.com)",
+              "url": "https://thewowdb.com/wow-forever/item/ancient-vambraces-15600/"
+            },
+            "url": "https://thewowdb.com/api/v1/forever/item/15600",
+            "retrieved_at": "2026-11-17T00:59:02.771132+00:00",
+            "payload_hash": "9b3116c980e2a3678d4c6e920217cbbdaad29dff2373d207d0d78c50d563da89",
+            "icon_url": "https://render.worldofwarcraft.com/us/icons/56/inv_bracer_15.jpg"
+          },
+          "new_fields": [
+            "level",
+            "lines",
+            "name",
+            "quality",
+            "required_level"
+          ],
+          "outcome": "name_recovered"
+        }
+      },
+      {
+        "item_id": 15599,
+        "provider": "thewowdb",
+        "at": "2026-11-17 00:58:56.181242+00:00",
+        "result": {
+          "provider": "thewowdb",
+          "item_id": 15599,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "quality",
+            "lines",
+            "level",
+            "required_level",
+            "name"
+          ],
+          "source": {
+            "provider": "thewowdb",
+            "edition": "forever",
+            "build": "wow_classic_beta-1.60.1.70532",
+            "locale": "en_US",
+            "confidence": "community_beta",
+            "attribution": {
+              "text": "Data from TheWoWDB (thewowdb.com)",
+              "url": "https://thewowdb.com/wow-forever/item/ancient-greaves-15599/"
+            },
+            "url": "https://thewowdb.com/api/v1/forever/item/15599",
+            "retrieved_at": "2026-11-17T00:58:56.181242+00:00",
+            "payload_hash": "7711fab2d2ace0d3e3b9aafeb01702bb3285e96192c43fc630609b4516c7864e",
+            "icon_url": "https://render.worldofwarcraft.com/us/icons/56/inv_boots_plate_04.jpg"
+          },
+          "new_fields": [
+            "level",
+            "lines",
+            "name",
+            "quality",
+            "required_level"
+          ],
+          "outcome": "name_recovered"
+        }
+      },
+      {
+        "item_id": 15598,
+        "provider": "thewowdb",
+        "at": "2026-11-17 00:58:51.015567+00:00",
+        "result": {
+          "provider": "thewowdb",
+          "item_id": 15598,
+          "http_status": 200,
+          "status": "available",
+          "recovered_fields": [
+            "quality",
+            "lines",
+            "level",
+            "required_level",
+            "name"
+          ],
+          "source": {
+            "provider": "thewowdb",
+            "edition": "forever",
+            "build": "wow_classic_beta-1.60.1.70532",
+            "locale": "en_US",
+            "confidence": "community_beta",
+            "attribution": {
+              "text": "Data from TheWoWDB (thewowdb.com)",
+              "url": "https://thewowdb.com/wow-forever/item/steadfast-girdle-15598/"
+            },
+            "url": "https://thewowdb.com/api/v1/forever/item/15598",
+            "retrieved_at": "2026-11-17T00:58:51.015567+00:00",
+            "payload_hash": "3f66469fd46a852e7233abaf4e6f11f084e72720009c91a6f6214a96407591ed",
+            "icon_url": "https://render.worldofwarcraft.com/us/icons/56/inv_belt_30.jpg"
+          },
+          "new_fields": [
+            "level",
+            "lines",
+            "name",
+            "quality",
+            "required_level"
+          ],
+          "outcome": "name_recovered"
+        }
+      }
+    ],
+    "attributes_available": 4858,
+    "scoped_pending_items": 2,
+    "unknown_not_tried": 0,
+    "tried_unavailable": 287,
+    "failed_or_blocked": 0,
+    "checked_unresolved": 0,
+    "coverage_identity": "Distinct regional base-item IDs in latest recorded snapshots; variants count once. Locale en_US.",
+    "attributes_definition": "At least one nonempty stored base-item or relationship field beyond name and icon; presence does not imply complete attributes.",
+    "recovery_notice": "Unknown is not failed. Pending items may already have names. Missing fields are not guaranteed recoverable; provider access, quotas and retry windows still apply."
+  },
+  "storage": {
+    "samples": [
+      {
+        "sampled_at": "2026-11-14 01:00:00+00:00",
+        "database_bytes": 8484531
+      },
+      {
+        "sampled_at": "2026-11-14 02:00:00+00:00",
+        "database_bytes": 8517299
+      },
+      {
+        "sampled_at": "2026-11-14 03:00:00+00:00",
+        "database_bytes": 46593715
+      },
+      {
+        "sampled_at": "2026-11-14 04:00:00+00:00",
+        "database_bytes": 81409715
+      },
+      {
+        "sampled_at": "2026-11-14 05:00:00+00:00",
+        "database_bytes": 118372019
+      },
+      {
+        "sampled_at": "2026-11-14 06:00:00+00:00",
+        "database_bytes": 155883187
+      },
+      {
+        "sampled_at": "2026-11-14 07:00:00+00:00",
+        "database_bytes": 193877683
+      },
+      {
+        "sampled_at": "2026-11-14 08:00:00+00:00",
+        "database_bytes": 232355507
+      },
+      {
+        "sampled_at": "2026-11-14 09:00:00+00:00",
+        "database_bytes": 270464691
+      },
+      {
+        "sampled_at": "2026-11-14 10:00:00+00:00",
+        "database_bytes": 307721907
+      },
+      {
+        "sampled_at": "2026-11-14 11:00:00+00:00",
+        "database_bytes": 343070387
+      },
+      {
+        "sampled_at": "2026-11-14 12:00:00+00:00",
+        "database_bytes": 376526515
+      },
+      {
+        "sampled_at": "2026-11-14 13:00:00+00:00",
+        "database_bytes": 408614579
+      },
+      {
+        "sampled_at": "2026-11-14 14:00:00+00:00",
+        "database_bytes": 438949555
+      },
+      {
+        "sampled_at": "2026-11-14 15:00:00+00:00",
+        "database_bytes": 468342451
+      },
+      {
+        "sampled_at": "2026-11-14 16:00:00+00:00",
+        "database_bytes": 529880755
+      },
+      {
+        "sampled_at": "2026-11-14 17:00:00+00:00",
+        "database_bytes": 560756403
+      },
+      {
+        "sampled_at": "2026-11-14 18:00:00+00:00",
+        "database_bytes": 592828083
+      },
+      {
+        "sampled_at": "2026-11-14 19:00:00+00:00",
+        "database_bytes": 626702003
+      },
+      {
+        "sampled_at": "2026-11-14 20:00:00+00:00",
+        "database_bytes": 662615731
+      },
+      {
+        "sampled_at": "2026-11-14 21:00:00+00:00",
+        "database_bytes": 700176051
+      },
+      {
+        "sampled_at": "2026-11-14 22:00:00+00:00",
+        "database_bytes": 739735219
+      },
+      {
+        "sampled_at": "2026-11-14 23:00:00+00:00",
+        "database_bytes": 780777139
+      },
+      {
+        "sampled_at": "2026-11-15 00:00:00+00:00",
+        "database_bytes": 822875827
+      },
+      {
+        "sampled_at": "2026-11-15 01:00:00+00:00",
+        "database_bytes": 865539763
+      },
+      {
+        "sampled_at": "2026-11-15 02:00:00+00:00",
+        "database_bytes": 908539571
+      },
+      {
+        "sampled_at": "2026-11-15 03:00:00+00:00",
+        "database_bytes": 962057907
+      },
+      {
+        "sampled_at": "2026-11-15 04:00:00+00:00",
+        "database_bytes": 1006311091
+      },
+      {
+        "sampled_at": "2026-11-15 05:00:00+00:00",
+        "database_bytes": 1052219059
+      },
+      {
+        "sampled_at": "2026-11-15 06:00:00+00:00",
+        "database_bytes": 1097283251
+      },
+      {
+        "sampled_at": "2026-11-15 07:00:00+00:00",
+        "database_bytes": 1141905075
+      },
+      {
+        "sampled_at": "2026-11-15 08:00:00+00:00",
+        "database_bytes": 1186674355
+      },
+      {
+        "sampled_at": "2026-11-15 09:00:00+00:00",
+        "database_bytes": 1230247603
+      },
+      {
+        "sampled_at": "2026-11-15 10:00:00+00:00",
+        "database_bytes": 1272747699
+      },
+      {
+        "sampled_at": "2026-11-15 11:00:00+00:00",
+        "database_bytes": 1313003187
+      },
+      {
+        "sampled_at": "2026-11-15 12:00:00+00:00",
+        "database_bytes": 1350629043
+      },
+      {
+        "sampled_at": "2026-11-15 13:00:00+00:00",
+        "database_bytes": 1385846451
+      },
+      {
+        "sampled_at": "2026-11-15 14:00:00+00:00",
+        "database_bytes": 1419597491
+      },
+      {
+        "sampled_at": "2026-11-15 15:00:00+00:00",
+        "database_bytes": 1452889779
+      },
+      {
+        "sampled_at": "2026-11-15 16:00:00+00:00",
+        "database_bytes": 1485813427
+      },
+      {
+        "sampled_at": "2026-11-15 17:00:00+00:00",
+        "database_bytes": 1519146675
+      },
+      {
+        "sampled_at": "2026-11-15 18:00:00+00:00",
+        "database_bytes": 1553528499
+      },
+      {
+        "sampled_at": "2026-11-15 19:00:00+00:00",
+        "database_bytes": 1589278387
+      },
+      {
+        "sampled_at": "2026-11-15 20:00:00+00:00",
+        "database_bytes": 1627084467
+      },
+      {
+        "sampled_at": "2026-11-15 21:00:00+00:00",
+        "database_bytes": 1666373299
+      },
+      {
+        "sampled_at": "2026-11-15 22:00:00+00:00",
+        "database_bytes": 1707357875
+      },
+      {
+        "sampled_at": "2026-11-15 23:00:00+00:00",
+        "database_bytes": 1750431411
+      },
+      {
+        "sampled_at": "2026-11-16 00:00:00+00:00",
+        "database_bytes": 1794201267
+      },
+      {
+        "sampled_at": "2026-11-16 01:00:00+00:00",
+        "database_bytes": 1837840051
+      },
+      {
+        "sampled_at": "2026-11-16 02:00:00+00:00",
+        "database_bytes": 1882633907
+      },
+      {
+        "sampled_at": "2026-11-16 03:00:00+00:00",
+        "database_bytes": 1939003059
+      },
+      {
+        "sampled_at": "2026-11-16 04:00:00+00:00",
+        "database_bytes": 1996019379
+      },
+      {
+        "sampled_at": "2026-11-16 05:00:00+00:00",
+        "database_bytes": 2042631859
+      },
+      {
+        "sampled_at": "2026-11-16 06:00:00+00:00",
+        "database_bytes": 2089703091
+      },
+      {
+        "sampled_at": "2026-11-16 07:00:00+00:00",
+        "database_bytes": 2134578867
+      },
+      {
+        "sampled_at": "2026-11-16 08:00:00+00:00",
+        "database_bytes": 2178578099
+      },
+      {
+        "sampled_at": "2026-11-16 09:00:00+00:00",
+        "database_bytes": 2220512947
+      },
+      {
+        "sampled_at": "2026-11-16 10:00:00+00:00",
+        "database_bytes": 2260817587
+      },
+      {
+        "sampled_at": "2026-11-16 11:00:00+00:00",
+        "database_bytes": 2298853043
+      },
+      {
+        "sampled_at": "2026-11-16 12:00:00+00:00",
+        "database_bytes": 2334054067
+      },
+      {
+        "sampled_at": "2026-11-16 13:00:00+00:00",
+        "database_bytes": 2370434739
+      },
+      {
+        "sampled_at": "2026-11-16 14:00:00+00:00",
+        "database_bytes": 2407503539
+      },
+      {
+        "sampled_at": "2026-11-16 15:00:00+00:00",
+        "database_bytes": 2442466995
+      },
+      {
+        "sampled_at": "2026-11-16 16:00:00+00:00",
+        "database_bytes": 2478708403
+      },
+      {
+        "sampled_at": "2026-11-16 17:00:00+00:00",
+        "database_bytes": 2513942195
+      },
+      {
+        "sampled_at": "2026-11-16 18:00:00+00:00",
+        "database_bytes": 2549102259
+      },
+      {
+        "sampled_at": "2026-11-16 19:00:00+00:00",
+        "database_bytes": 2585097907
+      },
+      {
+        "sampled_at": "2026-11-16 20:00:00+00:00",
+        "database_bytes": 2621585075
+      },
+      {
+        "sampled_at": "2026-11-16 21:00:00+00:00",
+        "database_bytes": 2655442611
+      },
+      {
+        "sampled_at": "2026-11-16 22:00:00+00:00",
+        "database_bytes": 2689423027
+      },
+      {
+        "sampled_at": "2026-11-16 23:00:00+00:00",
+        "database_bytes": 2726786739
+      },
+      {
+        "sampled_at": "2026-11-17 00:00:00+00:00",
+        "database_bytes": 2764289715
+      },
+      {
+        "sampled_at": "2026-11-17 01:00:00+00:00",
+        "database_bytes": 2802931379
+      }
+    ],
+    "delta_bytes": 2794446848,
+    "elapsed_seconds": 259200.0,
+    "bytes_per_day": 931482283,
+    "retention_days": 90,
+    "interval_seconds": 3600
+  },
+  "allocated_bytes": 2842375859
+}

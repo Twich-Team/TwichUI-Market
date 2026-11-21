@@ -1,0 +1,57 @@
+{
+  "source": "Actual authenticated public HTTPS using a temporary scope-limited grant attached to existing owner device; not owner-PC or toast evidence",
+  "release": {
+    "contract_version": 1,
+    "ready": true,
+    "platform": "windows-x64",
+    "channel": "private-beta",
+    "version": "2.0.0-beta.4",
+    "download_url": "/api/v1/companion/private-beta/2.0.0-beta.4/windows-x64",
+    "bytes": 4715921,
+    "sha256": "6a64493b795577b23503af86a1ff8d79181a157f233272a2247703c2059689af",
+    "source_commit": "2920f366f7b5cd32178ae06ae94cea84701ff87f",
+    "published_at": "2026-11-17T03:22:54.677104+00:00",
+    "updates": "signed",
+    "signed": false,
+    "updater_signature_verified": true,
+    "updater_public_key_sha256": "5794736c840c7c09a49396e60cd569ff6b5f24f872eb0318ed95d55c16616ecf",
+    "tray_actions_verified": false,
+    "notes": "Usability and reliability update: visible dashboard update notice, tray update indication, and duplicate-suppressed background Windows notifications. Installation always requires your confirmation. Existing market sync, cache, credentials and validated Workshop exports remain compatible. Actual notification delivery depends on Windows settings and remains subject to owner-PC acceptance.",
+    "message": "Private Windows beta. Unsigned Windows publisher; cryptographically verified updates require your installation consent. Tray actions are still being checked."
+  },
+  "native_updater": {
+    "2.0.0-beta.3": {
+      "status": 200,
+      "metadata": {
+        "version": "2.0.0-beta.4",
+        "pub_date": "2026-11-17T03:22:54.677104+00:00",
+        "notes": "Usability and reliability update: visible dashboard update notice, tray update indication, and duplicate-suppressed background Windows notifications. Installation always requires your confirmation. Existing market sync, cache, credentials and validated Workshop exports remain compatible. Actual notification delivery depends on Windows settings and remains subject to owner-PC acceptance.",
+        "url": "https://market.twich.gg/api/v1/companion/private-beta/2.0.0-beta.4/windows-x64",
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTSTBwUk5ybTY3SmFCdnMyTmljdi9ETzhoZGlOSDNhUWl4dWNRMEpFMWxJdDBFNStybjNmSjg0TmlMcmI0eC8xYVN3dEIwb2UxeHpwbFZDOEdpRGFqWmlmcmd1WnVyZ0FNPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzk0ODg1MDk1CWZpbGU6VHdpY2hVSS1NYXJrZXQtQ29tcGFuaW9uLTIuMC4wLWJldGEuNC13aW5kb3dzLXg2NC5leGUJdmVyc2lvbjoyLjAuMC1iZXRhLjQKMHZXOHBqOStpSCtIcEQ4dGtSQUJPbEJZM1dIK2tjVzR1Zjd4cG9HSUFSYzZsQ283WGlwT0R2WURlTW83QUQ4NTNoSENaajl5ZjVBbmVsKzFxVXk0RFE9PQo=",
+        "bytes": 4715921,
+        "sha256": "6a64493b795577b23503af86a1ff8d79181a157f233272a2247703c2059689af",
+        "source_commit": "2920f366f7b5cd32178ae06ae94cea84701ff87f"
+      }
+    },
+    "2.0.0-beta.4": {
+      "status": 204,
+      "metadata": null
+    },
+    "2.1.0": {
+      "status": 204,
+      "metadata": null
+    }
+  },
+  "downloaded_bytes": 4715921,
+  "downloaded_sha256": "6a64493b795577b23503af86a1ff8d79181a157f233272a2247703c2059689af",
+  "previous_beta3_original_bytes_retained": true,
+  "unauthenticated_update_status": 401,
+  "bootstrap_status": 200,
+  "native_sync_status": 200,
+  "native_sync_contract": 1,
+  "native_sync_rows": 50,
+  "new_device_or_account_created": false,
+  "auto_install_performed": false,
+  "native_sync_algorithm": "asking-v1-provisional",
+  "native_sync_page_has_more": true
+}

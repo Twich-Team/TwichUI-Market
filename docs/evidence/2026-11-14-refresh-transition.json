@@ -1,0 +1,165 @@
+{
+  "started_at": "2026-11-14T03:09:07.872090+00:00",
+  "latest": {
+    "checked_at": "2026-11-14T03:22:09.570811+00:00",
+    "snapshots": [
+      {
+        "snapshot_id": 1,
+        "retrieved_at": "2026-11-14T02:45:34.522262+00:00",
+        "upstream_modified": "Sat, 14 Nov 2026 02:17:50 GMT",
+        "listing_count": 96924,
+        "payload_hash": "cd71f4c077359ae2b7d58d33d24fb46a0e30c85016ede2765073bb3badd7fcd5"
+      },
+      {
+        "snapshot_id": 1,
+        "retrieved_at": "2026-11-14T02:50:40.749542+00:00",
+        "upstream_modified": "Sat, 14 Nov 2026 02:17:50 GMT",
+        "listing_count": 96924,
+        "payload_hash": "cd71f4c077359ae2b7d58d33d24fb46a0e30c85016ede2765073bb3badd7fcd5"
+      },
+      {
+        "snapshot_id": 1,
+        "retrieved_at": "2026-11-14T02:55:46.717394+00:00",
+        "upstream_modified": "Sat, 14 Nov 2026 02:17:50 GMT",
+        "listing_count": 96924,
+        "payload_hash": "cd71f4c077359ae2b7d58d33d24fb46a0e30c85016ede2765073bb3badd7fcd5"
+      },
+      {
+        "snapshot_id": 1,
+        "retrieved_at": "2026-11-14T03:00:54.519868+00:00",
+        "upstream_modified": "Sat, 14 Nov 2026 02:17:50 GMT",
+        "listing_count": 96924,
+        "payload_hash": "cd71f4c077359ae2b7d58d33d24fb46a0e30c85016ede2765073bb3badd7fcd5"
+      },
+      {
+        "snapshot_id": 1,
+        "retrieved_at": "2026-11-14T03:06:00.522482+00:00",
+        "upstream_modified": "Sat, 14 Nov 2026 02:17:50 GMT",
+        "listing_count": 96924,
+        "payload_hash": "cd71f4c077359ae2b7d58d33d24fb46a0e30c85016ede2765073bb3badd7fcd5"
+      },
+      {
+        "snapshot_id": 1,
+        "retrieved_at": "2026-11-14T03:11:01.617217+00:00",
+        "upstream_modified": "Sat, 14 Nov 2026 02:17:50 GMT",
+        "listing_count": 96924,
+        "payload_hash": "cd71f4c077359ae2b7d58d33d24fb46a0e30c85016ede2765073bb3badd7fcd5"
+      },
+      {
+        "snapshot_id": 1,
+        "retrieved_at": "2026-11-14T03:16:07.397637+00:00",
+        "upstream_modified": "Sat, 14 Nov 2026 02:17:50 GMT",
+        "listing_count": 96924,
+        "payload_hash": "cd71f4c077359ae2b7d58d33d24fb46a0e30c85016ede2765073bb3badd7fcd5"
+      },
+      {
+        "snapshot_id": 2,
+        "retrieved_at": "2026-11-14T03:21:13.310543+00:00",
+        "upstream_modified": "Sat, 14 Nov 2026 03:17:49 GMT",
+        "listing_count": 102237,
+        "payload_hash": "c611e99930be057a38acbafa8823533753ab675e0ead472cdc56594c5cadd106"
+      }
+    ],
+    "runs": [
+      {
+        "checked_at": "2026-11-14T02:45:34.522262+00:00",
+        "status": "collected",
+        "http_status": 200,
+        "error": null
+      },
+      {
+        "checked_at": "2026-11-14T02:50:40.749542+00:00",
+        "status": "unchanged",
+        "http_status": 304,
+        "error": null
+      },
+      {
+        "checked_at": "2026-11-14T02:55:46.717394+00:00",
+        "status": "unchanged",
+        "http_status": 304,
+        "error": null
+      },
+      {
+        "checked_at": "2026-11-14T03:00:54.519868+00:00",
+        "status": "unchanged",
+        "http_status": 304,
+        "error": null
+      },
+      {
+        "checked_at": "2026-11-14T03:06:00.522482+00:00",
+        "status": "unchanged",
+        "http_status": 304,
+        "error": null
+      },
+      {
+        "checked_at": "2026-11-14T03:11:01.617217+00:00",
+        "status": "unchanged",
+        "http_status": 304,
+        "error": null
+      },
+      {
+        "checked_at": "2026-11-14T03:16:07.397637+00:00",
+        "status": "unchanged",
+        "http_status": 304,
+        "error": null
+      },
+      {
+        "checked_at": "2026-11-14T03:21:13.310543+00:00",
+        "status": "collected",
+        "http_status": 200,
+        "error": null
+      }
+    ],
+    "database_bytes": 81352371
+  },
+  "content_change_observed": true,
+  "distinct_snapshot_count": 2,
+  "observed_header_gaps_seconds": [
+    3599.0
+  ],
+  "scope": "Observed header gaps are evidence, not a guaranteed refresh schedule. No new upstream requests are generated.",
+  "browser_after_refresh": {
+    "live_browser_verified": true,
+    "market_id": 1,
+    "item_id": 25,
+    "variant_key": "af047f1e942cb41794789277f0a9c87e65aa991486a671d9694530f1523e927c",
+    "supply": 7,
+    "recent_price": "2805",
+    "listing_sample_count": 7,
+    "history_points": 1,
+    "deal_coverage": {
+      "observed_days": 1,
+      "required_days": 3,
+      "status": "insufficient",
+      "basis": "utc_days_within_14_days"
+    },
+    "limited_coverage_candidates": 100,
+    "source_synthetic": false
+  },
+  "restoration": {
+    "two_generation_restoration_verified": true,
+    "archive": "market-development-20261114T032256003545Z.dump",
+    "restored": {
+      "migration": "0008",
+      "users": 6,
+      "markets": 1,
+      "observations": 8,
+      "listings": 199161,
+      "synthetic_observations": 0,
+      "buyout_total": "182049345136",
+      "snapshot_statistics": 47712,
+      "daily_observations": 1,
+      "market_verifications": 1
+    }
+  },
+  "resource_sample": {
+    "worker_memory_limit_bytes": 402653184,
+    "worker_memory_peak_bytes": 255692800,
+    "worker_cpu_quota": "50000 100000",
+    "worker_restarts": 0,
+    "worker_oom_killed": false,
+    "database_bytes": 81352371,
+    "retained_listing_rows": 199161,
+    "latest_snapshot_listings": 102237
+  }
+}

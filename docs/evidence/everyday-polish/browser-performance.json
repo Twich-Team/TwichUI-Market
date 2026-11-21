@@ -1,0 +1,33 @@
+{
+  "synthetic": true,
+  "scope": "Isolated rootless browser, one CPU; three contexts. Includes real fixture API/auth requests. Not production p95 or a before/after speedup claim.",
+  "runs": [
+    {
+      "signed_in_catalogue_including_login_ms": 996,
+      "parent_and_exact_navigation_ms": 1103,
+      "back_ms": 86,
+      "catalogue_requests_on_return": 0,
+      "rendered_rows": 1,
+      "initial_js_encoded_bytes": 164293,
+      "echarts_requested_by_explorer": false
+    },
+    {
+      "signed_in_catalogue_including_login_ms": 1069,
+      "parent_and_exact_navigation_ms": 1013,
+      "back_ms": 83,
+      "catalogue_requests_on_return": 0,
+      "rendered_rows": 1,
+      "initial_js_encoded_bytes": 164293,
+      "echarts_requested_by_explorer": false
+    },
+    {
+      "signed_in_catalogue_including_login_ms": 1272,
+      "parent_and_exact_navigation_ms": 1004,
+      "back_ms": 49,
+      "catalogue_requests_on_return": 0,
+      "rendered_rows": 1,
+      "initial_js_encoded_bytes": 164293,
+      "echarts_requested_by_explorer": false
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "version": "2.0.0-beta.9",
+  "source_commit": "580e2e5f34582d00ac3ba20b1440e08b55d2fdf1",
+  "installer_bytes": 4891515,
+  "installer_sha256": "1ff6a6b25c71b539dba8ad1045012355cfb24e0ee1cb1dc70ef651d4ef6f6b4f",
+  "actual_authenticated_https": true,
+  "website_link": "/api/v1/companion/private-beta/2.0.0-beta.9/windows-x64",
+  "browser_and_native_hashes": {
+    "browser": "1ff6a6b25c71b539dba8ad1045012355cfb24e0ee1cb1dc70ef651d4ef6f6b4f",
+    "native": "1ff6a6b25c71b539dba8ad1045012355cfb24e0ee1cb1dc70ef651d4ef6f6b4f"
+  },
+  "anonymous_download_status": 401,
+  "updates_from_beta5_beta6_beta7_beta8": true,
+  "no_downgrade": true,
+  "retained_prior_download_hashes": {
+    "2.0.0-beta.5": "6124b9472b03c1ee53a83e3a8e7570a9f3621834c77624cd9aa48bc005465de1",
+    "2.0.0-beta.6": "8383217c595d46dcc1a982f60dd500852d6402d613e261a7fd1b6e2a9c5ffb3c",
+    "2.0.0-beta.7": "ef770b95dab2240605f133ce78d63c55cd6be5689a8f2aa65789905f1eb1a3c8",
+    "2.0.0-beta.8": "60ed1c13b96fe5cc8601343ce7efb1d1730891bedaeb5a30eb060b31fe3dc9d1"
+  },
+  "page_errors": [],
+  "actual_pc_installation": false,
+  "native_forever_execution": false
+}

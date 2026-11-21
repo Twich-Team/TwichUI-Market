@@ -1,0 +1,47 @@
+{
+  "services": {
+    "api": {
+      "image": "sha256:6d764fbe8581680a4da806015d6a7f6f05483f0c57b8d64b89d55bd5a1812d86",
+      "environment": {
+        "APP_COMMIT": "70f144ca35bd7041dcf17391f9fc8c96fd3c4ef8",
+        "MAX_DATABASE_BYTES": null,
+        "MIN_DATABASE_FREE_BYTES": null,
+        "DATABASE_FILESYSTEM_PATH": null,
+        "RETENTION_SCHEDULER_INSTALLED": null
+      }
+    },
+    "local-api": {
+      "image": "sha256:6d764fbe8581680a4da806015d6a7f6f05483f0c57b8d64b89d55bd5a1812d86",
+      "environment": {
+        "APP_COMMIT": "70f144ca35bd7041dcf17391f9fc8c96fd3c4ef8",
+        "MAX_DATABASE_BYTES": null,
+        "MIN_DATABASE_FREE_BYTES": null,
+        "DATABASE_FILESYSTEM_PATH": null,
+        "RETENTION_SCHEDULER_INSTALLED": null
+      }
+    },
+    "worker": {
+      "image": "sha256:81336cb2ad0f9edc19ee9d70e5614cf052831591ff3a702099da24a75c59656e",
+      "environment": {
+        "APP_COMMIT": "70f144ca35bd7041dcf17391f9fc8c96fd3c4ef8",
+        "MAX_DATABASE_BYTES": "68719476736",
+        "MIN_DATABASE_FREE_BYTES": null,
+        "DATABASE_FILESYSTEM_PATH": null,
+        "RETENTION_SCHEDULER_INSTALLED": null
+      }
+    },
+    "monitor": {
+      "image": "sha256:0323bca0334572b29d3e8d6c388b214b3c22891242b9e6eec35f4010595fd18a",
+      "environment": {
+        "APP_COMMIT": null,
+        "MAX_DATABASE_BYTES": null,
+        "MIN_DATABASE_FREE_BYTES": null,
+        "DATABASE_FILESYSTEM_PATH": null,
+        "RETENTION_SCHEDULER_INSTALLED": null
+      }
+    },
+    "proxy": {
+      "image": "sha256:5bc8c724c44649dc63642581cb2276fe4daa77151ec24077112aac6994e80595"
+    }
+  }
+}

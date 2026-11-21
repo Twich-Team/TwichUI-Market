@@ -1,0 +1,55 @@
+{
+  "status": "dry_run",
+  "policy": {
+    "raw_days": 7,
+    "intraday_days": 90,
+    "daily_days": 365,
+    "operational_days": 90,
+    "security_days": 365,
+    "revision": 0,
+    "policy_hash": "04b7502127253363247dbad25b0fe2fd594f997a7364b9d5ddaf2b3146c2756e",
+    "application_authorized": false,
+    "daily_support_days": 60,
+    "batch_row_limit": 5000
+  },
+  "stages": [
+    {
+      "stage": "daily_references",
+      "eligible_rows": 0,
+      "estimated_logical_bytes": 0
+    },
+    {
+      "stage": "observations",
+      "eligible_rows": 0,
+      "estimated_logical_bytes": 0
+    },
+    {
+      "stage": "raw_listings",
+      "eligible_rows": 0,
+      "estimated_logical_bytes": 0
+    },
+    {
+      "stage": "intraday_statistics",
+      "eligible_rows": 0,
+      "estimated_logical_bytes": 0
+    },
+    {
+      "stage": "collection_logs",
+      "eligible_rows": 0,
+      "estimated_logical_bytes": 0
+    },
+    {
+      "stage": "security_logs",
+      "eligible_rows": 0,
+      "estimated_logical_bytes": 0
+    }
+  ],
+  "next_stage": null,
+  "next_batch_rows": 0,
+  "database_allocated_bytes": 467834547,
+  "estimated_logical_bytes": 0,
+  "filesystem_recoverable_bytes": null,
+  "estimate_notice": "Approximate proportional table/index allocation. DELETE permits database reuse; filesystem shrink is unknown. Daily history includes 60 days of supporting references.",
+  "backup_restore_ready": true,
+  "handler_ms": 167.495
+}

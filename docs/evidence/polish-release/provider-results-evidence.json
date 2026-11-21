@@ -1,0 +1,12 @@
+{
+  "actual_persisted_records": true,
+  "all_market_default": true,
+  "selected_market_total": 3,
+  "provider_outcome_item_date_filters": true,
+  "server_pagination_and_sorting": true,
+  "safe_diagnostics": true,
+  "ineligible_actual_diagnostic_retry_status": 409,
+  "recovery_preview_without_start": true,
+  "no_recovery_campaign_started": true,
+  "preview_item": 35
+}

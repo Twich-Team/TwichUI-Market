@@ -1,0 +1,13 @@
+{
+  "id": 14481763098,
+  "name": "twichui-market-companion-windows-candidate",
+  "digest": "sha256:3549539f08609d5cdabb436bcd91ec951d72e30a14ca3332347f967567ab33ba",
+  "size_in_bytes": 4873912,
+  "workflow_run": {
+    "id": 44419177982,
+    "repository_id": 1457156728,
+    "head_repository_id": 1457156728,
+    "head_branch": "integration/companion-beta8-signed-update",
+    "head_sha": "580e2e5f34582d00ac3ba20b1440e08b55d2fdf1"
+  }
+}

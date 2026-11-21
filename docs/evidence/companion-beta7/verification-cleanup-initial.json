@@ -1,0 +1,15 @@
+{
+  "credential_ids": [
+    279,
+    280
+  ],
+  "revoked": true,
+  "existing_device_revoked": false,
+  "https_after_revocation": [
+    401,
+    401
+  ],
+  "no_new_accounts": true,
+  "no_new_devices": true,
+  "private_grant_file_removed": true
+}

@@ -1,0 +1,17 @@
+# Apply last after current ForeverDB overlays. Scoped service operations only.
+services:
+  migrate:
+    image: sha256:fa5d8f4c18e0421da98a9bd275789d022924000e8d513e2aa50157e000e39f5f
+    build: !reset null
+  api:
+    image: sha256:fa5d8f4c18e0421da98a9bd275789d022924000e8d513e2aa50157e000e39f5f
+    environment:
+      APP_COMMIT: 2920f366f7b5cd32178ae06ae94cea84701ff87f
+  local-api:
+    image: sha256:fa5d8f4c18e0421da98a9bd275789d022924000e8d513e2aa50157e000e39f5f
+    environment:
+      APP_COMMIT: 2920f366f7b5cd32178ae06ae94cea84701ff87f
+  proxy:
+    image: sha256:197b01f4f4b9e7cf35d574e4c3e6f60f94a462e3dd5b9dccd488fb128d3743d9
+  worker:
+    image: sha256:fa5d8f4c18e0421da98a9bd275789d022924000e8d513e2aa50157e000e39f5f

@@ -1,0 +1,35 @@
+{
+  "contract_version": 1,
+  "market_id": 1,
+  "algorithm": "asking-v1-provisional",
+  "changes": [
+    {
+      "operation": "upsert",
+      "item_id": 12363,
+      "variant_key": "30e331db0906d7ead73d271e37e59463264d36910bb094b9e1bd28f717771f63",
+      "value": {
+        "recent_price": "9007199254740993",
+        "lowest_buyout": "9007199254740993",
+        "market_value": "9007199254740993",
+        "historical_value": "9007199254740993",
+        "supply": 1,
+        "priced_supply": 1,
+        "listing_count": 1,
+        "coverage_days": 1,
+        "market_coverage_days": 1,
+        "synthetic": true
+      }
+    },
+    {
+      "operation": "delete",
+      "item_id": 13463,
+      "variant_key": "5c7e2f300cd395edc87df887ba2301e458de6abf381c8a3b54e15b74f5c1f450",
+      "value": null
+    }
+  ],
+  "cursor": "synthetic-v1-fixture-cursor",
+  "has_more": false,
+  "target_observation_id": "1",
+  "observed_at": "2026-11-14T00:00:00+00:00",
+  "synthetic": true
+}

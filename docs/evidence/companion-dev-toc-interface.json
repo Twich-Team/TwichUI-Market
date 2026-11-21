@@ -1,0 +1,22 @@
+{
+  "source_commit": "17cca1e4ffccd60bc6390f290d79cba2f2dbbcb1",
+  "run_url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/44365263447",
+  "artifact_name": "TwichUI-Market-Companion-DEV-17cca1e",
+  "artifact_id": 14456109981,
+  "artifact_zip_sha256": "6494cddd8c5303d0fadb988ff4a0c25ad5124b09b5997a4be8ac30934f87c119",
+  "installer_sha256": "3e11d62d263a5ec773fe418bf3ec597554d8cbd6cd3323a838fd1a3cbe76c84c",
+  "windows_focused_tests": 13,
+  "installed_native_smoke": {
+    "version": "2.0.0-beta.8 DEV 17cca1e4ffccd60bc6390f290d79cba2f2dbbcb1",
+    "frontend": true,
+    "native": true,
+    "workshop_command": true,
+    "updater_disabled": true
+  },
+  "owner_previous_result": "core_interface rejection; owner reports TOC is 16001",
+  "change": "Remove core and Workshop TOC Interface-version gates; explicit delivery contract and safety checks retained",
+  "owner_new_result": "Addon checks passed; destination rejected by ambiguous internal ownership/ACL guard, without a Windows OS denial code",
+  "full_certification": "deferred",
+  "unsigned_private_test": true,
+  "public_release_or_deployment": false
+}

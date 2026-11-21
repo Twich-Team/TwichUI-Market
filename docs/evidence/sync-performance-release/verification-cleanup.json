@@ -1,0 +1,13 @@
+{
+  "credential_ids": [
+    297,
+    298
+  ],
+  "revoked": true,
+  "independent_https_status": {
+    "native": 401,
+    "browser": 401
+  },
+  "private_token_files_removed": true,
+  "original_credentials_unchanged_by_operator": true
+}

@@ -1,0 +1,229 @@
+{
+  "synthetic": true,
+  "rollback_only": true,
+  "workload": {
+    "item_groups": 10000,
+    "latest_variants": 30000,
+    "daily_history_days": 3651,
+    "distribution_listings": 100000
+  },
+  "measurements": {
+    "catalogue_50_groups": {
+      "median_ms": 83.45,
+      "latency_ms": [
+        97.299,
+        87.197,
+        81.276,
+        83.45,
+        81.401
+      ],
+      "sql_counts": [
+        5,
+        5,
+        5,
+        5,
+        5
+      ],
+      "response_bytes": 28675
+    },
+    "daily_history_10_years": {
+      "median_ms": 157.141,
+      "latency_ms": [
+        152.918,
+        157.141,
+        154.894,
+        161.997,
+        164.152
+      ],
+      "sql_counts": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "response_bytes": 1999716
+    },
+    "daily_history_10_years_chart": {
+      "median_ms": 164.381,
+      "latency_ms": [
+        164.381,
+        159.725,
+        164.842,
+        164.527,
+        162.917
+      ],
+      "sql_counts": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "response_bytes": 770440
+    },
+    "distribution_100000_listings": {
+      "median_ms": 173.942,
+      "latency_ms": [
+        169.299,
+        186.767,
+        166.874,
+        174.657,
+        173.942
+      ],
+      "sql_counts": [
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "response_bytes": 1194
+    }
+  },
+  "query_plans": {
+    "variant_history": [
+      {
+        "Plan": {
+          "Node Type": "Index Scan",
+          "Parallel Aware": false,
+          "Async Capable": false,
+          "Scan Direction": "Forward",
+          "Index Name": "ix_snapshot_statistics_item_variant",
+          "Relation Name": "snapshot_statistics",
+          "Alias": "snapshot_statistics",
+          "Startup Cost": 0.29,
+          "Total Cost": 577.52,
+          "Plan Rows": 399,
+          "Plan Width": 131,
+          "Actual Startup Time": 0.036,
+          "Actual Total Time": 0.475,
+          "Actual Rows": 3651,
+          "Actual Loops": 1,
+          "Index Cond": "((item_id = 25) AND ((variant_key)::text = '1946ff6706d0bb9843ba14631146ddfcdf00f1318e857107671cf01ce34c25b6'::text))",
+          "Rows Removed by Index Recheck": 0,
+          "Shared Hit Blocks": 79,
+          "Shared Read Blocks": 0,
+          "Shared Dirtied Blocks": 0,
+          "Shared Written Blocks": 0,
+          "Local Hit Blocks": 0,
+          "Local Read Blocks": 0,
+          "Local Dirtied Blocks": 0,
+          "Local Written Blocks": 0,
+          "Temp Read Blocks": 0,
+          "Temp Written Blocks": 0
+        },
+        "Planning": {
+          "Shared Hit Blocks": 0,
+          "Shared Read Blocks": 0,
+          "Shared Dirtied Blocks": 0,
+          "Shared Written Blocks": 0,
+          "Local Hit Blocks": 0,
+          "Local Read Blocks": 0,
+          "Local Dirtied Blocks": 0,
+          "Local Written Blocks": 0,
+          "Temp Read Blocks": 0,
+          "Temp Written Blocks": 0
+        },
+        "Planning Time": 0.071,
+        "Triggers": [],
+        "Execution Time": 0.645
+      }
+    ],
+    "daily_lookup": [
+      {
+        "Plan": {
+          "Node Type": "Index Scan",
+          "Parallel Aware": false,
+          "Async Capable": false,
+          "Scan Direction": "Forward",
+          "Index Name": "daily_observations_pkey",
+          "Relation Name": "daily_observations",
+          "Alias": "daily_observations",
+          "Startup Cost": 0.28,
+          "Total Cost": 192.11,
+          "Plan Rows": 3651,
+          "Plan Width": 12,
+          "Actual Startup Time": 0.042,
+          "Actual Total Time": 0.344,
+          "Actual Rows": 3651,
+          "Actual Loops": 1,
+          "Index Cond": "(market_id = '1'::smallint)",
+          "Rows Removed by Index Recheck": 0,
+          "Shared Hit Blocks": 42,
+          "Shared Read Blocks": 0,
+          "Shared Dirtied Blocks": 0,
+          "Shared Written Blocks": 0,
+          "Local Hit Blocks": 0,
+          "Local Read Blocks": 0,
+          "Local Dirtied Blocks": 0,
+          "Local Written Blocks": 0,
+          "Temp Read Blocks": 0,
+          "Temp Written Blocks": 0
+        },
+        "Planning": {
+          "Shared Hit Blocks": 5,
+          "Shared Read Blocks": 0,
+          "Shared Dirtied Blocks": 0,
+          "Shared Written Blocks": 0,
+          "Local Hit Blocks": 0,
+          "Local Read Blocks": 0,
+          "Local Dirtied Blocks": 0,
+          "Local Written Blocks": 0,
+          "Temp Read Blocks": 0,
+          "Temp Written Blocks": 0
+        },
+        "Planning Time": 0.057,
+        "Triggers": [],
+        "Execution Time": 0.481
+      }
+    ],
+    "listing_variant": [
+      {
+        "Plan": {
+          "Node Type": "Seq Scan",
+          "Parallel Aware": false,
+          "Async Capable": false,
+          "Relation Name": "listings",
+          "Alias": "listings",
+          "Startup Cost": 0.0,
+          "Total Cost": 3475.0,
+          "Plan Rows": 100000,
+          "Plan Width": 12,
+          "Actual Startup Time": 0.007,
+          "Actual Total Time": 14.953,
+          "Actual Rows": 100000,
+          "Actual Loops": 1,
+          "Filter": "((snapshot_id = '1'::smallint) AND (item_id = 25) AND ((variant_key)::text = '1946ff6706d0bb9843ba14631146ddfcdf00f1318e857107671cf01ce34c25b6'::text))",
+          "Rows Removed by Filter": 0,
+          "Shared Hit Blocks": 1725,
+          "Shared Read Blocks": 0,
+          "Shared Dirtied Blocks": 0,
+          "Shared Written Blocks": 0,
+          "Local Hit Blocks": 0,
+          "Local Read Blocks": 0,
+          "Local Dirtied Blocks": 0,
+          "Local Written Blocks": 0,
+          "Temp Read Blocks": 0,
+          "Temp Written Blocks": 0
+        },
+        "Planning": {
+          "Shared Hit Blocks": 0,
+          "Shared Read Blocks": 0,
+          "Shared Dirtied Blocks": 0,
+          "Shared Written Blocks": 0,
+          "Local Hit Blocks": 0,
+          "Local Read Blocks": 0,
+          "Local Dirtied Blocks": 0,
+          "Local Written Blocks": 0,
+          "Temp Read Blocks": 0,
+          "Temp Written Blocks": 0
+        },
+        "Planning Time": 0.038,
+        "Triggers": [],
+        "Execution Time": 17.879
+      }
+    ]
+  },
+  "environment": "Isolated market_test PostgreSQL; worker 384 MiB / 1 CPU; five sequential warm handler calls; excludes HTTP/browser. ANALYZE and all fixture rows are rolled back. Independent compact/catalogue, history and listing workloads, not ingestion observations."
+}

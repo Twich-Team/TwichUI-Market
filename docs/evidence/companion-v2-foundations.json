@@ -1,0 +1,19 @@
+{
+  "status": "policy_and_settings_foundation_verified_not_integrated",
+  "starting_commit": "454ec143dbcb87fce3395d6433adfb13070a904f",
+  "production_application_unchanged": "c8f03c2",
+  "toolchain": "rustc/cargo 1.100.0",
+  "test_environment": "marketdev rootless rust:1-slim-bookworm, 1536 MiB, 2 CPU; synthetic fixtures and local test servers only",
+  "rust_tests_passed_linux": 26,
+  "existing_cache_protocol_http_tests": 10,
+  "scheduler_tests": 12,
+  "settings_tests": 4,
+  "formatting": "cargo fmt --all",
+  "settings": ["safe defaults", "first-run visibility", "version and bounds", "unknown field rejection", "atomic persistence", "legacy nonsecret connection migration", "no token/password fields"],
+  "scheduler": ["single flight", "safe cancel acknowledgement", "manual and scheduled runs", "pause/resume", "market switch", "bounded backoff", "Retry-After bound", "offline recovery", "authorization-required stop", "clock backwards", "sleep/wake catch-up prevention", "unchanged upstream generation", "accurate separate timestamps", "shutdown", "unrelated settings preserve deadlines"],
+  "remaining": ["native runtime integration", "browser authorization", "native tray/autostart/window behavior", "website wizard/device management", "signed release distribution", "actual installed Windows end-to-end", "performance and eight screenshots", "owner visual/signing/release gates", "approved deployment and complete original request audit"],
+  "production_database_or_services_changed": false,
+  "additional_collectors_activated": false,
+  "historical_pruning_activated": false,
+  "addon_or_game_files_changed": false
+}

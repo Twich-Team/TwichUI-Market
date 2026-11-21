@@ -1,0 +1,33 @@
+{
+  "operation": "Scoped API drain for collector lock handoff",
+  "collector_code_schedule_or_process_changed": false,
+  "collector_caught_up_at": "2026-11-17T21:30:54.046823+00:00",
+  "compose_start_followed_stale_migrate_dependency": true,
+  "stale_migrate_error": "Cannot locate recovery_20261117; no migration applied",
+  "correction": "Started existing twichui-market-api-1 directly with docker start",
+  "public_health_after_correction": 200,
+  "schema_after": "recovery_20261117",
+  "services": [
+    {
+      "name": "/twichui-market-api-1",
+      "image": "sha256:3ef6f57964546a425f4c2ebe2bc44be2d9a516340325074dfb0fb2f32d7c3667",
+      "started": "2026-11-17T21:32:34.47911421Z",
+      "finished": "2026-11-17T21:30:54.10297379Z",
+      "status": "running"
+    },
+    {
+      "name": "/twichui-market-local-api-1",
+      "image": "sha256:3ef6f57964546a425f4c2ebe2bc44be2d9a516340325074dfb0fb2f32d7c3667",
+      "started": "2026-11-17T21:31:26.592735316Z",
+      "finished": "2026-11-17T21:30:53.877960931Z",
+      "status": "running"
+    },
+    {
+      "name": "/twichui-market-migrate-1",
+      "image": "sha256:4255007bdcf12a9b29e93a6be0e4be4a66480ce8139725ef3ba5e9fadae81550",
+      "started": "2026-11-17T21:31:26.775517163Z",
+      "finished": "2026-11-17T21:31:28.638520388Z",
+      "status": "exited"
+    }
+  ]
+}

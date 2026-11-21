@@ -1,0 +1,34 @@
+{
+  "checked_pr_head": "532cb1beb771c053e5a008a1017474a9a8ffa04e",
+  "integrated_development_base": "da3ae92dd5fbe02d201869d8d4a06ba01cb98451",
+  "pr": "https://github.com/Twich-Team/TwichUI-Market/pull/15",
+  "all_checks_success": true,
+  "checks": [
+    {
+      "name": "postgres",
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/43826528932/job/133161581959",
+      "evidence": "584 backend tests, five preservation/rollback rehearsals, 43 operational tests, 16 L1 conformance tests, audit and migration parity"
+    },
+    {
+      "name": "browser",
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/43826528924/job/133161784952",
+      "evidence": "build/audit, 123 unit tests, 41 ordinary + 1 ForeverDB + 1 provider browser workflows, focused archive UI/accessibility"
+    },
+    {
+      "name": "windows",
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/43826528996/job/133161635435",
+      "evidence": "92 Windows core tests; Tauri compile/test/build; actual canonical/provisional native archive pipelines; legacy installed upgrade; actual installed WebView archive/manual publisher; uninstall retains archive/scalar/settings; no game installation"
+    },
+    {
+      "name": "signed-update / verify",
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/43826528996/job/133161635458",
+      "evidence": "existing signed candidate verification only; no L2 signing/release/deployment"
+    }
+  ],
+  "scope": "Synthetic disposable infrastructure and CI Windows companion only; genuine archive/Forever frame-time acceptance remains open",
+  "final_pr_checks": "Later UI-status/documentation-only checkpoint must pass its own checks; see PR current head."
+}

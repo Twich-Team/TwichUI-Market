@@ -1,0 +1,50 @@
+{
+  "worker": {
+    "base_source": "fe92999cc969a23684f3023638673c656efb3bce",
+    "overrides": {},
+    "active_python_files_compared": 62,
+    "differences": []
+  },
+  "enrichment": {
+    "base_source": "bf8a04a0539fb4c3e2468c70a2e5155ba1150f95",
+    "overrides": {},
+    "active_python_files_compared": 57,
+    "differences": []
+  },
+  "backup-manager": {
+    "base_source": "e49de6a829b1c281e16a3da3c1baa377a1fb77d8",
+    "overrides": {},
+    "active_python_files_compared": 2,
+    "differences": []
+  },
+  "retention": {
+    "base_source": "fe92999cc969a23684f3023638673c656efb3bce",
+    "overrides": {
+      "backend/market/retention.py": "3ebd8b3c8b613ca8ed42a85614679a824ff85033",
+      "backend/market/retention_worker.py": "3ebd8b3c8b613ca8ed42a85614679a824ff85033"
+    },
+    "active_python_files_compared": 62,
+    "differences": []
+  },
+  "monitor": {
+    "base_source": "fe92999cc969a23684f3023638673c656efb3bce",
+    "overrides": {
+      "backend/market/retention.py": "3ebd8b3c8b613ca8ed42a85614679a824ff85033",
+      "backend/market/retention_worker.py": "3ebd8b3c8b613ca8ed42a85614679a824ff85033"
+    },
+    "active_python_files_compared": 62,
+    "differences": []
+  },
+  "api": {
+    "base_source": "3b59f0f34617cbcf12a43baddfeed7a1e668feb2",
+    "overrides": {},
+    "active_python_files_compared": 64,
+    "differences": []
+  },
+  "local-api": {
+    "base_source": "3b59f0f34617cbcf12a43baddfeed7a1e668feb2",
+    "overrides": {},
+    "active_python_files_compared": 64,
+    "differences": []
+  }
+}

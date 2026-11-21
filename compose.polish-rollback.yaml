@@ -1,0 +1,8 @@
+# Immediate preceding APIs e9c4d29 / frontend 4ddf137. Append LAST; keep all data and worker state.
+services:
+  api:
+    image: sha256:b645901b9b982e64881eff9743da56959ef3b7192239bcfa3b4d8ce691e732c9
+  local-api:
+    image: sha256:b645901b9b982e64881eff9743da56959ef3b7192239bcfa3b4d8ce691e732c9
+  proxy:
+    image: sha256:e996c241a2e128aeb1512801596ecae009e2d84020e6e92b4860e57acaeee9f4

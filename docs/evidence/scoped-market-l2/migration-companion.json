@@ -1,0 +1,1 @@
+{"database": "market_test", "legacy_0012_rows_preserved": true, "native_populated_downgrade_refused": true, "rejected_downgrade_retained_revision_and_rows": true, "empty_native_downgrade_preserved_legacy_rows": true, "full_upgrade_parity_round_trip": true, "revision": "archive_20261116", "synthetic_only": true}

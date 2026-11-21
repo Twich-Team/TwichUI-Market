@@ -1,0 +1,12 @@
+[
+  {
+    "tag": "twichui-market-backend:polish-release-7202e07",
+    "id": "sha256:48caf6befd76baa96460d2096e6c71280b961e2e8060ccc3d39a05b2f86bd5a8",
+    "revision": "7202e07a62f1770642b50afe5a3ec671d9b488cf"
+  },
+  {
+    "tag": "twichui-market-web:polish-release-7202e07",
+    "id": "sha256:06605be1c7b4651c4bc2fa763af30e1a517177189fd861e5c1404960f37f4c79",
+    "revision": "7202e07a62f1770642b50afe5a3ec671d9b488cf"
+  }
+]

@@ -1,0 +1,53 @@
+{
+  "first_attempt_ready": {
+    "ready_at": "2026-11-15T05:30:43.396Z",
+    "nonce": "bfd93206e2",
+    "public_tls": {
+      "issuer": "YR1",
+      "protocol": "TLS 1.3",
+      "subjectName": "*.twich.gg",
+      "validFrom": 1791687760,
+      "validTo": 1799463759
+    },
+    "public_session_established": true,
+    "local_session_established": true,
+    "test_accounts": {
+      "admin": 74,
+      "member": 75
+    },
+    "device_and_cursor_established": true,
+    "preferences_stored_before_deployment": true,
+    "continue_file": "artifacts/admin-release/public/continue-bfd93206e2"
+  },
+  "first_attempt_failure": {
+    "phase": "companion_download_pairing_and_revocation",
+    "error_type": "Error",
+    "frames": [],
+    "at": "2026-11-15T05:32:57.426Z"
+  },
+  "failure_classification": "Verification harness used obsolete bootstrap password; public login returned 401. No owner password reset and no product regression.",
+  "script_sha256": "9a1a0ca235dac3d3c8112a053b76be590fcb0852ebd3f9db9a5521248220bd1b",
+  "checks_completed_before_harness_failure": [
+    "TLS validation",
+    "pre-deployment public/local sessions and preferences survived scoped replacement",
+    "legacy desktop token/cursor continued",
+    "CSRF/origin rejection",
+    "member/admin boundary",
+    "real Explorer asking-price and supply math",
+    "price and supply charts",
+    "all Deal Finder modes",
+    "saved preferences reload/logout/login",
+    "recovery preview without provider request",
+    "provider key form empty and masked",
+    "all nine administration sections with zero axe violations",
+    "five bounded record endpoints and member denials",
+    "legacy device revocation"
+  ],
+  "no_external_recovery_requests": true,
+  "production_replacement_times": {
+    "/twichui-market-api-1": "2026-11-15T05:31:33.672188976Z",
+    "/twichui-market-local-api-1": "2026-11-15T05:31:33.855784757Z",
+    "/twichui-market-proxy-1": "2026-11-15T05:31:49.861044997Z",
+    "/twichui-market-enrichment-1": "2026-11-15T05:31:46.306415973Z"
+  }
+}

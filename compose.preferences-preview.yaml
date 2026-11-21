@@ -1,0 +1,6 @@
+# Apply after compose.item-preview.yaml. Personal settings only; no production promotion.
+services:
+  preview:
+    image: twichui-market-web:preferences
+  preview-api:
+    image: twichui-market-backend:preferences

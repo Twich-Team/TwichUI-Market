@@ -1,0 +1,36 @@
+{
+  "gameData": {
+    "build": "1.60.1.70938",
+    "credit": "Game data \u00a9 Blizzard Entertainment, Inc., read from the public client; not under Everloot's licence. Column names from WoWDBDefs (https://github.com/wowdev/WoWDBDefs), CC BY-SA 4.0.",
+    "extractedAt": "2026-11-13T02:53:06.160Z",
+    "label": "Found in game files, unconfirmed",
+    "licence": "Blizzard's data, not under Everloot's licence"
+  },
+  "generatedAt": "2026-11-15T03:50:49.370Z",
+  "items": [
+    {
+      "class": {
+        "id": 4,
+        "label": "Armor",
+        "name": "Armor",
+        "slug": "armor"
+      },
+      "itemId": 17,
+      "quality": null,
+      "slot": {
+        "inventoryType": 4,
+        "name": "Shirt",
+        "slug": "shirt"
+      },
+      "subclass": {
+        "id": 4,
+        "name": "Plate",
+        "slug": "plate"
+      }
+    }
+  ],
+  "limit": 1,
+  "next": "https://everloot.app/api/items?offset=1&limit=1",
+  "offset": 0,
+  "total": 31981
+}

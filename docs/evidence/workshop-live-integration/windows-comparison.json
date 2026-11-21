@@ -1,0 +1,101 @@
+{
+  "synthetic": true,
+  "production": false,
+  "physical_game": false,
+  "market_source": "17efbdb6d75d24d9d2702fedd2955e77a113101b",
+  "preview": "9b45d2957f45cea00451e482bd4a6498e881c8d5",
+  "workflow_run": 44441141007,
+  "job": 135281986623,
+  "artifact": {
+    "id": 14492911934,
+    "sha256": "4800d405bcb29eb743dfd3a38442bc2de5990606f8b33f68b9a36fe07aa7dcaf"
+  },
+  "comparison": "Frozen fe854b0 client vs current candidate; old addon capability, v1 rows, common repeat-price-loop measurement driver. Does not quantify the new single-flight runtime or physical-PC improvement.",
+  "runs": [
+    {
+      "label": "baseline",
+      "repeat": 0,
+      "mode": "archive",
+      "seconds": 35.0880655,
+      "values_sha256": "6a576d12dae92a659c1a9d29ea3f9ad7a76149e158a481b4211903f441147d9e"
+    },
+    {
+      "label": "baseline",
+      "repeat": 1,
+      "mode": "archive",
+      "seconds": 34.0416467,
+      "values_sha256": "6a576d12dae92a659c1a9d29ea3f9ad7a76149e158a481b4211903f441147d9e"
+    },
+    {
+      "label": "baseline",
+      "repeat": 2,
+      "mode": "archive",
+      "seconds": 34.0913612,
+      "values_sha256": "6a576d12dae92a659c1a9d29ea3f9ad7a76149e158a481b4211903f441147d9e"
+    },
+    {
+      "label": "candidate",
+      "repeat": 0,
+      "mode": "archive",
+      "seconds": 34.0848426,
+      "values_sha256": "6a576d12dae92a659c1a9d29ea3f9ad7a76149e158a481b4211903f441147d9e"
+    },
+    {
+      "label": "candidate",
+      "repeat": 1,
+      "mode": "archive",
+      "seconds": 33.9871753,
+      "values_sha256": "6a576d12dae92a659c1a9d29ea3f9ad7a76149e158a481b4211903f441147d9e"
+    },
+    {
+      "label": "candidate",
+      "repeat": 2,
+      "mode": "archive",
+      "seconds": 33.8907014,
+      "values_sha256": "6a576d12dae92a659c1a9d29ea3f9ad7a76149e158a481b4211903f441147d9e"
+    },
+    {
+      "label": "baseline",
+      "repeat": 0,
+      "mode": "auto",
+      "seconds": 164.286861,
+      "values_sha256": "9f082c463139dced2af0c8730a85d33ff74fd9f17a1cad61b96f08387ba0bdf3"
+    },
+    {
+      "label": "baseline",
+      "repeat": 1,
+      "mode": "auto",
+      "seconds": 164.7092476,
+      "values_sha256": "9f082c463139dced2af0c8730a85d33ff74fd9f17a1cad61b96f08387ba0bdf3"
+    },
+    {
+      "label": "baseline",
+      "repeat": 2,
+      "mode": "auto",
+      "seconds": 164.6453188,
+      "values_sha256": "9f082c463139dced2af0c8730a85d33ff74fd9f17a1cad61b96f08387ba0bdf3"
+    },
+    {
+      "label": "candidate",
+      "repeat": 0,
+      "mode": "auto",
+      "seconds": 57.5669735,
+      "values_sha256": "9f082c463139dced2af0c8730a85d33ff74fd9f17a1cad61b96f08387ba0bdf3"
+    },
+    {
+      "label": "candidate",
+      "repeat": 1,
+      "mode": "auto",
+      "seconds": 57.6496227,
+      "values_sha256": "9f082c463139dced2af0c8730a85d33ff74fd9f17a1cad61b96f08387ba0bdf3"
+    },
+    {
+      "label": "candidate",
+      "repeat": 2,
+      "mode": "auto",
+      "seconds": 57.7904927,
+      "values_sha256": "9f082c463139dced2af0c8730a85d33ff74fd9f17a1cad61b96f08387ba0bdf3"
+    }
+  ],
+  "earlier_failures": "Run 44436864049 automatic baseline returned Network on two runners. Instrumented run passes without transport/production timeout changes; earlier root cause remains unconfirmed."
+}

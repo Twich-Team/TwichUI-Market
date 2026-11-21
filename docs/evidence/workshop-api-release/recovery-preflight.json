@@ -1,0 +1,17 @@
+{
+  "protected_restored_recovery_ready": true,
+  "recovery": {
+    "policy": {
+      "mode": "local_only",
+      "valid": true,
+      "off_vm_required": false,
+      "owner_approval_reference": "owner-20261118-retention-local-only"
+    },
+    "off_vm_required": false,
+    "local_archive_status": "Revalidated under the backup lock before execution",
+    "off_vm_verification_recent": false,
+    "required_evidence_recent": true,
+    "verified_at": "2026-11-18 14:57:52.594491+00:00",
+    "reason": null
+  }
+}

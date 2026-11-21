@@ -1,0 +1,10 @@
+{
+  "origin": "synthetic",
+  "provider_requests": 0,
+  "desktop_axe_violations": 0,
+  "mobile_axe_violations": 0,
+  "screenshots": 10,
+  "saved_configuration": true,
+  "usage_and_cooldown_preserved": true,
+  "provider_enablement_preserved": true
+}

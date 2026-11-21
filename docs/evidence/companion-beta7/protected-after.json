@@ -1,0 +1,39 @@
+{
+  "users": {
+    "rows": 97,
+    "cutoff": 97,
+    "sha256": "d6f150dc6b7fc2b00afa4d0934d3353c6335e46756152342482c44ebff6932e5",
+    "original_rows_unchanged": true
+  },
+  "credentials": {
+    "rows": 277,
+    "cutoff": 277,
+    "sha256": "84d79a79c231e1dfa2e9b31d92dddc12153623765f2ab4346bd244f590d5b845",
+    "original_rows_unchanged": true
+  },
+  "user_preferences": {
+    "rows": 22,
+    "cutoff": 95,
+    "sha256": "b118e2b5faab2e45456935a537831214a8bb642ea669c6f001d8dd50556458b5",
+    "original_rows_unchanged": true
+  },
+  "companion_devices": {
+    "rows": 5,
+    "sha256": "9bdfbcc21f2d6da190f8e95136cd43e74fc9f23f9c9aa465a3a59428609cc068",
+    "original_rows_unchanged": true
+  },
+  "schema": "coverage_20261117",
+  "markets": [
+    {
+      "id": 2,
+      "region": "us",
+      "ruleset_id": 2,
+      "house_id": 114,
+      "interval_seconds": 300,
+      "unified_coverage": true,
+      "failures": 5,
+      "last_success": "2026-11-18 04:20:23.319502+00:00"
+    }
+  ],
+  "destructive_retention_batches": 0
+}

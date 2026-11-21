@@ -1,0 +1,44 @@
+[
+  {
+    "path": "/admin/users",
+    "status": 200,
+    "seconds": 0.11,
+    "bytes": 9941
+  },
+  {
+    "path": "/admin/invitations",
+    "status": 200,
+    "seconds": 0.03,
+    "bytes": 139
+  },
+  {
+    "path": "/admin/devices",
+    "status": 200,
+    "seconds": 0.03,
+    "bytes": 3946
+  },
+  {
+    "path": "/admin/storage",
+    "status": 200,
+    "seconds": 0.05,
+    "bytes": 6216
+  },
+  {
+    "path": "/admin/item-enrichment",
+    "status": 200,
+    "seconds": 0.2,
+    "bytes": 306
+  },
+  {
+    "path": "/companion/admin/device-summary",
+    "status": 200,
+    "seconds": 0.1,
+    "bytes": 384
+  },
+  {
+    "path": "/admin/item-metadata",
+    "status": 200,
+    "seconds": 5.01,
+    "bytes": 19611
+  }
+]

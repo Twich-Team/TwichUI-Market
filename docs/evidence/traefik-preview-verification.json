@@ -1,0 +1,76 @@
+{
+  "public_tls": {
+    "issuer": "YR1",
+    "protocol": "TLS 1.3",
+    "subjectName": "*.twich.gg",
+    "validFrom": 1791687760,
+    "validTo": 1799463759
+  },
+  "public_http_status": 403,
+  "public_authentication_verified": false,
+  "blocker": "Rootless publishing loses source IP; source filter awaits administrator.",
+  "local_secure_auth_csrf_logout_device_sync": true,
+  "preview_login_persistence_readonly_cookie_audience": true,
+  "preview_catalogue_icons_variants_tooltips_charts": true,
+  "axe_violations": 0,
+  "ignoreHTTPSErrors": false,
+  "source_synthetic": false,
+  "migration": {
+    "live": "0010",
+    "isolated_round_trip_and_parity": true
+  },
+  "tests": {
+    "backend": 120,
+    "frontend": 17,
+    "chromium_regressions": 6,
+    "chromium_regression_seconds": 35.1,
+    "focused_listener_security": 5
+  },
+  "network": {
+    "public_origin": "https://market.twich.gg",
+    "private_bind": "10.0.4.46:18780",
+    "local_https_bind": "127.0.0.1:18443",
+    "preview_bind": "127.0.0.1:18444",
+    "actual_traefik_tcp_peer": "10.0.4.3",
+    "caddy_peer_for_both_trusted_and_direct_requests": "172.18.0.1",
+    "direct_and_forged_header_status": 403,
+    "public_dns_A": "Google DNS NOERROR/NODATA; LAN resolver returns 10.0.4.3"
+  },
+  "production_assets": {
+    "unchanged_files": 6,
+    "manifest": "production-assets-before-traefik.json",
+    "modernized_promoted": false
+  },
+  "host_firewall_changed": false,
+  "traefik_repository_changed": false,
+  "collector": {
+    "revision": "0010",
+    "observations": 118,
+    "synthetic": 0,
+    "snapshots": 11,
+    "market": {
+      "id": 1,
+      "enabled": true,
+      "verified": true,
+      "failures": 0,
+      "last_error": null,
+      "last_success": "2026-11-14T12:54:53.888047+00:00"
+    }
+  },
+  "backup_before_migration": "market-development-20261114T123543922718Z.dump",
+  "ca_fingerprints_sha256": {
+    "local": "BB:AC:9C:EB:D9:22:C3:CE:49:27:0E:E8:9A:F8:FE:E5:83:EF:75:12:1E:C6:8D:66:7A:0C:D1:94:89:C4:89:78",
+    "preview": "94:4F:F2:20:92:83:1F:17:E3:CE:2D:ED:3A:34:1B:58:7B:48:9B:FE:F1:4E:43:0A:C5:C7:5A:61:35:B2:F2:2A"
+  },
+  "live_catalogue_item_groups": 4994,
+  "live_snapshot_id": "11",
+  "ci_checkpoint": "ece9100",
+  "ci": {
+    "Backend": 43598576332,
+    "Private website": 43598576334,
+    "Windows companion": 43598576327,
+    "conclusion": "success"
+  },
+  "collector_started_at": "2026-11-14T04:42:58.809855977Z",
+  "activation_negative_precheck": "Refused without configuration changes: direct non-Traefik request still reaches HTTP403"
+}

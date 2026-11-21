@@ -1,0 +1,56 @@
+[
+  {
+    "path": "screenshots/administration.png",
+    "sha256": "e8d72c890a2275aa9f239f7a172bf7ea21b4cd80b8ac00f02152135b5f60f633",
+    "bytes": 2653757,
+    "source": "Actual public HTTPS production; audited temporary account, genuine market/metadata, no mocked network responses"
+  },
+  {
+    "path": "screenshots/deal-finder.png",
+    "sha256": "9f6acaea836f8d61bd8ad78f14e62d5f23c8a701497103de009353408b8a9b8b",
+    "bytes": 12077334,
+    "source": "Actual public HTTPS production; audited temporary account, genuine market/metadata, no mocked network responses"
+  },
+  {
+    "path": "screenshots/details-mobile.png",
+    "sha256": "638fe12ee911fab1cc8729d49f703735459f6808e7c2a569c18b77b4af20abb1",
+    "bytes": 810916,
+    "source": "Actual public HTTPS production; audited temporary account, genuine market/metadata, no mocked network responses"
+  },
+  {
+    "path": "screenshots/exact-history-auctions.png",
+    "sha256": "10726c3454c6df41ad83af651ea367bb827bb7b8cf1ba40571d6784854a85e72",
+    "bytes": 1490076,
+    "source": "Actual public HTTPS production; audited temporary account, genuine market/metadata, no mocked network responses"
+  },
+  {
+    "path": "screenshots/explorer-search.png",
+    "sha256": "91cd2c65657b445cf22175a54423c679f2965d4b48abb0559bfecbd2850304f3",
+    "bytes": 391089,
+    "source": "Actual public HTTPS production; audited temporary account, genuine market/metadata, no mocked network responses"
+  },
+  {
+    "path": "screenshots/multiple-variants.png",
+    "sha256": "5118cf0fbc075bdbc2e653607fef6aa7b3db1e00f5266dce16b67b485b888906",
+    "bytes": 1547075,
+    "source": "Actual public HTTPS production; audited temporary account, genuine market/metadata, no mocked network responses"
+  },
+  {
+    "path": "screenshots/parent-item.png",
+    "sha256": "9b7674a7c818228b9ca7e7491970a83381b0a6d845f8a2e84117ed8107208790",
+    "bytes": 648923,
+    "source": "Actual public HTTPS production; audited temporary account, genuine market/metadata, no mocked network responses"
+  },
+  {
+    "path": "screenshots/production-companion-download.png",
+    "sha256": "6cab0819f2de0c9415b813d1ce81a53bf49644f66bff59b702140954d8d7ecd9",
+    "bytes": 1184916,
+    "source": "Actual public HTTPS production; audited temporary account, genuine market/metadata, no mocked network responses"
+  },
+  {
+    "path": "screenshots/quality-provenance.png",
+    "sha256": "5edbb4ed42d04c93ba303e3be176a565ffab0f318a38fb928124ef702480b99d",
+    "bytes": 961839,
+    "source": "Actual public HTTPS production; audited temporary account, genuine market/metadata, no mocked network responses"
+  }
+]

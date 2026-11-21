@@ -1,0 +1,91 @@
+[
+  {
+    "captured_at": "2026-11-17T18:19:40.636129+00:00",
+    "period_days": 30,
+    "providers": [
+      {
+        "provider": "blizzard",
+        "task_records": 626,
+        "committed_request_reservations": 525,
+        "final_responses_recorded": 525,
+        "final_requests_new_name": 170,
+        "final_requests_new_icon_reference": 0,
+        "final_requests_new_attributes": 188,
+        "final_already_known": 2,
+        "final_304": 0,
+        "final_404": 260,
+        "final_no_usable_data": 0,
+        "final_429": 0,
+        "final_errors": 0,
+        "overwritten_retry_records": 0,
+        "gain_evidence_incomplete": 335,
+        "within_nominal_refresh_needs_review": 0
+      },
+      {
+        "provider": "everloot",
+        "task_records": 2238,
+        "committed_request_reservations": 2170,
+        "final_responses_recorded": 2167,
+        "final_requests_new_name": 3,
+        "final_requests_new_icon_reference": 0,
+        "final_requests_new_attributes": 0,
+        "final_already_known": 1,
+        "final_304": 0,
+        "final_404": 1268,
+        "final_no_usable_data": 892,
+        "final_429": 0,
+        "final_errors": 0,
+        "overwritten_retry_records": 0,
+        "gain_evidence_incomplete": 1226,
+        "within_nominal_refresh_needs_review": 8
+      },
+      {
+        "provider": "foreverdb",
+        "task_records": 6088,
+        "committed_request_reservations": 6088,
+        "final_responses_recorded": 6063,
+        "final_requests_new_name": 492,
+        "final_requests_new_icon_reference": 0,
+        "final_requests_new_attributes": 5282,
+        "final_already_known": 265,
+        "final_304": 0,
+        "final_404": 3,
+        "final_no_usable_data": 0,
+        "final_429": 0,
+        "final_errors": 2,
+        "overwritten_retry_records": 0,
+        "gain_evidence_incomplete": 53,
+        "within_nominal_refresh_needs_review": 516
+      },
+      {
+        "provider": "thewowdb",
+        "task_records": 6850,
+        "committed_request_reservations": 6815,
+        "final_responses_recorded": 6747,
+        "final_requests_new_name": 2340,
+        "final_requests_new_icon_reference": 0,
+        "final_requests_new_attributes": 2350,
+        "final_already_known": 4149,
+        "final_304": 78,
+        "final_404": 245,
+        "final_no_usable_data": 0,
+        "final_429": 0,
+        "final_errors": 1,
+        "overwritten_retry_records": 3,
+        "gain_evidence_incomplete": 375,
+        "within_nominal_refresh_needs_review": 56
+      }
+    ],
+    "limitations": "Tasks overwrite retry results. Reservations are not exact outbound counts; only final responses/gains survive. Within-window repeats may be justified by errors, 404/429 windows, mapping or build changes. Icon downloads and validation are outside this task ledger. Historical requested goals/skip decisions are unrecorded."
+  },
+  {
+    "market_id": 2,
+    "snapshot_id": 88,
+    "observed": 5115,
+    "names": 4949,
+    "icons": 5115,
+    "quality": 4947,
+    "essential_definition": "Quality and class for all base items; level and slot only for verified Weapon/Armor classes. Unknown classification is not assumed equipment.",
+    "missing_applicable_essential": 186
+  }
+]

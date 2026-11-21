@@ -1,0 +1,7 @@
+2026-11-15T14:39:10.7365858Z   "tested_commit": "7202e07a62f1770642b50afe5a3ec671d9b488cf",
+2026-11-15T14:39:10.7366204Z   "source_kind": "commit",
+2026-11-15T14:39:10.7367958Z   "release_admissible": null,
+2026-11-15T14:39:16.4717651Z  Test Files  15 passed (15)
+2026-11-15T14:39:16.4718161Z       Tests  115 passed (115)
+2026-11-15T14:43:35.9558121Z   ✓  38 e2e/workflows.spec.ts:134:1 › invitation acceptance, member permissions, device sync/revocation and password change (5.9s)
+2026-11-15T14:43:38.9632731Z   39 passed (2.9m)

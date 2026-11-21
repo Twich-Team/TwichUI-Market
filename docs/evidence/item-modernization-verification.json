@@ -1,0 +1,182 @@
+{
+  "status": "owner_review_pending",
+  "production_frontend": "previous version retained",
+  "live_backend_revision": "0009",
+  "candidate_frontend_checkpoint": "1430b32",
+  "evidence": [
+    {
+      "path": "artifacts/modernization-live/catalogue.png",
+      "sha256": "1915d17614b1ec7e4ea920e27c8171b48b4090a1564ccaa4eea0981b579f3b66",
+      "bytes": 1095283,
+      "synthetic": false
+    },
+    {
+      "path": "artifacts/modernization-live/tooltip.png",
+      "sha256": "e613b7728f057bdaf8112d17b18bad8134fbf9fc231f1f48209886d711375db1",
+      "bytes": 1122353,
+      "synthetic": false
+    },
+    {
+      "path": "artifacts/modernization-live/deals-limited-history.png",
+      "sha256": "642e16fe4e44959cdc1a2ddeab820e2b32acdab42c6b6a8a2fe2eaeff161f193",
+      "bytes": 12040313,
+      "synthetic": false
+    },
+    {
+      "path": "artifacts/modernization/account-axe.json",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2,
+      "synthetic": true,
+      "result": []
+    },
+    {
+      "path": "artifacts/modernization/touch-item-axe.json",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2,
+      "synthetic": true,
+      "result": []
+    },
+    {
+      "path": "artifacts/modernization/deals-axe.json",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2,
+      "synthetic": true,
+      "result": []
+    },
+    {
+      "path": "artifacts/modernization/explorer-axe.json",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2,
+      "synthetic": true,
+      "result": []
+    },
+    {
+      "path": "artifacts/modernization/row-window-measurements.json",
+      "sha256": "04576452fc8fbfb575b670cdbe625660ee7bccbe5c9f1fe1a7f46d9eb3acea27",
+      "bytes": 126,
+      "synthetic": true,
+      "result": {
+        "synthetic": true,
+        "catalogue_rows": 25,
+        "calendar_days": 3651,
+        "virtual_rows": 17,
+        "paginated_history_rows": 50
+      }
+    },
+    {
+      "path": "artifacts/live-browser/explorer.png",
+      "sha256": "723022dba62b82f9552bca964c1314f781736679cb351cd55b27b454d025fdf3",
+      "bytes": 979627,
+      "synthetic": false
+    },
+    {
+      "path": "artifacts/modernization/touch-popover.png",
+      "sha256": "174d7c8fc58b4fc1ccab397990743a202ed79e3dd7777751cd57be6dab1d915b",
+      "bytes": 599522,
+      "synthetic": true
+    }
+  ],
+  "live_health": {
+    "checked_at": "2026-11-14T04:59:33.058563+00:00",
+    "database_bytes": 118372019,
+    "genuine_observations": 27,
+    "synthetic_observations": 0,
+    "snapshots": 3,
+    "markets": [
+      {
+        "id": 1,
+        "enabled": true,
+        "verified": true,
+        "failures": 0,
+        "last_error": null
+      }
+    ],
+    "collection_last_hour": [
+      {
+        "status": "collected",
+        "http_status": 200,
+        "count": 1
+      },
+      {
+        "status": "unchanged",
+        "http_status": 304,
+        "count": 11
+      }
+    ],
+    "metadata_states": [
+      {
+        "status": "missing",
+        "http_status": 404,
+        "count": 125
+      },
+      {
+        "status": "available",
+        "http_status": 200,
+        "count": 226
+      }
+    ],
+    "media_states": [
+      {
+        "status": "available",
+        "http_status": 200,
+        "count": 176,
+        "bytes": 406468
+      }
+    ]
+  },
+  "restore": {
+    "migration": "0009",
+    "users": 7,
+    "markets": 1,
+    "observations": 23,
+    "listings": 306260,
+    "synthetic_observations": 0,
+    "buyout_total": "184307499510",
+    "snapshot_statistics": 72673,
+    "daily_observations": 1,
+    "market_verifications": 1
+  },
+  "trusted_https": {
+    "health_http_status": 200,
+    "certificate_chain": "Explicit project-local CA; no host trust changes",
+    "api_cache_control": "no-store"
+  },
+  "ci_checkpoint_fa1aa35": {
+    "Backend": 43559048180,
+    "Private website": 43559048190,
+    "Windows companion": 43559048176,
+    "conclusion": "success"
+  },
+  "candidate_image": "sha256:d9a929b335c974d293c920b29940a88946702057a2bb92489bccea2421ca21b7",
+  "candidate_deployment": {
+    "compose": "compose.item-preview.yaml",
+    "read_only": true,
+    "host_ports": {},
+    "memory_bytes": 134217728,
+    "nano_cpus": 250000000,
+    "trusted_tls": {
+      "trusted_candidate_tls": true,
+      "status": 200,
+      "health": {
+        "status": "ok",
+        "contract_version": 1
+      },
+      "cache_control": "no-store",
+      "csp_verified": true
+    }
+  },
+  "ci_checkpoint_1430b32": {
+    "Backend": 43559592979,
+    "Private website": 43559592978,
+    "Windows companion": 43559592963,
+    "conclusion": "success"
+  },
+  "final_local_checks": {
+    "postgresql_tests": 115,
+    "frontend_tests": 16,
+    "chromium_workflows": 6,
+    "chromium_seconds": 35.3,
+    "production_dependency_audit_findings": 0,
+    "axe_violations": 0
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "pull_request": "https://github.com/Twich-Team/TwichUI/pull/62",
+  "approved_head": "790b1c1eafb9109b8bdfabdf083cae68909e5227",
+  "required_pr_ci_run": 44447353971,
+  "required_check": "verify",
+  "required_check_passed": true,
+  "merged_main": "074435e41521e97ad125e3094c45a9eb767f90e1",
+  "main_parent": "efaf0d1237f8b41bef1714f6aec19e22f443fd0d",
+  "main_tree": "e1caaa9226b64ce624fd69d34a612bc04ece0956",
+  "main_ci_run": 44448317126,
+  "main_suites_passed": 278,
+  "main_suites_failed": 0,
+  "simulator_suites": 0,
+  "history_reader_contract_settings_and_grouping_files_identical_to_reviewed_12a55a5": true,
+  "concurrent_main_changes_preserved": true,
+  "addon_publication": false
+}

@@ -1,0 +1,11 @@
+{
+  "verifier_source": "be09ff9f8adc1d5c8b8c12d04032b954863aa553",
+  "verifier_binary_sha256": "9e47f51bad9a675c4f45b33b9b9743fb7588d9abfe7f6b0b9228d02b6b13ea32",
+  "existing_operator_image": "sha256:c8686b5be272bcef4589df5a99a539cf9311dc111d0ba31ac8eee6c31f3802ec",
+  "override": "Read-only current native verifier via COMPANION_RELEASE_VERIFIER and source policy via PYTHONPATH=/work/backend",
+  "operator_python_workdir": "/work",
+  "schema_version": 2,
+  "signature_version_and_bytes_verified": true,
+  "validation_bypassed": false,
+  "rootless_owner_mapping": true
+}

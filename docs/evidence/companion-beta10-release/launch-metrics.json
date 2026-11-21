@@ -1,0 +1,6 @@
+{
+  "fixture": true,
+  "cold_start_to_native_window_ms": 719.1391,
+  "installer_bytes": 4891346,
+  "poll_resolution_ms": 50
+}

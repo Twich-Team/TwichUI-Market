@@ -1,0 +1,39 @@
+{
+  "services": {
+    "api": {
+      "image": "sha256:9712cd35a1f669343d20d42598717d0fcb370a4c358d3edb4c35f807b0d9295c",
+      "environment": {
+        "RETENTION_RECOVERY_MODE": "local_only",
+        "RETENTION_LOCAL_RECOVERY_APPROVAL": "owner-20261118-retention-local-only",
+        "RETENTION_PATCH_COMMIT": "3ebd8b3c8b613ca8ed42a85614679a824ff85033"
+      }
+    },
+    "local-api": {
+      "image": "sha256:9712cd35a1f669343d20d42598717d0fcb370a4c358d3edb4c35f807b0d9295c",
+      "environment": {
+        "RETENTION_RECOVERY_MODE": "local_only",
+        "RETENTION_LOCAL_RECOVERY_APPROVAL": "owner-20261118-retention-local-only",
+        "RETENTION_PATCH_COMMIT": "3ebd8b3c8b613ca8ed42a85614679a824ff85033"
+      }
+    },
+    "monitor": {
+      "image": "sha256:9712cd35a1f669343d20d42598717d0fcb370a4c358d3edb4c35f807b0d9295c",
+      "environment": {
+        "RETENTION_RECOVERY_MODE": "local_only",
+        "RETENTION_LOCAL_RECOVERY_APPROVAL": "owner-20261118-retention-local-only",
+        "RETENTION_PATCH_COMMIT": "3ebd8b3c8b613ca8ed42a85614679a824ff85033"
+      },
+      "volumes": [
+        "/home/marketdev/projects/TwichUI-Market/.local/retention-recovery:/retention-recovery:ro"
+      ]
+    },
+    "retention": {
+      "image": "sha256:9712cd35a1f669343d20d42598717d0fcb370a4c358d3edb4c35f807b0d9295c",
+      "environment": {
+        "RETENTION_RECOVERY_MODE": "local_only",
+        "RETENTION_LOCAL_RECOVERY_APPROVAL": "owner-20261118-retention-local-only",
+        "RETENTION_PATCH_COMMIT": "3ebd8b3c8b613ca8ed42a85614679a824ff85033"
+      }
+    }
+  }
+}

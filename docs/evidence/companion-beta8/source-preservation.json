@@ -1,0 +1,13 @@
+{
+  "repair_commit": "a85c0fb78c4d4aaa038b2364079e7b739006c85c",
+  "payload_commit": "36dc204d5975f57629ca1c830d41d8b95d2ac508",
+  "product_source_git_objects_identical": {
+    "desktop/core/src": "d7a0156157d0a4f9f340a54f1ff343bfbd6cf669",
+    "desktop/src-tauri/src": "8bbd84a8494f1f2054c9ced7a1b5568ca589fc83",
+    "desktop/ui": "b011be912513792c16e1a5e1b7ed3494ee6f5dc1",
+    "desktop/src-tauri/updater-public-key.txt": "809847d7796c50453cb14ca6cb7135f364fb1d1a"
+  },
+  "desktop_manifest_version": "2.0.0-beta.8",
+  "installed_test_gate_covers_beta8": true,
+  "beta7_installer_unchanged": true
+}

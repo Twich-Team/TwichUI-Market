@@ -1,0 +1,156 @@
+{
+  "deployed": false,
+  "owner_visual_approval": false,
+  "screenshots": [
+    {
+      "path": "quality/epic-tooltip.png",
+      "bytes": 1165114,
+      "provenance": "Isolated market_test synthetic browser fixtures",
+      "sha256": "3bbde7d06b835dd6164d7991f6ac64bf89c4ddcf376fcaac9ad43c1968bee64d"
+    },
+    {
+      "path": "quality/explorer.png",
+      "bytes": 1157238,
+      "provenance": "Isolated market_test synthetic browser fixtures",
+      "sha256": "ce032f1179e2a8f1896be0aa822a62080b22b321807eab923fa9baac6a1419aa"
+    },
+    {
+      "path": "quality/deals.png",
+      "bytes": 494306,
+      "provenance": "Isolated market_test synthetic browser fixtures",
+      "sha256": "a8f8c8c962b0b1e3ce70bcd9ff272dff8ab22b4e478fe72fc4fc72dd6386a91b"
+    },
+    {
+      "path": "before/markets---schedules.png",
+      "bytes": 772615,
+      "provenance": "Isolated market_test synthetic browser fixtures",
+      "sha256": "b3b7057715d593ece056928e1cff7afdf3c2cc20091403fca3ca9ad8fe1e92f1"
+    },
+    {
+      "path": "before/item-metadata.png",
+      "bytes": 1365068,
+      "provenance": "Isolated market_test synthetic browser fixtures",
+      "sha256": "4ad62fb93a22037c9f6cb5bb77c47f8387aa8bbd9834aeed714767aeb18fc57d"
+    },
+    {
+      "path": "before/collection.png",
+      "bytes": 1013980,
+      "provenance": "Isolated market_test synthetic browser fixtures",
+      "sha256": "f263f8a228670251a7c3c7ce8227ccd79e30a840a6ecf7fe2bea2cbb75338b28"
+    },
+    {
+      "path": "before/security-events.png",
+      "bytes": 838445,
+      "provenance": "Isolated market_test synthetic browser fixtures",
+      "sha256": "99ed1b7445c44e3c74df4a100a5d4388ac7ed9f005ca861f360911d1a5596b0e"
+    },
+    {
+      "path": "before/members---invitations.png",
+      "bytes": 662547,
+      "provenance": "Isolated market_test synthetic browser fixtures",
+      "sha256": "fe56b9d32a719668344c8e0bb8e5dda3ca369294251c4c4b1d43410e20db0aa7"
+    },
+    {
+      "path": "before/overview.png",
+      "bytes": 685174,
+      "provenance": "Isolated market_test synthetic browser fixtures",
+      "sha256": "c52bc5c7ba8e782ff3f86b63db4e91dfa26b59e471a6161fc3c3d9ac635e27d8"
+    },
+    {
+      "path": "before/devices.png",
+      "bytes": 676459,
+      "provenance": "Isolated market_test synthetic browser fixtures",
+      "sha256": "f9f077d8cfc60bb16d237bd1a3f95f784982173333b16c81e5592c803095eb1d"
+    },
+    {
+      "path": "before/data-sources.png",
+      "bytes": 1074259,
+      "provenance": "Isolated market_test synthetic browser fixtures",
+      "sha256": "869725adb95817690e5c7a30617484d6c724e9ead817524510089101aa9d6b1b"
+    },
+    {
+      "path": "before/storage---backups.png",
+      "bytes": 926379,
+      "provenance": "Isolated market_test synthetic browser fixtures",
+      "sha256": "7d6caa2279380336d56e12dbf66435f84e1e87c9817b54fe7d3e7381b757a785"
+    },
+    {
+      "path": "screenshots/markets---schedules.png",
+      "bytes": 710544,
+      "provenance": "Isolated market_test synthetic browser fixtures",
+      "sha256": "452467e6d8e802d9253bbba09e8f491c3339035d0ed731b38453440d36711fef"
+    },
+    {
+      "path": "screenshots/item-metadata.png",
+      "bytes": 4111898,
+      "provenance": "Isolated market_test synthetic browser fixtures",
+      "sha256": "6d7295569158865ed2c398a3293d7e11808cb59c8b8ebe6629bef2026a602270"
+    },
+    {
+      "path": "screenshots/security-mobile.png",
+      "bytes": 260830,
+      "provenance": "Isolated market_test synthetic browser fixtures",
+      "sha256": "e53aa88c0f79b343f8c18d973cd23c55242313e0bb4fb9afe465dc00df11eb26"
+    },
+    {
+      "path": "screenshots/collection.png",
+      "bytes": 346272,
+      "provenance": "Isolated market_test synthetic browser fixtures",
+      "sha256": "b86941f755f648c9f9bb295a9e0ed36eacb533ec201942cc7149d7c469b2a1f9"
+    },
+    {
+      "path": "screenshots/provider-attempts-focused.png",
+      "bytes": 514141,
+      "provenance": "Isolated market_test synthetic browser fixtures",
+      "sha256": "e564a0fb545aa29ed1a0dae848a261c1db226beab32de09faa0172918d54f260"
+    },
+    {
+      "path": "screenshots/security-events.png",
+      "bytes": 784673,
+      "provenance": "Isolated market_test synthetic browser fixtures",
+      "sha256": "c3793a7983736ee0602c2e5a6d90d4b24240545f76ef5763993f8e993c021552"
+    },
+    {
+      "path": "screenshots/members---invitations.png",
+      "bytes": 681849,
+      "provenance": "Isolated market_test synthetic browser fixtures",
+      "sha256": "73c8499f5279d35400b83c137f4f17971c959888baaa5bda27699a51d7c1dbb6"
+    },
+    {
+      "path": "screenshots/overview.png",
+      "bytes": 800156,
+      "provenance": "Isolated market_test synthetic browser fixtures",
+      "sha256": "f927e29962f827a89b8a18fbb06e823d13e6e78158f67a7253a7a7b81cdaed97"
+    },
+    {
+      "path": "screenshots/devices.png",
+      "bytes": 558076,
+      "provenance": "Isolated market_test synthetic browser fixtures",
+      "sha256": "d8dbcaf2e5534efd927a223f12eb3888ed406f2a50a434ae272f064f6ac11d8f"
+    },
+    {
+      "path": "screenshots/item-metadata-mobile.png",
+      "bytes": 1598610,
+      "provenance": "Isolated market_test synthetic browser fixtures",
+      "sha256": "5645964d1b948d1f58ce8ad515b19977ff9f26db6e18baa3071deea32a6b381c"
+    },
+    {
+      "path": "screenshots/data-sources.png",
+      "bytes": 765358,
+      "provenance": "Isolated market_test synthetic browser fixtures",
+      "sha256": "344167fda5838ceeeab972dec2c0bd74dd230d35984c2ae99cfe7c2c76a7b610"
+    },
+    {
+      "path": "screenshots/storage---backups.png",
+      "bytes": 1088280,
+      "provenance": "Isolated market_test synthetic browser fixtures",
+      "sha256": "bbe09ab824c0f3b8dab85c2b896d20a72144a1df6a74b2f512b6140ef2d88f5b"
+    },
+    {
+      "path": "quality/known-forever-items.png",
+      "bytes": 306215,
+      "provenance": "Isolated browser; names/qualities from read-only production primary Forever metadata; no live prices",
+      "sha256": "0b98f09e3314473ee71b12f39d6d541a566caa03ec93011867b82ee6eb6f8bfc"
+    }
+  ]
+}

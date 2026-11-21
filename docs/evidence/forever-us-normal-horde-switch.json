@@ -1,0 +1,723 @@
+{
+  "recorded_at": "2026-11-14T15:24:42.907959+00:00",
+  "status": "executed_and_verified",
+  "owner_confirmed": true,
+  "pre_switch_ci": {
+    "commit": "85e74a8ff32442de67761fa9f93857a9679d77a1",
+    "workflow_runs": [
+      {
+        "id": 43607856227,
+        "name": "Private website",
+        "status": "completed",
+        "conclusion": "success",
+        "run_number": 33,
+        "jobs_url": "https://api.github.com/repos/Twich-Team/TwichUI-Market/actions/runs/43607856227/jobs",
+        "logs_url": "https://api.github.com/repos/Twich-Team/TwichUI-Market/actions/runs/43607856227/logs",
+        "workflow_id": 417881467
+      },
+      {
+        "id": 43607856297,
+        "name": "Backend",
+        "status": "completed",
+        "conclusion": "success",
+        "run_number": 45,
+        "jobs_url": "https://api.github.com/repos/Twich-Team/TwichUI-Market/actions/runs/43607856297/jobs",
+        "logs_url": "https://api.github.com/repos/Twich-Team/TwichUI-Market/actions/runs/43607856297/logs",
+        "workflow_id": 417841759
+      },
+      {
+        "id": 43607856252,
+        "name": "Windows companion",
+        "status": "completed",
+        "conclusion": "success",
+        "run_number": 37,
+        "jobs_url": "https://api.github.com/repos/Twich-Team/TwichUI-Market/actions/runs/43607856252/jobs",
+        "logs_url": "https://api.github.com/repos/Twich-Team/TwichUI-Market/actions/runs/43607856252/logs",
+        "workflow_id": 417870542
+      }
+    ]
+  },
+  "pre_switch_backup": {
+    "manifest": {
+      "version": 1,
+      "filename": "market-development-20261114T151409719774Z.dump",
+      "source": "development",
+      "created_at": "2026-11-14T15:14:16.818372+00:00",
+      "bytes": 77159054,
+      "sha256": "564bdfbd736f5570da43f96dde25515ea5aae88fd1ec8cb4ea0adf01614dfbd5",
+      "restoration_verified_at": "2026-11-14T15:14:29.547905+00:00",
+      "restored": {
+        "migration": "0011",
+        "users": 47,
+        "markets": 2,
+        "observations": 144,
+        "listings": 1324933,
+        "synthetic_observations": 0,
+        "buyout_total": "831666297226",
+        "snapshot_statistics": 320105,
+        "daily_observations": 1,
+        "market_verifications": 2
+      }
+    },
+    "previous_archives_preserved": [
+      "market-development-20261114T032256003545Z.dump",
+      "market-development-20261114T041234852184Z.dump",
+      "market-development-20261114T044255979749Z.dump",
+      "market-development-20261114T123543922718Z.dump",
+      "market-development-20261114T141320585884Z.dump",
+      "market-development-20261114T142845676029Z.dump",
+      "market-development-20261114T143748051831Z.dump"
+    ],
+    "restored": {
+      "migration": "0011",
+      "users": 47,
+      "markets": 2,
+      "observations": 144,
+      "listings": 1324933,
+      "synthetic_observations": 0,
+      "buyout_total": "831666297226",
+      "snapshot_statistics": 320105,
+      "daily_observations": 1,
+      "market_verifications": 2
+    }
+  },
+  "execution": {
+    "owner_approval": "Explicit owner message authorizing 110 to verified US Normal Horde 114 (market 2), five minutes, preserve all history and backups",
+    "executed_at": "2026-11-14T15:15:50.030499+00:00",
+    "mechanism": "existing market_configuration.transition handler, privileged operator boundary with active owner identity",
+    "transition": {
+      "previous": {
+        "id": 1,
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 110,
+        "source_kind": "auctions",
+        "label": "US Forever \u2014 Alliance house 110 (ruleset aliases)",
+        "enabled": false,
+        "verified": true,
+        "player_identity_verified": false,
+        "interval_seconds": 300,
+        "last_success": "2026-11-14 15:14:21.190053+00:00",
+        "next_check": "2026-11-14 15:19:21.190053+00:00",
+        "last_modified": "Sat, 14 Nov 2026 14:17:45 GMT",
+        "check_age_seconds": 88,
+        "source_age_seconds": 3485,
+        "freshness": "current",
+        "failures": 0,
+        "last_error": null
+      },
+      "selected": {
+        "id": 2,
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 114,
+        "source_kind": "auctions",
+        "label": "US \u2014 Normal \u2014 Horde",
+        "enabled": true,
+        "verified": true,
+        "player_identity_verified": false,
+        "interval_seconds": 300,
+        "last_success": null,
+        "next_check": "2026-11-14 15:15:50.033656+00:00",
+        "last_modified": null,
+        "check_age_seconds": null,
+        "source_age_seconds": null,
+        "freshness": "unknown",
+        "failures": 0,
+        "last_error": null
+      },
+      "history_preserved": true
+    },
+    "audit": {
+      "id": 233,
+      "actor_id": 1,
+      "action": "market.transition.confirmed",
+      "detail": "from=1 to=2; previous schedule disabled; all history preserved"
+    },
+    "before_fingerprints": {
+      "observations": {
+        "rows": 145,
+        "bytes_hashed": 27417,
+        "sha256": "958905470de319a15d241a5c617ec97f4f98b40764dc2a17b850ae174112db7c"
+      },
+      "snapshots": {
+        "rows": 13,
+        "bytes_hashed": 1427,
+        "sha256": "058d16491b17f3bffbf4229b5dc86918c8c3c5dd172fd268e9681b0c2c5caf0d"
+      },
+      "listings": {
+        "rows": 1324933,
+        "bytes_hashed": 180716391,
+        "sha256": "4b4b279647f2980e4d191869de6fd7c4c49cd705e40cdfa4df6a3ef46c91ef39"
+      },
+      "snapshot_statistics": {
+        "rows": 320105,
+        "bytes_hashed": 35693934,
+        "sha256": "8c1c3584e0efc2a0f1a2a21b6627758310c0133924156d4050647e414a50a8e8"
+      },
+      "daily_observations": {
+        "rows": 1,
+        "bytes_hashed": 17,
+        "sha256": "68d1497e67819bb608ea929f6292562bb32f667c3092ba2037e916c36316973c"
+      },
+      "market_verifications": {
+        "rows": 2,
+        "bytes_hashed": 5028,
+        "sha256": "e7d6d471274fb9da263bf766a53941675224876ef60df832c1194ae61fa03d17"
+      },
+      "player_market_mappings": {
+        "rows": 1,
+        "bytes_hashed": 15546,
+        "sha256": "dde78a44cad988f6801006e0263f2bc09ae209428459ef17d26f9571c3c50cdd"
+      }
+    },
+    "after_fingerprints": {
+      "observations": {
+        "rows": 145,
+        "bytes_hashed": 27417,
+        "sha256": "958905470de319a15d241a5c617ec97f4f98b40764dc2a17b850ae174112db7c"
+      },
+      "snapshots": {
+        "rows": 13,
+        "bytes_hashed": 1427,
+        "sha256": "058d16491b17f3bffbf4229b5dc86918c8c3c5dd172fd268e9681b0c2c5caf0d"
+      },
+      "listings": {
+        "rows": 1324933,
+        "bytes_hashed": 180716391,
+        "sha256": "4b4b279647f2980e4d191869de6fd7c4c49cd705e40cdfa4df6a3ef46c91ef39"
+      },
+      "snapshot_statistics": {
+        "rows": 320105,
+        "bytes_hashed": 35693934,
+        "sha256": "8c1c3584e0efc2a0f1a2a21b6627758310c0133924156d4050647e414a50a8e8"
+      },
+      "daily_observations": {
+        "rows": 1,
+        "bytes_hashed": 17,
+        "sha256": "68d1497e67819bb608ea929f6292562bb32f667c3092ba2037e916c36316973c"
+      },
+      "market_verifications": {
+        "rows": 2,
+        "bytes_hashed": 5028,
+        "sha256": "e7d6d471274fb9da263bf766a53941675224876ef60df832c1194ae61fa03d17"
+      },
+      "player_market_mappings": {
+        "rows": 1,
+        "bytes_hashed": 15546,
+        "sha256": "dde78a44cad988f6801006e0263f2bc09ae209428459ef17d26f9571c3c50cdd"
+      }
+    },
+    "history_identical": true,
+    "database_bytes_before": 468571827,
+    "database_bytes_immediate_after": 468571827,
+    "backup_gate": {
+      "status": "ok",
+      "last_restoration_verified_at": "2026-11-14T15:14:29.547905+00:00",
+      "last_success": "2026-11-14T15:14:16.818372+00:00",
+      "bytes": 77159054,
+      "keep": 7,
+      "filename": "market-development-20261114T151409719774Z.dump",
+      "restored_archive_filename": "market-development-20261114T151409719774Z.dump",
+      "restored_archive_sha256": "564bdfbd736f5570da43f96dde25515ea5aae88fd1ec8cb4ea0adf01614dfbd5",
+      "restored_archive_created_at": "2026-11-14T15:14:16.818372+00:00"
+    },
+    "markets": [
+      {
+        "id": 1,
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 110,
+        "source_kind": "auctions",
+        "label": "US \u2014 Alliance \u2014 Ruleset unverified",
+        "enabled": false,
+        "verified": true,
+        "player_identity_verified": false,
+        "interval_seconds": 300,
+        "last_success": "2026-11-14 15:14:21.190053+00:00",
+        "next_check": "2026-11-14 15:19:21.190053+00:00",
+        "last_modified": "Sat, 14 Nov 2026 14:17:45 GMT",
+        "check_age_seconds": 94,
+        "source_age_seconds": 3490,
+        "freshness": "current",
+        "failures": 0,
+        "last_error": null
+      },
+      {
+        "id": 2,
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 114,
+        "source_kind": "auctions",
+        "label": "US \u2014 Normal \u2014 Horde",
+        "enabled": true,
+        "verified": true,
+        "player_identity_verified": true,
+        "interval_seconds": 300,
+        "last_success": null,
+        "next_check": "2026-11-14 15:15:50.033656+00:00",
+        "last_modified": null,
+        "check_age_seconds": null,
+        "source_age_seconds": null,
+        "freshness": "unknown",
+        "failures": 0,
+        "last_error": null
+      }
+    ]
+  },
+  "post_switch": {
+    "checked_at": "2026-11-14T15:21:46.599886+00:00",
+    "markets": [
+      {
+        "id": 1,
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 110,
+        "source_kind": "auctions",
+        "label": "US \u2014 Alliance \u2014 Ruleset unverified",
+        "enabled": false,
+        "verified": true,
+        "player_identity_verified": false,
+        "interval_seconds": 300,
+        "last_success": "2026-11-14 15:14:21.190053+00:00",
+        "next_check": "2026-11-14 15:19:21.190053+00:00",
+        "last_modified": "Sat, 14 Nov 2026 14:17:45 GMT",
+        "check_age_seconds": 445,
+        "source_age_seconds": 3841,
+        "freshness": "stale",
+        "failures": 0,
+        "last_error": null
+      },
+      {
+        "id": 2,
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 114,
+        "source_kind": "auctions",
+        "label": "US \u2014 Normal \u2014 Horde",
+        "enabled": true,
+        "verified": true,
+        "player_identity_verified": true,
+        "interval_seconds": 300,
+        "last_success": "2026-11-14 15:21:04.945104+00:00",
+        "next_check": "2026-11-14 15:26:04.945104+00:00",
+        "last_modified": "Sat, 14 Nov 2026 15:17:46 GMT",
+        "check_age_seconds": 41,
+        "source_age_seconds": 240,
+        "freshness": "current",
+        "failures": 0,
+        "last_error": null
+      }
+    ],
+    "runs": [
+      {
+        "id": 146,
+        "checked_at": "2026-11-14 15:15:53.422365+00:00",
+        "status": "collected",
+        "http_status": 200,
+        "duration_seconds": 9,
+        "payload_bytes": 8668422,
+        "error": null
+      },
+      {
+        "id": 147,
+        "checked_at": "2026-11-14 15:21:04.945104+00:00",
+        "status": "collected",
+        "http_status": 200,
+        "duration_seconds": 9,
+        "payload_bytes": 8637901,
+        "error": null
+      }
+    ],
+    "snapshots": [
+      {
+        "id": 14,
+        "created_at": "2026-11-14 15:15:55.549853+00:00",
+        "content_hash": "f9e80c2f0a4917df76c994a4ae6b1c9e31ef21ca596c93c22e34ec8b859f5fbb",
+        "listing_count": 89533,
+        "physical_listing_count": 89533,
+        "item35": {
+          "supply": 10,
+          "buyout_sum": 4347,
+          "listing_ids": [
+            "63352469",
+            "68195224",
+            "69457920",
+            "71223889",
+            "71336639",
+            "72272271",
+            "72376349",
+            "72558583",
+            "72779667",
+            "73102267"
+          ]
+        }
+      },
+      {
+        "id": 15,
+        "created_at": "2026-11-14 15:21:06.865883+00:00",
+        "content_hash": "c387b8f8da493d0740eaca74a1eb0edb12e520071eb459dada5ee1d7382b528b",
+        "listing_count": 89692,
+        "physical_listing_count": 89692,
+        "item35": {
+          "supply": 9,
+          "buyout_sum": 3847,
+          "listing_ids": [
+            "68195224",
+            "69457920",
+            "71223889",
+            "71336639",
+            "72272271",
+            "72376349",
+            "72558583",
+            "72779667",
+            "73102267"
+          ]
+        }
+      }
+    ],
+    "observations": [
+      {
+        "id": 146,
+        "snapshot_id": 14,
+        "retrieved_at": "2026-11-14 15:15:53.422365+00:00",
+        "namespace": "dynamic-forever-us",
+        "upstream_modified": "Sat, 14 Nov 2026 14:17:45 GMT",
+        "payload_hash": "d4ec5467e859991a1002876c5fc15a5ed72399e3b0e13039cc9b0daf63202ee3",
+        "payload_bytes": 8668422,
+        "synthetic": false
+      },
+      {
+        "id": 147,
+        "snapshot_id": 15,
+        "retrieved_at": "2026-11-14 15:21:04.945104+00:00",
+        "namespace": "dynamic-forever-us",
+        "upstream_modified": "Sat, 14 Nov 2026 15:17:46 GMT",
+        "payload_hash": "6840e8541f943a09eee80cd1651c53cc712890e3222975b6ac9b22fb369d4b08",
+        "payload_bytes": 8637901,
+        "synthetic": false
+      }
+    ],
+    "old_history_fingerprints": {
+      "observations": {
+        "rows": 145,
+        "bytes_hashed": 27417,
+        "sha256": "958905470de319a15d241a5c617ec97f4f98b40764dc2a17b850ae174112db7c"
+      },
+      "snapshots": {
+        "rows": 13,
+        "bytes_hashed": 1427,
+        "sha256": "058d16491b17f3bffbf4229b5dc86918c8c3c5dd172fd268e9681b0c2c5caf0d"
+      },
+      "listings": {
+        "rows": 1324933,
+        "bytes_hashed": 180716391,
+        "sha256": "4b4b279647f2980e4d191869de6fd7c4c49cd705e40cdfa4df6a3ef46c91ef39"
+      },
+      "snapshot_statistics": {
+        "rows": 320105,
+        "bytes_hashed": 35693934,
+        "sha256": "8c1c3584e0efc2a0f1a2a21b6627758310c0133924156d4050647e414a50a8e8"
+      },
+      "daily_observations": {
+        "rows": 1,
+        "bytes_hashed": 17,
+        "sha256": "68d1497e67819bb608ea929f6292562bb32f667c3092ba2037e916c36316973c"
+      },
+      "market_verifications": {
+        "rows": 2,
+        "bytes_hashed": 5028,
+        "sha256": "e7d6d471274fb9da263bf766a53941675224876ef60df832c1194ae61fa03d17"
+      },
+      "player_market_mappings": {
+        "rows": 1,
+        "bytes_hashed": 15546,
+        "sha256": "dde78a44cad988f6801006e0263f2bc09ae209428459ef17d26f9571c3c50cdd"
+      }
+    },
+    "database_bytes": 529323699,
+    "historical_retention_batches": 0,
+    "retention_application_authorized": null,
+    "backup_restore_ready": true,
+    "active_temporary_browser_users": [],
+    "unrevoked_temporary_browser_credentials": 0,
+    "temporary_browser_cleanup_verified_at": "2026-11-14T15:23:23.123050+00:00"
+  },
+  "resources": {
+    "sampled_at": "2026-11-14T15:22:47.428499+00:00",
+    "memory_peak_scope": "Container lifetime; not reset for the switch. Database kernel peak includes 20 KiB transient accounting above its limit; reclaim events are recorded, with zero OOM kills.",
+    "services": {
+      "twichui-market-worker-1": {
+        "memory_current_bytes": 130453504,
+        "memory_peak_bytes": 232771584,
+        "memory_limit_bytes": 402653184,
+        "cpu_max": "50000 100000",
+        "memory_events": {
+          "low": 0,
+          "high": 0,
+          "max": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "lifetime_peak_over_limit_bytes": 0
+      },
+      "twichui-market-db-1": {
+        "memory_current_bytes": 641888256,
+        "memory_peak_bytes": 805326848,
+        "memory_limit_bytes": 805306368,
+        "cpu_max": "100000 100000",
+        "memory_events": {
+          "low": 0,
+          "high": 0,
+          "max": 2158,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "lifetime_peak_over_limit_bytes": 20480
+      },
+      "twichui-market-api-1": {
+        "memory_current_bytes": 108146688,
+        "memory_peak_bytes": 182792192,
+        "memory_limit_bytes": 402653184,
+        "cpu_max": "50000 100000",
+        "memory_events": {
+          "low": 0,
+          "high": 0,
+          "max": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "lifetime_peak_over_limit_bytes": 0
+      },
+      "twichui-market-proxy-1": {
+        "memory_current_bytes": 15548416,
+        "memory_peak_bytes": 19890176,
+        "memory_limit_bytes": 134217728,
+        "cpu_max": "25000 100000",
+        "memory_events": {
+          "low": 0,
+          "high": 0,
+          "max": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "lifetime_peak_over_limit_bytes": 0
+      },
+      "twichui-market-modernization-preview": {
+        "memory_current_bytes": 17780736,
+        "memory_peak_bytes": 22249472,
+        "memory_limit_bytes": 134217728,
+        "cpu_max": "25000 100000",
+        "memory_events": {
+          "low": 0,
+          "high": 0,
+          "max": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "lifetime_peak_over_limit_bytes": 0
+      }
+    },
+    "filesystem_free_bytes": 20309688320,
+    "maximum_database_bytes": 5368709120
+  },
+  "browser": {
+    "verified_at": "2026-11-14T15:22:54.434Z",
+    "reports": [
+      {
+        "origin": "https://localhost:18443",
+        "market": {
+          "id": 2,
+          "region": "us",
+          "ruleset_id": 2,
+          "house_id": 114,
+          "source_kind": "auctions",
+          "label": "US \u2014 Normal \u2014 Horde",
+          "enabled": true,
+          "verified": true,
+          "player_identity_verified": true,
+          "interval_seconds": 300,
+          "last_success": "2026-11-14T15:21:04.945104+00:00",
+          "next_check": "2026-11-14T15:26:04.945104+00:00",
+          "last_modified": "Sat, 14 Nov 2026 15:17:46 GMT",
+          "check_age_seconds": 105,
+          "source_age_seconds": 304,
+          "freshness": "current",
+          "failures": 0,
+          "last_error": null
+        },
+        "old_market_disabled": true,
+        "historical_market_queryable": true,
+        "item_id": 35,
+        "item_name": "Bent Staff",
+        "variant_key": "88d4b5c819d8059f80e4812d017b78ae23c617ebda8ce00cfdd1695e4ce4a3a3",
+        "supply": 9,
+        "recent_price": "427",
+        "listing_count": 9,
+        "listing_ids": [
+          "68195224",
+          "69457920",
+          "71223889",
+          "71336639",
+          "72272271",
+          "72376349",
+          "72558583",
+          "72779667",
+          "73102267"
+        ],
+        "history_points": 1,
+        "source_synthetic": false,
+        "tls_errors_ignored": false,
+        "page_errors": []
+      },
+      {
+        "origin": "https://localhost:18444",
+        "market": {
+          "id": 2,
+          "region": "us",
+          "ruleset_id": 2,
+          "house_id": 114,
+          "source_kind": "auctions",
+          "label": "US \u2014 Normal \u2014 Horde",
+          "enabled": true,
+          "verified": true,
+          "player_identity_verified": true,
+          "interval_seconds": 300,
+          "last_success": "2026-11-14T15:21:04.945104+00:00",
+          "next_check": "2026-11-14T15:26:04.945104+00:00",
+          "last_modified": "Sat, 14 Nov 2026 15:17:46 GMT",
+          "check_age_seconds": 107,
+          "source_age_seconds": 306,
+          "freshness": "current",
+          "failures": 0,
+          "last_error": null
+        },
+        "old_market_disabled": true,
+        "historical_market_queryable": true,
+        "item_id": 35,
+        "item_name": "Bent Staff",
+        "variant_key": "88d4b5c819d8059f80e4812d017b78ae23c617ebda8ce00cfdd1695e4ce4a3a3",
+        "supply": 9,
+        "recent_price": "427",
+        "listing_count": 9,
+        "listing_ids": [
+          "68195224",
+          "69457920",
+          "71223889",
+          "71336639",
+          "72272271",
+          "72376349",
+          "72558583",
+          "72779667",
+          "73102267"
+        ],
+        "history_points": 1,
+        "source_synthetic": false,
+        "tls_errors_ignored": false,
+        "page_errors": []
+      }
+    ]
+  },
+  "all_backup_archive_checksums": [
+    {
+      "filename": "market-development-20261114T032256003545Z.dump",
+      "bytes": 10849641,
+      "sha256": "218f9286a63af1eaa49d27435b4253432892535f0baea2900dcc13405b25ba29",
+      "checksum_valid": true
+    },
+    {
+      "filename": "market-development-20261114T041234852184Z.dump",
+      "bytes": 10860376,
+      "sha256": "b953e8b6e575657044b0d55d585ef9e8f150ff8b339d29cb36f73ecf09cfb931",
+      "checksum_valid": true
+    },
+    {
+      "filename": "market-development-20261114T044255979749Z.dump",
+      "bytes": 16879477,
+      "sha256": "2fd2279dc6782089b60d93753e80387a44ef60f7d3f33a1a59b1590595951ed5",
+      "checksum_valid": true
+    },
+    {
+      "filename": "market-development-20261114T123543922718Z.dump",
+      "bytes": 66440746,
+      "sha256": "572c66d4eb8d48c4560ea64c7b01bb09b994382e013f1963f923f882d22fe977",
+      "checksum_valid": true
+    },
+    {
+      "filename": "market-development-20261114T141320585884Z.dump",
+      "bytes": 72007473,
+      "sha256": "da0f404c42f664edc1d06eb5f34d4345304beadb97776f083514daf967995601",
+      "checksum_valid": true
+    },
+    {
+      "filename": "market-development-20261114T142845676029Z.dump",
+      "bytes": 76786153,
+      "sha256": "1ff8f7c55cb338853b3d67857d6af657c405a057935847b57f5c40b08cfcaf31",
+      "checksum_valid": true
+    },
+    {
+      "filename": "market-development-20261114T143748051831Z.dump",
+      "bytes": 76916961,
+      "sha256": "01c59a394d9a159223b60f8b020fb8778fbdff6316a7a3b52ba7021859806e81",
+      "checksum_valid": true
+    },
+    {
+      "filename": "market-development-20261114T151409719774Z.dump",
+      "bytes": 77159054,
+      "sha256": "564bdfbd736f5570da43f96dde25515ea5aae88fd1ec8cb4ea0adf01614dfbd5",
+      "checksum_valid": true
+    },
+    {
+      "filename": "market-recovery-20261113T233953939295Z.dump",
+      "bytes": 31828,
+      "sha256": "0425b0a47f8d180d03d23d811fa5163cbc0dc03d55bd25050698a266c81c4231",
+      "checksum_valid": true
+    },
+    {
+      "filename": "market-recovery-20261114T003722062298Z.dump",
+      "bytes": 35978,
+      "sha256": "884f8c56f4b3b1bce3557cf3e146522547d073d8876a4f4450207489221ef856",
+      "checksum_valid": true
+    },
+    {
+      "filename": "market-recovery-20261114T013607846546Z.dump",
+      "bytes": 39027,
+      "sha256": "7e1105803bdfff95ae8c2f726d30b39de44216859d57ae82dc5e8f66f76e44a0",
+      "checksum_valid": true
+    },
+    {
+      "filename": "market-recovery-20261114T141243667398Z.dump",
+      "bytes": 57361,
+      "sha256": "cf5cc4aed83b73c799698c77d9073e042f9bee9b6dfcbbce798a29ae49664d53",
+      "checksum_valid": true
+    },
+    {
+      "filename": "market-test-20261113T233410595426Z.dump",
+      "bytes": 31831,
+      "sha256": "367259ed8f02ba4f86205b7dfb172277bd378a7fa93bb417ea655d7c87c15883",
+      "checksum_valid": true
+    },
+    {
+      "filename": "market-test-20261113T233847732467Z.dump",
+      "bytes": 31829,
+      "sha256": "c0de0896777aba18ad276cb599197de44fab61ed5a8b15f7885b65b854fc9b64",
+      "checksum_valid": true
+    }
+  ],
+  "isolation": {
+    "original_project_services_unchanged": true,
+    "host_listener_baseline_unchanged": true,
+    "production_frontend_promoted": false,
+    "amp_or_unrelated_services_accessed_or_modified": false,
+    "additional_markets_activated": false,
+    "limitation": "Isolation evidence is operation scope and unchanged host listeners; no AMP/gameplay health probe was performed."
+  },
+  "database_growth_bytes": 60751872,
+  "database_budget_used_fraction": 0.09859422203153372,
+  "evidence_limit": "Two successful post-switch collection cycles; not a long-run capacity or uptime guarantee. Shared database growth includes concurrent background work. Original mapping uncertainty remains documented."
+}

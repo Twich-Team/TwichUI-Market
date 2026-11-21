@@ -1,0 +1,31 @@
+# Workshop summary delivery v1 — review candidate
+
+Separate protocol, not detailed history schema 3 or an activation of U1's experimental envelope. It reuses U1's modulo-64 routing, canonical content pins, exact upstream identities and conservative availability. U1/U2 histories and their existing contracts remain intact. No native Forever-link equivalences are authorized.
+
+## Authenticated transport
+
+Existing native credentials access `GET /api/v1/workshop/markets/{market}/summary`, returning `{account_id,manifest}`. Client checks the account against its authenticated scope, full market and canonical algorithm. Browser sessions refuse. Source binding comes from the configured authenticated HTTPS origin and existing credential/authorization protocol; content SHA-256 is integrity, **not an asymmetric signature** or permission to trust arbitrary files/issuers. No content credentials enter Lua. Existing signed application/updater trust is unchanged.
+
+ETag is the quoted generation ID; conditional requests still authorize and validate the selected market before 304. HTTP 202/Retry-After means a bounded cold derivation is preparing; 409 unavailable source support never activates a provisional substitute. Parts are requested by exact market/generation/bucket at `.../summary/{generation}/parts/{bucket}`. Eviction returns 410 and requires a same-scope restart; no cross-generation mixing or remote URLs. All responses are private/no-store. Viewing website research does not invoke this native delivery endpoint.
+
+## Contract
+
+Closed [manifest](manifest.schema.json) and [tuple](row.schema.json), canonical JSON from the frozen existing bridge serializer. Manifest SHA-256 excludes only `generation_id`; partition pins cover their complete canonical array bytes. Parts are sorted by bucket and rows by `(item_id,variant_key)`, strictly unique. Rows route by `item_id % 64`, keeping related exact variants together. Hashes are exactly 64 lowercase hex characters. In addition to schema validation, consumers must enforce digest, routing, ordering, totals, source clock, row-state and reference-coverage invariants.
+
+Tuple positions (one-based): item ID; exact upstream variant hash; availability code; recent listing reference; market reference; minimum listing reference; variant supply; age seconds; confidence code; historical reference; priced closes in 14 days; priced closes in 60 days; observed closes in 60 days. Four copper fields are exact decimal strings or null, range 1–99,999,999,999. No floats, zero prices or unsupported arithmetic. Counts obey `priced14 <= priced60 <= observed60 <= 60`. Priced state has some supported price, positive supply and limited confidence; supply-only has null prices, positive supply and unavailable price confidence; absent has null prices and zero supply; unknown/unsupported have null prices and null supply. Missing rows never prove zero or absence.
+
+References copy existing canonical bridge assembly, including the three-priced-close requirement for historical value. No economic formulas are introduced. The universe is **all exact variants in the pinned current observed snapshot**, not all items or historical-only variants. Whole-generation caps: 150,000 rows, 64 parts, 128 KiB/part, 8 MiB total partition bytes, 64 KiB manifest. Any overflow refuses the candidate, never publishes a silently truncated set. Real source coverage and consumer availability are independent. Current observation/source time drives age; a new desktop receipt cannot make an old observation fresh. Rebuilding the same source is deterministic. Advancing source confirmations can change the manifest while reusing identical part bytes.
+
+Summary history is not delivered: no daily points, trends or synthetic chart series. Source records explicitly retain synthetic provenance. Unknown native item mappings remain unsupported; item ID alone never selects a priced equipment variant. External asks cannot satisfy local competition, vendor/disenchant evidence or transaction authorization. Local histories, valuation defaults and crafting/Advisor safeguards remain independent.
+
+## Publication/loading policy
+
+Candidate publication uses the existing confirmed installation, ownership/ACL/reparse safeguards and fixed-file replacement helpers. Small `TwichUI_MarketData/Data.lua` binds manifest, receipt and bank. `TwichUI_MarketPart{A|B}{00..63}` are fixed load-on-demand data-only children, each holding one bounded canonical JSON string. Stage/verify the inactive owned bank before atomically switching the root; retain the previous root and bank. Refuse unknown folders/files. Never write while WoW runs; do not control or reload the game. No SavedVariables declarations or edits.
+
+The reader loads only the requested partition on demand and validates it cooperatively before use. Raw loaded bytes and decoded caches have separate hard bounds; addon code cannot claim a loaded addon is unloaded. Compile/assignment, validation slices, total resident memory, lookup/UI and repeated-update costs must be measured. Native Forever compile/load/frame/GC acceptance remains pending, regardless of offline/simulator or file-write success.
+
+## Installation grant and market transitions
+
+The installation grant belongs to the authenticated account/origin and confirmed filesystem destination. Each payload, download cache and status remains bound to its exact market. A native transition follows the existing verified selected-market workflow without requesting another installation grant; it never reuses another account/origin's folder. Legacy scope-bound markers require the same scope or an explicit predecessor proof from that account/origin's existing native configuration. Moved installations require confirmation and retain their original ownership proof for interrupted bank updates. Restoring a previous generation from another market refuses until that market is selected. Original version-1 delivery configuration is backed up before upgrading; optional archive data is untouched.
+
+The summary market extends the existing identity with the registry's verified `faction`; this is source evidence, not an inferred game-to-market mapping. Native Forever links still cannot resolve to upstream variant hashes.

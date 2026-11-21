@@ -1,0 +1,42 @@
+[
+  {
+    "port": 18443,
+    "path": "/",
+    "status": 200,
+    "tls_verified": true,
+    "cache_control": null,
+    "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
+  },
+  {
+    "port": 18443,
+    "path": "/api/v1/health",
+    "status": 200,
+    "tls_verified": true,
+    "cache_control": "no-store",
+    "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'",
+    "response": {
+      "status": "ok",
+      "contract_version": 1
+    }
+  },
+  {
+    "port": 18444,
+    "path": "/",
+    "status": 200,
+    "tls_verified": true,
+    "cache_control": null,
+    "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
+  },
+  {
+    "port": 18444,
+    "path": "/api/v1/health",
+    "status": 200,
+    "tls_verified": true,
+    "cache_control": "no-store",
+    "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'",
+    "response": {
+      "status": "ok",
+      "contract_version": 1
+    }
+  }
+]

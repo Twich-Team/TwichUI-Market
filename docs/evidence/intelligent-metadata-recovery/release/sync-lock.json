@@ -1,0 +1,10 @@
+{
+  "previous_production_sync_source_sha256": "453fb3cda2f1f933680c72e60dfcb66040acdee2da0b7d19aa29ea5b846d1cb8",
+  "same_preexisting_source_in_fa5d8f4_and_bf8a04a": true,
+  "related_postgresql_tests_passed": 76,
+  "new_test": "Pinned download permits competing ingest and keeps its old prices; subsequent download sees new generation",
+  "previous_source_negative_control": "Fails collector-lock assertion",
+  "collector_source_or_configuration_changed": false,
+  "contract_or_price_calculation_changed": false,
+  "api_fix_commit": "6682b82fbb9bf644989e9fe64265ed2361062dfc"
+}

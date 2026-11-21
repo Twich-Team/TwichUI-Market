@@ -1,0 +1,16 @@
+{
+  "valid": {
+    "accepted": true
+  },
+  "corrupt": {
+    "accepted": false
+  },
+  "wrong_version": {
+    "accepted": false
+  },
+  "version": "2.0.0-beta.6",
+  "installer_sha256": "8383217c595d46dcc1a982f60dd500852d6402d613e261a7fd1b6e2a9c5ffb3c",
+  "source_commit": "70f144ca35bd7041dcf17391f9fc8c96fd3c4ef8",
+  "network": "none",
+  "private_key_present": false
+}

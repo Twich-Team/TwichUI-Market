@@ -1,0 +1,774 @@
+{
+  "captured_at": "2026-11-14T02:53:58.574787+00:00",
+  "migration": "0008",
+  "markets": [
+    {
+      "id": 1,
+      "region": "us",
+      "ruleset_id": 2,
+      "house_id": 110,
+      "kind": "auctions",
+      "verified": true,
+      "enabled": true,
+      "interval_seconds": 300,
+      "failures": 0,
+      "last_error": null,
+      "last_success": "2026-11-14T02:50:40.749542+00:00",
+      "last_modified": "Sat, 14 Nov 2026 02:17:50 GMT"
+    }
+  ],
+  "observations": [
+    {
+      "id": 1,
+      "market_id": 1,
+      "snapshot_id": 1,
+      "retrieved_at": "2026-11-14T02:45:34.522262+00:00",
+      "upstream_modified": "Sat, 14 Nov 2026 02:17:50 GMT",
+      "payload_bytes": 9454413,
+      "payload_hash": "cd71f4c077359ae2b7d58d33d24fb46a0e30c85016ede2765073bb3badd7fcd5",
+      "synthetic": false
+    },
+    {
+      "id": 2,
+      "market_id": 1,
+      "snapshot_id": 1,
+      "retrieved_at": "2026-11-14T02:50:40.749542+00:00",
+      "upstream_modified": "Sat, 14 Nov 2026 02:17:50 GMT",
+      "payload_bytes": 0,
+      "payload_hash": "cd71f4c077359ae2b7d58d33d24fb46a0e30c85016ede2765073bb3badd7fcd5",
+      "synthetic": false
+    }
+  ],
+  "runs": [
+    {
+      "id": 1,
+      "status": "collected",
+      "http_status": 200,
+      "checked_at": "2026-11-14T02:45:34.522262+00:00",
+      "duration_seconds": 9,
+      "payload_bytes": 9454413,
+      "error": null
+    },
+    {
+      "id": 2,
+      "status": "unchanged",
+      "http_status": 304,
+      "checked_at": "2026-11-14T02:50:40.749542+00:00",
+      "duration_seconds": 0,
+      "payload_bytes": 0,
+      "error": null
+    }
+  ],
+  "listing_count": 96924,
+  "database_bytes": 46560947,
+  "metadata_available": 29,
+  "metadata_failures": 4,
+  "temporary_members_active": 0,
+  "temporary_credentials_unrevoked": 0,
+  "browser": {
+    "live_browser_verified": true,
+    "market_id": 1,
+    "item_id": 25,
+    "variant_key": "af047f1e942cb41794789277f0a9c87e65aa991486a671d9694530f1523e927c",
+    "supply": 7,
+    "recent_price": "2805",
+    "listing_sample_count": 7,
+    "history_points": 1,
+    "deal_coverage": {
+      "observed_days": 1,
+      "required_days": 3,
+      "status": "insufficient",
+      "basis": "utc_days_within_14_days"
+    },
+    "limited_coverage_candidates": 100,
+    "source_synthetic": false
+  },
+  "house_comparison": [
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/110?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:52:41.402805+00:00",
+        "duration_seconds": 0.409,
+        "bytes": 9454413,
+        "sha256": "cd71f4c077359ae2b7d58d33d24fb46a0e30c85016ede2765073bb3badd7fcd5",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:50 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:52:41 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "house_id": 110,
+      "house_name": "Alliance Auction House",
+      "listing_count": 96924,
+      "missing_auctions": false
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/111?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:52:43.089745+00:00",
+        "duration_seconds": 0.416,
+        "bytes": 10242095,
+        "sha256": "75cfad12b5d738fbd32cc43ad06f0f4211ed8c919e16019b844c5ee3bd7a68a1",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:50 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:52:42 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "house_id": 111,
+      "house_name": "Alliance Auction House",
+      "listing_count": 107564,
+      "missing_auctions": false
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/112?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:52:44.514411+00:00",
+        "duration_seconds": 0.222,
+        "bytes": 383,
+        "sha256": "c5b91328326fd359c102b6e98ec8bd2f72d4a4c321a7f9133dec014eb8f20cb2",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:39 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:52:44 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "house_id": 112,
+      "house_name": "Alliance Auction House",
+      "listing_count": null,
+      "missing_auctions": true
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/113?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:52:45.942322+00:00",
+        "duration_seconds": 0.428,
+        "bytes": 11190219,
+        "sha256": "4dc90bb380be24794691ca45e484c2bec33654a5f405cea59c23a1472a4bf6f8",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:51 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:52:45 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "house_id": 113,
+      "house_name": "Horde Auction House",
+      "listing_count": 113803,
+      "missing_auctions": false
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/114?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:52:47.726419+00:00",
+        "duration_seconds": 0.462,
+        "bytes": 10542245,
+        "sha256": "8805fa490310250e11ec0ba3455a1a6df69033a7e88dc531ec857fec71783cf3",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:51 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:52:47 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "house_id": 114,
+      "house_name": "Horde Auction House",
+      "listing_count": 109986,
+      "missing_auctions": false
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/115?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:52:49.166267+00:00",
+        "duration_seconds": 0.18,
+        "bytes": 380,
+        "sha256": "08cf04ab6b20b9f73920e9a3a291a6eea40125550ea762d812df49b916b7d369",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:39 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:52:49 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "house_id": 115,
+      "house_name": "Horde Auction House",
+      "listing_count": null,
+      "missing_auctions": true
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/116?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:52:50.391891+00:00",
+        "duration_seconds": 0.225,
+        "bytes": 713230,
+        "sha256": "96e3163b5011a3ad8c75d67acbb7cbc9e39461a364e072cf2578252760692297",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:41 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:52:50 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "house_id": 116,
+      "house_name": "Blackwater Auction House",
+      "listing_count": 7477,
+      "missing_auctions": false
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/117?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:52:51.637635+00:00",
+        "duration_seconds": 0.232,
+        "bytes": 788947,
+        "sha256": "c5fc116ab815c5d1d2c2771a191fe147b62c6f666290bd440d697def3f15bb94",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:41 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:52:51 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "house_id": 117,
+      "house_name": "Blackwater Auction House",
+      "listing_count": 8339,
+      "missing_auctions": false
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/118?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:52:52.818544+00:00",
+        "duration_seconds": 0.167,
+        "bytes": 385,
+        "sha256": "f7180ea97df88a859e49ad8919efd829ddb99cd31e517427ae130a5c14579b1d",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:39 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:52:52 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "house_id": 118,
+      "house_name": "Blackwater Auction House",
+      "listing_count": null,
+      "missing_auctions": true
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/119?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:52:54.144013+00:00",
+        "duration_seconds": 0.325,
+        "bytes": 2241423,
+        "sha256": "1060c2e5ee267b41611032854fe8cec0f3b7fdf21cd2771aac60fadf283bef95",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:42 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:52:53 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "house_id": 119,
+      "house_name": "Alliance Auction House",
+      "listing_count": 23736,
+      "missing_auctions": false
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/120?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:52:55.496044+00:00",
+        "duration_seconds": 0.314,
+        "bytes": 1671718,
+        "sha256": "32cc724408e1d1ecae4f809271344b27c510e93d14d9d5515b9dc70db0adf252",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:42 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:52:55 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "house_id": 120,
+      "house_name": "Horde Auction House",
+      "listing_count": 17532,
+      "missing_auctions": false
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/121?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:52:56.718526+00:00",
+        "duration_seconds": 0.19,
+        "bytes": 40051,
+        "sha256": "dfb779b1b7d7b9d8e1ed8632456edcf0834473564fff801303ed1909e4ae41da",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:39 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:52:56 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "house_id": 121,
+      "house_name": "Blackwater Auction House",
+      "listing_count": 412,
+      "missing_auctions": false
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/123?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:52:58.058164+00:00",
+        "duration_seconds": 0.338,
+        "bytes": 2152927,
+        "sha256": "5a09a99619241f4469c5b3aaecff8a61adc9782828e977b101e6e40ff433948c",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:42 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:52:57 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "house_id": 123,
+      "house_name": "Alliance Auction House",
+      "listing_count": 22620,
+      "missing_auctions": false
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/124?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:52:59.433305+00:00",
+        "duration_seconds": 0.287,
+        "bytes": 2249508,
+        "sha256": "f85caa161c42ae4a6bc03582f89f6c53eaa5a61227019fca55d66e241381f96e",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:43 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:52:59 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "house_id": 124,
+      "house_name": "Horde Auction House",
+      "listing_count": 23156,
+      "missing_auctions": false
+    },
+    {
+      "evidence": {
+        "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/125?namespace=dynamic-forever-us&locale=en_US",
+        "status": 200,
+        "retrieved_at": "2026-11-14T02:53:00.696627+00:00",
+        "duration_seconds": 0.222,
+        "bytes": 50951,
+        "sha256": "c41077bf54a211291195db4e9c388c55bca4e6ff8e98effaa51ca28eaaf6f728",
+        "headers": {
+          "Last-Modified": "Sat, 14 Nov 2026 02:17:39 GMT",
+          "ETag": null,
+          "Date": "Sat, 14 Nov 2026 02:53:00 GMT",
+          "Cache-Control": "public, max-age=86400",
+          "Retry-After": null,
+          "Battlenet-Namespace": "dynamic-forever-us"
+        }
+      },
+      "house_id": 125,
+      "house_name": "Blackwater Auction House",
+      "listing_count": 526,
+      "missing_auctions": false
+    },
+    {
+      "house_id_overlaps": [
+        {
+          "first_house": 110,
+          "second_house": 111,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 110,
+          "second_house": 113,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 110,
+          "second_house": 114,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 110,
+          "second_house": 116,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 110,
+          "second_house": 117,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 110,
+          "second_house": 119,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 110,
+          "second_house": 120,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 110,
+          "second_house": 121,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 110,
+          "second_house": 123,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 110,
+          "second_house": 124,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 110,
+          "second_house": 125,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 111,
+          "second_house": 113,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 111,
+          "second_house": 114,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 111,
+          "second_house": 116,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 111,
+          "second_house": 117,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 111,
+          "second_house": 119,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 111,
+          "second_house": 120,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 111,
+          "second_house": 121,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 111,
+          "second_house": 123,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 111,
+          "second_house": 124,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 111,
+          "second_house": 125,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 113,
+          "second_house": 114,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 113,
+          "second_house": 116,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 113,
+          "second_house": 117,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 113,
+          "second_house": 119,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 113,
+          "second_house": 120,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 113,
+          "second_house": 121,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 113,
+          "second_house": 123,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 113,
+          "second_house": 124,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 113,
+          "second_house": 125,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 114,
+          "second_house": 116,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 114,
+          "second_house": 117,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 114,
+          "second_house": 119,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 114,
+          "second_house": 120,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 114,
+          "second_house": 121,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 114,
+          "second_house": 123,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 114,
+          "second_house": 124,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 114,
+          "second_house": 125,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 116,
+          "second_house": 117,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 116,
+          "second_house": 119,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 116,
+          "second_house": 120,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 116,
+          "second_house": 121,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 116,
+          "second_house": 123,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 116,
+          "second_house": 124,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 116,
+          "second_house": 125,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 117,
+          "second_house": 119,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 117,
+          "second_house": 120,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 117,
+          "second_house": 121,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 117,
+          "second_house": 123,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 117,
+          "second_house": 124,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 117,
+          "second_house": 125,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 119,
+          "second_house": 120,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 119,
+          "second_house": 121,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 119,
+          "second_house": 123,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 119,
+          "second_house": 124,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 119,
+          "second_house": 125,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 120,
+          "second_house": 121,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 120,
+          "second_house": 123,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 120,
+          "second_house": 124,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 120,
+          "second_house": 125,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 121,
+          "second_house": 123,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 121,
+          "second_house": 124,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 121,
+          "second_house": 125,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 123,
+          "second_house": 124,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 123,
+          "second_house": 125,
+          "shared_auction_ids": 0
+        },
+        {
+          "first_house": 124,
+          "second_house": 125,
+          "shared_auction_ids": 0
+        }
+      ],
+      "scope": "Sequential upstream feed samples; disjoint IDs do not establish player-facing ruleset routing."
+    }
+  ],
+  "worker_limits": [
+    "402653184",
+    "76201984",
+    "50000 100000"
+  ],
+  "live_backup_restore": {
+    "live_data_restoration_verified": true,
+    "archive": "market-development-20261114T025821225188Z.dump",
+    "restored": {
+      "migration": "0008",
+      "users": 4,
+      "markets": 1,
+      "observations": 3,
+      "listings": 96924,
+      "synthetic_observations": 0,
+      "buyout_total": "90992744606",
+      "snapshot_statistics": 23448,
+      "daily_observations": 1,
+      "market_verifications": 1
+    }
+  }
+}

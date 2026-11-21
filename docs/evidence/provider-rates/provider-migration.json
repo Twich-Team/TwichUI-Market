@@ -1,0 +1,9 @@
+{
+  "origin": "synthetic",
+  "database": "market_test",
+  "baseline_revision": "bridge_20261115",
+  "head_revision": "rates_20261115",
+  "settings_credentials_usage_cooldown_preserved": true,
+  "populated_downgrade_refused": true,
+  "empty_rate_state_downgrade_reupgrade": true
+}

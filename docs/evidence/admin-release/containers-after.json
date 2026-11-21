@@ -1,0 +1,82 @@
+[
+  {
+    "name": "/twichui-market-api-1",
+    "id": "2c02a2b142c856a38a91efc37b9bbab0fb1c0c5385c2b6e8970a58625b44add2",
+    "image": "sha256:b645901b9b982e64881eff9743da56959ef3b7192239bcfa3b4d8ce691e732c9",
+    "started": "2026-11-15T05:31:33.672188976Z",
+    "restarts": 0,
+    "oom": false,
+    "memory_limit": 402653184,
+    "cpu": 500000000
+  },
+  {
+    "name": "/twichui-market-local-api-1",
+    "id": "3758531e240dab822d472490dbd06c2738c135c9e3f836b05937c6e135ff3c8d",
+    "image": "sha256:b645901b9b982e64881eff9743da56959ef3b7192239bcfa3b4d8ce691e732c9",
+    "started": "2026-11-15T05:31:33.855784757Z",
+    "restarts": 0,
+    "oom": false,
+    "memory_limit": 268435456,
+    "cpu": 250000000
+  },
+  {
+    "name": "/twichui-market-proxy-1",
+    "id": "165e2a01b60adc10ade58f43dc40612775b696a650ad15b4da917763d3945b8d",
+    "image": "sha256:2c16372dc3254d897e57d980529f62c9a1550ed356cdc66e121e23b64cf267c9",
+    "started": "2026-11-15T05:31:49.861044997Z",
+    "restarts": 0,
+    "oom": false,
+    "memory_limit": 134217728,
+    "cpu": 250000000
+  },
+  {
+    "name": "/twichui-market-enrichment-1",
+    "id": "0a4b02f201e390a27d29765d1e44ec45aa854ef095556906107fc28c3d6b2e3f",
+    "image": "sha256:b645901b9b982e64881eff9743da56959ef3b7192239bcfa3b4d8ce691e732c9",
+    "started": "2026-11-15T05:31:46.306415973Z",
+    "restarts": 0,
+    "oom": false,
+    "memory_limit": 201326592,
+    "cpu": 250000000
+  },
+  {
+    "name": "/twichui-market-worker-1",
+    "id": "dc270e9490b7ed737575b3d0cfd5840d9f13d6894cfef65e1fad1146352072bb",
+    "image": "sha256:d1ae733744b7328199f7926121c34d313027331301bcc60851451275f50a1294",
+    "started": "2026-11-14T14:24:43.267611827Z",
+    "restarts": 0,
+    "oom": false,
+    "memory_limit": 402653184,
+    "cpu": 500000000
+  },
+  {
+    "name": "/twichui-market-db-1",
+    "id": "1a138045d430554c64142f230fa1555e61d3414b2926ae9b2606f58fb8fb3642",
+    "image": "sha256:d3244e8ce3f165ee3c93d9c4a4b1d0fe48b3a89e2287b717fdcbbde92d405065",
+    "started": "2026-11-14T01:46:45.864726511Z",
+    "restarts": 0,
+    "oom": false,
+    "memory_limit": 805306368,
+    "cpu": 1000000000
+  },
+  {
+    "name": "/twichui-market-monitor-1",
+    "id": "295cc3e09e4927f38ffa1a221ef3f199f6e065561fb14fca859a8ce6de9228e2",
+    "image": "sha256:0323bca0334572b29d3e8d6c388b214b3c22891242b9e6eec35f4010595fd18a",
+    "started": "2026-11-14T04:42:59.157272882Z",
+    "restarts": 0,
+    "oom": false,
+    "memory_limit": 134217728,
+    "cpu": 250000000
+  },
+  {
+    "name": "/twichui-market-backup-1",
+    "id": "1f1cbba535e2cd64cf900099a5fe92ee662fa9ced84f5f2ae4fa5b28b32d5f9c",
+    "image": "sha256:2669ec98d745fbb77942ed6696162436862334ebaebc71e884853226504b260b",
+    "started": "2026-11-15T03:11:29.671470444Z",
+    "restarts": 0,
+    "oom": false,
+    "memory_limit": 268435456,
+    "cpu": 250000000
+  }
+]

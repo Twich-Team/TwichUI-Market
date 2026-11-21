@@ -1,0 +1,13 @@
+{
+  "id": 14445090083,
+  "name": "workshop-permissions-acceptance",
+  "digest": "sha256:5cef097465f99141bd29c48bca3a16c64d45c1468cf0fc584cf884f61a0168d5",
+  "size_in_bytes": 1332,
+  "workflow_run": {
+    "id": 44341487381,
+    "repository_id": 1457156728,
+    "head_repository_id": 1457156728,
+    "head_branch": "integration/retention-activation-companion-beta8",
+    "head_sha": "36dc204d5975f57629ca1c830d41d8b95d2ac508"
+  }
+}

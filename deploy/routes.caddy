@@ -1,0 +1,29 @@
+header {
+    X-Content-Type-Options nosniff
+    X-Frame-Options DENY
+    Referrer-Policy no-referrer
+    Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
+}
+request_body {
+    max_size 16KB
+}
+handle /api/* {
+    reverse_proxy api:8000
+}
+# Ownership proofs must never fall through to the SPA or authentication.
+handle /.well-known/foreverdb.txt {
+    root * /srv
+    header Content-Type "text/plain; charset=utf-8"
+    file_server
+}
+handle_path /design/* {
+    encode zstd gzip
+    root * /srv/design
+    file_server
+}
+handle {
+    encode zstd gzip
+    root * /srv
+    try_files {path} /index.html
+    file_server
+}

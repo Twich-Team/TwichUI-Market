@@ -1,0 +1,6 @@
+{
+  "productName": "TwichUI Market Companion DEV",
+  "identifier": "team.twich.market.dev",
+  "app": {"windows": [{"label":"main", "title":"TwichUI Market Companion DEV — Unsigned private test", "width":520, "height":710, "minWidth":440, "minHeight":560, "theme":"Dark", "visible":false}]},
+  "bundle": {"shortDescription":"Unsigned private owner test build", "createUpdaterArtifacts":false, "windows":{"nsis":{"installerHooks":"./windows/dev-hooks.nsh"}}}
+}

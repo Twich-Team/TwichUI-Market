@@ -1,0 +1,23 @@
+{
+  "source_commit": "3ba80139ac1243c34441ac4206aa6255d0eae26a",
+  "run_url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/44376361116",
+  "artifact_name": "TwichUI-Market-Companion-DEV-3ba8013",
+  "artifact_id": 14460609335,
+  "artifact_zip_sha256": "b1c0d35fb3a3af46693481f39ec591b342e05bdcf485fc61377ae48bcb2e92a8",
+  "installer_sha256": "8b5c0b9904a79615e59d8b9e0035dab8098ef8464584f2afc85e5651df718b61",
+  "windows_focused_tests": 22,
+  "installed_native_smoke": {
+    "version": "2.0.0-beta.8 DEV 3ba80139ac1243c34441ac4206aa6255d0eae26a",
+    "frontend": true,
+    "native": true,
+    "workshop_command": true,
+    "updater_disabled": true
+  },
+  "owner_previous_result": "Windows create access allowed; inherited Interactive Users grant rejected by the too-narrow previous group allowlist",
+  "change": "Game preflight and generated game-file operations use real Windows access checks, with no owner/group/ACL allowlist; private storage keeps its strict policy",
+  "native_tests": "Shared Users/Interactive Users/Authenticated Users/Everyone rules support actual game writes and replacements; actual Windows denial, junction refusal, private-storage controls, account markers and unknown-file preservation pass",
+  "owner_new_result": "pending",
+  "full_certification": "deferred",
+  "unsigned_private_test": true,
+  "public_release_or_deployment": false
+}

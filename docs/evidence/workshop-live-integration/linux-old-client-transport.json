@@ -1,0 +1,20 @@
+{
+  "purpose": "Investigate Windows automatic benchmark Network failure; not a new-client performance comparison",
+  "synthetic": true,
+  "production": false,
+  "physical_game": false,
+  "game_publication": false,
+  "platform": "Linux rootless disposable container, 2 CPU / 2 GiB",
+  "database": "disposable SQLite market_test",
+  "variants": 26342,
+  "client_algorithm_source": "fe854b0 (frozen by prepare-sync-baseline.py)",
+  "common_measurement_harness_source": "17efbdb6d75d24d9d2702fedd2955e77a113101b",
+  "server_source": "3a8ecca090240f88fa83111ea544796a60ac4015 (application unchanged in 17efbdb)",
+  "binary_sha256": "509f13261d28d8ccfe7fdc3193580480192d9fab340973b059695bad4aeb29bd",
+  "same_binary_both_phases": true,
+  "baseline_label": {"seconds": 189.797552393, "retry_policy": "all preparation responses 5 seconds"},
+  "candidate_label": {"seconds": 85.415836033, "retry_policy": "server directed: derivation 5 seconds / projection 1 second"},
+  "identical_values_sha256": "9f082c463139dced2af0c8730a85d33ff74fd9f17a1cad61b96f08387ba0bdf3",
+  "repetitions_per_phase": 1,
+  "result": "Both phases completed; Windows failure not reproduced on Linux. No physical-PC or new-client improvement claim."
+}

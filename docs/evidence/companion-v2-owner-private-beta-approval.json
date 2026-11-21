@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "owner_authorized_private_beta": true,
+  "scope": "private-unsigned-beta-with-manual-updates",
+  "owner_statement": "Use the free private beta",
+  "visual_approval_commit": "e55807c58c4cf68560729471019b88cc518fb5b0",
+  "authorization_source": "Explicit human owner response in the active Companion v2 task",
+  "recorded_at_utc": "2026-11-14 23:44 UTC",
+  "intended_audience": "Owner, brother and friend; their normal invitation-only accounts",
+  "initial_access": "Owner account only; brother and friend do not have accounts yet",
+  "updates": "manual",
+  "authenticode_required_for_private_beta": false,
+  "tray_actions_verified": false,
+  "paid_signing_service_authorized": false,
+  "stable_release_authorized": false
+}

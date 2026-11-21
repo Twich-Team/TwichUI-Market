@@ -1,0 +1,18 @@
+{
+  "items": 5000,
+  "limits": "192 MiB, one CPU; PostgreSQL isolated separately. Includes bounded local decision audit and writes rolled back each sample; excludes external I/O and production data. Not production p95.",
+  "missing_names": 11,
+  "process_peak_rss_bytes": 113303552,
+  "provider_requests": 0,
+  "synthetic_only": true,
+  "warm_runs": 5,
+  "warm_sql_statement_counts": [
+    93,
+    93,
+    93,
+    93,
+    93
+  ],
+  "warm_wall_median_ms": 73.307,
+  "warm_worker_cpu_median_ms": 42.049
+}

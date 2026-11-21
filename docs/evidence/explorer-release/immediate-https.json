@@ -1,0 +1,9 @@
+{
+  "certificate_verification": true,
+  "checks": {
+    "/": 200,
+    "/markets/2/items/2589": 200,
+    "/api/v1/health": 200
+  },
+  "served_index_matches_image": true
+}

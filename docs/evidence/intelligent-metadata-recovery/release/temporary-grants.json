@@ -1,0 +1,18 @@
+{
+  "revoked_verification_ids": [
+    268,
+    269
+  ],
+  "original_accounts_devices_and_credentials_revoked": 0,
+  "http_denials": [
+    {
+      "id": 268,
+      "status": 401
+    },
+    {
+      "id": 269,
+      "status": 401
+    }
+  ],
+  "private_token_file_removed": true
+}

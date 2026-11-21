@@ -1,0 +1,77 @@
+{
+  "schema": "retention_20261118",
+  "cutoffs": {
+    "snapshots": 111,
+    "observations": 1242,
+    "credentials": 293
+  },
+  "hashes": {
+    "users": {
+      "rows": 97,
+      "sha256": "0d560d66b04d2bfe2d60f76b9fbfffe60578526a855533240ff5d8cf63ce2bc6"
+    },
+    "credentials": {
+      "rows": 293,
+      "sha256": "3434d407f160bf0c643d7bdcffc0e0e3d30b1c8a261469e813e31119d300bb9d"
+    },
+    "user_preferences": {
+      "rows": 22,
+      "sha256": "2158b14109834cfabb04c3b5f569a904bc1479e4c0768927bd6748ee046ae104"
+    },
+    "player_market_mappings": {
+      "rows": 1,
+      "sha256": "108bbcf075d55127be3e17faf41956d284307037db08e0a787c18be145699245"
+    },
+    "market_verifications": {
+      "rows": 2,
+      "sha256": "7a3bf93390f058553852b1ad3c41af488467df734a4a0ce53b516c8ed81a7e90"
+    },
+    "retention_policy": {
+      "rows": 1,
+      "sha256": "b4d551ed2b5e63561fed107f02bf4f7940a8f8af966a94cea183dbf6521b3202"
+    },
+    "retention_automation": {
+      "rows": 1,
+      "sha256": "0d62f20f5f09cf9d21a5bdda54fb4905eecd6f9d8589be3e0962047b4aee7d83"
+    },
+    "metadata_providers": {
+      "rows": 4,
+      "sha256": "662289e5f664b7af7b6a7e1b1370e8aa6a09123a7093b000d8c68b17530670c3"
+    },
+    "snapshots": {
+      "rows": 111,
+      "sha256": "3dff4bf2d0842629594fa1f4b5cd89d30906c121f2a9901bd1f593a0d105df4e"
+    },
+    "observations": {
+      "rows": 1242,
+      "sha256": "e2a1b1b27bc61edfb0c92c9270b4c117249dcea1bc39c6e4f84341fcc1e8ed9b"
+    }
+  },
+  "markets": [
+    {
+      "id": 1,
+      "region": "us",
+      "ruleset_id": 2,
+      "house_id": 110,
+      "source_kind": "auctions",
+      "enabled": false,
+      "verified": true,
+      "interval_seconds": 300
+    },
+    {
+      "id": 2,
+      "region": "us",
+      "ruleset_id": 2,
+      "house_id": 114,
+      "source_kind": "auctions",
+      "enabled": true,
+      "verified": true,
+      "interval_seconds": 300
+    }
+  ],
+  "all_guarded_original_rows_identical": false,
+  "changed_tables": [
+    "retention_automation",
+    "metadata_providers"
+  ]
+}

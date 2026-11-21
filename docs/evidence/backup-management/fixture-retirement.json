@@ -1,0 +1,91 @@
+{
+  "at": "2026-11-18T03:38:32.743030+00:00",
+  "retired_projects": [
+    "twichui-market-backup-browser",
+    "twichui-market-backup-test"
+  ],
+  "task_owned_fixture_files_removed": [
+    {
+      "fixture_directory": "fixtures",
+      "filename": "market-scheduled-20261118T032935548748Z-277300f31a90.json",
+      "bytes": 600
+    },
+    {
+      "fixture_directory": "fixtures",
+      "filename": "market-scheduled-20261118T032935548748Z-277300f31a90.dump",
+      "bytes": 129243
+    },
+    {
+      "fixture_directory": "fixtures",
+      "filename": ".backup.lock",
+      "bytes": 0
+    },
+    {
+      "fixture_directory": "browser-fixtures",
+      "filename": "market-manual-20261118T033435132993Z-42a4cb065a4b.json",
+      "bytes": 502
+    },
+    {
+      "fixture_directory": "browser-fixtures",
+      "filename": "market-manual-20261118T033407047069Z-f3e657892efa.dump",
+      "bytes": 174278
+    },
+    {
+      "fixture_directory": "browser-fixtures",
+      "filename": "market-manual-20261118T032058105406Z.dump",
+      "bytes": 137402
+    },
+    {
+      "fixture_directory": "browser-fixtures",
+      "filename": "market-manual-20261118T032309517690Z.dump",
+      "bytes": 138670
+    },
+    {
+      "fixture_directory": "browser-fixtures",
+      "filename": "market-manual-20261118T033435132993Z-42a4cb065a4b.dump",
+      "bytes": 174892
+    },
+    {
+      "fixture_directory": "browser-fixtures",
+      "filename": "market-manual-20261118T033407047069Z-f3e657892efa.json",
+      "bytes": 502
+    },
+    {
+      "fixture_directory": "browser-fixtures",
+      "filename": "market-manual-20261118T032309517690Z.json",
+      "bytes": 489
+    },
+    {
+      "fixture_directory": "browser-fixtures",
+      "filename": "market-manual-20261118T032555701967Z.json",
+      "bytes": 489
+    },
+    {
+      "fixture_directory": "browser-fixtures",
+      "filename": "market-manual-20261118T032145996390Z.dump",
+      "bytes": 138061
+    },
+    {
+      "fixture_directory": "browser-fixtures",
+      "filename": ".backup.lock",
+      "bytes": 0
+    },
+    {
+      "fixture_directory": "browser-fixtures",
+      "filename": "market-manual-20261118T032058105406Z.json",
+      "bytes": 489
+    },
+    {
+      "fixture_directory": "browser-fixtures",
+      "filename": "market-manual-20261118T032145996390Z.json",
+      "bytes": 489
+    },
+    {
+      "fixture_directory": "browser-fixtures",
+      "filename": "market-manual-20261118T032555701967Z.dump",
+      "bytes": 145632
+    }
+  ],
+  "production_backups_touched": false,
+  "candidate_images_retained": true
+}

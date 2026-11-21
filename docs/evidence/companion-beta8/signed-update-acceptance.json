@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "installer_process_exit_observed": false,
+  "installer_exit_code": null,
+  "payload_source_commit": "36dc204d5975f57629ca1c830d41d8b95d2ac508",
+  "harness_source_commit": "3ebd8b3c8b613ca8ed42a85614679a824ff85033",
+  "version": "2.0.0-beta.8",
+  "installer_sha256": "60ed1c13b96fe5cc8601343ce7efb1d1730891bedaeb5a30eb060b31fe3dc9d1",
+  "executable_sha256": "faad54c5183014aaec07dee65023f1d489c372bfbc99f36dd1ab9b83187edd92",
+  "updater_public_key_sha256": "5794736c840c7c09a49396e60cd569ff6b5f24f872eb0318ed95d55c16616ecf",
+  "workflow_run_id": 44345199307,
+  "supported_sdk_signature_verified": true,
+  "corrupt_payload_rejected": true,
+  "wrong_signed_version_rejected": true,
+  "actual_sdk_install": true,
+  "installed_executable_verified": true,
+  "reconnect_sync_export": true,
+  "uninstall_data_preserved": true,
+  "tray_actions_verified": false,
+  "publication_approved": false,
+  "deployment_approved": false
+}

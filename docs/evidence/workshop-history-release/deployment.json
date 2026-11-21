@@ -1,0 +1,20 @@
+{
+  "only_replaced_services": [
+    "/twichui-market-api-1",
+    "/twichui-market-local-api-1"
+  ],
+  "unchanged_service_count": 9,
+  "all_other_container_ids_and_images_preserved": true,
+  "api_environment_mounts_resources_ports_restart_logs_preserved": true,
+  "candidate_image": "sha256:428f0acfa92ec42fcc40d467e072ad3d14f7175c02ad76303d141d6824b983af",
+  "api_health": {
+    "/twichui-market-api-1": "healthy",
+    "/twichui-market-local-api-1": "healthy"
+  },
+  "old_backup_state": {
+    "/twichui-market-backup-1": {
+      "running": false,
+      "restart": "no"
+    }
+  }
+}

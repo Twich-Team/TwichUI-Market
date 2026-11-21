@@ -1,0 +1,80 @@
+{
+  "schema": "retention_20261118",
+  "cutoffs": {
+    "snapshots": 113,
+    "observations": 1273,
+    "credentials": 296
+  },
+  "hashes": {
+    "users": {
+      "rows": 97,
+      "sha256": "0d560d66b04d2bfe2d60f76b9fbfffe60578526a855533240ff5d8cf63ce2bc6"
+    },
+    "credentials": {
+      "rows": 296,
+      "sha256": "dcaf46aa3bc823752ea4371cc0c60c9088921d432cb915a9fb86846458974613"
+    },
+    "user_preferences": {
+      "rows": 22,
+      "sha256": "2158b14109834cfabb04c3b5f569a904bc1479e4c0768927bd6748ee046ae104"
+    },
+    "player_market_mappings": {
+      "rows": 1,
+      "sha256": "108bbcf075d55127be3e17faf41956d284307037db08e0a787c18be145699245"
+    },
+    "market_verifications": {
+      "rows": 2,
+      "sha256": "7a3bf93390f058553852b1ad3c41af488467df734a4a0ce53b516c8ed81a7e90"
+    },
+    "retention_policy": {
+      "rows": 1,
+      "sha256": "b4d551ed2b5e63561fed107f02bf4f7940a8f8af966a94cea183dbf6521b3202"
+    },
+    "retention_automation": {
+      "rows": 1,
+      "sha256": "dfd844f2a5bf8bcce3a867f51c80cdcdc36e94f8b220e5c9c99155f16b20024e"
+    },
+    "metadata_providers": {
+      "rows": 4,
+      "sha256": "635891f11cfe660e757b88aa0a8f00bcc6d27993112287458e8759977ecf6b44"
+    },
+    "snapshots": {
+      "rows": 113,
+      "sha256": "945e5b103b9759a48d149c5af03db74106fe62ac0297eef8c535fa04e8e3a2c6"
+    },
+    "observations": {
+      "rows": 1273,
+      "sha256": "e19147699d07c673af51fc0149a94b1433c219e4569a4f8cba44532e29377da6"
+    }
+  },
+  "markets": [
+    {
+      "id": 1,
+      "region": "us",
+      "ruleset_id": 2,
+      "house_id": 110,
+      "source_kind": "auctions",
+      "enabled": false,
+      "verified": true,
+      "interval_seconds": 300
+    },
+    {
+      "id": 2,
+      "region": "us",
+      "ruleset_id": 2,
+      "house_id": 114,
+      "source_kind": "auctions",
+      "enabled": true,
+      "verified": true,
+      "interval_seconds": 300
+    }
+  ],
+  "all_guarded_original_rows_identical": false,
+  "changed_tables": [
+    "credentials",
+    "retention_automation",
+    "metadata_providers"
+  ],
+  "stable_configuration_and_credential_preservation_verified_separately": true,
+  "original_histories_accounts_preferences_mappings_identical": true
+}

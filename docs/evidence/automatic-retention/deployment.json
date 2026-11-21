@@ -1,0 +1,79 @@
+{
+  "deployed_at": "2026-11-18T15:13:01.056751+00:00",
+  "application_source_sha": "fe92999cc969a23684f3023638673c656efb3bce",
+  "state": {
+    "revision": "retention_20261118",
+    "approved": 0,
+    "batches": 0,
+    "enabled": 0,
+    "authorized": 0
+  },
+  "database_filesystem_before": "Filesystem           1024-blocks    Used Available Capacity Mounted on\n/dev/mapper/ubuntu--vg-ubuntu--lv              260484472  98310248 150479156  40% /etc/hostname\n",
+  "containers": {
+    "api": {
+      "before_id": "8529a6eaca72cc7ed77c46a6abf5c2a27c41527e7a91c91956223f531ce978d1",
+      "after_id": "dc793a40d14870219b263252c93ba08240bd5030439edfa48c4306e23ece7c48",
+      "image": "sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b",
+      "memory_bytes": 402653184,
+      "cpu_nanos": 500000000
+    },
+    "local-api": {
+      "before_id": "b4b47f747c7042d5d5c9d667a8711e9e4236bd4806cf69080f2e114c641586ce",
+      "after_id": "fff99bda1f6ac739feb92f2212b13f88a6cd05719ce04c5c68cd01a49ac283f4",
+      "image": "sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b",
+      "memory_bytes": 268435456,
+      "cpu_nanos": 250000000
+    },
+    "worker": {
+      "before_id": "9a70accf55e718c4da36ffad2f2ac5173be3d8e17ff95dc53cb3252c6da34c16",
+      "after_id": "81b36b1a230d15f0cef2edcadc53866128f302d305a662bc9a453abf203b2887",
+      "image": "sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b",
+      "memory_bytes": 402653184,
+      "cpu_nanos": 500000000
+    },
+    "monitor": {
+      "before_id": "295cc3e09e4927f38ffa1a221ef3f199f6e065561fb14fca859a8ce6de9228e2",
+      "after_id": "12d571b7e0645296321a857832169750cdb65d2727c1008da43e1973c0e88a62",
+      "image": "sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b",
+      "memory_bytes": 134217728,
+      "cpu_nanos": 250000000
+    },
+    "proxy": {
+      "before_id": "9413ba24ff745d1c84c80a65fb0e65424964426ffc21a3c81b7738abdf7d753e",
+      "after_id": "de1e7aceb146621a04cdea2151d46318fc3c4124b3aa4da9ac98c5282f4539ac",
+      "image": "sha256:f48f8f1a7e5a030432abde0792ee0be1aae0326950404e83036bc9c0172a6814",
+      "memory_bytes": 134217728,
+      "cpu_nanos": 250000000
+    },
+    "db": {
+      "before_id": "1a138045d430554c64142f230fa1555e61d3414b2926ae9b2606f58fb8fb3642",
+      "after_id": "1a138045d430554c64142f230fa1555e61d3414b2926ae9b2606f58fb8fb3642",
+      "image": "sha256:d3244e8ce3f165ee3c93d9c4a4b1d0fe48b3a89e2287b717fdcbbde92d405065",
+      "memory_bytes": 805306368,
+      "cpu_nanos": 1000000000
+    },
+    "enrichment": {
+      "before_id": "08ac2b64e749d094f88e9cce7157fd3c5a29ea867bb11ae24789247479a49c44",
+      "after_id": "08ac2b64e749d094f88e9cce7157fd3c5a29ea867bb11ae24789247479a49c44",
+      "image": "sha256:3ef6f57964546a425f4c2ebe2bc44be2d9a516340325074dfb0fb2f32d7c3667",
+      "memory_bytes": 201326592,
+      "cpu_nanos": 250000000
+    },
+    "backup-manager": {
+      "before_id": "0975558bb55d6a8216c43fdba4911b3a9cbfc46bc6f36188c3e88e88782f6ecf",
+      "after_id": "0975558bb55d6a8216c43fdba4911b3a9cbfc46bc6f36188c3e88e88782f6ecf",
+      "image": "sha256:79cea119910ad3353f8a35ce21d079fafbcab0a757c0734bfe3bce6055c68565",
+      "memory_bytes": 268435456,
+      "cpu_nanos": 250000000
+    },
+    "retention": {
+      "before_id": null,
+      "after_id": "1296bbf6f52d8de0a3e31022c95bb143dad93c91d9ed81f901c9bc35857d1c49",
+      "image": "sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b",
+      "memory_bytes": 201326592,
+      "cpu_nanos": 250000000
+    }
+  },
+  "unrelated_services_preserved": true,
+  "historical_pruning_executed": false
+}

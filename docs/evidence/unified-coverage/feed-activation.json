@@ -1,0 +1,182 @@
+{
+  "market_id": 2,
+  "status": "activated",
+  "provider_requests": 4,
+  "mapping_unchanged": true,
+  "interval_seconds": 300,
+  "proofs": [
+    {
+      "identity": {
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 114,
+        "source_kind": "auctions",
+        "namespace": "dynamic-forever-us",
+        "scope": "ruleset_house"
+      },
+      "actor_id": 1,
+      "verified_at": "2026-11-18T01:57:41.698433+00:00",
+      "report": {
+        "version": 1,
+        "verified_at": "2026-11-18T01:57:38.699632+00:00",
+        "mapping": {
+          "region": "us",
+          "ruleset_id": 2,
+          "house_id": 114,
+          "source_kind": "auctions"
+        },
+        "house_name": "Horde Auction House",
+        "scope": "Verified upstream house feed; ruleset URL alone does not establish an independent in-game economy.",
+        "listing_count": 133692,
+        "normalized_sha256": "51a8b5f85269645c1133f8ea14630fcf8a0b920b20a5ad1b4dfbbd840613a2b0",
+        "requests": [
+          {
+            "url": "https://us.api.blizzard.com/data/wow/ruleset/index?namespace=dynamic-forever-us&locale=en_US",
+            "status": 200,
+            "retrieved_at": "2026-11-18T01:57:32.292773+00:00",
+            "duration_seconds": 0.203,
+            "bytes": 528,
+            "sha256": "eb9bba087c4981474ff58e965f44503e979ec363427aed50666bb9b69e73a8fb",
+            "headers": {
+              "Last-Modified": "Wed, 18 Nov 2026 01:57:23 GMT",
+              "ETag": null,
+              "Date": "Wed, 18 Nov 2026 01:57:32 GMT",
+              "Cache-Control": "public, max-age=30",
+              "Retry-After": null,
+              "Battlenet-Namespace": "dynamic-forever-us",
+              "RateLimit-Limit": null,
+              "RateLimit-Remaining": null,
+              "RateLimit-Reset": null,
+              "X-RateLimit-Remaining": null
+            },
+            "structure": {
+              "keys": [
+                "_links",
+                "rulesets"
+              ],
+              "rulesets_count": 4
+            }
+          },
+          {
+            "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/?namespace=dynamic-forever-us&locale=en_US",
+            "status": 200,
+            "retrieved_at": "2026-11-18T01:57:33.478453+00:00",
+            "duration_seconds": 0.185,
+            "bytes": 2359,
+            "sha256": "84226f6daaa9cca42890729a9fcf006943c9ada3bc7021de47c278f6d120c6ed",
+            "headers": {
+              "Last-Modified": "Wed, 18 Nov 2026 01:24:54 GMT",
+              "ETag": null,
+              "Date": "Wed, 18 Nov 2026 01:57:33 GMT",
+              "Cache-Control": "public, max-age=86400",
+              "Retry-After": null,
+              "Battlenet-Namespace": "dynamic-forever-us",
+              "RateLimit-Limit": null,
+              "RateLimit-Remaining": null,
+              "RateLimit-Reset": null,
+              "X-RateLimit-Remaining": null
+            },
+            "structure": {
+              "keys": [
+                "_links",
+                "auctions"
+              ],
+              "auctions_count": 15,
+              "auction_fields": [
+                "id",
+                "key",
+                "name"
+              ]
+            }
+          },
+          {
+            "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/114?namespace=dynamic-forever-us&locale=en_US",
+            "status": 200,
+            "retrieved_at": "2026-11-18T01:57:34.910624+00:00",
+            "duration_seconds": 0.432,
+            "bytes": 12926318,
+            "sha256": "03c8a9080437aab97e269ca4267cc75711891220e566022d89d8ed599bd705f6",
+            "headers": {
+              "Last-Modified": "Wed, 18 Nov 2026 01:25:12 GMT",
+              "ETag": null,
+              "Date": "Wed, 18 Nov 2026 01:57:34 GMT",
+              "Cache-Control": "public, max-age=86400",
+              "Retry-After": null,
+              "Battlenet-Namespace": "dynamic-forever-us",
+              "RateLimit-Limit": null,
+              "RateLimit-Remaining": null,
+              "RateLimit-Reset": null,
+              "X-RateLimit-Remaining": null
+            },
+            "structure": {
+              "keys": [
+                "_links",
+                "auctions",
+                "commodities",
+                "id",
+                "name",
+                "ruleset"
+              ],
+              "auctions_count": 133692,
+              "auction_fields": [
+                "buyout",
+                "id",
+                "item",
+                "quantity",
+                "time_left"
+              ]
+            }
+          }
+        ]
+      },
+      "evidence_sha256": "043fa13dbb6dcb7731e342e98290f4d3db44360080d703b6916b6a419b82894b",
+      "registry_evidence_sha256": "9b638e0a304e77792d053750d8a2a20e70712a7ea92cb73bea724ba0ac800e2b"
+    },
+    {
+      "identity": {
+        "region": "us",
+        "ruleset_id": 2,
+        "house_id": 114,
+        "source_kind": "commodities",
+        "namespace": "dynamic-forever-us",
+        "scope": "ruleset_house"
+      },
+      "actor_id": 1,
+      "verified_at": "2026-11-18T01:57:41.698742+00:00",
+      "report": {
+        "mapping": {
+          "region": "us",
+          "ruleset_id": 2,
+          "house_id": 114,
+          "source_kind": "commodities"
+        },
+        "verified_at": "2026-11-18T01:57:41.309958+00:00",
+        "namespace": "dynamic-forever-us",
+        "listing_count": 106945,
+        "response": {
+          "url": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/114/commodities?namespace=dynamic-forever-us&locale=en_US",
+          "status": 200,
+          "retrieved_at": "2026-11-18T01:57:39.779793+00:00",
+          "duration_seconds": 0.465,
+          "bytes": 9304494,
+          "sha256": "754de22eb8b9da028a2779d4373a5f5b70c111b60d0160cde94dd1da27f3bbc6",
+          "headers": {
+            "Last-Modified": "Wed, 18 Nov 2026 01:25:12 GMT",
+            "ETag": null,
+            "Date": "Wed, 18 Nov 2026 01:57:39 GMT",
+            "Cache-Control": "public, max-age=86400",
+            "Retry-After": null,
+            "Battlenet-Namespace": "dynamic-forever-us",
+            "RateLimit-Limit": null,
+            "RateLimit-Remaining": null,
+            "RateLimit-Reset": null,
+            "X-RateLimit-Remaining": null
+          }
+        },
+        "normalized_sha256": "8ef4c7d2977aa38509898829279b34421b1d2a161ed6a295bb6cf374cc35ee59"
+      },
+      "evidence_sha256": "b838ed7d5c89de886e8344a8f4e2fd84f97eb009ccfc9986aa161cc5fda92e4c",
+      "registry_evidence_sha256": "9b638e0a304e77792d053750d8a2a20e70712a7ea92cb73bea724ba0ac800e2b"
+    }
+  ]
+}

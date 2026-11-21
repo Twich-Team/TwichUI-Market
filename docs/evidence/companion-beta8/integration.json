@@ -1,0 +1,17 @@
+{
+  "merged_at_recorded": "2026-11-18T16:36:26.229334+00:00",
+  "pr": "https://github.com/Twich-Team/TwichUI-Market/pull/39",
+  "merge_commit": "a0f614be8b1b2aeea4dae6b1474f7ad8e16d7589",
+  "repair_pr37_merge": "814ffd250251baa9f6d8e62a3cbae617375c778f",
+  "published_payload_source": "36dc204d5975f57629ca1c830d41d8b95d2ac508",
+  "tested_runtime_patch_harness": "3ebd8b3c8b613ca8ed42a85614679a824ff85033",
+  "merged_application_contract_and_workflow_trees_match_tested_source": {
+    "backend": "316c4f6339f7e9177a03b7addd12411f205b2702",
+    "desktop": "99cffbc035dba4237c88196f172d80259ea268ca",
+    "web": "9c07edbb08c4d83008ffe99e1724aa99a0de7e54",
+    "scripts": "822988dc286f6a06bfc813d7ffcbb85cc2919a1d",
+    "contracts": "6c146cc25208996b24186288e155cd3a5f949693",
+    ".github": "7095aa90365b2e450869fe170c7f22b99b1679e1"
+  },
+  "no_new_runtime_deployment_for_evidence_merge": true
+}

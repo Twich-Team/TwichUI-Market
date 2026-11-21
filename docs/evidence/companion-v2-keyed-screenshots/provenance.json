@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "fixture": true,
+  "generated_mockups": false,
+  "version": "2.0.0-beta.2",
+  "installer_source_commit": "c7bad2f5e84213e1c69e3eb66e8daa6540f05bc9",
+  "installer_sha256": "0fbc53603c218ffa85c8ee7b4e54f25e53c52a6fc3b2330ae914337714d41869",
+  "design_approval_receipt": "../companion-v2-owner-visual-approval.json",
+  "original_approved_gallery_preserved": true,
+  "tray_actions_verified": false,
+  "sdk_install_verified": true,
+  "sdk_verification_run_id": 43665403770,
+  "production_deployed": false,
+  "screenshots": [
+    {
+      "filename": "native-welcome.png",
+      "source_commit": "c7bad2f5e84213e1c69e3eb66e8daa6540f05bc9",
+      "run_id": 43664574901,
+      "artifact_id": 14142121334,
+      "artifact_sha256": "f1bf4110e96c63d1d30c45e33668925f0b62072bdd2aefe666fa6d5ebc7f279e",
+      "capture": "Actual installed frozen beta2 WebView2/Edge with synthetic accounts/market data",
+      "visually_inspected": true,
+      "sha256": "764870b147c65f2bc382b4ee053d0b766f30740ec18dafff8eeda9455226b2a0"
+    },
+    {
+      "filename": "native-dashboard.png",
+      "source_commit": "c7bad2f5e84213e1c69e3eb66e8daa6540f05bc9",
+      "run_id": 43664574901,
+      "artifact_id": 14142121334,
+      "artifact_sha256": "f1bf4110e96c63d1d30c45e33668925f0b62072bdd2aefe666fa6d5ebc7f279e",
+      "capture": "Actual installed frozen beta2 WebView2/Edge with synthetic accounts/market data",
+      "visually_inspected": true,
+      "sha256": "8ed281527d27a8730e00ad5f757455a5d0e7bac126c683ab122ae2b9106b63f3"
+    },
+    {
+      "filename": "native-sync-progress.png",
+      "source_commit": "c7bad2f5e84213e1c69e3eb66e8daa6540f05bc9",
+      "run_id": 43664574901,
+      "artifact_id": 14142121334,
+      "artifact_sha256": "f1bf4110e96c63d1d30c45e33668925f0b62072bdd2aefe666fa6d5ebc7f279e",
+      "capture": "Actual installed frozen beta2 WebView2/Edge with synthetic accounts/market data",
+      "visually_inspected": true,
+      "sha256": "15c57dcd0539feaf33780d88c78b59f53ab0cf65d7d76a25ed6a66a4c313c5d5"
+    },
+    {
+      "filename": "native-settings.png",
+      "source_commit": "c7bad2f5e84213e1c69e3eb66e8daa6540f05bc9",
+      "run_id": 43664574901,
+      "artifact_id": 14142121334,
+      "artifact_sha256": "f1bf4110e96c63d1d30c45e33668925f0b62072bdd2aefe666fa6d5ebc7f279e",
+      "capture": "Actual installed frozen beta2 WebView2/Edge with synthetic accounts/market data",
+      "visually_inspected": true,
+      "sha256": "8602eb45475eef1ced3c4312dbcfa8711b9578bfb741f08c7ea9948c031233eb"
+    },
+    {
+      "filename": "native-tray-attempt.png",
+      "sha256": "1c7c84513941471b3549fd677f9ef31940b179668975190dcb2e037fb8391ca7",
+      "source_commit": "2d660267a0727c22c348fec0380a5133611ae3b0",
+      "run_id": 43647891422,
+      "artifact_id": 14134754188,
+      "artifact_sha256": "59415e78e3cf366d53b199dc38f67deda4baf15f1bf72f6c099a6f689f75cfb8",
+      "capture": "Actual OS desktop capture",
+      "visually_inspected": true
+    },
+    {
+      "filename": "website-wizard.png",
+      "source_commit": "c7bad2f5e84213e1c69e3eb66e8daa6540f05bc9",
+      "run_id": 43664574901,
+      "artifact_id": 14142121334,
+      "artifact_sha256": "f1bf4110e96c63d1d30c45e33668925f0b62072bdd2aefe666fa6d5ebc7f279e",
+      "capture": "Actual installed frozen beta2 WebView2/Edge with synthetic accounts/market data",
+      "visually_inspected": true,
+      "sha256": "9140817f9c9b5677172bb3b9f8cc3d17f10d69eb3bafe54884593300b73cffa6"
+    },
+    {
+      "filename": "website-approval.png",
+      "source_commit": "c7bad2f5e84213e1c69e3eb66e8daa6540f05bc9",
+      "run_id": 43664574901,
+      "artifact_id": 14142121334,
+      "artifact_sha256": "f1bf4110e96c63d1d30c45e33668925f0b62072bdd2aefe666fa6d5ebc7f279e",
+      "capture": "Actual installed frozen beta2 WebView2/Edge with synthetic accounts/market data",
+      "visually_inspected": true,
+      "sha256": "569494e65c51dd99415c17c9f94f329225f42956e5363f94de2aec81655a0411"
+    },
+    {
+      "filename": "website-devices.png",
+      "source_commit": "c7bad2f5e84213e1c69e3eb66e8daa6540f05bc9",
+      "run_id": 43664574901,
+      "artifact_id": 14142121334,
+      "artifact_sha256": "f1bf4110e96c63d1d30c45e33668925f0b62072bdd2aefe666fa6d5ebc7f279e",
+      "capture": "Actual installed frozen beta2 WebView2/Edge with synthetic accounts/market data",
+      "visually_inspected": true,
+      "sha256": "063a82caf6106ef48b18a527daa71f53a5e69de8a443b868562b6154c79eaf14"
+    }
+  ]
+}

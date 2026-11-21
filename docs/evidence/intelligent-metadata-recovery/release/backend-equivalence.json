@@ -1,0 +1,16 @@
+{
+  "frontend_release_commit": "5231af21b68731542b6c50d18a1805b8b2747052",
+  "running_backend_commit": "bf8a04a0539fb4c3e2468c70a2e5155ba1150f95",
+  "byte_identical_git_trees": {
+    "backend": "e55d4cd1676670641b032e46656cff625b36bf41",
+    "contracts": "6def68b5b80154dce3ba849e2fb5ada6effbff89",
+    "desktop": "b579e2cdeda04f147ecff190b5d2dce90f8ff603"
+  },
+  "only_runtime_source_change": "web/src/recovery-tracker.tsx: legend position and scroll behavior",
+  "test_only_merge": "5231af21b68731542b6c50d18a1805b8b2747052",
+  "web_source_identical_to_visually_verified_5ed8281": true,
+  "planned_replacement": [
+    "proxy"
+  ],
+  "api_enrichment_collector_replacement_required": false
+}

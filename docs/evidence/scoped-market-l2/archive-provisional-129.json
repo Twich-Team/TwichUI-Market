@@ -1,0 +1,316 @@
+{
+  "result": "PASS",
+  "source_revision": "2487360bb004e28ad14b6987ffbd8604c3495118",
+  "source_sha256": {
+    "backend/market/archive_api.py": "0c5e04f81cad172656e8c6b8a9d3057b47ed4c11a5eb24e796907f24d512dcea",
+    "backend/market/bridge_api.py": "c9f3c2f0c29fe166b0d444ada4a64a934da684a1776d8a98462ae8d4d3621131",
+    "backend/market/models.py": "82465b9e7875e03621c5c4430dde58d1b9e533db006df35627fb7370b3a0667a",
+    "desktop/core/src/client.rs": "07eee23977e3988c75fd00eb04ee8d8b78a79d243a14b2c533a377db4acbbe6d",
+    "desktop/core/src/bridge/export.rs": "b299ab31d5f0be7fd321a14488af5e3fb14ecd30909b88ec92cd6212ccd6d95e",
+    "contracts/archive/v1/archive.schema.json": "df4cf3cf4df8676d6cbfdbb9e5409ecc0c0a997ffa062a4205b670f74e2f0e38",
+    "contracts/bridge/scoped-l1/SHA256SUMS.json": "c5a465e323005735444f3e5fe2ec48241f50942ebdfb7e7078049849206ec2a7",
+    "desktop/core/src/archive/mod.rs": "a388436911b804ebab03bbe5b70f22f1d65c8a0d5d94f4dedb64b1eb85ba4d03",
+    "desktop/core/src/archive/project.rs": "02f8f888ca1742650263183a8a7309a6fe97bdee05d882db4b3222e6fea09cc8",
+    "desktop/core/src/archive/scoped.rs": "d1f234aaee28896f6759d4a5c7670ec508d45a1fb4bd5dc1711f2452fbb86556",
+    "desktop/core/src/archive/store.rs": "8a17cbc416fc3fe42ec905cd373a6a85743f77749f511de858b32872f4bebc0e",
+    "desktop/core/src/archive/wire.rs": "0908ee736df5fe963d8d4c3f3be3ca8242c66f60cbf2cde9d9c269ebd32276b3"
+  },
+  "native_binary_sha256": "4c5c76b9fb296967f903a8d3606dadeca31423fa31749a507fc5827f61c9f7af",
+  "synthetic_seed_seconds": 0.10528390399849741,
+  "server_sqlite_bytes": 1114112,
+  "origin": "synthetic",
+  "variants": 129,
+  "algorithm": "asking-v1-provisional",
+  "python": "3.12.14",
+  "production_access": false,
+  "real_client_acceptance": false,
+  "initial_step": {
+    "archive_bytes": 135168,
+    "complete": false,
+    "elapsed_ms": 1528.393673,
+    "header": null,
+    "metrics": {
+      "final_validation_us": 0,
+      "pages_applied": 1,
+      "promotion_us": 0,
+      "received_bytes": 35237
+    },
+    "pending": true,
+    "process_wall_ms": 1547.1415590000106,
+    "native_sampled_peak_rss_bytes": 13172736
+  },
+  "initial_resume": {
+    "archive_bytes": 540672,
+    "complete": true,
+    "elapsed_ms": 270.38300300000003,
+    "header": {
+      "account_id": 1,
+      "archive_complete": true,
+      "base_checkpoint_id": null,
+      "base_watermark_observation_id": "0",
+      "checkpoint_id": "75a4b432fe3ed1fbcd9d2362c339a12a4b43be1303941f31dba36d7796408155",
+      "evidence_revision": 1,
+      "expires_at": "2026-11-17T07:14:49.416533Z",
+      "format": "twichui-history-archive",
+      "generated_at": "2026-11-16T07:14:49.416533Z",
+      "history_basis": "market_rolling_daily_means",
+      "issuer_id": "746e6398-a0f1-58a7-9a0a-4f04024c46d7",
+      "market": {
+        "game": "wow-forever",
+        "house_id": 114,
+        "mapping_evidence_sha256": "2a3b12355555f2e48b4b4ba395bf8600ce46c45b4b3adb2db8a131e4100690bd",
+        "mapping_verified": true,
+        "player_ruleset": "Normal",
+        "realm_scope": "ruleset_house",
+        "region": "us",
+        "server_market_id": 1,
+        "source_kind": "auctions",
+        "transport_ruleset_id": 1
+      },
+      "metadata_sha256": "35757d5084c18340cdb831861a0b20f6cfbb283d760c7eea7e357a2bdec2776c",
+      "pricing_algorithm": "asking-v1-provisional",
+      "protocol_version": 1,
+      "retained_from_day": "2026-11-14",
+      "retained_through_day": "2026-11-16",
+      "retention_basis": "all_retained_observations_and_snapshot_summaries",
+      "server_build": "development-archive-l2",
+      "server_checked_at": "2026-11-16T07:14:49.416533Z",
+      "total_observations": 2,
+      "total_records": 257,
+      "total_snapshots": 2,
+      "transfer_bytes": 89305,
+      "transfer_observations": 2,
+      "transfer_records": 257,
+      "transfer_snapshots": 2,
+      "watermark_observation_id": "2"
+    },
+    "metrics": {
+      "final_validation_us": 18886,
+      "pages_applied": 2,
+      "promotion_us": 4993,
+      "received_bytes": 56567
+    },
+    "pending": false,
+    "process_wall_ms": 281.89259600003425,
+    "native_sampled_peak_rss_bytes": 13258752
+  },
+  "incremental_step": {
+    "archive_bytes": 540672,
+    "complete": false,
+    "elapsed_ms": 248.147821,
+    "header": {
+      "account_id": 1,
+      "archive_complete": true,
+      "base_checkpoint_id": null,
+      "base_watermark_observation_id": "0",
+      "checkpoint_id": "75a4b432fe3ed1fbcd9d2362c339a12a4b43be1303941f31dba36d7796408155",
+      "evidence_revision": 1,
+      "expires_at": "2026-11-17T07:14:49.416533Z",
+      "format": "twichui-history-archive",
+      "generated_at": "2026-11-16T07:14:49.416533Z",
+      "history_basis": "market_rolling_daily_means",
+      "issuer_id": "746e6398-a0f1-58a7-9a0a-4f04024c46d7",
+      "market": {
+        "game": "wow-forever",
+        "house_id": 114,
+        "mapping_evidence_sha256": "2a3b12355555f2e48b4b4ba395bf8600ce46c45b4b3adb2db8a131e4100690bd",
+        "mapping_verified": true,
+        "player_ruleset": "Normal",
+        "realm_scope": "ruleset_house",
+        "region": "us",
+        "server_market_id": 1,
+        "source_kind": "auctions",
+        "transport_ruleset_id": 1
+      },
+      "metadata_sha256": "35757d5084c18340cdb831861a0b20f6cfbb283d760c7eea7e357a2bdec2776c",
+      "pricing_algorithm": "asking-v1-provisional",
+      "protocol_version": 1,
+      "retained_from_day": "2026-11-14",
+      "retained_through_day": "2026-11-16",
+      "retention_basis": "all_retained_observations_and_snapshot_summaries",
+      "server_build": "development-archive-l2",
+      "server_checked_at": "2026-11-16T07:14:49.416533Z",
+      "total_observations": 2,
+      "total_records": 257,
+      "total_snapshots": 2,
+      "transfer_bytes": 89305,
+      "transfer_observations": 2,
+      "transfer_records": 257,
+      "transfer_snapshots": 2,
+      "watermark_observation_id": "2"
+    },
+    "metrics": {
+      "final_validation_us": 0,
+      "pages_applied": 1,
+      "promotion_us": 0,
+      "received_bytes": 35233
+    },
+    "pending": true,
+    "process_wall_ms": 259.41389099898515,
+    "native_sampled_peak_rss_bytes": 13221888
+  },
+  "incremental_resume": {
+    "archive_bytes": 581632,
+    "complete": true,
+    "elapsed_ms": 113.93457799999999,
+    "header": {
+      "account_id": 1,
+      "archive_complete": true,
+      "base_checkpoint_id": "75a4b432fe3ed1fbcd9d2362c339a12a4b43be1303941f31dba36d7796408155",
+      "base_watermark_observation_id": "2",
+      "checkpoint_id": "431d912f4be28491e05559a2020a858ca7e9658d3dfd83306b3d6396be877130",
+      "evidence_revision": 1,
+      "expires_at": "2026-11-17T07:14:50.416533Z",
+      "format": "twichui-history-archive",
+      "generated_at": "2026-11-16T07:14:50.416533Z",
+      "history_basis": "market_rolling_daily_means",
+      "issuer_id": "746e6398-a0f1-58a7-9a0a-4f04024c46d7",
+      "market": {
+        "game": "wow-forever",
+        "house_id": 114,
+        "mapping_evidence_sha256": "2a3b12355555f2e48b4b4ba395bf8600ce46c45b4b3adb2db8a131e4100690bd",
+        "mapping_verified": true,
+        "player_ruleset": "Normal",
+        "realm_scope": "ruleset_house",
+        "region": "us",
+        "server_market_id": 1,
+        "source_kind": "auctions",
+        "transport_ruleset_id": 1
+      },
+      "metadata_sha256": "badeac53fdedefa5817396dc7a5d24b1066f4baa6be264c93e5d1dc2196777f6",
+      "pricing_algorithm": "asking-v1-provisional",
+      "protocol_version": 1,
+      "retained_from_day": "2026-11-14",
+      "retained_through_day": "2026-11-16",
+      "retention_basis": "all_retained_observations_and_snapshot_summaries",
+      "server_build": "development-archive-l2",
+      "server_checked_at": "2026-11-16T07:14:50.416533Z",
+      "total_observations": 3,
+      "total_records": 385,
+      "total_snapshots": 3,
+      "transfer_bytes": 44486,
+      "transfer_observations": 1,
+      "transfer_records": 128,
+      "transfer_snapshots": 1,
+      "watermark_observation_id": "3"
+    },
+    "metrics": {
+      "final_validation_us": 11441,
+      "pages_applied": 1,
+      "promotion_us": 4259,
+      "received_bytes": 10743
+    },
+    "pending": false,
+    "process_wall_ms": 125.60196499907761,
+    "native_sampled_peak_rss_bytes": 12914688
+  },
+  "ten_variant_export": {
+    "archive_bytes": 540672,
+    "checkpoint_id": "75a4b432fe3ed1fbcd9d2362c339a12a4b43be1303941f31dba36d7796408155",
+    "elapsed_ms": 145.21209900000002,
+    "generation_id": "2f98a1d74aa159acb40c794102c9dd172f2ad5ef5944bfc87476ec4a998671f7",
+    "metrics": {
+      "final_validation_us": 0,
+      "pages_applied": 0,
+      "promotion_us": 0,
+      "received_bytes": 0
+    },
+    "receipt": {
+      "completed_at": "2026-11-16T07:15:52.014869Z",
+      "desktop_build": "2.0.0-beta.2",
+      "generation_id": "2f98a1d74aa159acb40c794102c9dd172f2ad5ef5944bfc87476ec4a998671f7",
+      "schema_version": 1
+    },
+    "sizes": {
+      "canonical_bytes": 21176,
+      "lua_bytes": 28879,
+      "manifest_bytes": 10258,
+      "records": 10
+    },
+    "process_wall_ms": 165.94085300130246,
+    "native_sampled_peak_rss_bytes": 12095488
+  },
+  "hundred_variant_export": {
+    "archive_bytes": 540672,
+    "checkpoint_id": "75a4b432fe3ed1fbcd9d2362c339a12a4b43be1303941f31dba36d7796408155",
+    "elapsed_ms": 998.670725,
+    "generation_id": "cf8fcf150688107bb0921287a436473fc4bee601218289e302c8396a51cc8839",
+    "metrics": {
+      "final_validation_us": 0,
+      "pages_applied": 0,
+      "promotion_us": 0,
+      "received_bytes": 0
+    },
+    "receipt": {
+      "completed_at": "2026-11-16T07:15:52.602613Z",
+      "desktop_build": "2.0.0-beta.2",
+      "generation_id": "cf8fcf150688107bb0921287a436473fc4bee601218289e302c8396a51cc8839",
+      "schema_version": 1
+    },
+    "sizes": {
+      "canonical_bytes": 143399,
+      "lua_bytes": 193492,
+      "manifest_bytes": 34111,
+      "records": 100
+    },
+    "process_wall_ms": 1010.8821649992024,
+    "native_sampled_peak_rss_bytes": 16277504
+  },
+  "updated_export": {
+    "archive_bytes": 581632,
+    "checkpoint_id": "431d912f4be28491e05559a2020a858ca7e9658d3dfd83306b3d6396be877130",
+    "elapsed_ms": 1487.5878149999999,
+    "generation_id": "ead0fc6612138adc33ca949f7843bfd0b68718b67ce8c41248f096ad21568809",
+    "metrics": {
+      "final_validation_us": 0,
+      "pages_applied": 0,
+      "promotion_us": 0,
+      "received_bytes": 0
+    },
+    "receipt": {
+      "completed_at": "2026-11-16T07:15:55.059775Z",
+      "desktop_build": "2.0.0-beta.2",
+      "generation_id": "ead0fc6612138adc33ca949f7843bfd0b68718b67ce8c41248f096ad21568809",
+      "schema_version": 1
+    },
+    "sizes": {
+      "canonical_bytes": 143399,
+      "lua_bytes": 193492,
+      "manifest_bytes": 34111,
+      "records": 100
+    },
+    "process_wall_ms": 1499.9749819999124,
+    "native_sampled_peak_rss_bytes": 16609280
+  },
+  "server_request_process_cpu_ms_total": 1756.8727360000019,
+  "page_process_cpu_ms_total": 181.55717400000083,
+  "cpu_measurement": "Python server process CPU across each request; includes small coordinator polling overhead, excludes seed and native Rust subprocess",
+  "server_sql_total": 243,
+  "archive_page_requests": 5,
+  "page_sql_max": 10,
+  "page_sql_total": 40,
+  "server_process_peak_rss_bytes_including_seed": 158707712,
+  "server_request_sampled_rss_bytes": 99667968,
+  "page_response_ms_max": 58.18387799990887,
+  "independent_expected": {
+    "initial_recent": [
+      "100",
+      "120"
+    ],
+    "updated_recent": [
+      "100",
+      "140"
+    ],
+    "market_value": "110",
+    "updated_market_value": "120",
+    "historical_value": "110",
+    "historical_current_state": "absent",
+    "bid_supply": 2,
+    "missing_days": 58
+  },
+  "lua_proof": "L1 scoped artifact proof PASS",
+  "same_day_noop_retains_checkpoint": true,
+  "corrupt_existing_artifact_refused": true,
+  "over_budget_preserves_artifact": true,
+  "wrong_account_refused": true
+}

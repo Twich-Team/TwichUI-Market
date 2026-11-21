@@ -1,0 +1,34 @@
+{
+  "patch_and_sdk_harness_source": "3ebd8b3c8b613ca8ed42a85614679a824ff85033",
+  "backend_tests_passed": 731,
+  "scheduler_deployment_package_tests_passed": 33,
+  "workflows": [
+    {
+      "id": 44345199307,
+      "name": "Windows companion",
+      "head_sha": "3ebd8b3c8b613ca8ed42a85614679a824ff85033",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/44345199307",
+      "path": ".github/workflows/desktop.yml"
+    },
+    {
+      "id": 44345199392,
+      "name": "Backend",
+      "head_sha": "3ebd8b3c8b613ca8ed42a85614679a824ff85033",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/44345199392",
+      "path": ".github/workflows/backend.yml"
+    },
+    {
+      "id": 44345199354,
+      "name": "Private website",
+      "head_sha": "3ebd8b3c8b613ca8ed42a85614679a824ff85033",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/44345199354",
+      "path": ".github/workflows/web.yml"
+    }
+  ]
+}

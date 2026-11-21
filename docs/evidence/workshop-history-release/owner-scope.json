@@ -1,0 +1,12 @@
+{
+  "owner_request": "deploy market updates",
+  "additional_owner_request": "also merge the addon changes into main",
+  "authorized_scope": [
+    "deploy Workshop history API update to existing Market APIs",
+    "merge TwichUI PR62 into main"
+  ],
+  "companion_release_authorized": false,
+  "addon_publication_authorized": false,
+  "source_module": "8dfa5116397403bb93e90160e8706285f272f64f",
+  "addon_merge": "074435e41521e97ad125e3094c45a9eb767f90e1"
+}

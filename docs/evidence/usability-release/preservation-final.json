@@ -1,0 +1,200 @@
+{
+  "source": "read-only production original-column fingerprints",
+  "baseline_file": "preservation-before.json",
+  "cutoffs": {
+    "snapshot": 74,
+    "observation": 825,
+    "user": 97,
+    "credential": 252
+  },
+  "original_columns": {
+    "observations": [
+      "id",
+      "market_id",
+      "snapshot_id",
+      "request_key",
+      "retrieved_at",
+      "upstream_modified",
+      "namespace",
+      "payload_hash",
+      "payload_bytes",
+      "synthetic"
+    ],
+    "snapshots": [
+      "id",
+      "market_id",
+      "content_hash",
+      "created_at",
+      "listing_count",
+      "raw_retained",
+      "statistics_retained"
+    ],
+    "listings": [
+      "id",
+      "snapshot_id",
+      "auction_id",
+      "item_id",
+      "variant",
+      "variant_key",
+      "quantity",
+      "buyout",
+      "unit_price",
+      "bid",
+      "time_left"
+    ],
+    "snapshot_statistics": [
+      "snapshot_id",
+      "item_id",
+      "variant_key",
+      "algorithm",
+      "recent_price",
+      "lowest_buyout",
+      "supply",
+      "priced_supply",
+      "listing_count"
+    ],
+    "users": [
+      "id",
+      "username",
+      "password_hash",
+      "role",
+      "active",
+      "created_at"
+    ],
+    "credentials": [
+      "id",
+      "user_id",
+      "token_hash",
+      "kind",
+      "name",
+      "csrf_hash",
+      "created_at",
+      "expires_at",
+      "revoked",
+      "audience",
+      "companion_device_id"
+    ],
+    "user_preferences": [
+      "user_id",
+      "schema_version",
+      "revision",
+      "values_json",
+      "updated_at"
+    ],
+    "market_verifications": [
+      "id",
+      "market_id",
+      "actor_id",
+      "created_at",
+      "evidence",
+      "evidence_hash",
+      "notes"
+    ],
+    "player_market_mappings": [
+      "id",
+      "region",
+      "ruleset",
+      "faction",
+      "house_id",
+      "transport_ruleset_id",
+      "source_kind",
+      "confidence",
+      "evidence",
+      "evidence_hash",
+      "verified_at"
+    ],
+    "retention_policy": [
+      "id",
+      "revision",
+      "raw_days",
+      "intraday_days",
+      "daily_days",
+      "operational_days",
+      "security_days",
+      "approved_hash",
+      "approved_at",
+      "updated_at"
+    ]
+  },
+  "fingerprints": {
+    "observations": {
+      "rows": 825,
+      "bytes_hashed": 156946,
+      "sha256": "5a2bd7ad86fc9b12f285a0e11b2666ec3042e823ef210366c6e361bc7070fbff"
+    },
+    "snapshots": {
+      "rows": 74,
+      "bytes_hashed": 8182,
+      "sha256": "c3005109db2464dde1e0d0f30d27ea8471f89ee6e8322975284c01d98eea49b5"
+    },
+    "listings": {
+      "rows": 8573753,
+      "bytes_hashed": 1167895198,
+      "sha256": "cbce6faa19326f9249b7c5dfae38a18c27fbbeacd1f98319e8e0b728a49b789d"
+    },
+    "snapshot_statistics": {
+      "rows": 1845133,
+      "bytes_hashed": 206821821,
+      "sha256": "7382db23ca5cc8b2a53ba36c1aa87316bebd036f7ebaf608f24b1ff7cca08dda"
+    },
+    "users": {
+      "rows": 97,
+      "bytes_hashed": 16430,
+      "sha256": "c10ac65d1737c05fafbbbc6d790aaf6e61efaf3d539c07467323cbd1bf4e36f1"
+    },
+    "credentials": {
+      "rows": 252,
+      "bytes_hashed": 56917,
+      "sha256": "bb23df262824fa9868c9213f419c5f98c9a87f5a955b65b435af74aab355aa3c"
+    },
+    "user_preferences": {
+      "rows": 22,
+      "bytes_hashed": 8212,
+      "sha256": "56af5176abd081ce579279aedfb4d30f26865f1ddc43984e6c0fe77944bcde59"
+    },
+    "market_verifications": {
+      "rows": 2,
+      "bytes_hashed": 5028,
+      "sha256": "e7d6d471274fb9da263bf766a53941675224876ef60df832c1194ae61fa03d17"
+    },
+    "player_market_mappings": {
+      "rows": 1,
+      "bytes_hashed": 15546,
+      "sha256": "dde78a44cad988f6801006e0263f2bc09ae209428459ef17d26f9571c3c50cdd"
+    }
+  },
+  "all_original_rows_identical": true,
+  "probe_revision_only_preference_write_restored_with_backup_hash_and_concurrent_revision_guard": true,
+  "original_policy_rows": 0,
+  "concurrent_owner_policy_proposals_preserved": [
+    {
+      "id": 1,
+      "actor_id": 1,
+      "before": "{\"daily_days\":365,\"intraday_days\":90,\"operational_days\":90,\"raw_days\":7,\"security_days\":365}",
+      "after": "{\"daily_days\":365,\"intraday_days\":90,\"operational_days\":90,\"raw_days\":7,\"security_days\":365}",
+      "created_at": "2026-11-17T03:27:35.347027+00:00"
+    },
+    {
+      "id": 2,
+      "actor_id": 1,
+      "before": "{\"daily_days\":365,\"intraday_days\":90,\"operational_days\":90,\"raw_days\":7,\"security_days\":365}",
+      "after": "{\"daily_days\":365,\"intraday_days\":90,\"operational_days\":90,\"raw_days\":7,\"security_days\":365}",
+      "created_at": "2026-11-17T03:27:40.136394+00:00"
+    }
+  ],
+  "current_policy": {
+    "id": 1,
+    "revision": 2,
+    "raw_days": 7,
+    "intraday_days": 90,
+    "daily_days": 365,
+    "operational_days": 90,
+    "security_days": 365,
+    "approved_hash": null,
+    "approved_at": null,
+    "updated_at": "2026-11-17T03:27:40.135414+00:00"
+  },
+  "destructive_retention_authorized": false,
+  "retention_batches": 0,
+  "strict_original_audit_result": "initially failed on probe preference revision; later distinguishes legitimate concurrent owner policy proposal creation rather than overwriting it"
+}

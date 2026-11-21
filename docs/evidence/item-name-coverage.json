@@ -1,0 +1,24 @@
+{
+  "at": "2026-11-14T14:07:52.088092+00:00",
+  "market_id": 1,
+  "snapshot_id": 12,
+  "before": {
+    "item_ids": 4978,
+    "primary_names": 1147,
+    "community_names": 0,
+    "unresolved": 3831,
+    "name_percent": 23.04
+  },
+  "maximum_requests": 50,
+  "completed_requests": 50,
+  "after": {
+    "item_ids": 4978,
+    "primary_names": 1191,
+    "community_names": 0,
+    "unresolved": 3787,
+    "name_percent": 23.93
+  },
+  "finished_at": "2026-11-14T14:08:52.219226+00:00",
+  "community_enabled": false,
+  "note": "Primary Blizzard resolution only; fixed snapshot comparison. Concurrent background enrichment can contribute to the measured delta."
+}

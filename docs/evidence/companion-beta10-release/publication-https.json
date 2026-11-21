@@ -1,0 +1,22 @@
+{
+  "version": "2.0.0-beta.10",
+  "source_commit": "be09ff9f8adc1d5c8b8c12d04032b954863aa553",
+  "installer_bytes": 4891346,
+  "installer_sha256": "16adc59355cb99c1ec56322941f0a219f877c39fb2030584358044aa0fde527f",
+  "actual_authenticated_https": true,
+  "website_link": "/api/v1/companion/private-beta/2.0.0-beta.10/windows-x64",
+  "browser_and_native_hashes": {
+    "browser": "16adc59355cb99c1ec56322941f0a219f877c39fb2030584358044aa0fde527f",
+    "native": "16adc59355cb99c1ec56322941f0a219f877c39fb2030584358044aa0fde527f"
+  },
+  "anonymous_download_status": 401,
+  "updates_from_beta5_beta6_beta7_beta8_beta9": true,
+  "legacy_website_closed_game_copy": true,
+  "no_downgrade": true,
+  "retained_prior_download_hashes": {
+    "2.0.0-beta.9": "1ff6a6b25c71b539dba8ad1045012355cfb24e0ee1cb1dc70ef651d4ef6f6b4f"
+  },
+  "page_errors": [],
+  "actual_pc_installation": false,
+  "native_forever_execution": false
+}

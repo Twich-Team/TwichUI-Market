@@ -1,0 +1,45 @@
+{
+  "data": [
+    {
+      "kind": "quest",
+      "id": 89,
+      "name": "Quest 89",
+      "what": "Reward choices",
+      "before": "item 1310",
+      "seen": "item 1303, item 1304, item 1310",
+      "comparedWith": "hotfix",
+      "players": 21,
+      "firstSeen": "2026-11-12",
+      "lastSeen": "2026-11-16",
+      "verified": true,
+      "status": "Verified",
+      "url": "https://foreverdb.net/quest/89"
+    },
+    {
+      "kind": "quest",
+      "id": 4740,
+      "name": "Quest 4740",
+      "what": "Reward choices",
+      "before": "item 5315, item 15403",
+      "seen": "item 5315, item 15403, item 15404",
+      "comparedWith": "hotfix",
+      "players": 19,
+      "firstSeen": "2026-11-14",
+      "lastSeen": "2026-11-16",
+      "verified": true,
+      "status": "Verified",
+      "url": "https://foreverdb.net/quest/4740"
+    }
+  ],
+  "meta": {
+    "build": "1.60.1.70938",
+    "total": 400,
+    "limit": 2,
+    "offset": 0,
+    "next": "/api/v1/changes-seen?limit=2&offset=2",
+    "updated": "2026-11-16",
+    "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+    "attributionRequired": true,
+    "client": "dev-0255"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "source_commit": "6f5527371dd9e45fc8a26f29233f32028ccfce7a",
+  "run_url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/44368794230",
+  "artifact_name": "TwichUI-Market-Companion-DEV-6f55273",
+  "artifact_id": 14458993021,
+  "artifact_zip_sha256": "1a944efcca49b9cedda5e3c865d90725e16772b9c0389b1d6645c18f3020770d",
+  "installer_sha256": "addc272e005394d93c5587c54764ab2754b162b54658147f480f5bffd6bb621a",
+  "windows_focused_tests": 17,
+  "installed_native_smoke": {
+    "version": "2.0.0-beta.8 DEV 6f5527371dd9e45fc8a26f29233f32028ccfce7a",
+    "frontend": true,
+    "native": true,
+    "workshop_command": true,
+    "updater_disabled": true
+  },
+  "owner_previous_result": {
+    "stage": "destination",
+    "code": "access_denied",
+    "details": "Windows bridge staging ownership or ACL is ambiguous"
+  },
+  "change": "Separate actual Windows create access from internal ownership/access-rule policy; precise redacted destination checks; no policy predicates bypassed",
+  "owner_specific_rule": "Inherited BUILTIN Users full-control rule on AddOns",
+  "owner_new_result": "Confirmed effective create access=true; output_parent_broad_write rejects inherited builtin_users mask0x000d0156 flags0x13",
+  "full_certification": "deferred",
+  "unsigned_private_test": true,
+  "public_release_or_deployment": false
+}

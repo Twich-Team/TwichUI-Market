@@ -1,0 +1,1 @@
+{"markets" : [{"id" : 1, "house_id" : 110, "enabled" : false, "interval_seconds" : 300, "failures" : 0}, {"id" : 2, "house_id" : 114, "enabled" : true, "interval_seconds" : 300, "failures" : 0}], "retention_batches" : 0, "schema" : "meta_20261114"}

@@ -1,0 +1,50 @@
+{
+  "baseline_sha": "fa089a2660e745d6f77f5c2b0b7bbcb9109d6ae8",
+  "clock_hook": "Observation-only insertion in the committed replay fake transport; actual frozen/new worker code, fixed clock, population and responses unchanged.",
+  "container_memory_limit_bytes": 201326592,
+  "limitations": "Synthetic trade goods, 10 missing names/10 missing quality/20 complete. Secondary unchanged responses are deterministic. CPU excludes PostgreSQL server; wall includes SQL and mocks. No production efficiency claim. No artwork recovery in this replay.",
+  "population": 40,
+  "results": {
+    "item_centric": {
+      "already_known": 0,
+      "clock_span_seconds": 4819,
+      "external_requests": 20,
+      "first_name_request": 1,
+      "first_name_seconds": 0,
+      "last_missing_priority_field_seconds": 1159,
+      "last_name_seconds": 610,
+      "last_priority_request": 20,
+      "new_attribute_requests": 10,
+      "new_name_requests": 10,
+      "provider_distribution": {
+        "foreverdb": 20
+      },
+      "traced_peak_bytes": 11522106,
+      "traced_retained_bytes": 9984407,
+      "worker_cpu_seconds": 13.1935,
+      "worker_wall_seconds": 14.8322
+    },
+    "provider_first": {
+      "already_known": 60,
+      "clock_span_seconds": 4819,
+      "external_requests": 80,
+      "first_name_request": 31,
+      "first_name_seconds": 1830,
+      "last_missing_priority_field_seconds": 2379,
+      "last_name_seconds": 2379,
+      "last_priority_request": 40,
+      "new_attribute_requests": 10,
+      "new_name_requests": 10,
+      "provider_distribution": {
+        "foreverdb": 40,
+        "thewowdb": 40
+      },
+      "traced_peak_bytes": 3625946,
+      "traced_retained_bytes": 3550823,
+      "worker_cpu_seconds": 7.2154,
+      "worker_wall_seconds": 8.9759
+    }
+  },
+  "synthetic_only": true,
+  "ticks": 80
+}

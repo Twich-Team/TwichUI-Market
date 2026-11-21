@@ -1,0 +1,7 @@
+{
+  "source_sha256": "4a0d0fe05ca0fbae90b61c81f98f7039d9dba2a76ea1437fa479f0c6333d4709",
+  "binary_sha256": "3467ace753e3c774c013b36906e8b507210af8b5e91b36f9199372a161d70c42",
+  "native_core_application_source": "8dfa5116397403bb93e90160e8706285f272f64f",
+  "genuine_https_receipt": "native-https.json",
+  "game_publication": false
+}

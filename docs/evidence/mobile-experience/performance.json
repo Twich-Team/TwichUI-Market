@@ -1,0 +1,60 @@
+{
+  "fixture": true,
+  "network": "local loopback; not cellular or real device",
+  "samples": [
+    {
+      "phase": "before",
+      "catalogueReadyMs": 536,
+      "searchResponseMs": 123,
+      "catalogueRequests": 2,
+      "cls": 0.3165954941891438,
+      "heapBytes": 10276887,
+      "domNodes": 128
+    },
+    {
+      "phase": "before",
+      "catalogueReadyMs": 545,
+      "searchResponseMs": 113,
+      "catalogueRequests": 2,
+      "cls": 0.33058686040698737,
+      "heapBytes": 10296574,
+      "domNodes": 128
+    },
+    {
+      "phase": "before",
+      "catalogueReadyMs": 940,
+      "searchResponseMs": 100,
+      "catalogueRequests": 2,
+      "cls": 0.3165954941891438,
+      "heapBytes": 10338967,
+      "domNodes": 128
+    },
+    {
+      "phase": "after",
+      "catalogueReadyMs": 574,
+      "searchResponseMs": 123,
+      "catalogueRequests": 2,
+      "cls": 0.1805879532136304,
+      "heapBytes": 9098024,
+      "domNodes": 117
+    },
+    {
+      "phase": "after",
+      "catalogueReadyMs": 485,
+      "searchResponseMs": 136,
+      "catalogueRequests": 2,
+      "cls": 0.1805879532136304,
+      "heapBytes": 9771652,
+      "domNodes": 117
+    },
+    {
+      "phase": "after",
+      "catalogueReadyMs": 483,
+      "searchResponseMs": 101,
+      "catalogueRequests": 2,
+      "cls": 0.1805879532136304,
+      "heapBytes": 9109992,
+      "domNodes": 117
+    }
+  ]
+}

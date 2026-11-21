@@ -1,0 +1,7 @@
+{
+  "services": {
+    "proxy": {
+      "image": "sha256:5bc8c724c44649dc63642581cb2276fe4daa77151ec24077112aac6994e80595"
+    }
+  }
+}

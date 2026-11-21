@@ -1,0 +1,24 @@
+{
+  "source": "7202e07a62f1770642b50afe5a3ec671d9b488cf",
+  "public_index_matches_image": true,
+  "assets": [
+    {
+      "path": "/assets/index-CcT4rSWK.css",
+      "sha256": "7869c85b4bb017edf9315a0ab54bb37a8665b43cdc055a3dab5e67ef39143b3e",
+      "bytes": 32036,
+      "matches_deployed_image": true
+    },
+    {
+      "path": "/assets/index-DdYMlXL4.js",
+      "sha256": "d8c7e49ac771886108fb92eb88b6cf5e5d9d18d72d966580c2689f2c4081c030",
+      "bytes": 267650,
+      "matches_deployed_image": true
+    },
+    {
+      "path": "/assets/jsx-runtime-Wy9s6hX0.js",
+      "sha256": "bcb9f6586cd973c2fb2faa4a2d38d4b06660e2fe2806aaa0de1c39306ff0f69a",
+      "bytes": 8911,
+      "matches_deployed_image": true
+    }
+  ]
+}

@@ -1,0 +1,255 @@
+{
+  "format_version": 2,
+  "columns": {
+    "observations": [
+      "id",
+      "market_id",
+      "snapshot_id",
+      "request_key",
+      "retrieved_at",
+      "upstream_modified",
+      "namespace",
+      "payload_hash",
+      "payload_bytes",
+      "synthetic"
+    ],
+    "snapshots": [
+      "id",
+      "market_id",
+      "content_hash",
+      "created_at",
+      "listing_count",
+      "raw_retained",
+      "statistics_retained"
+    ],
+    "listings": [
+      "id",
+      "snapshot_id",
+      "auction_id",
+      "item_id",
+      "variant",
+      "variant_key",
+      "quantity",
+      "buyout",
+      "unit_price",
+      "bid",
+      "time_left"
+    ],
+    "snapshot_statistics": [
+      "snapshot_id",
+      "item_id",
+      "variant_key",
+      "algorithm",
+      "recent_price",
+      "lowest_buyout",
+      "supply",
+      "priced_supply",
+      "listing_count"
+    ],
+    "users": [
+      "id",
+      "username",
+      "password_hash",
+      "role",
+      "active",
+      "created_at"
+    ],
+    "credentials": [
+      "id",
+      "user_id",
+      "token_hash",
+      "kind",
+      "name",
+      "csrf_hash",
+      "created_at",
+      "expires_at",
+      "revoked",
+      "audience",
+      "companion_device_id"
+    ],
+    "user_preferences": [
+      "user_id",
+      "schema_version",
+      "revision",
+      "values_json",
+      "updated_at"
+    ],
+    "market_verifications": [
+      "id",
+      "market_id",
+      "actor_id",
+      "created_at",
+      "evidence",
+      "evidence_hash",
+      "notes"
+    ],
+    "player_market_mappings": [
+      "id",
+      "region",
+      "ruleset",
+      "faction",
+      "house_id",
+      "transport_ruleset_id",
+      "source_kind",
+      "confidence",
+      "evidence",
+      "evidence_hash",
+      "verified_at"
+    ],
+    "retention_policy": [
+      "id",
+      "revision",
+      "raw_days",
+      "intraday_days",
+      "daily_days",
+      "operational_days",
+      "security_days",
+      "approved_hash",
+      "approved_at",
+      "updated_at"
+    ]
+  },
+  "schema_revision": "meta_20261114",
+  "original_schema_revision": "meta_20261114",
+  "checked_at": "2026-11-15T14:40:32.114272+00:00",
+  "cutoffs": {
+    "snapshot": 38,
+    "observation": 422,
+    "user": 85,
+    "credential": 191
+  },
+  "fingerprints": {
+    "observations": {
+      "rows": 422,
+      "bytes_hashed": 80177,
+      "sha256": "e3a3391d3a1f0ffa1da456833bff316a6e98f7aaa2e0790385f175b5b3b89289"
+    },
+    "snapshots": {
+      "rows": 38,
+      "bytes_hashed": 4193,
+      "sha256": "460241c30fe37cfb30db163171bb8022c61e918cfffad79d179d92948e871713"
+    },
+    "listings": {
+      "rows": 4328867,
+      "bytes_hashed": 589497495,
+      "sha256": "3acc4ec7c7be0954b78654e6830ca40c04804706bff44c8d54bd8213b811e3cd"
+    },
+    "snapshot_statistics": {
+      "rows": 934662,
+      "bytes_hashed": 104632132,
+      "sha256": "2e6b80728ed088d81735f5908e01641ed4ea90bb411c3b7d14dc709945abd008"
+    },
+    "users": {
+      "rows": 85,
+      "bytes_hashed": 14379,
+      "sha256": "4c3c8e400ef5b7fa0bb7cca6cf8db6f6252b5df95434538b728b630b77ce1378"
+    },
+    "credentials": {
+      "rows": 191,
+      "bytes_hashed": 43638,
+      "sha256": "5948b4f8f61974c162cbd471dab59cd73f0db792f136e6793424cfe563732f8d"
+    },
+    "user_preferences": {
+      "rows": 17,
+      "bytes_hashed": 6356,
+      "sha256": "c5629d6ba30be92cea3d41bf5ca8decd15c13fb7a28a170db50aeb3b62ad62ee"
+    },
+    "market_verifications": {
+      "rows": 2,
+      "bytes_hashed": 5028,
+      "sha256": "e7d6d471274fb9da263bf766a53941675224876ef60df832c1194ae61fa03d17"
+    },
+    "player_market_mappings": {
+      "rows": 1,
+      "bytes_hashed": 15546,
+      "sha256": "dde78a44cad988f6801006e0263f2bc09ae209428459ef17d26f9571c3c50cdd"
+    },
+    "retention_policy": {
+      "rows": 0,
+      "bytes_hashed": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "collection_configuration": [
+    {
+      "id": 1,
+      "region": "us",
+      "ruleset_id": 2,
+      "house_id": 110,
+      "source_kind": "auctions",
+      "enabled": false,
+      "verified": true,
+      "interval_seconds": 300
+    },
+    {
+      "id": 2,
+      "region": "us",
+      "ruleset_id": 2,
+      "house_id": 114,
+      "source_kind": "auctions",
+      "enabled": true,
+      "verified": true,
+      "interval_seconds": 300
+    }
+  ],
+  "all_preexisting_rows_identical": false,
+  "historical_retention_authorized": false,
+  "historical_retention_batches": 0,
+  "database_bytes": 1452201651,
+  "recent_collection_runs": [
+    {
+      "id": 424,
+      "market_id": 2,
+      "checked_at": "2026-11-15T14:40:25.839709+00:00",
+      "status": "unchanged",
+      "http_status": 304,
+      "duration_seconds": 0,
+      "error": null
+    },
+    {
+      "id": 423,
+      "market_id": 2,
+      "checked_at": "2026-11-15T14:35:23.498174+00:00",
+      "status": "unchanged",
+      "http_status": 304,
+      "duration_seconds": 0,
+      "error": null
+    },
+    {
+      "id": 422,
+      "market_id": 2,
+      "checked_at": "2026-11-15T14:30:20.872088+00:00",
+      "status": "unchanged",
+      "http_status": 304,
+      "duration_seconds": 0,
+      "error": null
+    },
+    {
+      "id": 421,
+      "market_id": 2,
+      "checked_at": "2026-11-15T14:24:33.43931+00:00",
+      "status": "unchanged",
+      "http_status": 304,
+      "duration_seconds": 0,
+      "error": null
+    },
+    {
+      "id": 420,
+      "market_id": 2,
+      "checked_at": "2026-11-15T14:19:32.893518+00:00",
+      "status": "collected",
+      "http_status": 200,
+      "duration_seconds": 13,
+      "error": null
+    },
+    {
+      "id": 419,
+      "market_id": 2,
+      "checked_at": "2026-11-15T14:14:30.506049+00:00",
+      "status": "unchanged",
+      "http_status": 304,
+      "duration_seconds": 0,
+      "error": null
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "checked_at_utc": "2026-11-15T01:07:18.400928+00:00",
+  "source_commit": "e86d1fb4d445340adfa0cd018fe599d91a474886",
+  "candidate_images": {
+    "backend": "sha256:277ada4d7ebb289fc288cf7a0107afc0fe4cb1529b2404a328171b9151b3544a",
+    "web": "sha256:b61ee9bd4fcca0e85fd4778ab1b5c021420bc441304da1e9367eb01fa97c5b01",
+    "release-tools": "sha256:2a28087cb330f9075cdd646f69fae8571580e0fcdd03df3a73800d8cb528f3cb"
+  },
+  "previous_production_images": {
+    "backend": "sha256:17d2c17591bd0ddea617fcf9018d0235a9100bd00813ea0faa025f3b83e679f2",
+    "web": "sha256:fb5f20db59d6a5ed92c1ea4d490e1d6af86772065b9d5be88f1096cf00cc6d0c"
+  },
+  "rollback_tags": {
+    "backend": "twichui-market-backend:rollback-pre-companion-v2-20261115",
+    "web": "twichui-market-web:rollback-pre-companion-v2-20261115"
+  },
+  "live_images_unchanged": true,
+  "deployed": false,
+  "published": false,
+  "synthetic_signed_store_rehearsal": {
+    "synthetic_only": true,
+    "actual_offline_signature_verifier": true,
+    "atomic_publication": true,
+    "immutable_copy": true,
+    "idempotent_retry": true,
+    "durable_intent_and_commit_audit": true,
+    "temporary_store_destroyed_on_exit": true
+  },
+  "backup": {
+    "archive": "market-development-20261115T010501853878Z.dump",
+    "sha256": "6e90a5339526b910314d4128f3166e734fdf5eb3b99be3ac29ab1dc64bdf3c11",
+    "bytes": 141074272,
+    "all_previous_dump_hashes_unchanged": true,
+    "preserved_previous_archives": 17,
+    "actual_isolated_restore": true,
+    "restored": {
+      "migration": "0012",
+      "users": 65,
+      "markets": 2,
+      "observations": 262,
+      "listings": 2529900,
+      "synthetic_observations": 0,
+      "buyout_total": "849693001349",
+      "snapshot_statistics": 573209,
+      "daily_observations": 3,
+      "market_verifications": 2,
+      "user_preferences": 7
+    },
+    "production_migrated": false,
+    "production_deployed": false
+  },
+  "classification": "Historical preservation/rollback preparation, not final beta2 deployment authorization",
+  "candidate_images_superseded_for_review": true
+}

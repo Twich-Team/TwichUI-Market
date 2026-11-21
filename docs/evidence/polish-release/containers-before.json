@@ -1,0 +1,170 @@
+[
+  {
+    "name": "/twichui-market-api-1",
+    "id": "2c02a2b142c856a38a91efc37b9bbab0fb1c0c5385c2b6e8970a58625b44add2",
+    "image": "sha256:b645901b9b982e64881eff9743da56959ef3b7192239bcfa3b4d8ce691e732c9",
+    "configured_image": "sha256:b645901b9b982e64881eff9743da56959ef3b7192239bcfa3b4d8ce691e732c9",
+    "revision": "e9c4d299cdf781be0e362edb26b4de6097a33e6a",
+    "started_at": "2026-11-15T05:31:33.672188976Z",
+    "limits": {
+      "Memory": 402653184,
+      "NanoCpus": 500000000,
+      "PidsLimit": 100,
+      "LogConfig": {
+        "Type": "json-file",
+        "Config": {
+          "max-file": "2",
+          "max-size": "5m"
+        }
+      }
+    },
+    "environment_sha256": "dd6ca5efde8d3b9c76f674bad3769509014827223331b1d8ffef98c9a3edb83e"
+  },
+  {
+    "name": "/twichui-market-local-api-1",
+    "id": "3758531e240dab822d472490dbd06c2738c135c9e3f836b05937c6e135ff3c8d",
+    "image": "sha256:b645901b9b982e64881eff9743da56959ef3b7192239bcfa3b4d8ce691e732c9",
+    "configured_image": "sha256:b645901b9b982e64881eff9743da56959ef3b7192239bcfa3b4d8ce691e732c9",
+    "revision": "e9c4d299cdf781be0e362edb26b4de6097a33e6a",
+    "started_at": "2026-11-15T05:31:33.855784757Z",
+    "limits": {
+      "Memory": 268435456,
+      "NanoCpus": 250000000,
+      "PidsLimit": 100,
+      "LogConfig": {
+        "Type": "json-file",
+        "Config": {
+          "max-file": "2",
+          "max-size": "5m"
+        }
+      }
+    },
+    "environment_sha256": "97a24dc77a1d812a73246b12c8488e54207e860c6c7ac1a7621f78977b2a5591"
+  },
+  {
+    "name": "/twichui-market-proxy-1",
+    "id": "566e5d201f1202734866ed5dbc3d1bee6e131a07462cb8079ff5438e9c8e80c9",
+    "image": "sha256:e996c241a2e128aeb1512801596ecae009e2d84020e6e92b4860e57acaeee9f4",
+    "configured_image": "sha256:e996c241a2e128aeb1512801596ecae009e2d84020e6e92b4860e57acaeee9f4",
+    "revision": "4ddf137712084292b899e7b352fe41b751e8e70b",
+    "started_at": "2026-11-15T09:40:25.09464042Z",
+    "limits": {
+      "Memory": 134217728,
+      "NanoCpus": 250000000,
+      "PidsLimit": null,
+      "LogConfig": {
+        "Type": "json-file",
+        "Config": {
+          "max-file": "2",
+          "max-size": "5m"
+        }
+      }
+    },
+    "environment_sha256": "8400f1f81abe40863929dc136ac4b2217096ee4bca3d37a34ed535d597c8837b"
+  },
+  {
+    "name": "/twichui-market-enrichment-1",
+    "id": "0a4b02f201e390a27d29765d1e44ec45aa854ef095556906107fc28c3d6b2e3f",
+    "image": "sha256:b645901b9b982e64881eff9743da56959ef3b7192239bcfa3b4d8ce691e732c9",
+    "configured_image": "sha256:b645901b9b982e64881eff9743da56959ef3b7192239bcfa3b4d8ce691e732c9",
+    "revision": "e9c4d299cdf781be0e362edb26b4de6097a33e6a",
+    "started_at": "2026-11-15T05:31:46.306415973Z",
+    "limits": {
+      "Memory": 201326592,
+      "NanoCpus": 250000000,
+      "PidsLimit": 100,
+      "LogConfig": {
+        "Type": "json-file",
+        "Config": {
+          "max-file": "2",
+          "max-size": "5m"
+        }
+      }
+    },
+    "environment_sha256": "96d6664879587022d0d408518105f471d0572977764cac761760cbbf8ff54788"
+  },
+  {
+    "name": "/twichui-market-worker-1",
+    "id": "dc270e9490b7ed737575b3d0cfd5840d9f13d6894cfef65e1fad1146352072bb",
+    "image": "sha256:d1ae733744b7328199f7926121c34d313027331301bcc60851451275f50a1294",
+    "configured_image": "twichui-market-backend:dev",
+    "revision": null,
+    "started_at": "2026-11-14T14:24:43.267611827Z",
+    "limits": {
+      "Memory": 402653184,
+      "NanoCpus": 500000000,
+      "PidsLimit": null,
+      "LogConfig": {
+        "Type": "json-file",
+        "Config": {
+          "max-file": "2",
+          "max-size": "5m"
+        }
+      }
+    },
+    "environment_sha256": "42d39862ce66b647bb886715053c5fe0c8ade09ab5a89ab56561dcb66af34cb7"
+  },
+  {
+    "name": "/twichui-market-monitor-1",
+    "id": "295cc3e09e4927f38ffa1a221ef3f199f6e065561fb14fca859a8ce6de9228e2",
+    "image": "sha256:0323bca0334572b29d3e8d6c388b214b3c22891242b9e6eec35f4010595fd18a",
+    "configured_image": "twichui-market-backend:dev",
+    "revision": null,
+    "started_at": "2026-11-14T04:42:59.157272882Z",
+    "limits": {
+      "Memory": 134217728,
+      "NanoCpus": 250000000,
+      "PidsLimit": null,
+      "LogConfig": {
+        "Type": "json-file",
+        "Config": {
+          "max-file": "2",
+          "max-size": "5m"
+        }
+      }
+    },
+    "environment_sha256": "634d77ce7bd2dbbd317cbd211efc40e9c17aae442d6fdd269eb6cd714e6ae47d"
+  },
+  {
+    "name": "/twichui-market-backup-1",
+    "id": "1f1cbba535e2cd64cf900099a5fe92ee662fa9ced84f5f2ae4fa5b28b32d5f9c",
+    "image": "sha256:2669ec98d745fbb77942ed6696162436862334ebaebc71e884853226504b260b",
+    "configured_image": "twichui-market-backup:dev",
+    "revision": null,
+    "started_at": "2026-11-15T03:11:29.671470444Z",
+    "limits": {
+      "Memory": 268435456,
+      "NanoCpus": 250000000,
+      "PidsLimit": null,
+      "LogConfig": {
+        "Type": "json-file",
+        "Config": {
+          "max-file": "2",
+          "max-size": "5m"
+        }
+      }
+    },
+    "environment_sha256": "7593f245811a6addf806e7d4b6e0a36033b12a9ac4b6139a9562d1dbe478b329"
+  },
+  {
+    "name": "/twichui-market-db-1",
+    "id": "1a138045d430554c64142f230fa1555e61d3414b2926ae9b2606f58fb8fb3642",
+    "image": "sha256:d3244e8ce3f165ee3c93d9c4a4b1d0fe48b3a89e2287b717fdcbbde92d405065",
+    "configured_image": "postgres:17-alpine",
+    "revision": null,
+    "started_at": "2026-11-14T01:46:45.864726511Z",
+    "limits": {
+      "Memory": 805306368,
+      "NanoCpus": 1000000000,
+      "PidsLimit": null,
+      "LogConfig": {
+        "Type": "json-file",
+        "Config": {
+          "max-file": "2",
+          "max-size": "5m"
+        }
+      }
+    },
+    "environment_sha256": "1bce0bb693cd52410df12d4c4b4d19d0902caba28316784de71c28a5b9ea738f"
+  }
+]

@@ -1,0 +1,14 @@
+# Optional owner-approved deployment overlay. Never used by this Cloud task.
+# Mount a private keyring outside database/backup volumes, readable by container UID 10001.
+services:
+  api:
+    environment:
+      METADATA_KEYRING_FILE: /run/metadata/keyring.json
+    volumes:
+      - ${METADATA_KEYRING_PATH:?Set owner-managed private keyring path}:/run/metadata/keyring.json:ro
+  enrichment:
+    profiles: [metadata]
+    environment:
+      METADATA_KEYRING_FILE: /run/metadata/keyring.json
+    volumes:
+      - ${METADATA_KEYRING_PATH:?Set owner-managed private keyring path}:/run/metadata/keyring.json:ro

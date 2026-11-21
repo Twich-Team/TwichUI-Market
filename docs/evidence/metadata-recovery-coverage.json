@@ -1,0 +1,49 @@
+{
+  "recorded_at": "2026-11-15T00:03:58.535796+00:00",
+  "current_production_snapshot_available": false,
+  "historical_repository_receipt": {
+    "source": "docs/evidence/item-name-coverage.json",
+    "retrieved_at": "2026-11-14T14:08:52.219226+00:00",
+    "market_id": 1,
+    "snapshot_id": 12,
+    "item_ids": 4978,
+    "primary_names": 1191,
+    "community_names": 0,
+    "unresolved": 3787,
+    "name_percent": 23.93
+  },
+  "current_source_measurements": {
+    "unique_observed_item_ids": null,
+    "blizzard_names": null,
+    "blizzard_pending": null,
+    "blizzard_confirmed_missing": null,
+    "everloot_names": null,
+    "foreverdb_names": null,
+    "thewowdb_names": null,
+    "provider_overlap": null,
+    "conflicting_names": null,
+    "combined_recoverable_names": null,
+    "remaining_unresolved": null,
+    "icons": null,
+    "basic_attributes": null
+  },
+  "bounded_public_probe": {
+    "attempted_on": "2026-11-14",
+    "requests": 6,
+    "successful_item_records_retrieved": 0,
+    "error_category": "cloud_proxy_tunnel_forbidden",
+    "provider_http_status": null,
+    "sources": [
+      "https://everloot.app/api/openapi.json",
+      "https://everloot.app/api/tooltip/item/720",
+      "https://everloot.app/api/items?limit=2",
+      "https://foreverdb.net/api/v1/meta",
+      "https://thewowdb.com/api/v1/forever/item/720",
+      "https://data.everloot.app/latest.json"
+    ]
+  },
+  "name_target_percent": 90,
+  "target_evaluated": false,
+  "genuine_name_gain_claimed": false,
+  "limitation": "Historical aggregate receipt is not the current market-2 snapshot and does not include complete per-ID data. Provider API access blocked by Cloud proxy. Null means unmeasured, not zero. Synthetic tests/benchmarks are excluded from genuine coverage."
+}

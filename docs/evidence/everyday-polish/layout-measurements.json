@@ -1,0 +1,21 @@
+{
+  "synthetic": true,
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "rows": [
+    {
+      "version": "released",
+      "catalogue_top": 496.015625,
+      "first_row_top": 722.640625,
+      "search_top": 298.390625
+    },
+    {
+      "version": "candidate",
+      "catalogue_top": 396.546875,
+      "first_row_top": 501.640625,
+      "search_top": 250.703125
+    }
+  ]
+}

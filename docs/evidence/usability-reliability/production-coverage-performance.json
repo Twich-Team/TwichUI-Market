@@ -1,0 +1,161 @@
+{
+  "source": "read-only production; sequential same-transaction baseline/candidate handler probe, not a statistical benchmark",
+  "captured_at": "2026-11-17 01:37:00.154384+00:00",
+  "market_id": 2,
+  "snapshot_id": 73,
+  "baseline_seconds": 2.405597226927057,
+  "candidate_seconds": 1.3833029721863568,
+  "all_shared_coverage_counts_equal": true,
+  "candidate_recovery_partition_equals_denominator": true,
+  "candidate_observed": 5147,
+  "candidate_provider_records": [
+    {
+      "provider": "blizzard",
+      "checked": 5147,
+      "names_available": 2395,
+      "name_only": 0,
+      "detailed_records": 2395,
+      "fields_available": {
+        "availability": 0,
+        "binding": 65,
+        "category_ids": 0,
+        "class": 141,
+        "crafting": 0,
+        "disenchant": 0,
+        "disenchantable": 0,
+        "effects": 0,
+        "item_sets": 0,
+        "level": 2395,
+        "lines": 2395,
+        "quality": 2395,
+        "required_level": 2395,
+        "slot": 141,
+        "stats": 0,
+        "subclass": 141,
+        "unique": 0,
+        "vendor_sell": 2395,
+        "vendors": 0,
+        "weapon": 0
+      },
+      "overlapping_names": 1633,
+      "conflicting_names": 0,
+      "builds": [
+        {
+          "build": "static-1.60.1_70399-forever-us",
+          "records": 2395
+        }
+      ]
+    },
+    {
+      "provider": "everloot",
+      "checked": 1277,
+      "names_available": 3,
+      "name_only": 3,
+      "detailed_records": 0,
+      "fields_available": {
+        "availability": 0,
+        "binding": 0,
+        "category_ids": 0,
+        "class": 0,
+        "crafting": 0,
+        "disenchant": 0,
+        "disenchantable": 0,
+        "effects": 0,
+        "item_sets": 0,
+        "level": 0,
+        "lines": 0,
+        "quality": 0,
+        "required_level": 0,
+        "slot": 0,
+        "stats": 0,
+        "subclass": 0,
+        "unique": 0,
+        "vendor_sell": 0,
+        "vendors": 0,
+        "weapon": 0
+      },
+      "overlapping_names": 3,
+      "conflicting_names": 0,
+      "builds": [
+        {
+          "build": null,
+          "records": 102
+        }
+      ]
+    },
+    {
+      "provider": "foreverdb",
+      "checked": 3955,
+      "names_available": 3932,
+      "name_only": 2,
+      "detailed_records": 3937,
+      "fields_available": {
+        "availability": 3930,
+        "binding": 2780,
+        "category_ids": 3930,
+        "class": 3930,
+        "crafting": 9,
+        "disenchant": 2768,
+        "disenchantable": 3930,
+        "effects": 582,
+        "item_sets": 0,
+        "level": 3930,
+        "lines": 0,
+        "quality": 3930,
+        "required_level": 3930,
+        "slot": 3930,
+        "stats": 1458,
+        "subclass": 3930,
+        "unique": 3930,
+        "vendor_sell": 3907,
+        "vendors": 7,
+        "weapon": 601
+      },
+      "overlapping_names": 3463,
+      "conflicting_names": 5,
+      "builds": [
+        {
+          "build": "1.60.1.70938",
+          "records": 3939
+        }
+      ]
+    },
+    {
+      "provider": "thewowdb",
+      "checked": 2084,
+      "names_available": 2050,
+      "name_only": 0,
+      "detailed_records": 2050,
+      "fields_available": {
+        "availability": 0,
+        "binding": 0,
+        "category_ids": 0,
+        "class": 0,
+        "crafting": 0,
+        "disenchant": 0,
+        "disenchantable": 0,
+        "effects": 0,
+        "item_sets": 0,
+        "level": 2050,
+        "lines": 2002,
+        "quality": 2050,
+        "required_level": 2047,
+        "slot": 0,
+        "stats": 0,
+        "subclass": 0,
+        "unique": 0,
+        "vendor_sell": 1029,
+        "vendors": 0,
+        "weapon": 0
+      },
+      "overlapping_names": 1831,
+      "conflicting_names": 5,
+      "builds": [
+        {
+          "build": "wow_classic_beta-1.60.1.70532",
+          "records": 2050
+        }
+      ]
+    }
+  ]
+}

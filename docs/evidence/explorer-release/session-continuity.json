@@ -1,0 +1,34 @@
+{
+  "verified_at": "2026-11-15T09:40:33.813Z",
+  "real_deployment_between_sessions": true,
+  "ready": {
+    "ready_at": "2026-11-15T09:37:14.221Z",
+    "nonce": "a730c6490c",
+    "public_tls": {
+      "issuer": "YR1",
+      "protocol": "TLS 1.3",
+      "subjectName": "*.twich.gg",
+      "validFrom": 1791687760,
+      "validTo": 1799463759
+    },
+    "public_session_established": true,
+    "local_session_established": true,
+    "test_accounts": {
+      "admin": 78,
+      "member": 79
+    },
+    "device_and_cursor_established": true,
+    "preferences_stored_before_deployment": true,
+    "continue_file": "artifacts/explorer-release/public/continue-a730c6490c"
+  },
+  "completed_before_next_phase_failure": [
+    "public_and_local_session_reload",
+    "same_account_identity",
+    "unchanged_secure_session_cookie",
+    "unchanged_preference_values_and_revision",
+    "existing_legacy_device_and_sync_cursor",
+    "CSRF_and_origin_rejections",
+    "member_admin_permission_boundary"
+  ],
+  "next_phase_failure": "Default five-second browser assertion expired while the actual production catalogue was still loading. No application exception or release regression established. Rechecking with a 30-second acceptance timeout; application source unchanged."
+}

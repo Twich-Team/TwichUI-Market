@@ -1,0 +1,67 @@
+{
+  "baseline": {
+    "synthetic": false,
+    "tls_errors_ignored": false,
+    "runs": [
+      {
+        "ready_ms": 1589,
+        "dom_nodes": 640,
+        "js_bytes": 484631,
+        "catalogue_rows": 25,
+        "initial_api_calls": 16,
+        "return_api_calls": 0
+      },
+      {
+        "ready_ms": 1622,
+        "dom_nodes": 640,
+        "js_bytes": 484631,
+        "catalogue_rows": 25,
+        "initial_api_calls": 16,
+        "return_api_calls": 0
+      },
+      {
+        "ready_ms": 1573,
+        "dom_nodes": 640,
+        "js_bytes": 484631,
+        "catalogue_rows": 25,
+        "initial_api_calls": 16,
+        "return_api_calls": 0
+      }
+    ],
+    "notes": "Three fresh authenticated Chromium contexts; ready includes auth and network-idle settle. Same read-only origin/container limits. Handler/render sample, not production p95."
+  },
+  "refined": {
+    "synthetic": false,
+    "tls_errors_ignored": false,
+    "runs": [
+      {
+        "ready_ms": 2061,
+        "dom_nodes": 1527,
+        "js_bytes": 529741,
+        "catalogue_rows": 25,
+        "initial_api_calls": 19,
+        "return_api_calls": 0
+      },
+      {
+        "ready_ms": 1802,
+        "dom_nodes": 1527,
+        "js_bytes": 529741,
+        "catalogue_rows": 25,
+        "initial_api_calls": 19,
+        "return_api_calls": 0
+      },
+      {
+        "ready_ms": 1743,
+        "dom_nodes": 1527,
+        "js_bytes": 529741,
+        "catalogue_rows": 25,
+        "initial_api_calls": 19,
+        "return_api_calls": 0
+      }
+    ],
+    "notes": "Three fresh authenticated Chromium contexts; ready includes auth and network-idle settle. Same read-only origin/container limits. Handler/render sample, not production p95."
+  },
+  "median_before_ms": 1589,
+  "median_after_ms": 1802,
+  "change_percent": 13.4
+}

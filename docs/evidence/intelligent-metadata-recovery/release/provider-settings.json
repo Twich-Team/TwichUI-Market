@@ -1,0 +1,91 @@
+{
+  "at": "2026-11-17T22:03:33.377856+00:00",
+  "settings": [
+    {
+      "provider": "blizzard",
+      "enabled": true,
+      "automatic": true,
+      "hourly_budget": 240,
+      "daily_budget": 2000,
+      "rate_config": null,
+      "credential_key_id": null,
+      "credential_sha256": null,
+      "expires_at": null,
+      "credential_status": "oauth_connected",
+      "validated_at": "2026-11-15T03:21:58.000517+00:00",
+      "pending_key_id": null,
+      "pending_expires_at": null,
+      "pending_credential_sha256": null,
+      "validation_requested": false,
+      "validation_revision": 1,
+      "validation_error": null
+    },
+    {
+      "provider": "everloot",
+      "enabled": false,
+      "automatic": false,
+      "hourly_budget": 240,
+      "daily_budget": 2000,
+      "rate_config": null,
+      "credential_key_id": "metadata-20261115",
+      "credential_sha256": "52551096b001ed48d24195218d968f3527bbb44c75826ddf3769415be7a0b1f9",
+      "expires_at": "2027-11-13T23:59:59+00:00",
+      "credential_status": "connected",
+      "validated_at": "2026-11-15T03:02:49.94173+00:00",
+      "pending_key_id": null,
+      "pending_expires_at": null,
+      "pending_credential_sha256": null,
+      "validation_requested": false,
+      "validation_revision": 1,
+      "validation_error": null
+    },
+    {
+      "provider": "foreverdb",
+      "enabled": true,
+      "automatic": true,
+      "hourly_budget": 1200,
+      "daily_budget": 4250,
+      "rate_config": "{\"hourly_budget\": 1200, \"daily_budget\": 4250, \"minute_budget\": 30, \"minimum_interval\": 3.0, \"requests_per_second\": null, \"burst_capacity\": null, \"max_concurrent\": 1, \"page_size\": null}",
+      "credential_key_id": "metadata-20261115",
+      "credential_sha256": "8580787488b322d94c4442354b033d92c2d78bfe33095c53e8e08314722dfcd0",
+      "expires_at": null,
+      "credential_status": "connected",
+      "validated_at": "2026-11-15T21:51:43.401674+00:00",
+      "pending_key_id": null,
+      "pending_expires_at": null,
+      "pending_credential_sha256": null,
+      "validation_requested": false,
+      "validation_revision": 1,
+      "validation_error": null
+    },
+    {
+      "provider": "thewowdb",
+      "enabled": true,
+      "automatic": true,
+      "hourly_budget": 1000,
+      "daily_budget": 20000,
+      "rate_config": "{\"hourly_budget\": 1000, \"daily_budget\": 20000, \"minute_budget\": null, \"minimum_interval\": 1.0, \"requests_per_second\": 2.0, \"burst_capacity\": 120, \"max_concurrent\": 1, \"page_size\": null}",
+      "credential_key_id": null,
+      "credential_sha256": null,
+      "expires_at": null,
+      "credential_status": "keyless",
+      "validated_at": "2026-11-15T03:30:55.909543+00:00",
+      "pending_key_id": null,
+      "pending_expires_at": null,
+      "pending_credential_sha256": null,
+      "validation_requested": false,
+      "validation_revision": 1,
+      "validation_error": null
+    }
+  ],
+  "sole_active_market": [
+    {
+      "id": 2,
+      "house": 114,
+      "interval": 300,
+      "failures": 0,
+      "last_success": "2026-11-17T22:02:16.94518+00:00"
+    }
+  ],
+  "retention_batches": 0
+}

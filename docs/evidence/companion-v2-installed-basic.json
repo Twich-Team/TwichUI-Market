@@ -1,0 +1,44 @@
+{
+  "source_commit": "4a3be8f4cfbb1f26f983befced5216a2f2de9616",
+  "windows_workflow": 43634783506,
+  "backend_workflow": 43634783487,
+  "website_workflow": 43634783486,
+  "status": "installed_basic_acceptance_passed_full_release_acceptance_pending",
+  "fixture_data": true,
+  "native_version": "2.0.0-beta.1",
+  "installer_bytes": 4092846,
+  "installer_sha256": "78472b6a61afaac245065d7b4a65e24f7e603a4037bcb66ab50f0bd4850f645f",
+  "acceptance_archive_sha256": "248431d5006c160913b70d9e95c373341dfa41c45c6fe93b70d32b8611b3eb63",
+  "verified": {
+    "fixture": true,
+    "version": "2.0.0-beta.1",
+    "native_browser_approval_api": true,
+    "native_thread_hidden_sync": true,
+    "single_instance_restore": true,
+    "preferences_saved": true,
+    "export_valid": true,
+    "server_revocation": true,
+    "offline_cache_preserved": true,
+    "website_approval_ui_verified": false,
+    "full_tray_autostart_upgrade_acceptance_complete": false
+  },
+  "screenshots": [
+    "native-welcome.png",
+    "native-dashboard.png",
+    "native-sync-progress.png",
+    "native-settings.png"
+  ],
+  "remaining": [
+    "actual tray menu",
+    "reversible startup registration",
+    "hidden startup/restart",
+    "upgrade",
+    "performance metrics",
+    "browser approval UI in installed flow",
+    "signed controlled release and updater",
+    "all eight screenshot owner review",
+    "approved production migration/deployment"
+  ],
+  "production_changed": false,
+  "released_as_stable": false
+}

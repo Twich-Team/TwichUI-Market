@@ -1,0 +1,122 @@
+[
+  {
+    "filename": "market-development-20261114T032256003545Z.dump",
+    "sha256": "218f9286a63af1eaa49d27435b4253432892535f0baea2900dcc13405b25ba29",
+    "bytes": 10849641
+  },
+  {
+    "filename": "market-development-20261114T041234852184Z.dump",
+    "sha256": "b953e8b6e575657044b0d55d585ef9e8f150ff8b339d29cb36f73ecf09cfb931",
+    "bytes": 10860376
+  },
+  {
+    "filename": "market-development-20261114T044255979749Z.dump",
+    "sha256": "2fd2279dc6782089b60d93753e80387a44ef60f7d3f33a1a59b1590595951ed5",
+    "bytes": 16879477
+  },
+  {
+    "filename": "market-development-20261114T123543922718Z.dump",
+    "sha256": "572c66d4eb8d48c4560ea64c7b01bb09b994382e013f1963f923f882d22fe977",
+    "bytes": 66440746
+  },
+  {
+    "filename": "market-development-20261114T141320585884Z.dump",
+    "sha256": "da0f404c42f664edc1d06eb5f34d4345304beadb97776f083514daf967995601",
+    "bytes": 72007473
+  },
+  {
+    "filename": "market-development-20261114T142845676029Z.dump",
+    "sha256": "1ff8f7c55cb338853b3d67857d6af657c405a057935847b57f5c40b08cfcaf31",
+    "bytes": 76786153
+  },
+  {
+    "filename": "market-development-20261114T143748051831Z.dump",
+    "sha256": "01c59a394d9a159223b60f8b020fb8778fbdff6316a7a3b52ba7021859806e81",
+    "bytes": 76916961
+  },
+  {
+    "filename": "market-development-20261114T151409719774Z.dump",
+    "sha256": "564bdfbd736f5570da43f96dde25515ea5aae88fd1ec8cb4ea0adf01614dfbd5",
+    "bytes": 77159054
+  },
+  {
+    "filename": "market-development-20261114T160815982254Z.dump",
+    "sha256": "1f76dada9a988323bbaf63df7df4489e1333c07357b6b5e4e260a24507b38bc8",
+    "bytes": 86633969
+  },
+  {
+    "filename": "market-development-20261114T161622641394Z.dump",
+    "sha256": "08d66ae9ed72dd567ff07170dc2296a47970ee17a0650f3f47c0d8d8a76efbc9",
+    "bytes": 86711170
+  },
+  {
+    "filename": "market-development-20261114T165413439364Z.dump",
+    "sha256": "5e940fb9034e873f3e426e9f488e72e2f31831f10a851510a9fd16157c407fb4",
+    "bytes": 91521915
+  },
+  {
+    "filename": "market-development-20261115T010501853878Z.dump",
+    "sha256": "6e90a5339526b910314d4128f3166e734fdf5eb3b99be3ac29ab1dc64bdf3c11",
+    "bytes": 141074272
+  },
+  {
+    "filename": "market-development-20261115T022523797350Z.dump",
+    "sha256": "a0a017a694cc878ccb4f4410718a0ae0cdbbdffcbd3ddb0efe67ff2739087dc7",
+    "bytes": 154434459
+  },
+  {
+    "filename": "market-development-20261115T022538566306Z.dump",
+    "sha256": "303b37ace22c81f0cac41123d657a1a6acda92e4ce4b8e2b7286d4ff169f5fc5",
+    "bytes": 154437027
+  },
+  {
+    "filename": "market-development-20261115T024914842493Z.dump",
+    "sha256": "17a9c725b47343b69b9eef04959e74558517f13e9faf65b1a4eaee2b1578a0d0",
+    "bytes": 155519147
+  },
+  {
+    "filename": "market-development-20261115T031130139561Z.dump",
+    "sha256": "c63283077f1e54b11e3392b82c647e21b9c6aac2f335065502bd394481f7fb87",
+    "bytes": 155612338
+  },
+  {
+    "filename": "market-development-20261115T031227463979Z.dump",
+    "sha256": "83a308830a2935262661651783043459bb0c817a16a714cf4e22565194791f34",
+    "bytes": 155526654
+  },
+  {
+    "filename": "market-development-20261115T052439755689Z.dump",
+    "sha256": "be53ae5abb8aacdc2b513f23de3bddbac8de0fa2129b2f0dd982a7d956868564",
+    "bytes": 177056249
+  },
+  {
+    "filename": "market-recovery-20261113T233953939295Z.dump",
+    "sha256": "0425b0a47f8d180d03d23d811fa5163cbc0dc03d55bd25050698a266c81c4231",
+    "bytes": 31828
+  },
+  {
+    "filename": "market-recovery-20261114T003722062298Z.dump",
+    "sha256": "884f8c56f4b3b1bce3557cf3e146522547d073d8876a4f4450207489221ef856",
+    "bytes": 35978
+  },
+  {
+    "filename": "market-recovery-20261114T013607846546Z.dump",
+    "sha256": "7e1105803bdfff95ae8c2f726d30b39de44216859d57ae82dc5e8f66f76e44a0",
+    "bytes": 39027
+  },
+  {
+    "filename": "market-recovery-20261114T141243667398Z.dump",
+    "sha256": "cf5cc4aed83b73c799698c77d9073e042f9bee9b6dfcbbce798a29ae49664d53",
+    "bytes": 57361
+  },
+  {
+    "filename": "market-test-20261113T233410595426Z.dump",
+    "sha256": "367259ed8f02ba4f86205b7dfb172277bd378a7fa93bb417ea655d7c87c15883",
+    "bytes": 31831
+  },
+  {
+    "filename": "market-test-20261113T233847732467Z.dump",
+    "sha256": "c0de0896777aba18ad276cb599197de44fab61ed5a8b15f7885b65b854fc9b64",
+    "bytes": 31829
+  }
+]

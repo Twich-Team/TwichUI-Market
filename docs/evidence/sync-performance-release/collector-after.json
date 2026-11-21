@@ -1,0 +1,54 @@
+{
+  "markets": [
+    {
+      "id": 1,
+      "house_id": 110,
+      "enabled": false,
+      "interval_seconds": 300
+    },
+    {
+      "id": 2,
+      "house_id": 114,
+      "enabled": true,
+      "interval_seconds": 300
+    }
+  ],
+  "feeds": [
+    {
+      "market_id": 2,
+      "source_kind": "auctions",
+      "enabled": true
+    },
+    {
+      "market_id": 2,
+      "source_kind": "commodities",
+      "enabled": true
+    }
+  ],
+  "recent_collection": [
+    {
+      "market_id": 2,
+      "status": "unchanged",
+      "http_status": null,
+      "checked_at": "2026-11-18 23:37:43.606986+00:00"
+    },
+    {
+      "market_id": 2,
+      "status": "unchanged",
+      "http_status": null,
+      "checked_at": "2026-11-18 23:32:41.054525+00:00"
+    },
+    {
+      "market_id": 2,
+      "status": "collected",
+      "http_status": null,
+      "checked_at": "2026-11-18 23:27:39.858697+00:00"
+    },
+    {
+      "market_id": 2,
+      "status": "unchanged",
+      "http_status": null,
+      "checked_at": "2026-11-18 23:22:37.291572+00:00"
+    }
+  ]
+}

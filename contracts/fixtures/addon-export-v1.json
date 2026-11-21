@@ -1,0 +1,28 @@
+{
+  "format": "twichui-market-addon-data",
+  "contract_version": 1,
+  "algorithm": "asking-v1-provisional",
+  "server": "https://fixture.invalid/",
+  "market_id": 1,
+  "observed_at": "2026-11-14T00:00:00+00:00",
+  "generated_at": "2026-11-14T00:01:00+00:00",
+  "synthetic": true,
+  "items": [
+    {
+      "item_id": 12363,
+      "variant_key": "30e331db0906d7ead73d271e37e59463264d36910bb094b9e1bd28f717771f63",
+      "value": {
+        "recent_price": "9007199254740993",
+        "lowest_buyout": "9007199254740993",
+        "market_value": "9007199254740993",
+        "historical_value": "9007199254740993",
+        "supply": 1,
+        "priced_supply": 1,
+        "listing_count": 1,
+        "coverage_days": 1,
+        "market_coverage_days": 1,
+        "synthetic": true
+      }
+    }
+  ]
+}

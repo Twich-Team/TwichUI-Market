@@ -1,0 +1,55 @@
+# Interactive review only: dedicated origin-bound read-only API, shared genuine database.
+name: twichui-market-item-preview
+services:
+  preview:
+    restart: unless-stopped
+    image: twichui-market-web:dev
+    build:
+      context: .
+      dockerfile: deploy/web.Dockerfile
+    container_name: twichui-market-modernization-preview
+    networks: [market]
+    ports: ["127.0.0.1:18444:443"]
+    volumes:
+      - ./deploy/Caddyfile.preview:/etc/caddy/Caddyfile:ro
+      - ./deploy/routes.preview.caddy:/etc/caddy/routes.preview.caddy:ro
+      - preview-ca:/data
+    read_only: true
+    tmpfs: [/tmp:size=16m, /config:size=4m]
+    mem_limit: 128m
+    cpus: 0.25
+    pids_limit: 100
+    security_opt: [no-new-privileges:true]
+    logging:
+      driver: json-file
+      options: {max-size: 2m, max-file: "2"}
+  preview-api:
+    image: twichui-market-backend:dev
+    networks: [market]
+    environment:
+      DATABASE_URL: postgresql+psycopg://market:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@db:5432/market
+      APP_ORIGIN: https://localhost:18444
+      SESSION_COOKIE_NAME: market_preview_session
+      COOKIE_SECURE: "true"
+      APP_READ_ONLY: "true"
+      SYNC_CURSOR_SECRET: ${SYNC_CURSOR_SECRET:?Retain sync secret}
+    volumes: [./artifacts/backup-status:/backup-status:ro]
+    read_only: true
+    tmpfs: [/tmp:size=16m]
+    mem_limit: 256m
+    cpus: 0.25
+    pids_limit: 100
+    restart: unless-stopped
+    security_opt: [no-new-privileges:true]
+    logging: {driver: json-file, options: {max-size: 5m, max-file: "2"}}
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health',timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+volumes:
+  preview-ca:
+networks:
+  market:
+    external: true
+    name: twichui-market_default

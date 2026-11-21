@@ -1,0 +1,167 @@
+{
+  "environment": "Linux native release build; rootless bounded API/PostgreSQL; loopback; durable SQLite FULL; not Windows SSD or owner-PC timing",
+  "fixture": "complete current variant sets; genuine bounded historical summary slice, not full production archive",
+  "fixture_sha256": "63609d8703a76bec0dabc3e1c80dc8ee49f17ad934f82d0e59df59d5867991bb",
+  "groups": [
+    {
+      "page_limit": 50,
+      "scenario": "full",
+      "runs": 3,
+      "elapsed_seconds": {
+        "median": 10.204657208,
+        "minimum": 10.200821252,
+        "maximum": 10.428539199
+      },
+      "http_requests": 495,
+      "received_records": 24584,
+      "response_body_bytes": 8392151,
+      "sqlite_transaction_ms": 1711.294,
+      "queries": 6421,
+      "sql_ms": 2764.3665911164135,
+      "server_cpu_ms": 6512.658676999995,
+      "cache_values_sha256": [
+        "4f5d1ade7ecdae2a0e3e7ea95569050bf61a0c033363c946ebe34691923124a1"
+      ]
+    },
+    {
+      "page_limit": 50,
+      "scenario": "unchanged",
+      "runs": 3,
+      "elapsed_seconds": {
+        "median": 0.053553446,
+        "minimum": 0.050531754,
+        "maximum": 0.056977131
+      },
+      "http_requests": 4,
+      "received_records": 0,
+      "response_body_bytes": 2383,
+      "sqlite_transaction_ms": 5.183,
+      "queries": 39,
+      "sql_ms": 13.152274070307612,
+      "server_cpu_ms": 33.03151000000071,
+      "cache_values_sha256": [
+        "4f5d1ade7ecdae2a0e3e7ea95569050bf61a0c033363c946ebe34691923124a1"
+      ]
+    },
+    {
+      "page_limit": 50,
+      "scenario": "incremental",
+      "runs": 3,
+      "elapsed_seconds": {
+        "median": 22.763250587,
+        "minimum": 22.676112531,
+        "maximum": 23.574052706
+      },
+      "http_requests": 554,
+      "received_records": 11623,
+      "response_body_bytes": 3703232,
+      "sqlite_transaction_ms": 2017.402,
+      "queries": 9943,
+      "sql_ms": 12714.959054952487,
+      "server_cpu_ms": 9671.965762999953,
+      "cache_values_sha256": [
+        "47d32caca283fe7add04abd51c10c0eaedce90e5f74c37f17d72378241f0727e"
+      ]
+    },
+    {
+      "page_limit": 50,
+      "scenario": "unchanged_advance",
+      "runs": 3,
+      "elapsed_seconds": {
+        "median": 0.049457073,
+        "minimum": 0.045992783,
+        "maximum": 0.050136725
+      },
+      "http_requests": 4,
+      "received_records": 0,
+      "response_body_bytes": 2383,
+      "sqlite_transaction_ms": 4.474,
+      "queries": 40,
+      "sql_ms": 11.410617735236883,
+      "server_cpu_ms": 30.46083899999985,
+      "cache_values_sha256": [
+        "47d32caca283fe7add04abd51c10c0eaedce90e5f74c37f17d72378241f0727e"
+      ]
+    },
+    {
+      "page_limit": 100,
+      "scenario": "full",
+      "runs": 3,
+      "elapsed_seconds": {
+        "median": 6.693561111,
+        "minimum": 6.67770663,
+        "maximum": 6.790585716
+      },
+      "http_requests": 249,
+      "received_records": 24584,
+      "response_body_bytes": 8279596,
+      "sqlite_transaction_ms": 1024.238,
+      "queries": 3223,
+      "sql_ms": 1887.9403911996633,
+      "server_cpu_ms": 4226.766127000012,
+      "cache_values_sha256": [
+        "4f5d1ade7ecdae2a0e3e7ea95569050bf61a0c033363c946ebe34691923124a1"
+      ]
+    },
+    {
+      "page_limit": 100,
+      "scenario": "unchanged",
+      "runs": 3,
+      "elapsed_seconds": {
+        "median": 0.049502689,
+        "minimum": 0.049272357,
+        "maximum": 0.052538847
+      },
+      "http_requests": 4,
+      "received_records": 0,
+      "response_body_bytes": 2383,
+      "sqlite_transaction_ms": 4.763,
+      "queries": 39,
+      "sql_ms": 11.777096893638372,
+      "server_cpu_ms": 31.931389999996895,
+      "cache_values_sha256": [
+        "4f5d1ade7ecdae2a0e3e7ea95569050bf61a0c033363c946ebe34691923124a1"
+      ]
+    },
+    {
+      "page_limit": 100,
+      "scenario": "incremental",
+      "runs": 3,
+      "elapsed_seconds": {
+        "median": 13.848101412,
+        "minimum": 13.733514659,
+        "maximum": 14.673470377
+      },
+      "http_requests": 279,
+      "received_records": 11623,
+      "response_body_bytes": 3576311,
+      "sqlite_transaction_ms": 1166.574,
+      "queries": 4993,
+      "sql_ms": 7077.378150308505,
+      "server_cpu_ms": 6348.626526000061,
+      "cache_values_sha256": [
+        "47d32caca283fe7add04abd51c10c0eaedce90e5f74c37f17d72378241f0727e"
+      ]
+    },
+    {
+      "page_limit": 100,
+      "scenario": "unchanged_advance",
+      "runs": 3,
+      "elapsed_seconds": {
+        "median": 0.048806477,
+        "minimum": 0.048006729,
+        "maximum": 0.04942326
+      },
+      "http_requests": 4,
+      "received_records": 0,
+      "response_body_bytes": 2383,
+      "sqlite_transaction_ms": 4.689,
+      "queries": 40,
+      "sql_ms": 11.688710423186421,
+      "server_cpu_ms": 30.399279999997475,
+      "cache_values_sha256": [
+        "47d32caca283fe7add04abd51c10c0eaedce90e5f74c37f17d72378241f0727e"
+      ]
+    }
+  ]
+}

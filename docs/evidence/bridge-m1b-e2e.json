@@ -1,0 +1,73 @@
+{
+  "result": "PASS",
+  "origin": "synthetic",
+  "fixture_input_sha256": "5eccb4625fb69c9dab8eed326075b7a7932a99e12cdf174a67d9f6a7e4c2bcfa",
+  "independent_expected_sha256": "a5b9f94832cdbc296a0232df509efd15326bb58b8b0beabe8b93c0e91454ce65",
+  "http_authenticated": true,
+  "page_record_limit": 1,
+  "generation_id": "4e6cea38071018d519682ba4690b79566303f8ce67039ef6e99472f107ee453f",
+  "market": {
+    "game": "wow-forever",
+    "house_id": 114,
+    "mapping_evidence_sha256": "5ab76855a8180370e3b03a355d7e2f1cee562284434328733971437bf0ecd61b",
+    "mapping_verified": true,
+    "player_ruleset": "Normal",
+    "realm_scope": "ruleset_house",
+    "region": "us",
+    "server_market_id": 1,
+    "source_kind": "auctions",
+    "transport_ruleset_id": 1
+  },
+  "schema_version": 2,
+  "contract_version": 1,
+  "transport_version": 1,
+  "available_dates": [
+    "2026-11-13",
+    "2026-11-15"
+  ],
+  "missing_dates": [
+    "2026-11-14"
+  ],
+  "rust": {
+    "algorithm": "twichui-pricing-v1",
+    "download_ms": 253.038019,
+    "export_ms": 11.551498,
+    "generation_id": "4e6cea38071018d519682ba4690b79566303f8ce67039ef6e99472f107ee453f",
+    "lua_bytes": 31566,
+    "market": {
+      "game": "wow-forever",
+      "house_id": 114,
+      "mapping_evidence_sha256": "5ab76855a8180370e3b03a355d7e2f1cee562284434328733971437bf0ecd61b",
+      "mapping_verified": true,
+      "player_ruleset": "Normal",
+      "realm_scope": "ruleset_house",
+      "region": "us",
+      "server_market_id": 1,
+      "source_kind": "auctions",
+      "transport_ruleset_id": 1
+    },
+    "payload_bytes": 7702,
+    "record_count": 4,
+    "schema_version": 2
+  },
+  "lua": {
+    "cache_entries": 4,
+    "corruption_rejected": true,
+    "generation_id": "4e6cea38071018d519682ba4690b79566303f8ce67039ef6e99472f107ee453f",
+    "largest_slice_us": 2059,
+    "load_us": 48,
+    "local_saved_data_unchanged": true,
+    "navigation_100_us": 2116,
+    "navigation_growth_bytes": -343,
+    "payload_bytes": 7702,
+    "record_count": 4,
+    "retained_heap_bytes": 52661,
+    "slices": 54,
+    "validation_us": 31891
+  },
+  "production_access": false,
+  "installed_into_game": false,
+  "real_client_acceptance": false,
+  "bridge_only_does_not_load_workshop": true,
+  "no_frames_or_auction_requests": true
+}

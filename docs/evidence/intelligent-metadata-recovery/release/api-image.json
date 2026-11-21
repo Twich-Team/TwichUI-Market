@@ -1,0 +1,13 @@
+{
+  "id": "sha256:d7df98deb095a74c1c1b962d113d26e463d2f5e6de2abdf3fcb47b8339b45085",
+  "tag": "twichui-market-backend:metadata-recovery-sync-6682b82",
+  "base": "sha256:3ef6f57964546a425f4c2ebe2bc44be2d9a516340325074dfb0fb2f32d7c3667",
+  "revision": "6682b82fbb9bf644989e9fe64265ed2361062dfc",
+  "runtime_change": "Only sync_api.py transaction boundary; watermark and contracts unchanged",
+  "source_sha256": "9d25f5076cacbb872efd258abce9c355a2aa834f5a0c0066c9206fab144f724d",
+  "frontend_tree_matches_running_5231af2": true,
+  "enrichment_modules_and_contracts_unchanged_from_bf8a04a": true,
+  "network": "none",
+  "build_memory_bytes": 402653184,
+  "build_cpu_limit": 0.5
+}

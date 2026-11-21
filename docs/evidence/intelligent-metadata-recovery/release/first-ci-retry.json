@@ -1,0 +1,13 @@
+{
+  "application_commit": "bf8a04a0539fb4c3e2468c70a2e5155ba1150f95",
+  "run": 44166970733,
+  "first_job": 134335520454,
+  "first_attempt": "failed in pre-existing WebKit synthetic route handler during context teardown",
+  "error": "apiResponse.json: Response has been disposed; browserContext.close: Test ended",
+  "product_assertion_failed": false,
+  "failure_artifact": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/44166970733/artifacts/14367055542",
+  "action": "one failed-job retry requested; no test or product source change, no checks disabled",
+  "final_result": "success",
+  "final_job": 134340270089,
+  "final_attempt": 2
+}

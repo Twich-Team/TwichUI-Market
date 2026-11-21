@@ -1,0 +1,26 @@
+{
+  "source": "Unchanged deployed e9c4d29 backend, read-only transactions, per-query 8 second limit",
+  "checks": [
+    {
+      "q": "2589",
+      "sort": "item_id",
+      "seconds": 0.11,
+      "rows": 0,
+      "total_items": 0
+    },
+    {
+      "q": "cloth",
+      "sort": "item_id",
+      "seconds": 8.06,
+      "error_type": "OperationalError",
+      "sqlstate": "57014"
+    },
+    {
+      "q": "cloth",
+      "sort": "name",
+      "seconds": 8.05,
+      "error_type": "OperationalError",
+      "sqlstate": "57014"
+    }
+  ]
+}

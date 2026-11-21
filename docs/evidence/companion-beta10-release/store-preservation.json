@@ -1,0 +1,21 @@
+{
+  "original_file_count": 90,
+  "original_immutable_files_preserved": 89,
+  "changed_original_immutable_files": [],
+  "only_original_pointer_changed": true,
+  "added_files": [
+    "2.0.0-beta.10/TwichUI-Market-Companion-2.0.0-beta.10-windows-x64.exe",
+    "2.0.0-beta.10/installed-smoke.json",
+    "2.0.0-beta.10/launch-metrics.json",
+    "2.0.0-beta.10/legacy-upgrade.json",
+    "2.0.0-beta.10/manifest.json",
+    "2.0.0-beta.10/owner-release-approval.json",
+    "2.0.0-beta.10/performance.json",
+    "2.0.0-beta.10/signed-update-acceptance.json",
+    "2.0.0-beta.10/windows-signature.json",
+    "audit/00000009.complete.json",
+    "audit/00000009.json"
+  ],
+  "total_file_count": 101,
+  "store_snapshot_excludes_operational_publication_lock": true
+}

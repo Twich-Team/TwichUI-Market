@@ -1,0 +1,30 @@
+{
+  "application_commit": "bf8a04a0539fb4c3e2468c70a2e5155ba1150f95",
+  "predecessor": "fa089a2660e745d6f77f5c2b0b7bbcb9109d6ae8",
+  "feature_pr": 24,
+  "feature_merge": "f87ae6b36cbb7e5b4379895b97e62d66f6823b9d",
+  "query_repair_pr": 25,
+  "query_repair_head": "11ff6785ef6420fac6bd48ec34cd3ce9d483db66",
+  "migration_head": "recovery_20261117",
+  "isolated_test_services_retired": true,
+  "routine_provider_responses_mocked": true,
+  "manual_production_campaign": false,
+  "protected_contracts_unchanged_from_start": true,
+  "unchanged_paths": [
+    "desktop",
+    "contracts",
+    "backend/market/ingest.py",
+    "backend/market/worker.py",
+    "backend/market/provider_rates.py",
+    "backend/market/archive_api.py",
+    "backend/market/bridge_api.py",
+    "backend/market/market_api.py",
+    "backend/market/catalogue.py",
+    "backend/market/intraday_history.py",
+    "backend/market/current_listings.py"
+  ],
+  "final_api_commit": "6682b82fbb9bf644989e9fe64265ed2361062dfc",
+  "frontend_commit": "5231af21b68731542b6c50d18a1805b8b2747052",
+  "enrichment_commit": "bf8a04a0539fb4c3e2468c70a2e5155ba1150f95",
+  "related_api_integration_exception": "sync_api.py releases the ingest lock after pinning the watermark; identical previous-production lock problem reproduced; unchanged cursor contract and calculations verified concurrently."
+}

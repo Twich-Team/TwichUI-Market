@@ -1,0 +1,12 @@
+# Scope: frontend/API rollback only. Keep schema, secrets, data volumes and collector.
+# Captured from the running production services before approved promotion.
+# Web: sha256:0abc0d5ebf24b3f01dfaaaa52ffddb8c6ecc63973632289fb3f240ff9ec8da0f
+# API: sha256:9fe1f98e78e86eae9821d2c5e02a6e0f48cc9899cb259c63a4a05416118413a0
+# Apply LAST after compose.yaml, compose.tls.yaml and compose.traefik.yaml.
+services:
+  api:
+    image: twichui-market-backend:rollback-20261114
+  local-api:
+    image: twichui-market-backend:rollback-20261114
+  proxy:
+    image: twichui-market-web:rollback-20261114

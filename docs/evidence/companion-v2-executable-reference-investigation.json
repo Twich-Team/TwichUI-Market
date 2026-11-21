@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "purpose": "Engineering reference correction; beta1 remains superseded and is not admitted for publication",
+  "payload_source_commit": "40fa2dd223f9f314c465ac3ad5c265e54c1d2592",
+  "installer_sha256": "bbc7518e9608fdd9b1db89f14eeab842dc2f212291b1a38841eb9f6750ba4a1d",
+  "installer_version": "2.0.0-beta.1",
+  "original_build_directory_executable_sha256": "3a94f74d8a0f06934e0a9a988a0b2f76b2b105d264f081dbebe3bcaa1c34b4fd",
+  "independently_extracted_executable_sha256": "0eb7473b0e4ba09fe080883b6d57592596f842d31b3de8b838073f9aaff0e000",
+  "observed_sdk_installed_executable_sha256": "0eb7473b0e4ba09fe080883b6d57592596f842d31b3de8b838073f9aaff0e000",
+  "legacy_0_1_installer_embedded_executable_sha256": "f9c7808bff04ca4e8997f8bbbd03521675b41efef388bc10acb47d22321a042e",
+  "method": "Bounded rootless p7zip read-only inspection of both original archives; original NSIS bytes and version-bound signature unchanged",
+  "application_update_byte_replacement_verified": true,
+  "full_sdk_reconnect_export_uninstall_acceptance_verified": false,
+  "diagnostic_run_id": 43662683043,
+  "diagnostic_artifact_id": 14141170751,
+  "diagnostic_artifact_sha256": "07f9b2f37e5389de2a826c62ce9dca4b078b46fd3025ad10819b445f9a7902ee",
+  "reference_error_corrected_in_engineering_proof_only": true,
+  "new_beta2_candidate_required": true,
+  "publication_approved": false,
+  "deployment_approved": false
+}

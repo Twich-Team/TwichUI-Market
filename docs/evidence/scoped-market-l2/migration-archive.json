@@ -1,0 +1,1 @@
+{"origin": "synthetic", "database": "market_test", "baseline": "fdb_20261116", "head": "archive_20261116", "original_tables_preserved": 35, "source_history_and_preferences_preserved": true, "only_disposable_archive_metadata_removed_on_downgrade": true, "upgrade_downgrade_reupgrade": true}

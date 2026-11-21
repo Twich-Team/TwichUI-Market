@@ -1,0 +1,41 @@
+{
+  "origin": "Actual Chromium rendering of isolated synthetic market_test; no production or provider observations",
+  "scenes": [
+    {
+      "file": "screenshots/01-desktop-overview.png",
+      "title": "Desktop overview",
+      "sha256": "bb3b6442c4a3e2932a5d53f7f24913ef2aa34aca1fdff7b459f7daf255d21c6d",
+      "bytes": 404755
+    },
+    {
+      "file": "screenshots/02-recovery-journey.png",
+      "title": "Fields, provenance and recovery journey",
+      "sha256": "a9723147beb02ce94fd2dd2aad2fdd7bc35353c90b214302477d1da90f40f3de",
+      "bytes": 612009
+    },
+    {
+      "file": "screenshots/03-mobile-records.png",
+      "title": "Mobile records and provider states",
+      "sha256": "8f456503241bcc5d4ea1ffd2eef4c5e363e9df42a490476201362be62d70b592",
+      "bytes": 209642
+    },
+    {
+      "file": "screenshots/04-error-state.png",
+      "title": "Synthetic error state",
+      "sha256": "f561531983630eec469bdccf6dca6fd65a2bbef680ed46d1b752590451f14465",
+      "bytes": 321568
+    },
+    {
+      "file": "screenshots/05-empty-filter.png",
+      "title": "Empty filtered result",
+      "sha256": "919c5f017bb368da969b2ad143cdd118f2cbefbdcb6c609a0e910bda8b6f3052",
+      "bytes": 452090
+    },
+    {
+      "file": "screenshots/06-efficiency.png",
+      "title": "Recovery efficiency and exact-count alternative",
+      "sha256": "305cb8d8a3823387b29dd48c763889033c4b5a089df637359127461c15b39792",
+      "bytes": 266308
+    }
+  ]
+}

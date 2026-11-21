@@ -1,0 +1,20 @@
+{
+  "base_image": "sha256:a79a7f0fca9c8fb6257201d53b6509e08b7630296661b1d672a1c828bb1bd907",
+  "candidate_image": "sha256:428f0acfa92ec42fcc40d467e072ad3d14f7175c02ad76303d141d6824b983af",
+  "source": "8dfa5116397403bb93e90160e8706285f272f64f",
+  "changed_paths": [
+    "/app/market/workshop_summary.py",
+    "/usr/local/lib/python3.12/site-packages/market/workshop_summary.py"
+  ],
+  "added_contract_files": [
+    "/contracts/workshop-summary/v2/README.md",
+    "/contracts/workshop-summary/v2/addon-source.txt",
+    "/contracts/workshop-summary/v2/fixtures/synthetic.json",
+    "/contracts/workshop-summary/v2/manifest.schema.json",
+    "/contracts/workshop-summary/v2/row.schema.json"
+  ],
+  "source_module_sha256": "8166c91561a1b0198dc17a3cd341617890b564c0e389b41797d05dd6fa4795ef",
+  "other_runtime_and_contract_files_identical": true,
+  "unchanged_files": 194,
+  "bridge_retention_security_sync_pricing_unchanged": true
+}

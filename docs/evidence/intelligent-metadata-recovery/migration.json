@@ -1,0 +1,9 @@
+{
+  "origin": "synthetic",
+  "database": "market_test",
+  "head": "recovery_20261117",
+  "original_tables_preserved": 38,
+  "original_negative_cache_preserved": true,
+  "empty_round_trip": true,
+  "populated_evidence_downgrade_refused": true
+}

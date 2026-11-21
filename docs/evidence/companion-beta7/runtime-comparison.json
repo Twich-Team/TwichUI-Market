@@ -1,0 +1,7 @@
+{
+  "container_ids_images_environments_limits_unchanged": true,
+  "services_replaced_by_this_task": false,
+  "schema_changed": false,
+  "provider_configuration_changed": false,
+  "start_time_difference": "Proxy baseline StartedAt was unavailable (0001); final metadata gives 04:19:44 UTC, before the 04:42 publication. Raw comparison retained."
+}

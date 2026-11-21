@@ -1,0 +1,307 @@
+import { test, expect, Page } from "@playwright/test";
+const password = "synthetic browser owner password";
+async function login(page: Page, username = "owner", secret = password) {
+  await page.goto("/");
+  await page.getByLabel("Username", { exact: true }).fill(username);
+  await page.getByLabel("Password", { exact: true }).fill(secret);
+  await page.getByRole("button", { name: "Sign in", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Market Explorer", exact: true }),
+  ).toBeVisible();
+  const saved = await (await page.request.get("/api/v1/me/preferences")).json();
+  if (saved.revision > 0) {
+    const session = await (await page.request.get("/api/v1/auth/session")).json();
+    const reset = await page.request.post("/api/v1/me/preferences/reset", {headers:{"X-CSRF-Token":session.csrf_token},data:{schema_version:1,expected_revision:saved.revision}});
+    expect(reset.status()).toBe(200);
+    await page.goto("/");
+    await expect(page.getByRole("heading",{name:"Market Explorer",exact:true})).toBeVisible();
+  }
+}
+
+test("private Explorer, history, listings, Deal Finder and browser reload use real APIs", async ({
+  page,
+}) => {
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  expect((await page.request.get("/api/v1/markets")).status()).toBe(401);
+  await login(page);
+  await expect(
+    page.getByText(
+      "Synthetic fixture data · not live Auction House observations.",
+    ),
+  ).toBeVisible();
+  await page.getByLabel("Search items",{exact:true}).fill("arcane");
+  await page.getByRole("button",{name:"Search",exact:true}).click();
+  await page.getByRole("link",{name:"Research Synthetic Arcane Crystal",exact:true}).click();
+
+  await expect(page.getByRole("heading",{name:"Synthetic Arcane Crystal",exact:true})).toBeVisible();
+  await page.locator(".chart-viewport").first().scrollIntoViewIfNeeded();
+  await expect(
+    page.getByRole("img", { name: "Observed asking-price history" }),
+  ).toBeVisible();
+  await page
+    .getByLabel("Advanced auction diagnostics", { exact: true })
+    .check();
+  await expect(
+    page.getByRole("cell", { name: "9007199254740993", exact: true }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "60D", exact: true }).click();
+  await Promise.all([
+    page.waitForResponse(
+      (response) =>
+        response.url().includes("/history?days=365") &&
+        response.status() === 200,
+    ),
+    page.getByRole("button", { name: "1Y", exact: true }).click(),
+  ]);
+  await page.locator(".chart-viewport").first().scrollIntoViewIfNeeded();
+  await expect(
+    page.getByRole("img", { name: "Observed asking-price history" }),
+  ).toBeVisible();
+  await expect(page.getByLabel("Comparison market")).toHaveCount(0);
+  await page.getByRole("button", { name: "Deal Finder", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "1 opportunity", exact: true }),
+  ).toBeVisible();
+  await page.getByLabel("Maximum spend (gold)").fill("0.01");
+  await page
+    .getByRole("button", { name: "Apply filters", exact: true })
+    .click();
+  await expect(
+    page.getByText("No listings match these filters", { exact: false }),
+  ).toBeVisible();
+  await page.getByLabel("Maximum spend (gold)").fill("500");
+  await page
+    .getByRole("button", { name: "Apply filters", exact: true })
+    .click();
+  await page.getByRole("tab", { name: "Supply changes", exact: true }).click();
+  await expect(
+    page.getByText("Listed supply changed -50.0%", { exact: false }),
+  ).toBeVisible();
+  await page.getByRole("tab", { name: "Price changes", exact: true }).click();
+  await expect(
+    page.getByText("Quantity-weighted asking price changed -50.0%", {
+      exact: false,
+    }),
+  ).toBeVisible();
+  await page
+    .getByRole("combobox", { name: "Evidence", exact: true })
+    .selectOption("moderate");
+  await page
+    .getByRole("button", { name: "Apply filters", exact: true })
+    .click();
+  await expect(
+    page.getByText("No changes match these filters", { exact: false }),
+  ).toBeVisible();
+  await page
+    .getByRole("combobox", { name: "Evidence", exact: true })
+    .selectOption("limited");
+  await page
+    .getByRole("button", { name: "Apply filters", exact: true })
+    .click();
+  await expect(
+    page.getByText("Quantity-weighted asking price changed -50.0%", {
+      exact: false,
+    }),
+  ).toBeVisible();
+  await page
+    .getByRole("link", { name: "Inspect item ↗", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", {
+      name: "Synthetic Arcane Crystal",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole("heading",{name:"Synthetic Arcane Crystal",exact:true})).toBeVisible();
+  await page
+    .getByRole("button", { name: "Administration", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Invite a friend", exact: true })
+    .click();
+  await expect(page.getByLabel("New invitation link")).toHaveValue(/invite=/);
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  expect(errors).toEqual([]);
+});
+
+test("invitation acceptance, member permissions, device sync/revocation and password change", async ({
+  page,
+}) => {
+  await login(page);
+  await page
+    .getByRole("button", { name: "Administration", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Invite a friend", exact: true })
+    .click();
+  const invitation = await page.getByLabel("New invitation link").inputValue();
+  await page.getByRole("button", { name: "Sign out", exact: true }).click();
+  await page.goto(invitation);
+  await expect(
+    page.getByRole("heading", { name: "Join the ledger", exact: true }),
+  ).toBeVisible();
+  await page.getByLabel("Username", { exact: true }).fill("browser_friend");
+  await page
+    .getByLabel("Password", { exact: true })
+    .fill("synthetic friend password");
+  await page
+    .getByRole("button", { name: "Create account", exact: true })
+    .click();
+  await expect(
+    page.getByText("Account created. Sign in with your new credentials."),
+  ).toBeVisible();
+  await page
+    .getByLabel("Password", { exact: true })
+    .fill("synthetic friend password");
+  await page.getByRole("button", { name: "Sign in", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Market Explorer", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Administration", exact: true }),
+  ).toHaveCount(0);
+  expect((await page.request.get("/api/v1/admin/users")).status()).toBe(403);
+  await page
+    .getByRole("button", { name: "Account & devices", exact: true })
+    .click();
+  await page.locator('.legacy-device-access > summary').click();
+  await page.getByLabel("Device name").fill("Browser Windows fixture");
+  await page
+    .getByRole("button", { name: "Create device token", exact: true })
+    .click();
+  const token = await page
+    .getByLabel("New device token", { exact: true })
+    .inputValue();
+  expect(
+    (
+      await page.request.get("/api/v1/sync/markets/1", {
+        headers: { authorization: `Bearer ${token}` },
+      })
+    ).status(),
+  ).toBe(200);
+  await page.getByRole("button", { name: "Revoke", exact: true }).click();
+  await expect(
+    page.getByRole("cell", { name: "Revoked", exact: true }),
+  ).toBeVisible();
+  expect(
+    (
+      await page.request.get("/api/v1/sync/markets/1", {
+        headers: { authorization: `Bearer ${token}` },
+      })
+    ).status(),
+  ).toBe(401);
+  await page
+    .getByLabel("Current password", { exact: true })
+    .fill("synthetic friend password");
+  await page
+    .getByLabel("New password", { exact: true })
+    .fill("synthetic changed password");
+  await page
+    .getByRole("button", { name: "Change password and sign out", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Welcome back", exact: true }),
+  ).toBeVisible();
+  await login(page, "browser_friend", "synthetic changed password");
+});
+
+test("administrator roles, disabled mappings, schedules, storage and security events", async ({
+  page,
+}) => {
+  await login(page);
+  await page
+    .getByRole("button", { name: "Administration", exact: true })
+    .click();
+  await page
+    .getByRole("tab", { name: "Members & invitations", exact: true })
+    .click();
+  await page
+    .getByLabel("Role for member_fixture", { exact: true })
+    .selectOption("admin");
+  await expect(
+    page.getByText("Member role updated.", { exact: true }),
+  ).toBeVisible();
+  await page
+    .getByLabel("Role for member_fixture", { exact: true })
+    .selectOption("member");
+  await expect(
+    page.getByLabel("Role for member_fixture", { exact: true }),
+  ).toHaveValue("member");
+  await page
+    .getByRole("tab", { name: "Markets & schedules", exact: true })
+    .click();
+  await expect(page.getByLabel("Region", { exact: true })).toHaveValue("us");
+  await expect(page.getByLabel("Ruleset", { exact: true })).toHaveValue(
+    "Normal",
+  );
+  await expect(
+    page.getByLabel("Faction / auction house", { exact: true }),
+  ).toHaveValue("Horde");
+  await expect(
+    page.getByRole("button", { name: "Add disabled market", exact: true }),
+  ).toBeDisabled();
+  await expect(
+    page.getByText("US — Normal — Horde: identity verification is pending.", {
+      exact: false,
+    }),
+  ).toBeVisible();
+  const schedule = page
+    .getByRole("table", { name: "market schedules", exact: true })
+    .getByRole("row")
+    .filter({ hasText: "Synthetic Alliance" })
+    .locator("form.schedule");
+  await expect(schedule.getByRole("checkbox")).toBeDisabled();
+  await schedule.getByLabel("Interval (minutes)", { exact: true }).fill("60");
+  await Promise.all([
+    page.waitForResponse(
+      (r) =>
+        r.url().includes("/schedule") &&
+        r.request().method() === "PATCH" &&
+        r.status() === 200,
+    ),
+    schedule
+      .getByRole("button", { name: "Save schedule", exact: true })
+      .click(),
+  ]);
+  await page
+    .getByRole("tab", { name: "Storage & backups", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Backups & restoration", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", {
+      name: "Historical retention policy",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("+1.0 MiB over 1.0 days", { exact: true }),
+  ).toBeVisible();
+  await page.getByText("Recent storage measurements", { exact: true }).click();
+  await expect(
+    page.getByRole("cell", { name: "11.0 MiB", exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Preview retention impact", exact: true })
+    .click();
+  await expect(
+    page.getByRole("table", { name: "retention preview", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Apply confirmed batch", exact: true }),
+  ).toBeDisabled();
+  await page.getByRole("tab", { name: "Security events", exact: true }).click();
+  await expect(
+    page
+      .getByRole("cell", { name: "market schedule updated", exact: true })
+      .first(),
+  ).toBeVisible();
+});

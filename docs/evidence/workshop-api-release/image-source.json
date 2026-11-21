@@ -1,0 +1,18 @@
+{
+  "base_image": "sha256:9712cd35a1f669343d20d42598717d0fcb370a4c358d3edb4c35f807b0d9295c",
+  "source_commit": "47ab3cf52b58cafb3006523fc4e96e11943d2c9d",
+  "changed_modules": [
+    "app.py",
+    "bridge_api.py",
+    "security.py",
+    "workshop_summary.py"
+  ],
+  "unchanged_modules": 59,
+  "module_sha256": {
+    "app.py": "6dbd13c68cb14f4a7a645a5aaf1068da7c7e03bacbed75b649a20790ef68d503",
+    "bridge_api.py": "17d08e1812ab6d66a492396ccbd07539b286b1e28effdac2d279cca7fadf5652",
+    "security.py": "203974a76521a29cbde7f99cba6213ec8a42e3af7326a68813e02f8d5b8f28f6",
+    "workshop_summary.py": "6af307cc5748d3140d6178bc7271dfdb97f7ee620521bfba0e947e86684c3c24"
+  },
+  "retention_modules_unchanged": true
+}

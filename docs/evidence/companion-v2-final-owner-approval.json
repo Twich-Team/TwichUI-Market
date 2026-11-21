@@ -1,0 +1,20 @@
+{
+  "schema_version": 2,
+  "scope": "private-nsis-with-tauri-signed-updates",
+  "owner_approved_publication": true,
+  "owner_approved_deployment": true,
+  "owner_statement": "I am explicitly authorizing the controlled integration and production deployment of the completed Desktop Companion v2 and Item Metadata Recovery features. I also authorize publication of the verified Windows Companion 2.0.0-beta.2 installer through the website's account-controlled download flow.",
+  "authorization_source": "Human owner attached request in this integration chat, 2026-11-14 America/Denver",
+  "authorization_document_sha256": "5367b5d4d1e1b198c3b3fa9e125df05cf0a94951af69bbbc23c61f1227016b0c",
+  "source_commit": "c7bad2f5e84213e1c69e3eb66e8daa6540f05bc9",
+  "version": "2.0.0-beta.2",
+  "installer_sha256": "0fbc53603c218ffa85c8ee7b4e54f25e53c52a6fc3b2330ae914337714d41869",
+  "updater_public_key_sha256": "5794736c840c7c09a49396e60cd569ff6b5f24f872eb0318ed95d55c16616ecf",
+  "windows_run_id": 43664574901,
+  "signed_update_run_id": 43668266314,
+  "visual_approval_commit": "e55807c58c4cf68560729471019b88cc518fb5b0",
+  "deployment_source_commit": "e7d312974196690dbc8eae70a0aa3d5ecb4cc88e",
+  "tray_actions_verified": false,
+  "acknowledges_unverified_tray": true,
+  "note": "The owner authorizes beta publication and explicitly requires reporting remaining manual Windows tray tests. Tray actions remain unverified; this receipt records authorization, never a new Windows observation."
+}

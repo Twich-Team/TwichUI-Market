@@ -1,0 +1,186 @@
+name: Private website
+on:
+  push:
+    branches: [main, 'integration/**']
+  pull_request:
+concurrency:
+  group: web-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    env:
+      POSTGRES_PASSWORD: synthetic-ci-database-password
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Verify combined PR source
+        run: python3 scripts/verify-ci-checkout.py
+        env:
+          CI_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      - name: Prepare runner-owned backup fixture directories before Docker writes artifacts
+        run: |
+          mkdir -p artifacts/backup-management/browser-fixtures
+          chmod 700 artifacts/backup-management/browser-fixtures
+      - run: npm ci --prefix web
+      - run: npm --prefix web run build && npm --prefix web test
+      - run: npm --prefix web audit --omit=dev
+      - run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml up -d --build
+      - run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml exec -T -e METADATA_TEST_KEYRING_ONLY=true api python - < web/e2e/seed.py
+      - run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml run --rm -T --no-deps api python - < web/e2e/seed.py
+      - run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml exec -T api python - < web/e2e/seed-admin.py
+      - run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml exec -T api python - < web/e2e/seed-quality.py
+      - run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml exec -T api python - < web/e2e/seed-private-beta.py
+      - run: docker run --rm --network twichui-market-browser_default -v "$PWD:/work" -w /work/web mcr.microsoft.com/playwright:v1.65.1-noble npm run test:e2e -- --grep-invert 'backup management|unified commodities|Recovery Tracker:|provider rate limits:|ForeverDB metadata:|usability M[1-4]:'
+      - name: Verify mobile geometry and navigation in WebKit
+        run: docker run --rm --network twichui-market-browser_default -e MOBILE_SCREENSHOT_DIR=../artifacts/mobile-webkit -v "$PWD:/work" -w /work/web mcr.microsoft.com/playwright:v1.65.1-noble npm run test:e2e -- --config playwright.webkit.config.ts
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mobile-webkit-review
+          path: |
+            artifacts/mobile-webkit
+            artifacts/mobile-webkit-tests
+          if-no-files-found: ignore
+      - name: Verify Companion dashboard update notices and confirmation with mocked IPC
+        run: docker run --rm -v "$PWD:/repo" -w /repo mcr.microsoft.com/playwright:v1.65.1-noble node web/e2e/companion-layout.cjs
+      - name: Verify manual archive UI intents with mocked IPC
+        run: docker run --rm -e MARKET_ARCHIVE_UI_EVIDENCE=/work/artifacts/companion-v2 -v "$PWD:/work" -w /work/web mcr.microsoft.com/playwright:v1.65.1-noble node e2e/companion-archive.cjs
+      - name: Verify automatic Workshop setup and isolation with mocked IPC
+        run: docker run --rm -e MARKET_WORKSHOP_UI_EVIDENCE=/work/artifacts/workshop-delivery/browser -v "$PWD:/work" -w /work/web mcr.microsoft.com/playwright:v1.65.1-noble node e2e/companion-workshop.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: scoped-archive-ui-evidence
+          path: |
+            artifacts/companion-v2/archive-manual-controls.png
+            artifacts/workshop-delivery/browser
+          if-no-files-found: ignore
+      - name: Verify authentic ForeverDB metadata with isolated synthetic auctions
+        run: |
+          docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml exec -T api python - < web/e2e/seed-foreverdb.py
+          docker run --rm --network twichui-market-browser_default -v "$PWD:/work" -w /work/web mcr.microsoft.com/playwright:v1.65.1-noble npm run test:e2e -- foreverdb-metadata.spec.ts
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: foreverdb-metadata-review
+          path: artifacts/foreverdb-browser
+          if-no-files-found: ignore
+      - name: Seed synthetic provider quota review after ordinary workflows
+        run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml exec -T api python - < web/e2e/seed-provider-rates.py
+      - run: docker run --rm --network twichui-market-browser_default -v "$PWD:/work" -w /work/web mcr.microsoft.com/playwright:v1.65.1-noble npm run test:e2e -- provider-rates.spec.ts
+      - name: Seed disposable owner-observation acceptance
+        run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml exec -T api python - < web/e2e/seed-usability.py
+      - name: Verify usability, archive safety and actual chart interactions
+        run: docker run --rm --network twichui-market-browser_default -v "$PWD:/work" -w /work/web mcr.microsoft.com/playwright:v1.65.1-noble npm run test:e2e -- usability-reliability.spec.ts
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: owner-observations-review
+          path: artifacts/usability-reliability
+          if-no-files-found: ignore
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: provider-rate-management-review
+          path: artifacts/provider-rates
+          if-no-files-found: ignore
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: administration-and-quality-review-evidence
+          path: |
+            artifacts/admin-modernization/screenshots
+            artifacts/item-quality
+          if-no-files-found: ignore
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: metadata-recovery-browser-evidence
+          path: artifacts/metadata-recovery
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: item-modernization-browser-evidence
+          path: artifacts/modernization
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: companion-private-beta-browser-evidence
+          path: artifacts/companion-v2/private-beta-wizard*.png
+          if-no-files-found: ignore
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: explorer-item-details-review-evidence
+          path: artifacts/explorer-details
+          if-no-files-found: ignore
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: everyday-market-polish-review-evidence
+          path: artifacts/everyday-polish
+          if-no-files-found: ignore
+      - name: Seed isolated recovery tracker after ordinary workflows
+        run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml exec -T api python - < web/e2e/seed-recovery-tracker.py
+      - name: Verify recovery tracker and mobile journey
+        run: docker run --rm --network twichui-market-browser_default -v "$PWD:/work" -w /work/web mcr.microsoft.com/playwright:v1.65.1-noble npm run test:e2e -- recovery-tracker.spec.ts
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: recovery-tracker-evidence
+          path: artifacts/recovery-tracker
+          if-no-files-found: ignore
+
+      - name: Seed isolated unified coverage after existing browser suites
+        run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml exec -T api python - < web/e2e/seed-unified-coverage.py
+      - name: Verify commodity Explorer and details in Chromium
+        run: docker run --rm --network twichui-market-browser_default -v "$PWD:/work" -w /work/web mcr.microsoft.com/playwright:v1.65.1-noble npm run test:e2e -- unified-coverage.spec.ts
+      - name: Verify commodity Explorer and details in WebKit
+        run: docker run --rm --network twichui-market-browser_default -v "$PWD:/work" -w /work/web mcr.microsoft.com/playwright:v1.65.1-noble npm run test:e2e -- --config playwright.commodity-webkit.config.ts
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: commodity-webkit-evidence
+          path: artifacts/commodity-webkit-tests
+          if-no-files-found: ignore
+
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-failure-evidence
+          path: artifacts/web-e2e
+      - name: Prepare isolated backup management service and fixtures
+        run: |
+          export BACKUP_TEST_UID=$(id -u) BACKUP_TEST_GID=$(id -g)
+          mkdir -p artifacts/backup-management/browser-fixtures
+          chmod 700 artifacts/backup-management/browser-fixtures
+          python3 -c "from pathlib import Path; Path('artifacts/backup-management/synthetic-token').write_text('synthetic-backup-browser-token-not-for-production-2026')"
+          docker tag twichui-market-backend:dev twichui-market-backend:backup-review
+          docker tag twichui-market-web:dev twichui-market-web:backup-review
+          docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml -f compose.backup-browser.yaml build backup-manager
+          docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml -f compose.backup-browser.yaml up -d --no-deps --wait --wait-timeout 90 api backup-manager
+      - name: Verify backup administration and actual management boundary in Chromium and WebKit
+        run: |
+          docker run --rm --network twichui-market-browser_default -v "$PWD:/work" -w /work/web mcr.microsoft.com/playwright:v1.65.1-noble npm run test:e2e -- backup-management.spec.ts
+          docker run --rm --network twichui-market-browser_default -v "$PWD:/work" -w /work/web mcr.microsoft.com/playwright:v1.65.1-noble npm run test:e2e -- --config playwright.backup-webkit.config.ts
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backup-management-review
+          path: |
+            artifacts/backup-management/screenshots
+            artifacts/backup-management-webkit
+            artifacts/web-e2e
+          if-no-files-found: ignore
+      - if: always()
+        run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml -f compose.backup-browser.yaml down --volumes --remove-orphans

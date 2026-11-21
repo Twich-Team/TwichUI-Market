@@ -1,0 +1,8 @@
+# Review preparation only. Stop backup-manager before applying the prior APIs/frontend.
+services:
+  api:
+    image: sha256:81336cb2ad0f9edc19ee9d70e5614cf052831591ff3a702099da24a75c59656e
+  local-api:
+    image: sha256:81336cb2ad0f9edc19ee9d70e5614cf052831591ff3a702099da24a75c59656e
+  proxy:
+    image: sha256:561f33a0a4fd253a04efd8738c5261177274688daa0b8aa732bde6c50744b186
