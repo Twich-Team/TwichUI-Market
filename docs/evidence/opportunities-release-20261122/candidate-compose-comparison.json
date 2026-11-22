@@ -1,0 +1,12 @@
+{
+  "at": "2026-11-22T14:36:17.792190+00:00",
+  "original_overlay_count": 25,
+  "final_overlay_count": 26,
+  "config_quiet": true,
+  "changed_paths": [
+    "services.local-api.image",
+    "services.api.image"
+  ],
+  "candidate_image": "sha256:a3f8226431fbef2794187df8f7a4667f7ef5b96ca1f7a294c1ae3ffdccf8f88c",
+  "all_environment_mounts_ports_networks_resources_restart_logging_and_other_service_definitions_identical": true
+}

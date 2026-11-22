@@ -1,0 +1,31 @@
+{
+  "at": "2026-11-22T14:41:01.811885+00:00",
+  "cutoffs": {
+    "snapshot": 173,
+    "observation": 1964
+  },
+  "tables": {
+    "observations": {
+      "rows": 1964,
+      "bytes_hashed": 1173636,
+      "sha256": "12b76710fa398bf60818d26b8aec276bd914a8e67d8ab3ca27cad2c95945d34e"
+    },
+    "snapshots": {
+      "rows": 173,
+      "bytes_hashed": 19232,
+      "sha256": "b57c55c64250ba14bd2f724c140272612e76732af7ac2f4d67972f7fbe8d3413"
+    },
+    "listings": {
+      "rows": 27696379,
+      "bytes_hashed": 3995684335,
+      "sha256": "9543ef0c761565276dc0e3a4e734c826dd29ed23dad12e707e698db9df0caa82"
+    },
+    "snapshot_statistics": {
+      "rows": 4598744,
+      "bytes_hashed": 560375086,
+      "sha256": "03646d32e00ce6c65e32a027aad6a045b49d995079abc55b99b7b39cfc0d3bd0"
+    }
+  },
+  "database": "isolated market_restore",
+  "all_original_rows_identical": true
+}

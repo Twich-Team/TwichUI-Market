@@ -1,6 +1,6 @@
 # Market Opportunities operational release checkpoint
 
-**Preparation in progress; no production API replacement or Companion publication.**
+**Backend recovery/image/preflight gates pass; production replacement has not yet run. Companion publication awaits final exact-artifact owner approval.**
 Frozen Market source remains `29fa95b569cc3834ed2c17490d251a2a4ac6b4f5`;
 addon main remains `8e25ceea2a542a3e67b1dd586c3b4cdd00a70374`, with coordinated
 reader pin `d93d253ac31b89e953a8853ee2ce7b25adaedcc7`. Restoration authority is
@@ -38,25 +38,23 @@ The existing manager created it under the shared lock, fully decoded its custom
 archive, and recorded `protected=true` and
 `required_by=["release:opportunities-20261122"]`. Its schedule/policy is unchanged;
 both prior protected archives remain. [Creation receipt](evidence/opportunities-release-20261122/backup.json).
-**This creation receipt is not completed restore evidence.**
+The separate [actual restore receipt](evidence/opportunities-release-20261122/restore.json) now records completed isolated restoration, constraints and original-row readback; archive integrity alone was never treated as restore proof.
 
 Two VM interruptions prevented the isolated restore and native Linux build from
 completing. No acceptance is inferred from partial database files. Only task-owned
 interrupted restore data and completed destructive-test fixtures were retired.
-A fresh disk-backed isolated restore is in progress through the frozen
+A fresh disk-backed isolated restore subsequently completed through the frozen
 `scripts/backups.py` operator function, with the existing operation-specific Compose
 binding, the actual shared backup lock, pinned PostgreSQL, no ports, 1 GiB memory,
 no swap and one CPU. Its dataset is too large for the original 2 GiB tmpfs target.
-It must restore constraints, match the pinned original historical rows and pass
-candidate schema/credential checks before recording acceptance.
+It restored constraints, matched all 27,696,379 original listings, 4,598,744 snapshot-statistic rows, 1,964 observations and 173 snapshots at the pre-dump cutoffs, and passed candidate schema and original encrypted-provider-envelope decryption checks. No migration or upstream request occurred. Only its disposable database/network/volume were retired. The archive remains protected and now also carries the operator restore-recovery-gate reference.
 
 The executable [backend rollback](../deploy/opportunities-20261122/rollback-api.sh)
 has all 25 actual original overlays and both actual environment files in order,
 selects the retained prior immutable image and scopes execution to `api local-api`.
-Its check-only mode passed. It refuses an enabled/running legacy backup or running
+Its check-only mode passed. The separate [private release rollback](../deploy/opportunities-20261122/rollback-private-release.sh) pins retained beta.10, actual operator `marketdev`, the existing offline operator image/current reviewed policy and independently pinned verifier. Its check-only verification passed with the store read-only. Neither rollback was executed. It refuses an enabled/running legacy backup or running
 migrate container. The [candidate overlay](../deploy/opportunities-20261122/compose.api-release.yaml)
-changes only the two API image fields and is **not active**. Effective candidate
-configuration comparison and fresh health checks remain mandatory before execution.
+changes only the two API image fields and is **not active**. [Effective candidate configuration comparison](evidence/opportunities-release-20261122/candidate-compose-comparison.json) confirms exactly two image-field changes, with the full prior chain retained. [Final preflight](evidence/opportunities-release-20261122/final-preflight.json) reconfirms healthy collection, unchanged component settings, schema, retention and sufficient resources. Repeat health if execution is delayed.
 
 ## Signed Companion candidate, pending owner approval
 

@@ -1,0 +1,6 @@
+{
+  "image": "sha256:a3f8226431fbef2794187df8f7a4667f7ef5b96ca1f7a294c1ae3ffdccf8f88c",
+  "schema": "retention_20261118",
+  "alembic_check_returncode": 0,
+  "migration_applied": false
+}

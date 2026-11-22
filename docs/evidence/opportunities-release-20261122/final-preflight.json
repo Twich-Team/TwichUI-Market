@@ -1,0 +1,162 @@
+{
+  "at": "2026-11-22T14:42:09.637984+00:00",
+  "containers": [
+    {
+      "service": "api",
+      "id": "f7dbcf773567c6d8d912867bb1a9831a69d454a47d87b9dcc832c6dc634a6d5d",
+      "image": "sha256:428f0acfa92ec42fcc40d467e072ad3d14f7175c02ad76303d141d6824b983af",
+      "started": "2026-11-22T14:25:14.668612457Z",
+      "status": "running",
+      "health": "healthy"
+    },
+    {
+      "service": "local-api",
+      "id": "094706c2adc5a0686a2fddb7aca8624e928d5020b18a69a3ba901bd167406a35",
+      "image": "sha256:428f0acfa92ec42fcc40d467e072ad3d14f7175c02ad76303d141d6824b983af",
+      "started": "2026-11-22T14:25:14.723153951Z",
+      "status": "running",
+      "health": "healthy"
+    },
+    {
+      "service": "retention",
+      "id": "225f8fba07561eda9d4f64eb8ca98f3115ab50f5b0e6e4bdc050d75e30f81d43",
+      "image": "sha256:9712cd35a1f669343d20d42598717d0fcb370a4c358d3edb4c35f807b0d9295c",
+      "started": "2026-11-22T14:25:14.739805384Z",
+      "status": "running",
+      "health": null
+    },
+    {
+      "service": "monitor",
+      "id": "00320ce44d3801ef902386a2f7956fe9f49e74decad5ea71782a3f8cdde1dcd5",
+      "image": "sha256:9712cd35a1f669343d20d42598717d0fcb370a4c358d3edb4c35f807b0d9295c",
+      "started": "2026-11-22T14:25:14.680769774Z",
+      "status": "running",
+      "health": null
+    },
+    {
+      "service": "proxy",
+      "id": "de1e7aceb146621a04cdea2151d46318fc3c4124b3aa4da9ac98c5282f4539ac",
+      "image": "sha256:f48f8f1a7e5a030432abde0792ee0be1aae0326950404e83036bc9c0172a6814",
+      "started": "2026-11-22T14:25:14.624136218Z",
+      "status": "running",
+      "health": null
+    },
+    {
+      "service": "worker",
+      "id": "81b36b1a230d15f0cef2edcadc53866128f302d305a662bc9a453abf203b2887",
+      "image": "sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b",
+      "started": "2026-11-22T14:25:14.655183316Z",
+      "status": "running",
+      "health": null
+    },
+    {
+      "service": "backup-manager",
+      "id": "0975558bb55d6a8216c43fdba4911b3a9cbfc46bc6f36188c3e88e88782f6ecf",
+      "image": "sha256:79cea119910ad3353f8a35ce21d079fafbcab0a757c0734bfe3bce6055c68565",
+      "started": "2026-11-22T14:25:14.718813461Z",
+      "status": "running",
+      "health": null
+    },
+    {
+      "service": "enrichment",
+      "id": "08ac2b64e749d094f88e9cce7157fd3c5a29ea867bb11ae24789247479a49c44",
+      "image": "sha256:3ef6f57964546a425f4c2ebe2bc44be2d9a516340325074dfb0fb2f32d7c3667",
+      "started": "2026-11-22T14:25:14.640992375Z",
+      "status": "running",
+      "health": null
+    },
+    {
+      "service": "backup",
+      "id": "1f1cbba535e2cd64cf900099a5fe92ee662fa9ced84f5f2ae4fa5b28b32d5f9c",
+      "image": "sha256:2669ec98d745fbb77942ed6696162436862334ebaebc71e884853226504b260b",
+      "started": "2026-11-15T03:11:29.671470444Z",
+      "status": "exited",
+      "health": null
+    },
+    {
+      "service": "migrate",
+      "id": "d4336d00e3e028a60d6bbcb80af7136835897a6f07a5b27629ca35a01ac6f180",
+      "image": "sha256:4255007bdcf12a9b29e93a6be0e4be4a66480ce8139725ef3ba5e9fadae81550",
+      "started": "2026-11-17T21:31:26.775517163Z",
+      "status": "exited",
+      "health": null
+    },
+    {
+      "service": "db",
+      "id": "1a138045d430554c64142f230fa1555e61d3414b2926ae9b2606f58fb8fb3642",
+      "image": "sha256:d3244e8ce3f165ee3c93d9c4a4b1d0fe48b3a89e2287b717fdcbbde92d405065",
+      "started": "2026-11-22T14:25:14.726106577Z",
+      "status": "running",
+      "health": "healthy"
+    }
+  ],
+  "health": {
+    "at": [
+      {
+        "at": "2026-11-22 14:42:09.542957+00:00"
+      }
+    ],
+    "markets": [
+      {
+        "id": 1,
+        "enabled": false,
+        "house_id": 110,
+        "interval_seconds": 300,
+        "last_success": "2026-11-14 15:14:21.190053+00:00",
+        "failures": 0
+      },
+      {
+        "id": 2,
+        "enabled": true,
+        "house_id": 114,
+        "interval_seconds": 300,
+        "last_success": "2026-11-22 14:40:38.199163+00:00",
+        "failures": 0
+      }
+    ],
+    "feeds": [
+      {
+        "source_kind": "auctions",
+        "last_check": "2026-11-22 14:40:38.199163+00:00",
+        "last_success": "2026-11-22 14:40:38.199163+00:00",
+        "failures": 0,
+        "retry_after": null
+      },
+      {
+        "source_kind": "commodities",
+        "last_check": "2026-11-22 14:40:38.199163+00:00",
+        "last_success": "2026-11-22 14:40:38.199163+00:00",
+        "failures": 0,
+        "retry_after": null
+      }
+    ],
+    "schema": [
+      {
+        "version_num": "retention_20261118"
+      }
+    ],
+    "wal": [
+      {
+        "bytes": "385875968"
+      }
+    ],
+    "retention_batches": [
+      {
+        "count": 0
+      }
+    ]
+  },
+  "resources": {
+    "disk": {
+      "total": 266736099328,
+      "used": 117283811328,
+      "free": 137476538368
+    },
+    "inodes_available": 15832773,
+    "mem_available_bytes": 7093424128,
+    "cpu_count": 16
+  },
+  "full_chain_config_quiet": true,
+  "all_original_component_settings_preserved": true,
+  "dns_empty_representation_normalized_only": true
+}
