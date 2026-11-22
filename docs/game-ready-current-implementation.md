@@ -97,3 +97,29 @@ unknown files, capability replacement and actual HTTP/cache/fallback paths pass.
 -j 2` also passes. These checks do not certify new-format Windows publication,
 an installer, or real Forever frame time; paired acceptance follows in Stage D.
 No release version/signing/updater configuration has changed.
+
+## Stage D integration checkpoint
+
+The Unix cfg(test) native publisher driver uses the existing synthetic executable identity;
+all HTTP negotiation, validation, ownership, bank publication and readback are production
+code. The driver is ignored by ordinary tests and absent from release builds.
+Actual API -> native publisher -> exact addon 3596347 -> production Lua current/history ->
+incremental Opportunities passes for both 16 and 32, with 129 fabricated variants and
+60 dated observations. Warm 304 does one request, transfers zero bytes and preserves
+the active root mtime/hash. No archive or player data is changed.
+Core tests: 76 passed, zero failed; two opt-in tests ignored (the existing profiler and
+this explicit fixture driver). New native Windows publication/paired Linux consumption
+jobs are separate from the installed UI campaign, which remains required and unsuppressed.
+
+Scripts reuse `verify-workshop-e2e.py` and addon PR127's Opportunities benchmark/oracle.
+The dedicated campaign is `scripts/measure-workshop-prepared.py`; it is never selected by
+ordinary feature commands. Full repeated 60-day 120/500/1000/5000 results follow in the
+integration evidence report. No native Forever target achievement is claimed.
+
+Hosted status reviewed: corrected Stage A fce5 passes Backend314, Windows306 and website302.
+Its sync-performance21 campaign fails, as does the earlier20 campaign (baseline Error:Network).
+Stage B 2fcd passes Backend315 and website303; Windows307's core/desktop tests, build, picker
+and existing signed-updater verification pass, but installed WebView2 multi-installation
+selection fails waiting for `#workshop-confirmation` (job137327529233), skipping subsequent
+legacy/current publication steps. This failure is unresolved, not classified as passing or
+proven unrelated. No checks are disabled.

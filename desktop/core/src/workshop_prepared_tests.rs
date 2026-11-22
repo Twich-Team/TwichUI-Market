@@ -123,3 +123,38 @@ fn prepared_unknown_files_wrong_accounts_and_mid_publication_capability_changes_
         fs::write(&cap,bridge::canonical(&value).unwrap()).unwrap();
     }false}).is_err());assert_eq!(fs::read(&root).unwrap(),before);
 }
+
+/// Opt-in Unix integration driver: production HTTP/cache/publisher, with only the
+/// existing cfg(test) synthetic Forever executable identity. Never in a release.
+#[cfg(unix)]
+#[test]
+#[ignore = "explicit disposable producer-to-addon integration; not a development test"]
+fn prepared_pipeline_offline_driver() {
+    let path=std::path::PathBuf::from(std::env::var("TWICHUI_PREPARED_TEST_CONFIG").expect("explicit fixture config"));
+    let input:Value=serde_json::from_slice(&fs::read(&path).unwrap()).unwrap();
+    let base=path.parent().unwrap();assert!(base.file_name().unwrap().to_string_lossy().starts_with("prepared-fixture-"));
+    delivery::owned(base).unwrap();let game=base.join("game");
+    assert_eq!(fs::read(game.join("Wow.exe")).unwrap(),b"TWICHUI SYNTHETIC FOREVER 1.60.1");
+    let scope=Scope{server:crate::client::server_url(input["server"].as_str().unwrap()).unwrap().to_string(),account_id:input["account_id"].as_u64().unwrap()as u32,
+        market_id:input["market_id"].as_u64().unwrap()as u32,algorithm:"twichui-pricing-v1".into()};
+    assert!(scope.server.starts_with("http://127.0.0.1:"));
+    let c=Configuration{version:2,enabled:true,scope,installation:game.clone(),selection:json!({"kind":"broad_summary","market_id":input["market_id"],"region":"us"}),history_days:0};
+    let start=std::time::Instant::now();
+    let result=(||->Result<Value>{
+        let (bundle,bytes,requests)=if let Some(file)=input["source"].as_str() {
+            let v:Value=serde_json::from_slice(&fs::read(file)?)?;
+            let b=Bundle{manifest:v["manifest"].clone(),parts:v["parts"].as_object().unwrap().iter().map(|(k,v)|(k.parse().unwrap(),v.as_str().unwrap().as_bytes().to_vec())).collect(),prepared:v.get("prepared").filter(|v|!v.is_null()).cloned()};
+            b.validate(&c.scope,Some("us"))?;(b,0,0)
+        }else{
+            let client=MarketClient::new(&c.scope.server,std::env::var("TWICHUI_SUMMARY_TEST_TOKEN").unwrap())?;
+            download(base,&client,&c,&||false)?
+        };
+        let changed=publish(&c,&bundle,&||false)?;
+        let raw=fs::read(game.join("Interface/AddOns/TwichUI_MarketData/Data.lua"))?;
+        let (_,bank,_)=inspect_root(&raw,&c.scope,Some("us"))?;verify_bank(&c,&bundle.manifest,&bank)?;
+        Ok(json!({"ready":true,"changed":changed,"manifest":bundle.manifest,"requests":requests,"download_bytes":bytes,
+            "publication":game.join("Interface/AddOns"),"elapsed_ms":start.elapsed().as_secs_f64()*1000.}))
+    })();
+    let output=match result {Ok(v)=>v,Err(Error::SummaryPreparing(retry))=>json!({"ready":false,"retry_after":retry}),Err(e)=>panic!("synthetic prepared pipeline: {e:?}")};
+    fs::write(base.join("result.json"),serde_json::to_vec(&output).unwrap()).unwrap();
+}

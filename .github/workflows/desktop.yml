@@ -209,3 +209,68 @@ jobs:
         with:
           name: workshop-production-lua-acceptance
           path: acceptance/workshop-large/
+
+  prepared-publisher:
+    # Independent of the installed UI campaign: a UI failure must not silently
+    # skip the new wire-format producer/consumer acceptance.
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/checkout@v4
+        with:
+          repository: Twich-Team/TwichUI
+          ref: 3596347fef1be812114c11a06cfe874a4541e7aa
+          path: prepared-addon
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.100.0
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: desktop -> target
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r backend/requirements.lock
+      - run: cargo build --manifest-path desktop/Cargo.toml --example workshop_smoke --locked
+      - name: Actual native prepared 16 publication (60 synthetic days)
+        run: python scripts/verify-workshop-e2e.py --rust-client desktop/target/debug/examples/workshop_smoke.exe --addon-root prepared-addon --current --prepared 16 --variants 129 --days 60 --publish --skip-lua --out artifacts/prepared/16
+      - name: Actual native prepared 32 publication (60 synthetic days)
+        run: python scripts/verify-workshop-e2e.py --rust-client desktop/target/debug/examples/workshop_smoke.exe --addon-root prepared-addon --current --prepared 32 --variants 129 --days 60 --publish --skip-lua --out artifacts/prepared/32
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: prepared-native-publication
+          path: artifacts/prepared
+          if-no-files-found: error
+
+  prepared-consumer:
+    needs: prepared-publisher
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/checkout@v4
+        with:
+          repository: Twich-Team/TwichUI
+          ref: 3596347fef1be812114c11a06cfe874a4541e7aa
+          path: prepared-addon
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: prepared-native-publication
+          path: prepared-publication
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq lua5.1 lua-bitop
+      - name: Exact Windows files through production Lua and Opportunities
+        working-directory: prepared-addon/tests
+        shell: bash
+        run: |
+          for layout in 16 32; do
+            export WORKSHOP_SUMMARY_ARTIFACT="$GITHUB_WORKSPACE/prepared-publication/$layout/publication/TwichUI_MarketData/Data.lua"
+            export WORKSHOP_SUMMARY_PARTS="$GITHUB_WORKSPACE/prepared-publication/$layout/publication"
+            export WORKSHOP_PREPARED_EXPECTED_LAYOUT="$layout"
+            lua5.1 -e 'require("bit"); ROOT="../!!!TwichUI/"; REPO="../"; TESTS="./"' "$GITHUB_WORKSPACE/scripts/test_workshop_prepared_artifact.lua"
+          done
