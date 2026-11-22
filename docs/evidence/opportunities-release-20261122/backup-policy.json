@@ -1,0 +1,21 @@
+{
+  "job": {
+    "id": "9750365f6dde4f3aa4c6f6eb79629185",
+    "status": "succeeded",
+    "actor": "admin:1",
+    "started_at": "2026-11-18T14:48:08.992929+00:00",
+    "finished_at": "2026-11-18T14:52:50.002028+00:00",
+    "backup_id": "24a79defbf4791f00cb88f6078009421"
+  },
+  "policy": {
+    "revision": 1,
+    "enabled": false,
+    "interval_seconds": 86400,
+    "daily": 2,
+    "weekly": 0,
+    "monthly": 0,
+    "max_bytes": null,
+    "minimum_recovery_points": 1,
+    "warning_free_bytes": 3221225472
+  }
+}

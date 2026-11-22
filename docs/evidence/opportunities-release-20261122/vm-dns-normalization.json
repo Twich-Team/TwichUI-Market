@@ -1,0 +1,189 @@
+[
+  {
+    "service": "api",
+    "changes": {
+      "Dns": [
+        null,
+        []
+      ],
+      "DnsOptions": [
+        null,
+        []
+      ],
+      "DnsSearch": [
+        null,
+        []
+      ]
+    }
+  },
+  {
+    "service": "local-api",
+    "changes": {
+      "Dns": [
+        null,
+        []
+      ],
+      "DnsOptions": [
+        null,
+        []
+      ],
+      "DnsSearch": [
+        null,
+        []
+      ]
+    }
+  },
+  {
+    "service": "retention",
+    "changes": {
+      "Dns": [
+        null,
+        []
+      ],
+      "DnsOptions": [
+        null,
+        []
+      ],
+      "DnsSearch": [
+        null,
+        []
+      ]
+    }
+  },
+  {
+    "service": "monitor",
+    "changes": {
+      "Dns": [
+        null,
+        []
+      ],
+      "DnsOptions": [
+        null,
+        []
+      ],
+      "DnsSearch": [
+        null,
+        []
+      ]
+    }
+  },
+  {
+    "service": "proxy",
+    "changes": {
+      "Dns": [
+        null,
+        []
+      ],
+      "DnsOptions": [
+        null,
+        []
+      ],
+      "DnsSearch": [
+        null,
+        []
+      ]
+    }
+  },
+  {
+    "service": "worker",
+    "changes": {
+      "Dns": [
+        null,
+        []
+      ],
+      "DnsOptions": [
+        null,
+        []
+      ],
+      "DnsSearch": [
+        null,
+        []
+      ]
+    }
+  },
+  {
+    "service": "backup-manager",
+    "changes": {
+      "Dns": [
+        null,
+        []
+      ],
+      "DnsOptions": [
+        null,
+        []
+      ],
+      "DnsSearch": [
+        null,
+        []
+      ]
+    }
+  },
+  {
+    "service": "enrichment",
+    "changes": {
+      "Dns": [
+        null,
+        []
+      ],
+      "DnsOptions": [
+        null,
+        []
+      ],
+      "DnsSearch": [
+        null,
+        []
+      ]
+    }
+  },
+  {
+    "service": "backup",
+    "changes": {
+      "Dns": [
+        null,
+        []
+      ],
+      "DnsOptions": [
+        null,
+        []
+      ],
+      "DnsSearch": [
+        null,
+        []
+      ]
+    }
+  },
+  {
+    "service": "migrate",
+    "changes": {
+      "Dns": [
+        null,
+        []
+      ],
+      "DnsOptions": [
+        null,
+        []
+      ],
+      "DnsSearch": [
+        null,
+        []
+      ]
+    }
+  },
+  {
+    "service": "db",
+    "changes": {
+      "Dns": [
+        null,
+        []
+      ],
+      "DnsOptions": [
+        null,
+        []
+      ],
+      "DnsSearch": [
+        null,
+        []
+      ]
+    }
+  }
+]

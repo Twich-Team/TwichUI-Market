@@ -1,0 +1,10 @@
+{
+  "source": "29fa95b569cc3834ed2c17490d251a2a4ac6b4f5",
+  "operator_image": "sha256:c8686b5be272bcef4589df5a99a539cf9311dc111d0ba31ac8eee6c31f3802ec",
+  "verifier_sha256": "9e47f51bad9a675c4f45b33b9b9743fb7588d9abfe7f6b0b9228d02b6b13ea32",
+  "retained_version_verified": "2.0.0-beta.10",
+  "returncode": 0,
+  "network": "none",
+  "store_mount": "read-only",
+  "old_embedded_policy_used": false
+}

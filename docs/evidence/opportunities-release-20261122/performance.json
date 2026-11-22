@@ -1,0 +1,39 @@
+{
+  "fixture": true,
+  "source_commit": "b39a35c01676b50dbc159f4793e0ad547676acfc",
+  "initial_sync_ms": 2616.2563999999993,
+  "incremental_noop_sync_ms": 917.4395999999997,
+  "sync_fixture": {
+    "variants": 2,
+    "page_limit": 1,
+    "injected_delay_ms_per_page": 500
+  },
+  "second_launch_restore_ms": 93.35610000000088,
+  "idle_market_api_requests": {
+    "before": {
+      "bearer_requests": 10,
+      "token_requests": 3,
+      "sync_requests": 3,
+      "price_runs": 2,
+      "summary_preparations": 0
+    },
+    "after": {
+      "bearer_requests": 10,
+      "token_requests": 3,
+      "sync_requests": 3,
+      "price_runs": 2,
+      "summary_preparations": 0
+    }
+  },
+  "resources": {
+    "processes": 7,
+    "cpu_one_core_percent": 0.621,
+    "private_bytes_sum": 131252224,
+    "established_tcp_connections": 1,
+    "scope": "installed native process and owned WebView2 children; browser and test driver excluded",
+    "cpu_host_percent": 0.1552,
+    "working_set_sum_bytes": 387612672,
+    "sample_ms": 10065.19
+  },
+  "desktop_frontend_bytes": 50773
+}

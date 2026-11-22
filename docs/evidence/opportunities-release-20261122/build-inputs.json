@@ -1,0 +1,14 @@
+{
+  "source": "29fa95b569cc3834ed2c17490d251a2a4ac6b4f5",
+  "base_image": "sha256:428f0acfa92ec42fcc40d467e072ad3d14f7175c02ad76303d141d6824b983af",
+  "sha256": {
+    "backend/market/security.py": "2c0ee7b698cbb196d1bf048cfe476340b37130eb80b51c6a3ee5f10080aac614",
+    "backend/market/workshop_summary.py": "735425ed693faaa6790c21a3c16626e770d2f01d6569fd8328a89da2d54cf743",
+    "contracts/workshop-summary/v3/README.md": "002368a740312693e1fb3784f20e44b296518e431495b808d2fa980d67b7b155",
+    "contracts/workshop-summary/v3/addon-source.txt": "d62d3d0d6ce3bcf399285bea98bff50dbb6a648a7580b22daa7a0658ebc0ed33",
+    "contracts/workshop-summary/v3/fixtures/synthetic.json": "2e7ac6a6aa3c77ec721b4d7df9a793620413d62669ebe9df9646bd72c3e4b350",
+    "contracts/workshop-summary/v3/manifest.schema.json": "6ba4f2de41c8e91c311789a99c2b27228f9c01cab659df78c202b8658c28f88f",
+    "contracts/workshop-summary/v3/row.schema.json": "8b1f1d49547bf27f4ec88a6230fe049a391a93288923d97144710fe9e585d538"
+  },
+  "no_dependency_or_schema_change": true
+}

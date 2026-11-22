@@ -1,0 +1,17 @@
+{
+  "status": "signed original candidate; publication awaits exact-artifact owner approval; backend awaits actual restore",
+  "payload_commit": "b39a35c01676b50dbc159f4793e0ad547676acfc",
+  "proof_commit": "fa9f494ec9ae822f305dd406a5174942d503776c",
+  "pr": 45,
+  "version": "2.0.0-beta.11",
+  "installer_sha256": "84dacad168dc212d8dda7d06f15ddc5a918f170ba1af0e9ece4e6373cd883129",
+  "installer_bytes": 4885541,
+  "original_windows_run_id": 45027451323,
+  "original_artifact_id": 14756114202,
+  "original_archive_sha256": "783821c57bf882c17cf0ea8d90f063af07cf6770e59ffbd49720e3a0a8a04b38",
+  "sdk_run_id": 45028815202,
+  "updater_public_key_sha256": "5794736c840c7c09a49396e60cd569ff6b5f24f872eb0318ed95d55c16616ecf",
+  "owner_publication_approval": false,
+  "tray_verified": false,
+  "physical_pc_or_forever_verified": false
+}

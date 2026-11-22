@@ -1,0 +1,26 @@
+{
+  "windows": {
+    "id": 45027451323,
+    "source_commit": "b39a35c01676b50dbc159f4793e0ad547676acfc",
+    "repository": "Twich-Team/TwichUI-Market",
+    "path": ".github/workflows/desktop.yml",
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "backend": {
+    "id": 45027451269,
+    "source_commit": "b39a35c01676b50dbc159f4793e0ad547676acfc",
+    "repository": "Twich-Team/TwichUI-Market",
+    "path": ".github/workflows/backend.yml",
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "website": {
+    "id": 45027451254,
+    "source_commit": "b39a35c01676b50dbc159f4793e0ad547676acfc",
+    "repository": "Twich-Team/TwichUI-Market",
+    "path": ".github/workflows/web.yml",
+    "status": "completed",
+    "conclusion": "success"
+  }
+}
