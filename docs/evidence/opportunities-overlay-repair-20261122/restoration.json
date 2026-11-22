@@ -1,0 +1,63 @@
+{
+  "approved_commit": "7b342109eaa7287a86b7233ee4af09139361b394",
+  "at": "2026-11-22T13:10:39.881900+00:00",
+  "manifest_sha256": "34e1df21dbd91553eab1230005bf437e6b9801b26c76311b168e94934a70172a",
+  "restored": [
+    {
+      "path": "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.backup-management.yaml",
+      "sha256": "19392027add62af3d8a4fd9d5a9c524c193c9b1c469b4aab63776bffadef93bb",
+      "uid": 1002,
+      "mode": "0o644",
+      "bytes": 1572
+    },
+    {
+      "path": "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.backup-review-images.yaml",
+      "sha256": "4ee22ffb9d85cec1caa2125fa92bba111ad784248d65552f02c88ee30f442103",
+      "uid": 1002,
+      "mode": "0o644",
+      "bytes": 467
+    },
+    {
+      "path": "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-cap.yaml",
+      "sha256": "20334dd0f071c89f58aba74c3718fb1a99ed08e47190e967bad7be4028da659e",
+      "uid": 1002,
+      "mode": "0o644",
+      "bytes": 251
+    },
+    {
+      "path": "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-release.yaml",
+      "sha256": "d25d9b6eb672aefd731ca759849f3051d50585f838002ecd9c0a293b26257187",
+      "uid": 1002,
+      "mode": "0o644",
+      "bytes": 4040
+    },
+    {
+      "path": "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-activation.yaml",
+      "sha256": "e488062573302d6d839cf795eb4cc7a39e041662c38172c4768ffe3bf823f5b4",
+      "uid": 1002,
+      "mode": "0o644",
+      "bytes": 1570
+    },
+    {
+      "path": "/home/marketdev/.codex/worktrees/backup-management-retention/TwichUI-Market/compose.backup-management.yaml",
+      "sha256": "19392027add62af3d8a4fd9d5a9c524c193c9b1c469b4aab63776bffadef93bb",
+      "uid": 1002,
+      "mode": "0o644",
+      "bytes": 1572
+    },
+    {
+      "path": "/home/marketdev/.codex/worktrees/backup-management-retention/TwichUI-Market/compose.backup-review-images.yaml",
+      "sha256": "4ee22ffb9d85cec1caa2125fa92bba111ad784248d65552f02c88ee30f442103",
+      "uid": 1002,
+      "mode": "0o644",
+      "bytes": 467
+    }
+  ],
+  "created_parent_directories": [
+    "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market",
+    "/home/marketdev/.codex/worktrees/backup-management-retention/TwichUI-Market"
+  ],
+  "preexisting_parent_permissions_preserved": true,
+  "existing_files_overwritten": false,
+  "git_worktrees_registered_or_recreated": false
+}

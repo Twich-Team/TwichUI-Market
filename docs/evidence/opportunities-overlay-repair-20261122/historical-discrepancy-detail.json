@@ -1,0 +1,37 @@
+{
+  "backup": {
+    "state": "exited",
+    "expected_restart": "unless-stopped",
+    "actual_restart": {
+      "Name": "no",
+      "MaximumRetryCount": 0
+    },
+    "expected_logging": {
+      "driver": "json-file",
+      "options": {
+        "max-file": "2",
+        "max-size": "5m"
+      }
+    },
+    "actual_logging": {
+      "Type": "json-file",
+      "Config": {
+        "max-file": "2",
+        "max-size": "5m"
+      }
+    }
+  },
+  "migrate": {
+    "state": "exited",
+    "expected_restart": null,
+    "actual_restart": {
+      "Name": "no",
+      "MaximumRetryCount": 0
+    },
+    "expected_logging": null,
+    "actual_logging": {
+      "Type": "json-file",
+      "Config": {}
+    }
+  }
+}

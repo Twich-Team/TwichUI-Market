@@ -1,0 +1,337 @@
+[
+  {
+    "service": "api",
+    "status": "running",
+    "checks": {
+      "image_identity": true,
+      "environment": true,
+      "mounts": true,
+      "network_membership": true,
+      "published_ports": true,
+      "memory_limit": true,
+      "pids_limit": true,
+      "cpu_limit": true,
+      "restart": true,
+      "logging": true,
+      "read_only": true,
+      "security_options": true,
+      "cap_drop": true,
+      "tmpfs": true,
+      "command": true,
+      "entrypoint": true
+    },
+    "details": {
+      "image_selection": {
+        "declared": "sha256:428f0acfa92ec42fcc40d467e072ad3d14f7175c02ad76303d141d6824b983af",
+        "resolved_image": "sha256:428f0acfa92ec42fcc40d467e072ad3d14f7175c02ad76303d141d6824b983af",
+        "running_image": "sha256:428f0acfa92ec42fcc40d467e072ad3d14f7175c02ad76303d141d6824b983af"
+      }
+    }
+  },
+  {
+    "service": "local-api",
+    "status": "running",
+    "checks": {
+      "image_identity": true,
+      "environment": true,
+      "mounts": true,
+      "network_membership": true,
+      "published_ports": true,
+      "memory_limit": true,
+      "pids_limit": true,
+      "cpu_limit": true,
+      "restart": true,
+      "logging": true,
+      "read_only": true,
+      "security_options": true,
+      "cap_drop": true,
+      "tmpfs": true,
+      "command": true,
+      "entrypoint": true
+    },
+    "details": {
+      "image_selection": {
+        "declared": "sha256:428f0acfa92ec42fcc40d467e072ad3d14f7175c02ad76303d141d6824b983af",
+        "resolved_image": "sha256:428f0acfa92ec42fcc40d467e072ad3d14f7175c02ad76303d141d6824b983af",
+        "running_image": "sha256:428f0acfa92ec42fcc40d467e072ad3d14f7175c02ad76303d141d6824b983af"
+      }
+    }
+  },
+  {
+    "service": "retention",
+    "status": "running",
+    "checks": {
+      "image_identity": true,
+      "environment": true,
+      "mounts": true,
+      "network_membership": true,
+      "published_ports": true,
+      "memory_limit": true,
+      "pids_limit": true,
+      "cpu_limit": true,
+      "restart": true,
+      "logging": true,
+      "read_only": true,
+      "security_options": true,
+      "cap_drop": true,
+      "tmpfs": true,
+      "command": true,
+      "entrypoint": true
+    },
+    "details": {
+      "image_selection": {
+        "declared": "sha256:9712cd35a1f669343d20d42598717d0fcb370a4c358d3edb4c35f807b0d9295c",
+        "resolved_image": "sha256:9712cd35a1f669343d20d42598717d0fcb370a4c358d3edb4c35f807b0d9295c",
+        "running_image": "sha256:9712cd35a1f669343d20d42598717d0fcb370a4c358d3edb4c35f807b0d9295c"
+      }
+    }
+  },
+  {
+    "service": "monitor",
+    "status": "running",
+    "checks": {
+      "image_identity": true,
+      "environment": true,
+      "mounts": true,
+      "network_membership": true,
+      "published_ports": true,
+      "memory_limit": true,
+      "pids_limit": true,
+      "cpu_limit": true,
+      "restart": true,
+      "logging": true,
+      "read_only": true,
+      "security_options": true,
+      "cap_drop": true,
+      "tmpfs": true,
+      "command": true,
+      "entrypoint": true
+    },
+    "details": {
+      "image_selection": {
+        "declared": "sha256:9712cd35a1f669343d20d42598717d0fcb370a4c358d3edb4c35f807b0d9295c",
+        "resolved_image": "sha256:9712cd35a1f669343d20d42598717d0fcb370a4c358d3edb4c35f807b0d9295c",
+        "running_image": "sha256:9712cd35a1f669343d20d42598717d0fcb370a4c358d3edb4c35f807b0d9295c"
+      }
+    }
+  },
+  {
+    "service": "proxy",
+    "status": "running",
+    "checks": {
+      "image_identity": true,
+      "environment": true,
+      "mounts": true,
+      "network_membership": true,
+      "published_ports": true,
+      "memory_limit": true,
+      "pids_limit": true,
+      "cpu_limit": true,
+      "restart": true,
+      "logging": true,
+      "read_only": true,
+      "security_options": true,
+      "cap_drop": true,
+      "tmpfs": true,
+      "command": true,
+      "entrypoint": true
+    },
+    "details": {
+      "image_selection": {
+        "declared": "sha256:f48f8f1a7e5a030432abde0792ee0be1aae0326950404e83036bc9c0172a6814",
+        "resolved_image": "sha256:f48f8f1a7e5a030432abde0792ee0be1aae0326950404e83036bc9c0172a6814",
+        "running_image": "sha256:f48f8f1a7e5a030432abde0792ee0be1aae0326950404e83036bc9c0172a6814"
+      }
+    }
+  },
+  {
+    "service": "worker",
+    "status": "running",
+    "checks": {
+      "image_identity": true,
+      "environment": true,
+      "mounts": true,
+      "network_membership": true,
+      "published_ports": true,
+      "memory_limit": true,
+      "pids_limit": true,
+      "cpu_limit": true,
+      "restart": true,
+      "logging": true,
+      "read_only": true,
+      "security_options": true,
+      "cap_drop": true,
+      "tmpfs": true,
+      "command": true,
+      "entrypoint": true
+    },
+    "details": {
+      "image_selection": {
+        "declared": "sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b",
+        "resolved_image": "sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b",
+        "running_image": "sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b"
+      }
+    }
+  },
+  {
+    "service": "backup-manager",
+    "status": "running",
+    "checks": {
+      "image_identity": true,
+      "environment": true,
+      "mounts": true,
+      "network_membership": true,
+      "published_ports": true,
+      "memory_limit": true,
+      "pids_limit": true,
+      "cpu_limit": true,
+      "restart": true,
+      "logging": true,
+      "read_only": true,
+      "security_options": true,
+      "cap_drop": true,
+      "tmpfs": true,
+      "command": true,
+      "entrypoint": true
+    },
+    "details": {
+      "image_selection": {
+        "declared": "sha256:79cea119910ad3353f8a35ce21d079fafbcab0a757c0734bfe3bce6055c68565",
+        "resolved_image": "sha256:79cea119910ad3353f8a35ce21d079fafbcab0a757c0734bfe3bce6055c68565",
+        "running_image": "sha256:79cea119910ad3353f8a35ce21d079fafbcab0a757c0734bfe3bce6055c68565"
+      }
+    }
+  },
+  {
+    "service": "enrichment",
+    "status": "running",
+    "checks": {
+      "image_identity": true,
+      "environment": true,
+      "mounts": true,
+      "network_membership": true,
+      "published_ports": true,
+      "memory_limit": true,
+      "pids_limit": true,
+      "cpu_limit": true,
+      "restart": true,
+      "logging": true,
+      "read_only": true,
+      "security_options": true,
+      "cap_drop": true,
+      "tmpfs": true,
+      "command": true,
+      "entrypoint": true
+    },
+    "details": {
+      "image_selection": {
+        "declared": "sha256:3ef6f57964546a425f4c2ebe2bc44be2d9a516340325074dfb0fb2f32d7c3667",
+        "resolved_image": "sha256:3ef6f57964546a425f4c2ebe2bc44be2d9a516340325074dfb0fb2f32d7c3667",
+        "running_image": "sha256:3ef6f57964546a425f4c2ebe2bc44be2d9a516340325074dfb0fb2f32d7c3667"
+      }
+    }
+  },
+  {
+    "service": "backup",
+    "status": "exited",
+    "checks": {
+      "image_identity": true,
+      "environment": true,
+      "mounts": true,
+      "network_membership": true,
+      "published_ports": true,
+      "memory_limit": true,
+      "pids_limit": true,
+      "cpu_limit": true,
+      "restart": false,
+      "logging": true,
+      "read_only": true,
+      "security_options": true,
+      "cap_drop": true,
+      "tmpfs": true,
+      "command": true,
+      "entrypoint": true
+    },
+    "details": {
+      "image_selection": {
+        "declared": "twichui-market-backup:dev",
+        "resolved_image": "sha256:2669ec98d745fbb77942ed6696162436862334ebaebc71e884853226504b260b",
+        "running_image": "sha256:2669ec98d745fbb77942ed6696162436862334ebaebc71e884853226504b260b"
+      },
+      "restart": {
+        "expected_sha256": "cf1f9ee404ab3a53e62063bf9af575d7ff694c83daab8d84f6f67921962189a2",
+        "actual_sha256": "d404b4000ecf4446757d677fdda5761dbf5875035c3c79c9f1851044156d6510"
+      }
+    }
+  },
+  {
+    "service": "migrate",
+    "status": "exited",
+    "checks": {
+      "image_identity": false,
+      "environment": false,
+      "mounts": true,
+      "network_membership": true,
+      "published_ports": true,
+      "memory_limit": true,
+      "pids_limit": true,
+      "cpu_limit": true,
+      "restart": true,
+      "logging": true,
+      "read_only": true,
+      "security_options": true,
+      "cap_drop": true,
+      "tmpfs": true,
+      "command": true,
+      "entrypoint": true
+    },
+    "details": {
+      "image_identity": {
+        "expected_sha256": "073060f0a9c60dcc4a2b69806908bebcf5a5ce7065d9863b3709a05a84c04955",
+        "actual_sha256": "72f0586c4f383a1934766f71cd4f2f18cb39018a97759c5d802ddf54a1fbcbdf"
+      },
+      "image_selection": {
+        "declared": "twichui-market-backend:dev",
+        "resolved_image": "sha256:9fe1f98e78e86eae9821d2c5e02a6e0f48cc9899cb259c63a4a05416118413a0",
+        "running_image": "sha256:4255007bdcf12a9b29e93a6be0e4be4a66480ce8139725ef3ba5e9fadae81550"
+      },
+      "environment": {
+        "expected_sha256": "7c2c612a9d742713d60f7336f7e6b1ae7b5080185b6da34d848f911b54b513cf",
+        "actual_sha256": "d83d962c6d20da11a0882df6d2d68abee93651d390e94a578cc09e7f37354fb0"
+      },
+      "environment_keys_differing": [
+        "DETAILED_STATISTICS_DAYS",
+        "RAW_LISTING_DAYS"
+      ]
+    }
+  },
+  {
+    "service": "db",
+    "status": "running",
+    "checks": {
+      "image_identity": true,
+      "environment": true,
+      "mounts": true,
+      "network_membership": true,
+      "published_ports": true,
+      "memory_limit": true,
+      "pids_limit": true,
+      "cpu_limit": true,
+      "restart": true,
+      "logging": true,
+      "read_only": true,
+      "security_options": true,
+      "cap_drop": true,
+      "tmpfs": true,
+      "command": true,
+      "entrypoint": true
+    },
+    "details": {
+      "image_selection": {
+        "declared": "postgres:17-alpine",
+        "resolved_image": "sha256:d3244e8ce3f165ee3c93d9c4a4b1d0fe48b3a89e2287b717fdcbbde92d405065",
+        "running_image": "sha256:d3244e8ce3f165ee3c93d9c4a4b1d0fe48b3a89e2287b717fdcbbde92d405065"
+      }
+    }
+  }
+]

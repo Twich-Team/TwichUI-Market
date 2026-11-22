@@ -1,0 +1,18 @@
+{
+  "log_returncode": 0,
+  "requested_tail_limit": 250,
+  "safe_collector_lines": [],
+  "other_lines_withheld": 0,
+  "collector_source_hashes": {
+    "worker.py": "5f948e3ed503516eb5e0089e787138563936b60c20e0b957c4997531e7f9418a",
+    "feed_collection.py": "524c86afb99793648fe7b702cafca8272236d449aca4634d4afe3b8e6bb08fc7",
+    "probe.py": "74ce9045ba6c55934ce81700e81cbf8c6ded241a94f92c8bca5f853d719a94ec",
+    "ingest.py": "14b87d1e0e5cc8fd4b1d93e80f270712ab4c0df45bebad7591c03b542a3c68ea"
+  },
+  "matches_frozen_market_modules": {
+    "worker.py": true,
+    "feed_collection.py": true,
+    "probe.py": true,
+    "ingest.py": true
+  }
+}

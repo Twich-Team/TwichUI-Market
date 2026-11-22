@@ -1,0 +1,219 @@
+{
+  "verified_at": "2026-11-22T13:13:49.502977+00:00",
+  "all_11_identities_and_configuration_unchanged": true,
+  "restored_files_rehashed": 7,
+  "containers": [
+    {
+      "service": "api",
+      "id": "f7dbcf773567c6d8d912867bb1a9831a69d454a47d87b9dcc832c6dc634a6d5d",
+      "image": "sha256:428f0acfa92ec42fcc40d467e072ad3d14f7175c02ad76303d141d6824b983af",
+      "started": "2026-11-19T03:05:23.19328208Z",
+      "status": "running",
+      "health": "healthy",
+      "preservation_checks": {
+        "id": true,
+        "image": true,
+        "started": true,
+        "status": true,
+        "restart_count": true,
+        "config": true,
+        "host_config": true,
+        "mounts": true,
+        "network_settings": true
+      }
+    },
+    {
+      "service": "local-api",
+      "id": "094706c2adc5a0686a2fddb7aca8624e928d5020b18a69a3ba901bd167406a35",
+      "image": "sha256:428f0acfa92ec42fcc40d467e072ad3d14f7175c02ad76303d141d6824b983af",
+      "started": "2026-11-19T03:05:22.95870302Z",
+      "status": "running",
+      "health": "healthy",
+      "preservation_checks": {
+        "id": true,
+        "image": true,
+        "started": true,
+        "status": true,
+        "restart_count": true,
+        "config": true,
+        "host_config": true,
+        "mounts": true,
+        "network_settings": true
+      }
+    },
+    {
+      "service": "retention",
+      "id": "225f8fba07561eda9d4f64eb8ca98f3115ab50f5b0e6e4bdc050d75e30f81d43",
+      "image": "sha256:9712cd35a1f669343d20d42598717d0fcb370a4c358d3edb4c35f807b0d9295c",
+      "started": "2026-11-18T16:23:06.415356816Z",
+      "status": "running",
+      "health": null,
+      "preservation_checks": {
+        "id": true,
+        "image": true,
+        "started": true,
+        "status": true,
+        "restart_count": true,
+        "config": true,
+        "host_config": true,
+        "mounts": true,
+        "network_settings": true
+      }
+    },
+    {
+      "service": "monitor",
+      "id": "00320ce44d3801ef902386a2f7956fe9f49e74decad5ea71782a3f8cdde1dcd5",
+      "image": "sha256:9712cd35a1f669343d20d42598717d0fcb370a4c358d3edb4c35f807b0d9295c",
+      "started": "2026-11-18T16:23:06.640021525Z",
+      "status": "running",
+      "health": null,
+      "preservation_checks": {
+        "id": true,
+        "image": true,
+        "started": true,
+        "status": true,
+        "restart_count": true,
+        "config": true,
+        "host_config": true,
+        "mounts": true,
+        "network_settings": true
+      }
+    },
+    {
+      "service": "proxy",
+      "id": "de1e7aceb146621a04cdea2151d46318fc3c4124b3aa4da9ac98c5282f4539ac",
+      "image": "sha256:f48f8f1a7e5a030432abde0792ee0be1aae0326950404e83036bc9c0172a6814",
+      "started": "2026-11-18T15:11:55.771277769Z",
+      "status": "running",
+      "health": null,
+      "preservation_checks": {
+        "id": true,
+        "image": true,
+        "started": true,
+        "status": true,
+        "restart_count": true,
+        "config": true,
+        "host_config": true,
+        "mounts": true,
+        "network_settings": true
+      }
+    },
+    {
+      "service": "worker",
+      "id": "81b36b1a230d15f0cef2edcadc53866128f302d305a662bc9a453abf203b2887",
+      "image": "sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b",
+      "started": "2026-11-18T15:11:38.605275169Z",
+      "status": "running",
+      "health": null,
+      "preservation_checks": {
+        "id": true,
+        "image": true,
+        "started": true,
+        "status": true,
+        "restart_count": true,
+        "config": true,
+        "host_config": true,
+        "mounts": true,
+        "network_settings": true
+      }
+    },
+    {
+      "service": "backup-manager",
+      "id": "0975558bb55d6a8216c43fdba4911b3a9cbfc46bc6f36188c3e88e88782f6ecf",
+      "image": "sha256:79cea119910ad3353f8a35ce21d079fafbcab0a757c0734bfe3bce6055c68565",
+      "started": "2026-11-18T04:20:50.066168318Z",
+      "status": "running",
+      "health": null,
+      "preservation_checks": {
+        "id": true,
+        "image": true,
+        "started": true,
+        "status": true,
+        "restart_count": true,
+        "config": true,
+        "host_config": true,
+        "mounts": true,
+        "network_settings": true
+      }
+    },
+    {
+      "service": "enrichment",
+      "id": "08ac2b64e749d094f88e9cce7157fd3c5a29ea867bb11ae24789247479a49c44",
+      "image": "sha256:3ef6f57964546a425f4c2ebe2bc44be2d9a516340325074dfb0fb2f32d7c3667",
+      "started": "2026-11-17T20:28:47.737748418Z",
+      "status": "running",
+      "health": null,
+      "preservation_checks": {
+        "id": true,
+        "image": true,
+        "started": true,
+        "status": true,
+        "restart_count": true,
+        "config": true,
+        "host_config": true,
+        "mounts": true,
+        "network_settings": true
+      }
+    },
+    {
+      "service": "backup",
+      "id": "1f1cbba535e2cd64cf900099a5fe92ee662fa9ced84f5f2ae4fa5b28b32d5f9c",
+      "image": "sha256:2669ec98d745fbb77942ed6696162436862334ebaebc71e884853226504b260b",
+      "started": "2026-11-15T03:11:29.671470444Z",
+      "status": "exited",
+      "health": null,
+      "preservation_checks": {
+        "id": true,
+        "image": true,
+        "started": true,
+        "status": true,
+        "restart_count": true,
+        "config": true,
+        "host_config": true,
+        "mounts": true,
+        "network_settings": true
+      }
+    },
+    {
+      "service": "migrate",
+      "id": "d4336d00e3e028a60d6bbcb80af7136835897a6f07a5b27629ca35a01ac6f180",
+      "image": "sha256:4255007bdcf12a9b29e93a6be0e4be4a66480ce8139725ef3ba5e9fadae81550",
+      "started": "2026-11-17T21:31:26.775517163Z",
+      "status": "exited",
+      "health": null,
+      "preservation_checks": {
+        "id": true,
+        "image": true,
+        "started": true,
+        "status": true,
+        "restart_count": true,
+        "config": true,
+        "host_config": true,
+        "mounts": true,
+        "network_settings": true
+      }
+    },
+    {
+      "service": "db",
+      "id": "1a138045d430554c64142f230fa1555e61d3414b2926ae9b2606f58fb8fb3642",
+      "image": "sha256:d3244e8ce3f165ee3c93d9c4a4b1d0fe48b3a89e2287b717fdcbbde92d405065",
+      "started": "2026-11-14T01:46:45.864726511Z",
+      "status": "running",
+      "health": "healthy",
+      "preservation_checks": {
+        "id": true,
+        "image": true,
+        "started": true,
+        "status": true,
+        "restart_count": true,
+        "config": true,
+        "host_config": true,
+        "mounts": true,
+        "network_settings": true
+      }
+    }
+  ],
+  "no_services_restarted_or_replaced": true,
+  "no_build_migration_signing_publication_or_activation": true,
+  "no_collection_triggered": true
+}

@@ -1,0 +1,213 @@
+[
+  {
+    "services_with_this_chain": [
+      "api",
+      "local-api"
+    ],
+    "file_count": 25,
+    "ordered_files": [
+      "/home/marketdev/projects/TwichUI-Market/compose.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.tls.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.traefik.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.companion-private-beta.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.combined-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.admin-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.explorer-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.polish-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.foreverdb-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/usability-release/compose.usability-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/mobile-release/compose.mobile-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-chart.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-api.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.owner-backup-policy.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.unified-coverage-release.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.backup-management.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.backup-review-images.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.companion-beta7-web.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-cap.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-release.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-activation.yaml",
+      "/home/marketdev/.codex/worktrees/workshop-dev-build/TwichUI-Market/compose.workshop-api-release.yaml",
+      "/home/marketdev/.codex/worktrees/companion-sync-performance/TwichUI-Market/compose.sync-performance-release.yaml",
+      "/home/marketdev/.codex/worktrees/workshop-live-status/TwichUI-Market/compose.workshop-history-release.yaml"
+    ],
+    "environment_files": [
+      "/home/marketdev/projects/TwichUI-Market/.env",
+      "/home/marketdev/projects/TwichUI-Market/.env.combined-release"
+    ],
+    "config_quiet_returncode": 0
+  },
+  {
+    "services_with_this_chain": [
+      "retention",
+      "monitor"
+    ],
+    "file_count": 22,
+    "ordered_files": [
+      "/home/marketdev/projects/TwichUI-Market/compose.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.tls.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.traefik.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.companion-private-beta.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.combined-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.admin-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.explorer-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.polish-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.foreverdb-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/usability-release/compose.usability-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/mobile-release/compose.mobile-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-chart.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-api.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.owner-backup-policy.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.unified-coverage-release.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.backup-management.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.backup-review-images.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.companion-beta7-web.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-cap.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-release.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-activation.yaml"
+    ],
+    "environment_files": [
+      "/home/marketdev/projects/TwichUI-Market/.env",
+      "/home/marketdev/projects/TwichUI-Market/.env.combined-release"
+    ],
+    "config_quiet_returncode": 0
+  },
+  {
+    "services_with_this_chain": [
+      "proxy",
+      "worker"
+    ],
+    "file_count": 21,
+    "ordered_files": [
+      "/home/marketdev/projects/TwichUI-Market/compose.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.tls.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.traefik.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.companion-private-beta.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.combined-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.admin-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.explorer-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.polish-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.foreverdb-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/usability-release/compose.usability-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/mobile-release/compose.mobile-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-chart.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-api.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.owner-backup-policy.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.unified-coverage-release.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.backup-management.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.backup-review-images.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.companion-beta7-web.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-cap.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-release.yaml"
+    ],
+    "environment_files": [
+      "/home/marketdev/projects/TwichUI-Market/.env",
+      "/home/marketdev/projects/TwichUI-Market/.env.combined-release"
+    ],
+    "config_quiet_returncode": 0
+  },
+  {
+    "services_with_this_chain": [
+      "backup-manager"
+    ],
+    "file_count": 18,
+    "ordered_files": [
+      "/home/marketdev/projects/TwichUI-Market/compose.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.tls.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.traefik.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.companion-private-beta.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.combined-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.admin-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.explorer-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.polish-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.foreverdb-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/usability-release/compose.usability-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/mobile-release/compose.mobile-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-chart.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-api.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.owner-backup-policy.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.unified-coverage-release.yaml",
+      "/home/marketdev/.codex/worktrees/backup-management-retention/TwichUI-Market/compose.backup-management.yaml",
+      "/home/marketdev/.codex/worktrees/backup-management-retention/TwichUI-Market/compose.backup-review-images.yaml"
+    ],
+    "environment_files": [
+      "/home/marketdev/projects/TwichUI-Market/.env",
+      "/home/marketdev/projects/TwichUI-Market/.env.combined-release"
+    ],
+    "config_quiet_returncode": 0
+  },
+  {
+    "services_with_this_chain": [
+      "enrichment"
+    ],
+    "file_count": 12,
+    "ordered_files": [
+      "/home/marketdev/projects/TwichUI-Market/compose.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.tls.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.traefik.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.companion-private-beta.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.combined-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.admin-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.explorer-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.polish-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.foreverdb-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/usability-release/compose.usability-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/mobile-release/compose.mobile-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-release.yaml"
+    ],
+    "environment_files": [
+      "/home/marketdev/projects/TwichUI-Market/.env",
+      "/home/marketdev/projects/TwichUI-Market/.env.combined-release"
+    ],
+    "config_quiet_returncode": 0
+  },
+  {
+    "services_with_this_chain": [
+      "backup"
+    ],
+    "file_count": 5,
+    "ordered_files": [
+      "/home/marketdev/projects/TwichUI-Market/compose.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.tls.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.traefik.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.companion-private-beta.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.combined-release.yaml"
+    ],
+    "environment_files": [
+      "/home/marketdev/projects/TwichUI-Market/.env",
+      "/home/marketdev/projects/TwichUI-Market/.env.combined-release"
+    ],
+    "config_quiet_returncode": 0
+  },
+  {
+    "services_with_this_chain": [
+      "migrate"
+    ],
+    "file_count": 2,
+    "ordered_files": [
+      "/home/marketdev/projects/TwichUI-Market/compose.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.tls.yaml"
+    ],
+    "environment_files": [
+      ""
+    ],
+    "config_quiet_returncode": 0
+  },
+  {
+    "services_with_this_chain": [
+      "db"
+    ],
+    "file_count": 1,
+    "ordered_files": [
+      "/home/marketdev/projects/TwichUI-Market/compose.yaml"
+    ],
+    "environment_files": [
+      ""
+    ],
+    "config_quiet_returncode": 0
+  }
+]
