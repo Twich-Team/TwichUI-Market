@@ -2,7 +2,7 @@
 
 Stacked on [producer PR #43](https://github.com/Twich-Team/TwichUI-Market/pull/43),
 producer commit `b02a190f22fd403a35c0856dfb3c598cd0720bc7`. The paired addon is
-stacked on TwichUI PR #99. Contract definition: `contracts/workshop-summary/v3/`.
+[consumer PR #100](https://github.com/Twich-Team/TwichUI/pull/100), stacked on TwichUI PR #99. Contract definition: `contracts/workshop-summary/v3/`.
 No service operation, deployment, migration, signing or client publication.
 
 ## Delivery and compatibility
@@ -36,8 +36,11 @@ publisher now resumes an empty generated directory only; any unowned payload or
 unknown file still refuses. Nothing is deleted or silently adopted with contents.
 
 Rollout after review: producer support with default 1 unchanged, compatible
-Companion, then addon capability activation. Keep the compatible Companion while
-restoring a previous 1/2 generation before downgrading it. Do not mix bank files or
+Companion, then addon capability activation. Pause automatic delivery before
+rollback. Restore a previous compatible 1/2 generation with the new Companion
+before downgrading the addon/Companion. If none remains, keep the new Companion,
+install the old addon to negotiate 1/2 and complete that sync before downgrading
+the Companion. Resume delivery only with a supported pair. Do not mix bank files or
 manually edit roots. The existing private signed updater/release state is unchanged.
 
 ## Verification
@@ -66,7 +69,34 @@ This paired test caught a Lua nil-global fallback that could confuse current and
 history before the first history addon load; it is fixed and covered in the addon
 unit test. It does not prove Windows NTFS/UAC or real Forever behavior.
 
-The frozen source still needs the existing Windows CI/integration coverage and
-owner-directed native latency/frame/memory acceptance; none is inferred from
-Linux synthetic timings or fixture output. No physical Windows/game test or
-public Companion release is claimed.
+## Completed coordinated CI and benchmark evidence
+
+At `0ed2edaa5d5fd03eb22501522f6e6dda4a619fa0`, [Windows CI and its artifact
+consumer passed](https://github.com/Twich-Team/TwichUI-Market/actions/runs/44975496335),
+including actual authenticated contract-3 publication in a disposable Windows
+installation (129 variants), then the exact production Lua consumer `c70566f`.
+All 64 current buckets load without historical bytes; explicit history loads one
+rich bucket. Existing contract-2 installed/large publication checks also pass.
+Backend PostgreSQL and website checks pass. This is automated Windows fixture
+acceptance, not a physical owner-PC, actual Forever, or signed release claim.
+
+The separate [sync-performance job remains failed](https://github.com/Twich-Team/TwichUI-Market/actions/runs/44975496301):
+the frozen baseline executable returns `Error: Network` before the candidate,
+with Windows reset 10054, final summary 202/Retry-After 5, server alive and no
+request in flight. Cause unresolved; no assertion or retry policy was weakened.
+Other price/archive benchmark stages passed. This is an explicit review
+limitation, not a fully green integration declaration.
+
+[Consumer PR2 report](https://github.com/Twich-Team/TwichUI/blob/fix/v2-market-cold-pricing/docs/performance/v2-market-cold-pricing-pr2.md)
+retains exact commands/source/harness hashes, all samples and limits. In the
+30,000-variant/60-day uneven native-file test, current enumeration CPU falls
+74.19→6.20 s and current-query retained heap 41.44→3.87 MiB. Both generations
+have identical rich bytes; 768 variants of one item and a 921,601-byte historical
+bucket are included. Current payload is 3.51 MB versus 36.00 MB rich history;
+transport delivers both, adding 9.75% raw bytes and up to 64 part requests on a
+fresh generation. No synchronization or actual game latency improvement is
+inferred. Large Opportunities redraws remain a PR3 concern.
+
+No production/live service, signed build, updater/publication, game install or
+SavedVariables change occurred. Owner-directed client latency/frame/memory and
+physical PC acceptance remain. Stop at coordinated draft review.
