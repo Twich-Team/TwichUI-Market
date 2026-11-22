@@ -385,6 +385,33 @@ def history_part(market_id: MarketId, generation: str, bucket: int, user: User =
     return read_part(db, market_id, generation, bucket, True)
 
 
+@router.get('/markets/{market_id}/summary/{generation}/prepared/1/{partitions}')
+def prepared_current(market_id: MarketId, generation: str, partitions: int, request: Request,
+                     user: User = Depends(bridge.device_identity), db: Session = Depends(session)):
+    """Explicit capability only; existing v1/v2/v3 exports/defaults stay frozen."""
+    from . import workshop_prepared as prepared
+    require_market(db, market_id)
+    if re.fullmatch('[0-9a-f]{64}', generation) is None or partitions not in prepared.COUNTS:
+        raise HTTPException(422, 'Invalid prepared identity/layout')
+    row = db.get(BridgeGeneration, generation)
+    if row is None or row.market_id != market_id or row.algorithm != 'workshop-summary-v3:' + cp.ALGORITHM:
+        raise HTTPException(410, 'Summary expired; restart the same authenticated download')
+    raw_parts = dict(db.execute(select(BridgeRecord.position, BridgeRecord.record_json).where(
+        BridgeRecord.generation_id == generation, BridgeRecord.position < BUCKETS)).all())
+    try:
+        manifest = json.loads(row.manifest_json)
+        need(manifest['generation_id'] == generation and manifest['market']['server_market_id'] == market_id,
+             'prepared source identity')
+        attestation, _ = prepared.prepare(manifest, raw_parts, partitions)
+    except (ValueError, jsonschema.ValidationError) as exc:
+        # No pruning or partial attestation; a compatible client can use v3.
+        raise HTTPException(409, 'Prepared projection unavailable; legacy summary retained') from exc
+    headers = {'ETag': '"' + attestation['attestation_id'] + '"', 'Cache-Control': 'no-store'}
+    if request.headers.get('if-none-match') == headers['ETag']:
+        return Response(status_code=304, headers=headers)
+    return JSONResponse(dict(account_id=user.id, attestation=attestation), headers=headers)
+
+
 def read_part(db, market_id, generation, bucket, history):
     require_market(db, market_id)
     if re.fullmatch('[0-9a-f]{64}', generation) is None or not 0 <= bucket < BUCKETS:
