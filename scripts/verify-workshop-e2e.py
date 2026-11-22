@@ -65,7 +65,7 @@ def main():
   game=base/'not-a-game';publication=base/'publication'
   if a.publish:
    env['MARKET_TEST_APP_DATA']=str(base)
-   fixture=json.loads(subprocess.check_output(['powershell','-NoProfile','-File',str(ROOT/'scripts/windows/workshop-fixtures.ps1'),'-Action','Setup'],env=env,text=True))
+   fixture=json.loads(subprocess.check_output(['powershell','-NoProfile','-File',str(ROOT/'scripts/windows/workshop-fixtures.ps1'),'-Action','Setup','-AddonRoot',str(a.addon_root.resolve())],env=env,text=True))
    game=Path(fixture['first']);publication=game/'Interface/AddOns'
   if (a.history or a.current) and not a.publish:
    cap=game/'Interface/AddOns/TwichUI_Workshop/MarketDelivery.json';cap.parent.mkdir(parents=True);shutil.copyfile(a.addon_root/'TwichUI_Workshop/MarketDelivery.json',cap)
@@ -86,6 +86,9 @@ def main():
    else:
     assert info['manifest']['record_count']==a.variants
     if a.current:assert info['manifest']['contract_version']==3
+   if a.current:
+    assert json.loads((game/'Interface/AddOns/TwichUI_Workshop/MarketDelivery.json').read_text(encoding='utf-8-sig'))['summary_current_contract']==3
+    assert any(p.name.startswith('TwichUI_MarketHistoryPart')for p in publication.iterdir()),'paired history was not published'
    original=info
    before_hash=hashlib.sha256((publication/'TwichUI_MarketData/Data.lua').read_bytes()).hexdigest()
    before_mtime=(publication/'TwichUI_MarketData/Data.lua').stat().st_mtime_ns
