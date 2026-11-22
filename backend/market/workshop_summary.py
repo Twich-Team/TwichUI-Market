@@ -51,7 +51,7 @@ def digest(value):
     return hashlib.sha256(canonical(value)).hexdigest()
 
 
-@lru_cache(maxsize=2)
+@lru_cache(maxsize=3)
 def manifest_validator(version=1):
     bundle = Path(contract().__file__).resolve().parents[2]
     schema = json.loads((bundle / f'workshop-summary/v{version}/manifest.schema.json').read_bytes())
@@ -142,6 +142,9 @@ def project_daily(record):
 
 
 def seal(metadata, rows, version=1):
+    need(version in (1, 2, 3), 'unsupported summary contract')
+    if version == 3:
+        return seal_split(metadata, rows)
     if version==2:
         observations=metadata.get('observations')
         need(type(observations) is list and 1<=len(observations)<=60,'history observation bound')
@@ -195,9 +198,39 @@ def seal(metadata, rows, version=1):
     return manifest, encoded
 
 
+def seal_split(metadata, rows):
+    """One source/generation, independently verifiable current and history bytes.
+
+    Storage positions 0..63 are current, 64..127 history. The public route still
+    uses modulo-64 buckets. Existing immutable v1/v2 generations are untouched.
+    """
+    history, rich = seal(metadata, rows, 2)
+    parts, descriptors, total = {}, [], 0
+    for bucket, raw in rich.items():
+        current = canonical([row[:13] for row in json.loads(raw)])
+        need(len(current) <= 1024 * 1024, 'current partition bound; no publication')
+        total += len(current)
+        need(total <= 32 * 1024 * 1024, 'current generation bound; no publication')
+        parts[bucket] = current
+        descriptors.append(dict(bucket=bucket, bytes=len(current),
+                                record_count=history['partitions'][len(descriptors)]['record_count'],
+                                sha256=hashlib.sha256(current).hexdigest()))
+        parts[64 + bucket] = raw
+    manifest = dict(history, schema_version=3, contract_version=3, columns=COLUMNS,
+                    history_partitioning=history['partitioning'],
+                    history_partitions=history['partitions'],
+                    partitioning=dict(history['partitioning'], max_total_bytes=32 * 1024 * 1024),
+                    partitions=descriptors)
+    manifest.pop('generation_id')
+    manifest['generation_id'] = digest(manifest)
+    need(len(canonical(manifest)) <= MAX_MANIFEST, 'split manifest bound')
+    manifest_validator(3).validate(manifest)
+    return manifest, parts
+
+
 def build(db, market, preparation=None, version=1):
-    algorithm=ALGORITHM if version==1 else "workshop-summary-v2:"+cp.ALGORITHM
-    staging=STAGING if version==1 else "workshop-summary-chunks-coverage-v2:"+cp.ALGORITHM
+    algorithm=ALGORITHM if version==1 else f"workshop-summary-v{version}:"+cp.ALGORITHM
+    staging=STAGING if version==1 else f"workshop-summary-chunks-coverage-v{version}:"+cp.ALGORITHM
     max_part,max_total=(MAX_PART,MAX_TOTAL) if version==1 else (1024*1024,64*1024*1024)
     # Immutable observations and derived source records permit a pinned prefix.
     # This export lock never owns the collector/global ingest lock.
@@ -267,9 +300,9 @@ def build(db, market, preparation=None, version=1):
             select(ItemSourceCoverage).where(ItemSourceCoverage.market_id == market.id,
                 tuple_(ItemSourceCoverage.item_id, ItemSourceCoverage.variant_key).in_(batch)))}
         for key in batch:
-            record = bridge.assemble_record(key, values, current, daily, refs, cp.ALGORITHM, at, {o.id for o in daily} if version==2 else set(), starts.get(key))
+            record = bridge.assemble_record(key, values, current, daily, refs, cp.ALGORITHM, at, {o.id for o in daily} if version>=2 else set(), starts.get(key))
             row = project(record)
-            if version==2: row.append(project_daily(record))
+            if version>=2: row.append(project_daily(record))
             raw = canonical(row).decode()
             bucket = str(row[0] % BUCKETS)
             old = sizes.get(bucket, 2)
@@ -306,7 +339,7 @@ def build(db, market, preparation=None, version=1):
                     source_observation=dict(observation_id=str(current.id), observed_at=bridge.stamp(at), scope_complete=True),
                     generated_at=bridge.stamp(at), synthetic=any(o.synthetic for o in observations))
     try:
-        if version==2:
+        if version>=2:
             metadata["observations"]=[dict(observation_id=str(o.id),observed_at=bridge.stamp(o.retrieved_at),scope_complete=True,synthetic=o.synthetic) for o in daily]
         manifest, parts = seal(metadata, final_rows(),version)
     except ValueError as error:
@@ -327,7 +360,7 @@ def build(db, market, preparation=None, version=1):
 
 
 @router.get('/markets/{market_id}/summary')
-def summary(market_id: MarketId, request: Request, contract_version: int = Query(1,ge=1,le=2), user: User = Depends(bridge.device_identity), db: Session = Depends(session)):
+def summary(market_id: MarketId, request: Request, contract_version: int = Query(1,ge=1,le=3), user: User = Depends(bridge.device_identity), db: Session = Depends(session)):
     market = require_market(db, market_id)
     if not market.verified:
         raise HTTPException(404, 'Verified observed market required')
@@ -344,13 +377,23 @@ def summary(market_id: MarketId, request: Request, contract_version: int = Query
 
 @router.get('/markets/{market_id}/summary/{generation}/parts/{bucket}')
 def part(market_id: MarketId, generation: str, bucket: int, user: User = Depends(bridge.device_identity), db: Session = Depends(session)):
+    return read_part(db, market_id, generation, bucket, False)
+
+
+@router.get('/markets/{market_id}/summary/{generation}/history/{bucket}')
+def history_part(market_id: MarketId, generation: str, bucket: int, user: User = Depends(bridge.device_identity), db: Session = Depends(session)):
+    return read_part(db, market_id, generation, bucket, True)
+
+
+def read_part(db, market_id, generation, bucket, history):
     require_market(db, market_id)
     if re.fullmatch('[0-9a-f]{64}', generation) is None or not 0 <= bucket < BUCKETS:
         raise HTTPException(422, 'Invalid summary identity')
     row = db.get(BridgeGeneration, generation)
-    if row is None or row.market_id != market_id or row.algorithm not in (ALGORITHM,"workshop-summary-v2:"+cp.ALGORITHM):
+    algorithms = (ALGORITHM, "workshop-summary-v2:"+cp.ALGORITHM, "workshop-summary-v3:"+cp.ALGORITHM)
+    if row is None or row.market_id != market_id or row.algorithm not in algorithms or history and row.algorithm != algorithms[2]:
         raise HTTPException(410, 'Summary expired; restart the same authenticated download')
-    raw = db.scalar(select(BridgeRecord.record_json).where(BridgeRecord.generation_id == generation, BridgeRecord.position == bucket))
+    raw = db.scalar(select(BridgeRecord.record_json).where(BridgeRecord.generation_id == generation, BridgeRecord.position == bucket + (64 if history else 0)))
     if raw is None:
         raise HTTPException(404, 'Partition not included; absence is not established')
     return Response(content=raw, media_type='application/json', headers={'Cache-Control': 'no-store'})
