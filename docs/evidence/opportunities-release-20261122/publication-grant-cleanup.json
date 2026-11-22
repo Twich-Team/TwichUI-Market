@@ -1,0 +1,16 @@
+{
+  "at": "2026-11-22T15:19:10.924174+00:00",
+  "revoked_only_task_grants": [
+    {
+      "id": 401,
+      "kind": "session",
+      "https_status_after_revocation": 401
+    },
+    {
+      "id": 402,
+      "kind": "device",
+      "https_status_after_revocation": 401
+    }
+  ],
+  "original_accounts_devices_sessions_not_reset": true
+}

@@ -1,0 +1,71 @@
+{
+  "schema_version": 2,
+  "channel": "private-beta",
+  "version": "2.0.0-beta.11",
+  "filename": "TwichUI-Market-Companion-2.0.0-beta.11-windows-x64.exe",
+  "bytes": 4885541,
+  "sha256": "84dacad168dc212d8dda7d06f15ddc5a918f170ba1af0e9ece4e6373cd883129",
+  "source_commit": "b39a35c01676b50dbc159f4793e0ad547676acfc",
+  "visual_approval_commit": "8dfa5116397403bb93e90160e8706285f272f64f",
+  "workflow_run_id": 45027451323,
+  "published_at": "2026-11-22T15:14:49.554803+00:00",
+  "authenticode_status": "NotSigned",
+  "updates": "signed",
+  "updater_public_key_sha256": "5794736c840c7c09a49396e60cd569ff6b5f24f872eb0318ed95d55c16616ecf",
+  "updater_signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTSTBwUk5ybTY3SlVYMzB5cDdMTEM2M2NXV2ZIb01oaGxuSGtEY1hMV3FKL0dTYnBiR0hTK2FhdFAvRHhRWFB1dkt2VVFjVHRvNE1QVmJqcDh1cVBJazFBUUdBSXNXRkE0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzk1MzU0ODA0CWZpbGU6VHdpY2hVSS1NYXJrZXQtQ29tcGFuaW9uLTIuMC4wLWJldGEuMTEtd2luZG93cy14NjQuZXhlCXZlcnNpb246Mi4wLjAtYmV0YS4xMQoyejZmVE1pQ3dVT1FtZHJseFA0cW92QW9qNlhMYWNkMi9qWUpwdHJtMDdFQWRJME4zOUpLSi9odU54QmZBV21FMWFEL1RuemtwQU8xalRtcGhoc2ZDQT09Cg==",
+  "acceptance": {
+    "uninstall": true,
+    "hidden_sync": true,
+    "upgrade": true,
+    "autostart": true,
+    "restart": true,
+    "windows_core": true,
+    "preferences": true,
+    "offline_cache": true,
+    "installed_ui": true,
+    "tray": false,
+    "no_release_debug": true,
+    "performance": true,
+    "native_browser_approval": true,
+    "revocation": true
+  },
+  "unverified_requirements": [
+    "tray_actions"
+  ],
+  "ci": {
+    "windows": {
+      "id": 45027451323,
+      "source_commit": "b39a35c01676b50dbc159f4793e0ad547676acfc",
+      "repository": "Twich-Team/TwichUI-Market",
+      "path": ".github/workflows/desktop.yml",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    "backend": {
+      "id": 45027451269,
+      "source_commit": "b39a35c01676b50dbc159f4793e0ad547676acfc",
+      "repository": "Twich-Team/TwichUI-Market",
+      "path": ".github/workflows/backend.yml",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    "website": {
+      "id": 45027451254,
+      "source_commit": "b39a35c01676b50dbc159f4793e0ad547676acfc",
+      "repository": "Twich-Team/TwichUI-Market",
+      "path": ".github/workflows/web.yml",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  },
+  "evidence_sha256": {
+    "signed-update-acceptance.json": "e49682cbf9ef283393b19d1e5a66762bce6d8c982e9660964aae8b161213a9e7",
+    "installed-smoke.json": "3f41bbf999373febec56d1322cb4c94626328f744c9a554401ce928fc50a9ba7",
+    "legacy-upgrade.json": "a9100b60bb1c6f4e8ec55806e206d968d40152b1bb7d68340753485b9b7b6fd9",
+    "windows-signature.json": "a9c5f6d12050ae25573fa48652d3740b6feb617625a90b75f9736fc3b01d9e18",
+    "launch-metrics.json": "27bcfc04947b30d302019b39c42d979c47a2db375cb4a70bad68d98762c0d848",
+    "performance.json": "629df3e4a510f72b30357497e6792a25d97126ac995a07e59fcb413e9d4bec1a",
+    "owner-release-approval.json": "a544d429d4b0c3111dd60e01a2078ffc59f2c2b436f7ebd4b19ae9720b3bf5bb"
+  },
+  "notes": "Contract-3 paired current/history delivery for the verified Market Opportunities program. Existing private-beta NotSigned, PC/tray/Forever limits remain."
+}

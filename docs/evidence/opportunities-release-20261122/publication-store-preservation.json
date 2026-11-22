@@ -1,0 +1,54 @@
+{
+  "all_prior_immutable_files_identical": true,
+  "prior_file_count": 100,
+  "after_file_count": 111,
+  "only_prior_file_changed": "current.json",
+  "new_files": [
+    "2.0.0-beta.11/TwichUI-Market-Companion-2.0.0-beta.11-windows-x64.exe",
+    "2.0.0-beta.11/installed-smoke.json",
+    "2.0.0-beta.11/launch-metrics.json",
+    "2.0.0-beta.11/legacy-upgrade.json",
+    "2.0.0-beta.11/manifest.json",
+    "2.0.0-beta.11/owner-release-approval.json",
+    "2.0.0-beta.11/performance.json",
+    "2.0.0-beta.11/signed-update-acceptance.json",
+    "2.0.0-beta.11/windows-signature.json",
+    "audit/00000010.complete.json",
+    "audit/00000010.json"
+  ],
+  "intent": {
+    "actor": "marketdev",
+    "at": "2026-11-22T15:16:17.976962+00:00",
+    "authenticode_status": "NotSigned",
+    "channel": "private-beta",
+    "evidence_sha256": {
+      "installed-smoke.json": "3f41bbf999373febec56d1322cb4c94626328f744c9a554401ce928fc50a9ba7",
+      "launch-metrics.json": "27bcfc04947b30d302019b39c42d979c47a2db375cb4a70bad68d98762c0d848",
+      "legacy-upgrade.json": "a9100b60bb1c6f4e8ec55806e206d968d40152b1bb7d68340753485b9b7b6fd9",
+      "owner-release-approval.json": "a544d429d4b0c3111dd60e01a2078ffc59f2c2b436f7ebd4b19ae9720b3bf5bb",
+      "performance.json": "629df3e4a510f72b30357497e6792a25d97126ac995a07e59fcb413e9d4bec1a",
+      "signed-update-acceptance.json": "e49682cbf9ef283393b19d1e5a66762bce6d8c982e9660964aae8b161213a9e7",
+      "windows-signature.json": "a9c5f6d12050ae25573fa48652d3740b6feb617625a90b75f9736fc3b01d9e18"
+    },
+    "installer_sha256": "84dacad168dc212d8dda7d06f15ddc5a918f170ba1af0e9ece4e6373cd883129",
+    "manifest_sha256": "bda66d542123c40fdffda5a0bd4bac45d7687fd080e2a820521a2ba771d652bb",
+    "operation": "publish",
+    "phase": "prepared",
+    "previous_version": "2.0.0-beta.10",
+    "schema_version": 1,
+    "source_commit": "b39a35c01676b50dbc159f4793e0ad547676acfc",
+    "tray_actions_verified": false,
+    "updater_public_key_sha256": "5794736c840c7c09a49396e60cd569ff6b5f24f872eb0318ed95d55c16616ecf",
+    "updates": "signed",
+    "version": "2.0.0-beta.11",
+    "workflow_run_id": 45027451323
+  },
+  "completion": {
+    "at": "2026-11-22T15:16:17.985338+00:00",
+    "channel": "private-beta",
+    "phase": "committed",
+    "prepared": "00000010.json",
+    "schema_version": 1,
+    "version": "2.0.0-beta.11"
+  }
+}

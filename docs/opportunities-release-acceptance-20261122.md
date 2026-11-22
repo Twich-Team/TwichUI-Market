@@ -1,8 +1,8 @@
-# Market Opportunities backend acceptance and signed Companion decision
+# Market Opportunities deployment and Companion publication acceptance
 
-**Backend deployed and verified; Companion beta.11 is signed and verified but
-unpublished. Beta.10 remains the private website/updater release.** This is not a
-claim that the coordinated release or physical-PC/game acceptance is complete.
+**Backend deployed and verified; signed Companion 2.0.0-beta.11 is published through
+the existing private website/updater. Beta.10 remains retained and downloadable.**
+Physical-PC and game acceptance remain open; they are not established by this release.
 
 ## Deployed server and recovery
 
@@ -160,7 +160,7 @@ not reproduce it; **unqualified whole-row equality is not claimed**. Those owner
 changes were not reset. [Comparison limit and renewal events](evidence/opportunities-release-20261122/credential-refresh-comparison.json),
 [final fingerprints](evidence/opportunities-release-20261122/stable-final.json).
 
-Only task grant **398** was revoked. Independent trusted HTTPS now returns 401 for
+For backend acceptance, only task grant **398** was revoked. Independent trusted HTTPS now returns 401 for
 its bootstrap and Contract-3 requests. Task-created raw secret snapshots and
 retired fixture credentials were removed; concurrent owner sessions/renewals remain.
 [Revocation receipt](evidence/opportunities-release-20261122/grant-revocation.json).
@@ -180,19 +180,54 @@ installed SemVer downgrade. Pause automatic delivery and restore a complete
 supported 1/2 generation with the compatible new Companion before downgrading
 consumer support; never splice banks, hand-edit active roots or delete history.
 
-**Stop pending exact-artifact owner consent.** Approve/decline private publication
-of the unchanged original signed beta.11 identified above and merge of PR45,
-including the existing private-beta NotSigned / unverified PC/tray/Forever limits.
-The [pending owner template](evidence/opportunities-release-20261122/owner-release-approval.pending.json)
-contains no consent and cannot admit a bundle. After genuine approval, complete
-the existing owner receipt/admission gates and use only the audited offline atomic
-publisher; no rebuild/substitution is permitted. Beta.10 remains current.
+## Approved publication and independent readback
 
-The [release rule](companion-v2-release-operations.md#final-approval-and-private-admission)
-requires the separate exact-hash owner receipt: “The owner's strategy decision
-alone cannot fill that final receipt.” No broad or historical approval was reused.
+The owner subsequently instructed **“publish companion.”** in the exact-artifact
+approval context above. The [new owner receipt](evidence/opportunities-release-20261122/owner-release-approval.json)
+was committed at `17743db` before admission. The pending template remains historical;
+it was not used as consent. This satisfies the separate exact-hash receipt required
+by the [release rule](companion-v2-release-operations.md#final-approval-and-private-admission).
+No historical or broad deployment approval was substituted.
 
-## Minimum owner game acceptance after approved publication
+PR45 was merged through the normal workflow at
+`e2882dd822b356ffa081efebbff167827f9bf364`; its tree equals the verified public-proof
+commit `fa9f494ec9ae822f305dd406a5174942d503776c`. The installer remains the original
+payload artifact identified above. No later build was substituted.
+[Source and operator identities](evidence/opportunities-release-20261122/publication-source.json).
+
+The existing audited atomic publisher used retained operator image
+`sha256:c8686b5be272bcef4589df5a99a539cf9311dc111d0ba31ac8eee6c31f3802ec`
+with current reviewed read-only policy and verifier. Publication had no network,
+Docker socket or database credentials; only the dedicated distribution volume was
+writable. Actor `marketdev` published beta.11 over beta.10 with durable intent
+`audit/00000010.json` and completion `audit/00000010.complete.json`.
+All **99 prior immutable files** are byte-identical; only the existing current
+pointer changed, with 11 new bundle/audit files. Updater keys and retained releases
+remain intact. [Publication](evidence/opportunities-release-20261122/publication.json),
+[store preservation](evidence/opportunities-release-20261122/publication-store-preservation.json),
+[admitted manifest](evidence/opportunities-release-20261122/published-manifest.json).
+
+Actual trusted HTTPS website-offer and native-download requests return the exact
+original installer SHA256/size above. The downloaded bytes independently verify
+against the existing updater key and exact version. Anonymous downloads are 401;
+native credentials cannot access the browser-only current-release endpoint (403).
+Supported beta.5 through beta.10 clients receive beta.11 offers; equal beta.11,
+newer beta.12 and stable 2.0.0 receive 204, preserving no-downgrade behavior.
+Beta.10 downloads remain intact. This is real website-offer API evidence, not a
+claim of a new browser screenshot or owner-PC installation.
+[HTTPS readback](evidence/opportunities-release-20261122/publication-https.json),
+[independent signature verification](evidence/opportunities-release-20261122/https-downloaded-signature.json).
+
+All **11 production container identities, images, configuration, mounts and start
+times** remain unchanged by publication. Both collector feeds remain healthy with
+the original schedule; schema and retention state are preserved.
+[Publication preservation](evidence/opportunities-release-20261122/publication-runtime-preservation.json).
+Only the publication verification grants **401 and 402** were revoked, each
+independently returning HTTPS 401 afterward. Their temporary private snapshots
+were removed; owner accounts/devices/sessions were not reset.
+[Cleanup receipt](evidence/opportunities-release-20261122/publication-grant-cleanup.json).
+
+## Minimum owner game acceptance
 
 Select/consent to the real verification PC/game destination. Install the approved
 addon (frozen runtime/final main or verified compatible release); restart Forever

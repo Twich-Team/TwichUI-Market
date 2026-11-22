@@ -1,5 +1,5 @@
 {
-  "status": "backend deployed and verified; signed original Companion candidate awaits exact-artifact owner publication approval",
+  "status": "original signed Companion beta.11 privately published and HTTPS verified; backend remains deployed; physical PC/game/tray acceptance separate",
   "payload_commit": "b39a35c01676b50dbc159f4793e0ad547676acfc",
   "proof_commit": "fa9f494ec9ae822f305dd406a5174942d503776c",
   "pr": 45,
@@ -11,7 +11,10 @@
   "original_archive_sha256": "783821c57bf882c17cf0ea8d90f063af07cf6770e59ffbd49720e3a0a8a04b38",
   "sdk_run_id": 45028815202,
   "updater_public_key_sha256": "5794736c840c7c09a49396e60cd569ff6b5f24f872eb0318ed95d55c16616ecf",
-  "owner_publication_approval": false,
+  "owner_publication_approval": true,
   "tray_verified": false,
-  "physical_pc_or_forever_verified": false
+  "physical_pc_or_forever_verified": false,
+  "published": true,
+  "publication_audit": "00000010.json",
+  "retained_previous_version": "2.0.0-beta.10"
 }

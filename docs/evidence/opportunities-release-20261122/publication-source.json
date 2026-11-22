@@ -1,0 +1,18 @@
+{
+  "version": "2.0.0-beta.11",
+  "original_payload_commit": "b39a35c01676b50dbc159f4793e0ad547676acfc",
+  "public_proof_commit": "fa9f494ec9ae822f305dd406a5174942d503776c",
+  "pr": 45,
+  "merge_commit": "e2882dd822b356ffa081efebbff167827f9bf364",
+  "merge_tree_identical_to_verified_proof_head": true,
+  "new_merge_builds_not_substituted_for_original_installer": true,
+  "owner_consent_commit": "17743db",
+  "publisher_image": "sha256:c8686b5be272bcef4589df5a99a539cf9311dc111d0ba31ac8eee6c31f3802ec",
+  "source_policy": "frozen reviewed backend read-only at /work; PYTHONPATH=/work/backend",
+  "network": "none",
+  "writable_persistent_mounts": [
+    "twichui-market_companion-private-beta"
+  ],
+  "db_credentials_or_docker_socket_mounted": false,
+  "actor": "marketdev"
+}
