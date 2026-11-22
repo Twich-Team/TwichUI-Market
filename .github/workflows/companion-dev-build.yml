@@ -102,11 +102,11 @@ jobs:
           @"
           UNSIGNED PRIVATE WINDOWS TEST — $env:DEV_ARTIFACT
           Source: $env:COMPANION_DEV_SHA
-          1. Install the included DEV setup.exe. Keep the signed beta.8 installed.
-          2. Open TwichUI Market Companion DEV and sign in separately. Choose US / Normal / Horde.
-          3. Click Connect Workshop and choose the Forever folder.
-          4. Report whether installation authorization appears, or the exact error/check. Save redacted diagnostics if needed.
-          DEV uses separate credentials/storage and cannot update itself. Close the signed app while testing to avoid competing delivery workers. Close DEV and open the signed Companion to return; uninstall DEV independently if desired. No signed release or public updater publication occurred.
+          1. Verify checksums and use only a disposable Windows VM with an independent Forever installation and fresh private WTF. Do not mount production folders or install the normal Companion in that VM.
+          2. Read private-prepared-native-acceptance.md for the pinned addon, device approval, frozen source, explicit 16/32 selection and native publication steps.
+          3. DEV uses separate credentials/storage and cannot update itself. Confirm only the exact private game folder; fully exit DEV during offline publication and game trials.
+          4. Keep snapshots, credentials and real Market data private. Report pair receipts and redacted performance exports; never upload real data as CI artifacts.
+          No signing, production installation replacement, public endpoint deployment or updater publication occurred.
           "@ | Set-Content artifacts/companion-dev/READ-ME.txt
           "Artifact: $env:DEV_ARTIFACT`nSource: $env:COMPANION_DEV_SHA`nSHA256: $hash`nUnsigned side-by-side NSIS installer; focused checks and installed native/frontend smoke passed." >> $env:GITHUB_STEP_SUMMARY
       - uses: actions/upload-artifact@v4

@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def verify(base, game, count, binary):
     assert os.name == 'nt' and os.environ.get('GITHUB_ACTIONS') == 'true'
     copies = base / 'private-market-source-fixture'
-    caches = list(base.glob('workshop-summary-*'))
+    caches = [p for p in base.glob('workshop-summary-*') if p.is_dir() and (p/'current.json').is_file()]
     assert len(caches) == 1
     shutil.copytree(caches[0], copies)
     snapshot = base / 'private-frozen-source'
