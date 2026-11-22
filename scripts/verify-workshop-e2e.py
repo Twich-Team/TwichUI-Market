@@ -12,6 +12,8 @@ def main():
  p.add_argument('--rust-client',type=Path,required=True);p.add_argument('--addon-root',type=Path,required=True);p.add_argument('--lua',default='lua5.1');p.add_argument('--lua-cpath');p.add_argument('--variants',type=int,default=129);p.add_argument('--out',type=Path,required=True);p.add_argument('--publish',action='store_true');p.add_argument('--history',action='store_true',help='Negotiate the installed paired history reader in staging mode');p.add_argument('--skip-lua',action='store_true',help='Windows producer only; paired Linux artifact consumer is mandatory in CI')
  p.add_argument('--current',action='store_true',help='Explicit split-projection paired-addon acceptance; no live service')
  p.add_argument('--prepared',type=int,choices=[16,32],help='Opt-in actual prepared publication with the pinned Stage C addon')
+ p.add_argument('--fixture-as-of',help='Shared UTC source instant for matched synthetic 16/32 publications; never changes client time/admission')
+ p.add_argument('--private-publisher',type=Path,help='Windows CI only: also verify the isolated DEV offline publisher and private endpoint adapter')
  p.add_argument('--test-driver',action='store_true',help='Linux only: --rust-client is the cfg(test) native publisher executable')
  p.add_argument('--legacy-native',action='store_true',help='Windows compatibility: pinned old native binary with the new prepared-capable addon')
  p.add_argument('--legacy-native-source-root',type=Path,help='Exact frozen source built into the legacy compatibility binary')
@@ -38,6 +40,10 @@ def main():
   import uvicorn
   assert engine.url.database.endswith('summary-market_test.sqlite')
   Base.metadata.create_all(engine);at=datetime.now(timezone.utc)-timedelta(minutes=1)
+  if a.fixture_as_of:
+   at=datetime.fromisoformat(a.fixture_as_of.replace('Z','+00:00'))
+   if at.utcoffset()!=timedelta(0) or not timedelta(0)<=datetime.now(timezone.utc)-at<=timedelta(hours=1):
+    p.error('Shared synthetic source instant must be UTC and within the past hour')
   def book(price,historical=False):
    rows=[{'id':j+1,'item':{'id':2589},'quantity':q,'buyout':q*price}for j,q in enumerate([3,3,4])]
    rows +=[{'id':20,'item':{'id':2589,'bonus_lists':[9]},'quantity':1,'buyout':999},{'id':21,'item':{'id':123},'quantity':2,'bid':50}]
@@ -129,6 +135,10 @@ def main():
      assert (publication/'TwichUI_MarketData/Data.lua').stat().st_mtime_ns==before_mtime
      assert hashlib.sha256((publication/'TwichUI_MarketData/Data.lua').read_bytes()).hexdigest()==before_hash
     else:assert info['requests']==1 and info['download_bytes']==0 and info['manifest']==original['manifest']
+   if a.private_publisher:
+    assert a.publish and a.prepared, 'private helper requires the actual Windows prepared fixture'
+    from private_native_tools_fixture import verify
+    (a.out/'private-tools.json').write_text(json.dumps(verify(base,game,a.prepared,a.private_publisher),indent=2)+'\n')
    destination=a.out/'publication';destination.mkdir(exist_ok=True)
    for folder in publication.iterdir():
     if folder.name=='TwichUI_MarketData' or folder.name.startswith(('TwichUI_MarketPart','TwichUI_MarketHistoryPart','TwichUI_MarketCurrentPart')):shutil.copytree(folder,destination/folder.name)

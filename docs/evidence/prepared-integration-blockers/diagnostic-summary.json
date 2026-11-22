@@ -1,0 +1,72 @@
+{
+  "run_id": 45075563739,
+  "source_commit": "91e1132cf30e2c6a9ea1b1666859023c2602f1da",
+  "artifact_sha256": "2f4c89221702921888005e18d28a413ca9f81cc8a1c0335b8571ee3dbb7a64ad",
+  "failure_json_sha256": "f151082cb6f64b69596397494c3811da846c0dbf504511aae67cf6009d8bf7f9",
+  "native_stderr": "fixture synchronizer failure attempt=19 stage_ms=0 error=Network\nError: Network\n",
+  "last_wire_requests": [
+    {
+      "id": 1351,
+      "path": "/api/v1/companion/bootstrap",
+      "method": "GET",
+      "client_port": 51208,
+      "started": 1054.5704398,
+      "stage": "complete",
+      "body_bytes_sent": 2156,
+      "status": 200,
+      "headers_ms": 12.690499999962412,
+      "elapsed_ms": 14.380999999957567
+    },
+    {
+      "id": 1352,
+      "path": "/api/v1/companion/activity",
+      "method": "POST",
+      "client_port": 51208,
+      "started": 1054.5841705,
+      "stage": "complete",
+      "body_bytes_sent": 0,
+      "status": 204,
+      "headers_ms": 5.927400000018679,
+      "elapsed_ms": 6.570000000010623
+    },
+    {
+      "id": 1353,
+      "path": "/api/v1/sync/markets/2",
+      "method": "GET",
+      "client_port": 51208,
+      "started": 1054.5921622,
+      "stage": "complete",
+      "body_bytes_sent": 360,
+      "status": 200,
+      "headers_ms": 9.199999999964348,
+      "elapsed_ms": 10.7154999998329
+    },
+    {
+      "id": 1354,
+      "path": "/api/v1/companion/markets/2/observations/4",
+      "method": "GET",
+      "client_port": 51208,
+      "started": 1054.6022021,
+      "stage": "complete",
+      "body_bytes_sent": 383,
+      "status": 200,
+      "headers_ms": 5.696299999954135,
+      "elapsed_ms": 6.488099999842234
+    },
+    {
+      "id": 1355,
+      "path": "/api/v1/workshop/markets/2/summary",
+      "method": "GET",
+      "client_port": 51208,
+      "started": 1054.6107661,
+      "stage": "complete",
+      "body_bytes_sent": 21,
+      "status": 202,
+      "headers_ms": 173.29499999982545,
+      "elapsed_ms": 174.11029999993843
+    }
+  ],
+  "loop_errors_in_failing_repeat": [],
+  "server_in_flight": [],
+  "request_explanation": "next bootstrap fails in <1ms before ASGI, after completed 202 and 5s native preparation wait; no timeout or event-loop exception"
+}

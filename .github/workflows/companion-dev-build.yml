@@ -77,6 +77,19 @@ jobs:
       - name: Minimal installed Windows smoke
         timeout-minutes: 3
         run: ./scripts/windows/verify-companion-dev.ps1
+      - name: Package the private offline native acceptance tool and endpoint adapter
+        shell: pwsh
+        run: |
+          cargo build --manifest-path desktop/Cargo.toml --release --locked --features private-dev --example prepared_private_publish
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Copy-Item desktop/target/release/examples/prepared_private_publish.exe artifacts/companion-dev/
+          Copy-Item scripts/verify-prepared-layout-pair.py artifacts/companion-dev/
+          Copy-Item scripts/prepare-private-current-snapshot.py artifacts/companion-dev/
+          Copy-Item scripts/select-private-current-layout.ps1 artifacts/companion-dev/
+          Copy-Item docs/private-prepared-native-acceptance.md artifacts/companion-dev/
+          Get-ChildItem artifacts/companion-dev -File | ForEach-Object {
+            "$((Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower())  $($_.Name)"
+          } | Set-Content artifacts/companion-dev/PRIVATE-TOOLS-SHA256SUMS.txt
       - name: Freeze executable integrity and owner instructions
         shell: pwsh
         run: |

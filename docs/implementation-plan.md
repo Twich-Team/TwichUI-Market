@@ -130,3 +130,5 @@ Initial US live rollout acceptance: direct OAuth/index/house/commodity evidence;
 ## Prepared-current final integration readiness (2026-11-22)
 
 Resolve automatic-sync baseline failure with focused diagnostics, verify exact integrated sources, and prepare isolated DEV/native acceptance. [Current plan and evidence](performance-integration-readiness.md). No production changes.
+
+Final integration checkpoint: Windows wire evidence isolates the expired pooled bootstrap boundary; fixture 202s now explicitly retire connections, with a deterministic negative/control regression. Required addon verification is green (324/324). Frozen-cache endpoint/native DEV acceptance tools are prepared; final Windows and DEV artifact verification pending. See performance-integration-readiness.md.
