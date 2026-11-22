@@ -123,3 +123,20 @@ and existing signed-updater verification pass, but installed WebView2 multi-inst
 selection fails waiting for `#workshop-confirmation` (job137327529233), skipping subsequent
 legacy/current publication steps. This failure is unresolved, not classified as passing or
 proven unrelated. No checks are disabled.
+
+Stage C follow-up is pinned at `d7150fc3fb5afe524a4a0001208a315f92a1d7bc` after the
+first dense campaign failed its original 15% threshold (+23.33% / +20.70%). The
+failed report is retained. Dense completion avoids redundant proof work and generic
+JSON tuple construction; no frame budget increased. New fast checks also cover
+large numeric boundaries, stale eligibility and cancellation of enumeration.
+The benchmark separately reports root file compilation/execution and cooperative
+root admission (excluded identically from the opening workload), plus first/default
+12 visible results. It supports the actual UI harness separately from the full
+120/500/1000/5000 Session campaign. Final evidence must name exact clean commits.
+
+Windows308 (`45064754346`) passes new prepared-publisher and prepared-consumer jobs
+for both layouts, plus the existing installed Windows workflow, native picker and
+existing signed-updater verification. The earlier Windows307 UI failure remains
+in the record; the later installed run passes without altering UI/runtime tests.
+The original legacy/current consumer job and sync performance status are tracked
+separately until complete; no new signed artifact is produced by these checks.

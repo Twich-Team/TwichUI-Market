@@ -9,7 +9,7 @@ ROOT=Path(__file__).resolve().parents[1]
 def main():
  p=argparse.ArgumentParser(description=__doc__)
  p.add_argument('--addon-root',type=Path,required=True);p.add_argument('--rust-test-driver',type=Path,required=True);p.add_argument('--source',type=Path);p.add_argument('--out',type=Path,required=True)
- p.add_argument('--recipes',type=int,nargs='+',default=[120,500,1000,5000]);p.add_argument('--reps',type=int,choices=range(1,6),default=3);p.add_argument('--layouts',type=int,nargs='+',choices=[64,16,32],default=[64,16,32]);p.add_argument('--history-probe',action='store_true');p.add_argument('--scenario',choices=['none','reopen'],default='none')
+ p.add_argument('--recipes',type=int,nargs='+',default=[120,500,1000,5000]);p.add_argument('--reps',type=int,choices=range(1,6),default=3);p.add_argument('--layouts',type=int,nargs='+',choices=[64,16,32],default=[64,16,32]);p.add_argument('--view',choices=['session','ui'],default='session');p.add_argument('--history-probe',action='store_true');p.add_argument('--scenario',choices=['none','reopen'],default='none')
  a=p.parse_args();a.addon_root=a.addon_root.resolve();a.out.mkdir(parents=True,exist_ok=True)
  sys.path.insert(0,str(a.addon_root/'tools/experiments'));from measure_game_ready import numeric_metrics
  from market_game_ready import build
@@ -20,7 +20,7 @@ def main():
  files=['scripts/measure-workshop-prepared.py','scripts/bench_workshop_prepared.lua','desktop/core/src/workshop_prepared.rs','desktop/core/src/workshop_summary.rs','desktop/core/src/workshop_prepared_tests.rs','backend/market/workshop_prepared.py']
  addon_files=['TwichUI_Workshop/Prepared.lua','TwichUI_Workshop/Summary.lua','TwichUI_Workshop/Pricing.lua','TwichUI_Workshop/OpportunityEngine.lua','TwichUI_Workshop/Session.lua','tests/bench_market_opportunities.lua']
  identity={f:sha(ROOT/f)for f in files};identity.update({'addon/'+f:sha(a.addon_root/f)for f in addon_files})
- report=dict(synthetic=True,real_game=False,market_commit=revision(ROOT),addon_commit=revision(a.addon_root),source_sha256=identity,native_driver_sha256=sha(a.rust_test_driver),host=platform.platform(),cpu=platform.processor(),clock='Lua CPU os.clock; modeled After minimum 60Hz frame; warm filesystem cache, fresh Lua process; root admission excluded identically',repeats=a.reps,discarded_warmups=1,history_days=60,cases=[])
+ report=dict(synthetic=True,real_game=False,market_commit=revision(ROOT),addon_commit=revision(a.addon_root),market_dirty=bool(subprocess.check_output(['git','status','--porcelain'],cwd=ROOT,text=True)),addon_dirty=bool(subprocess.check_output(['git','status','--porcelain'],cwd=a.addon_root,text=True)),source_sha256=identity,native_driver_sha256=sha(a.rust_test_driver),host=platform.platform(),cpu=platform.processor(),clock='Lua CPU os.clock; modeled After minimum 60Hz frame; warm filesystem cache, fresh Lua process; root admission excluded identically',repeats=a.reps,discarded_warmups=1,history_days=60,view=a.view,cases=[])
  cpuinfo=Path('/proc/cpuinfo');report['cpu']=next((line.split(':',1)[1].strip()for line in cpuinfo.read_text().splitlines()if line.startswith('model name')),report['cpu'])if cpuinfo.exists()else report['cpu']
  def save():(a.out/'benchmark.json').write_text(json.dumps(report,indent=2)+'\n')
  with tempfile.TemporaryDirectory(prefix='prepared-campaign-')as directory:
@@ -42,7 +42,7 @@ def main():
     for count in a.recipes:
      case=dict(layout=layout,recipes=count,native_validation_publication_ms=native_ms,samples=[]);report['cases'].append(case);save()
      for repeat in range(a.reps+1):
-      snapshot=base/'oracle.bin';env=dict(os.environ,BENCH_ORACLE_SNAPSHOT=str(snapshot));command=['lua5.1','tests/bench_market_opportunities.lua','opps','session',str(count),'60','3','1','off',a.scenario,'off','20',str(ROOT/'scripts/bench_workshop_prepared.lua'),str(config)]
+      snapshot=base/'oracle.bin';env=dict(os.environ,BENCH_ORACLE_SNAPSHOT=str(snapshot));command=['lua5.1','tests/bench_market_opportunities.lua','opps',a.view,str(count),'60','3','1','off',a.scenario,'off','20',str(ROOT/'scripts/bench_workshop_prepared.lua'),str(config)]
       start=time.perf_counter();proc=subprocess.run(command,cwd=a.addon_root,env=env,capture_output=True,text=True,timeout=300)
       if proc.returncode:
        case.update(status='failed',stderr=proc.stderr[:4000]);save();raise RuntimeError('Production benchmark failed; see report')

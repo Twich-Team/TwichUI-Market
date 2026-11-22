@@ -5,7 +5,17 @@ local function clock()return os.clock()*1000 end
 function X.setup(client)
     c=client;W=c.TwichUI.Workshop;J,B,P,Q=W.BridgeCodec,W.Bridge,W.Pricing,W.Summary
     cfg=J.Parse(read(assert(arg[12])));stats={loads=0,history_loads=0,compile_ms=0,execute_ms=0,source_bytes=0,worst_load_ms=0,load_peak_kib=0}
-    local root=assert(loadfile(cfg.publication..'/TwichUI_MarketData/Data.lua'));setfenv(root,c);root()
+    local at=clock();local source=read(cfg.publication..'/TwichUI_MarketData/Data.lua')
+    local began=clock();local root=assert(loadstring(source,'@TwichUI_MarketData/Data.lua'));setfenv(root,c);stats.root_compile_ms=clock()-began
+    began=clock();root();stats.root_execute_ms=clock()-began;stats.root_file_ms=clock()-at
+    local step=Q.Step
+    Q.Step=function(...)
+        if stats.root_done then return step(...)end
+        local before=clock();local ok,why=step(...)
+        stats.root_validation_ms=(stats.root_validation_ms or 0)+clock()-before
+        stats.root_slices=(stats.root_slices or 0)+1;stats.root_done=B.Status().ready
+        return ok,why
+    end
     h=J.Parse(c.TwichUIMarketData.manifest);assert(h.contract_version==3 and #h.observations==60)
     local _,at=W.BridgeValidate.Time(h.generated_at);c.time=function()return at+60 end
     c.C_AddOns.LoadAddOn=function(name)
@@ -38,11 +48,21 @@ function X.recipes(count)
 end
 function X.observe(view,elapsed,cpu,out)
     if out.prepared_visible_model_seconds then return end
-    for i=1,math.min(12,#view.all)do local row=view.all[i];if not(row.done and row.owner:Valid(row))then return end end
+    local settled,priced=true,0
+    for i=1,math.min(12,#view.all)do
+        local row=view.all[i]
+        if not(row.done and row.owner:Valid(row))then settled=false
+        elseif row.est.state=='ok'then priced=priced+1 end
+    end
     if #view.all==0 then return end
-    out.prepared_visible_model_seconds=elapsed;out.prepared_visible_cpu_ms=cpu
+    if priced>0 and not out.prepared_first_visible_model_seconds then
+        out.prepared_first_visible_model_seconds=elapsed;out.prepared_first_visible_cpu_ms=cpu
+    end
+    if settled then out.prepared_visible_model_seconds=elapsed;out.prepared_visible_cpu_ms=cpu end
 end
 function X.finish(out,event)
+    out.root_compile_ms=stats.root_compile_ms;out.root_execute_ms=stats.root_execute_ms;out.root_file_ms=stats.root_file_ms
+    out.root_validation_ms=stats.root_validation_ms;out.root_validation_slices=stats.root_slices;out.root_admission_model_seconds=stats.root_slices/60
     out.prepared_layout=cfg.layout;out.prepared_production_reader=true;out.prepared_source_generation=h.generation_id
     out.prepared_recipe_sha256=X.recipeSHA;out.prepared_distinct_items=X.items;out.prepared_legacy_buckets=X.buckets
     out.compile_ms=stats.compile_ms;out.execute_ms=stats.execute_ms;out.loads=stats.loads;out.history_loads=stats.history_loads
