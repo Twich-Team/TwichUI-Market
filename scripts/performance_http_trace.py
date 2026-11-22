@@ -4,8 +4,23 @@ Does not log headers, bodies, query strings or credentials, change responses,
 retry requests, or replace the event loop's exception reporting.
 """
 import asyncio
+import os
 import time
 from collections import deque
+
+
+def run_fixture_server(server, sockets):
+    """Use a socket-only loop for the disposable Windows HTTP server.
+
+    CPython 3.12 Proactor shutdown can raise WinError10054 before socket close/
+    server detach, leaving Server.wait_closed pending. No exceptions are hidden;
+    native Windows clients and their connection/retry policies are unchanged.
+    """
+    if os.name == 'nt':
+        with asyncio.Runner(loop_factory=asyncio.SelectorEventLoop) as runner:
+            runner.run(server.serve(sockets=sockets))
+    else:
+        server.run(sockets=sockets)
 
 
 class TransportTrace:

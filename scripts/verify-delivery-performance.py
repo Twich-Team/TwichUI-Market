@@ -6,7 +6,7 @@ uses versioned synthetic PE plus the pinned addon fixture, never a real game.
 """
 import argparse,hashlib,json,os,platform,socket,subprocess,sys,tempfile,threading,time
 from pathlib import Path
-from performance_http_trace import TransportTrace
+from performance_http_trace import TransportTrace,run_fixture_server
 ROOT=Path(__file__).resolve().parents[1]
 p=argparse.ArgumentParser();p.add_argument('--baseline',type=Path,required=True);p.add_argument('--candidate',type=Path,required=True);p.add_argument('--report',type=Path,required=True);p.add_argument('--runs',type=int,default=3);p.add_argument('--variants',type=int,default=26342);p.add_argument('--mode',choices=['archive','auto'],required=True)
 a=p.parse_args();assert 1<=a.runs<=3
@@ -48,7 +48,7 @@ with tempfile.TemporaryDirectory(prefix='delivery-performance-',dir=os.environ.g
  archive_api.now=lambda:at;bridge_api.now=lambda:at
  sock=socket.socket();sock.bind(('127.0.0.1',0));port=sock.getsockname()[1]
  wire=TransportTrace(app)
- server=uvicorn.Server(uvicorn.Config(wire,host='127.0.0.1',port=port,access_log=False,log_level='error'));thread=threading.Thread(target=server.run,kwargs={'sockets':[sock]},daemon=True);thread.start()
+ server=uvicorn.Server(uvicorn.Config(wire,host='127.0.0.1',port=port,access_log=False,log_level='error'));thread=threading.Thread(target=run_fixture_server,args=(server,[sock]),daemon=True);thread.start()
  for _ in range(1000):
   if server.started:break
   time.sleep(.01)

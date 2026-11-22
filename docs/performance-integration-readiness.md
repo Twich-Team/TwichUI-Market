@@ -1,3 +1,5 @@
+> **OWNER HOLD:** coordinated merge/release is blocked on the new physical-addon footprint investigation. Logical 32-current/64-history remains approved; actual WoW performance is unverified and personal comparison is waived. No production packaging-format change is authorized.
+
 # Prepared-current integration and private acceptance
 
 Continuation of game-ready-current-results.md and the 22 November private-test readiness
@@ -56,3 +58,7 @@ binding. These are fabricated ordinary-admission fixtures, not genuine Market re
 Native summary tests pass 26/26; one existing opt-in driver remains intentionally ignored
 by ordinary development tests. Windows helper/paired publication and exact-source DEV
 installer build remain pending. Follow [private acceptance](private-prepared-native-acceptance.md).
+
+## Follow-up fixture cleanup
+
+Run45079104793 completed all three baseline and three candidate automatic-publication comparisons with identical economic hashes, then failed the new strict teardown check. CPython3.12 Proactor `_call_connection_lost` raises WinError10054 in socket.shutdown before socket.close/server._detach, so server.wait_closed cannot finish and SQLite remains in use. The disposable Windows HTTP thread now uses a local SelectorEventLoop Runner, leaving native clients, production services, request retries and timeouts unchanged. A reset-socket lifecycle regression preserves background exceptions and requires clean server shutdown. Linux focused tests pass3/3 with warnings treated as errors; Windows verification pending.
