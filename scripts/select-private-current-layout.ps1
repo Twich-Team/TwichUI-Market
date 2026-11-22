@@ -24,7 +24,7 @@ $capability=Join-Path $game 'Interface\AddOns\TwichUI_Workshop\MarketDelivery.js
 $current=Get-Item -LiteralPath $capability
 while ($null -ne $current) {
     if ($current.Attributes -band [IO.FileAttributes]::ReparsePoint) { throw 'Linked capability refused' }
-    $current=$current.Parent
+    $current=if ($current.PSIsContainer) { $current.Parent } else { $current.Directory }
 }
 $value=Get-Content -LiteralPath $capability -Raw | ConvertFrom-Json
 if ($value.prepared_current_version -ne 1 -or $value.summary_current_contract -ne 3) { throw 'Pinned prepared reader required' }
