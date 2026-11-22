@@ -1,0 +1,1551 @@
+{
+  "metrics_enabled": false,
+  "simulator_workers": 1,
+  "simulator_resource_budget": null,
+  "complete": true,
+  "package": null,
+  "automated_release_gate_passed": false,
+  "source": {
+    "commit": "d7150fc3fb5afe524a4a0001208a315f92a1d7bc",
+    "dirty": false,
+    "working_tree_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "source_after": {
+    "commit": "d7150fc3fb5afe524a4a0001208a315f92a1d7bc",
+    "dirty": false,
+    "working_tree_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "source_unchanged": true,
+  "exit_code": 1,
+  "slowest_tests": [
+    {
+      "metrics": null,
+      "test": "test_workshop_history2.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 43.24166862400307
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_market_scale.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 28.499030296006822
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_market_reference.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 17.042121523991227
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_valuation.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 14.435300063996692
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_craftplanner.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 9.80901308200555
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_bridge_performance.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 4.906869862010353
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_auction_market_ui.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 3.822807325006579
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_auction_market_chart.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 3.811172378002084
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_bridge_scoped.py",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": 6,
+      "seconds": 2.4960211050056387
+    },
+    {
+      "metrics": null,
+      "test": "test_profiles.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 2.4253801090089837
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_market_pending.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 2.3496867179928813
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_market_prepared.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 1.9909442719945218
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_opportunity_ui.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 1.8334573189931689
+    },
+    {
+      "metrics": null,
+      "test": "test_persist.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 1.7793680360045983
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_dist.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 1.5854906890017446
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_schema.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 1.5751406329945894
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_market_performance.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 1.5703401140053757
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_storage.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 1.4093877590057673
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_scoped_bridge_l1.py",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": 4,
+      "seconds": 1.3638940370001364
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_bridge_compatibility.py",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": 17,
+      "seconds": 1.202940306000528
+    }
+  ],
+  "slowest_scenarios": [],
+  "selection": {
+    "tier": "integration",
+    "group": "market",
+    "groups": [
+      "advanced-market-chart",
+      "core",
+      "crafting",
+      "market",
+      "shared-ui"
+    ],
+    "tests": [
+      "test_auction_host.lua",
+      "test_auction_price.lua",
+      "test_auction_window.lua",
+      "test_cleanup.lua",
+      "test_commands.lua",
+      "test_defaults.lua",
+      "test_frame_look.lua",
+      "test_lifecycle.lua",
+      "test_lod_apply.lua",
+      "test_media_border.lua",
+      "test_menu_style.lua",
+      "test_notify.lua",
+      "test_notify_look.lua",
+      "test_persist.lua",
+      "test_press.lua",
+      "test_pricing_conformance.py",
+      "test_profiles.lua",
+      "test_reach.lua",
+      "test_routing.lua",
+      "test_simlab_diagnostics.lua",
+      "test_status.lua",
+      "test_storage.lua",
+      "test_stored_data.lua",
+      "test_theme_defaults.lua",
+      "test_window_smoke.lua",
+      "test_workshop.lua",
+      "test_workshop_a7.lua",
+      "test_workshop_auction_market.lua",
+      "test_workshop_auction_market_chart.lua",
+      "test_workshop_auction_market_chart_interaction.lua",
+      "test_workshop_auction_market_history.lua",
+      "test_workshop_auction_market_scoped.lua",
+      "test_workshop_auction_market_search.lua",
+      "test_workshop_auction_market_server.lua",
+      "test_workshop_auction_market_summary.lua",
+      "test_workshop_auction_market_ui.lua",
+      "test_workshop_auto.lua",
+      "test_workshop_bridge.lua",
+      "test_workshop_bridge.py",
+      "test_workshop_bridge_compatibility.py",
+      "test_workshop_bridge_freshness.lua",
+      "test_workshop_bridge_performance.lua",
+      "test_workshop_bridge_scoped.lua",
+      "test_workshop_bridge_scoped.py",
+      "test_workshop_compact.lua",
+      "test_workshop_crafting_reference.lua",
+      "test_workshop_craftplanner.lua",
+      "test_workshop_disenchant.lua",
+      "test_workshop_disenchant_market.lua",
+      "test_workshop_dist.lua",
+      "test_workshop_estimate.lua",
+      "test_workshop_history2.lua",
+      "test_workshop_market.lua",
+      "test_workshop_market_consumption.lua",
+      "test_workshop_market_consumption_async.lua",
+      "test_workshop_market_current.lua",
+      "test_workshop_market_pending.lua",
+      "test_workshop_market_performance.lua",
+      "test_workshop_market_prepared.lua",
+      "test_workshop_market_reference.lua",
+      "test_workshop_market_scale.lua",
+      "test_workshop_memory.lua",
+      "test_workshop_opportunity_engine.lua",
+      "test_workshop_opportunity_ui.lua",
+      "test_workshop_prices.lua",
+      "test_workshop_pricing_v1.lua",
+      "test_workshop_schema.lua",
+      "test_workshop_scoped_bridge_l1.py",
+      "test_workshop_shopping.lua",
+      "test_workshop_storage.lua",
+      "test_workshop_strategy.lua",
+      "test_workshop_strategy_ui.lua",
+      "test_workshop_summary.lua",
+      "test_workshop_valuation.lua",
+      "test_workshop_vendor_places.lua",
+      "test_workshop_worth.lua"
+    ],
+    "syntax": [
+      "!!!TwichUI/Core.lua",
+      "!!!TwichUI/CraftLook.lua",
+      "!!!TwichUI/DiagnosticsLauncher.lua",
+      "!!!TwichUI/FirstRunWelcome.lua",
+      "!!!TwichUI/ForeverItemFamilies.lua",
+      "!!!TwichUI/FrameLook.lua",
+      "!!!TwichUI/Icons.lua",
+      "!!!TwichUI/LayoutsLauncher.lua",
+      "!!!TwichUI/Look.lua",
+      "!!!TwichUI/Onboarding.lua",
+      "!!!TwichUI/Persist.lua",
+      "!!!TwichUI/Profiles.lua",
+      "!!!TwichUI/QuietScreen.lua",
+      "!!!TwichUI/SettingsBroker.lua",
+      "!!!TwichUI/SettingsLauncher.lua",
+      "!!!TwichUI/Switches.lua",
+      "!!!TwichUI/WorkshopAuto.lua",
+      "!!!TwichUI/WorkshopLauncher.lua",
+      "!!!TwichUI/auction/Build.lua",
+      "!!!TwichUI/auction/Host.lua",
+      "!!!TwichUI/auction/Ledger.lua",
+      "!!!TwichUI/auction/LedgerAuction.lua",
+      "!!!TwichUI/auction/LedgerCost.lua",
+      "!!!TwichUI/auction/LedgerCostWatch.lua",
+      "!!!TwichUI/auction/LedgerQuest.lua",
+      "!!!TwichUI/auction/Mail.lua",
+      "!!!TwichUI/auction/Price.lua",
+      "!!!TwichUI/auction/Scan.lua",
+      "!!!TwichUI/auction/Vendor.lua",
+      "!!!TwichUI/auction/Window.lua",
+      "!!!TwichUI/setup/Cleanup.lua",
+      "!!!TwichUI/setup/CommTest.lua",
+      "!!!TwichUI/setup/Ellesmere.lua",
+      "!!!TwichUI/setup/Explorer.lua",
+      "!!!TwichUI/setup/ExplorerWindow.lua",
+      "!!!TwichUI/setup/Group.lua",
+      "!!!TwichUI/setup/PackFile.lua",
+      "!!!TwichUI/setup/Portable.lua",
+      "!!!TwichUI/setup/Restore.lua",
+      "!!!TwichUI/setup/Setups.lua",
+      "!!!TwichUI/setup/Share.lua",
+      "!!!TwichUI/setup/StoredData.lua",
+      "!!!TwichUI/setup/StoredDataWindow.lua",
+      "!!!TwichUI/setup/TwichConfig.lua",
+      "!!!TwichUI/setup/Window.lua",
+      "TwichUI_Diagnostics/Gauges.lua",
+      "TwichUI_Settings/Cards.lua",
+      "TwichUI_Settings/Companion.lua",
+      "TwichUI_Settings/Craft.lua",
+      "TwichUI_Settings/Design.lua",
+      "TwichUI_Settings/Home.lua",
+      "TwichUI_Settings/Kit.lua",
+      "TwichUI_Settings/Material.lua",
+      "TwichUI_Settings/Previews.lua",
+      "TwichUI_Settings/QuickAccess.lua",
+      "TwichUI_Settings/Search.lua",
+      "TwichUI_Settings/Widgets.lua",
+      "TwichUI_Settings/Window.lua",
+      "TwichUI_Workshop/Advisor.lua",
+      "TwichUI_Workshop/AdvisorData.lua",
+      "TwichUI_Workshop/AuctionButton.lua",
+      "TwichUI_Workshop/Auto.lua",
+      "TwichUI_Workshop/Bank.lua",
+      "TwichUI_Workshop/Bridge.lua",
+      "TwichUI_Workshop/BridgeCodec.lua",
+      "TwichUI_Workshop/BridgeSchema.lua",
+      "TwichUI_Workshop/BridgeValidate.lua",
+      "TwichUI_Workshop/ChartKit.lua",
+      "TwichUI_Workshop/Coins.lua",
+      "TwichUI_Workshop/Compact.lua",
+      "TwichUI_Workshop/CraftPlanner.lua",
+      "TwichUI_Workshop/Data.lua",
+      "TwichUI_Workshop/Disenchant.lua",
+      "TwichUI_Workshop/DisenchantData.lua",
+      "TwichUI_Workshop/DisenchantExclusions.lua",
+      "TwichUI_Workshop/Dist.lua",
+      "TwichUI_Workshop/Estimate.lua",
+      "TwichUI_Workshop/Fees.lua",
+      "TwichUI_Workshop/History.lua",
+      "TwichUI_Workshop/History2.lua",
+      "TwichUI_Workshop/Junk.lua",
+      "TwichUI_Workshop/Known.lua",
+      "TwichUI_Workshop/LedgerChart.lua",
+      "TwichUI_Workshop/LedgerQuery.lua",
+      "TwichUI_Workshop/Market.lua",
+      "TwichUI_Workshop/MarketFacts.lua",
+      "TwichUI_Workshop/Materials.lua",
+      "TwichUI_Workshop/Notice.lua",
+      "TwichUI_Workshop/Observe.lua",
+      "TwichUI_Workshop/Opportunities.lua",
+      "TwichUI_Workshop/OpportunityEngine.lua",
+      "TwichUI_Workshop/Prepared.lua",
+      "TwichUI_Workshop/Prices.lua",
+      "TwichUI_Workshop/Pricing.lua",
+      "TwichUI_Workshop/PricingV1.lua",
+      "TwichUI_Workshop/Progress.lua",
+      "TwichUI_Workshop/Queue.lua",
+      "TwichUI_Workshop/Scan.lua",
+      "TwichUI_Workshop/Sell.lua",
+      "TwichUI_Workshop/ServerMarket.lua",
+      "TwichUI_Workshop/Session.lua",
+      "TwichUI_Workshop/Shopping.lua",
+      "TwichUI_Workshop/Stock.lua",
+      "TwichUI_Workshop/Storage.lua",
+      "TwichUI_Workshop/Strategy.lua",
+      "TwichUI_Workshop/Style.lua",
+      "TwichUI_Workshop/Summary.lua",
+      "TwichUI_Workshop/SummarySchema.lua",
+      "TwichUI_Workshop/Valuation.lua",
+      "TwichUI_Workshop/Vendor.lua",
+      "TwichUI_Workshop/ViewAdvisor.lua",
+      "TwichUI_Workshop/ViewCrafting.lua",
+      "TwichUI_Workshop/ViewLedger.lua",
+      "TwichUI_Workshop/ViewOpportunities.lua",
+      "TwichUI_Workshop/ViewOverview.lua",
+      "TwichUI_Workshop/ViewShopping.lua",
+      "TwichUI_Workshop/ViewStrategy.lua",
+      "TwichUI_Workshop/Watch.lua",
+      "TwichUI_Workshop/Window.lua",
+      "TwichUI_Workshop/Worth.lua",
+      "TwichUI_Workshop/WorthLayout.lua",
+      "TwichUI_Workshop/WorthTip.lua",
+      "TwichUI_Workshop/auction/Actions.lua",
+      "TwichUI_Workshop/auction/AdvancedChart.lua",
+      "TwichUI_Workshop/auction/BrowseData.lua",
+      "TwichUI_Workshop/auction/Categories.lua",
+      "TwichUI_Workshop/auction/Components.lua",
+      "TwichUI_Workshop/auction/Debug.lua",
+      "TwichUI_Workshop/auction/MarketData.lua",
+      "TwichUI_Workshop/auction/ReadRequests.lua",
+      "TwichUI_Workshop/auction/SellData.lua",
+      "TwichUI_Workshop/auction/ShoppingData.lua",
+      "TwichUI_Workshop/auction/ViewBrowse.lua",
+      "TwichUI_Workshop/auction/ViewMarket.lua",
+      "TwichUI_Workshop/auction/ViewOwned.lua",
+      "TwichUI_Workshop/auction/ViewSell.lua",
+      "TwichUI_Workshop/auction/ViewShopping.lua",
+      "TwichUI_Workshop/auction/Window.lua"
+    ],
+    "simulators": [
+      {
+        "script": "workshop",
+        "only": [
+          "craft",
+          "history",
+          "opps",
+          "shop",
+          "shopcollect",
+          "strategy",
+          "wrong"
+        ]
+      },
+      {
+        "script": "auctionpreview",
+        "only": [
+          "companionnewer",
+          "companionolder",
+          "companionvalid",
+          "market",
+          "marketbridge",
+          "marketcopper",
+          "marketdrag",
+          "marketempty",
+          "markethover",
+          "marketinterval",
+          "marketlong",
+          "marketscaled",
+          "marketsingle",
+          "marketsmall",
+          "marketsparse",
+          "replay",
+          "shell",
+          "summarycorrupt",
+          "summaryfuture",
+          "summaryvalid",
+          "wrong"
+        ]
+      }
+    ],
+    "verification_profile": "integration",
+    "selection_reason": "affected groups and recursive shared dependencies; explicit scoped simulator selections",
+    "omitted_catalogs": [
+      "lab-guard",
+      "smoke",
+      "interact",
+      "diagnose",
+      "auctionproof",
+      "testlab",
+      "settings",
+      "reminders"
+    ],
+    "coverage_classification": {
+      "offline": [
+        "unit tests",
+        "contracts, migrations, performance, packaging and mutation harnesses as selected by module"
+      ],
+      "simulators": {
+        "workshop": [
+          "feature interaction",
+          "replay/determinism",
+          "negative controls",
+          "visual structural checks"
+        ],
+        "auctionpreview": [
+          "feature interaction",
+          "replay/determinism",
+          "negative controls",
+          "visual structural checks"
+        ]
+      },
+      "not_established": [
+        "real-client acceptance",
+        "pixel baseline regression (structural screenshots only)",
+        "production mutation campaigns (separate policy)",
+        "real-client packaged-install acceptance"
+      ]
+    },
+    "profile": "cloud"
+  },
+  "jobs": 2,
+  "layout_workers": 1,
+  "seconds": 664.5136020330101,
+  "local_milestone_passed": false,
+  "unsupported_coverage": [
+    "game asset rendering, client fonts and visual fidelity"
+  ],
+  "syntax_passed": true,
+  "tests": [
+    {
+      "metrics": null,
+      "test": "test_auction_host.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 1.0862440110067837
+    },
+    {
+      "metrics": null,
+      "test": "test_auction_price.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.00510680400475394
+    },
+    {
+      "metrics": null,
+      "test": "test_auction_window.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.01890539600572083
+    },
+    {
+      "metrics": null,
+      "test": "test_cleanup.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.335371697001392
+    },
+    {
+      "metrics": null,
+      "test": "test_commands.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.0493197760079056
+    },
+    {
+      "metrics": null,
+      "test": "test_defaults.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.04888134000066202
+    },
+    {
+      "metrics": null,
+      "test": "test_frame_look.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.03531151500646956
+    },
+    {
+      "metrics": null,
+      "test": "test_lifecycle.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.07820896500197705
+    },
+    {
+      "metrics": null,
+      "test": "test_lod_apply.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.04990037599054631
+    },
+    {
+      "metrics": null,
+      "test": "test_media_border.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.036058212994248606
+    },
+    {
+      "metrics": null,
+      "test": "test_menu_style.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.023246912998729385
+    },
+    {
+      "metrics": null,
+      "test": "test_notify.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.030061671990551986
+    },
+    {
+      "metrics": null,
+      "test": "test_notify_look.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.030025348998606205
+    },
+    {
+      "metrics": null,
+      "test": "test_persist.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 1.7793680360045983
+    },
+    {
+      "metrics": null,
+      "test": "test_press.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.006426818988984451
+    },
+    {
+      "metrics": null,
+      "test": "test_pricing_conformance.py",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": 1,
+      "seconds": 0.07722707399807405
+    },
+    {
+      "metrics": null,
+      "test": "test_profiles.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 2.4253801090089837
+    },
+    {
+      "metrics": null,
+      "test": "test_reach.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.04229671599750873
+    },
+    {
+      "metrics": null,
+      "test": "test_routing.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.06956992199411616
+    },
+    {
+      "metrics": null,
+      "test": "test_simlab_diagnostics.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.017550158998346888
+    },
+    {
+      "metrics": null,
+      "test": "test_status.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.24830245799967088
+    },
+    {
+      "metrics": null,
+      "test": "test_storage.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.026833537995116785
+    },
+    {
+      "metrics": null,
+      "test": "test_stored_data.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.04610192599648144
+    },
+    {
+      "metrics": null,
+      "test": "test_theme_defaults.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.03880297300929669
+    },
+    {
+      "metrics": null,
+      "test": "test_window_smoke.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.04026802298903931
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.46367672699852847
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_a7.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.05571026100369636
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_auction_market.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.6254326219932409
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_auction_market_chart.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 3.811172378002084
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_auction_market_chart_interaction.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.08506816199223977
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_auction_market_history.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.19789703900460154
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_auction_market_scoped.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.445633130002534
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_auction_market_search.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.1673366589966463
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_auction_market_server.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.3282478040055139
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_auction_market_summary.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.19384087200160138
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_auction_market_ui.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 3.822807325006579
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_auto.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.8058075709996046
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_bridge.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.08051599300233647
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_bridge.py",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": 6,
+      "seconds": 0.551395299989963
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_bridge_compatibility.py",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": 17,
+      "seconds": 1.202940306000528
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_bridge_freshness.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.05302977999963332
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_bridge_performance.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 4.906869862010353
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_bridge_scoped.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.49359981599263847
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_bridge_scoped.py",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": 6,
+      "seconds": 2.4960211050056387
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_compact.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.11944193700037431
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_crafting_reference.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 1.0058330220053904
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_craftplanner.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 9.80901308200555
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_disenchant.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.11330536501191091
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_disenchant_market.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.16074749700783286
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_dist.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 1.5854906890017446
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_estimate.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.034127841994632035
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_history2.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 43.24166862400307
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_market.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 1.1036949380068108
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_market_consumption.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.2778361520031467
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_market_consumption_async.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.12164115499763284
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_market_current.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.3322166669968283
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_market_pending.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 2.3496867179928813
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_market_performance.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 1.5703401140053757
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_market_prepared.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 1.9909442719945218
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_market_reference.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 17.042121523991227
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_market_scale.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 28.499030296006822
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_memory.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.8164201820036396
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_opportunity_engine.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.25700470799347386
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_opportunity_ui.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 1.8334573189931689
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_prices.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.6314088999934029
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_pricing_v1.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.004564875998767093
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_schema.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 1.5751406329945894
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_scoped_bridge_l1.py",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": 4,
+      "seconds": 1.3638940370001364
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_shopping.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.7833982419979293
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_storage.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 1.4093877590057673
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_strategy.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.5400431370071601
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_strategy_ui.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.10763065700302832
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_summary.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.22171637599240057
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_valuation.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 14.435300063996692
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_vendor_places.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.03397299800417386
+    },
+    {
+      "metrics": null,
+      "test": "test_workshop_worth.lua",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "python_cases": null,
+      "seconds": 0.3613969830039423
+    }
+  ],
+  "simulators": [
+    {
+      "script": "workshop",
+      "only": [
+        "craft",
+        "history",
+        "opps",
+        "shop",
+        "shopcollect",
+        "strategy",
+        "wrong"
+      ],
+      "worker": null,
+      "passed": false,
+      "exit_code": 1,
+      "timed_out": false,
+      "artifacts": "/workspace/TwichUI-prepared-reader/test-output/simlab/artifacts/workshop-gUBNEsS9",
+      "screenshots": [
+        "craft.png",
+        "history.png",
+        "opps.png",
+        "shop.png",
+        "shopcollect.png",
+        "strategy.png"
+      ],
+      "telemetry": [],
+      "launches": 7,
+      "scenario_checks": 3711,
+      "scenarios": [
+        {
+          "scenario": "craft",
+          "structured_assertions": 530,
+          "intentional_negative_control": false,
+          "failed_assertion_markers": 41,
+          "bootstrap_seconds": 7.015,
+          "last_native_timestamp_seconds": 33.797,
+          "metrics": null
+        },
+        {
+          "scenario": "history",
+          "structured_assertions": 530,
+          "intentional_negative_control": false,
+          "failed_assertion_markers": 41,
+          "bootstrap_seconds": 4.831,
+          "last_native_timestamp_seconds": 31.343,
+          "metrics": null
+        },
+        {
+          "scenario": "opps",
+          "structured_assertions": 531,
+          "intentional_negative_control": false,
+          "failed_assertion_markers": 41,
+          "bootstrap_seconds": 4.384,
+          "last_native_timestamp_seconds": 31.616,
+          "metrics": null
+        },
+        {
+          "scenario": "shop",
+          "structured_assertions": 530,
+          "intentional_negative_control": false,
+          "failed_assertion_markers": 41,
+          "bootstrap_seconds": 4.411,
+          "last_native_timestamp_seconds": 32.112,
+          "metrics": null
+        },
+        {
+          "scenario": "shopcollect",
+          "structured_assertions": 530,
+          "intentional_negative_control": false,
+          "failed_assertion_markers": 41,
+          "bootstrap_seconds": 4.79,
+          "last_native_timestamp_seconds": 32.235,
+          "metrics": null
+        },
+        {
+          "scenario": "strategy",
+          "structured_assertions": 530,
+          "intentional_negative_control": false,
+          "failed_assertion_markers": 41,
+          "bootstrap_seconds": 4.539,
+          "last_native_timestamp_seconds": 32.294,
+          "metrics": null
+        },
+        {
+          "scenario": "wrong",
+          "structured_assertions": 530,
+          "intentional_negative_control": true,
+          "failed_assertion_markers": 42,
+          "bootstrap_seconds": 4.665,
+          "last_native_timestamp_seconds": 32.252,
+          "metrics": null
+        }
+      ],
+      "seconds": 242.7498023990047
+    },
+    {
+      "script": "auctionpreview",
+      "only": [
+        "companionnewer",
+        "companionolder",
+        "companionvalid",
+        "market",
+        "marketbridge",
+        "marketcopper",
+        "marketdrag",
+        "marketempty",
+        "markethover",
+        "marketinterval",
+        "marketlong",
+        "marketscaled",
+        "marketsingle",
+        "marketsmall",
+        "marketsparse",
+        "replay",
+        "shell",
+        "summarycorrupt",
+        "summaryfuture",
+        "summaryvalid",
+        "wrong"
+      ],
+      "worker": null,
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "artifacts": "/workspace/TwichUI-prepared-reader/test-output/simlab/artifacts/auctionpreview-jXKf0XGX",
+      "screenshots": [
+        "companionnewer.png",
+        "companionolder.png",
+        "companionvalid.png",
+        "market.png",
+        "marketbridge.png",
+        "marketcopper.png",
+        "marketdrag.png",
+        "marketempty.png",
+        "markethover.png",
+        "marketinterval.png",
+        "marketlong.png",
+        "marketscaled.png",
+        "marketsingle.png",
+        "marketsmall.png",
+        "marketsparse.png",
+        "replay.png",
+        "shell.png",
+        "summarycorrupt.png",
+        "summaryfuture.png",
+        "summaryvalid.png",
+        "wrong.png"
+      ],
+      "telemetry": [],
+      "launches": 21,
+      "scenario_checks": 2996,
+      "scenarios": [
+        {
+          "scenario": "companionnewer",
+          "structured_assertions": 163,
+          "intentional_negative_control": false,
+          "failed_assertion_markers": 0,
+          "bootstrap_seconds": 5.806,
+          "last_native_timestamp_seconds": 27.585,
+          "metrics": null
+        },
+        {
+          "scenario": "companionolder",
+          "structured_assertions": 163,
+          "intentional_negative_control": false,
+          "failed_assertion_markers": 0,
+          "bootstrap_seconds": 4.297,
+          "last_native_timestamp_seconds": 23.992,
+          "metrics": null
+        },
+        {
+          "scenario": "companionvalid",
+          "structured_assertions": 163,
+          "intentional_negative_control": false,
+          "failed_assertion_markers": 0,
+          "bootstrap_seconds": 4.228,
+          "last_native_timestamp_seconds": 38.978,
+          "metrics": null
+        },
+        {
+          "scenario": "market",
+          "structured_assertions": 136,
+          "intentional_negative_control": false,
+          "failed_assertion_markers": 0,
+          "bootstrap_seconds": 4.39,
+          "last_native_timestamp_seconds": 10.173,
+          "metrics": null
+        },
+        {
+          "scenario": "marketbridge",
+          "structured_assertions": 147,
+          "intentional_negative_control": false,
+          "failed_assertion_markers": 0,
+          "bootstrap_seconds": 4.674,
+          "last_native_timestamp_seconds": 14.762,
+          "metrics": null
+        },
+        {
+          "scenario": "marketcopper",
+          "structured_assertions": 136,
+          "intentional_negative_control": false,
+          "failed_assertion_markers": 0,
+          "bootstrap_seconds": 4.293,
+          "last_native_timestamp_seconds": 10.152,
+          "metrics": null
+        },
+        {
+          "scenario": "marketdrag",
+          "structured_assertions": 139,
+          "intentional_negative_control": false,
+          "failed_assertion_markers": 0,
+          "bootstrap_seconds": 4.567,
+          "last_native_timestamp_seconds": 11.003,
+          "metrics": null
+        },
+        {
+          "scenario": "marketempty",
+          "structured_assertions": 136,
+          "intentional_negative_control": false,
+          "failed_assertion_markers": 0,
+          "bootstrap_seconds": 4.298,
+          "last_native_timestamp_seconds": 10.187,
+          "metrics": null
+        },
+        {
+          "scenario": "markethover",
+          "structured_assertions": 141,
+          "intentional_negative_control": false,
+          "failed_assertion_markers": 0,
+          "bootstrap_seconds": 4.803,
+          "last_native_timestamp_seconds": 14.111,
+          "metrics": null
+        },
+        {
+          "scenario": "marketinterval",
+          "structured_assertions": 137,
+          "intentional_negative_control": false,
+          "failed_assertion_markers": 0,
+          "bootstrap_seconds": 4.398,
+          "last_native_timestamp_seconds": 10.184,
+          "metrics": null
+        },
+        {
+          "scenario": "marketlong",
+          "structured_assertions": 136,
+          "intentional_negative_control": false,
+          "failed_assertion_markers": 0,
+          "bootstrap_seconds": 4.569,
+          "last_native_timestamp_seconds": 10.062,
+          "metrics": null
+        },
+        {
+          "scenario": "marketscaled",
+          "structured_assertions": 136,
+          "intentional_negative_control": false,
+          "failed_assertion_markers": 0,
+          "bootstrap_seconds": 4.367,
+          "last_native_timestamp_seconds": 10.156,
+          "metrics": null
+        },
+        {
+          "scenario": "marketsingle",
+          "structured_assertions": 136,
+          "intentional_negative_control": false,
+          "failed_assertion_markers": 0,
+          "bootstrap_seconds": 4.399,
+          "last_native_timestamp_seconds": 10.087,
+          "metrics": null
+        },
+        {
+          "scenario": "marketsmall",
+          "structured_assertions": 136,
+          "intentional_negative_control": false,
+          "failed_assertion_markers": 0,
+          "bootstrap_seconds": 4.418,
+          "last_native_timestamp_seconds": 10.119,
+          "metrics": null
+        },
+        {
+          "scenario": "marketsparse",
+          "structured_assertions": 136,
+          "intentional_negative_control": false,
+          "failed_assertion_markers": 0,
+          "bootstrap_seconds": 4.052,
+          "last_native_timestamp_seconds": 9.023,
+          "metrics": null
+        },
+        {
+          "scenario": "replay",
+          "structured_assertions": 136,
+          "intentional_negative_control": false,
+          "failed_assertion_markers": 0,
+          "bootstrap_seconds": 4.335,
+          "last_native_timestamp_seconds": 9.488,
+          "metrics": null
+        },
+        {
+          "scenario": "shell",
+          "structured_assertions": 136,
+          "intentional_negative_control": false,
+          "failed_assertion_markers": 0,
+          "bootstrap_seconds": 4.587,
+          "last_native_timestamp_seconds": 9.762,
+          "metrics": null
+        },
+        {
+          "scenario": "summarycorrupt",
+          "structured_assertions": 149,
+          "intentional_negative_control": false,
+          "failed_assertion_markers": 0,
+          "bootstrap_seconds": 4.134,
+          "last_native_timestamp_seconds": 9.056,
+          "metrics": null
+        },
+        {
+          "scenario": "summaryfuture",
+          "structured_assertions": 149,
+          "intentional_negative_control": false,
+          "failed_assertion_markers": 0,
+          "bootstrap_seconds": 4.205,
+          "last_native_timestamp_seconds": 9.131,
+          "metrics": null
+        },
+        {
+          "scenario": "summaryvalid",
+          "structured_assertions": 149,
+          "intentional_negative_control": false,
+          "failed_assertion_markers": 0,
+          "bootstrap_seconds": 4.524,
+          "last_native_timestamp_seconds": 10.815,
+          "metrics": null
+        },
+        {
+          "scenario": "wrong",
+          "structured_assertions": 136,
+          "intentional_negative_control": true,
+          "failed_assertion_markers": 1,
+          "bootstrap_seconds": 4.198,
+          "last_native_timestamp_seconds": 9.091,
+          "metrics": null
+        }
+      ],
+      "seconds": 338.0242651060107
+    }
+  ],
+  "passed": false
+}

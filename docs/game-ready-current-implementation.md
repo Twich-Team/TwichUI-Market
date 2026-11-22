@@ -160,3 +160,12 @@ Market65 and Crafting37 unit selections pass locally. The earlier broader run pa
 The original main b541 reproduces the identical41 failure lines, without weakening tests.
 Windows310 passes the exact old-native/new-addon compatibility addition as well as
 prepared16/32 and original installed/native/legacy consumer checks.
+
+## Final report
+
+[Implementation, final evidence, compatibility limits and exact Forever procedure](game-ready-current-results.md).
+The delivered addon is a59bbcec; measured Market runtime/tooling is f7c937a. Both were
+clean throughout the final 36-sample campaign. All economic/ranking/warm invariants
+pass; dense CPU increases 10.37%/10.57% remain below 15%. Actual UI reopen/history
+checks pass. Memory/frame/native limits and baseline failures remain explicit.
+All four PRs remain draft; no production operation, signing or publication occurred.
