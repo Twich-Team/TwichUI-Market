@@ -126,3 +126,7 @@ Initial US live rollout acceptance: direct OAuth/index/house/commodity evidence;
 **Owner-authorized intelligent metadata recovery:** [Implementation plan](intelligent-metadata-recovery-plan.md), [progress](intelligent-metadata-recovery-progress.md). Implement/test/integrate/deploy item-centric recovery and administration tracker after successful checks; preserve all provider settings, collection/history, mobile release and beta.5. Current storage headroom blocks release allocations, not independent source work.
 
 2026-11-18: execute the explicitly authorized [automatic retention goal](automatic-retention-progress.md), preserving prior releases and leaving production historical deletion unauthorized.
+
+## Prepared-current final integration readiness (2026-11-22)
+
+Resolve automatic-sync baseline failure with focused diagnostics, verify exact integrated sources, and prepare isolated DEV/native acceptance. [Current plan and evidence](performance-integration-readiness.md). No production changes.

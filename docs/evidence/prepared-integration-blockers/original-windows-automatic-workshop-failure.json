@@ -1,0 +1,4550 @@
+{
+  "synthetic": true,
+  "production": false,
+  "physical_game": false,
+  "label": "baseline",
+  "repeat": 1,
+  "mode": "auto",
+  "exit_code": 1,
+  "server_thread_alive": true,
+  "sql_queries": 7438,
+  "requests": [
+    {
+      "operation": "bootstrap",
+      "status": 200,
+      "body_bytes": 2156,
+      "server_ms": 11.759299999994255,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "bootstrap",
+      "status": 200,
+      "body_bytes": 2156,
+      "server_ms": 8.484899999984918,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "activity",
+      "status": 204,
+      "body_bytes": 0,
+      "server_ms": 6.049200000006749,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.902999999984786,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 9.970099999918602,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.008100000050035,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.08080000008249,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.055500000021311,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 9.980900000073234,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.097299999983989,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.210499999971034,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 9.982799999988856,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.081399999990026,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 9.692999999970198,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.20410000000993,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 9.870500000033644,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 9.936100000004444,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 9.928100000024642,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.222099999964485,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.054900000000089,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 9.86539999996694,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.151199999995697,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 9.97800000004645,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.194300000080148,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.454499999989821,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 9.967199999891818,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 9.577599999943232,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 9.837599999968916,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 9.93149999999332,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 9.952500000053988,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 9.861799999953291,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.090500000046632,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.013800000024276,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.162700000023506,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.108899999977439,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 9.96379999992314,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.001399999964633,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 9.837400000037633,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.085099999969316,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.20210000001498,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.070599999949081,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.247499999991305,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.767400000077032,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.581500000057531,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 9.949699999992845,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.067599999956656,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.29520000008688,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.89280000007875,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.150899999985086,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 9.963299999981245,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.095099999944068,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 9.963400000060574,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 16.099199999985103,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.656300000026931,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.794799999985116,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.147700000061377,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.219799999958923,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.32390000000305,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.174600000027567,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.184200000026067,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.136799999941104,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.047999999983404,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 9.935799999993833,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.159799999996721,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.383199999978387,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 9.982599999943886,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 9.731600000009166,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.132900000030531,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 9.906999999998334,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.060600000088016,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.044099999959144,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 9.836600000085127,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 9.977100000014616,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.100999999963278,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.634200000026794,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.666599999922255,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 9.882199999992736,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.382499999991524,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.07249999997839,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.05150000003141,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.381700000039018,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.329500000011649,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.328800000024785,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 9.911600000009457,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 9.94309999998677,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.047900000017762,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.080200000061268,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 9.859599999913371,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.328700000059143,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.0648000000092,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.299600000053033,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.60070000005453,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.170499999958338,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.127499999953216,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.746900000001006,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.197399999924528,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.072300000047107,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.119899999949666,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.554699999943296,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.27139999996507,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.225900000023103,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.41639999994004,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.235700000066572,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.188400000060938,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.107800000014322,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.654599999952552,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.23490000000038,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.206299999936164,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.211099999992257,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.009800000034375,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.45139999996536,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.369900000000598,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.361299999999574,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.424899999975423,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.322399999949994,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.263900000040849,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.398000000009233,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.38770000002387,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.252799999989293,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.74740000001384,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.67440000008446,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.791600000061408,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.698499999989508,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.780899999986104,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.550999999964006,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.26179999996657,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.303899999939858,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.295199999973192,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.72599999997692,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.564400000021124,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.264199999937773,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.345099999971353,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.262900000043373,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.359199999925295,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.125199999947654,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.087399999974878,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.25830000003225,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.47280000000228,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.15729999994619,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.374299999966752,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.201499999993757,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.178800000062438,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.282200000006014,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 9.978799999998955,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.040000000003602,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.260200000061559,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.261700000000928,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.04360000001725,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.471199999983583,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.515000000054897,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.34310000000005,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.843999999996413,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.448299999893607,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.43630000003759,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.240300000077696,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.437499999966349,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.428899999965324,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.258700000008503,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.530199999948309,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.487699999998767,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.266799999953946,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.262799999964045,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.591399999952955,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.81120000003466,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.56200000004992,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.252900000044974,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.302799999976742,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.326999999961117,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.261099999979706,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.494699999981094,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.315099999957056,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.35490000003847,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.52279999998973,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.56370000003426,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.533300000020063,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.386100000005172,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.014100000034887,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.566700000026685,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.41680000002998,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.512699999935649,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.201499999993757,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.466199999996206,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.370100000045568,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.450999999989108,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.251100000004953,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.342700000023797,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.604999999941356,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.448600000017905,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.486700000001292,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.649599999965176,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.60589999997319,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.630900000023757,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.534799999959432,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.485600000038175,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.452199999917866,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.649700000044504,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.55830000007063,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.507899999993242,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.36680000004253,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.527599999932136,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.568499999976666,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.798099999988153,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.371900000109235,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.603000000060092,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.736699999938537,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.464800000022478,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.358800000062729,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.529300000030162,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.573099999940496,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.077100000055907,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.35860000001776,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.982499999954598,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.435099999995145,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.103400000024521,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.593200000016623,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.059600000066894,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.514599999964958,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.55040000005647,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.380400000030932,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.533799999961957,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.766799999942123,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.591399999952955,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.549399999945308,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.566799999992327,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.546099999942271,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.814299999992727,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.561700000039309,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.630699999978788,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.504500000024564,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.429700000031517,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.48219999995581,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.62980000006064,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.593900000003487,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.526400000003377,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.595200000011573,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.410500000034517,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.614799999984825,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.702899999955662,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.332900000094014,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.550899999998364,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.61400000003232,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.354800000072828,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.972700000024815,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.887900000057016,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.684500000024855,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.713900000041576,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.524199999963457,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.689100000035978,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.538699999983692,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.792199999968943,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.593699999958517,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.606699999925695,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.144999999942229,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.88600000000406,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.399900000014895,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.005599999975857,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.932899999943402,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.080399999968904,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.015400000019326,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.89850000005299,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.620800000083364,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.978200000067773,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.729200000014316,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.018400000011752,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.719299999981558,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.788700000034623,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.02960000002895,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.662499999966712,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.98479999996016,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.946999999987383,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.002200000007178,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.051400000042122,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.73380000002544,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.956500000020242,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.857900000019072,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.902099999952952,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.867000000075677,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.163300000021081,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.87880000000041,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.970100000008642,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.819200000014462,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.862499999916508,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.087999999972453,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.59439999994538,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.033799999950133,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.336199999959717,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.997500000030414,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.131399999953828,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.02020000007542,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.205200000063087,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.962199999994482,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.958500000015192,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.973799999987932,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.707000000024891,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.149099999987811,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.448100000052364,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.408400000050278,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.984500000063235,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.984899999925801,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.070999999901687,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.736100000031001,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.006299999962721,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.081099999955768,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.900300000002972,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.037699999974393,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.055800000008276,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.901199999921118,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.291799999980867,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.268500000028325,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.223999999970147,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.894100000086837,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.747499999979482,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.757300000022951,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.095800000020972,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.030300000015814,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.897600000021157,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.626200000046992,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.706599999934951,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.8169000000089,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.741800000005242,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.921599999960563,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.852300000010473,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.180100000046878,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.84179999998014,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.059199999976954,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.742099999902166,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.846199999946293,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.943900000029316,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.050899999986541,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.835800000108975,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.66929999990407,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.781800000017938,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.03530000000319,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.995699999966746,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.690500000009706,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.924399999908019,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.825599999975566,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.330000000019936,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.972900000046138,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.335899999949106,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.845199999925171,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.15560000005189,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.399200000028031,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.49550000002364,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.76799999996092,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.782700000026125,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.466300000051888,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.364200000002711,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.336499999970329,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.198899999953937,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.963299999957599,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.225500000023203,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.151200000085737,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.170799999945302,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.127700000088225,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.19139999991603,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.917300000073737,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.247499999967658,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.876100000018596,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.007400000039524,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.199799999985771,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.07440000009774,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.812600000008388,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.127900000019508,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.097999999947206,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.33310000000165,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.444699999969998,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.182000000076187,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.10489999996389,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.418899999966925,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.139899999989211,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.920099999907507,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.858299999995324,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.10130000006393,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.941600000023755,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.881700000027195,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.85169999998925,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.207000000013068,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.100300000066454,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.060599999927035,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.208600000008119,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.92859999994289,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.23619999998482,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.96380000001318,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.466600000062499,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.394200000040655,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.220299999990857,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.022700000012264,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.894000000007509,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.829499999999825,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.236299999950461,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.038500000040585,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.996999999974832,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.254399999984344,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.094599999978527,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.130299999990712,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.19539999990593,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.175100000059501,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.339300000031471,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.228200000005018,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.072900000044683,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.247300000036375,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.291099999994003,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 10.90349999992668,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.271500000020751,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.320699999942008,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.178800000038791,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.34029999991526,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.358100000052218,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.106199999971977,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.080099999958293,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.151999999924556,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.054199999989578,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.16469999999481,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.359199999901648,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.19729999993524,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.103299999945193,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.238499999990381,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.22290000000703,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.074099999973441,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.088399999948706,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.318399999936446,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.007900000071459,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.60400000003392,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.010299999928975,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.373199999979988,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.448299999983647,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.035900000024412,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.270200000012665,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.919899999952577,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.464799999998831,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.225699999954486,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.185700000055476,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.252700000000004,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.183099999925616,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.411900000098285,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.518899999941823,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.350200000038058,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 11.149499999987711,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.95310000000427,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.5878000000057,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.884800000051655,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.781600000039361,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.505000000032851,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.658099999953265,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.409000000047854,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.46559999992769,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.701999999990221,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.526999999977306,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.450399999920592,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.472000000002481,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.490399999933288,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.412299999937204,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.502600000061648,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.427799999954914,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.362600000074053,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.351100000046245,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.415400000008958,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.40219999999681,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.671899999986636,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.758699999949386,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.797900000009577,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.895500000013271,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.819899999954032,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.55910000008953,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.863400000014735,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.026999999965483,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.798999999972693,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.873099999978876,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.986899999987145,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.67439999992348,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.767400000029738,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.136600000052567,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.820099999999002,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.028100000042286,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.946299999953226,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.996099999895705,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.974200000030578,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 60.82809999998062,
+      "server_process_cpu_ms": 62.5,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 14.176700000007258,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.74410000005355,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.977599999999256,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.749200000006567,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.435599999979786,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.240100000075472,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.891000000081476,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.002000000028602,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.793399999964095,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.695500000063475,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.72340000002714,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.762199999997392,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.098600000034821,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.290699999970457,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.234799999963798,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.518999999973857,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.431599999989885,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.815799999974843,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.473900000008143,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.25289999999768,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.41950000005454,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.5178000000451,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.903799999980038,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.668199999983699,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.522800000032476,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.756499999999505,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.385599999992337,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.401199999975688,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.29960000009578,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.226700000018354,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.586099999997714,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.235300000019379,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.515800000050149,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.274199999955272,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.905499999964377,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.533800000004703,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.72049999997671,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.4150999999747,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.264800000001742,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.37510000007569,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.275000000021464,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.178899999957139,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.041600000065046,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.8161000000091,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.085899999964568,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.746100000072147,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.960399999997207,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.009899999929075,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 13.215299999956187,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 16850,
+      "server_ms": 12.929200000030505,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 14237,
+      "server_ms": 12.961099999984071,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "provenance",
+      "status": 200,
+      "body_bytes": 383,
+      "server_ms": 6.159700000011981,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "workshop_summary",
+      "status": 202,
+      "body_bytes": 21,
+      "server_ms": 3691.172100000017,
+      "server_process_cpu_ms": 3531.25,
+      "retry_after": "5"
+    },
+    {
+      "operation": "bootstrap",
+      "status": 200,
+      "body_bytes": 2156,
+      "server_ms": 10.669899999925292,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "activity",
+      "status": 204,
+      "body_bytes": 0,
+      "server_ms": 16.76950000000943,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 360,
+      "server_ms": 10.308699999995952,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "provenance",
+      "status": 200,
+      "body_bytes": 383,
+      "server_ms": 5.624500000067201,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "workshop_summary",
+      "status": 202,
+      "body_bytes": 21,
+      "server_ms": 3541.2929000000304,
+      "server_process_cpu_ms": 3484.375,
+      "retry_after": "5"
+    },
+    {
+      "operation": "bootstrap",
+      "status": 200,
+      "body_bytes": 2156,
+      "server_ms": 10.688200000004144,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "activity",
+      "status": 204,
+      "body_bytes": 0,
+      "server_ms": 5.355599999916194,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 360,
+      "server_ms": 8.95700000000943,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "provenance",
+      "status": 200,
+      "body_bytes": 383,
+      "server_ms": 5.22000000000844,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "workshop_summary",
+      "status": 202,
+      "body_bytes": 21,
+      "server_ms": 124.2966999999453,
+      "server_process_cpu_ms": 125.0,
+      "retry_after": "5"
+    },
+    {
+      "operation": "bootstrap",
+      "status": 200,
+      "body_bytes": 2156,
+      "server_ms": 10.355799999956616,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "activity",
+      "status": 204,
+      "body_bytes": 0,
+      "server_ms": 5.464300000085132,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 360,
+      "server_ms": 9.431199999994533,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "provenance",
+      "status": 200,
+      "body_bytes": 383,
+      "server_ms": 5.077799999980925,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "workshop_summary",
+      "status": 202,
+      "body_bytes": 21,
+      "server_ms": 170.07879999994202,
+      "server_process_cpu_ms": 156.25,
+      "retry_after": "5"
+    },
+    {
+      "operation": "bootstrap",
+      "status": 200,
+      "body_bytes": 2156,
+      "server_ms": 11.46799999992254,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "activity",
+      "status": 204,
+      "body_bytes": 0,
+      "server_ms": 5.357100000082937,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 360,
+      "server_ms": 9.295899999870016,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "provenance",
+      "status": 200,
+      "body_bytes": 383,
+      "server_ms": 5.223300000125164,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "workshop_summary",
+      "status": 202,
+      "body_bytes": 21,
+      "server_ms": 120.92649999999594,
+      "server_process_cpu_ms": 125.0,
+      "retry_after": "5"
+    },
+    {
+      "operation": "bootstrap",
+      "status": 200,
+      "body_bytes": 2156,
+      "server_ms": 10.242100000141363,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "activity",
+      "status": 204,
+      "body_bytes": 0,
+      "server_ms": 6.382300000041141,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 360,
+      "server_ms": 8.994499999971595,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "provenance",
+      "status": 200,
+      "body_bytes": 383,
+      "server_ms": 5.471699999816337,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "workshop_summary",
+      "status": 202,
+      "body_bytes": 21,
+      "server_ms": 122.95870000002651,
+      "server_process_cpu_ms": 125.0,
+      "retry_after": "5"
+    },
+    {
+      "operation": "bootstrap",
+      "status": 200,
+      "body_bytes": 2156,
+      "server_ms": 10.616300000037882,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "activity",
+      "status": 204,
+      "body_bytes": 0,
+      "server_ms": 5.456099999946673,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 360,
+      "server_ms": 9.536400000115464,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "provenance",
+      "status": 200,
+      "body_bytes": 383,
+      "server_ms": 4.996900000151072,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "workshop_summary",
+      "status": 202,
+      "body_bytes": 21,
+      "server_ms": 132.83149999983834,
+      "server_process_cpu_ms": 125.0,
+      "retry_after": "5"
+    },
+    {
+      "operation": "bootstrap",
+      "status": 200,
+      "body_bytes": 2156,
+      "server_ms": 10.825199999999313,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "activity",
+      "status": 204,
+      "body_bytes": 0,
+      "server_ms": 5.442700000003242,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 360,
+      "server_ms": 9.454900000037014,
+      "server_process_cpu_ms": 0.0,
+      "retry_after": null
+    },
+    {
+      "operation": "provenance",
+      "status": 200,
+      "body_bytes": 383,
+      "server_ms": 5.028199999969729,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "workshop_summary",
+      "status": 202,
+      "body_bytes": 21,
+      "server_ms": 122.23740000013095,
+      "server_process_cpu_ms": 125.0,
+      "retry_after": "5"
+    }
+  ],
+  "in_flight": []
+}

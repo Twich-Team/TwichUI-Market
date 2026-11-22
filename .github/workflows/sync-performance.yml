@@ -46,6 +46,8 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install -r backend/requirements.lock
+      - name: Verify HTTP fixture instrumentation without changing responses
+        run: python -m unittest discover -s scripts -p test_performance_http_trace.py
       - name: Checkout source-only addon for disposable publication fixture
         uses: actions/checkout@v4
         with:

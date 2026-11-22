@@ -25,8 +25,10 @@ fn main()->Result<(),Box<dyn std::error::Error>> {
   let mut scheduler=Scheduler::new(SystemClock,Settings{selected_market:Some(2),..Settings::default()},true)?;let run=scheduler.sync_now().ok_or("fixture scheduler")?;
   let mut attempts=0;let mut slept_ms=0u64;
   let status=loop {attempts+=1;if attempts>160{return Err("preparation bound".into())}
-   synchronizer::synchronize(&client,&scope.server,&base.join("market.sqlite"),&run,Some(2),&SystemClock,&|_|{},|_|{})?;
-   match attempt(&base,&client,&config) {Ok(s)=>break s,Err(Error::SummaryPreparing(seconds))=>{let delay=seconds.clamp(1,3600)*1000;slept_ms+=delay;std::thread::sleep(Duration::from_millis(delay));},Err(e)=>return Err(e.into())}
+   let stage=Instant::now();
+   synchronizer::synchronize(&client,&scope.server,&base.join("market.sqlite"),&run,Some(2),&SystemClock,&|_|{},|_|{}).map_err(|e|{eprintln!("fixture synchronizer failure attempt={attempts} stage_ms={} error={e:?}",stage.elapsed().as_millis());e})?;
+   let stage=Instant::now();
+   match attempt(&base,&client,&config) {Ok(s)=>break s,Err(Error::SummaryPreparing(seconds))=>{let delay=seconds.clamp(1,3600)*1000;slept_ms+=delay;std::thread::sleep(Duration::from_millis(delay));},Err(e)=>{eprintln!("fixture workshop failure attempt={attempts} stage_ms={} error={e:?}",stage.elapsed().as_millis());return Err(e.into())}}
   };
   let (bundle,_,_)=workshop_summary::download(&base,&client,&config,&||false)?;
   if bundle.manifest["synthetic"]!=true{return Err("synthetic fixture required".into())}

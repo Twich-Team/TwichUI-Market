@@ -1,0 +1,10 @@
+{
+  "run_id": 45072066729,
+  "artifact_id": 14774570399,
+  "source_commit": "999b040aa49592b42eb03f362a670b61ceafb90a",
+  "zip_sha256": "aa2a0b4be62599d5c621ff1f798368a8b338cdb59f8152127dd2ded3b29b7983",
+  "extracted_files": {
+    "original-baseline-source.json": "53c33e1c7f4d4fd3754aa6899c6dfc73d012d01feb655e2b3ddeb8baae69f2e1",
+    "original-windows-automatic-workshop-failure.json": "a2b9f8b624d3ef226b2579baf4b2c2309efff0a50bd19ce27e1531fc2f622a16"
+  }
+}
