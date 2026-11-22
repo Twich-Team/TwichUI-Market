@@ -1,0 +1,62 @@
+{
+  "source": "5a35aac28b7163b47859806f912eb61ff254ed5a",
+  "run": 44994457028,
+  "job": 137122370584,
+  "label": "baseline",
+  "repeat": 1,
+  "exit": 1,
+  "server_thread_alive": true,
+  "in_flight": [],
+  "request_count": 587,
+  "last_requests": [
+    {
+      "operation": "workshop_summary",
+      "status": 202,
+      "body_bytes": 21,
+      "server_ms": 71.48730000005799,
+      "server_process_cpu_ms": 62.5,
+      "retry_after": "5"
+    },
+    {
+      "operation": "bootstrap",
+      "status": 200,
+      "body_bytes": 2156,
+      "server_ms": 6.666099999961261,
+      "server_process_cpu_ms": 0,
+      "retry_after": null
+    },
+    {
+      "operation": "activity",
+      "status": 204,
+      "body_bytes": 0,
+      "server_ms": 3.314600000067003,
+      "server_process_cpu_ms": 0,
+      "retry_after": null
+    },
+    {
+      "operation": "prices",
+      "status": 200,
+      "body_bytes": 360,
+      "server_ms": 5.36649999992278,
+      "server_process_cpu_ms": 15.625,
+      "retry_after": null
+    },
+    {
+      "operation": "provenance",
+      "status": 200,
+      "body_bytes": 383,
+      "server_ms": 2.652699999998731,
+      "server_process_cpu_ms": 0,
+      "retry_after": null
+    },
+    {
+      "operation": "workshop_summary",
+      "status": 202,
+      "body_bytes": 21,
+      "server_ms": 118.1823000000577,
+      "server_process_cpu_ms": 125,
+      "retry_after": "5"
+    }
+  ],
+  "failure": "Native delivery fixture failed: Error: Network; repeated WinError 10054; candidate not reached"
+}

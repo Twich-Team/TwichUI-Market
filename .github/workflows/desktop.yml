@@ -43,6 +43,13 @@ jobs:
           ref: 074435e41521e97ad125e3094c45a9eb767f90e1
           path: coordinated-addon
           persist-credentials: false
+      - name: Checkout merged split-projection addon source
+        uses: actions/checkout@v4
+        with:
+          repository: Twich-Team/TwichUI
+          ref: d93d253ac31b89e953a8853ee2ce7b25adaedcc7
+          path: coordinated-current-addon
+          persist-credentials: false
       - run: cargo test --manifest-path desktop/Cargo.toml --workspace --locked
       - run: cargo test --manifest-path desktop/src-tauri/Cargo.toml --locked
       - run: cargo build --manifest-path desktop/Cargo.toml --example http_smoke --locked
@@ -73,6 +80,9 @@ jobs:
       - name: Actual authenticated large-market native summary publication
         timeout-minutes: 10
         run: python scripts/verify-workshop-e2e.py --rust-client desktop/target/debug/examples/workshop_smoke.exe --addon-root coordinated-addon --variants 45125 --publish --skip-lua --out artifacts/companion-v2/workshop-large
+      - name: Actual authenticated split-projection native publication
+        timeout-minutes: 5
+        run: python scripts/verify-workshop-e2e.py --rust-client desktop/target/debug/examples/workshop_smoke.exe --addon-root coordinated-current-addon --current --variants 129 --publish --skip-lua --out artifacts/companion-v2/workshop-current
       - name: Record Windows publisher status and embedded updater key
         shell: pwsh
         run: ./scripts/windows/record-private-beta-candidate.ps1
@@ -145,6 +155,13 @@ jobs:
         with:
           name: companion-v2-acceptance
           path: acceptance
+      - name: Checkout exact split-projection consumer
+        uses: actions/checkout@v4
+        with:
+          repository: Twich-Team/TwichUI
+          ref: d93d253ac31b89e953a8853ee2ce7b25adaedcc7
+          path: current-consumer
+          persist-credentials: false
       - name: Lua 5.1 and bitop
         run: |
           sudo apt-get update -qq
@@ -174,6 +191,20 @@ jobs:
           WORKSHOP_SUMMARY_PARTS: ${{ github.workspace }}/acceptance/workshop-large/publication
           WORKSHOP_SUMMARY_EXPECTED_ITEM: '10000'
         run: lua5.1 -e 'require("bit"); ROOT="../!!!TwichUI/"; REPO="../"; TESTS="./"' bench_workshop_summary.lua | tee ../acceptance/workshop-large/production-lua-costs.json
+      - name: Windows split publication through exact production Lua consumer
+        working-directory: current-consumer
+        env:
+          WORKSHOP_SUMMARY_ARTIFACT: ${{ github.workspace }}/acceptance/workshop-current/publication/TwichUI_MarketData/Data.lua
+          WORKSHOP_SUMMARY_PARTS: ${{ github.workspace }}/acceptance/workshop-current/publication
+          WORKSHOP_SUMMARY_EXPECTED_ITEM: '10000'
+        run: lua5.1 -e 'REPO="./"; dofile("tests/bench_workshop_summary.lua"); assert(TwichUI.Workshop.Bridge.Manifest().contract_version==3)'
+      - name: Legacy Windows contract-2 publication through merged addon
+        working-directory: current-consumer
+        env:
+          WORKSHOP_SUMMARY_ARTIFACT: ${{ github.workspace }}/acceptance/workshop-large/publication/TwichUI_MarketData/Data.lua
+          WORKSHOP_SUMMARY_PARTS: ${{ github.workspace }}/acceptance/workshop-large/publication
+          WORKSHOP_SUMMARY_EXPECTED_ITEM: '10000'
+        run: lua5.1 -e 'REPO="./"; dofile("tests/bench_workshop_summary.lua"); assert(TwichUI.Workshop.Bridge.Manifest().contract_version==2)'
       - uses: actions/upload-artifact@v4
         with:
           name: workshop-production-lua-acceptance

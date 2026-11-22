@@ -1,5 +1,5 @@
 # Test-only native PE and shell interactions, restricted to disposable CI fixtures.
-param([Parameter(Mandatory=$true)][ValidateSet('Setup','Register','RegisterSecond','ClearRegistry','StartGame','StopGame','GameRunning','ChooseFolder','CancelFolder')][string]$Action,[string]$GamePath)
+param([Parameter(Mandatory=$true)][ValidateSet('Setup','Register','RegisterSecond','ClearRegistry','StartGame','StopGame','GameRunning','ChooseFolder','CancelFolder')][string]$Action,[string]$GamePath,[string]$AddonRoot)
 $ErrorActionPreference='Stop'
 if ($env:GITHUB_ACTIONS -ne 'true' -or $env:RUNNER_OS -ne 'Windows') { throw 'Disposable Windows CI only' }
 $base=Join-Path $env:MARKET_TEST_APP_DATA 'workshop-summary-fixtures'
@@ -22,7 +22,7 @@ using System.Reflection;
 class SyntheticWow { static void Main() { System.Threading.Thread.Sleep(180000); } }
 '@ | Set-Content $source
     $compiler=Join-Path $env:WINDIR 'Microsoft.NET\Framework64\v4.0.30319\csc.exe'
-    $addon=Join-Path (Get-Location) 'coordinated-addon'
+    $addon=if($AddonRoot){(Resolve-Path $AddonRoot).Path}else{Join-Path (Get-Location) 'coordinated-addon'}
     if(-not(Test-Path (Join-Path $addon 'TwichUI_Workshop\Summary.lua'))){throw 'Pinned coordinated addon checkout required'}
     foreach($name in @('Forever-A','Forever-B')) {
         $game=Join-Path $base $name

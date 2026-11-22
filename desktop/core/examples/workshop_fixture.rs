@@ -15,6 +15,6 @@ fn main()->Result<(),Box<dyn std::error::Error>> {
     fs::create_dir_all(&output)?;let root=output.join("TwichUI_MarketData");fs::create_dir(&root)?;
     let receipt=json!({"schema_version":1,"generation_id":b.manifest["generation_id"],"desktop_build":"synthetic-history-benchmark","completed_at":"2026-11-19T00:00:00Z"});
     fs::write(root.join("Data.lua"),workshop_summary::root_artifact(&b.manifest,"A",&receipt)?)?;
-    for (&bucket,raw) in &b.parts {let dir=output.join(format!("TwichUI_MarketPartA{bucket:02}"));fs::create_dir(&dir)?;fs::write(dir.join("Data.lua"),workshop_summary::part_artifact("A",bucket,raw))?;}
+    for (&bucket,raw) in &b.parts {let dir=output.join(format!("TwichUI_Market{}PartA{:02}",if bucket>=64{"History"}else{""},bucket%64));fs::create_dir(&dir)?;fs::write(dir.join("Data.lua"),workshop_summary::part_artifact("A",bucket,raw))?;}
     println!("{}",json!({"synthetic":true,"game_publication":false,"records":b.manifest["record_count"],"parts":b.parts.len(),"raw_bytes":b.parts.values().map(Vec::len).sum::<usize>()}));Ok(())
 }
