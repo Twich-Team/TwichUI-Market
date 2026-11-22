@@ -161,7 +161,7 @@ fn validate_daily(value:&Value,h:&Value)->Result<()> {
 }
 
 #[derive(Clone,Debug)]
-pub struct Bundle {pub manifest:Value,pub parts:BTreeMap<u8,Vec<u8>>}
+pub struct Bundle {pub manifest:Value,pub parts:BTreeMap<u8,Vec<u8>>,pub prepared:Option<Value>}
 // Private keys 64..127 identify history files; public routing stays modulo 64.
 fn part_specs(h:&Value)->Vec<(u8,&Value)> {
     let mut out=h["partitions"].as_array().unwrap().iter().map(|p|(p["bucket"].as_u64().unwrap() as u8,p)).collect::<Vec<_>>();
@@ -186,7 +186,9 @@ impl Bundle {
         for (key,p) in specs {
             let raw=self.parts.get(&key).ok_or(Error::Invalid("summary missing partition"))?;
             validate_position(&self.manifest,key,p,raw)?;
-        }Ok(())
+        }
+        if let Some(value)=&self.prepared {crate::workshop_prepared::build(self,value)?;}
+        Ok(())
     }
 }
 
@@ -208,7 +210,7 @@ fn cached_bundle(root:&Path,state:&Value,scope:&Scope,region:Option<&str>)->Resu
     for (bucket,p) in part_specs(&h) {
         let raw=delivery::read(&root.join(bank).join(format!("{bucket:02}.json")),part_limit(&h))?;
         validate_position(&h,bucket,p,&raw)?;parts.insert(bucket,raw);
-    }Ok(Bundle{manifest:h,parts})
+    }Ok(Bundle{prepared:None,manifest:h,parts})
 }
 
 /// Two fixed local slots retain the completed generation while interrupted
@@ -224,7 +226,7 @@ pub fn download(base:&Path,client:&MarketClient,c:&Configuration,cancelled:&impl
     let etag=active.as_ref().and_then(|b|b.manifest["generation_id"].as_str());
     let response=match version {3=>client.summary_current_request(&endpoint,etag,MAX_MANIFEST+128),2=>client.summary_history_request(&endpoint,etag,MAX_MANIFEST+128),_=>client.summary_request(&endpoint,etag,MAX_MANIFEST+128)}?;
     let Some(raw)=response else {
-        let b=active.ok_or(Error::Invalid("unbound summary 304"))?;need(b.manifest["contract_version"]==version,"negotiated Workshop 304 contract")?;return Ok((b,0,1));};
+        let mut b=active.ok_or(Error::Invalid("unbound summary 304"))?;need(b.manifest["contract_version"]==version,"negotiated Workshop 304 contract")?;let (bytes,requests)=attach_prepared(base,client,c,&mut b,cancelled)?;return Ok((b,bytes,1+requests));};
     let envelope=bridge::parse(&raw,MAX_MANIFEST+128)?;closed(&envelope,&["account_id","manifest"])?;
     need(envelope["account_id"]==c.scope.account_id,"summary authenticated account")?;
     let manifest=envelope["manifest"].clone();need(manifest["contract_version"]==version,"negotiated Workshop contract")?;validate_manifest(&manifest,&c.scope,c.selection["region"].as_str())?;
@@ -255,11 +257,39 @@ pub fn download(base:&Path,client:&MarketClient,c:&Configuration,cancelled:&impl
         crate::performance::checkpoint();
         delivery::atomic(&target,&raw)?;parts.insert(bucket,raw);
     }
-    let bundle=Bundle{manifest,parts};bundle.validate(&c.scope,c.selection["region"].as_str())?;
+    let mut bundle=Bundle{manifest,parts,prepared:None};bundle.validate(&c.scope,c.selection["region"].as_str())?;
     if cancelled(){return Err(Error::Cancelled)}
     if let Some(s)=state {delivery::atomic(&root.join("previous.json"),&bridge::canonical(&s)?)?;}
     delivery::atomic(&root.join("current.json"),&bridge::canonical(&pending)?)?;
-    Ok((bundle,bytes,requests))
+    let (extra,queries)=attach_prepared(base,client,c,&mut bundle,cancelled)?;
+    Ok((bundle,bytes+extra,requests+queries))
+}
+
+fn attach_prepared(base:&Path,client:&MarketClient,c:&Configuration,bundle:&mut Bundle,cancelled:&impl Fn()->bool)->Result<(u64,u32)> {
+    let Some(count)=crate::installation::prepared_layout(&c.installation)? else{return Ok((0,0))};
+    need(bundle.manifest["contract_version"]==3,"prepared requires split source")?;
+    if cancelled(){return Err(Error::Cancelled)}
+    // Separate bounded sidecar files leave the legacy source-cache grammar and
+    // its two complete generations readable by older Companions.
+    let file=cache_dir(base,&c.scope)?.join(format!("prepared-{count}.json"));
+    if file.try_exists()? {
+        if let Ok(bytes)=delivery::read(&file,MAX_MANIFEST) {
+            if let Ok(value)=bridge::parse(&bytes,MAX_MANIFEST) {
+                if crate::workshop_prepared::build(bundle,&value).is_ok_and(|(a,_)|a.partitions_count==count) {bundle.prepared=Some(value);return Ok((0,0));}
+            }
+        }
+    }
+    let path=format!("api/v1/workshop/markets/{}/summary/{}/prepared/1/{count}",c.scope.market_id,bundle.manifest["generation_id"].as_str().unwrap());
+    let bytes=match client.summary_request(&path,None,MAX_MANIFEST+128) {
+        Ok(Some(bytes))=>bytes,Err(Error::PreparedUnavailable)=>return Ok((0,1)),
+        Ok(None)=>return Err(Error::Invalid("unbound prepared response")),Err(e)=>return Err(e),
+    };
+    let envelope=bridge::parse(&bytes,MAX_MANIFEST+128)?;closed(&envelope,&["account_id","attestation"])?;
+    need(envelope["account_id"]==c.scope.account_id,"prepared authenticated account")?;
+    let value=envelope["attestation"].clone();let (a,_)=crate::workshop_prepared::build(bundle,&value)?;
+    need(a.partitions_count==count,"prepared negotiated layout")?;
+    if cancelled(){return Err(Error::Cancelled)}
+    delivery::atomic(&file,&bridge::canonical(&value)?)?;bundle.prepared=Some(value);Ok((bytes.len() as u64,1))
 }
 
 pub fn root_artifact(manifest:&Value,bank:&str,receipt:&Value)->Result<Vec<u8>> {
@@ -269,17 +299,29 @@ pub fn root_artifact(manifest:&Value,bank:&str,receipt:&Value)->Result<Vec<u8>> 
     out.extend_from_slice(b", receipt = ");bridge::export::literal(&bridge::canonical(receipt)?,&mut out);out.extend_from_slice(b" }\n");Ok(out)
 }
 pub fn inspect_root(raw:&[u8],scope:&Scope,region:Option<&str>)->Result<(Value,String,Value)> {
-    need(raw.len()<=ROOT_MAX&&raw.starts_with(ROOT_PREFIX),"summary root transport")?;let mut i=ROOT_PREFIX.len();
+    let (h,bank,receipt,_)=inspect_root_full(raw,scope,region)?;Ok((h,bank,receipt))
+}
+fn inspect_root_full(raw:&[u8],scope:&Scope,region:Option<&str>)->Result<(Value,String,Value,Option<Value>)> {
+    let prepared=raw.starts_with(crate::workshop_prepared::ROOT_PREFIX);
+    need(raw.len()<=ROOT_MAX+MAX_MANIFEST*4+32 && (prepared || raw.starts_with(ROOT_PREFIX)),"summary root transport")?;
+    let mut i=if prepared {crate::workshop_prepared::ROOT_PREFIX.len()}else{ROOT_PREFIX.len()};
     let h=bridge::parse(&bridge::export::read_literal(raw,&mut i,MAX_MANIFEST)?,MAX_MANIFEST)?;
     need(raw.get(i..i+9)==Some(b", bank = "),"summary root bank")?;i+=9;
     let bank=bridge::export::read_literal(raw,&mut i,1)?;
     need(raw.get(i..i+12)==Some(b", receipt = "),"summary root receipt")?;i+=12;
     let receipt=bridge::parse(&bridge::export::read_literal(raw,&mut i,4096)?,4096)?;
+    let attestation=if prepared {
+        need(raw.get(i..i+13)==Some(b", prepared = "),"prepared root field")?;i+=13;
+        let bytes=bridge::export::read_literal(raw,&mut i,MAX_MANIFEST)?;
+        let value=bridge::parse(&bytes,MAX_MANIFEST)?;
+        need(bridge::canonical(&value)?==bytes,"prepared canonical metadata")?;
+        crate::workshop_prepared::metadata(&value,&h)?;Some(value)
+    }else{None};
     need(raw.get(i..)==Some(b" }\n")&&(bank==b"A"||bank==b"B"),"summary root syntax")?;
     validate_manifest(&h,scope,region)?;closed(&receipt,&["schema_version","generation_id","desktop_build","completed_at"])?;
     need(receipt["schema_version"]==1&&receipt["generation_id"]==h["generation_id"]&&receipt["desktop_build"].as_str().is_some_and(|s|!s.is_empty()&&s.len()<=80)
         &&bridge::validation::time(&receipt["completed_at"])? >= bridge::validation::time(&h["generated_at"])? ,"summary receipt")?;
-    Ok((h,String::from_utf8(bank).unwrap(),receipt))
+    Ok((h,String::from_utf8(bank).unwrap(),receipt,attestation))
 }
 fn part_name(bank:&str,bucket:u8)->String {format!("TwichUI_Market{}Part{bank}{:02}",if bucket>=64{"History"}else{""},bucket%64)}
 fn part_prefix(bank:&str,bucket:u8)->Vec<u8> {let name=if bucket>=64{"TwichUIMarketHistoryParts"}else{"TwichUIMarketParts"};format!("{name} = {name} or {{}}\n{name}[\"{bank}{:02}\"] = ",bucket%64).into_bytes()}
@@ -317,8 +359,8 @@ fn folder(folder:&Path,allowed:&[&str])->Result<()> {
     }Ok(())
 }
 fn root_header(c:&Configuration,raw:&[u8])->Result<(Value,Option<String>)> {
-    if raw.starts_with(ROOT_PREFIX) {
-        let mut i=ROOT_PREFIX.len();let header=bridge::parse(&bridge::export::read_literal(raw,&mut i,MAX_MANIFEST)?,MAX_MANIFEST)?;
+    if raw.starts_with(ROOT_PREFIX) || raw.starts_with(crate::workshop_prepared::ROOT_PREFIX) {
+        let mut i=if raw.starts_with(ROOT_PREFIX){ROOT_PREFIX.len()}else{crate::workshop_prepared::ROOT_PREFIX.len()};let header=bridge::parse(&bridge::export::read_literal(raw,&mut i,MAX_MANIFEST)?,MAX_MANIFEST)?;
         let mut previous=c.scope.clone();previous.market_id=number(&header["market"]["server_market_id"],i32::MAX as u64)? as u32;
         let(h,bank,_)=inspect_root(raw,&previous,None)?;Ok((h,Some(bank)))
     } else {let(g,_)=bridge::inspect_artifact(raw)?;Ok((g,None))}
@@ -344,8 +386,8 @@ fn inspect_output(c:&Configuration)->Result<Value> {
     }
     Ok(json!({"installation":c.installation,"destination":dir,"existing_generation":existing.as_ref().map(|h|&h["generation_id"]),"requires_adoption":dir.join("Data.lua").is_file()&&!dir.join(".twichui-delivery.json").try_exists()?,"summary_delivery_version":1}))
 }
-fn verify_bank(c:&Configuration,h:&Value,bank:&str)->Result<()> {
-    for (b,p) in part_specs(h) {let name=part_name(bank,b);let dir=c.installation.join("Interface/AddOns").join(&name);
+fn verify_source_bank(c:&Configuration,h:&Value,bank:&str,history_only:bool)->Result<()> {
+    for (b,p) in part_specs(h).into_iter().filter(|(b,_)| !history_only || *b>=64) {let name=part_name(bank,b);let dir=c.installation.join("Interface/AddOns").join(&name);
         folder(&dir,&[&format!("{name}.toc"),"Data.lua",".twichui-delivery.json"])?;
         need(dir.join(".twichui-delivery.json").is_file(),"unowned summary partition")?;marker(c,&dir)?;
         let toc=delivery::read(&dir.join(format!("{name}.toc")),1024)?;
@@ -382,7 +424,109 @@ fn repair_metadata(c:&Configuration,cancelled:&impl Fn()->bool)->Result<bool> {
     Ok(!repairs.is_empty())
 }
 
+fn verify_prepared_bank(c:&Configuration,h:&Value,bank:&str,value:&Value)->Result<()> {
+    let a=crate::workshop_prepared::metadata(value,h)?;
+    for p in &a.partitions {
+        let name=crate::workshop_prepared::name(bank,p.bucket as u8);let dir=c.installation.join("Interface/AddOns").join(&name);
+        folder(&dir,&[&format!("{name}.toc"),"Data.lua",".twichui-delivery.json"])?;
+        need(dir.join(".twichui-delivery.json").is_file(),"unowned prepared partition")?;marker(c,&dir)?;
+        need(delivery::read(&dir.join(format!("{name}.toc")),1024)?==part_toc(),"prepared TOC")?;
+        crate::workshop_prepared::inspect(bank,p,&a,&delivery::read(&dir.join("Data.lua"),crate::workshop_prepared::MAX_PART+1024)?,h)?;
+    }
+    verify_source_bank(c,h,bank,true)
+}
+fn verify_bank(c:&Configuration,h:&Value,bank:&str)->Result<()> {
+    for file in ["Data.lua","Previous.lua"] {
+        let path=main_dir(c).join(file);if !path.try_exists()? {continue}
+        let raw=delivery::read(&path,3*1024*1024)?;
+        if raw.starts_with(crate::workshop_prepared::ROOT_PREFIX) {
+            let (source,slot)=root_header(c,&raw)?;
+            if source["generation_id"]==h["generation_id"] && slot.as_deref()==Some(bank) {
+                let mut scope=c.scope.clone();scope.market_id=h["market"]["server_market_id"].as_u64().ok_or(Error::Invalid("prepared Market"))? as u32;
+                let (_,_,_,value)=inspect_root_full(&raw,&scope,None)?;
+                return verify_prepared_bank(c,h,bank,&value.unwrap());
+            }
+        }
+    }
+    verify_source_bank(c,h,bank,false)
+}
+pub fn prepared_root_artifact(manifest:&Value,bank:&str,receipt:&Value,value:&Value)->Result<Vec<u8>> {
+    crate::workshop_prepared::metadata(value,manifest)?;need(bank=="A"||bank=="B","prepared bank")?;
+    let mut bytes=crate::workshop_prepared::ROOT_PREFIX.to_vec();bridge::export::literal(&bridge::canonical(manifest)?,&mut bytes);
+    bytes.extend_from_slice(b", bank = ");bridge::export::literal(bank.as_bytes(),&mut bytes);
+    bytes.extend_from_slice(b", receipt = ");bridge::export::literal(&bridge::canonical(receipt)?,&mut bytes);
+    bytes.extend_from_slice(b", prepared = ");bridge::export::literal(&bridge::canonical(value)?,&mut bytes);bytes.extend_from_slice(b" }\n");Ok(bytes)
+}
 pub fn publish(c:&Configuration,bundle:&Bundle,cancelled:&impl Fn()->bool)->Result<bool> {
+    match (crate::installation::prepared_layout(&c.installation)?,&bundle.prepared) {
+        (Some(count),Some(value))=>publish_prepared(c,bundle,count,value,cancelled),
+        _=>publish_legacy(c,bundle,cancelled),
+    }
+}
+fn publish_prepared(c:&Configuration,bundle:&Bundle,count:usize,value:&Value,cancelled:&impl Fn()->bool)->Result<bool> {
+    c.validate()?;need(c.enabled,"Workshop delivery is disconnected")?;bundle.validate(&c.scope,c.selection["region"].as_str())?;
+    let (a,parts)=crate::workshop_prepared::build(bundle,value)?;need(a.partitions_count==count,"prepared installed layout changed")?;
+    inspect_destination(c)?;
+    let root=main_dir(c);let target=root.join("Data.lua");let old=if target.try_exists()? {Some(delivery::read(&target,3*1024*1024)?)}else{None};
+    let current=old.as_ref().map(|b|root_header(c,b)).transpose()?;
+    if let Some((h,bank))=&current {
+        need(h["issuer_id"]==bundle.manifest["issuer_id"],"installed summary issuer changed; review connection")?;
+        if h["market"]["server_market_id"]==bundle.manifest["market"]["server_market_id"] {
+            for field in ["game","region","house_id","source_kind","server_market_id","transport_ruleset_id","realm_scope"] {
+                need(h["market"][field]==bundle.manifest["market"][field],"installed Market identity changed")?;
+            }
+        }
+        if let Some(bank)=bank {verify_bank(c,h,bank)?;}
+    }
+    let changed=repair_metadata(c,cancelled)?;
+    if let Some(raw)=&old {if raw.starts_with(crate::workshop_prepared::ROOT_PREFIX)
+        && current.as_ref().is_some_and(|(h,_)|h["generation_id"]==bundle.manifest["generation_id"]) {
+        let (h,_,_,installed)=inspect_root_full(raw,&c.scope,c.selection["region"].as_str())?;
+        if h["generation_id"]==bundle.manifest["generation_id"] && installed.as_ref()==Some(value) {
+            let toc=root.join("TwichUI_MarketData.toc");
+            let repair=!toc.try_exists()? || delivery::read(&toc,1024)?!=delivery::SUMMARY_TOC;
+            if repair {write_game(&toc,delivery::SUMMARY_TOC,cancelled)?;}return Ok(changed||repair);
+        }
+    }}
+    let bank=if current.as_ref().is_some_and(|(_,b)|b.as_deref()==Some("A")){"B"}else{"A"};
+    let addons=c.installation.join("Interface/AddOns");let mut outputs=Vec::<(String,u8,bool)>::new();let mut bytes=0u64;
+    for p in &a.partitions {
+        bytes+=crate::workshop_prepared::artifact(bank,p,count,&parts[&(p.bucket as u8)])?.len() as u64;
+        outputs.push((crate::workshop_prepared::name(bank,p.bucket as u8),p.bucket as u8,true));
+    }
+    for (&b,raw) in bundle.parts.iter().filter(|(b,_)|**b>=64) {
+        bytes+=(part_prefix(bank,b).len()+4*raw.len()+3) as u64;outputs.push((part_name(bank,b),b,false));
+    }
+    for (name,_,_) in &outputs {let dir=addons.join(name);if dir.try_exists()? {
+        folder(&dir,&[&format!("{name}.toc"),"Data.lua",".twichui-delivery.json"])?;marker(c,&dir)?;
+        need(dir.join(".twichui-delivery.json").is_file() || fs::read_dir(&dir)?.next().is_none(),"unowned prepared destination")?;
+    }}
+    need(delivery::free_space(&c.installation)?>=32*1024*1024+2*bytes,"insufficient recoverable prepared disk space")?;
+    if !root.exists(){fs::create_dir(&root)?;}
+    let owner=bridge::canonical(&identity(c)?)?;write_game(&root.join(".twichui-delivery.json"),&owner,cancelled)?;
+    for (name,b,current) in &outputs {
+        let bytes=if *current {crate::workshop_prepared::artifact(bank,&a.partitions[*b as usize],count,&parts[b])?}
+            else{part_artifact(bank,*b,&bundle.parts[b])};
+        let dir=addons.join(name);if !dir.exists(){fs::create_dir(&dir)?;}
+        write_game(&dir.join(".twichui-delivery.json"),&owner,cancelled)?;
+        write_game(&dir.join("Data.lua"),&bytes,cancelled)?;
+        need(delivery::read(&dir.join("Data.lua"),bytes.len())?==bytes,"prepared exact byte readback")?;
+        write_game(&dir.join(format!("{name}.toc")),part_toc(),cancelled)?;
+    }
+    verify_prepared_bank(c,&bundle.manifest,bank,value)?;
+    let receipt=json!({"schema_version":1,"generation_id":bundle.manifest["generation_id"],"desktop_build":env!("CARGO_PKG_VERSION"),"completed_at":Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Micros,true)});
+    let raw=prepared_root_artifact(&bundle.manifest,bank,&receipt,value)?;inspect_root(&raw,&c.scope,c.selection["region"].as_str())?;
+    write_game(&root.join("TwichUI_MarketData.toc"),delivery::SUMMARY_TOC,cancelled)?;
+    if let Some(previous)=&old {write_game(&root.join("Previous.lua"),previous,cancelled)?;}
+    // Recheck negotiation immediately before activation. The root pointer is
+    // the last write; no cancellation or metadata repair follows its commit.
+    need(crate::installation::prepared_layout(&c.installation)?==Some(count),"prepared capability changed during publication")?;
+    write_game(&target,&raw,cancelled)?;
+    if delivery::read(&target,raw.len())?!=raw {if let Some(previous)=&old {write_game(&target,previous,&||false)?;}return Err(Error::Invalid("prepared root readback; previous preserved"));}
+    Ok(true)
+}
+
+fn publish_legacy(c:&Configuration,bundle:&Bundle,cancelled:&impl Fn()->bool)->Result<bool> {
     let _publication=crate::performance::measure(crate::performance::Stage::WorkshopPublication);
     crate::performance::operation(crate::performance::Operation::InstallingWorkshop);
     c.validate()?;need(c.enabled,"Workshop delivery is disconnected")?;bundle.validate(&c.scope,c.selection["region"].as_str())?;
@@ -401,7 +545,7 @@ pub fn publish(c:&Configuration,bundle:&Bundle,cancelled:&impl Fn()->bool)->Resu
     }
     if let Some((h,Some(bank)))=&current {verify_bank(c,h,bank)?;}
     let metadata_changed=repair_metadata(c,cancelled)?;
-    if let Some((h,Some(_bank)))=&current {if h["generation_id"]==bundle.manifest["generation_id"] {
+    if let Some((h,Some(_bank)))=&current {if h["generation_id"]==bundle.manifest["generation_id"] && !old.as_ref().is_some_and(|b|b.starts_with(crate::workshop_prepared::ROOT_PREFIX)) {
         let toc=dir.join("TwichUI_MarketData.toc");
         if !toc.try_exists()? || delivery::read(&toc,1024)?!=delivery::SUMMARY_TOC {write_game(&toc,delivery::SUMMARY_TOC,cancelled)?;return Ok(true);}
         return Ok(metadata_changed);
@@ -443,6 +587,11 @@ pub fn rollback(c:&Configuration)->Result<()> {
     crate::installation::validate(&c.installation)?;let dir=main_dir(c);
     folder(&dir,&["TwichUI_MarketData.toc","Data.lua","Previous.lua",".twichui-delivery.json"])?;marker(c,&dir)?;
     let raw=delivery::read(&dir.join("Previous.lua"),3*1024*1024)?;let(h,bank)=root_header(c,&raw)?;
+    if raw.starts_with(crate::workshop_prepared::ROOT_PREFIX) {
+        let (_,_,_,value)=inspect_root_full(&raw,&c.scope,c.selection["region"].as_str())?;
+        let a=crate::workshop_prepared::metadata(&value.unwrap(),&h)?;
+        need([16,32].contains(&a.partitions_count) && crate::installation::prepared_layout(&c.installation)?.is_some(),"installed addon cannot restore prepared data")?;
+    }
     if h["contract_version"]==3 {need(crate::installation::summary_contract(&c.installation)?==3,"installed addon cannot restore split projection")?;}
     need(h["market"]["server_market_id"]==c.scope.market_id&&h["market"]["region"]==c.selection["region"],"Select the previous generation's market before restoring it")?;
     if let Some(ref bank)=bank {verify_bank(c,&h,bank)?;}
@@ -465,7 +614,7 @@ mod tests {
     use std::{io::{Read,Write},net::TcpListener,sync::{Arc,Mutex},thread,time::{Duration,Instant}};
     fn fixture()->Bundle {
         let value:Value=serde_json::from_str(include_str!("../../../contracts/workshop-summary/v1/fixtures/synthetic.json")).unwrap();
-        Bundle{manifest:value["manifest"].clone(),parts:value["parts"].as_object().unwrap().iter().map(|(k,v)|(k.parse().unwrap(),v.as_str().unwrap().as_bytes().to_vec())).collect()}
+        Bundle{prepared:None,manifest:value["manifest"].clone(),parts:value["parts"].as_object().unwrap().iter().map(|(k,v)|(k.parse().unwrap(),v.as_str().unwrap().as_bytes().to_vec())).collect()}
     }
     fn seal(b:&mut Bundle) {
         let mut total=0;let parts=b.parts.iter().map(|(&bucket,raw)|{let n:Value=serde_json::from_slice(raw).unwrap();let count=n.as_array().unwrap().len();total+=count;
@@ -482,11 +631,11 @@ mod tests {
         b.manifest["source_watermark"]="999999".into();b.manifest["source_observation"]["observation_id"]="999999".into();seal(&mut b);b}
     fn history_fixture()->Bundle {
         let v:Value=serde_json::from_str(include_str!("../../../contracts/workshop-summary/v2/fixtures/synthetic.json")).unwrap();
-        Bundle{manifest:v["manifest"].clone(),parts:v["parts"].as_object().unwrap().iter().map(|(k,v)|(k.parse().unwrap(),v.as_str().unwrap().as_bytes().to_vec())).collect()}
+        Bundle{prepared:None,manifest:v["manifest"].clone(),parts:v["parts"].as_object().unwrap().iter().map(|(k,v)|(k.parse().unwrap(),v.as_str().unwrap().as_bytes().to_vec())).collect()}
     }
     fn split_fixture()->Bundle {
         let v:Value=serde_json::from_str(include_str!("../../../contracts/workshop-summary/v3/fixtures/synthetic.json")).unwrap();
-        Bundle{manifest:v["manifest"].clone(),parts:v["parts"].as_object().unwrap().iter().map(|(k,v)|(k.parse().unwrap(),v.as_str().unwrap().as_bytes().to_vec())).collect()}
+        Bundle{prepared:None,manifest:v["manifest"].clone(),parts:v["parts"].as_object().unwrap().iter().map(|(k,v)|(k.parse().unwrap(),v.as_str().unwrap().as_bytes().to_vec())).collect()}
     }
     #[test]
     fn split_projection_requires_complete_matching_pair_even_after_rehash() {
@@ -836,6 +985,7 @@ mod tests {
         let(origin,task,_)=serve(responses);let mut c=config(d.path(),&b);c.scope.server=origin;let client=MarketClient::new(&c.scope.server,"synthetic-workshop-connection".into()).unwrap();download(d.path(),&client,&c,&||false).unwrap();
         let root=cache_dir(d.path(),&c.scope).unwrap();let before=fs::read(root.join("current.json")).unwrap();assert!(download(d.path(),&client,&c,&||false).is_err());assert!(download(d.path(),&client,&c,&||false).is_err());assert_eq!(fs::read(root.join("current.json")).unwrap(),before);task.join().unwrap();
     }
+    include!("workshop_prepared_tests.rs");
 }
 pub fn synchronize(base:&Path,client:&MarketClient,c:&Configuration,cancelled:impl Fn()->bool)->Result<Status> {
     let _workshop=crate::performance::measure(crate::performance::Stage::WorkshopSync);

@@ -15,6 +15,7 @@ pub mod update;
 pub mod vault;
 pub mod worker;
 pub mod workshop_summary;
+pub mod workshop_prepared;
 pub mod installation;
 pub mod workshop_setup;
 
@@ -44,6 +45,8 @@ pub enum Error {
     ServiceUnavailable,
     #[error("Workshop delivery is unavailable on the Market server. The server needs the Workshop API update; your folder permissions are not the cause.")]
     WorkshopUnavailable,
+    #[error("Prepared prices are unavailable; the complete legacy summary remains supported")]
+    PreparedUnavailable,
     #[error("Please wait before trying again")]
     RateLimited(u64),
     #[error("Market summaries are being prepared; synchronization will retry")]

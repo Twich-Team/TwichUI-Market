@@ -51,3 +51,49 @@ with native `Error: Network`, after actual 202 preparation responses; the candid
 automatic-publication comparison did not complete. Its credential-free failure
 artifact is `14768591665`. This is not a prepared-format performance result or
 a passing baseline. Preserve the failure and the separate release gate.
+
+
+## Stage B: native preprocessing/publication
+
+The core independently validates the authoritative sidecar against the complete
+original Contract 3 bundle, encodes 135-character records, and regenerates the
+packed SHA proof tree. Static literal templates accept only bounded numeric/hex
+atoms. Installed prepared files are parsed as a fixed grammar, never executed,
+and their decoded rows are independently rebound to every original modulo-64
+current descriptor. History retains the exact original 64-bucket projection.
+
+Prepared publication uses outer `summary_version=2`, distinct
+`TwichUI_MarketCurrentPart{A|B}{00..31}` children, and the existing root/history
+names. The original source manifest remains Contract 3. An explicit additive
+consumer capability selects 16 or 32, requires the actual Prepared.lua TOC entry,
+and is rechecked immediately before activation. Older capabilities retain their
+existing 1/2/3 negotiation. A server without the optional sidecar or an oversized
+prepared projection falls back to a fully validated legacy summary; malformed
+integrity evidence never becomes a successful prepared publication.
+
+The original two-slot source-cache files keep their frozen grammar. Two bounded
+sidecar metadata files reuse verified attestations; warm synchronization makes
+no extra sidecar request. Output is streamed per child instead of retaining all
+escaped history source. Existing ownership/link/unexpected-file checks, exact
+readback and file/directory durability remain. Root pointer publication is last;
+mid-publication capability changes and cancellation preserve the prior root.
+
+Legacy conversion regenerates a complete source-format bank through the existing
+publisher. It must finish before downgrading a Companion that cannot read the new
+outer root. An older addon is never allowed to restore an incompatible prepared
+root. Both supported new layouts can restore a previous verified prepared layout.
+No installed legacy folders are deleted: fresh maximum layouts are 161 (16/64)
+or 193 (32/64); upgraded installations retain their prior owned folders until a
+separately verified retirement can preserve compatible rollback. Folder reduction
+is not claimed to happen immediately on an existing installation.
+
+Linux verification: `cargo test --locked --offline --manifest-path
+ desktop/core/Cargo.toml --lib -j 2`: **76 passed, zero failed, one existing opt-in
+profiler ignored**. Shared Python/native vectors, valid-looking corruption,
+source injection, rehashed metadata, source changes, atomic/no-op publication,
+legacy downgrade, cancelled writes, layout-switch rollback, foreign accounts,
+unknown files, capability replacement and actual HTTP/cache/fallback paths pass.
+`cargo check --locked --offline --manifest-path desktop/core/Cargo.toml --examples
+-j 2` also passes. These checks do not certify new-format Windows publication,
+an installer, or real Forever frame time; paired acceptance follows in Stage D.
+No release version/signing/updater configuration has changed.

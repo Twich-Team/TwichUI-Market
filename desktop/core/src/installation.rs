@@ -88,6 +88,7 @@ pub fn validate_addons(path: &Path) -> Result<()> {
     ] {
         checked("summary_contract", message, need(cap[field] == expected, detail))?;
     }
+    checked("prepared_contract", "Workshop prepared-price capabilities are incomplete or unsupported.", prepared_layout(path))?;
     checked("summary_toc_entry", "The Workshop TOC does not load Summary.lua. This addon package needs the summary consumer.", need(toc.lines().any(|line| line.trim() == "Summary.lua"), "Summary.lua TOC entry missing"))
 }
 
@@ -433,4 +434,21 @@ pub fn summary_contract(path:&Path)->Result<u64> {
         need(cap["summary_history_partition_bytes"]==1048576&&cap["summary_history_total_bytes"]==67108864,"Workshop history capability bounds")?;
         Ok(2)
     }else{Ok(1)}
+}
+
+/// Additive, explicit experimental capability. Older clients ignore these fields
+/// and continue their existing v2/v3 negotiation; presence alone is insufficient.
+pub fn prepared_layout(path:&Path)->Result<Option<usize>> {
+    let folder=path.join("Interface/AddOns/TwichUI_Workshop");let file=folder.join("MarketDelivery.json");
+    if !file.try_exists()? {return Ok(None)}
+    let raw=read(&file,4096)?;let cap=crate::bridge::parse(raw.strip_prefix(&[0xef,0xbb,0xbf]).unwrap_or(&raw),4096)?;
+    if cap.get("prepared_current_version").is_none() {return Ok(None)}
+    let count=cap["prepared_current_partitions"].as_u64().unwrap_or(0) as usize;
+    need(cap["prepared_current_version"]==1 && [16,32].contains(&count)
+         && cap["prepared_current_part_bytes"]==4194304 && cap["prepared_current_total_bytes"]==33554432
+         && summary_contract(path)?==3,"prepared capability")?;
+    addon_text(&folder.join("Prepared.lua"),262144)?;
+    let toc=addon_text(&folder.join("TwichUI_Workshop.toc"),32768)?;
+    need(toc.lines().any(|line|line.trim()=="Prepared.lua"),"prepared reader TOC entry")?;
+    Ok(Some(count))
 }
