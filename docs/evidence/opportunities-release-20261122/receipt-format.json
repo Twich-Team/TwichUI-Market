@@ -1,0 +1,30 @@
+{
+  "note": "Windows CI original artifacts and original extracted receipts remain unchanged in task storage. These Git display copies use LF. Signing/publication preparation uses the original extracted receipts, not normalized copies.",
+  "files": {
+    "launch-metrics.json": {
+      "original_ci_receipt_sha256": "27bcfc04947b30d302019b39c42d979c47a2db375cb4a70bad68d98762c0d848",
+      "readable_git_copy_sha256": "630e5b7f6a41793580c191fdf2e29c0371d6ef0985877771b4485fe4aa913fed",
+      "canonical_document_equal": true
+    },
+    "installed-smoke.json": {
+      "original_ci_receipt_sha256": "3f41bbf999373febec56d1322cb4c94626328f744c9a554401ce928fc50a9ba7",
+      "readable_git_copy_sha256": "9866589ed573547eff047de4fa59598241e1b31d33e6e59914da7465c2ed5ef2",
+      "canonical_document_equal": true
+    },
+    "windows-signature.json": {
+      "original_ci_receipt_sha256": "a9c5f6d12050ae25573fa48652d3740b6feb617625a90b75f9736fc3b01d9e18",
+      "readable_git_copy_sha256": "7e66984947c94849288927617b5c722b257783c02719ec13d929ee0ae45c692c",
+      "canonical_document_equal": true
+    },
+    "signed-update-acceptance.json": {
+      "original_ci_receipt_sha256": "e49682cbf9ef283393b19d1e5a66762bce6d8c982e9660964aae8b161213a9e7",
+      "readable_git_copy_sha256": "68e5be62af2f0dd3bf293792022fe697887e059da073e39c58b5823c9facb1d1",
+      "canonical_document_equal": true
+    },
+    "legacy-upgrade.json": {
+      "original_ci_receipt_sha256": "a9100b60bb1c6f4e8ec55806e206d968d40152b1bb7d68340753485b9b7b6fd9",
+      "readable_git_copy_sha256": "75b8f299e125cbddab5f1d0d9cd40cdc0b326286cd085c5761f5afdb93ae0864",
+      "canonical_document_equal": true
+    }
+  }
+}
