@@ -149,3 +149,14 @@ existing installed Windows legacy-addon checks remain intact. A local native
 ordinary-admission legacy-file control passes with 129 fabricated variants/60
 days; the old-binary Windows result is separately recorded when CI completes.
 No runtime or protocol changes accompany this compatibility harness.
+
+Final lifecycle correction is pinned at addon `a59bbcec042485e281a28fb54f14202d5b0abc8d`.
+Replacing/cancelling pending work with the same immutable source generation reproduced
+a stranded waiting row. Calculation context now includes the existing cancellation epoch;
+partial item completion still does not invalidate the full catalog. Header activation
+drops work queued against the previous context during admission. Fast44 passes; final
+Market65 and Crafting37 unit selections pass locally. The earlier broader run passed all
+76 offline checks and the 21-scene Auction/Chart simulator; Workshop failed41 checks.
+The original main b541 reproduces the identical41 failure lines, without weakening tests.
+Windows310 passes the exact old-native/new-addon compatibility addition as well as
+prepared16/32 and original installed/native/legacy consumer checks.
