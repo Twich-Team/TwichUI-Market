@@ -8,8 +8,8 @@ Status: coordinated **drafts**, no merge, deployment, signing or publication.
 | --- | --- | --- |
 | A: authoritative server metadata | [Market #46](https://github.com/Twich-Team/TwichUI-Market/pull/46) | `fce5c0574a0457ad3326709d16a6b5bfb7495cb6` |
 | B: native preparation/publication | [Market #47](https://github.com/Twich-Team/TwichUI-Market/pull/47) | `2fcd450a9982a1a1fa32286928f21d179c291e58` |
-| C: cooperative addon reader | [TwichUI #131](https://github.com/Twich-Team/TwichUI/pull/131) | `a59bbcec042485e281a28fb54f14202d5b0abc8d` |
-| D: complete pipeline/benchmarks | [Market #48](https://github.com/Twich-Team/TwichUI-Market/pull/48) | `f7c937a23c350a3ebc82d6cd7c020ac818c70b2f` (runtime/tooling; later evidence commit only) |
+| C: cooperative addon reader | [TwichUI #131](https://github.com/Twich-Team/TwichUI/pull/131) | `db5bd544759c725a7f3dfe12d62743253f9e8551` |
+| D: complete pipeline/benchmarks | [Market #48](https://github.com/Twich-Team/TwichUI-Market/pull/48) | `f7c937a23c350a3ebc82d6cd7c020ac818c70b2f` (measured runtime/tooling; later pin/diagnostic evidence noted below) |
 
 Inspected main baselines were addon `b541c5b39f324c9d356cb3783cff67db1362787b` and
 Market `e2882dd822b356ffa081efebbff167827f9bf364`. Addon #131 stacks on audit #127
@@ -17,6 +17,12 @@ Market `e2882dd822b356ffa081efebbff167827f9bf364`. Addon #131 stacks on audit #1
 Market #48 stacks on #47, which stacks on #46. No protected branch was changed.
 Chart-loading draft #117 stays separate: Pricing.Chart, MarketFacts, ViewOpportunities
 and AdvancedChart behavior were not changed. Unrelated worktrees and development are preserved.
+
+Final addon `db5bd544...` adds only passive diagnostic selection/proxies and its regression test
+above measured reader revision `a59bbcec...`. Every measured addon source hash is unchanged
+([source proof](evidence/game-ready-current/final-diagnostics-source.json)); the 14-test group
+passes again in 10.456 s. The Workshop preset now selects all 24 bounded gauges before the
+lazy addon loads, including nine prepared counters. No pricing/scheduling budget changed.
 
 ## What changed
 

@@ -169,3 +169,8 @@ clean throughout the final 36-sample campaign. All economic/ranking/warm invaria
 pass; dense CPU increases 10.37%/10.57% remain below 15%. Actual UI reopen/history
 checks pass. Memory/frame/native limits and baseline failures remain explicit.
 All four PRs remain draft; no production operation, signing or publication occurred.
+
+Final diagnostics-only addon head is db5bd544. The cold preset selects 24 passive gauges
+(including all nine prepared counters) before Workshop loads; fast 14 passes again.
+Measured reader/engine/core source hashes are identical to a59bbcec; the final report
+records that proof instead of relabelling old measurements as a different runtime.
