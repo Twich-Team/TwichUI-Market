@@ -24,6 +24,14 @@ try {
     BeginPicker 'select';$null=& $helper -Action ChooseFolder -GamePath $fixture.first
     $chosen=ReadPicker
     if($chosen.selected -ne $fixture.first -or -not $chosen.valid){throw 'Real native selection or edition/capability validation failed'}
+    # Real shell selection must replace its last PIDL, including when accepting a
+    # path whose addon is invalid. Merely changing an edit box can return old data.
+    $wrong=Join-Path $fixture.base 'WrongGame';$null=New-Item $wrong -ItemType Directory
+    foreach($target in @($fixture.second,$wrong,$fixture.first)) {
+        BeginPicker ('replace-'+[IO.Path]::GetFileName($target));$null=& $helper -Action ChooseFolder -GamePath $target
+        $chosen=ReadPicker
+        if($chosen.selected -ne $target -or $chosen.valid -ne ($target -ne $wrong)){throw 'Native picker reused a stale selection or validation'}
+    }
     $null=& $helper -Action Register
     $found=(& $exe discover)|ConvertFrom-Json
     if($found.candidates.Count -ne 1 -or $found.candidates[0] -ne $fixture.first){throw 'Actual registry single discovery failed'}

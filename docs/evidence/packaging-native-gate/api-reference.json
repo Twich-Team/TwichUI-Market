@@ -1,0 +1,13 @@
+{
+  "reference_commit": "bebcb6bf309cf41b41bd74f8ca651e6a105b2676",
+  "reference_version": "1.60.1.70938",
+  "simulator_ui_commit": "ca8368f2f2380cbe696854f7f2646387c278a61b",
+  "simulator_ui_version": "1.60.1.70532",
+  "sha256": {
+    "Interface/AddOns/Blizzard_APIDocumentationGenerated/AddOnsDocumentation.lua": "8535c5ab5e2a2a4f2ad9e14a355a619d4e12fa2b975e28bda01da6eb6580db75",
+    "Interface/AddOns/Blizzard_APIDocumentationGenerated/EncodingUtilDocumentation.lua": "325d34637f5d99ac120714f0eab0907e8647ff85af2c61a75619faeb0832f5b1",
+    "Interface/AddOns/Blizzard_CooldownViewer/CooldownViewerSettingsDataStoreSerialization.lua": "ec0f9457d57055a5e208e9c7e356c7c445825950b0efa7c4effe54027ed1ff78"
+  },
+  "native_client_executed": false,
+  "simulator_probe": "api-probe.log"
+}

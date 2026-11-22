@@ -82,6 +82,7 @@ public static class SummaryPickerControls {
  [DllImport("user32.dll")] public static extern bool EnumChildWindows(IntPtr window,EnumChild callback,IntPtr data);
  [DllImport("user32.dll",CharSet=CharSet.Unicode)] public static extern int GetClassNameW(IntPtr window,StringBuilder name,int size);
  [DllImport("user32.dll")] public static extern bool IsWindowVisible(IntPtr window);
+ [DllImport("user32.dll")] public static extern bool IsWindowEnabled(IntPtr window);
  public static IntPtr FindEdit(IntPtr parent) {
   IntPtr found=IntPtr.Zero;int count=0;
   EnumChildWindows(parent,delegate(IntPtr w,IntPtr data) {
@@ -128,17 +129,14 @@ if($Action -eq 'CancelFolder') {
 } else {
     $resolved=[IO.Path]::GetFullPath($GamePath)
     if(-not $resolved.StartsWith([IO.Path]::GetFullPath($base)+'\',[StringComparison]::OrdinalIgnoreCase)){throw 'Picker fixture path escaped'}
-    $edit=$dialog.FindFirst([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::ControlTypeProperty,[System.Windows.Automation.ControlType]::Edit))
-    $pattern=$null
-    if($edit -and $edit.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern,[ref]$pattern)){$pattern.SetValue($resolved)}
-    else {
-        $nativeEdit=[SummaryPickerControls]::FindEdit($dialogWindow)
-        if($nativeEdit -eq [IntPtr]::Zero){throw ('Actual native folder edit unavailable; classes: '+[SummaryPickerControls]::Classes($dialogWindow))}
-        $window=CheckedWindow $nativeEdit;$result=[IntPtr]::Zero
-        if([SummaryPickerControls]::SetText($window,0x000C,[IntPtr]::Zero,$resolved,2,3000,[ref]$result) -eq [IntPtr]::Zero){throw 'Actual native edit timed out'}
-    }
+    # SHBrowseForFolder returns its selected PIDL, not arbitrary edit-control text.
+    # BFFM_SETSELECTIONW (WM_USER + 103) commits the actual shell selection.
+    # https://learn.microsoft.com/windows/win32/shell/bffm-setselection
+    $window=CheckedWindow $dialogWindow;$result=[IntPtr]::Zero
+    if([SummaryPickerControls]::SetText($window,1127,[IntPtr]1,$resolved,2,3000,[ref]$result) -eq [IntPtr]::Zero){throw 'Actual native folder selection timed out'}
     $button=$dialog.FindFirst([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::AutomationIdProperty,'1'))
     if(-not $button){throw 'Native folder confirmation unavailable'}
+    if(-not [SummaryPickerControls]::IsWindowEnabled((CheckedWindow $button))){throw 'Selected native folder cannot be confirmed'}
     ClickButton $button
 }
 @{native_dialog=$true;cancelled=($Action -eq 'CancelFolder')}|ConvertTo-Json -Compress

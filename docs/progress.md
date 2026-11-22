@@ -233,3 +233,12 @@ Owner-authorized blocker repair and isolated native-test preparation: see [readi
 Final integration checkpoint: Windows wire evidence isolates the expired pooled bootstrap boundary; fixture 202s now explicitly retire connections, with a deterministic negative/control regression. Required addon verification is green (324/324). Frozen-cache endpoint/native DEV acceptance tools are prepared; final Windows and DEV artifact verification pending. See performance-integration-readiness.md.
 
 Owner HOLD: no coordinated merge/release. Investigate physical-addon footprint separately; no production-format changes. Preserve logical32/64 and prepared performance. Disposable Windows HTTP cleanup fix and approved32-source pin are verification-only follow-ups.
+
+Owner approved only a bounded thirteen-addon prototype after native codec proof.
+[Gate report](performance-packaging-prototype-gate.md): actual decoder behavior,
+resource bounds and native allocations remain unavailable; stop before packaging
+implementation. Existing simulator identity stubs are explicitly rejected as
+evidence. Independent Windows CI follow-up preserves original failure45084411116,
+commits actual shell selection in the disposable picker, adds stale-selection
+coverage and diagnoses the unchanged legacy-close timeout. No product format,
+production, installed client, merge or release change.

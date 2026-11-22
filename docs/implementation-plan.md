@@ -134,3 +134,8 @@ Resolve automatic-sync baseline failure with focused diagnostics, verify exact i
 Final integration checkpoint: Windows wire evidence isolates the expired pooled bootstrap boundary; fixture 202s now explicitly retire connections, with a deterministic negative/control regression. Required addon verification is green (324/324). Frozen-cache endpoint/native DEV acceptance tools are prepared; final Windows and DEV artifact verification pending. See performance-integration-readiness.md.
 
 Owner HOLD: no coordinated merge/release. Investigate physical-addon footprint separately; no production-format changes. Preserve logical32/64 and prepared performance. Disposable Windows HTTP cleanup fix and approved32-source pin are verification-only follow-ups.
+
+Owner-approved bounded thirteen-addon prototype: [native codec gate](performance-packaging-prototype-gate.md).
+The prerequisite cannot be established from the available native evidence, so
+packaging implementation stops before format changes. Finish independent CI
+repair without relaxing assertions; preserve native picker/upgrade failures.

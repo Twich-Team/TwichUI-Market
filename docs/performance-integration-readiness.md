@@ -1,5 +1,12 @@
 > **OWNER HOLD:** coordinated merge/release is blocked on the new physical-addon footprint investigation. Logical 32-current/64-history remains approved; actual WoW performance is unverified and personal comparison is waived. No production packaging-format change is authorized.
 
+**Prototype direction:** the owner subsequently approved a bounded thirteen-addon
+prototype, conditional on proving the actual native codec first. That gate is
+blocked; see [the precise evidence and stop decision](performance-packaging-prototype-gate.md).
+No packaging runtime change has begun. The Windows UI harness follow-up is
+independent: actual shell selection replaces arbitrary edit-box text; a legacy
+close timeout receives stage evidence without increased waits or retries.
+
 # Prepared-current integration and private acceptance
 
 Continuation of game-ready-current-results.md and the 22 November private-test readiness
