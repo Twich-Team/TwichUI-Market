@@ -1,0 +1,87 @@
+{
+  "runtime_pin": "d93d253ac31b89e953a8853ee2ce7b25adaedcc7",
+  "final_addon": "8e25ceea2a542a3e67b1dd586c3b4cdd00a70374",
+  "only_documentation_changes": [
+    "docs/evidence/v2-market-integration/README.md",
+    "docs/evidence/v2-market-integration/combined-verification.json",
+    "docs/evidence/v2-market-integration/simulator-comparison.json",
+    "docs/evidence/v2-market-opportunities/README.md",
+    "docs/evidence/v2-market-opportunities/baseline-2day.json",
+    "docs/evidence/v2-market-opportunities/baseline-60day.json",
+    "docs/evidence/v2-market-opportunities/index-memory.json",
+    "docs/evidence/v2-market-opportunities/verification.json",
+    "docs/performance/v2-market-opportunities-audit.md"
+  ],
+  "addon_hashes": {
+    "TwichUI_Workshop/Summary.lua": {
+      "sha256": "1168efa03ac1fa8be44d80eb7c3150bfa0424aec18ff6e31c500ea7634543f79",
+      "evidence_matches": true,
+      "final_bytes_equal": true
+    },
+    "TwichUI_Workshop/SummarySchema.lua": {
+      "sha256": "0caef462952e78ccb39d22b8bda14497b8d97731f679c0b331b6748d710c9931",
+      "evidence_matches": true,
+      "final_bytes_equal": true
+    },
+    "TwichUI_Workshop/BridgeCodec.lua": {
+      "sha256": "dd994aa52e3dec2071134c6823707bc05c716474af069a2ff86f257fd73d928f",
+      "evidence_matches": true,
+      "final_bytes_equal": true
+    },
+    "TwichUI_Workshop/Bridge.lua": {
+      "sha256": "e80c27b2640bba041c6c9f4d390b68c5390481101e971e8bfaff2be77b3ae73d",
+      "evidence_matches": true,
+      "final_bytes_equal": true
+    },
+    "TwichUI_Workshop/auction/ViewMarket.lua": {
+      "sha256": "d81fc75d8a01676962df4e0c58ccd564938fbeb02f2ebe4f8de0eb77d8af6349",
+      "evidence_matches": true,
+      "final_bytes_equal": true
+    },
+    "tests/test_workshop_auction_market_summary.lua": {
+      "sha256": "8be37d6368e2e7ceb9d7f2c00df7d4abd53ffc782d0faf8026c2d7231fdd718e",
+      "evidence_matches": true,
+      "final_bytes_equal": true
+    },
+    "TwichUI_Workshop/Pricing.lua": {
+      "sha256": "ea78b53db936b6153ae28c8dca365d7bf94d467ba1d816a311e25651d1bf70d3",
+      "evidence_matches": true,
+      "final_bytes_equal": true
+    },
+    "TwichUI_Workshop/Estimate.lua": {
+      "sha256": "31fc5d3219e2c390f755559feae6a65ac0efe68810f951d5f24725cac0ef76c3",
+      "evidence_matches": true,
+      "final_bytes_equal": true
+    },
+    "TwichUI_Workshop/OpportunityEngine.lua": {
+      "sha256": "9f1434e2ed391b97ba485f561cf13a026aad8ab85269ddf80a44fa78f41435b4",
+      "evidence_matches": true,
+      "final_bytes_equal": true
+    },
+    "TwichUI_Workshop/Session.lua": {
+      "sha256": "715260e20b45747d5ea0a1811d20ae42e64b0e1c2a41f8013807ca38a45124c8",
+      "evidence_matches": true,
+      "final_bytes_equal": true
+    },
+    "TwichUI_Workshop/MarketDelivery.json": {
+      "sha256": "275f668d1cbcc4cb0b2663e3b61dea21d5ab52dd73115f54b83840839bd7d251",
+      "evidence_matches": true,
+      "final_bytes_equal": true
+    }
+  },
+  "frozen_market_evidence_hash_matches": {
+    "backend/market/workshop_summary.py": true,
+    "backend/market/bridge_api.py": true,
+    "desktop/core/src/workshop_summary.rs": true,
+    "desktop/core/src/client.rs": true,
+    "contracts/workshop-summary/v1/manifest.schema.json": true,
+    "contracts/workshop-summary/v1/row.schema.json": true,
+    "contracts/workshop-summary/v2/manifest.schema.json": true,
+    "contracts/workshop-summary/v2/row.schema.json": true,
+    "contracts/workshop-summary/v2/addon-source.txt": true,
+    "contracts/workshop-summary/v3/addon-source.txt": true,
+    "contracts/workshop-summary/v3/manifest.schema.json": true,
+    "contracts/workshop-summary/v3/row.schema.json": true,
+    "desktop/core/examples/workshop_smoke.rs": true
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "files": [
+    {
+      "path": "/home/marketdev/.local/share/twichui-market-companion/signing/updater.key.pub",
+      "exists": true,
+      "uid": 1002,
+      "mode": "0o600"
+    },
+    {
+      "path": "/home/marketdev/.local/share/twichui-market-companion/signing/updater.key",
+      "exists": true,
+      "uid": 1002,
+      "mode": "0o600"
+    },
+    {
+      "path": "/home/marketdev/.local/share/twichui-market-companion/signing/twichui-market-updater-key-20261115.tar.gz",
+      "exists": true,
+      "uid": 1002,
+      "mode": "0o600"
+    },
+    {
+      "path": "/home/marketdev/.local/state/twichui-market-companion/updater-key.passphrase",
+      "exists": true,
+      "uid": 1002,
+      "mode": "0o600"
+    }
+  ],
+  "public_key_sha256": "5794736c840c7c09a49396e60cd569ff6b5f24f872eb0318ed95d55c16616ecf",
+  "compiled_public_key_sha256": "5794736c840c7c09a49396e60cd569ff6b5f24f872eb0318ed95d55c16616ecf"
+}

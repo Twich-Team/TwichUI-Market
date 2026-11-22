@@ -1,0 +1,1006 @@
+[
+  {
+    "service": "api",
+    "id": "f7dbcf773567c6d8d912867bb1a9831a69d454a47d87b9dcc832c6dc634a6d5d",
+    "image": "sha256:428f0acfa92ec42fcc40d467e072ad3d14f7175c02ad76303d141d6824b983af",
+    "image_present": true,
+    "image_digests": [
+      "twichui-market-workshop-history@sha256:428f0acfa92ec42fcc40d467e072ad3d14f7175c02ad76303d141d6824b983af"
+    ],
+    "status": "running",
+    "health": "healthy",
+    "started": "2026-11-19T03:05:23.19328208Z",
+    "compose_files": [
+      "/home/marketdev/projects/TwichUI-Market/compose.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.tls.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.traefik.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.companion-private-beta.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.combined-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.admin-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.explorer-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.polish-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.foreverdb-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/usability-release/compose.usability-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/mobile-release/compose.mobile-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-chart.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-api.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.owner-backup-policy.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.unified-coverage-release.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.backup-management.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.backup-review-images.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.companion-beta7-web.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-cap.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-release.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-activation.yaml",
+      "/home/marketdev/.codex/worktrees/workshop-dev-build/TwichUI-Market/compose.workshop-api-release.yaml",
+      "/home/marketdev/.codex/worktrees/companion-sync-performance/TwichUI-Market/compose.sync-performance-release.yaml",
+      "/home/marketdev/.codex/worktrees/workshop-live-status/TwichUI-Market/compose.workshop-history-release.yaml"
+    ],
+    "missing": [
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.backup-management.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.backup-review-images.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-cap.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-release.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-activation.yaml"
+    ],
+    "project": "twichui-market",
+    "project_dir": "/home/marketdev/projects/TwichUI-Market",
+    "env_files": "/home/marketdev/projects/TwichUI-Market/.env,/home/marketdev/projects/TwichUI-Market/.env.combined-release",
+    "mounts": [
+      {
+        "Type": "bind",
+        "Source": "/home/marketdev/projects/TwichUI-Market/artifacts/backup-status",
+        "Destination": "/backup-status",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "volume",
+        "Name": "twichui-market_market-data",
+        "Source": "/home/marketdev/.local/share/docker/volumes/twichui-market_market-data/_data",
+        "Destination": "/database-filesystem",
+        "Driver": "local",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": ""
+      },
+      {
+        "Type": "volume",
+        "Name": "twichui-market_companion-private-beta",
+        "Source": "/home/marketdev/.local/share/docker/volumes/twichui-market_companion-private-beta/_data",
+        "Destination": "/private-beta",
+        "Driver": "local",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": ""
+      },
+      {
+        "Type": "bind",
+        "Source": "/home/marketdev/projects/TwichUI-Market/.local/retention-recovery",
+        "Destination": "/retention-recovery",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/home/marketdev/.local/share/twichui-market-metadata/keyring.json",
+        "Destination": "/run/metadata/keyring.json",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/home/marketdev/projects/TwichUI-Market/.local/backup-management/token",
+        "Destination": "/run/secrets/backup-manager-token",
+        "Mode": "",
+        "RW": false,
+        "Propagation": "rprivate"
+      }
+    ],
+    "networks": [
+      "twichui-market_backup-control",
+      "twichui-market_default"
+    ],
+    "ports": {
+      "8000/tcp": null
+    },
+    "resources": {
+      "Memory": 402653184,
+      "MemorySwap": 805306368,
+      "NanoCpus": 500000000,
+      "CpuQuota": 0,
+      "CpuPeriod": 0,
+      "PidsLimit": 100
+    },
+    "restart": {
+      "Name": "unless-stopped",
+      "MaximumRetryCount": 0
+    },
+    "logs": {
+      "Type": "json-file",
+      "Config": {
+        "max-file": "2",
+        "max-size": "5m"
+      }
+    },
+    "env_sha256": "2e5514adce0177df1182ae4f479197a8e0e588987f40732f27e057dabf626754"
+  },
+  {
+    "service": "local-api",
+    "id": "094706c2adc5a0686a2fddb7aca8624e928d5020b18a69a3ba901bd167406a35",
+    "image": "sha256:428f0acfa92ec42fcc40d467e072ad3d14f7175c02ad76303d141d6824b983af",
+    "image_present": true,
+    "image_digests": [
+      "twichui-market-workshop-history@sha256:428f0acfa92ec42fcc40d467e072ad3d14f7175c02ad76303d141d6824b983af"
+    ],
+    "status": "running",
+    "health": "healthy",
+    "started": "2026-11-19T03:05:22.95870302Z",
+    "compose_files": [
+      "/home/marketdev/projects/TwichUI-Market/compose.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.tls.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.traefik.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.companion-private-beta.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.combined-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.admin-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.explorer-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.polish-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.foreverdb-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/usability-release/compose.usability-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/mobile-release/compose.mobile-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-chart.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-api.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.owner-backup-policy.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.unified-coverage-release.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.backup-management.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.backup-review-images.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.companion-beta7-web.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-cap.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-release.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-activation.yaml",
+      "/home/marketdev/.codex/worktrees/workshop-dev-build/TwichUI-Market/compose.workshop-api-release.yaml",
+      "/home/marketdev/.codex/worktrees/companion-sync-performance/TwichUI-Market/compose.sync-performance-release.yaml",
+      "/home/marketdev/.codex/worktrees/workshop-live-status/TwichUI-Market/compose.workshop-history-release.yaml"
+    ],
+    "missing": [
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.backup-management.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.backup-review-images.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-cap.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-release.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-activation.yaml"
+    ],
+    "project": "twichui-market",
+    "project_dir": "/home/marketdev/projects/TwichUI-Market",
+    "env_files": "/home/marketdev/projects/TwichUI-Market/.env,/home/marketdev/projects/TwichUI-Market/.env.combined-release",
+    "mounts": [
+      {
+        "Type": "bind",
+        "Source": "/home/marketdev/projects/TwichUI-Market/artifacts/backup-status",
+        "Destination": "/backup-status",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "volume",
+        "Name": "twichui-market_market-data",
+        "Source": "/home/marketdev/.local/share/docker/volumes/twichui-market_market-data/_data",
+        "Destination": "/database-filesystem",
+        "Driver": "local",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": ""
+      },
+      {
+        "Type": "volume",
+        "Name": "twichui-market_companion-private-beta",
+        "Source": "/home/marketdev/.local/share/docker/volumes/twichui-market_companion-private-beta/_data",
+        "Destination": "/private-beta",
+        "Driver": "local",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": ""
+      },
+      {
+        "Type": "bind",
+        "Source": "/home/marketdev/projects/TwichUI-Market/.local/retention-recovery",
+        "Destination": "/retention-recovery",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/home/marketdev/.local/share/twichui-market-metadata/keyring.json",
+        "Destination": "/run/metadata/keyring.json",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/home/marketdev/projects/TwichUI-Market/.local/backup-management/token",
+        "Destination": "/run/secrets/backup-manager-token",
+        "Mode": "",
+        "RW": false,
+        "Propagation": "rprivate"
+      }
+    ],
+    "networks": [
+      "twichui-market_backup-control",
+      "twichui-market_default"
+    ],
+    "ports": {
+      "8000/tcp": null
+    },
+    "resources": {
+      "Memory": 268435456,
+      "MemorySwap": 536870912,
+      "NanoCpus": 250000000,
+      "CpuQuota": 0,
+      "CpuPeriod": 0,
+      "PidsLimit": 100
+    },
+    "restart": {
+      "Name": "unless-stopped",
+      "MaximumRetryCount": 0
+    },
+    "logs": {
+      "Type": "json-file",
+      "Config": {
+        "max-file": "2",
+        "max-size": "5m"
+      }
+    },
+    "env_sha256": "4d4a8e6ba8814aa7e61e182225058e5dced471b086860c80164321bd913b4397"
+  },
+  {
+    "service": "retention",
+    "id": "225f8fba07561eda9d4f64eb8ca98f3115ab50f5b0e6e4bdc050d75e30f81d43",
+    "image": "sha256:9712cd35a1f669343d20d42598717d0fcb370a4c358d3edb4c35f807b0d9295c",
+    "image_present": true,
+    "image_digests": [
+      "twichui-market-backend@sha256:9712cd35a1f669343d20d42598717d0fcb370a4c358d3edb4c35f807b0d9295c"
+    ],
+    "status": "running",
+    "health": null,
+    "started": "2026-11-18T16:23:06.415356816Z",
+    "compose_files": [
+      "/home/marketdev/projects/TwichUI-Market/compose.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.tls.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.traefik.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.companion-private-beta.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.combined-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.admin-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.explorer-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.polish-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.foreverdb-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/usability-release/compose.usability-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/mobile-release/compose.mobile-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-chart.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-api.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.owner-backup-policy.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.unified-coverage-release.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.backup-management.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.backup-review-images.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.companion-beta7-web.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-cap.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-release.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-activation.yaml"
+    ],
+    "missing": [
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.backup-management.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.backup-review-images.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-cap.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-release.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-activation.yaml"
+    ],
+    "project": "twichui-market",
+    "project_dir": "/home/marketdev/projects/TwichUI-Market",
+    "env_files": "/home/marketdev/projects/TwichUI-Market/.env,/home/marketdev/projects/TwichUI-Market/.env.combined-release",
+    "mounts": [
+      {
+        "Type": "bind",
+        "Source": "/home/marketdev/projects/TwichUI-Market/artifacts/backup-status",
+        "Destination": "/backup-status",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "volume",
+        "Name": "twichui-market_market-data",
+        "Source": "/home/marketdev/.local/share/docker/volumes/twichui-market_market-data/_data",
+        "Destination": "/database-filesystem",
+        "Driver": "local",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": ""
+      },
+      {
+        "Type": "bind",
+        "Source": "/home/marketdev/projects/TwichUI-Market/.local/retention-recovery",
+        "Destination": "/retention-recovery",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/home/marketdev/projects/TwichUI-Market/.local/backup-management/token",
+        "Destination": "/run/secrets/backup-manager-token",
+        "Mode": "",
+        "RW": false,
+        "Propagation": "rprivate"
+      }
+    ],
+    "networks": [
+      "twichui-market_backup-control",
+      "twichui-market_default"
+    ],
+    "ports": {
+      "8000/tcp": null
+    },
+    "resources": {
+      "Memory": 201326592,
+      "MemorySwap": 402653184,
+      "NanoCpus": 250000000,
+      "CpuQuota": 0,
+      "CpuPeriod": 0,
+      "PidsLimit": 64
+    },
+    "restart": {
+      "Name": "unless-stopped",
+      "MaximumRetryCount": 0
+    },
+    "logs": {
+      "Type": "json-file",
+      "Config": {
+        "max-file": "2",
+        "max-size": "2m"
+      }
+    },
+    "env_sha256": "5804800216aa33d4c5deea95eb97a8f276c9321efdd82b1efe2e348626828d0c"
+  },
+  {
+    "service": "monitor",
+    "id": "00320ce44d3801ef902386a2f7956fe9f49e74decad5ea71782a3f8cdde1dcd5",
+    "image": "sha256:9712cd35a1f669343d20d42598717d0fcb370a4c358d3edb4c35f807b0d9295c",
+    "image_present": true,
+    "image_digests": [
+      "twichui-market-backend@sha256:9712cd35a1f669343d20d42598717d0fcb370a4c358d3edb4c35f807b0d9295c"
+    ],
+    "status": "running",
+    "health": null,
+    "started": "2026-11-18T16:23:06.640021525Z",
+    "compose_files": [
+      "/home/marketdev/projects/TwichUI-Market/compose.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.tls.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.traefik.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.companion-private-beta.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.combined-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.admin-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.explorer-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.polish-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.foreverdb-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/usability-release/compose.usability-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/mobile-release/compose.mobile-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-chart.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-api.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.owner-backup-policy.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.unified-coverage-release.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.backup-management.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.backup-review-images.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.companion-beta7-web.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-cap.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-release.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-activation.yaml"
+    ],
+    "missing": [
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.backup-management.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.backup-review-images.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-cap.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-release.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-activation.yaml"
+    ],
+    "project": "twichui-market",
+    "project_dir": "/home/marketdev/projects/TwichUI-Market",
+    "env_files": "/home/marketdev/projects/TwichUI-Market/.env,/home/marketdev/projects/TwichUI-Market/.env.combined-release",
+    "mounts": [
+      {
+        "Type": "volume",
+        "Name": "twichui-market_market-data",
+        "Source": "/home/marketdev/.local/share/docker/volumes/twichui-market_market-data/_data",
+        "Destination": "/database-filesystem",
+        "Driver": "local",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": ""
+      },
+      {
+        "Type": "bind",
+        "Source": "/home/marketdev/projects/TwichUI-Market/.local/retention-recovery",
+        "Destination": "/retention-recovery",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": "rprivate"
+      }
+    ],
+    "networks": [
+      "twichui-market_default"
+    ],
+    "ports": {
+      "8000/tcp": null
+    },
+    "resources": {
+      "Memory": 134217728,
+      "MemorySwap": 268435456,
+      "NanoCpus": 250000000,
+      "CpuQuota": 0,
+      "CpuPeriod": 0,
+      "PidsLimit": null
+    },
+    "restart": {
+      "Name": "unless-stopped",
+      "MaximumRetryCount": 0
+    },
+    "logs": {
+      "Type": "json-file",
+      "Config": {
+        "max-file": "2",
+        "max-size": "5m"
+      }
+    },
+    "env_sha256": "520f292a72e3f46a80b96fc676df7523a99299335d0996751bced9589295f2ee"
+  },
+  {
+    "service": "proxy",
+    "id": "de1e7aceb146621a04cdea2151d46318fc3c4124b3aa4da9ac98c5282f4539ac",
+    "image": "sha256:f48f8f1a7e5a030432abde0792ee0be1aae0326950404e83036bc9c0172a6814",
+    "image_present": true,
+    "image_digests": [
+      "twichui-market-web@sha256:f48f8f1a7e5a030432abde0792ee0be1aae0326950404e83036bc9c0172a6814"
+    ],
+    "status": "running",
+    "health": null,
+    "started": "2026-11-18T15:11:55.771277769Z",
+    "compose_files": [
+      "/home/marketdev/projects/TwichUI-Market/compose.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.tls.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.traefik.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.companion-private-beta.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.combined-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.admin-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.explorer-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.polish-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.foreverdb-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/usability-release/compose.usability-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/mobile-release/compose.mobile-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-chart.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-api.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.owner-backup-policy.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.unified-coverage-release.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.backup-management.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.backup-review-images.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.companion-beta7-web.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-cap.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-release.yaml"
+    ],
+    "missing": [
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.backup-management.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.backup-review-images.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-cap.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-release.yaml"
+    ],
+    "project": "twichui-market",
+    "project_dir": "/home/marketdev/projects/TwichUI-Market",
+    "env_files": "/home/marketdev/projects/TwichUI-Market/.env,/home/marketdev/projects/TwichUI-Market/.env.combined-release",
+    "mounts": [
+      {
+        "Type": "volume",
+        "Name": "twichui-market_caddy-data",
+        "Source": "/home/marketdev/.local/share/docker/volumes/twichui-market_caddy-data/_data",
+        "Destination": "/data",
+        "Driver": "local",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": ""
+      },
+      {
+        "Type": "bind",
+        "Source": "/home/marketdev/projects/TwichUI-Market/deploy/Caddyfile.production",
+        "Destination": "/etc/caddy/Caddyfile",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/home/marketdev/projects/TwichUI-Market/deploy/routes.local.caddy",
+        "Destination": "/etc/caddy/routes.local.caddy",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/home/marketdev/projects/TwichUI-Market/deploy/routes.production.caddy",
+        "Destination": "/etc/caddy/routes.production.caddy",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": "rprivate"
+      }
+    ],
+    "networks": [
+      "twichui-market_default"
+    ],
+    "ports": {
+      "2019/tcp": null,
+      "443/tcp": [
+        {
+          "HostIp": "127.0.0.1",
+          "HostPort": "18443"
+        }
+      ],
+      "443/udp": null,
+      "80/tcp": [
+        {
+          "HostIp": "10.0.4.46",
+          "HostPort": "18780"
+        }
+      ]
+    },
+    "resources": {
+      "Memory": 134217728,
+      "MemorySwap": 268435456,
+      "NanoCpus": 250000000,
+      "CpuQuota": 0,
+      "CpuPeriod": 0,
+      "PidsLimit": null
+    },
+    "restart": {
+      "Name": "unless-stopped",
+      "MaximumRetryCount": 0
+    },
+    "logs": {
+      "Type": "json-file",
+      "Config": {
+        "max-file": "2",
+        "max-size": "5m"
+      }
+    },
+    "env_sha256": "8400f1f81abe40863929dc136ac4b2217096ee4bca3d37a34ed535d597c8837b"
+  },
+  {
+    "service": "worker",
+    "id": "81b36b1a230d15f0cef2edcadc53866128f302d305a662bc9a453abf203b2887",
+    "image": "sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b",
+    "image_present": true,
+    "image_digests": [
+      "twichui-market-backend@sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b"
+    ],
+    "status": "running",
+    "health": null,
+    "started": "2026-11-18T15:11:38.605275169Z",
+    "compose_files": [
+      "/home/marketdev/projects/TwichUI-Market/compose.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.tls.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.traefik.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.companion-private-beta.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.combined-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.admin-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.explorer-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.polish-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.foreverdb-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/usability-release/compose.usability-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/mobile-release/compose.mobile-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-chart.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-api.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.owner-backup-policy.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.unified-coverage-release.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.backup-management.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.backup-review-images.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.companion-beta7-web.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-cap.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-release.yaml"
+    ],
+    "missing": [
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.backup-management.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.backup-review-images.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-cap.yaml",
+      "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-release.yaml"
+    ],
+    "project": "twichui-market",
+    "project_dir": "/home/marketdev/projects/TwichUI-Market",
+    "env_files": "/home/marketdev/projects/TwichUI-Market/.env,/home/marketdev/projects/TwichUI-Market/.env.combined-release",
+    "mounts": [
+      {
+        "Type": "volume",
+        "Name": "twichui-market_market-data",
+        "Source": "/home/marketdev/.local/share/docker/volumes/twichui-market_market-data/_data",
+        "Destination": "/database-filesystem",
+        "Driver": "local",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": ""
+      }
+    ],
+    "networks": [
+      "twichui-market_default"
+    ],
+    "ports": {
+      "8000/tcp": null
+    },
+    "resources": {
+      "Memory": 402653184,
+      "MemorySwap": 805306368,
+      "NanoCpus": 500000000,
+      "CpuQuota": 0,
+      "CpuPeriod": 0,
+      "PidsLimit": null
+    },
+    "restart": {
+      "Name": "unless-stopped",
+      "MaximumRetryCount": 0
+    },
+    "logs": {
+      "Type": "json-file",
+      "Config": {
+        "max-file": "2",
+        "max-size": "5m"
+      }
+    },
+    "env_sha256": "1b0190a76e3ac758618562d0368434fe1af67b5758e956642173a94b1db82ebe"
+  },
+  {
+    "service": "backup-manager",
+    "id": "0975558bb55d6a8216c43fdba4911b3a9cbfc46bc6f36188c3e88e88782f6ecf",
+    "image": "sha256:79cea119910ad3353f8a35ce21d079fafbcab0a757c0734bfe3bce6055c68565",
+    "image_present": true,
+    "image_digests": [
+      "twichui-market-backup-manager@sha256:79cea119910ad3353f8a35ce21d079fafbcab0a757c0734bfe3bce6055c68565"
+    ],
+    "status": "running",
+    "health": null,
+    "started": "2026-11-18T04:20:50.066168318Z",
+    "compose_files": [
+      "/home/marketdev/projects/TwichUI-Market/compose.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.tls.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.traefik.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.companion-private-beta.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.combined-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.admin-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.explorer-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.polish-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.foreverdb-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/usability-release/compose.usability-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/mobile-release/compose.mobile-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-chart.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-api.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.owner-backup-policy.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.unified-coverage-release.yaml",
+      "/home/marketdev/.codex/worktrees/backup-management-retention/TwichUI-Market/compose.backup-management.yaml",
+      "/home/marketdev/.codex/worktrees/backup-management-retention/TwichUI-Market/compose.backup-review-images.yaml"
+    ],
+    "missing": [
+      "/home/marketdev/.codex/worktrees/backup-management-retention/TwichUI-Market/compose.backup-management.yaml",
+      "/home/marketdev/.codex/worktrees/backup-management-retention/TwichUI-Market/compose.backup-review-images.yaml"
+    ],
+    "project": "twichui-market",
+    "project_dir": "/home/marketdev/projects/TwichUI-Market",
+    "env_files": "/home/marketdev/projects/TwichUI-Market/.env,/home/marketdev/projects/TwichUI-Market/.env.combined-release",
+    "mounts": [
+      {
+        "Type": "bind",
+        "Source": "/home/marketdev/projects/TwichUI-Market/backups",
+        "Destination": "/backups",
+        "Mode": "",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "volume",
+        "Name": "twichui-market_backup-management-state",
+        "Source": "/home/marketdev/.local/share/docker/volumes/twichui-market_backup-management-state/_data",
+        "Destination": "/state",
+        "Driver": "local",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": ""
+      },
+      {
+        "Type": "bind",
+        "Source": "/home/marketdev/projects/TwichUI-Market/.local/backup-management/token",
+        "Destination": "/run/secrets/backup-manager-token",
+        "Mode": "",
+        "RW": false,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "volume",
+        "Name": "89b31260a39f7faef1ff871012dfdeabe98c483f13ccfd9a372f986ee4a0b8db",
+        "Source": "/home/marketdev/.local/share/docker/volumes/89b31260a39f7faef1ff871012dfdeabe98c483f13ccfd9a372f986ee4a0b8db/_data",
+        "Destination": "/var/lib/postgresql/data",
+        "Driver": "local",
+        "Mode": "",
+        "RW": true,
+        "Propagation": ""
+      }
+    ],
+    "networks": [
+      "twichui-market_backup-control",
+      "twichui-market_default"
+    ],
+    "ports": {
+      "5432/tcp": null
+    },
+    "resources": {
+      "Memory": 268435456,
+      "MemorySwap": 536870912,
+      "NanoCpus": 250000000,
+      "CpuQuota": 0,
+      "CpuPeriod": 0,
+      "PidsLimit": 64
+    },
+    "restart": {
+      "Name": "unless-stopped",
+      "MaximumRetryCount": 0
+    },
+    "logs": {
+      "Type": "json-file",
+      "Config": {
+        "max-file": "2",
+        "max-size": "2m"
+      }
+    },
+    "env_sha256": "4ede36695007991890092c615dbaac1054f80082a921a79ca45abcd3a34aa8a0"
+  },
+  {
+    "service": "enrichment",
+    "id": "08ac2b64e749d094f88e9cce7157fd3c5a29ea867bb11ae24789247479a49c44",
+    "image": "sha256:3ef6f57964546a425f4c2ebe2bc44be2d9a516340325074dfb0fb2f32d7c3667",
+    "image_present": true,
+    "image_digests": [
+      "twichui-market-backend@sha256:3ef6f57964546a425f4c2ebe2bc44be2d9a516340325074dfb0fb2f32d7c3667"
+    ],
+    "status": "running",
+    "health": null,
+    "started": "2026-11-17T20:28:47.737748418Z",
+    "compose_files": [
+      "/home/marketdev/projects/TwichUI-Market/compose.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.tls.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.traefik.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.companion-private-beta.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.combined-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.admin-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.explorer-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.polish-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.foreverdb-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/usability-release/compose.usability-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/mobile-release/compose.mobile-release.yaml",
+      "/home/marketdev/projects/TwichUI-Market/.worktrees/intelligent-metadata-recovery/compose.metadata-recovery-release.yaml"
+    ],
+    "missing": [],
+    "project": "twichui-market",
+    "project_dir": "/home/marketdev/projects/TwichUI-Market",
+    "env_files": "/home/marketdev/projects/TwichUI-Market/.env,/home/marketdev/projects/TwichUI-Market/.env.combined-release",
+    "mounts": [
+      {
+        "Type": "bind",
+        "Source": "/home/marketdev/.local/share/twichui-market-metadata/keyring.json",
+        "Destination": "/run/metadata/keyring.json",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": "rprivate"
+      }
+    ],
+    "networks": [
+      "twichui-market_default"
+    ],
+    "ports": {
+      "8000/tcp": null
+    },
+    "resources": {
+      "Memory": 201326592,
+      "MemorySwap": 402653184,
+      "NanoCpus": 250000000,
+      "CpuQuota": 0,
+      "CpuPeriod": 0,
+      "PidsLimit": 100
+    },
+    "restart": {
+      "Name": "unless-stopped",
+      "MaximumRetryCount": 0
+    },
+    "logs": {
+      "Type": "json-file",
+      "Config": {
+        "max-file": "2",
+        "max-size": "5m"
+      }
+    },
+    "env_sha256": "96d6664879587022d0d408518105f471d0572977764cac761760cbbf8ff54788"
+  },
+  {
+    "service": "backup",
+    "id": "1f1cbba535e2cd64cf900099a5fe92ee662fa9ced84f5f2ae4fa5b28b32d5f9c",
+    "image": "sha256:2669ec98d745fbb77942ed6696162436862334ebaebc71e884853226504b260b",
+    "image_present": true,
+    "image_digests": [
+      "twichui-market-backup@sha256:2669ec98d745fbb77942ed6696162436862334ebaebc71e884853226504b260b"
+    ],
+    "status": "exited",
+    "health": null,
+    "started": "2026-11-15T03:11:29.671470444Z",
+    "compose_files": [
+      "/home/marketdev/projects/TwichUI-Market/compose.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.tls.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.traefik.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.companion-private-beta.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.combined-release.yaml"
+    ],
+    "missing": [],
+    "project": "twichui-market",
+    "project_dir": "/home/marketdev/projects/TwichUI-Market",
+    "env_files": "/home/marketdev/projects/TwichUI-Market/.env,/home/marketdev/projects/TwichUI-Market/.env.combined-release",
+    "mounts": [
+      {
+        "Type": "bind",
+        "Source": "/home/marketdev/projects/TwichUI-Market/backups",
+        "Destination": "/backups",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/home/marketdev/projects/TwichUI-Market/artifacts/backup-status",
+        "Destination": "/status",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "volume",
+        "Name": "f0357311d282d678539ad27e670eda8d698b15e2c93af14392d1a99755b31a2a",
+        "Source": "/home/marketdev/.local/share/docker/volumes/f0357311d282d678539ad27e670eda8d698b15e2c93af14392d1a99755b31a2a/_data",
+        "Destination": "/var/lib/postgresql/data",
+        "Driver": "local",
+        "Mode": "z",
+        "RW": true,
+        "Propagation": ""
+      }
+    ],
+    "networks": [
+      "twichui-market_default"
+    ],
+    "ports": {},
+    "resources": {
+      "Memory": 268435456,
+      "MemorySwap": 536870912,
+      "NanoCpus": 250000000,
+      "CpuQuota": 0,
+      "CpuPeriod": 0,
+      "PidsLimit": null
+    },
+    "restart": {
+      "Name": "no",
+      "MaximumRetryCount": 0
+    },
+    "logs": {
+      "Type": "json-file",
+      "Config": {
+        "max-file": "2",
+        "max-size": "5m"
+      }
+    },
+    "env_sha256": "7593f245811a6addf806e7d4b6e0a36033b12a9ac4b6139a9562d1dbe478b329"
+  },
+  {
+    "service": "migrate",
+    "id": "d4336d00e3e028a60d6bbcb80af7136835897a6f07a5b27629ca35a01ac6f180",
+    "image": "sha256:4255007bdcf12a9b29e93a6be0e4be4a66480ce8139725ef3ba5e9fadae81550",
+    "image_present": false,
+    "image_digests": [],
+    "status": "exited",
+    "health": null,
+    "started": "2026-11-17T21:31:26.775517163Z",
+    "compose_files": [
+      "/home/marketdev/projects/TwichUI-Market/compose.yaml",
+      "/home/marketdev/projects/TwichUI-Market/compose.tls.yaml"
+    ],
+    "missing": [],
+    "project": "twichui-market",
+    "project_dir": "/home/marketdev/projects/TwichUI-Market",
+    "env_files": null,
+    "mounts": [],
+    "networks": [
+      "twichui-market_default"
+    ],
+    "ports": {},
+    "resources": {
+      "Memory": 268435456,
+      "MemorySwap": 536870912,
+      "NanoCpus": 500000000,
+      "CpuQuota": 0,
+      "CpuPeriod": 0,
+      "PidsLimit": null
+    },
+    "restart": {
+      "Name": "no",
+      "MaximumRetryCount": 0
+    },
+    "logs": {
+      "Type": "json-file",
+      "Config": {}
+    },
+    "env_sha256": "634d77ce7bd2dbbd317cbd211efc40e9c17aae442d6fdd269eb6cd714e6ae47d"
+  },
+  {
+    "service": "db",
+    "id": "1a138045d430554c64142f230fa1555e61d3414b2926ae9b2606f58fb8fb3642",
+    "image": "sha256:d3244e8ce3f165ee3c93d9c4a4b1d0fe48b3a89e2287b717fdcbbde92d405065",
+    "image_present": true,
+    "image_digests": [
+      "postgres@sha256:d3244e8ce3f165ee3c93d9c4a4b1d0fe48b3a89e2287b717fdcbbde92d405065"
+    ],
+    "status": "running",
+    "health": "healthy",
+    "started": "2026-11-14T01:46:45.864726511Z",
+    "compose_files": [
+      "/home/marketdev/projects/TwichUI-Market/compose.yaml"
+    ],
+    "missing": [],
+    "project": "twichui-market",
+    "project_dir": "/home/marketdev/projects/TwichUI-Market",
+    "env_files": null,
+    "mounts": [
+      {
+        "Type": "volume",
+        "Name": "twichui-market_market-data",
+        "Source": "/home/marketdev/.local/share/docker/volumes/twichui-market_market-data/_data",
+        "Destination": "/var/lib/postgresql/data",
+        "Driver": "local",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": ""
+      }
+    ],
+    "networks": [
+      "twichui-market_default"
+    ],
+    "ports": {
+      "5432/tcp": null
+    },
+    "resources": {
+      "Memory": 805306368,
+      "MemorySwap": 1610612736,
+      "NanoCpus": 1000000000,
+      "CpuQuota": 0,
+      "CpuPeriod": 0,
+      "PidsLimit": null
+    },
+    "restart": {
+      "Name": "unless-stopped",
+      "MaximumRetryCount": 0
+    },
+    "logs": {
+      "Type": "json-file",
+      "Config": {
+        "max-file": "2",
+        "max-size": "5m"
+      }
+    },
+    "env_sha256": "1bce0bb693cd52410df12d4c4b4d19d0902caba28316784de71c28a5b9ea738f"
+  }
+]

@@ -1,0 +1,68 @@
+{
+  "status": "proposal only; not approved or applied",
+  "files": [
+    {
+      "original_path": "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.backup-management.yaml",
+      "snapshot_path": "deploy/baselines/2026-11-21/overlays/16-compose.backup-management.yaml",
+      "sha256": "19392027add62af3d8a4fd9d5a9c524c193c9b1c469b4aab63776bffadef93bb",
+      "evidence": "missing original path; reconstructed from beta10 Git tree",
+      "source_commit": "3b59f0f34617cbcf12a43baddfeed7a1e668feb2",
+      "proposed_action": "restore only this missing regular file at its original absolute path; do not overwrite any existing path",
+      "git_blob": "6fb1a1a775b2bd1090e4eba29b17bcc2fc786a5e"
+    },
+    {
+      "original_path": "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.backup-review-images.yaml",
+      "snapshot_path": "deploy/baselines/2026-11-21/overlays/17-compose.backup-review-images.yaml",
+      "sha256": "4ee22ffb9d85cec1caa2125fa92bba111ad784248d65552f02c88ee30f442103",
+      "evidence": "missing original path; reconstructed from beta10 Git tree",
+      "source_commit": "3b59f0f34617cbcf12a43baddfeed7a1e668feb2",
+      "proposed_action": "restore only this missing regular file at its original absolute path; do not overwrite any existing path",
+      "git_blob": "2c5d2e9aa3a93f5ffb70880b85e21aa4574b961c"
+    },
+    {
+      "original_path": "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-cap.yaml",
+      "snapshot_path": "deploy/baselines/2026-11-21/overlays/19-compose.retention-cap.yaml",
+      "sha256": "20334dd0f071c89f58aba74c3718fb1a99ed08e47190e967bad7be4028da659e",
+      "evidence": "missing original path; reconstructed from beta10 Git tree",
+      "source_commit": "3b59f0f34617cbcf12a43baddfeed7a1e668feb2",
+      "proposed_action": "restore only this missing regular file at its original absolute path; do not overwrite any existing path",
+      "git_blob": "1144b9353f5ad50966b630c9c2222e66e9aed593"
+    },
+    {
+      "original_path": "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-release.yaml",
+      "snapshot_path": "deploy/baselines/2026-11-21/overlays/20-compose.retention-release.yaml",
+      "sha256": "d25d9b6eb672aefd731ca759849f3051d50585f838002ecd9c0a293b26257187",
+      "evidence": "missing original path; reconstructed from beta10 Git tree",
+      "source_commit": "3b59f0f34617cbcf12a43baddfeed7a1e668feb2",
+      "proposed_action": "restore only this missing regular file at its original absolute path; do not overwrite any existing path",
+      "git_blob": "a973e703a8b8610e13fc0eb635fe521d32041972"
+    },
+    {
+      "original_path": "/home/marketdev/.codex/worktrees/automatic-historical-retention/TwichUI-Market/compose.retention-activation.yaml",
+      "snapshot_path": "deploy/baselines/2026-11-21/overlays/21-compose.retention-activation.yaml",
+      "sha256": "e488062573302d6d839cf795eb4cc7a39e041662c38172c4768ffe3bf823f5b4",
+      "evidence": "missing original path; reconstructed from beta10 Git tree",
+      "source_commit": "3b59f0f34617cbcf12a43baddfeed7a1e668feb2",
+      "proposed_action": "restore only this missing regular file at its original absolute path; do not overwrite any existing path",
+      "git_blob": "20d4bd94bbc1dbb453c416b3146aaaf7571d05b3"
+    },
+    {
+      "original_path": "/home/marketdev/.codex/worktrees/backup-management-retention/TwichUI-Market/compose.backup-management.yaml",
+      "snapshot_path": "deploy/baselines/2026-11-21/overlays/25-compose.backup-management.yaml",
+      "sha256": "19392027add62af3d8a4fd9d5a9c524c193c9b1c469b4aab63776bffadef93bb",
+      "evidence": "missing original path; reconstructed from beta10 Git tree",
+      "source_commit": "3b59f0f34617cbcf12a43baddfeed7a1e668feb2",
+      "proposed_action": "restore only this missing regular file at its original absolute path; do not overwrite any existing path",
+      "git_blob": "6fb1a1a775b2bd1090e4eba29b17bcc2fc786a5e"
+    },
+    {
+      "original_path": "/home/marketdev/.codex/worktrees/backup-management-retention/TwichUI-Market/compose.backup-review-images.yaml",
+      "snapshot_path": "deploy/baselines/2026-11-21/overlays/26-compose.backup-review-images.yaml",
+      "sha256": "4ee22ffb9d85cec1caa2125fa92bba111ad784248d65552f02c88ee30f442103",
+      "evidence": "missing original path; reconstructed from beta10 Git tree",
+      "source_commit": "3b59f0f34617cbcf12a43baddfeed7a1e668feb2",
+      "proposed_action": "restore only this missing regular file at its original absolute path; do not overwrite any existing path",
+      "git_blob": "2c5d2e9aa3a93f5ffb70880b85e21aa4574b961c"
+    }
+  ]
+}
