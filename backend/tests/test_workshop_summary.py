@@ -223,6 +223,10 @@ def test_real_scoped_companion_access_can_read_only_summary_routes(source, owner
         assert client.get(path).status_code == 403
     assert client.post('/api/v1/devices', json={'name':'forbidden'}).status_code == 403
     assert client.get(f'/api/v1/workshop/markets/{mid}/summary/'+'f'*64+'/parts/64').status_code == 403
+    split, _, _ = download(source, 3)
+    bucket = split['history_partitions'][0]['bucket']
+    assert client.get(f"/api/v1/workshop/markets/{mid}/summary/{split['generation_id']}/history/{bucket}").status_code == 200
+    assert client.get(f"/api/v1/workshop/markets/{mid}/summary/{split['generation_id']}/history/64").status_code == 403
 
 
 def test_bounded_projection_uses_shorter_retry_without_changing_cold_derivation(source,monkeypatch):
@@ -257,7 +261,7 @@ def test_negotiated_history_carries_actual_closes_and_preserves_legacy(source,da
     assert response.status_code==304
     again,again_rows,_=download(source)
     assert again==legacy and again_rows==old_rows
-    assert client.get(f'/api/v1/workshop/markets/{mid}/summary?contract_version=3').status_code==422
+    assert client.get(f'/api/v1/workshop/markets/{mid}/summary?contract_version=4').status_code==422
 
 
 def test_history_before_source_coverage_is_unknown_and_not_zero_supply(source,database):
@@ -278,3 +282,50 @@ def test_history_sealing_refuses_rehashed_missing_or_invented_daily_evidence(sou
     for change in [lambda p:p.pop(),lambda p:p.append([0,'120','120',10]),lambda p:p.__setitem__(0,[0,'0','120',10]),lambda p:p.__setitem__(0,[3,None,None,0]),lambda p:p.__setitem__(0,[True,None,None,10])]:
         bad=copy.deepcopy(row);change(bad[13])
         with pytest.raises(ValueError):summary.seal(metadata,[bad],2)
+
+
+def test_split_current_is_exact_history_projection_and_legacy_remains_frozen(source):
+    old, rich, _ = download(source, 2)
+    manifest, current, etag = download(source, 3)
+    assert manifest['schema_version'] == manifest['contract_version'] == 3
+    assert manifest['observations'] == old['observations']
+    assert manifest['history_partitions'] == old['partitions']
+    assert manifest['columns'] == summary.COLUMNS
+    assert current == {k: r[:13] for k, r in rich.items()}
+    assert len({k[1] for k in current if k[0] == 2589}) == 2
+    client, mid, *_ = source
+    path = f"/api/v1/workshop/markets/{mid}/summary/{manifest['generation_id']}"
+    for history, p in zip(manifest['history_partitions'], manifest['partitions']):
+        assert history['bucket'] == p['bucket'] and history['record_count'] == p['record_count']
+        response = client.get(f"{path}/history/{p['bucket']}")
+        assert response.status_code == 200
+        assert len(response.content) == history['bytes']
+        assert hashlib.sha256(response.content).hexdigest() == history['sha256']
+        assert hashlib.sha256(summary.canonical([r[:13] for r in response.json()])).hexdigest() == p['sha256']
+    assert client.get(f"/api/v1/workshop/markets/{mid}/summary", params={'contract_version':3},
+                      headers={'If-None-Match':etag}).status_code == 304
+    assert client.get(f"/api/v1/workshop/markets/{mid}/summary/{old['generation_id']}/history/29").status_code == 410
+    again, again_rich, _ = download(source, 2)
+    assert (again, again_rich) == (old, rich)
+    default, _, _ = download(source)
+    assert default['contract_version'] == 1
+
+
+def test_split_preparation_is_bounded_and_history_routes_keep_authentication(source, monkeypatch):
+    monkeypatch.setattr(summary, 'PROJECTION_BATCH', 1)
+    client, mid, *_ = source
+    path = f'/api/v1/workshop/markets/{mid}/summary'
+    for _ in range(20):
+        r = client.get(path, params={'contract_version':3})
+        assert r.status_code in (200, 202)
+        if r.status_code == 200:
+            h = r.json()['manifest']
+            assert sum(p['record_count'] for p in h['partitions']) == 3
+            assert sum(p['record_count'] for p in h['history_partitions']) == 3
+            break
+    else:
+        raise AssertionError('split generation did not atomically finish')
+    assert client.get(f"{path}/{h['generation_id']}/history/64").status_code == 422
+    client.cookies.clear()
+    client.headers.pop('Authorization')
+    assert client.get(f"{path}/{h['generation_id']}/history/0").status_code == 401
