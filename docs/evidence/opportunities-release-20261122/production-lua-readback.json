@@ -1,0 +1,17 @@
+{
+  "chart_points": 9,
+  "contract_version": 3,
+  "current_partition_loads": 64,
+  "declared_exact_variants": 30303,
+  "enumerated_item_ids": 6712,
+  "generation": "a76befe8a8a897fe4d6339dc47b19c35924781f6637e67f0c20dcd1f04e9f7a0",
+  "history_loads_after_chart": 1,
+  "history_loads_before_chart": 0,
+  "missing_prices_settled": true,
+  "mode": "unchanged production Lua reader on genuine native-staged data; not actual Forever",
+  "real_game": false,
+  "synthetic": false,
+  "verified_item": 2589,
+  "verified_recent_copper": 26,
+  "verified_variant": "684434823a7f7a1797ecda68d5bb5abef5ea13a18aefa5a26cccff8e1b813d51"
+}

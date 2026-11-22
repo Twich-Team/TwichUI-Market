@@ -1,6 +1,6 @@
 # Market Opportunities operational release checkpoint
 
-**Backend recovery/image/preflight gates pass; production replacement has not yet run. Companion publication awaits final exact-artifact owner approval.**
+**Historical preparation checkpoint. Superseded by the [deployed backend and signed-candidate acceptance report](opportunities-release-acceptance-20261122.md).** The statements below describe the preparation boundary before API replacement; use the acceptance report for current operation and remaining approval.
 Frozen Market source remains `29fa95b569cc3834ed2c17490d251a2a4ac6b4f5`;
 addon main remains `8e25ceea2a542a3e67b1dd586c3b4cdd00a70374`, with coordinated
 reader pin `d93d253ac31b89e953a8853ee2ce7b25adaedcc7`. Restoration authority is

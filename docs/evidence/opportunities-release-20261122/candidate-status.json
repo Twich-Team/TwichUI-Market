@@ -1,5 +1,5 @@
 {
-  "status": "signed original candidate; publication awaits exact-artifact owner approval; backend awaits actual restore",
+  "status": "backend deployed and verified; signed original Companion candidate awaits exact-artifact owner publication approval",
   "payload_commit": "b39a35c01676b50dbc159f4793e0ad547676acfc",
   "proof_commit": "fa9f494ec9ae822f305dd406a5174942d503776c",
   "pr": 45,

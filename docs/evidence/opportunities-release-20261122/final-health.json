@@ -1,0 +1,48 @@
+{
+  "at": "2026-11-22T15:02:57.695087+00:00",
+  "database": {
+    "markets": [
+      {
+        "id": 1,
+        "enabled": false,
+        "house_id": 110,
+        "interval_seconds": 300,
+        "last_success": "2026-11-14 15:14:21.190053+00:00",
+        "failures": 0
+      },
+      {
+        "id": 2,
+        "enabled": true,
+        "house_id": 114,
+        "interval_seconds": 300,
+        "last_success": "2026-11-22 15:00:48.539694+00:00",
+        "failures": 0
+      }
+    ],
+    "feeds": [
+      {
+        "source_kind": "auctions",
+        "last_check": "2026-11-22 15:00:48.539694+00:00",
+        "last_success": "2026-11-22 15:00:48.539694+00:00",
+        "failures": 0
+      },
+      {
+        "source_kind": "commodities",
+        "last_check": "2026-11-22 15:00:48.539694+00:00",
+        "last_success": "2026-11-22 15:00:48.539694+00:00",
+        "failures": 0
+      }
+    ],
+    "schema": [
+      {
+        "version_num": "retention_20261118"
+      }
+    ],
+    "retention_batches": [
+      {
+        "count": 0
+      }
+    ]
+  },
+  "public_https_health": 200
+}

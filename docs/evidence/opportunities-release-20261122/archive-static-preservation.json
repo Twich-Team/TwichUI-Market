@@ -1,0 +1,51 @@
+{
+  "metadata_providers": {
+    "archive": {
+      "rows": 4,
+      "fields": [
+        "provider",
+        "enabled",
+        "automatic",
+        "hourly_budget",
+        "daily_budget",
+        "credential",
+        "credential_key_id",
+        "expires_at",
+        "credential_status",
+        "pending_credential",
+        "pending_key_id",
+        "pending_expires_at",
+        "validation_requested",
+        "validation_revision",
+        "rate_config"
+      ],
+      "sha256": "5335f9400f6d3fc8e3618e06b96b1ae227b45ae26bda0442d0c8b24689dd39f8",
+      "max_id": null
+    },
+    "actual_rows": 4,
+    "actual_sha256": "5335f9400f6d3fc8e3618e06b96b1ae227b45ae26bda0442d0c8b24689dd39f8",
+    "identical": true
+  },
+  "credentials": {
+    "archive": {
+      "rows": 394,
+      "fields": [
+        "id",
+        "user_id",
+        "token_hash",
+        "kind",
+        "name",
+        "csrf_hash",
+        "created_at",
+        "expires_at",
+        "audience",
+        "companion_device_id"
+      ],
+      "sha256": "65fce7ab0f34a77f925e20a6bb21154d8bfa7f0a3f5ecc99e76588065a08c998",
+      "max_id": 394
+    },
+    "actual_rows": 394,
+    "actual_sha256": "65fce7ab0f34a77f925e20a6bb21154d8bfa7f0a3f5ecc99e76588065a08c998",
+    "identical": true
+  }
+}

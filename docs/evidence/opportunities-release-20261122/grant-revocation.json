@@ -1,0 +1,10 @@
+{
+  "grant_id": 398,
+  "kind": "device",
+  "revoked_only_task_grant": true,
+  "independent_trusted_https_after_revocation": {
+    "/api/v1/companion/bootstrap": 401,
+    "/api/v1/workshop/markets/2/summary?contract_version=3": 401
+  },
+  "at": "2026-11-22T14:57:33.771971+00:00"
+}

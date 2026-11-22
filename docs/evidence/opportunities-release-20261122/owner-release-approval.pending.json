@@ -1,0 +1,18 @@
+{
+  "schema_version": 2,
+  "scope": "private-beta",
+  "owner_statement": "PENDING: no exact-artifact publication consent recorded",
+  "owner_approved_publication": false,
+  "owner_approved_deployment": false,
+  "source_commit": "b39a35c01676b50dbc159f4793e0ad547676acfc",
+  "visual_approval_commit": "8dfa5116397403bb93e90160e8706285f272f64f",
+  "version": "2.0.0-beta.11",
+  "installer_sha256": "84dacad168dc212d8dda7d06f15ddc5a918f170ba1af0e9ece4e6373cd883129",
+  "windows_run_id": 45027451323,
+  "signed_update_run_id": 45028815202,
+  "updater_public_key_sha256": "5794736c840c7c09a49396e60cd569ff6b5f24f872eb0318ed95d55c16616ecf",
+  "tray_actions_verified": false,
+  "acknowledges_unverified_tray": false,
+  "actual_owner_pc_installation_observed": false,
+  "native_forever_execution_observed": false
+}

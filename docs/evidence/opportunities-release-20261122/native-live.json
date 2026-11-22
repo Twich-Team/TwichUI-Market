@@ -1,0 +1,16 @@
+{
+  "mode": "Linux source-qualified core readback/staging; not installed Windows publication",
+  "synthetic": false,
+  "real_game": false,
+  "generation": "a76befe8a8a897fe4d6339dc47b19c35924781f6637e67f0c20dcd1f04e9f7a0",
+  "contract_version": 3,
+  "records": 30303,
+  "source_observation": {
+    "observation_id": "2010",
+    "observed_at": "2026-11-22T14:50:43.349755Z",
+    "scope_complete": true
+  },
+  "download_bytes": 12182957,
+  "requests": 129,
+  "staged_projection_parts": 128
+}

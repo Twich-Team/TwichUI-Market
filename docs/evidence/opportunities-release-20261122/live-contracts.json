@@ -1,0 +1,75 @@
+{
+  "started": "2026-11-22T14:47:50.406449+00:00",
+  "origin": "https://market.twich.gg",
+  "account_id": 1,
+  "market_id": 2,
+  "synthetic": false,
+  "physical_game": false,
+  "versions": [
+    {
+      "contract_version": 1,
+      "generation": "6a3d18ca645b86bd5be180b7e8b2e92fff8fabe1c8e8d4f0bc84217f86c7fe43",
+      "records": 30303,
+      "parts": 64,
+      "history_parts": 0,
+      "current_bytes": 3548956,
+      "history_bytes": 0,
+      "source_observation": {
+        "observation_id": "2009",
+        "observed_at": "2026-11-22T14:45:40.766253Z",
+        "scope_complete": true
+      },
+      "observed_dates": 0,
+      "etag": "\"6a3d18ca645b86bd5be180b7e8b2e92fff8fabe1c8e8d4f0bc84217f86c7fe43\"",
+      "schema_hash_canonical_identity_size_checks": true,
+      "authenticated_bound_304": true,
+      "anonymous_401_including_conditional": true,
+      "preparation_responses": 0
+    },
+    {
+      "contract_version": 2,
+      "generation": "698cc82842d0660c8417e95eea74b31283bf6bd1246b5ba7dfa49d3cfe96b45b",
+      "records": 30303,
+      "parts": 64,
+      "history_parts": 0,
+      "current_bytes": 8615353,
+      "history_bytes": 0,
+      "source_observation": {
+        "observation_id": "2009",
+        "observed_at": "2026-11-22T14:45:40.766253Z",
+        "scope_complete": true
+      },
+      "observed_dates": 9,
+      "etag": "\"698cc82842d0660c8417e95eea74b31283bf6bd1246b5ba7dfa49d3cfe96b45b\"",
+      "schema_hash_canonical_identity_size_checks": true,
+      "authenticated_bound_304": true,
+      "anonymous_401_including_conditional": true,
+      "preparation_responses": 30
+    },
+    {
+      "contract_version": 3,
+      "generation": "d0d273d20b02f48562050b4b3cac08a9b4be5a97ba307676aedfc14e4841947a",
+      "records": 30303,
+      "parts": 64,
+      "history_parts": 64,
+      "current_bytes": 3548956,
+      "history_bytes": 8615353,
+      "source_observation": {
+        "observation_id": "2009",
+        "observed_at": "2026-11-22T14:45:40.766253Z",
+        "scope_complete": true
+      },
+      "observed_dates": 9,
+      "schema_hash_canonical_identity_size_checks": true,
+      "authenticated_bound_summary_304": true,
+      "anonymous_401_including_conditional": true,
+      "wrong_contract_etag_response": "202 while a new observation prepares; never false 304",
+      "part_semantics": "immutable content 200; conditional 304 applies to summary only"
+    }
+  ],
+  "default_contract_remains_1": true,
+  "operator_initial_assumptions_corrected": [
+    "part routes preserve reviewed 200 semantics without conditional handling",
+    "wrong-contract validator may legitimately return 202 for a new source, not only 200"
+  ]
+}
