@@ -115,12 +115,21 @@ def main():
    assert not any('/archive' in r['path'] for r in requests)
    paths=['backend/market/workshop_summary.py','backend/market/bridge_api.py','desktop/core/src/workshop_summary.rs','desktop/core/src/client.rs','contracts/workshop-summary/v1/manifest.schema.json','contracts/workshop-summary/v1/row.schema.json','contracts/workshop-summary/v2/manifest.schema.json','contracts/workshop-summary/v2/row.schema.json','contracts/workshop-summary/v2/addon-source.txt']
    report={'credential_kind':'companion','synthetic':True,'real_game':False,'platform':platform.platform(),'mode':'actual Windows publication'if a.publish else'Linux native staging; not installed Windows acceptance','variants':a.variants,'native_calls':calls,'http_requests':requests,'total_seconds':time.perf_counter()-start,'mandatory_archive':False,'no_change_http_304':True,'no_change_game_mtime_preserved':True if a.publish else None,'production_lua_market_passed':lua is not None and lua.returncode==0,'native_binary_sha256':hashlib.sha256(a.rust_client.read_bytes()).hexdigest(),'source_sha256':{q:hashlib.sha256((ROOT/q).read_bytes()).hexdigest()for q in paths},'game_consumption':'pending actual Forever','paired_addon_commit':(ROOT/'contracts/workshop-summary/v2/addon-source.txt').read_text().strip(),'addon_source_sha256':{q:hashlib.sha256((a.addon_root/q).read_bytes()).hexdigest()for q in ['TwichUI_Workshop/Summary.lua','TwichUI_Workshop/SummarySchema.lua','TwichUI_Workshop/BridgeCodec.lua','TwichUI_Workshop/Bridge.lua','TwichUI_Workshop/auction/ViewMarket.lua','tests/test_workshop_auction_market_summary.lua']}}
+   report['declared_addon_commit']=(ROOT/('contracts/workshop-summary/v3/addon-source.txt'if a.current else'contracts/workshop-summary/v2/addon-source.txt')).read_text().strip()
+   if (a.addon_root/'.git').exists():
+    report['paired_addon_commit']=subprocess.check_output(['git','rev-parse','HEAD'],cwd=a.addon_root,text=True).strip()
+    report['paired_addon_dirty']=bool(subprocess.check_output(['git','status','--porcelain'],cwd=a.addon_root,text=True))
    if a.current:
     report['negotiated_contract']=3
     report['paired_addon_commit']=subprocess.check_output(['git','rev-parse','HEAD'],cwd=a.addon_root,text=True).strip()
     report['paired_addon_dirty']=bool(subprocess.check_output(['git','status','--porcelain'],cwd=a.addon_root,text=True))
-    for q in ['contracts/workshop-summary/v3/manifest.schema.json','desktop/core/examples/workshop_smoke.rs']:
+    pin='contracts/workshop-summary/v3/addon-source.txt'
+    assert report['paired_addon_commit']==(ROOT/pin).read_text().strip(),'current acceptance must use the declared merged addon'
+    assert not report['paired_addon_dirty'],'current acceptance requires an unchanged addon checkout'
+    for q in [pin,'contracts/workshop-summary/v3/manifest.schema.json','contracts/workshop-summary/v3/row.schema.json','desktop/core/examples/workshop_smoke.rs']:
      report['source_sha256'][q]=hashlib.sha256((ROOT/q).read_bytes()).hexdigest()
+    for q in ['TwichUI_Workshop/Pricing.lua','TwichUI_Workshop/Estimate.lua','TwichUI_Workshop/OpportunityEngine.lua','TwichUI_Workshop/Session.lua','TwichUI_Workshop/MarketDelivery.json']:
+     report['addon_source_sha256'][q]=hashlib.sha256((a.addon_root/q).read_bytes()).hexdigest()
    (a.out/'evidence.json').write_text(json.dumps(report,indent=2)+'\n')
    print(json.dumps({'synthetic':True,'variants':a.variants,'native_calls':len(calls),'http_requests':len(requests),'seconds':report['total_seconds'],'production_lua_market_passed':report['production_lua_market_passed'],'mode':report['mode']}))
   finally:

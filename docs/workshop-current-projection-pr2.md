@@ -100,3 +100,68 @@ inferred. Large Opportunities redraws remain a PR3 concern.
 No production/live service, signed build, updater/publication, game install or
 SavedVariables change occurred. Owner-directed client latency/frame/memory and
 physical PC acceptance remain. Stop at coordinated draft review.
+
+## Main integration authorization and evidence
+
+The later owner request authorizes verified development merges of the performance
+program, superseding the draft-only stop above. It still prohibits deployment,
+signing, publication, release tagging and production changes in this session.
+Producer #43 merged as `4df46eee3626dc9f6e8e82420ce293da9492439b`.
+
+The earlier failed sync runs remain historical evidence. Producer run
+[44970968454 attempt 1](https://github.com/Twich-Team/TwichUI-Market/actions/runs/44970968454/attempts/1)
+failed on the frozen baseline before candidate delivery: repeated Windows
+`ConnectionResetError [WinError 10054]`, ending with
+`RuntimeError: Native delivery fixture failed: Error: Network`.
+One controlled rerun tested the transient local-HTTP-reset hypothesis with
+unchanged source, assertions and retry policy.
+[Attempt 2](https://github.com/Twich-Team/TwichUI-Market/actions/runs/44970968454/attempts/2)
+passed (job `137116049118`). This supports a transient fixture/transport failure;
+it does not establish a production synchronization defect or erase the failed run.
+
+On the main-rebased Companion head `5a35aac`, the canonical Backend, website and
+Windows publication workflows passed, but comparison
+[44994457028](https://github.com/Twich-Team/TwichUI-Market/actions/runs/44994457028)
+failed on baseline repeat 1 before the candidate. The server remained alive with
+no in-flight request; the last summary returned 202 / Retry-After 5, followed by
+`Error: Network` and repeated WinError 10054. The prior baseline repeat completed.
+[Bounded failure evidence](evidence/v2-market-integration/sync-baseline-failure.json)
+preserves stage, source, counts and final requests. The failure remains a merge
+gate until the final coordinated head passes the affected comparison. No
+transport, assertion, timeout or retry-policy change is made to obtain a pass.
+
+Final coordinated acceptance pins the actual merged addon in
+`contracts/workshop-summary/v3/addon-source.txt` and both current-reader Windows
+checkouts. It records the actual clean checkout and reader/engine/capability file
+hashes. Legacy v1/v2 pins remain unchanged for explicit older-consumer fixtures.
+The same genuine Windows contract-2 publication is additionally consumed by the
+merged addon, alongside contract-3 current/history lazy-consumption assertions.
+These source integrations require the canonical Backend, Private website and
+Windows workflows plus the affected sync-performance comparison; final run and
+main identities are in the PR integration handoff.
+
+The source version still identifies already-published Companion beta.10. No new
+signed artifact exists from this integration. A future authorized release must
+prepare a distinct approved version, freeze exact-source Windows artifacts and
+complete genuine original-byte signed-SDK and owner publication gates. A green
+pending-only signed-update job does not certify a newly signed installer.
+
+
+Coordinated consumer pin: merged addon runtime main
+`d93d253ac31b89e953a8853ee2ce7b25adaedcc7` (PR3 #102). Audit #97 is reconciled
+as documentation only; its later main tip must retain identical runtime/tooling
+bytes. The immutable reader pin deliberately identifies the merged runtime,
+not a moving branch. Final handoff verifies equality with the final main tip.
+
+[Native compatibility evidence](evidence/v2-market-integration/native-compatibility.json)
+records actual authenticated synthetic server → native staging → production Lua
+for new/new contract 3, frozen older Companion core/new addon contract 2, and
+new Companion core/older addon contract 2. The legacy native runtime is byte-equal
+to released beta.10's core source; current runtime matches #44. Both projections
+are validated before stage assembly; current Lua queries load zero history and
+an explicit chart loads one history partition. These Linux CLI probes do not
+prove installed Windows atomic publication or real-game acceptance; canonical
+Windows CI performs the separate genuine publisher/artifact-consumer checks.
+The initial reverse probe with an incorrect shared Cargo alias is discarded;
+accepted current probes use a distinct verified executable and assert contract 3
+before testing legacy negotiation. No installer release identity is inferred.
