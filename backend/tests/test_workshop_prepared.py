@@ -8,7 +8,7 @@ import pytest
 import jsonschema
 from market import workshop_prepared as prepared, workshop_summary as summary
 from market.models import BridgeGeneration, BridgeRecord
-from test_workshop_summary import source, download, bridge
+from test_workshop_summary import source, download, bridge, contract_bundle
 
 
 def synthetic():

@@ -34,3 +34,20 @@ exact source/encoding/hash boundary and explicit 4/32 MiB prepared bounds.
 Oversized prepared projections retain the complete legacy format without pruning.
 Actual Forever latency remains an owner-directed acceptance requirement, not
 an offline timing claim.
+
+## First hosted verification and correction
+
+At `074abfc`, the Backend run `45057534987` passed 740 tests and failed seven
+new prepared tests because their module did not import the existing autouse
+`contract_bundle` fixture. Installed-package CI correctly refuses to discover
+contracts from an arbitrary working directory. The fix imports that existing
+fixture; production contract discovery is unchanged. An explicit missing-root
+local reproduction fails before the fix and passes afterward. Full failed logs
+are retained in the task workspace; no failed receipt is called passing.
+
+Windows build/picker/signed-update verification and existing consumer acceptance
+passed. The separate performance run `45057534933` failed in **baseline repeat 1**
+with native `Error: Network`, after actual 202 preparation responses; the candidate
+automatic-publication comparison did not complete. Its credential-free failure
+artifact is `14768591665`. This is not a prepared-format performance result or
+a passing baseline. Preserve the failure and the separate release gate.
