@@ -140,3 +140,12 @@ existing signed-updater verification. The earlier Windows307 UI failure remains
 in the record; the later installed run passes without altering UI/runtime tests.
 The original legacy/current consumer job and sync performance status are tracked
 separately until complete; no new signed artifact is produced by these checks.
+
+Compatibility acceptance now also builds the exact pre-prepared Market main
+`e2882dd822b356ffa081efebbff167827f9bf364` in Windows, pairs it with the pinned new
+addon, and requires root version 1, no prepared request/files, original 64/64
+projections, correct prices/history/Opportunities and unchanged-data reuse. The
+existing installed Windows legacy-addon checks remain intact. A local native
+ordinary-admission legacy-file control passes with 129 fabricated variants/60
+days; the old-binary Windows result is separately recorded when CI completes.
+No runtime or protocol changes accompany this compatibility harness.

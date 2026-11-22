@@ -13,8 +13,14 @@ def main():
  p.add_argument('--current',action='store_true',help='Explicit split-projection paired-addon acceptance; no live service')
  p.add_argument('--prepared',type=int,choices=[16,32],help='Opt-in actual prepared publication with the pinned Stage C addon')
  p.add_argument('--test-driver',action='store_true',help='Linux only: --rust-client is the cfg(test) native publisher executable')
+ p.add_argument('--legacy-native',action='store_true',help='Windows compatibility: pinned old native binary with the new prepared-capable addon')
+ p.add_argument('--legacy-native-source-root',type=Path,help='Exact frozen source built into the legacy compatibility binary')
+ p.add_argument('--ordinary-admission',action='store_true',help='Fabricated records with ordinary admission flags, for legacy Pricing acceptance')
  p.add_argument('--days',type=int,choices=[2,60],default=2)
  a=p.parse_args()
+ if a.legacy_native and not a.legacy_native_source_root:p.error('--legacy-native requires exact --legacy-native-source-root')
+ if a.legacy_native and not(a.publish and a.current and not a.prepared):p.error('--legacy-native requires Windows --publish --current and no prepared layout')
+ if a.ordinary_admission and not(a.publish or a.test_driver):p.error('ordinary admission requires the actual or cfg(test) publisher')
  if a.prepared and not a.current:p.error('--prepared requires --current')
  if a.prepared and not(a.publish or a.test_driver):p.error('--prepared requires the actual Windows publisher or Unix cfg(test) publisher')
  if a.test_driver and (os.name=='nt' or a.publish):p.error('Unix ignored-test driver only; Windows uses actual publication')
@@ -46,8 +52,8 @@ def main():
    proof=json.dumps({'region':'us','house_id':114,'ruleset':'Normal','faction':'Horde','upstream_receipt':'synthetic','independent_observation':'synthetic','independent_source_url':'https://example.invalid/fixture'})
    db.add(PlayerMarketMapping(region='us',ruleset='Normal',faction='Horde',house_id=114,source_kind='auctions',transport_ruleset_id=1,confidence='verified',evidence=proof,evidence_hash=hashlib.sha256(proof.encode()).hexdigest(),verified_at=at))
    for day in range(a.days-1,0,-1):
-    ingest(db,mid,book(100,True),request_key=f'summary-e2e-previous-{day}',retrieved_at=at-timedelta(days=day),synthetic=not bool(a.prepared))
-   ingest(db,mid,book(120),request_key='summary-e2e-current',retrieved_at=at,synthetic=not bool(a.prepared))
+    ingest(db,mid,book(100,True),request_key=f'summary-e2e-previous-{day}',retrieved_at=at-timedelta(days=day),synthetic=not bool(a.prepared or a.legacy_native or a.ordinary_admission))
+   ingest(db,mid,book(120),request_key='summary-e2e-current',retrieved_at=at,synthetic=not bool(a.prepared or a.legacy_native or a.ordinary_admission))
   gc.collect();requests=[]
   @app.middleware('http')
   async def measure(request,call_next):
@@ -130,10 +136,11 @@ def main():
    if a.lua_cpath:lua_env['LUA_CPATH']=a.lua_cpath
    lua=None
    if not a.skip_lua:
-    lua_test='test_workshop_prepared_artifact.lua'if a.prepared else 'bench_workshop_summary.lua'if a.current else'test_workshop_auction_market_summary.lua'
-    if a.prepared:lua_env['WORKSHOP_PREPARED_EXPECTED_LAYOUT']=str(a.prepared)
+    prepared_consumer=bool(a.prepared or a.legacy_native or a.ordinary_admission)
+    lua_test='test_workshop_prepared_artifact.lua'if prepared_consumer else 'bench_workshop_summary.lua'if a.current else'test_workshop_auction_market_summary.lua'
+    if prepared_consumer:lua_env['WORKSHOP_PREPARED_EXPECTED_LAYOUT']=str(a.prepared or 0)
     lua=subprocess.run([a.lua,'-e','require("bit"); ROOT="../!!!TwichUI/"; REPO="../"; TESTS="./"',
-        str(ROOT/'scripts'/lua_test)if a.prepared else lua_test],cwd=a.addon_root/'tests',env=lua_env,text=True,capture_output=True,timeout=300)
+        str(ROOT/'scripts'/lua_test)if prepared_consumer else lua_test],cwd=a.addon_root/'tests',env=lua_env,text=True,capture_output=True,timeout=300)
     (a.out/'production-lua.log').write_text(lua.stdout+lua.stderr)
     if lua.returncode:raise RuntimeError('Production Workshop Market consumer failed; see production-lua.log')
    assert any(r['path'].endswith('/summary')and r['status']==200 for r in requests)
@@ -149,7 +156,7 @@ def main():
     report['paired_addon_commit']=subprocess.check_output(['git','rev-parse','HEAD'],cwd=a.addon_root,text=True).strip()
     report['paired_addon_dirty']=bool(subprocess.check_output(['git','status','--porcelain'],cwd=a.addon_root,text=True))
     pin='contracts/workshop-summary/v3/addon-source.txt'
-    if a.prepared:
+    if a.prepared or a.legacy_native or a.ordinary_admission:
      pin='contracts/workshop-prepared/v1/addon-source.txt'
      assert report['paired_addon_commit']==(ROOT/pin).read_text().strip(),'prepared acceptance must use the declared exact addon'
     else:assert report['paired_addon_commit']==(ROOT/pin).read_text().strip(),'current acceptance must use the declared merged addon'
@@ -169,6 +176,16 @@ def main():
      report['source_sha256'][q]=hashlib.sha256((ROOT/q).read_bytes()).hexdigest()
     for q in ['TwichUI_Workshop/Prepared.lua','tests/fixtures/workshop_prepared_v1/synthetic.json']:
      report['addon_source_sha256'][q]=hashlib.sha256((a.addon_root/q).read_bytes()).hexdigest()
+   if a.legacy_native:
+    legacy=a.legacy_native_source_root.resolve();revision=subprocess.check_output(['git','rev-parse','HEAD'],cwd=legacy,text=True).strip()
+    assert revision=='e2882dd822b356ffa081efebbff167827f9bf364'and not subprocess.check_output(['git','status','--porcelain'],cwd=legacy,text=True),'legacy source must be exact and unchanged'
+    report['legacy_native_source_commit']=revision
+    report['legacy_native_source_sha256']={q:hashlib.sha256((legacy/q).read_bytes()).hexdigest()for q in ['desktop/core/src/workshop_summary.rs','desktop/core/src/client.rs','desktop/core/src/installation.rs','desktop/core/Cargo.toml','desktop/Cargo.lock','desktop/core/examples/workshop_smoke.rs']}
+   if a.legacy_native or a.ordinary_admission:
+    assert not any('/prepared/'in r['path']for r in requests),'legacy compatibility unexpectedly negotiated prepared format'
+    assert not list(destination.glob('TwichUI_MarketCurrentPart*'))
+    report.update(legacy_native_with_new_addon=a.legacy_native,ordinary_admission_flags_on_fabricated_data=True,prepared_layout=None)
+    report['declared_addon_commit']=(ROOT/'contracts/workshop-prepared/v1/addon-source.txt').read_text().strip()
    (a.out/'evidence.json').write_text(json.dumps(report,indent=2)+'\n')
    print(json.dumps({'synthetic':True,'variants':a.variants,'native_calls':len(calls),'http_requests':len(requests),'seconds':report['total_seconds'],'production_lua_market_passed':report['production_lua_market_passed'],'mode':report['mode']}))
   finally:

@@ -239,6 +239,20 @@ jobs:
         run: python scripts/verify-workshop-e2e.py --rust-client desktop/target/debug/examples/workshop_smoke.exe --addon-root prepared-addon --current --prepared 16 --variants 129 --days 60 --publish --skip-lua --out artifacts/prepared/16
       - name: Actual native prepared 32 publication (60 synthetic days)
         run: python scripts/verify-workshop-e2e.py --rust-client desktop/target/debug/examples/workshop_smoke.exe --addon-root prepared-addon --current --prepared 32 --variants 129 --days 60 --publish --skip-lua --out artifacts/prepared/32
+      - name: Checkout exact old Companion source for compatibility
+        uses: actions/checkout@v4
+        with:
+          repository: Twich-Team/TwichUI-Market
+          ref: e2882dd822b356ffa081efebbff167827f9bf364
+          path: legacy-market
+          persist-credentials: false
+      - name: Old Companion with prepared-capable addon must stay on Contract 3 legacy files
+        shell: pwsh
+        run: |
+          cargo build --manifest-path legacy-market/desktop/Cargo.toml --target-dir desktop/target --example workshop_smoke --locked
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python scripts/verify-workshop-e2e.py --rust-client desktop/target/debug/examples/workshop_smoke.exe --addon-root prepared-addon --current --legacy-native --legacy-native-source-root legacy-market --variants 129 --days 60 --publish --skip-lua --out artifacts/prepared/legacy-native
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -268,9 +282,10 @@ jobs:
         working-directory: prepared-addon/tests
         shell: bash
         run: |
-          for layout in 16 32; do
-            export WORKSHOP_SUMMARY_ARTIFACT="$GITHUB_WORKSPACE/prepared-publication/$layout/publication/TwichUI_MarketData/Data.lua"
-            export WORKSHOP_SUMMARY_PARTS="$GITHUB_WORKSPACE/prepared-publication/$layout/publication"
+          for fixture in 16 32 legacy-native; do
+            layout="$fixture"; if [ "$fixture" = legacy-native ]; then layout=0; fi
+            export WORKSHOP_SUMMARY_ARTIFACT="$GITHUB_WORKSPACE/prepared-publication/$fixture/publication/TwichUI_MarketData/Data.lua"
+            export WORKSHOP_SUMMARY_PARTS="$GITHUB_WORKSPACE/prepared-publication/$fixture/publication"
             export WORKSHOP_PREPARED_EXPECTED_LAYOUT="$layout"
             lua5.1 -e 'require("bit"); ROOT="../!!!TwichUI/"; REPO="../"; TESTS="./"' "$GITHUB_WORKSPACE/scripts/test_workshop_prepared_artifact.lua"
           done
