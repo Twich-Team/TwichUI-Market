@@ -22,7 +22,7 @@ fn main()->Result<(),Box<dyn std::error::Error>> {
    let root=out.join("TwichUI_MarketData");std::fs::create_dir_all(&root)?;
    let receipt=json!({"schema_version":1,"generation_id":bundle.manifest["generation_id"],"desktop_build":env!("CARGO_PKG_VERSION"),"completed_at":chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Micros,true)});
    std::fs::write(root.join("Data.lua"),summary::root_artifact(&bundle.manifest,"A",&receipt)?)?;
-   for (&bucket,raw) in &bundle.parts {let dir=out.join(format!("TwichUI_MarketPartA{bucket:02}"));std::fs::create_dir_all(&dir)?;std::fs::write(dir.join("Data.lua"),summary::part_artifact("A",bucket,raw))?;}
+   for (&bucket,raw) in &bundle.parts {let dir=out.join(format!("TwichUI_Market{}PartA{:02}",if bucket>=64{"History"}else{""},bucket%64));std::fs::create_dir_all(&dir)?;std::fs::write(dir.join("Data.lua"),summary::part_artifact("A",bucket,raw))?;}
    Ok(json!({"ready":true,"manifest":bundle.manifest,"download_bytes":bytes,"requests":requests,"publication":out,"elapsed_ms":start.elapsed().as_secs_f64()*1000.}))
   }else{Err(Error::Invalid("summary acceptance action"))}
  })();
