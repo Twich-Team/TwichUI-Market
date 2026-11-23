@@ -221,7 +221,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: Twich-Team/TwichUI
-          ref: dd28236b30cb5504c18d38c30358e9643debbb42
+          ref: d2c2e2ae69fc250050fbd8e7a1aecdef642cc563
           path: prepared-addon
           persist-credentials: false
       - uses: dtolnay/rust-toolchain@stable
@@ -282,7 +282,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: Twich-Team/TwichUI
-          ref: dd28236b30cb5504c18d38c30358e9643debbb42
+          ref: d2c2e2ae69fc250050fbd8e7a1aecdef642cc563
           path: prepared-addon
           persist-credentials: false
       - uses: actions/download-artifact@v4
