@@ -1,7 +1,7 @@
 import json
 import pytest
 from market.feasibility import discover
-from market.ingest import normalize
+from market.ingest import MAX_LISTINGS, ListingCapacityExceeded, canonical, listing_digest, normalize
 
 
 class Client:
@@ -26,7 +26,24 @@ def test_discovery_detects_identical_ruleset_aliases_and_tests_conditionals():
 
 def test_discovery_and_listing_bounds_fail_closed():
     with pytest.raises(ValueError):list(discover('attacker.invalid',110,client=Client()))
-    with pytest.raises(ValueError,match='Too many listings'):normalize({'auctions':[{}]*150001},'auctions')
+    with pytest.raises(ListingCapacityExceeded,match='Too many listings'):
+        normalize({'auctions':[{}]*(MAX_LISTINGS+1)},'auctions')
+
+
+def test_large_auction_capacity_and_exact_incremental_content_hash():
+    import hashlib
+    auctions = [{'id': i+1, 'item': {'id': 25}, 'quantity': 2, 'buyout': 999}
+                for i in range(MAX_LISTINGS)]
+    rows = normalize({'auctions': auctions}, 'auctions')
+    assert len(rows) == MAX_LISTINGS > 150000
+    assert rows[0]['auction_id'] == 1 and rows[-1]['auction_id'] == MAX_LISTINGS
+    assert all(row['buyout'] == 999 and row['quantity'] == 2 for row in rows)
+    # Exact old digest equality preserves existing snapshot identity/idempotency.
+    for values in ([], rows[:3], rows[-3:], [dict(text='é\\n"', missing=None, flag=False)]):
+        assert listing_digest(values) == hashlib.sha256(canonical(values).encode()).hexdigest()
+    auctions[-1]['quantity'] = 0
+    with pytest.raises(ValueError, match='Invalid quantity'):
+        normalize({'auctions': auctions}, 'auctions')
 
 
 def test_captured_live_payload_excerpts_remain_normalizable():

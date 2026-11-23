@@ -118,6 +118,37 @@ def test_missing_304_capture_does_not_publish_empty(database):
         assert db.get(MarketFeed, (2, 'commodities')).etag is None
 
 
+def test_listing_capacity_is_actionable_and_keeps_last_good_and_backoff(database, monkeypatch):
+    import market.ingest as ingestion
+    at = configure(database)
+    assert collect_once(database, Client(), at=at)
+    with database() as db:
+        previous = db.get(Market, 2).last_success
+        capture = db.get(MarketFeed, (2, 'auctions')).capture_id
+    # Exercise the real bound without introducing a large database fixture.
+    monkeypatch.setattr(ingestion, 'MAX_LISTINGS', 3)
+    excessive = Client(auctions=[row(25, i, kind='auctions') for i in range(1, 5)])
+    assert collect_once(database, excessive, at=at+timedelta(seconds=300))
+    with database() as db:
+        feed = db.get(MarketFeed, (2, 'auctions'))
+        assert 'collector listing capacity' in feed.last_error
+        assert feed.capture_id == capture and feed.failures == 1
+        assert db.get(Market, 2).last_success == previous
+        assert db.scalar(select(func.count()).select_from(Observation)) == 1
+    not_due = Client()
+    assert not collect_once(database, not_due, at=at+timedelta(seconds=400))
+    assert not_due.calls == []
+    # A second failure extends feed backoff beyond the next ordinary market poll.
+    assert collect_once(database, excessive, at=at+timedelta(seconds=600))
+    with database() as db:
+        retry = db.get(MarketFeed, (2, 'auctions')).retry_after
+    deferred = Client()
+    assert collect_once(database, deferred, at=at+timedelta(seconds=900))
+    assert [call[0] for call in deferred.calls] == ['commodities']
+    with database() as db:
+        assert db.get(MarketFeed, (2, 'auctions')).retry_after == retry
+
+
 @pytest.mark.parametrize('overlap', ['listing', 'variant'])
 def test_cross_feed_overlap_fails_closed_and_retains_captures(database, overlap):
     at = configure(database)

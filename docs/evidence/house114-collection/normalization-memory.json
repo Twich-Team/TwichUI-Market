@@ -1,0 +1,24 @@
+{
+  "captured_response": {
+    "rows": 178402,
+    "max_listings": 200000,
+    "bytes": 17907298,
+    "content_hash": "b98df7f2c65311328d3ef3dccc8a7e1ec1142a28bad23e2a7da3fedf9dfc7c28",
+    "peak_rss_kib": 301544,
+    "seconds": 4.199467204001849,
+    "cgroup_peak": "295473152"
+  },
+  "synthetic_200000_boundary": {
+    "rows": 200000,
+    "max_listings": 200000,
+    "bytes": 20031194,
+    "content_hash": "864a763eaf3773ffb9cb0ec506e2898bc770bde1314a5bff70b659daa93c0c1e",
+    "peak_rss_kib": 322972,
+    "seconds": 4.685765562004235,
+    "cgroup_peak": "314789888"
+  },
+  "production_memory_bytes": 402653184,
+  "test_swap_disabled": true,
+  "production_deployment": false,
+  "raw_payload_limit_unchanged": 33554432
+}
