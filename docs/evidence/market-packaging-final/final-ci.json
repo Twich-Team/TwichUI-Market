@@ -1,105 +1,108 @@
 {
-  "market_head": "0d510c51f6c24a365b7f1ace298c93e2832882cf",
-  "market_tested_preview": "0b7fe6f4fb066b40fbd4c551d636877e2bf005f8",
-  "market_identical_tree": "c8021b43271c371c5e05f4848d91064f7cd6c4c3",
+  "market_head": "85f7dbd0a203553d5120ae601ef4d279c1561143",
+  "market_tested_preview": "06626a43b518d714094986c54de53f081b6bb457",
+  "market_identical_tree": "26f0b7a857ac62bed75215cd53261b10d9a7e114",
   "market_checks": [
     {
       "name": "workshop-consumer",
-      "id": 137530021579,
+      "id": 137545996928,
       "status": "completed",
       "conclusion": "success",
-      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45125108152/job/137530021579"
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45129941852/job/137545996928"
     },
     {
       "name": "prepared-consumer",
-      "id": 137528744685,
+      "id": 137544275120,
       "status": "completed",
       "conclusion": "success",
-      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45125108152/job/137528744685"
-    },
-    {
-      "name": "windows",
-      "id": 137527541037,
-      "status": "completed",
-      "conclusion": "success",
-      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45125108152/job/137527541037"
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45129941852/job/137544275120"
     },
     {
       "name": "signed-update / verify",
-      "id": 137527541029,
+      "id": 137542893268,
       "status": "completed",
       "conclusion": "success",
-      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45125108152/job/137527541029"
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45129941852/job/137542893268"
+    },
+    {
+      "name": "windows",
+      "id": 137542893252,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45129941852/job/137542893252"
     },
     {
       "name": "picker",
-      "id": 137527540998,
+      "id": 137542893123,
       "status": "completed",
       "conclusion": "success",
-      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45125108152/job/137527540998"
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45129941852/job/137542893123"
     },
     {
       "name": "prepared-publisher",
-      "id": 137527540720,
+      "id": 137542892628,
       "status": "completed",
       "conclusion": "success",
-      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45125108152/job/137527540720"
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45129941852/job/137542892628"
     },
     {
       "name": "windows-comparison",
-      "id": 137527539829,
+      "id": 137542892418,
       "status": "completed",
       "conclusion": "success",
-      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45125107816/job/137527539829"
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45129941711/job/137542892418"
     },
     {
       "name": "browser",
-      "id": 137527539502,
+      "id": 137542892261,
       "status": "completed",
       "conclusion": "success",
-      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45125107877/job/137527539502"
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45129941661/job/137542892261"
     },
     {
       "name": "postgres",
-      "id": 137527539440,
+      "id": 137542892144,
       "status": "completed",
       "conclusion": "success",
-      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45125107776/job/137527539440"
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45129941712/job/137542892144"
     }
   ],
-  "addon_head": "cfc41d8b47d51c1be329aa3c46b994b70a742cf1",
+  "addon_head": "daa674f58b33dc1640cf17f0ef9af8a8778fe702",
+  "addon_tested_preview": "8cb85508241b27c024979c7fca0be3da7c2fe5ea",
+  "addon_identical_tree": "38359dad91c05e99e3221023a3b55d46f3c37680",
   "prepared_reader_head": "ee4120880e55b88d588392769fdd6682820d300d",
   "addon_checks": [
     {
       "name": "internal",
-      "id": 137527804913,
+      "id": 137545501590,
       "status": "completed",
       "conclusion": "skipped",
-      "url": "https://github.com/Twich-Team/TwichUI/actions/runs/45124154646/job/137527804913"
+      "url": "https://github.com/Twich-Team/TwichUI/actions/runs/45129888934/job/137545501590"
     },
     {
       "name": "verify",
-      "id": 137524537797,
+      "id": 137542719268,
       "status": "completed",
       "conclusion": "success",
-      "url": "https://github.com/Twich-Team/TwichUI/actions/runs/45124154646/job/137524537797"
-    },
-    {
-      "name": "full-cloud",
-      "id": 137524536879,
-      "status": "completed",
-      "conclusion": "failure",
-      "url": "https://github.com/Twich-Team/TwichUI/actions/runs/45124154462/job/137524536879"
+      "url": "https://github.com/Twich-Team/TwichUI/actions/runs/45129888934/job/137542719268"
     },
     {
       "name": "market-performance",
-      "id": 137524536831,
+      "id": 137542719182,
       "status": "completed",
       "conclusion": "success",
-      "url": "https://github.com/Twich-Team/TwichUI/actions/runs/45124154456/job/137524536831"
+      "url": "https://github.com/Twich-Team/TwichUI/actions/runs/45129889066/job/137542719182"
+    },
+    {
+      "name": "full-cloud",
+      "id": 137542719125,
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/Twich-Team/TwichUI/actions/runs/45129888971/job/137542719125"
     }
   ],
   "full_simulator_gate_passed": false,
   "actual_sandbox_error": "bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted",
-  "release_merged_or_published": false
+  "release_merged_or_published": false,
+  "production_health_gate": "awaiting original natural auction retry 2026-11-23T08:07:31.827206Z"
 }

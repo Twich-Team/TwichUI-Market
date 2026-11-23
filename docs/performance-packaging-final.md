@@ -6,7 +6,7 @@ deploying the backend/private Companion through the existing signing/distributio
 process, provided all gates pass. No public addon release or temporary codec probe
 merge is authorized. Offline observations are never real Forever results.
 
-## Current result — 2026-11-23 07:30 UTC
+## Current result — 2026-11-23 07:43 UTC
 
 **25 addons selected and implemented.** At the larger frozen fixture, current
 physical-load p95 / maximum is4.326 /5.499ms, versus19.567 /20.889ms for13 and
@@ -17,9 +17,9 @@ unavailable; this is not real-client frame acceptance.
 Final source pair: Market **85f7dbd0a203553d5120ae601ef4d279c1561143** and
 addon **daa674f58b33dc1640cf17f0ef9af8a8778fe702**, including prepared reader
 **ee4120880e55b88d588392769fdd6682820d300d** and independently approved addon
-main **364c4c28889d621335bc4b3a7b61d234c0b04ce0**. Market's final backend,
-website, native Windows install, picker, signed updater, publication and both
-consumer checks pass; repeated Windows comparison is finishing. Addon's328
+main **364c4c28889d621335bc4b3a7b61d234c0b04ce0**. All nine final Market checks pass: backend, website, native Windows install,
+picker, signed updater, publication, both consumers and repeated Windows
+comparison. Addon's328
 modules and fast Market check pass. **The required full simulator remains
 blocked** by the actual isolated-network sandbox failure on both permitted
 local and standard CI environments. No failed check or security gate is waived.
@@ -387,3 +387,20 @@ pass. Offline benchmark heap measurements already included all allocations
 and do not change. No pricing, codec, loader, scheduler or publication logic
 changes. The final exact addon pin is now
 **daa674f58b33dc1640cf17f0ef9af8a8778fe702**; immutable paired CI runs again.
+
+
+## Final immutable verification — 07:43 UTC
+
+All nine checks pass at Market **85f7dbd0a203553d5120ae601ef4d279c1561143**.
+The installed/native source checkout is immutable preview
+**06626a43b518d714094986c54de53f081b6bb457** with the identical full tree
+**26f0b7a857ac62bed75215cd53261b10d9a7e114**. The exact pinned addon is
+**daa674f58b33dc1640cf17f0ef9af8a8778fe702**; its328-module verification
+and fast Market checks pass, including diagnostics domain regression. Its
+preview8cb8550 has the identical38359dad tree. [Exact check IDs and outcomes](evidence/market-packaging-final/final-ci.json).
+The earlier nine-green0d510c5 checkpoint is retained separately.
+
+The required full simulator check still fails because its sandbox cannot create
+isolated networking in the available environments. That explicit failed gate
+prevents coordinated merging/deployment even after production collection recovers.
+No additional product change, test waiver or security relaxation is proposed.
