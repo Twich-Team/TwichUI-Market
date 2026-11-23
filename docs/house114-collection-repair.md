@@ -8,6 +8,13 @@ delete history or change infrastructure.
 
 ## Exact diagnosis
 
+The **first retained house-114 collection failure** is **2026-11-15
+03:38:22.711308 UTC**, followed by another legacy failure November17 at
+05:55:30.241046. Both retain only `Transport or payload validation failed`,
+without precise exception/body, so their causes remain unknown. The first
+per-feed auction failure is November18 at04:25:25.955434. These are distinct
+from the current uninterrupted streak below. [Exact retained timeline](evidence/house114-collection/failure-timeline.json).
+
 The current uninterrupted auction failure streak starts at
 **2026-11-22 21:29:38.285896 UTC**. The last successful conditional check was
 21:24:35.749844. The last captured HTTP-200 source was 20:28:51.398853,
