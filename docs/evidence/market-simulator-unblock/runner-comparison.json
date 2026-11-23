@@ -1,0 +1,75 @@
+{
+  "scope": "Owner-authorized unchanged full simulator environment; 25-addon selection fixed",
+  "policy": "No production host security change; no root/sudo; no sandbox flag/assertion change",
+  "runner_comparison": [
+    {
+      "run": 45147627441,
+      "id": 137600739733,
+      "runner": "ubuntu-22.04",
+      "result": "failure",
+      "error": "bwrap: Can't mkdir /mnt/c: Read-only file system",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45147627441/job/137600739733",
+      "observations": [
+        "2026-11-23T09:30:25.7223809Z runner=ubuntu-22.04",
+        "2026-11-23T09:30:28.3779399Z bwrap: Can't mkdir /mnt/c: Read-only file system"
+      ]
+    },
+    {
+      "run": 45147627441,
+      "id": 137600740207,
+      "runner": "ubuntu-24.04",
+      "result": "failure",
+      "error": "bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45147627441/job/137600740207",
+      "observations": [
+        "2026-11-23T09:30:27.8727652Z runner=ubuntu-24.04",
+        "2026-11-23T09:30:37.1186458Z bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted"
+      ]
+    },
+    {
+      "run": 45147887480,
+      "id": 137601595795,
+      "runner": "ubuntu-22.04",
+      "result": "failure",
+      "error": "bwrap: Unexpected capabilities but not setuid, old file caps config?",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45147887480/job/137601595795",
+      "observations": [
+        "2026-11-23T09:32:01.2357276Z runner=ubuntu-22.04",
+        "2026-11-23T09:32:05.0511476Z bwrap: Unexpected capabilities but not setuid, old file caps config?"
+      ]
+    },
+    {
+      "run": 45148032576,
+      "id": 137602077788,
+      "runner": "ubuntu-22.04",
+      "result": "success",
+      "error": null,
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45148032576/job/137602077788",
+      "observations": [
+        "2026-11-23T09:32:56.2503393Z runner=ubuntu-22.04"
+      ]
+    }
+  ],
+  "first_full_attempt": {
+    "addon_head": "f7f42425ff53d0057c9c4799cbd85ca7791b9f06",
+    "run": 45148322762,
+    "job": 137603039704,
+    "result": "failure",
+    "reason": "No such file or directory: luac5.1",
+    "artifact_id": 14804324780,
+    "artifact_sha256": "ae3239c046d428b7a48fe7746ffcb4bb4c3a8fe713236d3cb4ceac27fd9940de",
+    "assertions_changed": false
+  },
+  "current_full_attempt": {
+    "addon_head": "03b1dc3b1086a260f81b3139e0a940d1d08520ee",
+    "run": 45148721970,
+    "job": 137604377136,
+    "status": "in_progress",
+    "command": "bash tests/run.sh full --profile cloud --jobs 2 --sim-jobs 1 --measure",
+    "native_verification": false,
+    "local_milestone_passed": false
+  },
+  "market_candidate": "5f8a6d917f8ff96f7ff54d7f3779ab4f84d0af73",
+  "companion_candidate_version": "2.0.0-beta.12",
+  "published_version_unchanged": "2.0.0-beta.11"
+}

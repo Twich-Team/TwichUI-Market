@@ -1,0 +1,27 @@
+{
+  "at": "2026-11-23T09:40:23.728681+00:00",
+  "market": {
+    "id": 2,
+    "house_id": 114,
+    "interval_seconds": 300,
+    "last_success": "2026-11-23T09:36:41.060129+00:00",
+    "failures": 0,
+    "last_error": null
+  },
+  "feeds": [
+    {
+      "source_kind": "auctions",
+      "last_success": "2026-11-23T09:36:41.060129+00:00",
+      "failures": 0,
+      "last_error": null,
+      "retry_after": null
+    },
+    {
+      "source_kind": "commodities",
+      "last_success": "2026-11-23T09:36:41.060129+00:00",
+      "failures": 0,
+      "last_error": null,
+      "retry_after": null
+    }
+  ]
+}

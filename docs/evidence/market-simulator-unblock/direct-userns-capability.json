@@ -1,0 +1,17 @@
+{
+  "unshare_user_result": 0,
+  "errno": 0,
+  "profile": "unprivileged_userns (enforce)",
+  "status": [
+    "Uid:\t65534\t65534\t65534\t65534",
+    "CapInh:\t0000000000000000",
+    "CapPrm:\t000001ffffffffff",
+    "CapEff:\t000001ffffffffff",
+    "CapBnd:\t000001ffffffffff",
+    "CapAmb:\t0000000000000000",
+    "Seccomp:\t0",
+    "Seccomp_filters:\t0"
+  ],
+  "unshare_net_result": -1,
+  "unshare_net_errno": 1
+}
