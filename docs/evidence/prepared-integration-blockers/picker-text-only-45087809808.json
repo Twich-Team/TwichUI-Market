@@ -1,0 +1,9 @@
+{
+  "source": "a6688c6f4e20036c09226036407b148106e64696",
+  "run": 45087809808,
+  "job": 137410297479,
+  "conclusion": "failure",
+  "message": "Real native selection or edition/capability validation failed",
+  "stage": "First selected folder; process exits but selected path/validation invariant fails",
+  "follow_up": "Use foreground-checked actual path typing notifications, preserve exact path/validation assertions and unchanged deadlines"
+}

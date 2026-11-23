@@ -23,7 +23,7 @@ try {
     if($null -ne (ReadPicker).selected){throw 'Native cancellation did not remain empty'}
     BeginPicker 'select';$null=& $helper -Action ChooseFolder -GamePath $fixture.first
     $chosen=ReadPicker
-    if($chosen.selected -ne $fixture.first -or -not $chosen.valid){throw 'Real native selection or edition/capability validation failed'}
+    if($chosen.selected -ne $fixture.first -or -not $chosen.valid){throw ('Real native selection or edition/capability validation failed: '+($chosen|ConvertTo-Json -Compress))}
     # Real shell selection must replace its last PIDL, including when accepting a
     # path whose addon is invalid. Merely changing an edit box can return old data.
     $wrong=Join-Path $fixture.base 'WrongGame';$null=New-Item $wrong -ItemType Directory

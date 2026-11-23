@@ -81,10 +81,10 @@ preserved in `evidence/prepared-integration-blockers/windows-ui-45084411116.json
 
 The fixture previously changed an Edit control and programmatically invoked
 the default button. Production `installation.rs:285` uses `SHBrowseForFolderW`,
-which returns the selected PIDL. The test-only correction sets text with the
-system-marshaled WM_SETTEXT, focuses the real edit via scalar WM_NEXTDLGCTL,
-requires the checked dialog in the foreground, and sends a real Enter key to
-commit/accept that path. Additional real Windows tests switch first → second →
+which returns the selected PIDL. The test-only correction focuses the real
+edit via scalar WM_NEXTDLGCTL, requires the checked dialog in the foreground,
+and types/accepts the path through real keyboard input (escaping SendKeys
+metacharacters). Additional real Windows tests switch first → second →
 invalid → first and verify the exact returned path, exit code and validation.
 No product picker, IPC result or economic assertion is mocked or bypassed.
 
@@ -111,3 +111,8 @@ changing window-ownership assertions. The final approach removes that message
 entirely and uses ordinary native keyboard interaction with the same deadlines.
 Actual Windows re-verification is required; failed and superseded runs remain
 evidence, not passing exceptions.
+
+The WM_SETTEXT-plus-Enter intermediate `a6688c6` exits normally but fails the
+exact selection/validation assertion. The final correction uses typed input
+notifications as well, retaining the same assertion and adding actual result
+details to any failure. It does not declare the intermediate run passing.

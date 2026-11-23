@@ -131,13 +131,18 @@ if($Action -eq 'CancelFolder') {
     $edit=[SummaryPickerControls]::FindEdit((CheckedWindow $dialogWindow))
     if($edit -eq [IntPtr]::Zero){throw ('Actual native folder edit unavailable; classes: '+[SummaryPickerControls]::Classes($dialogWindow))}
     $window=CheckedWindow $edit;$result=[IntPtr]::Zero
-    # WM_SETTEXT is system-marshaled between processes. BFFM_SETSELECTIONW is
-    # WM_USER+103: sending a local string pointer across processes is invalid.
-    if([SummaryPickerControls]::SetText($window,0x000C,[IntPtr]::Zero,$resolved,2,3000,[ref]$result) -eq [IntPtr]::Zero){throw 'Actual native edit timed out'}
-    # Focus the actual edit via scalar WM_NEXTDLGCTL, then use the real Enter
-    # key to validate/accept its path rather than invoking a stale selected PIDL.
+    # Focus via scalar WM_NEXTDLGCTL and type through the real keyboard so the
+    # shell observes edit notifications. A local WM_USER string pointer is not
+    # marshaled across processes, and WM_SETTEXT alone can leave a stale PIDL.
     if([SummaryPickerControls]::SendMessageTimeoutW((CheckedWindow $dialogWindow),0x0028,$window,[IntPtr]1,2,3000,[ref]$result) -eq [IntPtr]::Zero){throw 'Actual native edit focus timed out'}
     if([SummaryPickerControls]::GetForegroundWindow() -ne $dialogWindow){throw 'Refusing keyboard input outside the checked folder dialog'}
+    $keys=[Text.StringBuilder]::new()
+    foreach($character in $resolved.ToCharArray()) {
+        if('+^%~()[]{}'.Contains([string]$character)){$null=$keys.Append('{').Append($character).Append('}')}
+        else{$null=$keys.Append($character)}
+    }
+    [System.Windows.Forms.SendKeys]::SendWait('^a')
+    [System.Windows.Forms.SendKeys]::SendWait($keys.ToString())
     [System.Windows.Forms.SendKeys]::SendWait('{ENTER}')
 }
 @{native_dialog=$true;cancelled=($Action -eq 'CancelFolder')}|ConvertTo-Json -Compress
