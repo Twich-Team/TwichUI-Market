@@ -42,10 +42,18 @@ module.exports=async({page,invoke,api,shots,sourceCommit})=>{
   await clickPicker('ChooseFolder',game);await expect(page.locator('#workshop-confirmation')).toBeVisible();
   await expect(page.locator('#workshop-confirmed-folder')).toContainText(game);
   await page.screenshot({path:path.join(root,'native-one-permission.png'),fullPage:true});
+  // Finish the earlier Resume action before measuring this confirmation alone.
+  await expect.poll(async()=>(await invoke('app_state')).sync.sync.next_sync_ms,{timeout:60000}).toBeGreaterThan(Date.now());
+  await waitIdle();
+  const syncBeforeState=await invoke('app_state');
+  expect(syncBeforeState.sync.sync.next_sync_ms).toBeGreaterThan(Date.now());
   const syncBefore=await (await api.get('/__fixture__/native-network')).json();
   await page.locator('#workshop-authorize').click();
   await expect.poll(async()=>(await invoke('app_state')).delivery.status?.published_generation,{timeout:90000}).toMatch(/^[a-f0-9]{64}$/);
   await waitIdle();const syncAfter=await (await api.get('/__fixture__/native-network')).json();
+  fs.writeFileSync(path.join(root,'confirmation-network.json'),JSON.stringify({fixture:true,source_commit:sourceCommit,
+    before:syncBefore,after:syncAfter,before_sync:syncBeforeState.sync.sync,
+    events:await(await api.get('/__fixture__/native-network-events')).json()},null,2));
   expect(syncAfter.summary_preparations-syncBefore.summary_preparations).toBeGreaterThan(0);
   expect(syncAfter.price_runs-syncBefore.price_runs).toBe(1);
   const first=(await invoke('app_state')).delivery;expect(first.configuration.version).toBe(2);
@@ -88,6 +96,8 @@ module.exports=async({page,invoke,api,shots,sourceCommit})=>{
   await page.locator('#workshop-cancel').click();expect(fs.existsSync(configFile)).toBe(false);fs.renameSync(backup,configFile);
   facts.multiple_candidates_native_choice=true;fs.writeFileSync(path.join(root,'evidence.json'),JSON.stringify(facts,null,2));
  } catch(error){
+  const networkEvents=await api.get('/__fixture__/native-network-events').then(r=>r.json()).catch(()=>null);
+  if(networkEvents)fs.writeFileSync(path.join(root,'failure-network-events.json'),JSON.stringify(networkEvents,null,2));
   const state=await invoke('app_state').catch(()=>null);if(state)fs.writeFileSync(path.join(root,'failure-state.json'),JSON.stringify({version:state.version,connected:state.connected,error:state.error,sync:state.sync,delivery:state.delivery,automatic_sync:state.settings.automatic_sync},null,2));
   await page.screenshot({path:path.join(root,'failure-state.png'),fullPage:true}).catch(()=>{});throw error;
  } finally {await helper('StopGame').catch(()=>{});await helper('ClearRegistry').catch(()=>{});}

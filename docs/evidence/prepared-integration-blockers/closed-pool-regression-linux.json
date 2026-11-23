@@ -1,0 +1,23 @@
+{
+  "synthetic": true,
+  "production": false,
+  "fault_injected_expired_pool_connection": true,
+  "keepalive_failure_reproduced": true,
+  "runs": [
+    {
+      "cycle": 1,
+      "error": "reqwest::Error { kind: Request, url: \"http://127.0.0.1:35289/bootstrap\", source: hyper_util::client::legacy::Error(SendRequest, hyper::Error(IncompleteMessage)) }",
+      "ok": false,
+      "stage": "next-bootstrap",
+      "stage_us": 964,
+      "connection_close": false,
+      "idle_closes": 1
+    },
+    {
+      "cycles": 3,
+      "ok": true,
+      "connection_close": true,
+      "idle_closes": 0
+    }
+  ]
+}

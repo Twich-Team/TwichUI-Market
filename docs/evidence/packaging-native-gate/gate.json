@@ -1,0 +1,22 @@
+{
+  "status": "blocked_before_implementation",
+  "real_forever_codec_verified": false,
+  "native_decompression_cpu_measured": false,
+  "native_decompression_allocations_measured": false,
+  "full_193_vs_13_pricing_path_measured": false,
+  "compact_migration_rollback_tested": false,
+  "reason": "No actual target native decoder/verified capture; simulator known vectors fail and compression is identity",
+  "preserved_logical_layout": {
+    "current": 32,
+    "history": 64,
+    "banks": [
+      "A",
+      "B"
+    ]
+  },
+  "source_sha256": {
+    "api-reference.json": "be6335501c7772647d4722b9b89b894be371a037c0507ef950a515aed515f627",
+    "explicit-codec-result.txt": "1f38be17195cc083a1c05cba6db7e2c0b18da5f83bae7ce85b0fb412e227f353",
+    "probe-explicit-codec.lua": "7932c2d3177f9b300bb47ada1a5dabad3d23b8f74ded2c2229c4aed9be0350d0"
+  }
+}

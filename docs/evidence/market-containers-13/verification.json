@@ -1,0 +1,105 @@
+{
+  "addon": {
+    "head": "5b25af4eb84eabbd31719979e3b4320851f3585b",
+    "verify_run": 45099909437,
+    "passed": 325,
+    "failed": 0,
+    "seconds": 422.288,
+    "fast_run": 45099909430
+  },
+  "local_native": {
+    "passed": 84,
+    "failed": 0,
+    "existing_opt_in_ignored": 2,
+    "pipeline_driver_invoked_separately": true
+  },
+  "windows_producer": {
+    "head": "4b2c025053ae1e9c5c0bcc824a3641fe62bddab0",
+    "run": 45101736771,
+    "producer_job": 137453903248,
+    "consumer_job": 137454843069,
+    "status": "success; includes native migration/restore/re-migration and 13-container consumption"
+  },
+  "foreground_fix": {
+    "source": "0c0634e5f665f52d379a023db7d39fb7b47d16e3",
+    "run": 45102490747,
+    "job": 137456289240,
+    "status": "success",
+    "verified_foreground_and_focus_selections": 4,
+    "artifact_sha256": "a2557a645e34376919791971f2deb7f4a26663592c19d046ae341b5243cb7023"
+  },
+  "preserved_failures": [
+    {
+      "kind": "local full suite",
+      "result": "325 tests passed, 0 assertion failures; verification FAILED because tracked source changed during execution",
+      "accepted_as_pass": false
+    },
+    {
+      "kind": "intermediate repeated benchmark",
+      "path": "test-output/containers/final-session/benchmark.json",
+      "result": "source fingerprint guard failed after resource review changed producer code; excluded from accepted measurements",
+      "accepted_as_pass": false
+    },
+    {
+      "kind": "Windows and signed-update CI",
+      "run": 45101176636,
+      "jobs": [
+        137452126139,
+        137452126374
+      ],
+      "reason": "missing flate2 entry in Tauri application Cargo.lock; --locked correctly refused",
+      "fixed_by": "4b2c025053ae1e9c5c0bcc824a3641fe62bddab0"
+    },
+    {
+      "kind": "native picker",
+      "run": 45101736771,
+      "job": 137453903438,
+      "reason": "foreground assertion ran before real edit click activation; no unsafe pointer/text input was sent",
+      "focused_fix_run": 45102490747
+    },
+    {
+      "kind": "local native regression",
+      "reason": "new capability parser initially omitted existing Windows BOM handling; baseline test caught it; fixed before accepted native tests"
+    },
+    {
+      "kind": "initial benchmark harness",
+      "reason": "JSON null is truthy sentinel in Lua; native-codec adapter selection now requires string; initial failures excluded"
+    },
+    {
+      "kind": "full picker verification after first foreground correction",
+      "run": 45104103504,
+      "job": 137461324518,
+      "reason": "process guard rejected pointer target; no pointer/text input was sent to a foreign window",
+      "accepted_as_pass": false
+    },
+    {
+      "kind": "final installed native application",
+      "head": "acb6b0a9677c677bf30db1d37ae7bf4833f9d0da",
+      "run": 45105276740,
+      "job": 137465013314,
+      "reason": "installed application legacy delivery remained enabled after genuine Disable delivery click; original five-second assertion failed",
+      "artifact": 14787980131,
+      "artifact_sha256": "f4de94cc9043e07cd7dd95365b015a5770e65cbaf230f39faa1c3577c4b541a4",
+      "accepted_as_pass": false,
+      "resolution": "unresolved; scoped test observation added without changing click or assertion to distinguish UI input, command error and native state"
+    }
+  ],
+  "final_market_checks": "Authoritative final-head results are linked from draft PR50 after its final verification; no pending or skipped dependent check is declared passing here.",
+  "holds": [
+    "no merge",
+    "no deploy",
+    "no sign",
+    "no publish",
+    "no release",
+    "no production activation"
+  ],
+  "full_forever_transport_executed": false,
+  "foreground_fix_final": {
+    "source": "516a1d3bef62f50e68147b32960f64941299a8ac",
+    "run": 45104815135,
+    "job": 137463559570,
+    "status": "success",
+    "verified_foreground_and_focus_selections": 4,
+    "method": "one asynchronous NOACTIVATE raise of the process-checked disposable dialog, visibility observation within original deadline, then one real checked click; no arbitrary input retry or relaxed assertion"
+  }
+}

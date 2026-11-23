@@ -9,7 +9,7 @@ fn main()->Result<(),Box<dyn std::error::Error>> {
     if fs::metadata(&input)?.len()>HISTORY_TOTAL as u64*3||output.exists(){return Err("bounded fixture and new empty output required".into())}
     let v:Value=serde_json::from_slice(&fs::read(input)?)?;
     if v["manifest"]["synthetic"]!=true{return Err("explicitly synthetic input required".into())}
-    let b=Bundle{manifest:v["manifest"].clone(),parts:v["parts"].as_object().ok_or("parts")?.iter().map(|(k,v)|Ok((k.parse::<u8>()?,v.as_str().ok_or("raw part")?.as_bytes().to_vec()))).collect::<Result<BTreeMap<_,_>,Box<dyn std::error::Error>>>()?};
+    let b=Bundle{prepared:None,manifest:v["manifest"].clone(),parts:v["parts"].as_object().ok_or("parts")?.iter().map(|(k,v)|Ok((k.parse::<u8>()?,v.as_str().ok_or("raw part")?.as_bytes().to_vec()))).collect::<Result<BTreeMap<_,_>,Box<dyn std::error::Error>>>()?};
     let scope=Scope{server:"http://127.0.0.1:18888/".into(),account_id:1,market_id:b.manifest["market"]["server_market_id"].as_u64().ok_or("market")? as u32,algorithm:"twichui-pricing-v1".into()};
     b.validate(&scope,None)?;
     fs::create_dir_all(&output)?;let root=output.join("TwichUI_MarketData");fs::create_dir(&root)?;

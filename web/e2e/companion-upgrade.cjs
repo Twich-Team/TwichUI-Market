@@ -21,8 +21,16 @@ const fs=require('node:fs');const path=require('node:path');const {execFile,spaw
     const old=await invoke('status',{market:1});expect(old.item_count).toBe(2);expect(old.has_completed_cache).toBe(true);
     const connectionFile=path.join(process.env.MARKET_TEST_APP_DATA,'connection.json');const connectionBefore=fs.readFileSync(connectionFile,'utf8');
     // Close the old installed application through its real native window.
-    await promisify(execFile)('powershell.exe',['-NoProfile','-NonInteractive','-Command',
-      '$app=Get-Process -Name "twichui-market-companion" | Where-Object {$_.Path -eq $env:MARKET_TEST_INSTALLED_EXE};if(@($app).Count -ne 1){throw "Expected one old installed process"};$null=$app.CloseMainWindow();if(-not $app.WaitForExit(10000)){throw "Old installed app did not close"}'],{timeout:15000});
+    const closeEvidence=path.resolve('artifacts/companion-v2');fs.mkdirSync(closeEvidence,{recursive:true});
+    let closeOutput;
+    try {closeOutput=await promisify(execFile)('powershell.exe',['-NoProfile','-NonInteractive','-Command',
+      '$clock=[Diagnostics.Stopwatch]::StartNew();Write-Output "legacy-close stage=started ms=$($clock.ElapsedMilliseconds)";'+
+      '$app=Get-Process -Name "twichui-market-companion" | Where-Object {$_.Path -eq $env:MARKET_TEST_INSTALLED_EXE};if(@($app).Count -ne 1){throw "Expected one old installed process"};'+
+      'Write-Output "legacy-close stage=found ms=$($clock.ElapsedMilliseconds)";if(-not $app.CloseMainWindow()){throw "Old installed window could not be closed"};'+
+      'Write-Output "legacy-close stage=posted ms=$($clock.ElapsedMilliseconds)";if(-not $app.WaitForExit(10000)){throw "Old installed app did not close"};'+
+      'Write-Output "legacy-close stage=exited ms=$($clock.ElapsedMilliseconds)"'],{timeout:15000});}
+    catch(error){fs.writeFileSync(path.join(closeEvidence,'legacy-close-stages.txt'),String(error.stdout||'')+String(error.stderr||''));throw error;}
+    fs.writeFileSync(path.join(closeEvidence,'legacy-close-stages.txt'),closeOutput.stdout+closeOutput.stderr);
     await expect.poll(available).toBe(false);await browser.close().catch(()=>{});
     // Run the new current-user installer over the actual old installation.
     const sdkInstall=process.env.MARKET_TEST_UPDATER_SDK==='true';

@@ -61,8 +61,10 @@ if($Action -in @('StartGame','StopGame','GameRunning')) {
 }
 Add-Type -AssemblyName UIAutomationClient
 Add-Type -AssemblyName UIAutomationTypes
+Add-Type -AssemblyName System.Windows.Forms
 $condition=[System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::ClassNameProperty,'#32770')
 $dialog=$null
+$dialogDeadline=[DateTime]::UtcNow.AddSeconds(20)
 for($i=0;$i -lt 200;$i++) {
     $all=[System.Windows.Automation.AutomationElement]::RootElement.FindAll([System.Windows.Automation.TreeScope]::Children,$condition)
     foreach($candidate in $all) {if($candidate.Current.ProcessId -eq [int]$env:MARKET_TEST_PRIMARY_PID){$dialog=$candidate;break}}
@@ -78,10 +80,35 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Collections.Generic;
 public static class SummaryPickerControls {
+ [StructLayout(LayoutKind.Sequential)] public struct Point { public int X,Y; public Point(int x,int y){X=x;Y=y;} }
+ [DllImport("user32.dll")] public static extern IntPtr WindowFromPoint(Point point);
+ [DllImport("user32.dll")] public static extern IntPtr GetAncestor(IntPtr window,uint flags);
+ [DllImport("user32.dll",SetLastError=true)] public static extern bool SetWindowPos(IntPtr window,IntPtr after,int x,int y,int width,int height,uint flags);
+ [StructLayout(LayoutKind.Sequential)] public struct Rect { public int Left,Top,Right,Bottom; }
+ [StructLayout(LayoutKind.Sequential)] public struct GuiThread { public uint cbSize,flags; public IntPtr Active,Focus,Capture,MenuOwner,MoveSize,Caret; public Rect CaretRect; }
+ [DllImport("user32.dll")] public static extern bool GetGUIThreadInfo(uint thread,ref GuiThread info);
+ [DllImport("user32.dll")] public static extern bool GetWindowRect(IntPtr window,out Rect rect);
+ [DllImport("user32.dll")] public static extern bool SetProcessDPIAware();
+ [DllImport("user32.dll")] public static extern bool SetCursorPos(int x,int y);
+ [DllImport("user32.dll")] public static extern void mouse_event(uint flags,uint x,uint y,uint data,UIntPtr extra);
+ public static IntPtr Focus(IntPtr window) {
+  uint pid;uint thread=GetWindowThreadProcessId(window,out pid);
+  var info=new GuiThread();info.cbSize=(uint)Marshal.SizeOf(typeof(GuiThread));
+  if(!GetGUIThreadInfo(thread,ref info))throw new InvalidOperationException("Native thread focus unavailable");
+  return info.Focus;
+ }
  public delegate bool EnumChild(IntPtr window,IntPtr data);
  [DllImport("user32.dll")] public static extern bool EnumChildWindows(IntPtr window,EnumChild callback,IntPtr data);
  [DllImport("user32.dll",CharSet=CharSet.Unicode)] public static extern int GetClassNameW(IntPtr window,StringBuilder name,int size);
  [DllImport("user32.dll")] public static extern bool IsWindowVisible(IntPtr window);
+ [DllImport("user32.dll")] public static extern bool IsWindowEnabled(IntPtr window);
+ [DllImport("user32.dll")] public static extern int GetDlgCtrlID(IntPtr window);
+ [DllImport("user32.dll",EntryPoint="GetWindowLongW")] public static extern int GetStyle(IntPtr window,int index);
+ public static IntPtr[] Children(IntPtr parent) {
+  var items=new List<IntPtr>();
+  EnumChildWindows(parent,delegate(IntPtr w,IntPtr data) {if(items.Count>=128)return false;items.Add(w);return true;},IntPtr.Zero);
+  return items.ToArray();
+ }
  public static IntPtr FindEdit(IntPtr parent) {
   IntPtr found=IntPtr.Zero;int count=0;
   EnumChildWindows(parent,delegate(IntPtr w,IntPtr data) {
@@ -99,24 +126,38 @@ public static class SummaryPickerControls {
   },IntPtr.Zero);return String.Join(",",items.ToArray());
  }
  [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr window);
+ [DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();
  [DllImport("user32.dll")] public static extern IntPtr GetDlgItem(IntPtr window,int id);
  [DllImport("user32.dll")] public static extern uint GetWindowThreadProcessId(IntPtr window,out uint pid);
  [DllImport("user32.dll",CharSet=CharSet.Unicode)] public static extern IntPtr SendMessageTimeoutW(IntPtr window,uint message,IntPtr w,IntPtr l,uint flags,uint milliseconds,out IntPtr result);
  [DllImport("user32.dll",CharSet=CharSet.Unicode,EntryPoint="SendMessageTimeoutW")] public static extern IntPtr SetText(IntPtr window,uint message,IntPtr w,string text,uint flags,uint milliseconds,out IntPtr result);
+ [DllImport("user32.dll",CharSet=CharSet.Unicode,EntryPoint="SendMessageTimeoutW")] public static extern IntPtr ReadText(IntPtr window,uint message,IntPtr w,StringBuilder text,uint flags,uint milliseconds,out IntPtr result);
 }
 '@
 $dialogWindow=[IntPtr]$dialog.Current.NativeWindowHandle
+$null=[SummaryPickerControls]::SetProcessDPIAware()
 $null=[SummaryPickerControls]::SetForegroundWindow($dialogWindow)
+if($env:TWICHUI_PICKER_DIAGNOSTICS -eq 'true') {
+    $controls=@(foreach($handle in [SummaryPickerControls]::Children($dialogWindow)) {
+        $class=[Text.StringBuilder]::new(256);$null=[SummaryPickerControls]::GetClassNameW($handle,$class,256)
+        [uint32]$nativeOwner=0;$null=[SummaryPickerControls]::GetWindowThreadProcessId($handle,[ref]$nativeOwner)
+        $row=@{hwnd=$handle.ToInt64();class=$class.ToString();id=[SummaryPickerControls]::GetDlgCtrlID($handle);pid=$nativeOwner;visible=[SummaryPickerControls]::IsWindowVisible($handle);enabled=[SummaryPickerControls]::IsWindowEnabled($handle);style=('{0:X8}' -f [SummaryPickerControls]::GetStyle($handle,-16))}
+        if($class.ToString() -eq 'Edit') {
+            try {$element=[System.Windows.Automation.AutomationElement]::FromHandle($handle);$row.uia=@{name=$element.Current.Name;automation_id=$element.Current.AutomationId;focusable=$element.Current.IsKeyboardFocusable;offscreen=$element.Current.IsOffscreen;enabled=$element.Current.IsEnabled;focused=$element.Current.HasKeyboardFocus}}
+            catch {$row.uia_error=$_.Exception.Message}
+        }
+        $row
+    })
+    @{action=$Action;pid=$env:MARKET_TEST_PRIMARY_PID;dialog=$dialogWindow.ToInt64();controls=$controls}|ConvertTo-Json -Depth 5|Set-Content (Join-Path $base "picker-controls-$Action-$env:MARKET_TEST_PRIMARY_PID.json")
+}
 function CheckedWindow($element) {
     if($element -is [IntPtr]){$window=$element}else{$window=[IntPtr]$element.Current.NativeWindowHandle}
     [uint32]$owner=0
     $null=[SummaryPickerControls]::GetWindowThreadProcessId($window,[ref]$owner)
-    if($window -eq [IntPtr]::Zero -or $owner -ne [uint32]$env:MARKET_TEST_PRIMARY_PID){throw 'Native control process identity changed'}
+    if($window -eq [IntPtr]::Zero -or $owner -ne [uint32]$env:MARKET_TEST_PRIMARY_PID){throw ('Native control process identity changed: hwnd='+$window.ToInt64()+' expected_pid='+$env:MARKET_TEST_PRIMARY_PID+' actual_pid='+$owner)}
     return $window
 }
 function ClickButton($element) {
-    $pattern=$null
-    if($element.TryGetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern,[ref]$pattern)){$pattern.Invoke();return}
     $window=CheckedWindow $element
     $result=[IntPtr]::Zero
     if([SummaryPickerControls]::SendMessageTimeoutW($window,0x00F5,[IntPtr]::Zero,[IntPtr]::Zero,2,3000,[ref]$result) -eq [IntPtr]::Zero){throw 'Actual native button click timed out'}
@@ -128,17 +169,56 @@ if($Action -eq 'CancelFolder') {
 } else {
     $resolved=[IO.Path]::GetFullPath($GamePath)
     if(-not $resolved.StartsWith([IO.Path]::GetFullPath($base)+'\',[StringComparison]::OrdinalIgnoreCase)){throw 'Picker fixture path escaped'}
-    $edit=$dialog.FindFirst([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::ControlTypeProperty,[System.Windows.Automation.ControlType]::Edit))
-    $pattern=$null
-    if($edit -and $edit.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern,[ref]$pattern)){$pattern.SetValue($resolved)}
-    else {
-        $nativeEdit=[SummaryPickerControls]::FindEdit($dialogWindow)
-        if($nativeEdit -eq [IntPtr]::Zero){throw ('Actual native folder edit unavailable; classes: '+[SummaryPickerControls]::Classes($dialogWindow))}
-        $window=CheckedWindow $nativeEdit;$result=[IntPtr]::Zero
-        if([SummaryPickerControls]::SetText($window,0x000C,[IntPtr]::Zero,$resolved,2,3000,[ref]$result) -eq [IntPtr]::Zero){throw 'Actual native edit timed out'}
+    $edit=[SummaryPickerControls]::FindEdit((CheckedWindow $dialogWindow))
+    if($edit -eq [IntPtr]::Zero){throw ('Actual native folder edit unavailable; classes: '+[SummaryPickerControls]::Classes($dialogWindow))}
+    $window=CheckedWindow $edit;$result=[IntPtr]::Zero
+    # Actual inventory: enabled WS_TABSTOP Edit14148, but UIA reports it cannot
+    # receive focus. Click the real control and verify Win32 GUI-thread focus.
+    # Disposable test presentation only: one asynchronous raise of this owned
+    # dialog. NOACTIVATE preserves the requirement for a genuine click; ASYNC
+    # avoids an unbounded cross-thread wait. No retrying pointer/keyboard input.
+    if(-not [SummaryPickerControls]::SetWindowPos((CheckedWindow $dialogWindow),[IntPtr]::new(-1),0,0,0,0,0x4013)){throw 'Could not present the process-checked native dialog'}
+    $rect=[SummaryPickerControls+Rect]::new()
+    if(-not [SummaryPickerControls]::GetWindowRect($window,[ref]$rect) -or $rect.Right -le $rect.Left -or $rect.Bottom -le $rect.Top){throw 'Native folder edit rectangle unavailable'}
+    $point=[SummaryPickerControls+Point]::new([int](($rect.Left+$rect.Right)/2),[int](($rect.Top+$rect.Bottom)/2))
+    # Wait for the queued presentation operation inside the original dialog
+    # deadline. Observe only: never click an occluding or foreign window.
+    while($true) {
+        $hit=[SummaryPickerControls]::WindowFromPoint($point);[uint32]$hitOwner=0
+        $null=[SummaryPickerControls]::GetWindowThreadProcessId($hit,[ref]$hitOwner)
+        if($hit -ne [IntPtr]::Zero -and $hitOwner -eq [uint32]$env:MARKET_TEST_PRIMARY_PID -and [SummaryPickerControls]::GetAncestor($hit,2) -eq $dialogWindow){break}
+        if([DateTime]::UtcNow -ge $dialogDeadline){throw ('Native edit point remains occluded; expected_pid='+$env:MARKET_TEST_PRIMARY_PID+' actual_pid='+$hitOwner)}
+        Start-Sleep -Milliseconds 50
     }
-    $button=$dialog.FindFirst([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::AutomationIdProperty,'1'))
-    if(-not $button){throw 'Native folder confirmation unavailable'}
-    ClickButton $button
+    # SetForegroundWindow may be denied or activation may still be pending.
+    # A single real click on the verified visible target activates the dialog;
+    # no keyboard/edit input is permitted until actual foreground AND focus agree.
+    $null=[SummaryPickerControls]::SetCursorPos($point.X,$point.Y)
+    [SummaryPickerControls]::mouse_event(2,0,0,0,[UIntPtr]::Zero)
+    [SummaryPickerControls]::mouse_event(4,0,0,0,[UIntPtr]::Zero)
+    while([SummaryPickerControls]::GetForegroundWindow() -ne $dialogWindow -or [SummaryPickerControls]::Focus($dialogWindow) -ne $window) {
+        if([DateTime]::UtcNow -ge $dialogDeadline){throw 'Actual native folder dialog did not receive foreground and edit focus'}
+        Start-Sleep -Milliseconds 50
+    }
+    if($env:TWICHUI_PICKER_DIAGNOSTICS -eq 'true') {@{pid=$env:MARKET_TEST_PRIMARY_PID;dialog=$dialogWindow.ToInt64();edit=$window.ToInt64();focus=[SummaryPickerControls]::Focus($dialogWindow).ToInt64();native_focus_verified=$true;foreground=[SummaryPickerControls]::GetForegroundWindow().ToInt64();native_foreground_verified=([SummaryPickerControls]::GetForegroundWindow() -eq $dialogWindow)}|ConvertTo-Json -Compress|Set-Content (Join-Path $base "picker-focus-$env:MARKET_TEST_PRIMARY_PID.json")}
+    # System-marshaled edit text plus a REAL click: focus loss commits the
+    # shell's edit. Invoke/BM_CLICK/Enter can accept the old tree selection.
+    if([SummaryPickerControls]::SetText($window,0x000C,[IntPtr]::Zero,$resolved,2,3000,[ref]$result) -eq [IntPtr]::Zero){throw 'Actual native edit timed out'}
+    $actual=[Text.StringBuilder]::new(1024)
+    if([SummaryPickerControls]::ReadText($window,0x000D,[IntPtr]1024,$actual,2,3000,[ref]$result) -eq [IntPtr]::Zero){throw 'Actual native edit readback timed out'}
+    if($actual.ToString() -ne $resolved){throw 'Native folder edit does not contain the exact requested path'}
+    $ok=CheckedWindow ([SummaryPickerControls]::GetDlgItem((CheckedWindow $dialogWindow),1))
+    if(-not [SummaryPickerControls]::IsWindowEnabled($ok)){throw 'Native folder confirmation disabled'}
+    if(-not [SummaryPickerControls]::GetWindowRect($ok,[ref]$rect)){throw 'Native confirmation rectangle unavailable'}
+    if([SummaryPickerControls]::GetForegroundWindow() -ne $dialogWindow){throw 'Refusing native click outside the checked folder dialog'}
+    $point=[SummaryPickerControls+Point]::new([int](($rect.Left+$rect.Right)/2),[int](($rect.Top+$rect.Bottom)/2))
+    $hit=[SummaryPickerControls]::WindowFromPoint($point)
+    if($hit -eq [IntPtr]::Zero -or [SummaryPickerControls]::GetAncestor((CheckedWindow $hit),2) -ne $dialogWindow){throw 'Refusing native pointer input outside the checked folder dialog'}
+    # SetForegroundWindow may be denied or activation may still be pending.
+    # A single real click on the verified visible target activates the dialog;
+    # no keyboard/edit input is permitted until actual foreground AND focus agree.
+    $null=[SummaryPickerControls]::SetCursorPos($point.X,$point.Y)
+    [SummaryPickerControls]::mouse_event(2,0,0,0,[UIntPtr]::Zero)
+    [SummaryPickerControls]::mouse_event(4,0,0,0,[UIntPtr]::Zero)
 }
 @{native_dialog=$true;cancelled=($Action -eq 'CancelFolder')}|ConvertTo-Json -Compress

@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TwichUI prepared current integrity sidecar v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "version",
+    "source_generation_id",
+    "partitions_count",
+    "record_width",
+    "hash_algorithm",
+    "record_count",
+    "attestation_id",
+    "partitions"
+  ],
+  "properties": {
+    "format": {
+      "const": "twichui-workshop-prepared-current"
+    },
+    "version": {
+      "const": 1
+    },
+    "source_generation_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "partitions_count": {
+      "enum": [
+        16,
+        32
+      ]
+    },
+    "record_width": {
+      "const": 135
+    },
+    "hash_algorithm": {
+      "const": "sha256-canonical-13-v1"
+    },
+    "record_count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 150000
+    },
+    "attestation_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "partitions": {
+      "type": "array",
+      "minItems": 16,
+      "maxItems": 32,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "bucket",
+          "record_count",
+          "bytes",
+          "sha256",
+          "merkle_root"
+        ],
+        "properties": {
+          "bucket": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 31
+          },
+          "record_count": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 150000
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 2,
+            "maximum": 4194304
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "merkle_root": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    }
+  }
+}

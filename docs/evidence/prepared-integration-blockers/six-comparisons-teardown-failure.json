@@ -1,0 +1,88 @@
+{
+  "run_id": 45079104793,
+  "source_commit": "0591fe683238f64160dfaa122455d5d1f4903190",
+  "artifact_sha256": "5c3bfc09b49ac5f1baf248da3a04fe55238fc2495f3a6d278ecdcb1574f33b6d",
+  "workflow_conclusion": "failure",
+  "all_native_comparisons_completed": true,
+  "samples": [
+    {
+      "label": "baseline",
+      "repeat": 0,
+      "seconds": 165.3463272,
+      "values_sha256": "9f082c463139dced2af0c8730a85d33ff74fd9f17a1cad61b96f08387ba0bdf3"
+    },
+    {
+      "label": "baseline",
+      "repeat": 1,
+      "seconds": 166.0688412,
+      "values_sha256": "9f082c463139dced2af0c8730a85d33ff74fd9f17a1cad61b96f08387ba0bdf3"
+    },
+    {
+      "label": "baseline",
+      "repeat": 2,
+      "seconds": 165.4848936,
+      "values_sha256": "9f082c463139dced2af0c8730a85d33ff74fd9f17a1cad61b96f08387ba0bdf3"
+    },
+    {
+      "label": "candidate",
+      "repeat": 0,
+      "seconds": 58.2317593,
+      "values_sha256": "9f082c463139dced2af0c8730a85d33ff74fd9f17a1cad61b96f08387ba0bdf3"
+    },
+    {
+      "label": "candidate",
+      "repeat": 1,
+      "seconds": 58.5074229,
+      "values_sha256": "9f082c463139dced2af0c8730a85d33ff74fd9f17a1cad61b96f08387ba0bdf3"
+    },
+    {
+      "label": "candidate",
+      "repeat": 2,
+      "seconds": 58.5058816,
+      "values_sha256": "9f082c463139dced2af0c8730a85d33ff74fd9f17a1cad61b96f08387ba0bdf3"
+    }
+  ],
+  "teardown": {
+    "server_stopped": false,
+    "loop_errors": [
+      {
+        "exception": "ConnectionResetError",
+        "message": "Exception in callback _ProactorBasePipeTransport._call_connection_lost(None)"
+      },
+      {
+        "exception": "ConnectionResetError",
+        "message": "Exception in callback _ProactorBasePipeTransport._call_connection_lost(None)"
+      },
+      {
+        "exception": "ConnectionResetError",
+        "message": "Exception in callback _ProactorBasePipeTransport._call_connection_lost(None)"
+      },
+      {
+        "exception": "ConnectionResetError",
+        "message": "Exception in callback _ProactorBasePipeTransport._call_connection_lost(None)"
+      },
+      {
+        "exception": "ConnectionResetError",
+        "message": "Exception in callback _ProactorBasePipeTransport._call_connection_lost(None)"
+      },
+      {
+        "exception": "ConnectionResetError",
+        "message": "Exception in callback _ProactorBasePipeTransport._call_connection_lost(None)"
+      },
+      {
+        "exception": "ConnectionResetError",
+        "message": "Exception in callback _ProactorBasePipeTransport._call_connection_lost(None)"
+      },
+      {
+        "exception": "ConnectionResetError",
+        "message": "Exception in callback _ProactorBasePipeTransport._call_connection_lost(None)"
+      },
+      {
+        "exception": "ConnectionResetError",
+        "message": "Exception in callback _ProactorBasePipeTransport._call_connection_lost(None)"
+      }
+    ],
+    "active_requests": [],
+    "preparation_connection_policy": "explicit Connection: close for 202 in both arms"
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "source": "1e61ff41747b0d49edc024b174f9df6b4e6dd925",
+  "run": 45084411108,
+  "job": 137399621735,
+  "workflow_conclusion": "success",
+  "artifact_id": 14779720176,
+  "artifact_sha256": "8ef60b76318456a2ebb81d9e05b15de45e2fa6d0cefd0adc91e8458338407b99",
+  "samples": [
+    {
+      "label": "baseline",
+      "repeat": 0,
+      "seconds": 158.2248486,
+      "values_sha256": "9f082c463139dced2af0c8730a85d33ff74fd9f17a1cad61b96f08387ba0bdf3"
+    },
+    {
+      "label": "baseline",
+      "repeat": 1,
+      "seconds": 160.241997,
+      "values_sha256": "9f082c463139dced2af0c8730a85d33ff74fd9f17a1cad61b96f08387ba0bdf3"
+    },
+    {
+      "label": "baseline",
+      "repeat": 2,
+      "seconds": 159.7381329,
+      "values_sha256": "9f082c463139dced2af0c8730a85d33ff74fd9f17a1cad61b96f08387ba0bdf3"
+    },
+    {
+      "label": "candidate",
+      "repeat": 0,
+      "seconds": 51.3290046,
+      "values_sha256": "9f082c463139dced2af0c8730a85d33ff74fd9f17a1cad61b96f08387ba0bdf3"
+    },
+    {
+      "label": "candidate",
+      "repeat": 1,
+      "seconds": 51.3209644,
+      "values_sha256": "9f082c463139dced2af0c8730a85d33ff74fd9f17a1cad61b96f08387ba0bdf3"
+    },
+    {
+      "label": "candidate",
+      "repeat": 2,
+      "seconds": 51.5110476,
+      "values_sha256": "9f082c463139dced2af0c8730a85d33ff74fd9f17a1cad61b96f08387ba0bdf3"
+    }
+  ],
+  "teardown": {
+    "server_stopped": true,
+    "loop_errors": [],
+    "active_requests": [],
+    "preparation_connection_policy": "explicit Connection: close for 202 in both arms"
+  },
+  "binary_sha256": {
+    "baseline": "60c3a233da3e3a6cd2ba1303ad55e78aeb1d623e14303e3e58023aae05f3e828",
+    "candidate": "f60a86172c823c074f36f39637591747ad910b1eda7ac85a0f6e62d3d1461244"
+  },
+  "baseline_source": {
+    "algorithm_baseline": "fe854b00a239e3aa553bf5c0b3438139f2018e65",
+    "unmodified_algorithm_sha256": {
+      "desktop/core/src/client.rs": "e1bdb3ca30eb486116a508298fd35c22124880d1dbe835d7745dcb6b8d11001b",
+      "desktop/core/src/cache.rs": "2c95b21999d8ee0d429f4956d4d16d989797a06a09554d85bb1b218da96336bc",
+      "desktop/core/src/synchronizer.rs": "7812d72b405f064ac303abfa8424bf55925ebca383d5995c919481ee59aba008",
+      "desktop/core/src/archive/store.rs": "37632699f19502b2fcd499c39892bba7289157909871971e1f001e799ff464b4",
+      "desktop/core/src/delivery.rs": "c957cc0bf733144ee57ef278fe9189bcadb4f63fc93611350b82b02ccc2d29a1",
+      "desktop/core/src/workshop_summary.rs": "dc68f6fcdb0450f1eefe84c8420d8c562c0558f5fd5b0187f7a07e028f724bcd",
+      "backend/market/workshop_summary.py": "e500f1b1d573737f7de0b986c558d9af1f6dcdc8bb98056c1a6e11ed8024fb7c",
+      "backend/market/sync_api.py": "99c5963eb69ee499994ffbc474ef6eebb6b09ba110909865616e1d8b9c96bd01"
+    },
+    "common_measurement_harness_sha256": "5b8ce0e71f410fb473b183b9ce0f7e4be18ce2cfae37f286a68a838e10637adb",
+    "changes_in_baseline": "measurement module/examples and Windows process-metrics feature only; no algorithm/protocol/cache/durability edits"
+  },
+  "scope": "Existing automatic-sync benchmark with its pinned legacy addon fixture; not compressed-format or native game validation"
+}

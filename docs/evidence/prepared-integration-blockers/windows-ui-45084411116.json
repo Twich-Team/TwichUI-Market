@@ -1,0 +1,50 @@
+{
+  "source": "1e61ff41747b0d49edc024b174f9df6b4e6dd925",
+  "run": 45084411116,
+  "job": 137399622080,
+  "job_conclusion": "failure",
+  "artifact": 14779280299,
+  "artifact_zip_sha256": "082c893958538cd0de7bcb484c2f02205ddeb259cd034a64019f7c223f0f10ee",
+  "legacy_close": {
+    "subprocess_timeout_ms": 15000,
+    "process_exit_timeout_ms": 10000,
+    "code": null,
+    "killed": true,
+    "signal": "SIGTERM",
+    "stdout": "",
+    "stderr": "",
+    "precise_stage": "not established"
+  },
+  "picker": {
+    "expected": "Workshop Summary.lua is missing or unreadable",
+    "actual": "Choose the Forever game folder containing Wow.exe and Interface/AddOns.",
+    "failure_state": {
+      "version": "2.0.0-beta.11",
+      "connected": true,
+      "error": null,
+      "sync": {
+        "revision": 5,
+        "sync": {
+          "phase": "ready",
+          "automatic_sync": true,
+          "next_sync_ms": 1795394810375,
+          "last_sync_ms": 1795391210375,
+          "last_server_check_ms": 1795391171775,
+          "upstream_update_ms": null,
+          "generation": "1:1667b6d19ec287ae8d9e0835bc6a3094a275d5785905445ab424a1f16876b9bd",
+          "received_new_generation": false,
+          "pages_completed": 1,
+          "retry_attempts": 0,
+          "selected_market": 1,
+          "running": false
+        },
+        "error": null
+      },
+      "delivery": {
+        "notice": "Automatic delivery is off for this account and market. Review setup to enable it."
+      },
+      "automatic_sync": true
+    }
+  },
+  "legacy_consumer": "skipped, not passing"
+}

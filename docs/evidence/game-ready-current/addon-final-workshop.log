@@ -1,0 +1,60 @@
+simulator exit status: craft 0
+simulator exit status: opps 0
+simulator exit status: wrong 0
+artifacts: /workspace/TwichUI-prepared-reader/test-output/simlab/artifacts/workshop-qtyEGgme
+Read this result with:
+  - SHIMMED API: C_ChatInfo.RegisterAddonMessagePrefix and IsAddonMessagePrefixRegistered are lab stand-ins that only remember names. Nothing about addon messaging is tested.
+  - VERSION MISMATCH: the simulator's Blizzard UI is Forever 1.60.1.70532; the installed game is newer (art comes from it). Not the client's real UI code.
+  - FONTS: the simulator (v0.1.37) loads only the game's own fonts; every addon font path, TwichUI's Cinzel included, is measured and drawn in Friz Quadrata (docs/simulator-lab.md "Fonts"). Screenshots are STRUCTURAL, not a visual or wrapping validation.
+  - NOT THE CLIENT: combat lockdown, taint, secure actions, addon messages, saved data surviving a reload and other addons are not covered. Real-client testing is still required.
+Selection: FOCUSED ONLY; not complete regression coverage (craft, opps, wrong)
+The scenario, ending on craft:
+  pass  craft: the scenario reached its end  (SIMLAB done steps=30 simSeconds=40.6 passed=489 failed=41 aborted=false stopped=false)
+  pass  craft: every step ran, in order  (open and navigate, crafting: unsupported recipe is not ready, crafting: add, change quantity, remove, crafting: materials against the bags, crafting: a second profession and Open recipe, merchant prices noted, opportunities: before any scan, opportunities: scan against the fake auction house, opportunities: rows, ordering, filtering, unknowns, opportunities: short tooltip, details with Shift, what's it worth: item tooltip lines, what's it worth: tooltip designer, opportunities: test-input cut, then removed, opportunities: Add to queue, shopping: combined list, sources, total, warning, shopping: source choices, shopping: Show vendor, shopping: add the suggested subcraft, shopping: bags change, close and reopen, remembered recipes: closed window, background read, nothing open, bank and guild bank: remembered while the window is closed, bank and guild bank: planned with, collected not bought, labelled, profit unchanged, bank and guild bank: the guild choice, permissions and limits, bank and guild bank: a withdrawal and a deposit never count twice, third pass: hit test, hover, fit, tooltips, status, reachability: planted overlay, hover rows, insets, clipping, tooltip, automatic price updates on opening the auction house, item advisor: navigation, discovery, tracking and actions, pose for the screenshot)
+  FAIL  craft: no check failed  (41 failed; first: no cut confirmed, the auction is dearer: the fee is named and no winner is claimed expected=What's it worth? / Workshop: Not enough data / Vendor | 60c / Auction (before fees) | 1s 50c / Hold Shift for details actual=What's it worth? / Vendor | 60c / Auction (before fees) | 1s 50c / Hold Shift for details)
+  pass  craft: the printed counts agree with the lines
+  pass  craft: every evidence layer was exercised  (click, direct, display, event, init, state)
+  pass  craft: the planted overlay was seen: reachable, blocked, reachable (in that order)  (positions [453, 455, 459])
+  pass  craft: every negative-control check held (12 of them)
+  pass  craft: no Lua error outside the classified rules
+The scenario, ending on opps:
+  pass  opps: the scenario reached its end  (SIMLAB done steps=30 simSeconds=40.6 passed=490 failed=41 aborted=false stopped=false)
+  pass  opps: every step ran, in order  (open and navigate, crafting: unsupported recipe is not ready, crafting: add, change quantity, remove, crafting: materials against the bags, crafting: a second profession and Open recipe, merchant prices noted, opportunities: before any scan, opportunities: scan against the fake auction house, opportunities: rows, ordering, filtering, unknowns, opportunities: short tooltip, details with Shift, what's it worth: item tooltip lines, what's it worth: tooltip designer, opportunities: test-input cut, then removed, opportunities: Add to queue, shopping: combined list, sources, total, warning, shopping: source choices, shopping: Show vendor, shopping: add the suggested subcraft, shopping: bags change, close and reopen, remembered recipes: closed window, background read, nothing open, bank and guild bank: remembered while the window is closed, bank and guild bank: planned with, collected not bought, labelled, profit unchanged, bank and guild bank: the guild choice, permissions and limits, bank and guild bank: a withdrawal and a deposit never count twice, third pass: hit test, hover, fit, tooltips, status, reachability: planted overlay, hover rows, insets, clipping, tooltip, automatic price updates on opening the auction house, item advisor: navigation, discovery, tracking and actions, pose for the screenshot)
+  FAIL  opps: no check failed  (41 failed; first: no cut confirmed, the auction is dearer: the fee is named and no winner is claimed expected=What's it worth? / Workshop: Not enough data / Vendor | 60c / Auction (before fees) | 1s 50c / Hold Shift for details actual=What's it worth? / Vendor | 60c / Auction (before fees) | 1s 50c / Hold Shift for details)
+  pass  opps: the printed counts agree with the lines
+  pass  opps: every evidence layer was exercised  (click, direct, display, event, init, state)
+  pass  opps: the planted overlay was seen: reachable, blocked, reachable (in that order)  (positions [453, 455, 459])
+  pass  opps: every negative-control check held (12 of them)
+  pass  opps: no Lua error outside the classified rules
+Reproducibility, from a new empty install each time:
+  pass  the checks before the screenshot pose are identical in the 2 selected launches  (529 / 529)
+Negative control (one expectation made wrong on purpose):
+  pass  wrong: it ran to its end (a failure, not a crash)  (SIMLAB done steps=30 simSeconds=40.6 passed=488 failed=42 aborted=false stopped=false)
+  FAIL  wrong: exactly the doctored check failed  (Peacebloom shared by two recipes: need/in bags/still needed, no cut confirmed, the auction is dearer: the fee is named and no winner is claimed, active plan demand overrides a tempting vendor comparison, repeating the update gives the same lines, not more, green armour: disenchant has no data, so it is said and no winner is claimed, a bound item cannot be listed (unavailable, not unknown), an item with no listing: no price (never 0), more prices needed, a random-properties variant is not priced from the base item's listings, a stack says the values are for one item, Shift: the Always lines plus the age and the source, once each, and the unconfirmed cut stays on the value, released: the short form again, nothing left over, [test input] a verified fee alone cannot repair insufficient competition, unsupported outcome data is absent from the catalog, the catalog has seven supported types among the original eight, the layout starts as the short default, Normal preview of the ordinary example, live values stay the same while the item is kept for the active plan, preview and live values agree while active-plan advice stays distinct, Hold Shift preview adds the Shift lines to the Always lines, once each, the live tooltip with Shift held has the same kinds of lines (this scan's own age and market), clicking a row selects it, Move down puts Vendor after Auction, and the preview shows it, and the live tooltip follows at once, Auction is a Hold Shift line, live, Shift not held: no auction line, the suggestion unchanged, live, Shift held: the auction line is back in its place, with 'before fees', once, Remove takes it out, clicking an unused line adds it at the end (its usual choice in the Hold Shift preview), clicking it again adds nothing: no duplicate line types, Auction back to Always, [handler] OnDragStop over the mockup adds the line there, [handler] OnDragStart on a row carries it, [handler] dropped below the last row: Recommendation moved to the end of the shown rows, [handler] released outside: nothing changed, Reset layout puts the short default back, and the live tooltip is the default again, missing prices: said once, the unknown stays unknown (never zero), an action that can't be done and an unknown value, side by side, supported gross auction advice retains the before-fees qualification, back on: the section is back, Bronze Bar (make suggested))
+  FAIL  wrong: every other check passed  (530 checks, 42 failed)
+Screenshots (files only; whether they look right is for a person to judge):
+  pass  craft.png is 1600x1200  (1600x1200)
+  pass  craft.png: the window area is not blank  (8865 distinct colours)
+  pass  opps.png is 1600x1200  (1600x1200)
+  pass  opps.png: the window area is not blank  (9742 distinct colours)
+Evidence from this run (one launch; the others repeat it, then end in another view):
+  Window opened by /tui workshop ... yes (12 init checks)
+  Displayed text and state ......... yes (279 checks, read from the drawn frames)
+  Control interaction .............. yes, HANDLER-LEVEL (26 checks): Button:Click(). No pointer, hit test, focus or keyboard.
+  Game events ...................... yes (27 checks): fired by the simulator (BAG_UPDATE_DELAYED, TRADE_SKILL_LIST_UPDATE, MERCHANT_SHOW, REPLICATE_ITEM_LIST_UPDATE)
+  Direct handler calls ............. yes (38 checks): Session functions called by the scenario, not through a control
+  Underlying state ................. yes, in memory (148 checks)
+  Game data ........................ FAKE and deterministic (professions, items, bags, auction listings, merchant); the world map and NpcMap.Locate are stand-ins in the Show vendor step
+  Persistence tested ............... NO: nothing is reloaded or written to disk. Closing and reopening the window is not persistence.
+  Screenshots ...................... captured WITHOUT game assets: craft.png, opps.png (a script cannot judge them; look at them, and remember custom fonts are not drawn)
+  Real-client tested ............... NO
+530 checks per launch; 40.6 s of simulated time.
+Classified errors (kept in the log, not hidden):
+  Known delayed failure (simulator string rule; the game's contract is not established here)
+    addon-message-invalid-utf8: the simulator's SendAddonMessage refuses a payload that is not UTF-8
+    seen: 1 error(s) printed in full, 0 more summarised by the simulator; first printed after simulated t=None s (ticks are 0.5 s apart)
+    from TwichUI: libs/AceComm-3.0/ChatThrottleLib.lua:391 PerformSend <- libs/AceComm-3.0/ChatThrottleLib.lua:597 SendAddonMessageInternal <- libs/AceComm-3.0/ChatThrottleLib.lua:641 SendAddonMessage <- libs/AceComm-3.0/AceComm-3.0.lua:117 SendCommMessage <- npcs/Share.lua:334 <anonymous> (x1)
+  Unsupported behavior (simulator), shows up as a delayed error
+    voice-settings-unsupplied: C_VoiceChat.CanAccessSettings is not answered by the simulator
+    seen: 9 error(s) printed in full, 14 more summarised by the simulator; first printed after simulated t=None s (ticks are 0.5 s apart)
+FAIL

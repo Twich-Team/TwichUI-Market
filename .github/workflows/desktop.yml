@@ -209,3 +209,98 @@ jobs:
         with:
           name: workshop-production-lua-acceptance
           path: acceptance/workshop-large/
+
+  prepared-publisher:
+    # Independent of the installed UI campaign: a UI failure must not silently
+    # skip the new wire-format producer/consumer acceptance.
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/checkout@v4
+        with:
+          repository: Twich-Team/TwichUI
+          ref: 2da68dc6674fa71c92edfce38902197133177191
+          path: prepared-addon
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.100.0
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: desktop -> target
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r backend/requirements.lock
+      - run: cargo build --manifest-path desktop/Cargo.toml --example workshop_smoke --locked
+      - name: Freeze the shared synthetic source instant for both layouts
+        shell: pwsh
+        run: |
+          "WORKSHOP_FIXTURE_AS_OF=$([DateTime]::UtcNow.AddMinutes(-1).ToString('o'))" >> $env:GITHUB_ENV
+      - name: Build isolated offline acceptance helper without changing normal native flags
+        run: cargo build --manifest-path desktop/Cargo.toml --example prepared_private_publish --features private-dev --locked
+      - name: Actual native prepared 16 publication (60 synthetic days)
+        run: python scripts/verify-workshop-e2e.py --rust-client desktop/target/debug/examples/workshop_smoke.exe --addon-root prepared-addon --current --prepared 16 --fixture-as-of "$env:WORKSHOP_FIXTURE_AS_OF" --private-publisher desktop/target/debug/examples/prepared_private_publish.exe --variants 129 --days 60 --publish --skip-lua --out artifacts/prepared/16
+      - name: Actual native prepared 32 publication (60 synthetic days)
+        run: python scripts/verify-workshop-e2e.py --rust-client desktop/target/debug/examples/workshop_smoke.exe --addon-root prepared-addon --current --prepared 32 --fixture-as-of "$env:WORKSHOP_FIXTURE_AS_OF" --private-publisher desktop/target/debug/examples/prepared_private_publish.exe --variants 129 --days 60 --publish --skip-lua --out artifacts/prepared/32
+      - name: Actual native 25-container publication (same 60-day source)
+        run: python scripts/verify-workshop-e2e.py --rust-client desktop/target/debug/examples/workshop_smoke.exe --addon-root prepared-addon --current --prepared 32 --containers --fixture-as-of "$env:WORKSHOP_FIXTURE_AS_OF" --private-publisher desktop/target/debug/examples/prepared_private_publish.exe --variants 129 --days 60 --publish --skip-lua --out artifacts/prepared/25
+      - name: Require identical 16-baseline and 25-container prices and all histories
+        run: python scripts/verify-prepared-layout-pair.py artifacts/prepared/16/publication artifacts/prepared/25/publication > artifacts/prepared/container-pair.json
+      - name: Require identical source generation, prices and all 64 histories
+        run: python scripts/verify-prepared-layout-pair.py artifacts/prepared/16/publication artifacts/prepared/32/publication > artifacts/prepared/layout-pair.json
+      - name: Checkout exact old Companion source for compatibility
+        uses: actions/checkout@v4
+        with:
+          repository: Twich-Team/TwichUI-Market
+          ref: e2882dd822b356ffa081efebbff167827f9bf364
+          path: legacy-market
+          persist-credentials: false
+      - name: Old Companion with prepared-capable addon must stay on Contract 3 legacy files
+        shell: pwsh
+        run: |
+          cargo build --manifest-path legacy-market/desktop/Cargo.toml --target-dir desktop/target --example workshop_smoke --locked
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python scripts/verify-workshop-e2e.py --rust-client desktop/target/debug/examples/workshop_smoke.exe --addon-root prepared-addon --current --legacy-native --legacy-native-source-root legacy-market --variants 129 --days 60 --publish --skip-lua --out artifacts/prepared/legacy-native
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: prepared-native-publication
+          path: artifacts/prepared
+          if-no-files-found: error
+
+  prepared-consumer:
+    needs: prepared-publisher
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/checkout@v4
+        with:
+          repository: Twich-Team/TwichUI
+          ref: 2da68dc6674fa71c92edfce38902197133177191
+          path: prepared-addon
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: prepared-native-publication
+          path: prepared-publication
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq lua5.1 lua-bitop
+      - name: Build offline system-codec adapter (not Forever timing)
+        run: cc -shared -fPIC -O2 scripts/codec_zlib_offline.c -lz -lcrypto -o "$RUNNER_TEMP/market-codec.so"
+      - name: Exact Windows files through production Lua and Opportunities
+        working-directory: prepared-addon/tests
+        shell: bash
+        run: |
+          export WORKSHOP_CODEC_NATIVE="$RUNNER_TEMP/market-codec.so"
+          for fixture in 16 32 25 legacy-native; do
+            layout="$fixture"; if [ "$fixture" = legacy-native ]; then layout=0; elif [ "$fixture" = 25 ]; then layout=32; fi
+            export WORKSHOP_SUMMARY_ARTIFACT="$GITHUB_WORKSPACE/prepared-publication/$fixture/publication/TwichUI_MarketData/Data.lua"
+            export WORKSHOP_SUMMARY_PARTS="$GITHUB_WORKSPACE/prepared-publication/$fixture/publication"
+            export WORKSHOP_PREPARED_EXPECTED_LAYOUT="$layout"
+            lua5.1 -e 'require("bit"); ROOT="../!!!TwichUI/"; REPO="../"; TESTS="./"' "$GITHUB_WORKSPACE/scripts/test_workshop_prepared_artifact.lua"
+          done

@@ -1,0 +1,10 @@
+{
+  "source": "68713e73e2936c46ce6b70f1cd8c2a54e607be5a",
+  "run": 45088252331,
+  "job": 137411733291,
+  "conclusion": "failure",
+  "message": "Native picker reused a stale selection or validation",
+  "first_valid_selection": "passed",
+  "stage": "Repeated selection coverage; exact selected/valid assertion failed",
+  "follow_up": "Select all prior Edit text with scalar EM_SETSEL instead of assuming Ctrl+A; preserve path/validation assertions and deadlines"
+}

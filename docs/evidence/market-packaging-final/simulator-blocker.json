@@ -1,0 +1,21 @@
+{
+  "source": "fb64eeebcc58d08fcec3d92adab6c2c69080de23",
+  "run": 45119849609,
+  "job": 137510875627,
+  "conclusion": "failure",
+  "phase": "required sandbox preflight",
+  "command": "unshare -Ur true",
+  "error": "unshare: write failed /proc/self/uid_map: Operation not permitted",
+  "simulator_executed": false,
+  "local_rootless_same_failure": true,
+  "security_relaxation": false,
+  "suites_skipped_into_pass": false,
+  "release_blocked": true,
+  "actual_bubblewrap": {
+    "run": 45121804607,
+    "job": 137517036003,
+    "local_and_ci_error": "bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted",
+    "actual_existing_sandbox_arguments_tested": true,
+    "security_relaxed": false
+  }
+}

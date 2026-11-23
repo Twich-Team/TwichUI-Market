@@ -1,0 +1,22 @@
+{
+  "measured_addon": "a59bbcec042485e281a28fb54f14202d5b0abc8d",
+  "delivered_addon": "db5bd544759c725a7f3dfe12d62743253f9e8551",
+  "changes": [
+    "TwichUI_Diagnostics/Gauges.lua",
+    "TwichUI_Diagnostics/Presets.lua",
+    "docs/diagnostics.md",
+    "docs/performance/game-ready-current-reader.md",
+    "tests/test_perf_engine.lua"
+  ],
+  "measured_files_identical": {
+    "TwichUI_Workshop/Prepared.lua": "65c5ed52349f9a7400f8053645f75ce6c86a15c29c3407ae9e84d071ecc372d2",
+    "TwichUI_Workshop/Summary.lua": "f0729569c622aab976015e97c772f2e3d2ed37b4f612146485c88bc7086d612e",
+    "TwichUI_Workshop/Pricing.lua": "49f8c1a1e67b86b12472e7e8f21a58d192ff745fb826bd7dd51bc9ba0d509c0b",
+    "TwichUI_Workshop/OpportunityEngine.lua": "0ed2f5c38867335ed0593fcadd66090898f583f77f0b6073603d5498cc9733ed",
+    "TwichUI_Workshop/Session.lua": "3e23fc061ff7ee5a22615a5628782f9bd03b5d999af032f024a184dca1967d4c",
+    "tests/bench_market_opportunities.lua": "5354fd608ac52789d40bc28e96bde1c227199a2797ebc3a438fec2f7bd803bae"
+  },
+  "development_group": "14 passed, zero failed, 10.456s",
+  "native_runtime_changed": false,
+  "note": "Only opt-in passive diagnostics selection, its test and documentation changed. Reader, pricing, core and engine sources are unchanged."
+}
