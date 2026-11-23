@@ -1,0 +1,12 @@
+{
+  "source": "efe5262c391f51a4910c550e8eeb53c24c4e5eab",
+  "run": 45086199220,
+  "job": 137405293605,
+  "conclusion": "failure",
+  "message": "Native folder confirmation unavailable",
+  "location": "scripts/windows/workshop-fixtures.ps1:138",
+  "selection_message": "BFFM_SETSELECTIONW",
+  "button_lookup": "UIAutomation AutomationId=1",
+  "interpretation": "UIA lookup does not establish that native child controls are available; follow-up requires process-checked native IDs and readiness within the original discovery budget",
+  "required_follow_up": "Actual Windows verification; no exception accepted"
+}

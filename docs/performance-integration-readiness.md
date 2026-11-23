@@ -69,3 +69,12 @@ installer build remain pending. Follow [private acceptance](private-prepared-nat
 ## Follow-up fixture cleanup
 
 Run45079104793 completed all three baseline and three candidate automatic-publication comparisons with identical economic hashes, then failed the new strict teardown check. CPython3.12 Proactor `_call_connection_lost` raises WinError10054 in socket.shutdown before socket.close/server._detach, so server.wait_closed cannot finish and SQLite remains in use. The disposable Windows HTTP thread now uses a local SelectorEventLoop Runner, leaving native clients, production services, request retries and timeouts unchanged. A reset-socket lifecycle regression preserves background exceptions and requires clean server shutdown. Linux focused tests pass3/3 with warnings treated as errors; Windows verification pending.
+
+**Verified follow-up:** automatic-sync run [45084411108](https://github.com/Twich-Team/TwichUI-Market/actions/runs/45084411108)
+passes at `1e61ff41747b0d49edc024b174f9df6b4e6dd925`. All three baseline and
+three candidate results match; teardown records stopped server, zero active
+requests and zero loop errors. Exact receipt and artifact SHA are preserved in
+`evidence/prepared-integration-blockers/automatic-sync-passed-45084411108.json`.
+This supersedes the pending automatic-sync status above, not the preserved
+earlier failures. The independent UI harness draft PR49 remains subject to its
+actual Windows checks; no compact packaging implementation has begun.

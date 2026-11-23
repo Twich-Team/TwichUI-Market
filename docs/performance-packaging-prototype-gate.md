@@ -97,3 +97,13 @@ limits and all upgrade/data-retention assertions. Failure remains failure.
 Automatic-sync lifecycle repair runs independently. Its status and final hosted
 source/check links are recorded in the integration readiness report. No required
 failure is suppressed and no native acceptance claim follows from a host test.
+
+Automatic-sync run [45084411108](https://github.com/Twich-Team/TwichUI-Market/actions/runs/45084411108)
+now passes at `1e61ff41747b0d49edc024b174f9df6b4e6dd925`: all six comparisons
+have identical values, the server stops, and no active requests or background
+loop errors remain. Receipt: `evidence/prepared-integration-blockers/automatic-sync-passed-45084411108.json`.
+The separate first picker regression at `efe5262` fails because UIA cannot find
+the confirmation button after navigation. The follow-up uses native IDOK/IDCANCEL
+handles and waits for child readiness within the original discovery budget;
+this does not retry an application failure. Actual Windows re-verification is
+required; the failed run remains evidence, not a passing exception.
