@@ -6,7 +6,33 @@ deploying the backend/private Companion through the existing signing/distributio
 process, provided all gates pass. No public addon release or temporary codec probe
 merge is authorized. Offline observations are never real Forever results.
 
-## Source and dependency inventory
+## Current result — 2026-11-23 07:30 UTC
+
+**25 addons selected and implemented.** At the larger frozen fixture, current
+physical-load p95 / maximum is4.326 /5.499ms, versus19.567 /20.889ms for13 and
+9.137 /12.120ms for17. The repeatable13-addon loading hitch is reproduced
+and avoided by the selected layout in this offline host. Native Forever remains
+unavailable; this is not real-client frame acceptance.
+
+Final source pair: Market **85f7dbd0a203553d5120ae601ef4d279c1561143** and
+addon **daa674f58b33dc1640cf17f0ef9af8a8778fe702**, including prepared reader
+**ee4120880e55b88d588392769fdd6682820d300d** and independently approved addon
+main **364c4c28889d621335bc4b3a7b61d234c0b04ce0**. Market's final backend,
+website, native Windows install, picker, signed updater, publication and both
+consumer checks pass; repeated Windows comparison is finishing. Addon's328
+modules and fast Market check pass. **The required full simulator remains
+blocked** by the actual isolated-network sandbox failure on both permitted
+local and standard CI environments. No failed check or security gate is waived.
+
+Only the independent collector repair has merged/deployed: Market main
+**3f0421a2221e424df751b963f5b66b445e319018**, PR51. The worker-only replacement
+is running with original limits, settings and retry; natural house114 recovery
+is still pending at08:07:31 UTC or its next normal poll. API/frontend and private
+Companion2.0.0-beta.11 distribution are unchanged. No coordinated PR has merged,
+no prepared backend was deployed, and no new Companion or public addon release
+was published. The exact earlier checkpoints below remain chronological evidence.
+
+## Initial source and dependency inventory (historical checkpoint)
 
 Market main is `e2882dd822b356ffa081efebbff167827f9bf364`. Draft chain:
 46 (`fce5c057`) → 47 (`2fcd450a`) → 48 (`1e61ff41`) → 49 (`1e105b16`)
