@@ -64,6 +64,13 @@
     {
       "kind": "initial benchmark harness",
       "reason": "JSON null is truthy sentinel in Lua; native-codec adapter selection now requires string; initial failures excluded"
+    },
+    {
+      "kind": "full picker verification after first foreground correction",
+      "run": 45104103504,
+      "job": 137461324518,
+      "reason": "process guard rejected pointer target; no pointer/text input was sent to a foreign window",
+      "accepted_as_pass": false
     }
   ],
   "final_market_checks": "Authoritative final-head results are linked from draft PR50 after its final verification; no pending or skipped dependent check is declared passing here.",
@@ -75,5 +82,13 @@
     "no release",
     "no production activation"
   ],
-  "full_forever_transport_executed": false
+  "full_forever_transport_executed": false,
+  "foreground_fix_final": {
+    "source": "516a1d3bef62f50e68147b32960f64941299a8ac",
+    "run": 45104815135,
+    "job": 137463559570,
+    "status": "success",
+    "verified_foreground_and_focus_selections": 4,
+    "method": "one asynchronous NOACTIVATE raise of the process-checked disposable dialog, visibility observation within original deadline, then one real checked click; no arbitrary input retry or relaxed assertion"
+  }
 }

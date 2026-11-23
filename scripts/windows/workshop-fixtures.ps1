@@ -83,6 +83,7 @@ public static class SummaryPickerControls {
  [StructLayout(LayoutKind.Sequential)] public struct Point { public int X,Y; public Point(int x,int y){X=x;Y=y;} }
  [DllImport("user32.dll")] public static extern IntPtr WindowFromPoint(Point point);
  [DllImport("user32.dll")] public static extern IntPtr GetAncestor(IntPtr window,uint flags);
+ [DllImport("user32.dll",SetLastError=true)] public static extern bool SetWindowPos(IntPtr window,IntPtr after,int x,int y,int width,int height,uint flags);
  [StructLayout(LayoutKind.Sequential)] public struct Rect { public int Left,Top,Right,Bottom; }
  [StructLayout(LayoutKind.Sequential)] public struct GuiThread { public uint cbSize,flags; public IntPtr Active,Focus,Capture,MenuOwner,MoveSize,Caret; public Rect CaretRect; }
  [DllImport("user32.dll")] public static extern bool GetGUIThreadInfo(uint thread,ref GuiThread info);
@@ -153,7 +154,7 @@ function CheckedWindow($element) {
     if($element -is [IntPtr]){$window=$element}else{$window=[IntPtr]$element.Current.NativeWindowHandle}
     [uint32]$owner=0
     $null=[SummaryPickerControls]::GetWindowThreadProcessId($window,[ref]$owner)
-    if($window -eq [IntPtr]::Zero -or $owner -ne [uint32]$env:MARKET_TEST_PRIMARY_PID){throw 'Native control process identity changed'}
+    if($window -eq [IntPtr]::Zero -or $owner -ne [uint32]$env:MARKET_TEST_PRIMARY_PID){throw ('Native control process identity changed: hwnd='+$window.ToInt64()+' expected_pid='+$env:MARKET_TEST_PRIMARY_PID+' actual_pid='+$owner)}
     return $window
 }
 function ClickButton($element) {
@@ -173,11 +174,22 @@ if($Action -eq 'CancelFolder') {
     $window=CheckedWindow $edit;$result=[IntPtr]::Zero
     # Actual inventory: enabled WS_TABSTOP Edit14148, but UIA reports it cannot
     # receive focus. Click the real control and verify Win32 GUI-thread focus.
+    # Disposable test presentation only: one asynchronous raise of this owned
+    # dialog. NOACTIVATE preserves the requirement for a genuine click; ASYNC
+    # avoids an unbounded cross-thread wait. No retrying pointer/keyboard input.
+    if(-not [SummaryPickerControls]::SetWindowPos((CheckedWindow $dialogWindow),[IntPtr]::new(-1),0,0,0,0,0x4013)){throw 'Could not present the process-checked native dialog'}
     $rect=[SummaryPickerControls+Rect]::new()
     if(-not [SummaryPickerControls]::GetWindowRect($window,[ref]$rect) -or $rect.Right -le $rect.Left -or $rect.Bottom -le $rect.Top){throw 'Native folder edit rectangle unavailable'}
     $point=[SummaryPickerControls+Point]::new([int](($rect.Left+$rect.Right)/2),[int](($rect.Top+$rect.Bottom)/2))
-    $hit=[SummaryPickerControls]::WindowFromPoint($point)
-    if($hit -eq [IntPtr]::Zero -or [SummaryPickerControls]::GetAncestor((CheckedWindow $hit),2) -ne $dialogWindow){throw 'Refusing native pointer input outside the checked folder dialog'}
+    # Wait for the queued presentation operation inside the original dialog
+    # deadline. Observe only: never click an occluding or foreign window.
+    while($true) {
+        $hit=[SummaryPickerControls]::WindowFromPoint($point);[uint32]$hitOwner=0
+        $null=[SummaryPickerControls]::GetWindowThreadProcessId($hit,[ref]$hitOwner)
+        if($hit -ne [IntPtr]::Zero -and $hitOwner -eq [uint32]$env:MARKET_TEST_PRIMARY_PID -and [SummaryPickerControls]::GetAncestor($hit,2) -eq $dialogWindow){break}
+        if([DateTime]::UtcNow -ge $dialogDeadline){throw ('Native edit point remains occluded; expected_pid='+$env:MARKET_TEST_PRIMARY_PID+' actual_pid='+$hitOwner)}
+        Start-Sleep -Milliseconds 50
+    }
     # SetForegroundWindow may be denied or activation may still be pending.
     # A single real click on the verified visible target activates the dialog;
     # no keyboard/edit input is permitted until actual foreground AND focus agree.

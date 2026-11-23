@@ -293,3 +293,15 @@ Repeat once after a complete generation replacement; verify reload-required
 behavior instead of mixed data. Do not test rollback during live gameplay.
 The owner must approve any native installation, coordinated merge or activation;
 no such action occurred here. Do not merge probe135 or its temporary ZIP.
+
+
+Final focused presentation follow-up: the first click-activation correction
+passed its focused run, but full run45104103504 safely refused a foreign pointer
+target (job137461324518). The fixture now makes only its process-checked disposable
+dialog topmost with one asynchronous NOACTIVATE operation, observes the owned
+point becoming visible within the original deadline, then uses the same real
+click/foreground/focus/path assertions. It never clicks an occluding window.
+Focused Windows [45104815135](https://github.com/Twich-Team/TwichUI-Market/actions/runs/45104815135)
+passes all four exact paths with verified foreground/focus. This is test-only
+presentation, not a production picker or security-policy change. Final combined
+verification remains mandatory; neither earlier failed run is reclassified.
