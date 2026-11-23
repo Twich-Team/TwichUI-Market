@@ -1,5 +1,5 @@
 import { Loading } from "./loading";
-import { currentLocation, explorerState, explorerUrl, navigate, restoration, saveRestoration, type ExplorerState } from "./navigation";
+import { canonicalizeExplorerUrl, explorerState, explorerUrl, navigate, restoration, saveRestoration, type ExplorerState } from "./navigation";
 import { usePreferences } from "./preferences";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState, DependencyList } from "react";
@@ -83,7 +83,7 @@ export function Explorer({markets,market,setMarket,searchParams,marketsReady}: {
   const [summary,setSummary]=useState({synthetic:false,empty:false});
   const current=markets.find(row=>row.id===state.market);
   useEffect(()=>{setSearch(restoration()?.draft??state.query);},[state.query,state.market]);
-  useEffect(()=>{if(markets.length&&current&&currentLocation()!==explorerUrl(state))navigate(explorerUrl(state),true);},[markets.length,state.market,state.query,state.sort.id,state.sort.desc,state.pageIndex,state.pageSize]);
+  useEffect(()=>{if(markets.length&&current)canonicalizeExplorerUrl(searchParams,state);},[searchParams,markets.length,state.market,state.query,state.sort.id,state.sort.desc,state.pageIndex,state.pageSize]);
   function change(next:ExplorerState){navigate(explorerUrl(next),true);}
   return <div className="explorer-page">
     <h1>Market Explorer</h1>

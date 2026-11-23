@@ -33,6 +33,12 @@ export function explorerUrl(state:ExplorerState):string {
   const p=new URLSearchParams({market:String(state.market),q:state.query,sort:state.sort.id,direction:state.sort.desc?'desc':'asc',page:String(state.pageIndex),page_size:String(state.pageSize)});
   return '/?'+p;
 }
+export function canonicalizeExplorerUrl(renderedSearch:string,state:ExplorerState) {
+  // A passive effect from the previous page must not undo a newer navigation.
+  if(currentLocation()!=='/'+renderedSearch)return;
+  const canonical=explorerUrl(state);
+  if(currentLocation()!==canonical)navigate(canonical,true);
+}
 export function safeBrowseUrl(value:unknown):string|null {
   if(typeof value!=='string'||value.length>2048||!value.startsWith('/')||value.startsWith('//')||/[\\\r\n]/.test(value))return null;
   const u=new URL(value,'https://market.invalid');
