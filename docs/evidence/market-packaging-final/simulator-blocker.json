@@ -1,0 +1,14 @@
+{
+  "source": "fb64eeebcc58d08fcec3d92adab6c2c69080de23",
+  "run": 45119849609,
+  "job": 137510875627,
+  "conclusion": "failure",
+  "phase": "required sandbox preflight",
+  "command": "unshare -Ur true",
+  "error": "unshare: write failed /proc/self/uid_map: Operation not permitted",
+  "simulator_executed": false,
+  "local_rootless_same_failure": true,
+  "security_relaxation": false,
+  "suites_skipped_into_pass": false,
+  "release_blocked": true
+}
