@@ -404,3 +404,5 @@ The required full simulator check still fails because its sandbox cannot create
 isolated networking in the available environments. That explicit failed gate
 prevents coordinated merging/deployment even after production collection recovers.
 No additional product change, test waiver or security relaxation is proposed.
+
+[Final-source Windows receipts](evidence/market-packaging-final/final-windows-receipts.json) also retain the exact artifact hashes, one-run confirmation counters, legacy installer retention, selected native publication and193→25 restore/remigration acceptance. The broader installed-UI fixture deliberately exercises its older compatible addon; the prepared publisher/consumer independently pins the final addon source. All fixtures remain explicitly synthetic and are not gameplay observations.

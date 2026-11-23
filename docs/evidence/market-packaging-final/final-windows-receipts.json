@@ -1,0 +1,243 @@
+{
+  "market_head": "85f7dbd0a203553d5120ae601ef4d279c1561143",
+  "tested_immutable_preview": "06626a43b518d714094986c54de53f081b6bb457",
+  "addon_head": "daa674f58b33dc1640cf17f0ef9af8a8778fe702",
+  "synthetic": true,
+  "real_game": false,
+  "artifacts": [
+    {
+      "name": "final-windows-acceptance.zip",
+      "artifact_id": 14798120937,
+      "bytes": 4673226,
+      "sha256": "afd9bf91e0b4307d8e62294d711a6efa514a418690eaaab4724340853559e778"
+    },
+    {
+      "name": "final-prepared-publication.zip",
+      "artifact_id": 14797656984,
+      "bytes": 453123,
+      "sha256": "2555dc2e8d7033529edcea4d3d9deb87a3f4ec2f7ac3eb6215b88fe923c665dc"
+    }
+  ],
+  "receipts": {
+    "legacy-upgrade.json": {
+      "fixture": true,
+      "source_commit": "06626a43b518d714094986c54de53f081b6bb457",
+      "from_version": "0.1.0",
+      "to_version": "2.0.0-beta.11",
+      "actual_old_installer": true,
+      "actual_new_installer": true,
+      "legacy_credentials_preserved": true,
+      "cache_preserved": true,
+      "connection_settings_preserved": true,
+      "legacy_metadata_migrated": true,
+      "new_native_sync": true,
+      "export_contract_preserved": true,
+      "signed_updater_sdk_install": false,
+      "uninstall_data_preservation_verified_by_parent": true
+    },
+    "workshop-installed/confirmation-network.json": {
+      "fixture": true,
+      "source_commit": "06626a43b518d714094986c54de53f081b6bb457",
+      "before": {
+        "bearer_requests": 14,
+        "token_requests": 4,
+        "sync_requests": 4,
+        "price_runs": 3,
+        "summary_preparations": 0
+      },
+      "after": {
+        "bearer_requests": 22,
+        "token_requests": 5,
+        "sync_requests": 5,
+        "price_runs": 4,
+        "summary_preparations": 1
+      },
+      "before_sync": {
+        "phase": "ready",
+        "automatic_sync": true,
+        "next_sync_ms": 1795422214219,
+        "last_sync_ms": 1795418614219,
+        "last_server_check_ms": 1795418578331,
+        "upstream_update_ms": null,
+        "generation": "1:1667b6d19ec287ae8d9e0835bc6a3094a275d5785905445ab424a1f16876b9bd",
+        "received_new_generation": false,
+        "pages_completed": 1,
+        "retry_attempts": 0,
+        "selected_market": 1,
+        "running": false
+      },
+      "events": [
+        {
+          "at": 807.218,
+          "method": "POST",
+          "path": "/api/v1/companion/token",
+          "status": 200
+        },
+        {
+          "at": 807.406,
+          "method": "GET",
+          "path": "/api/v1/companion/bootstrap",
+          "status": 200
+        },
+        {
+          "at": 807.796,
+          "method": "POST",
+          "path": "/api/v1/companion/token",
+          "status": 200
+        },
+        {
+          "at": 807.906,
+          "method": "GET",
+          "path": "/api/v1/companion/bootstrap",
+          "status": 200
+        },
+        {
+          "at": 807.953,
+          "method": "POST",
+          "path": "/api/v1/companion/activity",
+          "status": 204
+        },
+        {
+          "at": 808.531,
+          "method": "GET",
+          "path": "/api/v1/sync/markets/1",
+          "status": 200
+        },
+        {
+          "at": 809.156,
+          "method": "GET",
+          "path": "/api/v1/sync/markets/1",
+          "status": 200
+        },
+        {
+          "at": 809.656,
+          "method": "GET",
+          "path": "/api/v1/companion/bootstrap",
+          "status": 200
+        },
+        {
+          "at": 813.546,
+          "method": "POST",
+          "path": "/api/v1/companion/token",
+          "status": 200
+        },
+        {
+          "at": 813.625,
+          "method": "GET",
+          "path": "/api/v1/companion/bootstrap",
+          "status": 200
+        },
+        {
+          "at": 813.671,
+          "method": "POST",
+          "path": "/api/v1/companion/activity",
+          "status": 204
+        },
+        {
+          "at": 814.203,
+          "method": "GET",
+          "path": "/api/v1/sync/markets/1",
+          "status": 200
+        },
+        {
+          "at": 832.531,
+          "method": "POST",
+          "path": "/api/v1/companion/token",
+          "status": 200
+        },
+        {
+          "at": 832.625,
+          "method": "GET",
+          "path": "/api/v1/companion/bootstrap",
+          "status": 200
+        },
+        {
+          "at": 832.671,
+          "method": "POST",
+          "path": "/api/v1/companion/activity",
+          "status": 204
+        },
+        {
+          "at": 833.203,
+          "method": "GET",
+          "path": "/api/v1/sync/markets/1",
+          "status": 200
+        },
+        {
+          "at": 837.562,
+          "method": "POST",
+          "path": "/api/v1/companion/token",
+          "status": 200
+        },
+        {
+          "at": 837.64,
+          "method": "GET",
+          "path": "/api/v1/companion/bootstrap",
+          "status": 200
+        },
+        {
+          "at": 837.687,
+          "method": "POST",
+          "path": "/api/v1/companion/activity",
+          "status": 204
+        },
+        {
+          "at": 838.218,
+          "method": "GET",
+          "path": "/api/v1/sync/markets/1",
+          "status": 200
+        },
+        {
+          "at": 838.312,
+          "method": "GET",
+          "path": "/api/v1/workshop/markets/1/summary",
+          "status": 202
+        },
+        {
+          "at": 843.39,
+          "method": "GET",
+          "path": "/api/v1/workshop/markets/1/summary",
+          "status": 200
+        }
+      ]
+    },
+    "container-pair.json": {
+      "pair_matches": true,
+      "generation": "95df167950ff06d537c51ab7d86d80d7790a305650863e4570226024e085826d",
+      "history_partitions": 64,
+      "current_records": 129,
+      "current_tuple_sha256": "47a90bd3b6904e96d0c82af4d40276132b6542ca211ab64a952b7ab31b7caa32",
+      "attestation_16": "209cfc39cf6409d14ded68227da155141b344a5196b96578b3d9ef574d44c8ba",
+      "attestation_32": "b49a7878cf383d4d11fdf8e42f4fedda83dbcf9258a49d4e54d2b56b0d6c53f4"
+    },
+    "25/private-tools.json": {
+      "fixture_synthetic": true,
+      "real_game": false,
+      "private_marker_enforced": true,
+      "native_validation_enforced": true,
+      "same_layout_no_change": true,
+      "isolated_endpoint_401_200_304": true,
+      "source_generation": "95df167950ff06d537c51ab7d86d80d7790a305650863e4570226024e085826d",
+      "windows_container_lifecycle": null
+    },
+    "32/private-tools.json": {
+      "fixture_synthetic": true,
+      "real_game": false,
+      "private_marker_enforced": true,
+      "native_validation_enforced": true,
+      "same_layout_no_change": true,
+      "isolated_endpoint_401_200_304": true,
+      "source_generation": "95df167950ff06d537c51ab7d86d80d7790a305650863e4570226024e085826d",
+      "windows_container_lifecycle": {
+        "changed": false,
+        "container_lifecycle_verified": true,
+        "generation": "95df167950ff06d537c51ab7d86d80d7790a305650863e4570226024e085826d",
+        "history_partitions": 64,
+        "layout": 32,
+        "offline": true,
+        "source_commit": "CI fixture",
+        "source_synthetic": false
+      }
+    }
+  }
+}
