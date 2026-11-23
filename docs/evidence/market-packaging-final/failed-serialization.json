@@ -1,0 +1,143 @@
+{
+  "synthetic": true,
+  "real_client": false,
+  "host": "Linux-6.8.0-149-generic-x86_64-with-glibc2.41",
+  "market_commit": "50246f1d54d4e3f3093ce6ac877c31fe0727f00c",
+  "addon_commit": "5b25af4eb84eabbd31719979e3b4320851f3585b",
+  "baseline_addon_commit": "ecc369d5c28686271ad7fc85c414a5e4b0d19de8",
+  "sources": {
+    "/home/marketdev/projects/TwichUI-Market/.worktrees/packaging-addon": {
+      "TwichUI_Workshop/Containers.lua": "e220bb392a5cf0a98c3f3c563f200d6978b5fec4c0d831bade575525d1fe3093",
+      "TwichUI_Workshop/Prepared.lua": "d437dcfc8404096e8c5839c50bad4bf3bcbc5c92f24345ffb459938cd2a76b7f",
+      "TwichUI_Workshop/Summary.lua": "ba40977742eeac2f1a5e0c9d254cc862dea28cb59c83b7d36949f2f611dbb1ec",
+      "TwichUI_Workshop/Pricing.lua": "49f8c1a1e67b86b12472e7e8f21a58d192ff745fb826bd7dd51bc9ba0d509c0b",
+      "TwichUI_Workshop/OpportunityEngine.lua": "0ed2f5c38867335ed0593fcadd66090898f583f77f0b6073603d5498cc9733ed",
+      "tests/bench_market_opportunities.lua": "5354fd608ac52789d40bc28e96bde1c227199a2797ebc3a438fec2f7bd803bae"
+    },
+    "/home/marketdev/projects/TwichUI-Market/.worktrees/packaging-baseline": {
+      "TwichUI_Workshop/Prepared.lua": "65c5ed52349f9a7400f8053645f75ce6c86a15c29c3407ae9e84d071ecc372d2",
+      "TwichUI_Workshop/Summary.lua": "f0729569c622aab976015e97c772f2e3d2ed37b4f612146485c88bc7086d612e",
+      "TwichUI_Workshop/Pricing.lua": "49f8c1a1e67b86b12472e7e8f21a58d192ff745fb826bd7dd51bc9ba0d509c0b",
+      "TwichUI_Workshop/OpportunityEngine.lua": "0ed2f5c38867335ed0593fcadd66090898f583f77f0b6073603d5498cc9733ed",
+      "tests/bench_market_opportunities.lua": "5354fd608ac52789d40bc28e96bde1c227199a2797ebc3a438fec2f7bd803bae"
+    }
+  },
+  "harness": {
+    "scripts/compare-current-containers.py": "f336e88d35af47860930e4070ee4cfec4bb55dc9220a12979a4597d7a151e756",
+    "scripts/bench_workshop_prepared.lua": "52dc621e0d777a5b7b0c140426cd6b4d699962bf34951873869a782107293d09",
+    "scripts/container_artifact.py": "5dd7231fb204e3ace4a38a8ea0b37cadb437ce997963b8d5d6010a37a5d54613",
+    "scripts/prepared_fixture_driver.py": "2d98f0f3cfc2ca266231681f8c705a69fd78fb28c884e5d79160affaa43edf5f",
+    "scripts/codec_zlib_offline.c": "74bb16c668f094b7e381a0c6180e74d1c4902ebfeda3a8973a28ff6c4db3f331"
+  },
+  "native_driver_sha256": "4fdac8bae3933b9e4b36fac9f0d8f5bbd8e8644e6c4a11926e84028d23eb0a93",
+  "native_codec_sha256": "223c43a7276f0d6f97af61054fc6fe89421e61caacff9fd86e386d9c820406d3",
+  "repetitions": 30,
+  "clock": "Lua os.clock actual CPU; perf_counter actual process elapsed; scheduler seconds modeled at 60Hz",
+  "caches": "fresh Lua process and cold reader/pricing caches; warm filesystem cache; one discarded warmup per case",
+  "codec": "offline system zlib/OpenSSL, not native Forever",
+  "selection_only_regrouping": true,
+  "view": "session",
+  "scenario": "none",
+  "cases": [
+    {
+      "packaging": 193,
+      "recipes": 120,
+      "samples": []
+    },
+    {
+      "packaging": 193,
+      "recipes": 1000,
+      "samples": []
+    },
+    {
+      "packaging": 193,
+      "recipes": 5000,
+      "samples": []
+    },
+    {
+      "packaging": 13,
+      "recipes": 120,
+      "samples": []
+    },
+    {
+      "packaging": 13,
+      "recipes": 1000,
+      "samples": []
+    },
+    {
+      "packaging": 13,
+      "recipes": 5000,
+      "samples": []
+    },
+    {
+      "packaging": 17,
+      "recipes": 120,
+      "samples": []
+    },
+    {
+      "packaging": 17,
+      "recipes": 1000,
+      "samples": []
+    },
+    {
+      "packaging": 17,
+      "recipes": 5000,
+      "samples": []
+    },
+    {
+      "packaging": 25,
+      "recipes": 120,
+      "samples": []
+    },
+    {
+      "packaging": 25,
+      "recipes": 1000,
+      "samples": []
+    },
+    {
+      "packaging": 25,
+      "recipes": 5000,
+      "samples": [],
+      "status": "failed",
+      "stderr": "lua5.1: invalid bridge encoding\nstack traceback:\n\t[C]: in function 'error'\n\t./TwichUI_Workshop/BridgeCodec.lua:9: in function 'fail'\n\t./TwichUI_Workshop/BridgeCodec.lua:146: in function 'emit'\n\t./TwichUI_Workshop/BridgeCodec.lua:149: in function 'Encode'\n\ttests/bench_market_opportunities.lua:442: in main chunk\n\t[C]: ?\n",
+      "returncode": 1
+    }
+  ],
+  "fixture_sha256": "815f81d023a45b3d1c6e3d5d0ea7e8bf6ed3e2e7688203dc300d12f7dec08d8f",
+  "source_generation": "ae761007c97a7456827f0d2d61925fa52ee4edf1623eab009572f65b6b2e1abc",
+  "records": 16384,
+  "reader_fingerprints": {
+    "193": {
+      "TwichUI_Workshop/Prepared.lua": "65c5ed52349f9a7400f8053645f75ce6c86a15c29c3407ae9e84d071ecc372d2",
+      "TwichUI_Workshop/Summary.lua": "f0729569c622aab976015e97c772f2e3d2ed37b4f612146485c88bc7086d612e",
+      "TwichUI_Workshop/Pricing.lua": "49f8c1a1e67b86b12472e7e8f21a58d192ff745fb826bd7dd51bc9ba0d509c0b",
+      "TwichUI_Workshop/OpportunityEngine.lua": "0ed2f5c38867335ed0593fcadd66090898f583f77f0b6073603d5498cc9733ed",
+      "tests/bench_market_opportunities.lua": "5354fd608ac52789d40bc28e96bde1c227199a2797ebc3a438fec2f7bd803bae"
+    },
+    "13": {
+      "TwichUI_Workshop/Containers.lua": "e220bb392a5cf0a98c3f3c563f200d6978b5fec4c0d831bade575525d1fe3093",
+      "TwichUI_Workshop/Prepared.lua": "d437dcfc8404096e8c5839c50bad4bf3bcbc5c92f24345ffb459938cd2a76b7f",
+      "TwichUI_Workshop/Summary.lua": "ba40977742eeac2f1a5e0c9d254cc862dea28cb59c83b7d36949f2f611dbb1ec",
+      "TwichUI_Workshop/Pricing.lua": "49f8c1a1e67b86b12472e7e8f21a58d192ff745fb826bd7dd51bc9ba0d509c0b",
+      "TwichUI_Workshop/OpportunityEngine.lua": "0ed2f5c38867335ed0593fcadd66090898f583f77f0b6073603d5498cc9733ed",
+      "tests/bench_market_opportunities.lua": "5354fd608ac52789d40bc28e96bde1c227199a2797ebc3a438fec2f7bd803bae"
+    },
+    "17": {
+      "TwichUI_Workshop/Containers.lua": "fb9b7e1a0b5b76c302b9cd529a8381a9c445f24433197b2a6f15680ce3c30a0a",
+      "TwichUI_Workshop/Prepared.lua": "d437dcfc8404096e8c5839c50bad4bf3bcbc5c92f24345ffb459938cd2a76b7f",
+      "TwichUI_Workshop/Summary.lua": "ba40977742eeac2f1a5e0c9d254cc862dea28cb59c83b7d36949f2f611dbb1ec",
+      "TwichUI_Workshop/Pricing.lua": "49f8c1a1e67b86b12472e7e8f21a58d192ff745fb826bd7dd51bc9ba0d509c0b",
+      "TwichUI_Workshop/OpportunityEngine.lua": "0ed2f5c38867335ed0593fcadd66090898f583f77f0b6073603d5498cc9733ed",
+      "tests/bench_market_opportunities.lua": "5354fd608ac52789d40bc28e96bde1c227199a2797ebc3a438fec2f7bd803bae"
+    },
+    "25": {
+      "TwichUI_Workshop/Containers.lua": "cf89dad79e2274c3d8613f6bcfd03cad740f960dc4fc010d74ded658045dba03",
+      "TwichUI_Workshop/Prepared.lua": "d437dcfc8404096e8c5839c50bad4bf3bcbc5c92f24345ffb459938cd2a76b7f",
+      "TwichUI_Workshop/Summary.lua": "ba40977742eeac2f1a5e0c9d254cc862dea28cb59c83b7d36949f2f611dbb1ec",
+      "TwichUI_Workshop/Pricing.lua": "49f8c1a1e67b86b12472e7e8f21a58d192ff745fb826bd7dd51bc9ba0d509c0b",
+      "TwichUI_Workshop/OpportunityEngine.lua": "0ed2f5c38867335ed0593fcadd66090898f583f77f0b6073603d5498cc9733ed",
+      "tests/bench_market_opportunities.lua": "5354fd608ac52789d40bc28e96bde1c227199a2797ebc3a438fec2f7bd803bae"
+    }
+  },
+  "logical_streams_identical": true
+}
