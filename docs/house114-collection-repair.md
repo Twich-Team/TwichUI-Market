@@ -172,3 +172,13 @@ command, replace its final release overlay with the versioned rollback overlay,
 and run the same `up -d --no-deps --no-build --pull never worker`. Verify only
 the worker image changes; retain all valid new observations and database schema.
 No database downgrade or destructive recovery is needed.
+
+
+At06:13 UTC the actual deployed private release loader validates the unchanged
+**2.0.0-beta.11** store, source`b39a35c01676b50dbc159f4793e0ad547676acfc`,
+installer4,885,541bytes/SHA256
+`84dacad168dc212d8dda7d06f15ddc5a918f170ba1af0e9ece4e6373cd883129`.
+This is private-store/evidence validation, not a new HTTPS authenticated
+distribution campaign. No grant, signature, installer, update pointer or installed
+client was changed. Older versions remain. No new Companion update is available.
+[Unchanged distribution receipt](evidence/house114-collection/unchanged-companion-distribution.json).
