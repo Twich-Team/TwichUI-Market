@@ -1,5 +1,7 @@
 # Simulator history, policy and CI correction
 
+**Current outcome:** environment restored; full45187769049 actually completed FAIL/exit1 with8 passing catalogs and Workshop/Reminders failing unchanged assertions. TestLab passes in this final run. No coordinated release occurred. [Final execution, exact causes and production state](market-simulator-final-results.md). Earlier pending/environment-blocked entries below are historical.
+
 The simulator and Bubblewrap were introduced together on2026-10-30 by
 f2a23cc3349cffd4b0f367871f1bb24adabc70b0. Setup already pinned v0.1.37 and
 SHA25666e9afa95b61619fb15af335c74a8e9e2b0cc645d9bbf078dca492ec8bf8dfae;

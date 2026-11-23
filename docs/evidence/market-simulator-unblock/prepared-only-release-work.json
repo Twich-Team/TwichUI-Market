@@ -1,0 +1,149 @@
+{
+  "build-inputs.json": {
+    "source": "e48e0eee828355ac1ed95c5be3eec46b032f9e82",
+    "base_image": "sha256:a3f8226431fbef2794187df8f7a4667f7ef5b96ca1f7a294c1ae3ffdccf8f88c",
+    "local_base_alias": "twichui-market-prepared:base-a3f8226431fb",
+    "alias_id_verified": true,
+    "image": "sha256:2de5aa76348ed3977db928464fb72a212b42c57f7142c923e35bda7ff12237cb",
+    "sha256": {
+      "Dockerfile": "fa4fb89e38ae822df9c5e31349f6c479d39fa0135b097e6033764d937a2ff497",
+      "backend/market/workshop_prepared.py": "4adc5588b32ce0e9323f803e1f0559612e152f21be818425b7f8520581ea49b9",
+      "backend/market/feed_collection.py": "5b87938fe4ed112fe8efc7c575a051467636cc316fa5a6f639ee6e880297d02f",
+      "backend/market/security.py": "c0fbb4b3002ed575672779e2a1f341e118bd2b51896633d21ae63399a4b094ae",
+      "backend/market/ingest.py": "2d940a9aadad0d93514a738a4a6378164e863da8228deb32ec83385c57e7f1d6",
+      "backend/market/workshop_summary.py": "64baf97e78cd9c43152192e14a1434d758d32edc346cc66386c1b8ef71a9275a",
+      "contracts/workshop-prepared/v1/attestation.schema.json": "fc469fe327e15455757e086505d9258a90bed9745bf67074135a57f5e7d64617",
+      "contracts/workshop-prepared/v1/README.md": "72251fce7de4b28a91aee1a82c52b0e96354aceab14126747abe5f335b9e400e",
+      "contracts/workshop-prepared/v1/addon-source.txt": "37b3271226423a55facc7dde7f933834d0a25d09053f08b9c66ebeb17980603e",
+      "contracts/workshop-prepared/v1/fixtures/synthetic.json": "c6db7e6cbddcf4590e3dce294ad9fdae24df28f746e8cc3087097d29649438ec"
+    },
+    "production_change": false,
+    "initial_failed_attempt": "build-inputs-initial-failed.json and build.log: BuildKit interprets raw image ID as registry repository; same local object given verified alias, no source or base-byte change."
+  },
+  "image-tests.json": {
+    "verified_at": "2026-11-23T13:41:31.596851+00:00",
+    "image": "sha256:2de5aa76348ed3977db928464fb72a212b42c57f7142c923e35bda7ff12237cb",
+    "returncode": 0,
+    "database": "isolated market_test",
+    "test_source": "e48e0eee828355ac1ed95c5be3eec46b032f9e82",
+    "runtime_source_path": "/usr/local/lib/python3.12/site-packages/market",
+    "production_mounts_or_credentials": false,
+    "tests": [
+      "test_workshop_summary.py",
+      "test_workshop_prepared.py",
+      "test_bridge_export.py",
+      "test_companion_auth.py",
+      "test_auth.py",
+      "test_sync.py",
+      "test_retention_worker.py",
+      "test_retention_policy.py",
+      "test_migration_backfill.py",
+      "test_feed_collection.py",
+      "test_ingest_pricing.py"
+    ],
+    "duplicate_app_bytes_match": true,
+    "module_inventory": "module-inventory.json",
+    "initial_harness_assumption_failure": "Only import path assertion expected /app; actual production site-packages import matches both source locations. Failed receipt retained, no product assertions changed."
+  },
+  "module-inventory.json": {
+    "image": "sha256:2de5aa76348ed3977db928464fb72a212b42c57f7142c923e35bda7ff12237cb",
+    "source": "e48e0eee828355ac1ed95c5be3eec46b032f9e82",
+    "expected_modules": 65,
+    "locations": {
+      "/app/market": {
+        "missing": [],
+        "extra": [],
+        "changed": []
+      },
+      "/usr/local/lib/python3.12/site-packages/market": {
+        "missing": [],
+        "extra": [],
+        "changed": []
+      }
+    },
+    "all_match": true
+  },
+  "compose-preflight.json": {
+    "files": 28,
+    "candidate_image": "sha256:2de5aa76348ed3977db928464fb72a212b42c57f7142c923e35bda7ff12237cb",
+    "collector_image": "sha256:ec94420d36baf501d312f3cbc85e38b77222e5b5bff92b76aae82dd8df95575d",
+    "api_checks": {
+      "api": {
+        "image_correct": true,
+        "environment_mismatches": []
+      },
+      "local-api": {
+        "image_correct": true,
+        "environment_mismatches": []
+      }
+    },
+    "executed": false
+  },
+  "production-mid-verification.json": {
+    "market": {
+      "id": 2,
+      "house_id": 114,
+      "interval_seconds": 300,
+      "last_success": "2026-11-23T14:29:56.07358+00:00",
+      "failures": 0,
+      "last_error": null
+    },
+    "feeds": [
+      {
+        "source_kind": "auctions",
+        "last_success": "2026-11-23T14:29:56.07358+00:00",
+        "failures": 0,
+        "last_error": null,
+        "retry_after": null
+      },
+      {
+        "source_kind": "commodities",
+        "last_success": "2026-11-23T14:29:56.07358+00:00",
+        "failures": 0,
+        "last_error": null,
+        "retry_after": null
+      }
+    ],
+    "at": "2026-11-23T14:34:21.983016+00:00",
+    "companion": {
+      "version": "2.0.0-beta.11",
+      "source_commit": "b39a35c01676b50dbc159f4793e0ad547676acfc",
+      "bytes": 4885541,
+      "sha256": "84dacad168dc212d8dda7d06f15ddc5a918f170ba1af0e9ece4e6373cd883129"
+    },
+    "health": {
+      "status": 200,
+      "body": {
+        "status": "ok",
+        "contract_version": 1
+      }
+    },
+    "all_original_production_container_ids_images_unchanged": true,
+    "provider_requests": 0
+  },
+  "private_addon_archive": {
+    "source_commit": "c872d027bb78771cd50fbec9350a3df159c329e1",
+    "source_tree": "7dda0a4d76238a2ea07a6653dfcf4612299f4584",
+    "zip": "TwichUI-Market-25-c872d027bb78-private.zip",
+    "bytes": 26505078,
+    "sha256": "ea827e4514ade83292753b63964c6b93cb43efa861587241fda75aef6777c8db",
+    "version": "0.0.0-dev.gc872d027bb78",
+    "private_installable": true,
+    "public_release": false,
+    "native_certification": false,
+    "archive_errors": [],
+    "runtime_folders": [
+      "!!!TwichUI",
+      "TwichUI_Settings",
+      "TwichUI_NavData",
+      "TwichUI_Diagnostics",
+      "TwichUI_Layouts",
+      "TwichUI_LayoutWizard",
+      "TwichUI_Workshop"
+    ],
+    "market_data_addons_generated_by_companion": 25,
+    "pending_full_verification": true,
+    "pending_merge": true
+  },
+  "deployment_or_signing_or_publication_executed": false
+}

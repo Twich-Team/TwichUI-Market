@@ -1,0 +1,96 @@
+{
+  "source": {
+    "commit": "c872d027bb78771cd50fbec9350a3df159c329e1",
+    "dirty": false,
+    "working_tree_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "source_after": {
+    "commit": "c872d027bb78771cd50fbec9350a3df159c329e1",
+    "dirty": false,
+    "working_tree_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "source_unchanged": true,
+  "complete": true,
+  "exit_code": 1,
+  "seconds": 3627.13833718,
+  "passed": false,
+  "catalogs": [
+    {
+      "script": "lab-guard",
+      "passed": true,
+      "exit_code": 0,
+      "launches": 0,
+      "scenario_checks": 0
+    },
+    {
+      "script": "smoke",
+      "passed": false,
+      "exit_code": 101,
+      "launches": 2,
+      "scenario_checks": 0
+    },
+    {
+      "script": "interact",
+      "passed": false,
+      "exit_code": 101,
+      "launches": 4,
+      "scenario_checks": 244
+    },
+    {
+      "script": "diagnose",
+      "passed": true,
+      "exit_code": 0,
+      "launches": 6,
+      "scenario_checks": 101
+    },
+    {
+      "script": "auctionproof",
+      "passed": false,
+      "exit_code": 101,
+      "launches": 13,
+      "scenario_checks": 1547
+    },
+    {
+      "script": "auctionpreview",
+      "passed": false,
+      "exit_code": 101,
+      "launches": 52,
+      "scenario_checks": 7290
+    },
+    {
+      "script": "workshop",
+      "passed": false,
+      "exit_code": 101,
+      "launches": 49,
+      "scenario_checks": 26178
+    },
+    {
+      "script": "testlab",
+      "passed": false,
+      "exit_code": 101,
+      "launches": 9,
+      "scenario_checks": 229
+    },
+    {
+      "script": "settings",
+      "passed": false,
+      "exit_code": 101,
+      "launches": 1,
+      "scenario_checks": 22
+    },
+    {
+      "script": "reminders",
+      "passed": false,
+      "exit_code": 101,
+      "launches": 0,
+      "scenario_checks": 0
+    }
+  ],
+  "run": 45185533044,
+  "job": 137730027480,
+  "artifact_id": 14827458297,
+  "artifact_sha256": "f112b82947388914b5c0e79f0ccb33be8c0256c3a961974cae022f0389a66b45",
+  "artifact_bytes": 87013447,
+  "offline_passed": 328,
+  "offline_failed": 0
+}

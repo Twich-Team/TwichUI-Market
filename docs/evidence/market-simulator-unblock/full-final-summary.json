@@ -1,0 +1,184 @@
+{
+  "source": {
+    "commit": "8aa42c16b6896555cd3bc857cf7ab0482dbf4116",
+    "dirty": false,
+    "working_tree_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "source_after": {
+    "commit": "8aa42c16b6896555cd3bc857cf7ab0482dbf4116",
+    "dirty": false,
+    "working_tree_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "source_unchanged": true,
+  "run": 45187769049,
+  "job": 137737762923,
+  "url": "https://github.com/Twich-Team/TwichUI/actions/runs/45187769049",
+  "command": "bash tests/run.sh full --profile cloud --jobs 2 --sim-jobs 1 --measure",
+  "complete": true,
+  "passed": false,
+  "exit_code": 1,
+  "seconds": 3328.762727805,
+  "omitted_catalogs": [],
+  "offline_modules_passed": 328,
+  "offline_modules_failed": 0,
+  "python_test_methods": 244,
+  "lua_syntax_files": 846,
+  "syntax_passed": true,
+  "native_launches": 233,
+  "structured_assertion_executions": 40663,
+  "raw_passed_assertion_markers": 38629,
+  "raw_failed_assertion_markers": 2034,
+  "count_caveat": "Raw failed markers include intentional negative controls. Workshop wrong launch has42 failures (one deliberate and41 duplicated stale failures); positive Workshop launches have1986 failed markers. Passing auctionproof has3 intentional control failures; two integrated control names are not recognized by the generic wrong-filename counter. Catalog verdicts retain the original independent controls; no false count of distinct bugs or waived failure.",
+  "catalogs": [
+    {
+      "script": "lab-guard",
+      "passed": true,
+      "exit_code": 0,
+      "launches": 0,
+      "scenario_checks": 0,
+      "seconds": 0.3574514579999004,
+      "raw_passed_assertion_markers": 0,
+      "raw_failed_assertion_markers": 0,
+      "failed_markers_outside_wrong_named_launch": 0
+    },
+    {
+      "script": "smoke",
+      "passed": true,
+      "exit_code": 0,
+      "launches": 2,
+      "scenario_checks": 0,
+      "seconds": 23.86754337700006,
+      "raw_passed_assertion_markers": 0,
+      "raw_failed_assertion_markers": 0,
+      "failed_markers_outside_wrong_named_launch": 0
+    },
+    {
+      "script": "interact",
+      "passed": true,
+      "exit_code": 0,
+      "launches": 4,
+      "scenario_checks": 244,
+      "seconds": 24.44180376099996,
+      "raw_passed_assertion_markers": 243,
+      "raw_failed_assertion_markers": 1,
+      "failed_markers_outside_wrong_named_launch": 0
+    },
+    {
+      "script": "diagnose",
+      "passed": true,
+      "exit_code": 0,
+      "launches": 6,
+      "scenario_checks": 101,
+      "seconds": 26.357195856999965,
+      "raw_passed_assertion_markers": 101,
+      "raw_failed_assertion_markers": 0,
+      "failed_markers_outside_wrong_named_launch": 0
+    },
+    {
+      "script": "auctionproof",
+      "passed": true,
+      "exit_code": 0,
+      "launches": 13,
+      "scenario_checks": 1547,
+      "seconds": 120.48084736200008,
+      "raw_passed_assertion_markers": 1544,
+      "raw_failed_assertion_markers": 3,
+      "failed_markers_outside_wrong_named_launch": 2
+    },
+    {
+      "script": "auctionpreview",
+      "passed": true,
+      "exit_code": 0,
+      "launches": 52,
+      "scenario_checks": 7290,
+      "seconds": 614.5884319180001,
+      "raw_passed_assertion_markers": 7289,
+      "raw_failed_assertion_markers": 1,
+      "failed_markers_outside_wrong_named_launch": 0
+    },
+    {
+      "script": "workshop",
+      "passed": false,
+      "exit_code": 1,
+      "launches": 49,
+      "scenario_checks": 26178,
+      "seconds": 1276.6535963689998,
+      "raw_passed_assertion_markers": 24150,
+      "raw_failed_assertion_markers": 2028,
+      "failed_markers_outside_wrong_named_launch": 1986
+    },
+    {
+      "script": "testlab",
+      "passed": true,
+      "exit_code": 0,
+      "launches": 9,
+      "scenario_checks": 229,
+      "seconds": 58.77935303100003,
+      "raw_passed_assertion_markers": 229,
+      "raw_failed_assertion_markers": 0,
+      "failed_markers_outside_wrong_named_launch": 0
+    },
+    {
+      "script": "settings",
+      "passed": true,
+      "exit_code": 0,
+      "launches": 62,
+      "scenario_checks": 1090,
+      "seconds": 414.5826257849999,
+      "raw_passed_assertion_markers": 1090,
+      "raw_failed_assertion_markers": 0,
+      "failed_markers_outside_wrong_named_launch": 0
+    },
+    {
+      "script": "reminders",
+      "passed": false,
+      "exit_code": 1,
+      "launches": 36,
+      "scenario_checks": 3984,
+      "seconds": 354.9909046739999,
+      "raw_passed_assertion_markers": 3983,
+      "raw_failed_assertion_markers": 1,
+      "failed_markers_outside_wrong_named_launch": 1
+    }
+  ],
+  "runner": {
+    "os": "Ubuntu24.04.5",
+    "image": "ubuntu-24.04",
+    "image_version": "20261116.133.1",
+    "provider": "AWS us-east-1 disposable GitHub-hosted VM",
+    "glibc": "2.39",
+    "bubblewrap": "0.9.0",
+    "bubblewrap_sha256": "e318903862396f96de3df57264e0158682b952fd3fb53ac23d876413e7b30f71",
+    "libvulkan1": "1.3.275.0-1build1",
+    "mesa_vulkan_drivers": "25.2.8-0ubuntu0.24.04.5"
+  },
+  "simulator": {
+    "version": "v0.1.37",
+    "archive_sha256": "66e9afa95b61619fb15af335c74a8e9e2b0cc645d9bbf078dca492ec8bf8dfae",
+    "ui_source": "ca8368f2f2380cbe696854f7f2646387c278a61b",
+    "unmodified": true
+  },
+  "security": {
+    "global_apparmor_namespace_restriction": 1,
+    "exact_executable_temporary_profile_loaded": true,
+    "profile_cleanup_passed": true,
+    "unchanged_inner_bubblewrap_isolation": true,
+    "production_security_changed": false
+  },
+  "artifact": {
+    "id": 14828757677,
+    "bytes": 185500170,
+    "sha256": "ea70ae22b4ef1ed62affbacaf7f6d99c5ed0e40794e3698c91f79553a3f94136",
+    "local": ".local/simulator-ci-correction/full-8aa42c1-mesa-complete.zip",
+    "png_files": 516,
+    "gpu_adapter_panics": 0,
+    "raw_report_sha256": "a3bc1f753a98409cbf6cc4be3e5794e932daf6844864f3b38c68c892d83e80d3"
+  },
+  "local_milestone_passed": false,
+  "native_forever_tested": false,
+  "unsupported_coverage": [
+    "game asset rendering, client fonts and visual fidelity"
+  ],
+  "release_safe_to_resume": false,
+  "coordinated_merge_deploy_publish_executed": false
+}

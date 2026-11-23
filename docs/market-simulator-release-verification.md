@@ -1,5 +1,7 @@
 # Simulator environment and coordinated release verification
 
+**Current outcome:** environment restored; full45187769049 actually completed FAIL/exit1 with8 passing catalogs and Workshop/Reminders failing unchanged assertions. TestLab passes in this final run. No coordinated release occurred. [Final execution, exact causes and production state](market-simulator-final-results.md). Earlier pending/environment-blocked entries below are historical.
+
 **Stopped safely at the environment gate, November23 09:57UTC.** Namespace
 policy is identified and a nonroot namespace setup passes on Ubuntu22.04, but
 that image lacks the pinned simulator's required glibc2.39. Ubuntu24.04 and

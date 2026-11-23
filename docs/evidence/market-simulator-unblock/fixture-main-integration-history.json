@@ -1,0 +1,17 @@
+[
+  {
+    "change": "208e0f9e628c75656f5e78d84464dec306edcc69",
+    "first_main_integration": "5dc8ee7fd8a92878996b2ddbea356af81d3ddafd",
+    "integration": "2026-11-19T09:43:38-07:00 Merge pull request #63 from Twich-Team/feature/workshop-market-consumption"
+  },
+  {
+    "change": "bc787b14aa27270d3557cf1efb36a491e68efbd0",
+    "first_main_integration": "653e128ba59c302c6cc4e13cc52d1e9b1f320700",
+    "integration": "2026-11-20T13:25:25-07:00 Merge pull request #84 from Twich-Team/claude/tooltip-builder-separators-hbsjda"
+  },
+  {
+    "change": "db11aebf690a7cf73ab9f07e034b3ba2390c9142",
+    "first_main_integration": "5dc8ee7fd8a92878996b2ddbea356af81d3ddafd",
+    "integration": "2026-11-19T09:43:38-07:00 Merge pull request #63 from Twich-Team/feature/workshop-market-consumption"
+  }
+]

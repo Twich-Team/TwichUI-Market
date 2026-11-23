@@ -1,5 +1,7 @@
 # Final packaging refinement and conditional release
 
+**Latest release state:** the approved25-addon selection is unchanged. Simulator environment is repaired and complete full45187769049 exits1 due Workshop/Reminders assertions. Production collection is healthy; no coordinated merge/deploy/beta12 publication. [Final report](market-simulator-final-results.md). Performance evidence below is retained unchanged.
+
 The owner authorizes choosing only A (13), B (17) or C (25), adapting the existing
 prepared containers, verifying both repositories, merging in dependency order and
 deploying the backend/private Companion through the existing signing/distribution

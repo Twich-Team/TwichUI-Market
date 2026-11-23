@@ -1,0 +1,73 @@
+{
+  "source": "e48e0eee828355ac1ed95c5be3eec46b032f9e82",
+  "tree": "e1b7b9b1b60ea714d7a333f281512bbe46064c7a",
+  "tested_preview": "1c29acd121f3b5c1c84fdf0b89483cb93e11210a",
+  "preview_tree_equals_source": true,
+  "ci_kind": "PR integration, not post-merge release build",
+  "checks": [
+    {
+      "name": "workshop-consumer",
+      "id": 137736057359,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45185592572/job/137736057359"
+    },
+    {
+      "name": "prepared-consumer",
+      "id": 137732312366,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45185592572/job/137732312366"
+    },
+    {
+      "name": "windows",
+      "id": 137730235959,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45185592572/job/137730235959"
+    },
+    {
+      "name": "signed-update / verify",
+      "id": 137730235778,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45185592572/job/137730235778"
+    },
+    {
+      "name": "prepared-publisher",
+      "id": 137730235152,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45185592572/job/137730235152"
+    },
+    {
+      "name": "picker",
+      "id": 137730234761,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45185592572/job/137730234761"
+    },
+    {
+      "name": "browser",
+      "id": 137730233450,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45185592057/job/137730233450"
+    },
+    {
+      "name": "windows-comparison",
+      "id": 137730231479,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45185592071/job/137730231479"
+    },
+    {
+      "name": "postgres",
+      "id": 137730230561,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45185591887/job/137730230561"
+    }
+  ],
+  "all_nine_success": true
+}
