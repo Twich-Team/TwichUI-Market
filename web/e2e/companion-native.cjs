@@ -39,7 +39,28 @@ const {createHash}=require('node:crypto');const fs=require('node:fs');const path
     expect(await website.locator('form').evaluate(form=>form.checkValidity())).toBe(true);
     const websiteLogin=website.waitForResponse(response=>response.url().endsWith('/api/v1/auth/login')&&response.request().method()==='POST');
     await website.getByRole('button',{name:'Sign in',exact:true}).click();expect((await websiteLogin).ok()).toBe(true);
-    await expect(website.getByRole('heading',{name:'Installed Windows fixture',exact:true})).toBeVisible();
+    try{
+      await expect(website.getByRole('heading',{name:'Installed Windows fixture',exact:true})).toBeVisible();
+    }catch(error){
+      // Preserve the original assertion/deadline. Observe only this disposable
+      // fixture's safe display fields; never log consent tokens or URL queries.
+      const diagnostic={fixture:true,source_commit:sourceCommit,stage:'approval-heading'};
+      try{
+        diagnostic.pathname=new URL(website.url()).pathname;
+        diagnostic.headings=await website.getByRole('heading').allTextContents();
+        diagnostic.alerts=await website.getByRole('alert').allTextContents();
+        const response=await api.get('/api/v1/companion/authorizations/'+approval.request_id);
+        diagnostic.details_http_status=response.status();
+        if(response.ok()){
+          const details=await response.json();
+          diagnostic.details={device_name:details.device_name,status:details.status,application:details.application};
+        }
+        await website.screenshot({path:path.join(shots,'approval-heading-failure.png'),fullPage:true});
+      }catch(captureError){diagnostic.capture_error=String(captureError).slice(0,200);}
+      fs.writeFileSync(path.join(shots,'approval-heading-failure.json'),JSON.stringify(diagnostic,null,2));
+      console.log('Approval heading failure evidence: '+JSON.stringify(diagnostic));
+      throw error;
+    }
     await expect(website.getByRole('button',{name:'Approve this device',exact:true})).toBeVisible();
     await website.screenshot({path:path.join(shots,'website-approval.png'),fullPage:true});
     const firstSyncStart=performance.now();

@@ -23,3 +23,20 @@ exercise current, already canonical, changed-query and four other-page cases.
 No timeout, retry policy or browser assertion is relaxed. The local 138-test
 Vitest suite and production frontend build pass. This correction has its own
 branch and PR; it does not expand the two-module collector deployment.
+
+
+The separate correction's first Windows run45119365339/job137509349688 fails
+the unchanged native approval-heading assertion at `companion-native.cjs:42`
+(5-second deadline). Backend, website, picker and signed updater pass; this branch
+is not merged or deployed. The original artifact is preserved with SHA256
+91670c94a64a60277b9e10aa50fa32b8792380e1b9da46a6c40da3b27f15f3f1.
+It contains only a pre-input welcome screenshot and no rejected approval page
+or request display name, so the failure's precise cause cannot be inferred.
+
+A test-only diagnostic now retains the actual failed page's safe headings,
+alerts, pathname and synthetic request display fields and screenshot before
+rethrowing the exact original assertion. It excludes authorization URL queries
+and consent tokens. No deadline, retry, assertion or native input path changes.
+The hypothesis is an unexpected approval-page/display-name state, rather than
+the unrelated collector or Explorer canonicalization helper. A new source run
+with this observation is warranted; a favorable rerun alone cannot prove a cause.
