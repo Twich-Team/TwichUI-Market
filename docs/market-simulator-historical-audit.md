@@ -52,3 +52,22 @@ infrastructure, simulator framework, binary or loader is introduced.
 
 Full current-source execution is in progress at run45176879766. A launcher
 preflight or old full pass is never represented as this full suite passing.
+
+
+## Read-only installation handoff correction
+
+The corrected Ubuntu24 runner proves glibc2.39, native sandboxed help exit0,
+loaded exact-executable policy with global restriction still1, and successful
+policy removal. The first full attempt atdd28236 passes328 modules but exits1
+before all nine native catalog launches: tools/simlab/run.sh reads
+**WOWSIM_INSTALL**, while the newly authored workflow exported SIMLAB_INSTALL.
+The full runner deliberately sanitizes SIMLAB_* and WOWSIM_LAB so stale pose
+filters or mutable lab state cannot leak into catalogs. The supported
+WOWSIM_INSTALL variable survives that sanitizer. A direct call to the existing
+sanitizer verifies this behavior; no runner code or assertions changed.
+
+At **d2c2e2ae69fc250050fbd8e7a1aecdef642cc563**, the workflow exports that
+existing documented installation interface. Actual full run45178795859 is now
+in progress. Market final integration pins match this exact source at275aa4f.
+The prior full attempt remains FAIL and its31MiB exact artifact is retained
+locally with checksum, alongside all earlier failures.

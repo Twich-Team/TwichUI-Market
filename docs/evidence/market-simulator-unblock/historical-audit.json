@@ -13,7 +13,6 @@
     "console_sha256": "7aa18ff1a5fba4846f953bc26f553906df385aea39a2b10d2bc9e41b17d96207",
     "command": "./tests/run.sh full --profile cloud --jobs 1",
     "passed": true,
-    "exit_code_from_console": 0,
     "units": 247,
     "launches": 192,
     "scenario_checks": 30552,
@@ -91,7 +90,8 @@
         "scenario_checks": 3768
       }
     ],
-    "os_not_recorded_in_archived_report": true
+    "os_not_recorded_in_archived_report": true,
+    "exit_evidence": "All catalog exits0, passed report/console PASS and immutable runner exit logic; documentation records successful command"
   },
   "documented_native_wsl_full": {
     "commit": "83050a2b19995678e174dbe4843fee0502e5608e",
@@ -125,6 +125,40 @@
   },
   "new_workflow_introduced": "148c8fd0d32c3c8f5f54186a0fe28d98ba02ead1",
   "incompatible_ubuntu22_switch": "f7f42425ff53d0057c9c4799cbd85ca7791b9f06",
-  "corrected_workflow_commit": "dd28236b30cb5504c18d38c30358e9643debbb42",
-  "correction": "Ubuntu24.04 glibc2.39; executable-specific owner-authorized temporary AppArmor userns permission in disposable hosted VM; global policy unchanged; same binary and test catalogs"
+  "corrected_workflow_commit": "d2c2e2ae69fc250050fbd8e7a1aecdef642cc563",
+  "correction": "Ubuntu24.04 glibc2.39; executable-specific owner-authorized temporary AppArmor userns permission in disposable hosted VM; global policy unchanged; same binary and test catalogs",
+  "runner_install_interface": {
+    "driver": "tools/simlab/run.sh",
+    "retained_install_variable": "WOWSIM_INSTALL",
+    "deliberately_cleared_by_full_runner": [
+      "SIMLAB_INSTALL",
+      "WOWSIM_LAB"
+    ],
+    "existing_sanitizer_directly_verified": true
+  },
+  "corrected24_attempt": {
+    "commit": "dd28236b30cb5504c18d38c30358e9643debbb42",
+    "run": 45176879766,
+    "job": 137700310644,
+    "profile_loaded": true,
+    "global_namespace_restriction": 1,
+    "glibc": "2.39",
+    "native_sandboxed_help_exit": 0,
+    "offline_passed": 328,
+    "syntax_lua_files": 845,
+    "full_passed": false,
+    "full_exit": 1,
+    "reason": "Wrong installation handoff; catalog driver expected WOWSIM_INSTALL and fell back to nonexistent default path",
+    "artifact_id": 14819733126,
+    "artifact_sha256": "33d4b947ee0d6a071f9f971e93316f9ee0e92dfe8503a85bf8234a31287678b2",
+    "artifact_retained_locally": ".local/simulator-ci-correction/full-24-failed.zip",
+    "job_specific_policy_removed": true
+  },
+  "current_run": {
+    "source": "d2c2e2ae69fc250050fbd8e7a1aecdef642cc563",
+    "run": 45178795859,
+    "job": 137706899572,
+    "status": "in_progress",
+    "command": "bash tests/run.sh full --profile cloud --jobs 2 --sim-jobs 1 --measure"
+  }
 }
