@@ -1,0 +1,81 @@
+{
+  "final_main": "f1492cdc8264e00309c07aba1492d9d207e43ac0",
+  "payload_and_backend_source": "e5576c9d66e50914d4bcbbf27aad962a8c9f372f",
+  "passed": true,
+  "runs": [
+    {
+      "id": 45229899975,
+      "name": "Backend",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "f1492cdc8264e00309c07aba1492d9d207e43ac0",
+      "path": ".github/workflows/backend.yml"
+    },
+    {
+      "id": 45229901410,
+      "name": "Windows companion",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "f1492cdc8264e00309c07aba1492d9d207e43ac0",
+      "path": ".github/workflows/desktop.yml"
+    },
+    {
+      "id": 45229900108,
+      "name": "Private website",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "f1492cdc8264e00309c07aba1492d9d207e43ac0",
+      "path": ".github/workflows/web.yml"
+    }
+  ],
+  "checks": [
+    {
+      "id": 137892270008,
+      "name": "workshop-consumer",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 137888384770,
+      "name": "prepared-consumer",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 137886297965,
+      "name": "signed-update / verify",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 137886297644,
+      "name": "picker",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 137886297325,
+      "name": "windows",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 137886297223,
+      "name": "prepared-publisher",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 137886293494,
+      "name": "postgres",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 137886290104,
+      "name": "browser",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ]
+}

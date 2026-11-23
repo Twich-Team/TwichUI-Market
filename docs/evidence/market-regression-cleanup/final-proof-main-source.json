@@ -1,0 +1,14 @@
+{
+  "final_main": "f1492cdc8264e00309c07aba1492d9d207e43ac0",
+  "proof_head": "b03458902a91971f016badbd849630909ae546ba",
+  "tree": "1c99984fbfb0ffced975b9936a39e2f5fafb33ab",
+  "identical_to_all16_passed_tree": true,
+  "release_payload_and_backend_source": "e5576c9d66e50914d4bcbbf27aad962a8c9f372f",
+  "differences": [
+    "docs/evidence/companion-v2-signed-candidate.json",
+    "docs/implementation-plan.md",
+    "docs/progress.md",
+    "web/e2e/preferences.spec.ts"
+  ],
+  "runtime_and_version_files_unchanged": true
+}
