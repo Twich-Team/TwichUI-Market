@@ -1,0 +1,10 @@
+{
+  "at": "2026-11-23T15:49:16.553112+00:00",
+  "prior_api_image": "sha256:a3f8226431fbef2794187df8f7a4667f7ef5b96ca1f7a294c1ae3ffdccf8f88c",
+  "preserved_collector_image": "sha256:ec94420d36baf501d312f3cbc85e38b77222e5b5bff92b76aae82dd8df95575d",
+  "overlay_files": 28,
+  "check_returncode": 0,
+  "rollback_executed": false,
+  "database_restore_or_downgrade": false,
+  "script_sha256": "f770e6159fd77a262db934ea882ae05533847b0635dc0dd61059b011b343908d"
+}
