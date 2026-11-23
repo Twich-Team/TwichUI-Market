@@ -9,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runner: [ubuntu-22.04, ubuntu-24.04]
+        runner: [ubuntu-26.04]
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 5
     steps:
@@ -42,7 +42,7 @@ jobs:
             --tmpfs /tmp --tmpfs "$HOME" --tmpfs /mnt/c --unshare-all
             --die-with-parent --new-session --clearenv --setenv PATH /usr/bin:/bin
             -- /usr/bin/true)
-          if [ '${{ matrix.runner }}' = ubuntu-22.04 ]; then
+          if [ '${{ matrix.runner }}' != ubuntu-24.04 ]; then
             unshare --user --map-current-user --mount --keep-caps sh -ec '
               test "$(id -u)" -ne 0
               mount -t tmpfs -o size=1m,mode=0755 tmpfs /mnt
