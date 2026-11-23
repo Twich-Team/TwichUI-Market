@@ -1,0 +1,27 @@
+{
+  "addon_head": "daa674f58b33dc1640cf17f0ef9af8a8778fe702",
+  "change": "Current container enumeration 2 to 8 in diagnostic memory aggregation and addon/error ownership",
+  "boundary_test": "includes both-bank current07/history03; excludes current08/history04; expected memory220",
+  "logs": [
+    {
+      "name": "diagnostics-container-after.log",
+      "bytes": 129,
+      "sha256": "1e685c7b3f168024fdd1be10f45bda3cb91b177ec5559c723cc52d98a0717807",
+      "text": "off cost (offline Lua 5.1, 200000 calls): bare 15.7 ns, guarded site 24.9 ns, Perf.Call 45.7 ns per call\nPERF ENGINE TEST PASSED\n"
+    },
+    {
+      "name": "diagnostics-container-before.log",
+      "bytes": 262,
+      "sha256": "91b4582a05e3fd2c65a97174c897912862029390008d63859911a8b589ae997c",
+      "text": "lua5.1: test_perf_engine.lua:207: current container attribution\nstack traceback:\n\t[C]: in function 'assert'\n\ttest_perf_engine.lua:207: in main chunk\n\t[C]: ?\noff cost (offline Lua 5.1, 200000 calls): bare 16.4 ns, guarded site 25.7 ns, Perf.Call 47.1 ns per call\n"
+    },
+    {
+      "name": "diagnostics-container-focused.log",
+      "bytes": 331,
+      "sha256": "4b4eed1da9b0933a31b9ca6454f37c92f20e584aed8617a86dcec93629527fd9",
+      "text": "off cost (offline Lua 5.1, 200000 calls): bare 15.7 ns, guarded site 26.0 ns, Perf.Call 47.7 ns per call\nPERF ENGINE TEST PASSED\n[Rich] |TInterface\\Icons\\inv_misc_scrollunrolled01:14:14|t |cff8a857cChronicle:|r Chronicle begun\nPERF WINDOW TEST PASSED\nMEMORY DIAG TEST PASSED\nNO PLAYER: Nobody Known-Forever\nDIAGNOSTICS TEST PASSED\n"
+    }
+  ],
+  "production_pricing_codec_loader_scheduler_changed": false,
+  "existing_offline_heap_measurements_changed": false
+}
