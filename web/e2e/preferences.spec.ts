@@ -12,8 +12,10 @@ async function login(page:Page,name:string) {
 const market=(page:Page)=>page.locator('select').filter({has:page.locator('option[value="2"]')}).first();
 const read=async(page:Page)=>(await page.request.get('/api/v1/me/preferences')).json();
 async function saved(page:Page,values:Record<string,unknown>) {
- await expect.poll(async()=>(await read(page)).values).toMatchObject(values);
+ // Wait for the existing UI acknowledgement before the authoritative read.
+ // An API read can outlast expect.poll's deadline even when the save is done.
  await expect(page.getByText('Saving preferences…',{exact:true})).toHaveCount(0);
+ expect((await read(page)).values).toMatchObject(values);
 }
 async function account(page:Page) {
  await page.getByRole('button',{name:'Account & devices',exact:true}).click();
