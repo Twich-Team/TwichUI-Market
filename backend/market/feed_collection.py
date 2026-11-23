@@ -14,7 +14,8 @@ from email.utils import parsedate_to_datetime
 from types import SimpleNamespace
 from sqlalchemy import delete, insert, select, tuple_
 from .db import now
-from .ingest import canonical, normalize, record_daily
+from .ingest import (MAX_LISTINGS, ListingCapacityExceeded, canonical, listing_digest,
+                     normalize, record_daily)
 from .models import (FeedCapture, FeedCheck, ItemSourceCoverage, Listing, MarketFeed,
                      Observation, Snapshot, SnapshotStatistic)
 from .pricing import ALGORITHM, summarize
@@ -89,6 +90,7 @@ def capture_feed(db, market, feed, client, at):
             if feed.source_kind == 'auctions' and payload.get('id') != market.house_id:
                 raise ValueError('House identity mismatch')
             rows = normalize(payload, feed.source_kind)
+            del payload
             # Commodity canonical identity is the observed base item descriptor.
             # Do not silently collapse newly introduced variants.
             if feed.source_kind == 'commodities' and any(json.loads(r['variant']) != {'id': r['item_id']} for r in rows):
@@ -98,7 +100,7 @@ def capture_feed(db, market, feed, client, at):
                 FeedCapture.source_kind == feed.source_kind, FeedCapture.payload_hash == payload_hash))
             if capture is None:
                 capture = FeedCapture(market_id=market.id, source_kind=feed.source_kind, observed_at=at,
-                    payload_hash=payload_hash, content_hash=hashlib.sha256(canonical(rows).encode()).hexdigest(),
+                    payload_hash=payload_hash, content_hash=listing_digest(rows),
                     payload_bytes=len(body), compressed_payload=gzip.compress(body, mtime=0), payload_retained_at=at,
                     listing_count=len(rows), item_count=len({r['item_id'] for r in rows}))
                 db.add(capture)
@@ -120,7 +122,10 @@ def capture_feed(db, market, feed, client, at):
         feed.last_success, feed.failures, feed.last_error, feed.retry_after = at, 0, None, None
     except (UpstreamFailure, OSError, ValueError, KeyError, TypeError) as error:
         feed.failures += 1
-        reason = (f'Upstream HTTP {error.status}' if error.status else error.reason) if isinstance(error, UpstreamFailure) else 'Feed transport, identity or payload validation failed'
+        if isinstance(error, ListingCapacityExceeded):
+            reason = f'Feed exceeds collector listing capacity ({MAX_LISTINGS}); last valid data retained'
+        else:
+            reason = (f'Upstream HTTP {error.status}' if error.status else error.reason) if isinstance(error, UpstreamFailure) else 'Feed transport, identity or payload validation failed'
         check.error = feed.last_error = reason
         retry = retry_seconds(error.retry_after, at) if isinstance(error, UpstreamFailure) else 0
         feed.retry_after = at + timedelta(seconds=max(300, min(300 * 2**min(feed.failures - 1, 8), 86400), retry))

@@ -1,0 +1,82 @@
+{
+  "read_only": true,
+  "live_auction_requests": 1,
+  "collector_backoff_modified": false,
+  "previous": {
+    "capture_id": 199,
+    "observed_at": "2026-11-22T20:28:51.398853+00:00",
+    "bytes": 14639222,
+    "sha256": "7ac1d404ce8a127ce659b653a7ea3f54439213dca46eae0425e357e0bb25826d",
+    "structure": {
+      "top_level_keys": [
+        "_links",
+        "auctions",
+        "commodities",
+        "id",
+        "name",
+        "ruleset"
+      ],
+      "house_id": 114,
+      "auctions_count": 147892,
+      "auction_field_sets": [
+        "bid,buyout,id,item,quantity,time_left",
+        "bid,id,item,quantity,time_left",
+        "buyout,id,item,quantity,time_left"
+      ]
+    },
+    "normalized_rows": 147892,
+    "self_link": "https://us.api.blizzard.com/data/wow/ruleset/2/auctions/114?namespace=dynamic-forever-us"
+  },
+  "retry_after_before": "2026-11-23T08:07:31.827206+00:00",
+  "current": {
+    "status": 200,
+    "bytes": 17907298,
+    "sha256": "adf243282660ca7b6cb072c0b86f0a15b78b1e0f2d2f1ae1a0778f9c303f8975",
+    "headers": {
+      "Content-Type": "application/json;charset=UTF-8",
+      "Content-Length": null,
+      "Battlenet-Namespace": "dynamic-forever-us",
+      "Last-Modified": "Mon, 23 Nov 2026 04:25:24 GMT",
+      "Date": "Mon, 23 Nov 2026 04:37:57 GMT"
+    },
+    "retrieved_at": "2026-11-23T04:37:58.208163+00:00",
+    "structure": {
+      "top_level_keys": [
+        "_links",
+        "auctions",
+        "commodities",
+        "id",
+        "name",
+        "ruleset"
+      ],
+      "house_id": 114,
+      "auctions_count": 178402,
+      "auction_field_sets": [
+        "bid,buyout,id,item,quantity,time_left",
+        "bid,id,item,quantity,time_left",
+        "buyout,id,item,quantity,time_left"
+      ]
+    },
+    "identity_checks": {
+      "namespace": true,
+      "self_scheme": true,
+      "self_host": true,
+      "self_path": true,
+      "self_namespace": true,
+      "house": true
+    },
+    "normalization_error": "Too many listings",
+    "offline_chunk_valid_rows": 178402,
+    "globally_unique_ids": true,
+    "redacted_row_example": {
+      "id": 166857631,
+      "item": {
+        "id": 6040
+      },
+      "quantity": 1,
+      "buyout": 1996,
+      "time_left": "SHORT"
+    }
+  },
+  "retained_full_responses": "Private ignored local evidence; not committed"
+}

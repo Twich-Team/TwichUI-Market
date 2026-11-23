@@ -1,0 +1,4 @@
+# Append last for targeted image rollback. Never downgrade or restore the DB.
+services:
+  worker:
+    image: sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b

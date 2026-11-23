@@ -1,3 +1,5 @@
+**Priority collector repair (2026-11-23):** one bounded read-only live diagnostic proves the current HTTP-200 house-114 payload is valid but exceeds the old 150,000-listing guard: 178,402 valid unique auctions, same identity/shape. Current failure streak begins November 22 at 21:29:38 UTC; the static cap dates to November 14. The bounded 200,000-row correction preserves exact hashes. Captured and maximum-boundary full isolated collection pass at 0.5 CPU/384 MiB without swap, retaining previous observations; 50 focused PostgreSQL and 32 identity tests pass. First hosted CI passes 741 PostgreSQL tests, website and all Windows/updater jobs, but its strict corpus fingerprint rejects the intentionally changed ingestion source; only that provenance entry is refreshed, preserving all assertions/vectors and historical fingerprints. Final exact-source CI and targeted deployment remain pending. Existing persisted retry is unchanged (November 23, 08:07:31 UTC); no production collection recovery is claimed. [Evidence and remaining gates](house114-collection-repair.md).
+
 **Current task (2026-11-23):** owner conditionally authorizes final 13/17/25 packaging refinement, coordinated merge and backend/private Companion deployment after all gates pass. [Evidence and precise remaining gates](performance-packaging-final.md). A read-only production preflight found pre-existing house-114 auction validation failures and stale complete collection; production has not changed. The bounded offline comparison is in progress. Historical holds below are superseded only within the new explicit scope; failed checks and unhealthy production cannot be waived.
 
 **Canonical baseline task (2026-11-21):** The owner authorizes verification, source reconciliation, exact-source testing and merge of PR #42 into `main`, without deployment or production changes. [Verified component inventory and development workflow](production-baseline.md) and [versioned manifest](../deploy/baselines/2026-11-21/manifest.json) preserve the mixed immutable deployment and rollback references. After the verified merge, `main` is the normal development and PR base; older integration/release branches are retained historical references. No new feature, service restart, migration, collection/retention change or Companion publication is authorized. This task supersedes historical integration-base instructions only for establishing main.
@@ -227,29 +229,3 @@ Product checkpoint **6c3b422**, Windows **44321509770 / job134861483428**, passe
 Final permission/picker job **134880495613 / run44326868360** passes **11 real NTFS cases**, including inherited permissions, administrator-owned inputs and future patch/build acceptance; unreadable/missing addon files, wrong/unsupported clients, unowned data, broad effective/inheritable writes and junctions are rejected. Every preflight leaves prior files unchanged. [Parsed successful stdout receipt](evidence/workshop-windows-connection/windows-permissions.json) preserves exact source/job provenance. The process has Administrators disabled and cannot read an administrator-only probe. It retains TokenElevation=true on this runner, so **uac_split_token_verified=false** remains explicit; this is restricted-privilege evidence, not a genuine normal-UAC-login claim. All three exact-source workflows at b5e4ade pass: Windows44326868360 (all four jobs), backend44326870045 and website44326868236. The final runtime correction preserves typed IO/JSON failures from saved Workshop configuration reads at stage saved_configuration. **Final code a85c0fb is green in Windows44328882818 (all four jobs), backend44328882601 and website44328882844.** [Final verification/source ledger](evidence/workshop-windows-connection/verification.json). This final checkpoint supersedes the earlier runtime source identity comparison. Evidence-only documentation changes do not alter the tested product trees.
 
 Genuine game bytes, normal owner-PC UAC login, game-loaded generation and physical-PC acceptance remain unverified. [Owner metadata observation](evidence/workshop-windows-connection/owner-version-observation.json) is screenshot evidence, not binary execution. No signing, installer replacement, release publication, deployment, production data, game/addon repository or Windows host policy/user changes occurred. Native owner acceptance remains required.
-
-## Prepared-current final integration readiness (2026-11-22)
-
-Owner-authorized blocker repair and isolated native-test preparation: see [readiness](performance-integration-readiness.md). Preserve baseline failure evidence, frozen algorithms, all assertions and production state. No merge/deployment/signing/publication.
-
-Final integration checkpoint: Windows wire evidence isolates the expired pooled bootstrap boundary; fixture 202s now explicitly retire connections, with a deterministic negative/control regression. Required addon verification is green (324/324). Frozen-cache endpoint/native DEV acceptance tools are prepared; final Windows and DEV artifact verification pending. See performance-integration-readiness.md.
-
-Owner HOLD: no coordinated merge/release. Investigate physical-addon footprint separately; no production-format changes. Preserve logical32/64 and prepared performance. Disposable Windows HTTP cleanup fix and approved32-source pin are verification-only follow-ups.
-
-Owner approved only a bounded thirteen-addon prototype after native codec proof.
-[Gate report](performance-packaging-prototype-gate.md): actual decoder behavior,
-resource bounds and native allocations remain unavailable; stop before packaging
-implementation. Existing simulator identity stubs are explicitly rejected as
-evidence. Independent Windows CI follow-up preserves original failure45084411116,
-commits actual shell selection in the disposable picker, adds stale-selection
-coverage and diagnoses the unchanged legacy-close timeout. No product format,
-production, installed client, merge or release change.
-
-Final focused Windows repair: actual inventory establishes Edit14148 has native
-WS_TABSTOP/enabled state but a non-focusable UIA provider. Real edit click plus
-GetGUIThreadInfo, exact native text readback and real OK click pass cancellation,
-valid/invalid/changed folder and registry tests in run45092875675 at7e0c0738.
-The focused workflow avoids full installer campaigns while diagnosing. All
-previous failures remain evidence; final complete Windows verification is next.
-Separate removable native codec probe is explicitly owner-authorized, while
-production packaging, merges, signing, publishing and deployment remain held.

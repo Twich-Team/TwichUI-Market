@@ -9,9 +9,28 @@ from .db import now
 from .models import DailyObservation, Listing, Market, Observation, Snapshot, SnapshotStatistic
 from .security import aware
 
+# Raw auction listings are distinct from summary variants. Keep admission bounded
+# while allowing the verified house-114 feed above the former 150,000-row ceiling.
+MAX_LISTINGS = 200_000
+
+
+class ListingCapacityExceeded(ValueError):
+    """A bounded collector capacity failure, not malformed upstream data."""
+
 
 def canonical(value):
     return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+
+
+def listing_digest(rows):
+    """Hash exactly canonical(rows), without two full serialized-list copies."""
+    digest = hashlib.sha256(b'[')
+    for index, row in enumerate(rows):
+        if index:
+            digest.update(b',')
+        digest.update(canonical(row).encode())
+    digest.update(b']')
+    return digest.hexdigest()
 
 
 def positive(value, name, optional=False):
@@ -26,8 +45,8 @@ def normalize(payload, kind):
     if not isinstance(payload, dict) or not isinstance(payload.get('auctions'), list):
         # Missing auctions must be confirmed as empty by a live mapping; fail closed for now.
         raise ValueError('Expected explicit auctions array')
-    if len(payload['auctions']) > 150000:
-        raise ValueError('Too many listings')
+    if len(payload['auctions']) > MAX_LISTINGS:
+        raise ListingCapacityExceeded('Too many listings')
     rows, seen = [], set()
     for auction in payload['auctions']:
         if not isinstance(auction, dict) or not isinstance(auction.get('item'), dict):
@@ -106,7 +125,7 @@ def ingest(db, market_id, payload_bytes, *, request_key, retrieved_at=None, modi
             raise ValueError('Idempotency key conflict')
         return existing
     rows = normalize(json.loads(payload_bytes), market.source_kind)
-    content_hash = hashlib.sha256(canonical(rows).encode()).hexdigest()
+    content_hash = listing_digest(rows)
     snapshot = db.scalar(select(Snapshot).where(Snapshot.market_id == market_id, Snapshot.content_hash == content_hash))
     if snapshot is None:
         snapshot = Snapshot(market_id=market_id, content_hash=content_hash, listing_count=len(rows))

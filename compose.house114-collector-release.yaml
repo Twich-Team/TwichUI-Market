@@ -1,0 +1,4 @@
+# Append after the existing worker deployment chain; replace only worker.
+services:
+  worker:
+    image: ${HOUSE114_COLLECTOR_IMAGE:?Set the verified immutable collector image}

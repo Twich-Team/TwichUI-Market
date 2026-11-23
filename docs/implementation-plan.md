@@ -1,3 +1,5 @@
+**Priority owner-authorized repair (2026-11-23):** diagnose and repair house-114 collection before any coordinated prepared/container release. Preserve backoff, 300-second polling, observations, credentials and infrastructure. Validate captured data and current collector resource limits, run exact-source CI and use a targeted worker replacement with immediate image rollback only after gates pass. Successful natural house-114 collection is required before resuming the coordinated release. [Cause, evidence and procedure](house114-collection-repair.md).
+
 **Current owner-authorized task (2026-11-23):** compare only 13/17/25 physical addons against the frozen 193 prepared baseline, select the smallest convincingly acceptable layout, adapt the existing implementation, verify immutable source CI, merge the coordinated PRs and deploy the compatible backend/private Companion through the existing process. This supersedes historical holds for this exact task, conditionally on every acceptance gate. No failed-check bypass, infrastructure migration, probe/chart merge or public addon release. [Current evidence and release gates](performance-packaging-final.md).
 
 **Canonical baseline task (2026-11-21):** The owner authorizes verification, source reconciliation, exact-source testing and merge of PR #42 into `main`, without deployment or production changes. [Verified component inventory and development workflow](production-baseline.md) and [versioned manifest](../deploy/baselines/2026-11-21/manifest.json) preserve the mixed immutable deployment and rollback references. After the verified merge, `main` is the normal development and PR base; older integration/release branches are retained historical references. No new feature, service restart, migration, collection/retention change or Companion publication is authorized. This task supersedes historical integration-base instructions only for establishing main.
@@ -128,22 +130,3 @@ Initial US live rollout acceptance: direct OAuth/index/house/commodity evidence;
 **Owner-authorized intelligent metadata recovery:** [Implementation plan](intelligent-metadata-recovery-plan.md), [progress](intelligent-metadata-recovery-progress.md). Implement/test/integrate/deploy item-centric recovery and administration tracker after successful checks; preserve all provider settings, collection/history, mobile release and beta.5. Current storage headroom blocks release allocations, not independent source work.
 
 2026-11-18: execute the explicitly authorized [automatic retention goal](automatic-retention-progress.md), preserving prior releases and leaving production historical deletion unauthorized.
-
-## Prepared-current final integration readiness (2026-11-22)
-
-Resolve automatic-sync baseline failure with focused diagnostics, verify exact integrated sources, and prepare isolated DEV/native acceptance. [Current plan and evidence](performance-integration-readiness.md). No production changes.
-
-Final integration checkpoint: Windows wire evidence isolates the expired pooled bootstrap boundary; fixture 202s now explicitly retire connections, with a deterministic negative/control regression. Required addon verification is green (324/324). Frozen-cache endpoint/native DEV acceptance tools are prepared; final Windows and DEV artifact verification pending. See performance-integration-readiness.md.
-
-Owner HOLD: no coordinated merge/release. Investigate physical-addon footprint separately; no production-format changes. Preserve logical32/64 and prepared performance. Disposable Windows HTTP cleanup fix and approved32-source pin are verification-only follow-ups.
-
-Owner-approved bounded thirteen-addon prototype: [native codec gate](performance-packaging-prototype-gate.md).
-The prerequisite cannot be established from the available native evidence, so
-packaging implementation stops before format changes. Finish independent CI
-repair without relaxing assertions; preserve native picker/upgrade failures.
-
-Owner-authorized final focused tasks: correct native picker interaction using
-actual control inventory and a lightweight development-branch workflow, then run
-the unchanged complete Windows checks. Focused run45092875675 passes; production
-code/format remains unchanged. Separate TwichUI development-only codec addon is
-owner-run evidence, not implementation or release of compressed packaging.

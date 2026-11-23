@@ -10,13 +10,13 @@
   "sources": [
     {
       "repository": "Twich-Team/TwichUI-Market",
-      "commit": "230465e1adf7c13f40344cc073383031d4a55f8d",
+      "commit": "153e1714b16ea38a893be5bb716cfc8fe3101e9c",
       "path": "backend/market/ingest.py",
-      "sha256": "14b87d1e0e5cc8fd4b1d93e80f270712ab4c0df45bebad7591c03b542a3c68ea",
+      "sha256": "2d940a9aadad0d93514a738a4a6378164e863da8228deb32ec83385c57e7f1d6",
       "classification": "source_verified",
       "proves": "source behavior/API shape only; no native descriptor equivalence",
       "foundation_sha256": "057ac244be8ec33aa9ad4fd96102f17a5abd7c2078b4fedc2d80ca5b62921b6e",
-      "candidate_amendment": "Automatic delivery candidate reconciles merged #30 source-aware coverage and independent nonblocking derived-cache reservation; original foundation fingerprint retained. No native identity equivalence inferred."
+      "candidate_amendment": "Automatic delivery candidate reconciles merged #30 source-aware coverage and independent nonblocking derived-cache reservation; original foundation fingerprint retained. No native identity equivalence inferred. House-114 capacity repair admits at most 200000 raw listings and hashes identical canonical rows incrementally; variant serialization and all identity vectors remain unchanged. Previous candidate fingerprint 14b87d1e0e5cc8fd4b1d93e80f270712ab4c0df45bebad7591c03b542a3c68ea is retained here; no native equivalence inferred."
     },
     {
       "repository": "Twich-Team/TwichUI-Market",
