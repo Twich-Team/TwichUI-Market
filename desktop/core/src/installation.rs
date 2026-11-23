@@ -89,6 +89,7 @@ pub fn validate_addons(path: &Path) -> Result<()> {
         checked("summary_contract", message, need(cap[field] == expected, detail))?;
     }
     checked("prepared_contract", "Workshop prepared-price capabilities are incomplete or unsupported.", prepared_layout(path))?;
+    checked("container_contract", "Workshop compressed-container capabilities are incomplete or unsupported.", compressed_containers(path))?;
     checked("summary_toc_entry", "The Workshop TOC does not load Summary.lua. This addon package needs the summary consumer.", need(toc.lines().any(|line| line.trim() == "Summary.lua"), "Summary.lua TOC entry missing"))
 }
 
@@ -451,4 +452,18 @@ pub fn prepared_layout(path:&Path)->Result<Option<usize>> {
     let toc=addon_text(&folder.join("TwichUI_Workshop.toc"),32768)?;
     need(toc.lines().any(|line|line.trim()=="Prepared.lua"),"prepared reader TOC entry")?;
     Ok(Some(count))
+}
+
+/// Physical-container support is negotiated independently of the unchanged API.
+pub fn compressed_containers(path:&Path)->Result<bool> {
+    let folder=path.join("Interface/AddOns/TwichUI_Workshop");
+    let raw=read(&folder.join("MarketDelivery.json"),4096)?;
+    let value:Value=crate::bridge::parse(raw.strip_prefix(&[0xef,0xbb,0xbf]).unwrap_or(&raw),4096)?;
+    if value.get("container_packaging_version").is_none(){return Ok(false)}
+    need(value["container_packaging_version"]==1 && value["container_codec"]=="raw-deflate-base64"
+        && value["container_block_bytes"]==524288 && value["current_containers"]==2
+        && value["history_containers"]==4 && prepared_layout(path)?==Some(32),"compressed container capability")?;
+    addon_text(&folder.join("Containers.lua"),262144)?;
+    need(addon_text(&folder.join("TwichUI_Workshop.toc"),32768)?.lines().any(|s|s.trim()=="Containers.lua"),"container TOC entry")?;
+    Ok(true)
 }

@@ -10,6 +10,7 @@ ROOT=Path(__file__).resolve().parents[1]
 def main():
  p=argparse.ArgumentParser(description=__doc__)
  p.add_argument('--rust-client',type=Path,required=True);p.add_argument('--addon-root',type=Path,required=True);p.add_argument('--lua',default='lua5.1');p.add_argument('--lua-cpath');p.add_argument('--variants',type=int,default=129);p.add_argument('--out',type=Path,required=True);p.add_argument('--publish',action='store_true');p.add_argument('--history',action='store_true',help='Negotiate the installed paired history reader in staging mode');p.add_argument('--skip-lua',action='store_true',help='Windows producer only; paired Linux artifact consumer is mandatory in CI')
+ p.add_argument('--containers',action='store_true',help='Explicit fixed 13-addon publication; requires prepared 32')
  p.add_argument('--current',action='store_true',help='Explicit split-projection paired-addon acceptance; no live service')
  p.add_argument('--prepared',type=int,choices=[16,32],help='Opt-in actual prepared publication with the pinned Stage C addon')
  p.add_argument('--fixture-as-of',help='Shared UTC source instant for matched synthetic 16/32 publications; never changes client time/admission')
@@ -23,6 +24,7 @@ def main():
  if a.legacy_native and not a.legacy_native_source_root:p.error('--legacy-native requires exact --legacy-native-source-root')
  if a.legacy_native and not(a.publish and a.current and not a.prepared):p.error('--legacy-native requires Windows --publish --current and no prepared layout')
  if a.ordinary_admission and not(a.publish or a.test_driver):p.error('ordinary admission requires the actual or cfg(test) publisher')
+ if a.containers and a.prepared!=32:p.error('--containers requires --prepared 32')
  if a.prepared and not a.current:p.error('--prepared requires --current')
  if a.prepared and not(a.publish or a.test_driver):p.error('--prepared requires the actual Windows publisher or Unix cfg(test) publisher')
  if a.test_driver and (os.name=='nt' or a.publish):p.error('Unix ignored-test driver only; Windows uses actual publication')
@@ -84,7 +86,7 @@ def main():
   game=base/'not-a-game';publication=base/'publication'
   if a.test_driver:
    from prepared_fixture_driver import installation,run as native_driver
-   game=installation(base,a.addon_root,a.prepared);publication=game/'Interface/AddOns'
+   game=installation(base,a.addon_root,a.prepared,containers=a.containers);publication=game/'Interface/AddOns'
    driver_config=dict(server=f'http://127.0.0.1:{port}',account_id=account,market_id=mid)
   if a.publish:
    env['MARKET_TEST_APP_DATA']=str(base)
@@ -94,7 +96,10 @@ def main():
    cap=game/'Interface/AddOns/TwichUI_Workshop/MarketDelivery.json';cap.parent.mkdir(parents=True);shutil.copyfile(a.addon_root/'TwichUI_Workshop/MarketDelivery.json',cap)
    if a.current and json.loads(cap.read_text(encoding='utf-8-sig')).get('summary_current_contract')!=3:raise RuntimeError('paired addon must explicitly support contract 3')
   if a.prepared and a.publish:
-   cap=game/'Interface/AddOns/TwichUI_Workshop/MarketDelivery.json';value=json.loads(cap.read_text(encoding='utf-8-sig'));value['prepared_current_partitions']=a.prepared;cap.write_text(json.dumps(value))
+   cap=game/'Interface/AddOns/TwichUI_Workshop/MarketDelivery.json';value=json.loads(cap.read_text(encoding='utf-8-sig'));value['prepared_current_partitions']=a.prepared
+   if not a.containers:
+    for key in ('container_packaging_version','container_codec','container_block_bytes','current_containers','history_containers'):value.pop(key,None)
+   cap.write_text(json.dumps(value))
   start=time.perf_counter();calls=[]
   try:
    for _ in range(150):
@@ -111,13 +116,13 @@ def main():
    assert not(base/'history-archive-v1.sqlite').exists()
    if a.publish:
     assert info['status']['summary_records']==a.variants
-    raw=(publication/'TwichUI_MarketData/Data.lua').read_text();assert raw.startswith('TwichUIMarketData = { summary_version = '+('2'if a.prepared else'1'))
+    raw=(publication/'TwichUI_MarketData/Data.lua').read_text();assert raw.startswith('TwichUIMarketData = { summary_version = '+('3'if a.containers else'2'if a.prepared else'1'))
    else:
     assert info['manifest']['record_count']==a.variants
     if a.current:assert info['manifest']['contract_version']==3
    if a.current:
     assert json.loads((game/'Interface/AddOns/TwichUI_Workshop/MarketDelivery.json').read_text(encoding='utf-8-sig'))['summary_current_contract']==3
-    assert any(p.name.startswith('TwichUI_MarketHistoryPart')for p in publication.iterdir()),'paired history was not published'
+    assert any(p.name.startswith('TwichUI_MarketHistoryContainer'if a.containers else'TwichUI_MarketHistoryPart')for p in publication.iterdir()),'paired history was not published'
    original=info
    before_hash=hashlib.sha256((publication/'TwichUI_MarketData/Data.lua').read_bytes()).hexdigest()
    before_mtime=(publication/'TwichUI_MarketData/Data.lua').stat().st_mtime_ns
@@ -141,7 +146,7 @@ def main():
     (a.out/'private-tools.json').write_text(json.dumps(verify(base,game,a.prepared,a.private_publisher),indent=2)+'\n')
    destination=a.out/'publication';destination.mkdir(exist_ok=True)
    for folder in publication.iterdir():
-    if folder.name=='TwichUI_MarketData' or folder.name.startswith(('TwichUI_MarketPart','TwichUI_MarketHistoryPart','TwichUI_MarketCurrentPart')):shutil.copytree(folder,destination/folder.name)
+    if folder.name=='TwichUI_MarketData' or folder.name.startswith(('TwichUI_MarketPart','TwichUI_MarketHistoryPart','TwichUI_MarketCurrentPart','TwichUI_MarketCurrentContainer','TwichUI_MarketHistoryContainer')):shutil.copytree(folder,destination/folder.name)
    lua_env=os.environ.copy();lua_env.update(WORKSHOP_SUMMARY_ARTIFACT=str(destination.resolve()/'TwichUI_MarketData/Data.lua'),WORKSHOP_SUMMARY_PARTS=str(destination.resolve()),WORKSHOP_SUMMARY_EXPECTED_ITEM='10000')
    if a.lua_cpath:lua_env['LUA_CPATH']=a.lua_cpath
    lua=None
@@ -177,10 +182,17 @@ def main():
      report['addon_source_sha256'][q]=hashlib.sha256((a.addon_root/q).read_bytes()).hexdigest()
    if a.prepared:
     assert any(r['path'].endswith('/prepared/1/'+str(a.prepared))and r['status']==200 for r in requests),'missing real authoritative metadata request'
-    assert len(list(destination.glob('TwichUI_MarketCurrentPart*')))==a.prepared
+    if a.containers:
+     assert len([p for p in destination.iterdir()if p.name.startswith('TwichUI_Market')])==13
+     assert len(list(destination.glob('TwichUI_MarketCurrentContainer*')))==4 and len(list(destination.glob('TwichUI_MarketHistoryContainer*')))==8
+    else:assert len(list(destination.glob('TwichUI_MarketCurrentPart*')))==a.prepared
     if a.test_driver:assert (game/'WTF/Account/SyntheticOnly/SavedVariables/TwichUI.lua').read_bytes()==b'unchanged synthetic player data'
     report['declared_addon_commit']=(ROOT/'contracts/workshop-prepared/v1/addon-source.txt').read_text().strip()
     report['no_change_game_mtime_preserved']=True
+    report['compressed_containers']=a.containers
+    if a.containers:
+     report['source_sha256']['desktop/core/src/workshop_containers.rs']=hashlib.sha256((ROOT/'desktop/core/src/workshop_containers.rs').read_bytes()).hexdigest()
+     report['addon_source_sha256']['TwichUI_Workshop/Containers.lua']=hashlib.sha256((a.addon_root/'TwichUI_Workshop/Containers.lua').read_bytes()).hexdigest()
     report.update(prepared_layout=a.prepared,history_days=a.days,ordinary_admission_flags_on_fabricated_data=True,production_publisher=True)
     for q in ['backend/market/workshop_prepared.py','desktop/core/src/workshop_prepared.rs','scripts/prepared_fixture_driver.py','scripts/test_workshop_prepared_artifact.lua']:
      report['source_sha256'][q]=hashlib.sha256((ROOT/q).read_bytes()).hexdigest()

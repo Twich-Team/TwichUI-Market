@@ -46,6 +46,14 @@ def verify(base, game, count, binary):
     result = json.loads(valid.stdout)
     assert not result['changed'] and result['offline'] and result['layout'] == count
     assert hashlib.sha256(root.read_bytes()).hexdigest() == before
+    lifecycle = None
+    cap = json.loads((game/'Interface/AddOns/TwichUI_Workshop/MarketDelivery.json').read_text(encoding='utf-8-sig'))
+    if count == 32 and 'container_packaging_version' not in cap:
+        check = subprocess.run([str(binary.resolve()), str(private), str(snapshot), str(count), '--verify-container-lifecycle'],
+                               capture_output=True, text=True, timeout=90)
+        assert check.returncode == 0, check.stderr
+        lifecycle = json.loads(check.stdout)
+        assert lifecycle['container_lifecycle_verified'] and hashlib.sha256(root.read_bytes()).hexdigest() == before
     # Same metadata but damaged source must fail before any game publication.
     part = snapshot / 'parts/00.json'
     original = part.read_bytes(); part.write_bytes(b'[]')
@@ -54,4 +62,4 @@ def verify(base, game, count, binary):
     part.write_bytes(original)
     return {'fixture_synthetic': True, 'real_game': False, 'private_marker_enforced': True,
             'native_validation_enforced': True, 'same_layout_no_change': True,
-            'isolated_endpoint_401_200_304': True, 'source_generation': result['generation']}
+            'isolated_endpoint_401_200_304': True, 'source_generation': result['generation'], 'windows_container_lifecycle': lifecycle}

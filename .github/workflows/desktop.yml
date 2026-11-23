@@ -221,7 +221,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: Twich-Team/TwichUI
-          ref: ecc369d5c28686271ad7fc85c414a5e4b0d19de8
+          ref: 5b25af4eb84eabbd31719979e3b4320851f3585b
           path: prepared-addon
           persist-credentials: false
       - uses: dtolnay/rust-toolchain@stable
@@ -245,6 +245,10 @@ jobs:
         run: python scripts/verify-workshop-e2e.py --rust-client desktop/target/debug/examples/workshop_smoke.exe --addon-root prepared-addon --current --prepared 16 --fixture-as-of "$env:WORKSHOP_FIXTURE_AS_OF" --private-publisher desktop/target/debug/examples/prepared_private_publish.exe --variants 129 --days 60 --publish --skip-lua --out artifacts/prepared/16
       - name: Actual native prepared 32 publication (60 synthetic days)
         run: python scripts/verify-workshop-e2e.py --rust-client desktop/target/debug/examples/workshop_smoke.exe --addon-root prepared-addon --current --prepared 32 --fixture-as-of "$env:WORKSHOP_FIXTURE_AS_OF" --private-publisher desktop/target/debug/examples/prepared_private_publish.exe --variants 129 --days 60 --publish --skip-lua --out artifacts/prepared/32
+      - name: Actual native 13-container publication (same 60-day source)
+        run: python scripts/verify-workshop-e2e.py --rust-client desktop/target/debug/examples/workshop_smoke.exe --addon-root prepared-addon --current --prepared 32 --containers --fixture-as-of "$env:WORKSHOP_FIXTURE_AS_OF" --private-publisher desktop/target/debug/examples/prepared_private_publish.exe --variants 129 --days 60 --publish --skip-lua --out artifacts/prepared/13
+      - name: Require identical 16-baseline and 13-container prices and all histories
+        run: python scripts/verify-prepared-layout-pair.py artifacts/prepared/16/publication artifacts/prepared/13/publication > artifacts/prepared/container-pair.json
       - name: Require identical source generation, prices and all 64 histories
         run: python scripts/verify-prepared-layout-pair.py artifacts/prepared/16/publication artifacts/prepared/32/publication > artifacts/prepared/layout-pair.json
       - name: Checkout exact old Companion source for compatibility
@@ -278,7 +282,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: Twich-Team/TwichUI
-          ref: ecc369d5c28686271ad7fc85c414a5e4b0d19de8
+          ref: 5b25af4eb84eabbd31719979e3b4320851f3585b
           path: prepared-addon
           persist-credentials: false
       - uses: actions/download-artifact@v4
@@ -286,12 +290,15 @@ jobs:
           name: prepared-native-publication
           path: prepared-publication
       - run: sudo apt-get update -qq && sudo apt-get install -y -qq lua5.1 lua-bitop
+      - name: Build offline system-codec adapter (not Forever timing)
+        run: cc -shared -fPIC -O2 scripts/codec_zlib_offline.c -lz -lcrypto -o "$RUNNER_TEMP/market-codec.so"
       - name: Exact Windows files through production Lua and Opportunities
         working-directory: prepared-addon/tests
         shell: bash
         run: |
-          for fixture in 16 32 legacy-native; do
-            layout="$fixture"; if [ "$fixture" = legacy-native ]; then layout=0; fi
+          export WORKSHOP_CODEC_NATIVE="$RUNNER_TEMP/market-codec.so"
+          for fixture in 16 32 13 legacy-native; do
+            layout="$fixture"; if [ "$fixture" = legacy-native ]; then layout=0; elif [ "$fixture" = 13 ]; then layout=32; fi
             export WORKSHOP_SUMMARY_ARTIFACT="$GITHUB_WORKSPACE/prepared-publication/$fixture/publication/TwichUI_MarketData/Data.lua"
             export WORKSHOP_SUMMARY_PARTS="$GITHUB_WORKSPACE/prepared-publication/$fixture/publication"
             export WORKSHOP_PREPARED_EXPECTED_LAYOUT="$layout"

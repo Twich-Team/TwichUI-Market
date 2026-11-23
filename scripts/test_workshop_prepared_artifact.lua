@@ -4,7 +4,12 @@ local B,Q,J,P=W.Bridge,W.Summary,W.BridgeCodec,W.Pricing
 local root=assert(os.getenv('WORKSHOP_SUMMARY_ARTIFACT'));local directory=assert(os.getenv('WORKSHOP_SUMMARY_PARTS'))
 local function execute(path)local fn=assert(loadfile(path));setfenv(fn,c);fn()end
 execute(root);local expected=assert(tonumber(os.getenv('WORKSHOP_PREPARED_EXPECTED_LAYOUT')))
-assert(c.TwichUIMarketData.summary_version==(expected>0 and 2 or 1))
+local packed=c.TwichUIMarketData.summary_version==3
+assert(c.TwichUIMarketData.summary_version==(packed and 3 or expected>0 and 2 or 1))
+if packed then
+    c.C_EncodingUtil=assert(package.loadlib(assert(os.getenv('WORKSHOP_CODEC_NATIVE')),'luaopen_market_codec_offline'))()
+    c.Enum={CompressionMethod={Deflate=0}}
+end
 local h=J.Parse(c.TwichUIMarketData.manifest)
 if expected>0 then assert(J.Parse(c.TwichUIMarketData.prepared).partitions_count==expected)end
 local _,at=W.BridgeValidate.Time(h.generated_at);c.time=function()return at+60 end
@@ -12,7 +17,7 @@ c.GetTimePreciseSec=os.clock;c.UnitFactionGroup=function()return 'Horde'end
 c.C_Item.GetItemInfo=function(id)return 'Synthetic '..id,'item:'..id,1,1,1,'Trade Goods','',1,'',134572,0 end
 local events,loads={},{};c.C_Timer.After=function(_,fn)events[#events+1]=fn end
 c.C_AddOns.LoadAddOn=function(name)
-    assert(name:match('^TwichUI_MarketPart[AB]%d%d$')or name:match('^TwichUI_MarketCurrentPart[AB]%d%d$')or name:match('^TwichUI_MarketHistoryPart[AB]%d%d$'))
+    assert(name:match('^TwichUI_MarketPart[AB]%d%d$')or name:match('^TwichUI_MarketCurrentPart[AB]%d%d$')or name:match('^TwichUI_MarketHistoryPart[AB]%d%d$')or name:match('^TwichUI_MarketCurrentContainer[AB]%d%d$')or name:match('^TwichUI_MarketHistoryContainer[AB]%d%d$'))
     loads[#loads+1]=name;execute(directory..'/'..name..'/Data.lua');return true
 end
 local function drain()

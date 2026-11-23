@@ -16,6 +16,7 @@ pub mod vault;
 pub mod worker;
 pub mod workshop_summary;
 pub mod workshop_prepared;
+pub mod workshop_containers;
 pub mod installation;
 pub mod workshop_setup;
 

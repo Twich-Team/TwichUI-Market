@@ -22,7 +22,9 @@ fn read(path: &Path, maximum: u64) -> Result<Vec<u8>, Box<dyn std::error::Error>
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     if !cfg!(all(windows, feature="private-dev")) {return Err("Windows private-dev build required".into());}
     let args=std::env::args().skip(1).collect::<Vec<_>>();
-    if args.len()!=3 {return Err("DEV_APPDATA FROZEN_SNAPSHOT 16|32".into());}
+    let lifecycle=args.len()==4 && args[3]=="--verify-container-lifecycle";
+    if args.len()!=3 && !lifecycle {return Err("DEV_APPDATA FROZEN_SNAPSHOT 16|32 [--verify-container-lifecycle]".into());}
+    if lifecycle && (std::env::var("GITHUB_ACTIONS").as_deref()!=Ok("true") || args[2]!="32") {return Err("container lifecycle is disposable Windows CI only".into());}
     let base=Path::new(&args[0]); let source=Path::new(&args[1]);
     if base.file_name().and_then(|p|p.to_str())!=Some("team.twich.market.dev") {
         return Err("only the isolated DEV AppData is accepted".into());
@@ -48,8 +50,34 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     if actual!=Some(count) {return Err("set the private installed MarketDelivery.json layout first".into());}
     // The publisher enforces actual PE/addon identity and owned game output.
     let changed=workshop_summary::publish(&c,&bundle,&||false)?;
+    if lifecycle {
+        let cap=c.installation.join("Interface/AddOns/TwichUI_Workshop/MarketDelivery.json");
+        let original=read(&cap,4096)?;let root=c.installation.join("Interface/AddOns/TwichUI_MarketData/Data.lua");
+        let before=read(&root,3*1024*1024)?;
+        if !before.starts_with(twichui_market_core::workshop_prepared::ROOT_PREFIX){return Err("legacy prepared lifecycle baseline required".into());}
+        let mut value:Value=serde_json::from_slice(&original)?;
+        for(k,v)in [("container_packaging_version",json!(1)),("container_codec",json!("raw-deflate-base64")),("container_block_bytes",json!(524288)),("current_containers",json!(2)),("history_containers",json!(4))]{value[k]=v;}
+        std::fs::write(&cap,serde_json::to_vec(&value)?)?;
+        // Genuine Windows process inventory must prevent removal of old addons
+        // while the versioned, long-running fixture executable is still alive.
+        let mut game=std::process::Command::new(c.installation.join("Wow.exe")).spawn()?;
+        let blocked=workshop_summary::publish(&c,&bundle,&||false);game.kill()?;game.wait()?;
+        if blocked.is_ok() || read(&root,3*1024*1024)?!=before{return Err("running-game migration did not preserve old root".into());}
+        if !workshop_summary::publish(&c,&bundle,&||false)?{return Err("container migration missing".into());}
+        let count=std::fs::read_dir(c.installation.join("Interface/AddOns"))?.filter(|e|e.as_ref().is_ok_and(|e|e.file_name().to_string_lossy().starts_with("TwichUI_Market"))).count();
+        if count!=13{return Err("migration must leave thirteen physical Market addons".into());}
+        let mut disconnected=c.clone();disconnected.enabled=false;disconnected.save_confirmed(base,false)?;
+        workshop_summary::restore_previous(base,&disconnected)?;
+        if read(&root,3*1024*1024)?!=before{return Err("legacy restore changed exact root".into());}
+        c.save_confirmed(base,true)?;
+        // Re-migration must clean the byte-identical restored copies safely.
+        if !workshop_summary::publish(&c,&bundle,&||false)?{return Err("re-migration missing".into());}
+        disconnected.save_confirmed(base,false)?;workshop_summary::restore_previous(base,&disconnected)?;
+        std::fs::write(&cap,original)?;c.save_confirmed(base,true)?;
+        if read(&root,3*1024*1024)?!=before{return Err("final compatible restoration failed".into());}
+    }
     println!("{}",json!({"generation":bundle.manifest["generation_id"],"layout":count,
-                         "history_partitions":64,"changed":changed,"offline":true,
+                         "history_partitions":64,"changed":changed,"offline":true,"container_lifecycle_verified":lifecycle,
                          "source_commit":option_env!("COMPANION_DEV_SHA").unwrap_or("CI fixture"),
                          "source_synthetic":bundle.manifest["synthetic"]}));
     Ok(())

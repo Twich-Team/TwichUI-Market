@@ -35,7 +35,7 @@ def sha(value):
 
 def read(addons, count):
     root = (addons / "TwichUI_MarketData/Data.lua").read_text(encoding="ascii")
-    pattern = (r'TwichUIMarketData = \{ summary_version = 2, manifest = (' + LITERAL
+    pattern = (r'TwichUIMarketData = \{ summary_version = [23], manifest = (' + LITERAL
                + r'), bank = (' + LITERAL + r'), receipt = (' + LITERAL
                + r'), prepared = (' + LITERAL + r') \}\n?')
     match = re.fullmatch(pattern, root)
@@ -49,29 +49,46 @@ def read(addons, count):
     need(sha(canonical({k: v for k, v in h.items() if k != "generation_id"})) == h["generation_id"], "manifest digest")
     need(sha(canonical({k: v for k, v in a.items() if k != "attestation_id"})) == a["attestation_id"], "attestation digest")
     need({p["bucket"] for p in h["history_partitions"]} == set(range(64)), "expected all 64 history descriptors")
+    packed = root.startswith('TwichUIMarketData = { summary_version = 3,')
+    compressed = None
+    if packed:
+        from container_artifact import read as read_compressed
+        compressed = read_compressed(addons, bank, h['generation_id'])
     histories = {}
     for p in h["history_partitions"]:
         bucket = p["bucket"]
-        name = f"TwichUI_MarketHistoryPart{bank}{bucket:02}"
-        text = (addons / name / "Data.lua").read_text(encoding="ascii")
-        prefix = 'TwichUIMarketHistoryParts = TwichUIMarketHistoryParts or {}\n'
-        prefix += f'TwichUIMarketHistoryParts["{bank}{bucket:02}"] = '
-        need(text.startswith(prefix), "history identity")
-        raw = literal(text[len(prefix):].rstrip("\n")).encode()
+        if packed:
+            part = compressed['History'][bucket]
+            need(part['content_id'] == p['sha256'], 'history source ID')
+            raw = part['data']
+        else:
+            name = f"TwichUI_MarketHistoryPart{bank}{bucket:02}"
+            text = (addons / name / "Data.lua").read_text(encoding="ascii")
+            prefix = 'TwichUIMarketHistoryParts = TwichUIMarketHistoryParts or {}\n'
+            prefix += f'TwichUIMarketHistoryParts["{bank}{bucket:02}"] = '
+            need(text.startswith(prefix), "history identity")
+            raw = literal(text[len(prefix):].rstrip("\n")).encode()
         need(len(raw) == p["bytes"] and sha(raw) == p["sha256"], "history integrity")
         histories[bucket] = sha(raw)
     rows = []
     need(len(a["partitions"]) == count, "prepared descriptor count")
     for p in a["partitions"]:
         bucket = p["bucket"]
-        name = f"TwichUI_MarketCurrentPart{bank}{bucket:02}"
-        text = (addons / name / "Data.lua").read_text(encoding="ascii")
-        prefix = 'TwichUIMarketCurrentParts = TwichUIMarketCurrentParts or {}\n'
-        prefix += f'TwichUIMarketCurrentParts["{bank}{bucket:02}"] = {{ version = 1, layout = {count}, content_id = "{p["sha256"]}", data = "'
-        need(text.startswith(prefix), "current identity")
-        match = re.fullmatch(r'([0-9a-fz]*)", proofs = "([0-9a-f]*)" \}\n?', text[len(prefix):])
-        need(match, "current transport")
-        data = match[1]
+        if packed:
+            part = compressed['Current'][bucket]
+            need(part['content_id'] == p['sha256'], 'current source ID')
+            data = part['data'].decode('ascii')
+            size = max(1, p['record_count']); size = 1 << (size - 1).bit_length()
+            need(len(part['proofs']) == (2 * size - 1) * 64, 'proof byte count')
+        else:
+            name = f"TwichUI_MarketCurrentPart{bank}{bucket:02}"
+            text = (addons / name / "Data.lua").read_text(encoding="ascii")
+            prefix = 'TwichUIMarketCurrentParts = TwichUIMarketCurrentParts or {}\n'
+            prefix += f'TwichUIMarketCurrentParts["{bank}{bucket:02}"] = {{ version = 1, layout = {count}, content_id = "{p["sha256"]}", data = "'
+            need(text.startswith(prefix), "current identity")
+            match = re.fullmatch(r'([0-9a-fz]*)", proofs = "([0-9a-f]*)" \}\n?', text[len(prefix):])
+            need(match, "current transport")
+            data = match[1]
         need(len(data) == 135 * p["record_count"], "current record count")
         part_rows = [data[i:i + 135] for i in range(0, len(data), 135)]
         need(all(int(row[:8], 16) % count == bucket for row in part_rows), "current partition identity")

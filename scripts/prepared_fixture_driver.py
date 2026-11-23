@@ -9,14 +9,18 @@ from pathlib import Path
 
 CAP_FIELDS=('prepared_current_version','prepared_current_partitions','prepared_current_part_bytes','prepared_current_total_bytes')
 
-def installation(base,addon,count):
+def installation(base,addon,count,containers=False):
     assert base.name.startswith('prepared-fixture-') and not (base/'game').exists()
     game=base/'game';addons=game/'Interface/AddOns';addons.mkdir(parents=True,mode=0o700)
     for name,files in {'!!!TwichUI':['!!!TwichUI.toc'],'TwichUI_Workshop':['TwichUI_Workshop.toc','MarketDelivery.json','Summary.lua','Bridge.lua','Prepared.lua']}.items():
         destination=addons/name;destination.mkdir()
         for file in files:shutil.copyfile(addon/name/file,destination/file)
+    if (addon/'TwichUI_Workshop/Containers.lua').exists():shutil.copyfile(addon/'TwichUI_Workshop/Containers.lua',addons/'TwichUI_Workshop/Containers.lua')
     cap=addons/'TwichUI_Workshop/MarketDelivery.json';value=json.loads(cap.read_text())
     assert value['prepared_current_version']==1
+    if not containers:
+        for key in ('container_packaging_version','container_codec','container_block_bytes','current_containers','history_containers'):value.pop(key,None)
+    else:assert count==32 and value['container_packaging_version']==1
     if count is None:
         for key in CAP_FIELDS:value.pop(key)
     else:value['prepared_current_partitions']=count

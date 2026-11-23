@@ -1,3 +1,5 @@
+> **Current owner direction:** native raw-Deflate compatibility has been reported from Forever build71037. Implement the bounded final 13-addon transport; preserve all merge/release holds. [Current implementation and verification](performance-containers-13.md). The earlier codec-blocked sections below are historical evidence.
+
 # Thirteen-addon prototype: native codec gate
 
 **Current owner direction:** prepare a small removable native codec probe and

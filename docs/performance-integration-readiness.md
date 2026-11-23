@@ -1,3 +1,5 @@
+> **Current owner direction:** native raw-Deflate compatibility has been reported from Forever build71037. Implement the bounded final 13-addon transport; preserve all merge/release holds. [Current implementation and verification](performance-containers-13.md). The earlier codec-blocked sections below are historical evidence.
+
 > **OWNER HOLD:** coordinated merge/release is blocked on the new physical-addon footprint investigation. Logical 32-current/64-history remains approved; actual WoW performance is unverified and personal comparison is waived. No production packaging-format change is authorized.
 
 **Prototype direction:** the owner subsequently approved a bounded thirteen-addon

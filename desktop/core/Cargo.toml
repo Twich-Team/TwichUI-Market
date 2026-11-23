@@ -8,6 +8,7 @@ private-dev = []
 
 [dependencies]
 base64 = "0.22"
+flate2 = { version = "1", default-features = false, features = ["rust_backend"] }
 chrono = { version = "0.4", features = ["serde"] }
 getrandom = "0.2"
 minisign-verify = "=0.3.0"

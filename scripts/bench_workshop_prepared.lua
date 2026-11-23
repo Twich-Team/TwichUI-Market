@@ -4,7 +4,7 @@ local function read(path)local f=assert(io.open(path,'rb'));local v=f:read('*a')
 local function clock()return os.clock()*1000 end
 function X.setup(client)
     c=client;W=c.TwichUI.Workshop;J,B,P,Q=W.BridgeCodec,W.Bridge,W.Pricing,W.Summary
-    cfg=J.Parse(read(assert(arg[12])));stats={loads=0,history_loads=0,compile_ms=0,execute_ms=0,source_bytes=0,worst_load_ms=0,load_peak_kib=0}
+    cfg=J.Parse(read(assert(arg[12])));if type(cfg.native_codec)=='string'then c.C_EncodingUtil=assert(package.loadlib(cfg.native_codec,'luaopen_market_codec_offline'))();c.Enum={CompressionMethod={Deflate=0}}end;stats={loads=0,history_loads=0,compile_ms=0,execute_ms=0,source_bytes=0,worst_load_ms=0,load_peak_kib=0}
     local at=clock();local source=read(cfg.publication..'/TwichUI_MarketData/Data.lua')
     local began=clock();local root=assert(loadstring(source,'@TwichUI_MarketData/Data.lua'));setfenv(root,c);stats.root_compile_ms=clock()-began
     began=clock();root();stats.root_execute_ms=clock()-began;stats.root_file_ms=clock()-at
@@ -19,7 +19,7 @@ function X.setup(client)
     h=J.Parse(c.TwichUIMarketData.manifest);assert(h.contract_version==3 and #h.observations==60)
     local _,at=W.BridgeValidate.Time(h.generated_at);c.time=function()return at+60 end
     c.C_AddOns.LoadAddOn=function(name)
-        assert(name:match('^TwichUI_MarketPart[AB]%d%d$')or name:match('^TwichUI_MarketCurrentPart[AB]%d%d$')or name:match('^TwichUI_MarketHistoryPart[AB]%d%d$'))
+        assert(name:match('^TwichUI_MarketPart[AB]%d%d$')or name:match('^TwichUI_MarketCurrentPart[AB]%d%d$')or name:match('^TwichUI_MarketHistoryPart[AB]%d%d$')or name:match('^TwichUI_MarketCurrentContainer[AB]%d%d$')or name:match('^TwichUI_MarketHistoryContainer[AB]%d%d$'))
         local began=clock();local source=read(cfg.publication..'/'..name..'/Data.lua')
         local at=clock();local fn=assert(loadstring(source,'@'..name..'/Data.lua'));setfenv(fn,c);stats.compile_ms=stats.compile_ms+clock()-at
         at=clock();fn();stats.execute_ms=stats.execute_ms+clock()-at
@@ -67,16 +67,24 @@ function X.finish(out,event)
     out.prepared_recipe_sha256=X.recipeSHA;out.prepared_distinct_items=X.items;out.prepared_legacy_buckets=X.buckets
     out.compile_ms=stats.compile_ms;out.execute_ms=stats.execute_ms;out.loads=stats.loads;out.history_loads=stats.history_loads
     out.prepared_worst_load_ms=stats.worst_load_ms;out.prepared_load_peak_heap_kib=stats.load_peak_kib;out.prepared_source_bytes=stats.source_bytes
-    local status=B.Status();for k,v in pairs(status.prepared or {})do out['prepared_'..k]=v end
+    local status=B.Status();for k,v in pairs(status.containers or {})do out['container_'..k]=v end;for k,v in pairs(status.prepared or {})do out['prepared_'..k]=v end
     local bytes,history=0,0;for _,p in ipairs(h.partitions)do bytes=bytes+p.bytes end;for _,p in ipairs(h.history_partitions)do history=history+p.bytes end
     out.fixture_current_bytes=bytes;out.fixture_history_bytes=history;out.raw_fixture_bytes=bytes
     out.prepared_loaded_history_bytes=status.history_bytes;out.prepared_history_partitions=64
     local at=clock();for i=1,1000 do P.Price(65+i%38)end;out.prepared_warm_1000_prices_ms=clock()-at
     if cfg.history_probe then
-        local before=stats.loads;local began=clock();B.History(1001,P.BaseKey(1001),'recent',{days=60})
-        while Q.Pending()do event()end
+        local before=stats.loads;local codec=B.Status().containers;local began=clock();B.History(1001,P.BaseKey(1001),'recent',{days=60})
+        local worst=0;while Q.Pending()do local start=clock();event();worst=math.max(worst,clock()-start)end
+        out.prepared_history_scheduler_step_max_ms=worst
         local series=assert(B.History(1001,P.BaseKey(1001),'recent',{days=60}));assert(#series.points==60)
         out.prepared_history_probe_cpu_ms=clock()-began;out.prepared_history_probe_loads=stats.loads-before
+        local after=B.Status().containers
+        if codec and after then
+            out.history_inflate_ms=after.inflate_ms-codec.inflate_ms;out.history_base64_ms=after.base64_ms-codec.base64_ms
+            out.history_inflates=after.inflates-codec.inflates;out.history_output_bytes=after.output_bytes-codec.output_bytes
+        end
+        local at=clock();local loads=stats.loads;B.History(1001,P.BaseKey(1001),'recent',{days=60})
+        out.history_warm_ms=clock()-at;out.history_warm_loads=stats.loads-loads
     end
 end
 return X

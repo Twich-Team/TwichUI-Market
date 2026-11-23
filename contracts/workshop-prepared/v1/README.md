@@ -79,3 +79,18 @@ fully verified previous compatible generation.
 attestations, data/proofs, multiple variants, supply-only/unknown records and empty
 buckets. Python, native Rust and Lua consumers must independently pass these
 vectors and corruption tests. They are not prices for a live installation.
+
+
+## Physical container transport (summary transport 3)
+
+Prepared attestation v1 and Contract 3 source bytes do not change. Additive
+`container_packaging_version=1`, `container_codec=raw-deflate-base64`,
+`container_block_bytes=524288`, `current_containers=2`, `history_containers=4`
+capabilities require exactly32 logical current partitions and a Containers.lua
+TOC entry. Older clients ignore them and retain their supported old transport.
+The root uses summary_version3; its original five fields are unchanged. Two
+current/four history containers per bank map logical bucket to floor(bucket/16).
+Every envelope binds source generation and canonical content ID. Streams contain
+fixed `{bytes,payload}` raw-Deflate/Base64 blocks, each at most512KiB output.
+Returned records/history still require the original authoritative authentication.
+See [bounds, migration and downgrade](../../../docs/performance-containers-13.md).
