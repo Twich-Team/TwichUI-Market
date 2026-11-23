@@ -6,7 +6,7 @@ deploying the backend/private Companion through the existing signing/distributio
 process, provided all gates pass. No public addon release or temporary codec probe
 merge is authorized. Offline observations are never real Forever results.
 
-## Current result — 2026-11-23 08:13 UTC
+## Current result — 2026-11-23 08:17 UTC
 
 **25 addons selected and implemented.** At the larger frozen fixture, current
 physical-load p95 / maximum is4.326 /5.499ms, versus19.567 /20.889ms for13 and
@@ -434,3 +434,22 @@ backend deployed, no new signed Companion distributed and no public addon
 release made. Next prerequisite is an approved environment where the existing
 unchanged full simulator sandbox works; do not remove isolation or weaken tests.
 Native Forever results remain unavailable and are a separate explicit uncertainty.
+
+
+The following normal cycle succeeds at **08:15:47 UTC**, HTTP304 on both feeds,
+fresh observation2075 and unchanged complete snapshot181. All failure counts
+remain zero; no restart/OOM or forced request. Production health is confirmed
+across both scheduled cycles. [Follow-up evidence](evidence/house114-collection/normal-followup-collection.json).
+
+Final verified source pair remains Market85f7dbd / addon daa674f, with reader
+ee412088 included. Final main tips are Market3f0421a and addon364c4c2. Only
+repair PR51 is merged/deployed. To resume the coordinated sequence, first run
+the existing unchanged full simulator gate in a permitted environment whose
+sandbox works, preserving its reports and actual exit status. The supported
+cloud command is `bash tests/run.sh full --profile cloud --jobs 2 --sim-jobs 1 --measure`;
+cloud evidence must retain its stated coverage limits and must not assert a
+local/native release flag. Then recheck actual main ancestry, protections and
+immutable paired CI before merging/releasing. Existing signing/distribution,
+versioning and compatibility gates remain required and have not been executed
+for a new release. No new installer is offered to existing users and no owner
+PC or WoW installation has been changed.

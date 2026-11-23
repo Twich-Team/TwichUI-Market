@@ -1,0 +1,60 @@
+{
+  "at": "2026-11-23T08:16:40.876889+00:00",
+  "market": {
+    "house_id": 114,
+    "interval_seconds": 300,
+    "last_success": "2026-11-23T08:15:47.245915+00:00",
+    "failures": 0,
+    "last_error": null,
+    "next_check": "2026-11-23T08:20:47.245915+00:00"
+  },
+  "feeds": [
+    {
+      "source_kind": "auctions",
+      "last_success": "2026-11-23T08:15:47.245915+00:00",
+      "failures": 0,
+      "last_error": null,
+      "retry_after": null,
+      "capture_id": 212
+    },
+    {
+      "source_kind": "commodities",
+      "last_success": "2026-11-23T08:15:47.245915+00:00",
+      "failures": 0,
+      "last_error": null,
+      "retry_after": null,
+      "capture_id": 211
+    }
+  ],
+  "checks": [
+    {
+      "source_kind": "auctions",
+      "checked_at": "2026-11-23T08:15:47.245915+00:00",
+      "status": "unchanged",
+      "http_status": 304,
+      "error": null,
+      "capture_id": 212
+    },
+    {
+      "source_kind": "commodities",
+      "checked_at": "2026-11-23T08:15:47.245915+00:00",
+      "status": "unchanged",
+      "http_status": 304,
+      "error": null,
+      "capture_id": 211
+    }
+  ],
+  "observation": {
+    "id": 2075,
+    "snapshot_id": 181,
+    "retrieved_at": "2026-11-23T08:15:47.245915+00:00",
+    "synthetic": false
+  },
+  "worker": {
+    "image": "sha256:ec94420d36baf501d312f3cbc85e38b77222e5b5bff92b76aae82dd8df95575d",
+    "restart_count": 0,
+    "running": true,
+    "oom_killed": false
+  },
+  "provider_requests_for_verification": 0
+}
