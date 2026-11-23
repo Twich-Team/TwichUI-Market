@@ -127,6 +127,7 @@ public static class SummaryPickerControls {
  [DllImport("user32.dll")] public static extern uint GetWindowThreadProcessId(IntPtr window,out uint pid);
  [DllImport("user32.dll",CharSet=CharSet.Unicode)] public static extern IntPtr SendMessageTimeoutW(IntPtr window,uint message,IntPtr w,IntPtr l,uint flags,uint milliseconds,out IntPtr result);
  [DllImport("user32.dll",CharSet=CharSet.Unicode,EntryPoint="SendMessageTimeoutW")] public static extern IntPtr SetText(IntPtr window,uint message,IntPtr w,string text,uint flags,uint milliseconds,out IntPtr result);
+ [DllImport("user32.dll",CharSet=CharSet.Unicode,EntryPoint="SendMessageTimeoutW")] public static extern IntPtr ReadText(IntPtr window,uint message,IntPtr w,StringBuilder text,uint flags,uint milliseconds,out IntPtr result);
 }
 '@
 $dialogWindow=[IntPtr]$dialog.Current.NativeWindowHandle
@@ -180,15 +181,18 @@ if($Action -eq 'CancelFolder') {
         Start-Sleep -Milliseconds 50
     }
     if($env:TWICHUI_PICKER_DIAGNOSTICS -eq 'true') {@{pid=$env:MARKET_TEST_PRIMARY_PID;dialog=$dialogWindow.ToInt64();edit=$window.ToInt64();focus=[SummaryPickerControls]::Focus($dialogWindow).ToInt64();native_focus_verified=$true}|ConvertTo-Json -Compress|Set-Content (Join-Path $base "picker-focus-$env:MARKET_TEST_PRIMARY_PID.json")}
-    $keys=[Text.StringBuilder]::new()
-    foreach($character in $resolved.ToCharArray()) {
-        if('+^%~()[]{}'.Contains([string]$character)){$null=$keys.Append('{').Append($character).Append('}')}
-        else{$null=$keys.Append($character)}
-    }
-    # Classic Edit controls need not implement Ctrl+A. EM_SETSEL selects the
-    # complete old path using scalar offsets, including on repeated dialogs.
-    if([SummaryPickerControls]::SendMessageTimeoutW($window,0x00B1,[IntPtr]::Zero,[IntPtr](-1),2,3000,[ref]$result) -eq [IntPtr]::Zero){throw 'Actual native edit selection timed out'}
-    [System.Windows.Forms.SendKeys]::SendWait($keys.ToString())
-    [System.Windows.Forms.SendKeys]::SendWait('{ENTER}')
+    # System-marshaled edit text plus a REAL click: focus loss commits the
+    # shell's edit. Invoke/BM_CLICK/Enter can accept the old tree selection.
+    if([SummaryPickerControls]::SetText($window,0x000C,[IntPtr]::Zero,$resolved,2,3000,[ref]$result) -eq [IntPtr]::Zero){throw 'Actual native edit timed out'}
+    $actual=[Text.StringBuilder]::new(1024)
+    if([SummaryPickerControls]::ReadText($window,0x000D,[IntPtr]1024,$actual,2,3000,[ref]$result) -eq [IntPtr]::Zero){throw 'Actual native edit readback timed out'}
+    if($actual.ToString() -ne $resolved){throw 'Native folder edit does not contain the exact requested path'}
+    $ok=CheckedWindow ([SummaryPickerControls]::GetDlgItem((CheckedWindow $dialogWindow),1))
+    if(-not [SummaryPickerControls]::IsWindowEnabled($ok)){throw 'Native folder confirmation disabled'}
+    if(-not [SummaryPickerControls]::GetWindowRect($ok,[ref]$rect)){throw 'Native confirmation rectangle unavailable'}
+    if([SummaryPickerControls]::GetForegroundWindow() -ne $dialogWindow){throw 'Refusing native click outside the checked folder dialog'}
+    $null=[SummaryPickerControls]::SetCursorPos([int](($rect.Left+$rect.Right)/2),[int](($rect.Top+$rect.Bottom)/2))
+    [SummaryPickerControls]::mouse_event(2,0,0,0,[UIntPtr]::Zero)
+    [SummaryPickerControls]::mouse_event(4,0,0,0,[UIntPtr]::Zero)
 }
 @{native_dialog=$true;cancelled=($Action -eq 'CancelFolder')}|ConvertTo-Json -Compress
