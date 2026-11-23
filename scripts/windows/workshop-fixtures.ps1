@@ -61,9 +61,9 @@ if($Action -in @('StartGame','StopGame','GameRunning')) {
 }
 Add-Type -AssemblyName UIAutomationClient
 Add-Type -AssemblyName UIAutomationTypes
+Add-Type -AssemblyName System.Windows.Forms
 $condition=[System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::ClassNameProperty,'#32770')
 $dialog=$null
-$dialogDeadline=[DateTime]::UtcNow.AddSeconds(20)
 for($i=0;$i -lt 200;$i++) {
     $all=[System.Windows.Automation.AutomationElement]::RootElement.FindAll([System.Windows.Automation.TreeScope]::Children,$condition)
     foreach($candidate in $all) {if($candidate.Current.ProcessId -eq [int]$env:MARKET_TEST_PRIMARY_PID){$dialog=$candidate;break}}
@@ -83,7 +83,6 @@ public static class SummaryPickerControls {
  [DllImport("user32.dll")] public static extern bool EnumChildWindows(IntPtr window,EnumChild callback,IntPtr data);
  [DllImport("user32.dll",CharSet=CharSet.Unicode)] public static extern int GetClassNameW(IntPtr window,StringBuilder name,int size);
  [DllImport("user32.dll")] public static extern bool IsWindowVisible(IntPtr window);
- [DllImport("user32.dll")] public static extern bool IsWindowEnabled(IntPtr window);
  public static IntPtr FindEdit(IntPtr parent) {
   IntPtr found=IntPtr.Zero;int count=0;
   EnumChildWindows(parent,delegate(IntPtr w,IntPtr data) {
@@ -101,6 +100,7 @@ public static class SummaryPickerControls {
   },IntPtr.Zero);return String.Join(",",items.ToArray());
  }
  [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr window);
+ [DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();
  [DllImport("user32.dll")] public static extern IntPtr GetDlgItem(IntPtr window,int id);
  [DllImport("user32.dll")] public static extern uint GetWindowThreadProcessId(IntPtr window,out uint pid);
  [DllImport("user32.dll",CharSet=CharSet.Unicode)] public static extern IntPtr SendMessageTimeoutW(IntPtr window,uint message,IntPtr w,IntPtr l,uint flags,uint milliseconds,out IntPtr result);
@@ -109,13 +109,6 @@ public static class SummaryPickerControls {
 '@
 $dialogWindow=[IntPtr]$dialog.Current.NativeWindowHandle
 $null=[SummaryPickerControls]::SetForegroundWindow($dialogWindow)
-# A top-level dialog can be discoverable before its child controls are ready.
-# Wait for native readiness within the existing 20-second discovery budget.
-while([SummaryPickerControls]::GetDlgItem($dialogWindow,1) -eq [IntPtr]::Zero -or
-      [SummaryPickerControls]::GetDlgItem($dialogWindow,2) -eq [IntPtr]::Zero) {
-    if([DateTime]::UtcNow -ge $dialogDeadline){throw ('Native folder controls not ready; classes: '+[SummaryPickerControls]::Classes($dialogWindow))}
-    Start-Sleep -Milliseconds 100
-}
 function CheckedWindow($element) {
     if($element -is [IntPtr]){$window=$element}else{$window=[IntPtr]$element.Current.NativeWindowHandle}
     [uint32]$owner=0
@@ -129,22 +122,22 @@ function ClickButton($element) {
     if([SummaryPickerControls]::SendMessageTimeoutW($window,0x00F5,[IntPtr]::Zero,[IntPtr]::Zero,2,3000,[ref]$result) -eq [IntPtr]::Zero){throw 'Actual native button click timed out'}
 }
 if($Action -eq 'CancelFolder') {
-    $button=[SummaryPickerControls]::GetDlgItem((CheckedWindow $dialogWindow),2)
-    if($button -eq [IntPtr]::Zero){throw 'Native cancel button unavailable'}
+    $button=$dialog.FindFirst([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::AutomationIdProperty,'2'))
+    if(-not $button){throw 'Native cancel button unavailable'}
     ClickButton $button
 } else {
     $resolved=[IO.Path]::GetFullPath($GamePath)
     if(-not $resolved.StartsWith([IO.Path]::GetFullPath($base)+'\',[StringComparison]::OrdinalIgnoreCase)){throw 'Picker fixture path escaped'}
-    # SHBrowseForFolder returns its selected PIDL, not arbitrary edit-control text.
-    # BFFM_SETSELECTIONW (WM_USER + 103) commits the actual shell selection.
-    # https://learn.microsoft.com/windows/win32/shell/bffm-setselection
-    $window=CheckedWindow $dialogWindow;$result=[IntPtr]::Zero
-    if([SummaryPickerControls]::SetText($window,1127,[IntPtr]1,$resolved,2,3000,[ref]$result) -eq [IntPtr]::Zero){throw 'Actual native folder selection timed out'}
-    # This classic dialog may stop exposing its buttons through UIA after tree
-    # navigation. Address the real IDOK child HWND, retaining process checks.
-    $button=[SummaryPickerControls]::GetDlgItem((CheckedWindow $dialogWindow),1)
-    if($button -eq [IntPtr]::Zero){throw ('Native folder confirmation unavailable; classes: '+[SummaryPickerControls]::Classes($dialogWindow))}
-    if(-not [SummaryPickerControls]::IsWindowEnabled((CheckedWindow $button))){throw 'Selected native folder cannot be confirmed'}
-    ClickButton $button
+    $edit=[SummaryPickerControls]::FindEdit((CheckedWindow $dialogWindow))
+    if($edit -eq [IntPtr]::Zero){throw ('Actual native folder edit unavailable; classes: '+[SummaryPickerControls]::Classes($dialogWindow))}
+    $window=CheckedWindow $edit;$result=[IntPtr]::Zero
+    # WM_SETTEXT is system-marshaled between processes. BFFM_SETSELECTIONW is
+    # WM_USER+103: sending a local string pointer across processes is invalid.
+    if([SummaryPickerControls]::SetText($window,0x000C,[IntPtr]::Zero,$resolved,2,3000,[ref]$result) -eq [IntPtr]::Zero){throw 'Actual native edit timed out'}
+    # Focus the actual edit via scalar WM_NEXTDLGCTL, then use the real Enter
+    # key to validate/accept its path rather than invoking a stale selected PIDL.
+    if([SummaryPickerControls]::SendMessageTimeoutW((CheckedWindow $dialogWindow),0x0028,$window,[IntPtr]1,2,3000,[ref]$result) -eq [IntPtr]::Zero){throw 'Actual native edit focus timed out'}
+    if([SummaryPickerControls]::GetForegroundWindow() -ne $dialogWindow){throw 'Refusing keyboard input outside the checked folder dialog'}
+    [System.Windows.Forms.SendKeys]::SendWait('{ENTER}')
 }
 @{native_dialog=$true;cancelled=($Action -eq 'CancelFolder')}|ConvertTo-Json -Compress

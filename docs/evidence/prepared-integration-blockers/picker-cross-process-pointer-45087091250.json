@@ -1,0 +1,9 @@
+{
+  "source": "c3740b45b230f81c68f20970519fb4d2ea11d22c",
+  "run": 45087091250,
+  "job": 137408086012,
+  "conclusion": "failure",
+  "message": "Native control process identity changed",
+  "cause": "Invalid cross-process local string pointer in BFFM_SETSELECTIONW (WM_USER+103); messages >= WM_USER are not system-marshaled",
+  "correction": "Remove pointer message; WM_SETTEXT plus scalar focus and foreground-checked real Enter; preserve every ownership and path assertion"
+}

@@ -79,12 +79,13 @@ condition instead of the deliberately missing Summary.lua condition. Its
 downstream legacy consumer is skipped, not passing. Original evidence is
 preserved in `evidence/prepared-integration-blockers/windows-ui-45084411116.json`.
 
-The fixture previously changed an arbitrary Edit control and immediately
-accepted the shell dialog. Production `installation.rs:285` uses
-`SHBrowseForFolderW`, which returns the selected PIDL. The test-only correction
-uses documented `BFFM_SETSELECTIONW` on the checked dialog/process and requires
-an enabled native confirmation. Additional real Windows tests switch first →
-second → invalid → first and verify the returned path and validation each time.
+The fixture previously changed an Edit control and programmatically invoked
+the default button. Production `installation.rs:285` uses `SHBrowseForFolderW`,
+which returns the selected PIDL. The test-only correction sets text with the
+system-marshaled WM_SETTEXT, focuses the real edit via scalar WM_NEXTDLGCTL,
+requires the checked dialog in the foreground, and sends a real Enter key to
+commit/accept that path. Additional real Windows tests switch first → second →
+invalid → first and verify the exact returned path, exit code and validation.
 No product picker, IPC result or economic assertion is mocked or bypassed.
 
 The legacy-close timeout has no stage evidence in the original log, so its
@@ -102,8 +103,11 @@ Automatic-sync run [45084411108](https://github.com/Twich-Team/TwichUI-Market/ac
 now passes at `1e61ff41747b0d49edc024b174f9df6b4e6dd925`: all six comparisons
 have identical values, the server stops, and no active requests or background
 loop errors remain. Receipt: `evidence/prepared-integration-blockers/automatic-sync-passed-45084411108.json`.
-The separate first picker regression at `efe5262` fails because UIA cannot find
-the confirmation button after navigation. The follow-up uses native IDOK/IDCANCEL
-handles and waits for child readiness within the original discovery budget;
-this does not retry an application failure. Actual Windows re-verification is
-required; the failed run remains evidence, not a passing exception.
+The initial repair attempts `efe5262` and `c3740b4` are failed test-only revisions.
+They used BFFM_SETSELECTIONW with a local string pointer across processes.
+Windows does not marshal messages at or above WM_USER; that pointer is invalid
+in the target process. The lost-dialog/identity failures must not be hidden by
+changing window-ownership assertions. The final approach removes that message
+entirely and uses ordinary native keyboard interaction with the same deadlines.
+Actual Windows re-verification is required; failed and superseded runs remain
+evidence, not passing exceptions.

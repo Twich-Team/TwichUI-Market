@@ -8,5 +8,6 @@
   "selection_message": "BFFM_SETSELECTIONW",
   "button_lookup": "UIAutomation AutomationId=1",
   "interpretation": "UIA lookup does not establish that native child controls are available; follow-up requires process-checked native IDs and readiness within the original discovery budget",
-  "required_follow_up": "Actual Windows verification; no exception accepted"
+  "required_follow_up": "Actual Windows verification; no exception accepted",
+  "superseding_root_cause": "The attempted BFFM_SETSELECTIONW repair passes a local pointer to a WM_USER message across processes; Windows does not marshal it. Remove this message, do not relax process checks."
 }
