@@ -1,5 +1,5 @@
 import {describe,it,expect} from 'vitest';
-import {parseRoute,itemUrl,supportedId,explorerState,explorerUrl,safeBrowseUrl} from './navigation';
+import {parseRoute,itemUrl,supportedId,explorerState,explorerUrl,safeBrowseUrl,canonicalizeExplorerUrl} from './navigation';
 const variant='a'.repeat(64);
 const defaults={market:2,query:'',sort:{id:'item_id' as const,desc:false},pageIndex:0,pageSize:25 as const};
 describe('canonical item identities',()=>{
@@ -31,6 +31,26 @@ describe('private transient restoration',()=>{
  }
  it('retains a bounded origin entry and clears optional state on account change',()=>{const history=browser();setQueryIdentity('one:member');saveRestoration({focus:'catalogue-item-25',expanded:{25:true},draft:'cloth'});expect(restoration()).toMatchObject({scroll:120,draft:'cloth',focus:'catalogue-item-25',expanded:{25:true}});navigate(itemUrl(2,25));expect(history.state.marketOrigin).toBe('/?market=2');setQueryIdentity('two:member');expect(restoration()).toBeUndefined();});
  it('clears optional state on logout while retaining the direct URL',()=>{browser();saveRestoration({draft:'cloth'});clearPrivateCache();expect(restoration()).toBeUndefined();expect(location.search).toBe('?market=2');});
+});
+
+describe('delayed Explorer canonicalization',()=>{
+ afterEach(()=>vi.unstubAllGlobals());
+ function browser(pathname:string,search='') {
+  const replaceState=vi.fn();vi.stubGlobal('location',{pathname,search});
+  vi.stubGlobal('history',{state:null,replaceState});
+  vi.stubGlobal('window',{dispatchEvent:vi.fn()});return replaceState;
+ }
+ it('canonicalizes the still-current rendered Explorer URL',()=>{
+  const replace=browser('/');canonicalizeExplorerUrl('',defaults);
+  expect(replace).toHaveBeenCalledWith(null,'',explorerUrl(defaults));
+ });
+ it.each(['/administration','/account','/deals','/markets/2/items/25'])('does not undo newer navigation to %s',path=>{
+  const replace=browser(path);canonicalizeExplorerUrl('',defaults);expect(replace).not.toHaveBeenCalled();
+ });
+ it('does not undo a newer Explorer search or rewrite an already canonical URL',()=>{
+  const replace=browser('/','?q=new');canonicalizeExplorerUrl('',defaults);expect(replace).not.toHaveBeenCalled();
+  location.search=explorerUrl(defaults).slice(1);canonicalizeExplorerUrl(location.search,defaults);expect(replace).not.toHaveBeenCalled();
+ });
 });
 
 it('round trips bounded intraday ranges independently of stored daily preferences',()=>{
