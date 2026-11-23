@@ -1,0 +1,7 @@
+{
+  "image": "sha256:2de5aa76348ed3977db928464fb72a212b42c57f7142c923e35bda7ff12237cb",
+  "schema": "retention_20261118",
+  "alembic_check_returncode": 0,
+  "migration_applied": false,
+  "database": "isolated market_restore"
+}

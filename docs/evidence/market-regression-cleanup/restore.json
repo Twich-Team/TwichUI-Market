@@ -1,0 +1,57 @@
+{
+  "operator_source": "/home/marketdev/projects/TwichUI-Market/.worktrees/packaging-selected/scripts/backups.py",
+  "operator_source_sha256": "7acc0e85e6c197bb4a6a35a739540e01bda88726e14d026863fbd6ecea37307e",
+  "archive": "market-release-20261123T152456556825Z-1c1734c7fc7d.dump",
+  "manifest": {
+    "version": 2,
+    "manager": "market-backups-v2",
+    "filename": "market-release-20261123T152456556825Z-1c1734c7fc7d.dump",
+    "source": "development",
+    "origin": "release",
+    "created_at": "2026-11-23T15:37:11.957776+00:00",
+    "bytes": 1922461549,
+    "sha256": "d0ae48ea244e08d5b1fc2804edc6dd8859ea06fceffe953f27bac4e087e5119e",
+    "postgres_major": 17,
+    "verification": "archive_integrity_verified",
+    "restoration_verified_at": "2026-11-23T15:47:07.885217+00:00",
+    "protected": true,
+    "required_by": [
+      "restore-recovery-gate"
+    ],
+    "file_identity": [
+      2144771,
+      1922461549,
+      1795448147252714786
+    ],
+    "restored": {
+      "migration": "retention_20261118",
+      "users": 99,
+      "markets": 2,
+      "observations": 2127,
+      "listings": 31194205,
+      "synthetic_observations": 0,
+      "buyout_total": "2683637955250",
+      "snapshot_statistics": 5102118,
+      "daily_observations": 11,
+      "market_verifications": 2,
+      "user_preferences": 23
+    }
+  },
+  "actual_restore": {
+    "migration": "retention_20261118",
+    "users": 99,
+    "markets": 2,
+    "observations": 2127,
+    "listings": 31194205,
+    "synthetic_observations": 0,
+    "buyout_total": "2683637955250",
+    "snapshot_statistics": 5102118,
+    "daily_observations": 11,
+    "market_verifications": 2,
+    "user_preferences": 23
+  },
+  "compose_project": "twichui-market-restore-prepared-20261123",
+  "candidate_image": "sha256:2de5aa76348ed3977db928464fb72a212b42c57f7142c923e35bda7ff12237cb",
+  "history_scope": "Old recorded historical cutoffs; no fresh full-table production baseline claimed",
+  "actual_restoration": true
+}

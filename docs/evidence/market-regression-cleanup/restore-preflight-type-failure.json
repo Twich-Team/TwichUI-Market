@@ -1,0 +1,11 @@
+{
+  "at": "2026-11-23T15:39:37.743607+00:00",
+  "exception_type": "AssertionError",
+  "project": "twichui-market-restore-prepared-20261123",
+  "receipt": "No successful restore is claimed. Preserve private logs and task volume for inspection.",
+  "cause": "Compose JSON serializes mem_limit and memswap_limit as decimal strings; integer-only preflight comparison rejected equal numeric limits",
+  "resources_created": false,
+  "production_changed": false,
+  "correction": "Parse both limits as integers before comparing exact1GiB values",
+  "rehearsal_started_after_diagnosis": true
+}
