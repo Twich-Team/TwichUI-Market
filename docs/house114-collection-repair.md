@@ -1,5 +1,17 @@
 # House 114 collection capacity repair
 
+**Production recovered — 2026-11-23 08:10:33 UTC.** The scheduled auction request
+returned HTTP200 and validated171,605 auctions, still above the old150,000 cap.
+Both feeds and the overall market now have zero failures; retry cleared normally.
+A complete non-synthetic293,167-listing snapshot is published, with the previous
+observation, snapshot and capture retained. The original300-second schedule,
+credentials, worker limits and other production services are unchanged.
+[Exact post-recovery acceptance](evidence/house114-collection/post-recovery-verification.json).
+The independent collector repair is complete; the coordinated prepared/Companion
+release remains held by the required unavailable full simulator sandbox.
+Earlier pending statements below are chronological checkpoints.
+
+
 The owner prioritizes this repair over packaging. The coordinated prepared-price /
 Companion release must not merge or deploy until production has a successful
 validated house-114 auction collection. A separately verified targeted collector
@@ -182,3 +194,39 @@ This is private-store/evidence validation, not a new HTTPS authenticated
 distribution campaign. No grant, signature, installer, update pointer or installed
 client was changed. Older versions remain. No new Companion update is available.
 [Unchanged distribution receipt](evidence/house114-collection/unchanged-companion-distribution.json).
+
+
+## Natural production recovery and final acceptance — 08:12 UTC
+
+The original persisted auction retry08:07:31.827206 was never reset. The normal
+300-second loop began its next check at **08:10:33.907615 UTC** and successfully
+collected HTTP200 auction capture212: **171,605** validated listings,
+17,243,985 payload bytes, SHA256
+`883214afc128e35c408508758d124eb0f2315fe5147b63f40339dcaf61692b10`.
+Commodities conditionally validate HTTP304 against capture211's121,562 rows.
+Observation2074 / snapshot181 is complete, non-synthetic and has **293,167**
+actual stored listing rows, exactly equal to the two validated feed counts.
+Its source manifest proves US/ruleset2/house114/dynamic-forever-us and both
+feed checks/payload hashes. Auction, commodity and market failures are zero;
+errors/retry are null. [Scheduled recovery receipt](evidence/house114-collection/production-recovery.json).
+
+The08:12 bounded read-only verifier confirms old observation2073, snapshot180
+(including raw data/statistics), and auction capture199 remain. It makes zero
+provider requests. Public API health is HTTP200. All other production container
+identities, worker environment/command/mounts/limits/security and private beta.11
+manifest/installer are unchanged. No critical worker traceback/memory errors,
+restart or OOM occurred. Actual cgroup peak **310,743,040bytes (296.35MiB)**
+is below the original402,653,184-byte limit; cgroup max/high/OOM event counters remain
+zero and CPU remains0.5. No production schema/data/settings/backoff/poll changes
+or new Companion publication occurred.
+
+Rollback preflight still resolves to the retained original collector image,
+with the same environment/command/limits/logging and worker-only scope. No
+rollback was needed. [Rollback readiness](evidence/house114-collection/rollback-preflight.json).
+Keep this worktree: the live Compose label references its release overlay.
+
+Final Market main remains **3f0421a2221e424df751b963f5b66b445e319018**.
+The production-health gate is now satisfied. Coordinated PRs46–50/131/136 remain
+unmerged and no prepared backend/private Companion update is deployed: required
+full simulator verification remains blocked by the actual sandbox isolation
+failure. That independent gate is not waived by production recovery.
