@@ -83,6 +83,14 @@ public static class SummaryPickerControls {
  [DllImport("user32.dll")] public static extern bool EnumChildWindows(IntPtr window,EnumChild callback,IntPtr data);
  [DllImport("user32.dll",CharSet=CharSet.Unicode)] public static extern int GetClassNameW(IntPtr window,StringBuilder name,int size);
  [DllImport("user32.dll")] public static extern bool IsWindowVisible(IntPtr window);
+ [DllImport("user32.dll")] public static extern bool IsWindowEnabled(IntPtr window);
+ [DllImport("user32.dll")] public static extern int GetDlgCtrlID(IntPtr window);
+ [DllImport("user32.dll",EntryPoint="GetWindowLongW")] public static extern int GetStyle(IntPtr window,int index);
+ public static IntPtr[] Children(IntPtr parent) {
+  var items=new List<IntPtr>();
+  EnumChildWindows(parent,delegate(IntPtr w,IntPtr data) {if(items.Count>=128)return false;items.Add(w);return true;},IntPtr.Zero);
+  return items.ToArray();
+ }
  public static IntPtr FindEdit(IntPtr parent) {
   IntPtr found=IntPtr.Zero;int count=0;
   EnumChildWindows(parent,delegate(IntPtr w,IntPtr data) {
@@ -109,6 +117,19 @@ public static class SummaryPickerControls {
 '@
 $dialogWindow=[IntPtr]$dialog.Current.NativeWindowHandle
 $null=[SummaryPickerControls]::SetForegroundWindow($dialogWindow)
+if($env:TWICHUI_PICKER_DIAGNOSTICS -eq 'true') {
+    $controls=@(foreach($handle in [SummaryPickerControls]::Children($dialogWindow)) {
+        $class=[Text.StringBuilder]::new(256);$null=[SummaryPickerControls]::GetClassNameW($handle,$class,256)
+        [uint32]$nativeOwner=0;$null=[SummaryPickerControls]::GetWindowThreadProcessId($handle,[ref]$nativeOwner)
+        $row=@{hwnd=$handle.ToInt64();class=$class.ToString();id=[SummaryPickerControls]::GetDlgCtrlID($handle);pid=$nativeOwner;visible=[SummaryPickerControls]::IsWindowVisible($handle);enabled=[SummaryPickerControls]::IsWindowEnabled($handle);style=('{0:X8}' -f [SummaryPickerControls]::GetStyle($handle,-16))}
+        if($class.ToString() -eq 'Edit') {
+            try {$element=[System.Windows.Automation.AutomationElement]::FromHandle($handle);$row.uia=@{name=$element.Current.Name;automation_id=$element.Current.AutomationId;focusable=$element.Current.IsKeyboardFocusable;offscreen=$element.Current.IsOffscreen;enabled=$element.Current.IsEnabled;focused=$element.Current.HasKeyboardFocus}}
+            catch {$row.uia_error=$_.Exception.Message}
+        }
+        $row
+    })
+    @{action=$Action;pid=$env:MARKET_TEST_PRIMARY_PID;dialog=$dialogWindow.ToInt64();controls=$controls}|ConvertTo-Json -Depth 5|Set-Content (Join-Path $base "picker-controls-$Action-$env:MARKET_TEST_PRIMARY_PID.json")
+}
 function CheckedWindow($element) {
     if($element -is [IntPtr]){$window=$element}else{$window=[IntPtr]$element.Current.NativeWindowHandle}
     [uint32]$owner=0

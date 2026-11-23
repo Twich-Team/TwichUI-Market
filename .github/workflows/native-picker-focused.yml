@@ -1,0 +1,46 @@
+name: Focused native picker
+on:
+  push:
+    branches: ['ci/native-picker/**']
+permissions:
+  contents: read
+concurrency:
+  group: native-picker-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  picker:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    env:
+      TWICHUI_PICKER_DIAGNOSTICS: 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: Twich-Team/TwichUI
+          ref: 074435e41521e97ad125e3094c45a9eb767f90e1
+          path: coordinated-addon
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.100.0
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: desktop -> target
+      - run: cargo build --manifest-path desktop/Cargo.toml --example installation_smoke --locked
+      - shell: pwsh
+        run: ./scripts/windows/verify-workshop-picker.ps1
+      - name: Preserve actual control inventory and picker results
+        if: always()
+        shell: pwsh
+        run: |
+          Get-ChildItem "$env:RUNNER_TEMP/TwichUI-Actual-Picker/workshop-summary-fixtures/picker-controls-*.json" -ErrorAction SilentlyContinue | ForEach-Object { Get-Content $_.FullName -Raw }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: native-picker-focused
+          path: |
+            ${{ runner.temp }}/TwichUI-Actual-Picker/*.json
+            ${{ runner.temp }}/TwichUI-Actual-Picker/*.stderr
+            ${{ runner.temp }}/TwichUI-Actual-Picker/workshop-summary-fixtures/picker-controls-*.json
+          if-no-files-found: warn
