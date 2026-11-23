@@ -1,0 +1,19 @@
+{
+  "fixture_synthetic": true,
+  "real_game": false,
+  "private_marker_enforced": true,
+  "native_validation_enforced": true,
+  "same_layout_no_change": true,
+  "isolated_endpoint_401_200_304": true,
+  "source_generation": "1480e07c33b28364677b91c564cb378f81cd243974146aed44b2b03c43de5b46",
+  "windows_container_lifecycle": {
+    "changed": false,
+    "container_lifecycle_verified": true,
+    "generation": "1480e07c33b28364677b91c564cb378f81cd243974146aed44b2b03c43de5b46",
+    "history_partitions": 64,
+    "layout": 32,
+    "offline": true,
+    "source_commit": "CI fixture",
+    "source_synthetic": false
+  }
+}

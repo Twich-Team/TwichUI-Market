@@ -1,0 +1,15 @@
+{
+  "market_head": "dc54726c8e3af27800a4e2150a9c2820bfdccc2a",
+  "market_tested_preview": "1100a089f872c6e21bf578555551c152378cad09",
+  "market_identical_tree": "55fa3de80eb9db81ef1c0e4b3418a82a9418720e",
+  "addon_head": "cfc41d8b47d51c1be329aa3c46b994b70a742cf1",
+  "prepared_reader_head": "ee4120880e55b88d588392769fdd6682820d300d",
+  "preserved_addon_main": "364c4c28889d621335bc4b3a7b61d234c0b04ce0",
+  "addon_identical_tree_to_prior_verified_preview": "fd907d23ca291144976bdafdec88932e885ecac8",
+  "prior_addon_verified_preview": "121434c30f2e4eaf7c45e986bd36fefcff1ba066",
+  "workshop_runtime_changes_since_measured_fb64": false,
+  "full_simulator_gate": "blocked: actual sandbox loopback setup denied locally and in CI",
+  "coordinated_release_merged": false,
+  "coordinated_release_deployed": false,
+  "companion_new_update_published": false
+}

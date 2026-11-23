@@ -255,3 +255,32 @@ The actual required Bubblewrap command was separately tested, not inferred from
 job137517036003, retains the actual-command failure. No network-isolation flag,
 host policy or assertion was removed. The diagnostic-only branch is not part
 of the release. Full simulator execution therefore remains blocked.
+
+
+## Final verification checkpoint and retained inputs
+
+Both exact frozen upstream fixture files were reconstructed independently and
+match their original campaign SHA256 values byte-for-byte (27,588,556 and
+59,126,554bytes). They remain under ignored local `preserved-fixtures`, bounded
+to83MiB; no provider or production data was used. [Input identities](evidence/market-packaging-final/preserved-fixture-identities.json).
+
+The corrected installed Windows workflow passes the unchanged strict assertion.
+[Its exact counter/event receipt](evidence/market-packaging-final/windows-confirmation-passed.json)
+shows one confirmation price run (3→4), one actual token renewal (4→5), one
+price page (4→5), and summary202→200 without restarting scalar pricing. The
+measurement starts with the earlier Resume complete and its next scheduled
+check in the future. Original failed evidence remains separate; its missing
+request statuses do not permit a sole historical-cause assertion.
+
+[Actual Windows lifecycle receipt](evidence/market-packaging-final/windows-lifecycle-25.json)
+confirms native validation, private isolation,401/200/304 endpoint compatibility,
+unchanged publication, running-game migration refusal, legacy restoration and
+re-migration. These are disposable Windows fixtures, not a real WoW client.
+
+The final installed workflow tests immutable Market preview1100a089, whose
+tree exactly equals candidate dc54726. Current addon main independently advanced
+to364c4c2 (approved Execute Range PR137). Prepared-reader131 now retains it
+through ee412088; container136 retains that reader through cfc41d8. Its tree
+exactly matches already verified preview121434c3. Market runtime and benchmark
+inputs are unchanged. New head checks still run; required gates are not waived
+on the basis of tree equality. [Precise identities](evidence/market-packaging-final/verification-checkpoint.json).

@@ -1,0 +1,16 @@
+[
+  {
+    "records": 16384,
+    "fixture_sha256": "815f81d023a45b3d1c6e3d5d0ea7e8bf6ed3e2e7688203dc300d12f7dec08d8f",
+    "source_generation": "ae761007c97a7456827f0d2d61925fa52ee4edf1623eab009572f65b6b2e1abc",
+    "source_identical": true,
+    "raw_bytes": 27588556
+  },
+  {
+    "records": 35116,
+    "fixture_sha256": "011e4a35f327237fd2eafc9ef224ef4a7659e23a882e2c1cc89a4026693e83da",
+    "source_generation": "3ce3175d950972cf827d920f82cae81bbd3ff3cf7429fb5cf7f5829d47c22219",
+    "source_identical": true,
+    "raw_bytes": 59126554
+  }
+]

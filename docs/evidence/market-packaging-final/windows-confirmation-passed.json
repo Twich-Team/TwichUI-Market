@@ -1,0 +1,166 @@
+{
+  "fixture": true,
+  "source_commit": "1100a089f872c6e21bf578555551c152378cad09",
+  "before": {
+    "bearer_requests": 14,
+    "token_requests": 4,
+    "sync_requests": 4,
+    "price_runs": 3,
+    "summary_preparations": 0
+  },
+  "after": {
+    "bearer_requests": 22,
+    "token_requests": 5,
+    "sync_requests": 5,
+    "price_runs": 4,
+    "summary_preparations": 1
+  },
+  "before_sync": {
+    "phase": "ready",
+    "automatic_sync": true,
+    "next_sync_ms": 1795418284694,
+    "last_sync_ms": 1795414684694,
+    "last_server_check_ms": 1795414648990,
+    "upstream_update_ms": null,
+    "generation": "1:1667b6d19ec287ae8d9e0835bc6a3094a275d5785905445ab424a1f16876b9bd",
+    "received_new_generation": false,
+    "pages_completed": 1,
+    "retry_attempts": 0,
+    "selected_market": 1,
+    "running": false
+  },
+  "events": [
+    {
+      "at": 1190.328,
+      "method": "POST",
+      "path": "/api/v1/companion/token",
+      "status": 200
+    },
+    {
+      "at": 1190.468,
+      "method": "GET",
+      "path": "/api/v1/companion/bootstrap",
+      "status": 200
+    },
+    {
+      "at": 1190.843,
+      "method": "POST",
+      "path": "/api/v1/companion/token",
+      "status": 200
+    },
+    {
+      "at": 1190.921,
+      "method": "GET",
+      "path": "/api/v1/companion/bootstrap",
+      "status": 200
+    },
+    {
+      "at": 1190.968,
+      "method": "POST",
+      "path": "/api/v1/companion/activity",
+      "status": 204
+    },
+    {
+      "at": 1191.515,
+      "method": "GET",
+      "path": "/api/v1/sync/markets/1",
+      "status": 200
+    },
+    {
+      "at": 1192.062,
+      "method": "GET",
+      "path": "/api/v1/sync/markets/1",
+      "status": 200
+    },
+    {
+      "at": 1192.828,
+      "method": "GET",
+      "path": "/api/v1/companion/bootstrap",
+      "status": 200
+    },
+    {
+      "at": 1196.828,
+      "method": "POST",
+      "path": "/api/v1/companion/token",
+      "status": 200
+    },
+    {
+      "at": 1196.906,
+      "method": "GET",
+      "path": "/api/v1/companion/bootstrap",
+      "status": 200
+    },
+    {
+      "at": 1196.937,
+      "method": "POST",
+      "path": "/api/v1/companion/activity",
+      "status": 204
+    },
+    {
+      "at": 1197.484,
+      "method": "GET",
+      "path": "/api/v1/sync/markets/1",
+      "status": 200
+    },
+    {
+      "at": 1216.406,
+      "method": "POST",
+      "path": "/api/v1/companion/token",
+      "status": 200
+    },
+    {
+      "at": 1216.468,
+      "method": "GET",
+      "path": "/api/v1/companion/bootstrap",
+      "status": 200
+    },
+    {
+      "at": 1216.515,
+      "method": "POST",
+      "path": "/api/v1/companion/activity",
+      "status": 204
+    },
+    {
+      "at": 1217.046,
+      "method": "GET",
+      "path": "/api/v1/sync/markets/1",
+      "status": 200
+    },
+    {
+      "at": 1221.796,
+      "method": "POST",
+      "path": "/api/v1/companion/token",
+      "status": 200
+    },
+    {
+      "at": 1221.875,
+      "method": "GET",
+      "path": "/api/v1/companion/bootstrap",
+      "status": 200
+    },
+    {
+      "at": 1221.906,
+      "method": "POST",
+      "path": "/api/v1/companion/activity",
+      "status": 204
+    },
+    {
+      "at": 1222.437,
+      "method": "GET",
+      "path": "/api/v1/sync/markets/1",
+      "status": 200
+    },
+    {
+      "at": 1222.531,
+      "method": "GET",
+      "path": "/api/v1/workshop/markets/1/summary",
+      "status": 202
+    },
+    {
+      "at": 1227.625,
+      "method": "GET",
+      "path": "/api/v1/workshop/markets/1/summary",
+      "status": 200
+    }
+  ]
+}
