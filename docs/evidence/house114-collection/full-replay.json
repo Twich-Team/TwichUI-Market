@@ -1,0 +1,69 @@
+{
+  "captured_response": {
+    "isolated_market_test": true,
+    "production_collection": false,
+    "synthetic_boundary": false,
+    "results": [
+      {
+        "capture": "previous.json.gz",
+        "listing_count": 280332,
+        "source_observations": 1,
+        "elapsed_seconds": 32.730481889004295,
+        "peak_rss_kib": 292352,
+        "cgroup_peak_bytes": 280399872,
+        "calls": [
+          "auctions",
+          "commodities"
+        ]
+      },
+      {
+        "capture": "current.json.gz",
+        "listing_count": 310842,
+        "source_observations": 2,
+        "elapsed_seconds": 33.71946105799725,
+        "peak_rss_kib": 333036,
+        "cgroup_peak_bytes": 323379200,
+        "calls": [
+          "auctions",
+          "commodities"
+        ]
+      }
+    ]
+  },
+  "synthetic_200000_boundary": {
+    "isolated_market_test": true,
+    "production_collection": false,
+    "synthetic_boundary": true,
+    "results": [
+      {
+        "capture": "previous.json.gz",
+        "listing_count": 280332,
+        "source_observations": 1,
+        "elapsed_seconds": 32.73024139399786,
+        "peak_rss_kib": 292464,
+        "cgroup_peak_bytes": 277745664,
+        "calls": [
+          "auctions",
+          "commodities"
+        ]
+      },
+      {
+        "capture": "bounded-200000.json.gz",
+        "listing_count": 332440,
+        "source_observations": 2,
+        "elapsed_seconds": 37.06491124600143,
+        "peak_rss_kib": 357872,
+        "cgroup_peak_bytes": 348762112,
+        "calls": [
+          "auctions",
+          "commodities"
+        ]
+      }
+    ]
+  },
+  "worker_memory_bytes": 402653184,
+  "worker_cpus": 0.5,
+  "swap_disabled": true,
+  "production_collection": false,
+  "all_prior_observations_preserved": true
+}
