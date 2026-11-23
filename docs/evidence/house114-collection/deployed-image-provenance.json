@@ -1,0 +1,17 @@
+{
+  "source": "3f0421a2221e424df751b963f5b66b445e319018",
+  "image": "sha256:ec94420d36baf501d312f3cbc85e38b77222e5b5bff92b76aae82dd8df95575d",
+  "previous_image": "sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b",
+  "only_module_changes": {
+    "/app/market": [
+      "feed_collection.py",
+      "ingest.py"
+    ],
+    "/usr/local/lib/python3.12/site-packages/market": [
+      "feed_collection.py",
+      "ingest.py"
+    ]
+  },
+  "exact_source_hashes": true,
+  "smoke_passed": true
+}
