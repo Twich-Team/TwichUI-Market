@@ -76,18 +76,45 @@ poll to execute and was corrected to assert no fetch followed by actual persiste
 backoff. A first full replay lost its disposable PostgreSQL connection after its
 undersized RAM-backed database exited; Docker records exit 1, no OOM event.
 That replay is not a passing result. A bounded disk-backed isolated `market_test`
-replay is in progress. No production limits were changed for these tests.
+replay now passes both captured-response and synthetic 200,000-auction cases.
+It publishes all 310,842 / 332,440 combined auction/commodity listings, retaining
+the previous 280,332-listing snapshot and observation. The corrected cycles take
+33.72 / 37.06 seconds at 0.5 CPU, with cgroup peaks 323,379,200 / 348,762,112 bytes,
+below the unchanged 384 MiB limit without swap. [Full replay evidence](evidence/house114-collection/full-replay.json).
+This is isolated replay, not live production recovery. No production limits changed.
+
+Initial hosted source `153e171` passes **741 PostgreSQL tests**, website, actual
+Windows install/picker/consumer and signed updater. Its operational gate correctly
+fails one stale ingestion-source fingerprint in the existing identity corpus.
+That provenance entry now pins the exact changed source at `153e171`, preserving
+its foundation and previous candidate hashes, every expected identity vector and
+the strict assertions. All 32 identity tests pass afterward. No Advisor code,
+trusted equivalence, activation or identity semantics change. [Original failed CI](evidence/house114-collection/ci-attempts.json).
+Final exact-source CI remains required; prior passing jobs do not waive this failure.
 
 ## Deployment and recovery gates
 
-Pending: full captured-response and maximum-boundary collection replay under the
-unchanged worker limits; exact final-source canonical CI; inspected image and
-configuration diff; preservation inventory and verified recovery reference.
+Pending: exact final-source canonical CI and production preservation/deployment.
+The original two-module candidate preserves every base layer and differs only in
+`ingest.py` and `feed_collection.py`, in both active and installed package paths.
+Its real immutable-image imports and exact digest pass. Existing Compose resolution
+matches the actual worker environment, command, mounts, CPU/memory and log limits.
+Other production containers are inventoried and unchanged. The protected November
+22 release archive still matches its exact 1,662,789,332-byte SHA-256
+`5bc9f1b3047b1911a7525e1f6cfa7a29c1f8ad5239ea5975373710106798dbee`;
+its recorded isolated restore verified original historical rows and credential
+continuity. No backup policy, storage budget, retention policy or archive changed.
 
-Build a two-module layer over exact original collector image
+Use [the two-module Dockerfile](../deploy/house114-collector.Dockerfile) over the exact original collector image
 `sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b`.
 Replace only the worker through its existing 21-file Compose chain plus an image
-override. Verify environment, command, mounts, networks, resource limits, original
+override ([release](../compose.house114-collector-release.yaml),
+[rollback](../compose.house114-collector-rollback.yaml)). Before building, independently
+verify the local base alias resolves to the complete original image ID above.
+Copy only the two committed source files into a private bounded build context and
+pass the exact source commit as `REPAIR_SOURCE`. Set `HOUSE114_COLLECTOR_IMAGE` to
+the independently inspected immutable result. Recheck every module against the
+base and committed source before promotion. Verify environment, command, mounts, networks, resource limits, original
 data and other container identities. There is no schema migration or database
 downgrade. Rollback is the identical worker procedure with the retained original
 image; retain new valid observations and all historical data.

@@ -1,0 +1,10 @@
+[
+  {
+    "head": "153e1714b16ea38a893be5bb716cfc8fe3101e9c",
+    "job": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45114291682/job/137493444991",
+    "failed_check": "test_corpus_market_source_fingerprints_and_unchanged_fixture_vectors",
+    "expected_old_ingest_sha256": "14b87d1e0e5cc8fd4b1d93e80f270712ab4c0df45bebad7591c03b542a3c68ea",
+    "actual_ingest_sha256": "2d940a9aadad0d93514a738a4a6378164e863da8228deb32ec83385c57e7f1d6",
+    "correction": "Refresh only the changed source provenance entry, retain foundation/previous fingerprints and every strict assertion and golden vector. All 32 identity tests pass locally afterward. Final full CI remains required."
+  }
+]
