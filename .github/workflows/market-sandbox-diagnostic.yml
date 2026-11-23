@@ -42,7 +42,12 @@ jobs:
             --tmpfs /tmp --tmpfs "$HOME" --tmpfs /mnt/c --unshare-all
             --die-with-parent --new-session --clearenv --setenv PATH /usr/bin:/bin
             -- /usr/bin/true)
-          if [ '${{ matrix.runner }}' != ubuntu-24.04 ]; then
+          if [ '${{ matrix.runner }}' = ubuntu-26.04 ] && [ -x /usr/bin/bwrap ]; then
+            command[0]=/usr/bin/bwrap
+            /usr/bin/bwrap --bind / / --dev /dev --proc /proc --tmpfs /mnt --dir /mnt/c \
+              --unshare-all --die-with-parent --new-session -- "${command[@]}" \
+              > "$deps/actual-sandbox.log" 2>&1
+          elif [ '${{ matrix.runner }}' != ubuntu-24.04 ]; then
             unshare --user --map-current-user --mount --keep-caps sh -ec '
               test "$(id -u)" -ne 0
               mount -t tmpfs -o size=1m,mode=0755 tmpfs /mnt
