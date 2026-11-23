@@ -1,0 +1,14 @@
+{
+  "at": "2026-11-23T17:55:53.437475+00:00",
+  "operator_image": "sha256:c8686b5be272bcef4589df5a99a539cf9311dc111d0ba31ac8eee6c31f3802ec",
+  "operator_rootless_uid": 0,
+  "network": "none",
+  "production_database_credentials_supplied": false,
+  "result": {
+    "changed": true,
+    "channel": "private-beta",
+    "previous_version": "2.0.0-beta.11",
+    "version": "2.0.0-beta.12",
+    "audit": "00000011.json"
+  }
+}

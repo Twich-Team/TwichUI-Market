@@ -1,0 +1,13 @@
+{
+  "published_version": "2.0.0-beta.12",
+  "all_staged_public_files_match_actual_store_hashes": true,
+  "backend_image": "sha256:cae89b4d481ef017b1376b276e4792412172c38022103948df2a430c9c863cb9",
+  "backend_source": "e5576c9d66e50914d4bcbbf27aad962a8c9f372f",
+  "final_market_main": "f1492cdc8264e00309c07aba1492d9d207e43ac0",
+  "final_addon_main": "84ca4842b9fdeac3aa9e2a3f697686fbb39eb655",
+  "rollbacks_executed": false,
+  "owner_pc_updated": false,
+  "public_addon_release_created": false,
+  "native_forever_tested": false,
+  "release_complete": true
+}

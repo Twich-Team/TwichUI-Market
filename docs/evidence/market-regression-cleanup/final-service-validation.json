@@ -1,0 +1,29 @@
+{
+  "at": "2026-11-23T18:00:51.470793+00:00",
+  "schema": "retention_20261118",
+  "schema_migration_applied": false,
+  "bounded_error_sample": [
+    {
+      "service": "api",
+      "sampled_lines": 44,
+      "critical_error_markers": 0
+    },
+    {
+      "service": "local-api",
+      "sampled_lines": 22,
+      "critical_error_markers": 0
+    },
+    {
+      "service": "worker",
+      "sampled_lines": 0,
+      "critical_error_markers": 0
+    },
+    {
+      "service": "db",
+      "sampled_lines": 3,
+      "critical_error_markers": 0
+    }
+  ],
+  "no_critical_error_markers": true,
+  "sample_scope": "Last200lines per service since17:55UTC; not an unbounded assertion about all logs"
+}

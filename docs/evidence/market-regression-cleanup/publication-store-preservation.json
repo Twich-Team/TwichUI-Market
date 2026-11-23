@@ -1,0 +1,24 @@
+{
+  "at": "2026-11-23T17:56:40.527733+00:00",
+  "previous_version": "2.0.0-beta.11",
+  "current_version": "2.0.0-beta.12",
+  "prior_nonpointer_files_byte_identical": 112,
+  "new_files": [
+    "2.0.0-beta.12/TwichUI-Market-Companion-2.0.0-beta.12-windows-x64.exe",
+    "2.0.0-beta.12/installed-smoke.json",
+    "2.0.0-beta.12/launch-metrics.json",
+    "2.0.0-beta.12/legacy-upgrade.json",
+    "2.0.0-beta.12/manifest.json",
+    "2.0.0-beta.12/owner-release-approval.json",
+    "2.0.0-beta.12/performance.json",
+    "2.0.0-beta.12/signed-update-acceptance.json",
+    "2.0.0-beta.12/windows-signature.json",
+    "audit/00000011.complete.json",
+    "audit/00000011.json"
+  ],
+  "before_bytes": 47653886,
+  "after_bytes": 52637781,
+  "budget_bytes": 134217728,
+  "old_installer_retained": true,
+  "immutable_versions_removed": false
+}

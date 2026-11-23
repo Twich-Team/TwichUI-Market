@@ -1,0 +1,19 @@
+{
+  "at": "2026-11-23T17:58:58.058828+00:00",
+  "only_task_grants_revoked": true,
+  "checks": [
+    {
+      "grant_id": 462,
+      "kind": "session",
+      "path": "/api/v1/companion/private-beta/current",
+      "status": 401
+    },
+    {
+      "grant_id": 463,
+      "kind": "device",
+      "path": "/api/v1/companion/bootstrap",
+      "status": 401
+    }
+  ],
+  "raw_grants_retired": true
+}
