@@ -1,0 +1,135 @@
+{
+  "market": {
+    "id": 2,
+    "house_id": 114,
+    "interval_seconds": 300,
+    "last_success": "2026-11-23T17:06:23.248837+00:00",
+    "failures": 0,
+    "last_error": null
+  },
+  "feeds": [
+    {
+      "source_kind": "auctions",
+      "last_success": "2026-11-23T17:06:23.248837+00:00",
+      "failures": 0,
+      "last_error": null,
+      "retry_after": null
+    },
+    {
+      "source_kind": "commodities",
+      "last_success": "2026-11-23T17:06:23.248837+00:00",
+      "failures": 0,
+      "last_error": null,
+      "retry_after": null
+    }
+  ],
+  "at": "2026-11-23T17:07:49.908227+00:00",
+  "companion": {
+    "version": "2.0.0-beta.11",
+    "source_commit": "b39a35c01676b50dbc159f4793e0ad547676acfc",
+    "bytes": 4885541,
+    "sha256": "84dacad168dc212d8dda7d06f15ddc5a918f170ba1af0e9ece4e6373cd883129"
+  },
+  "health": {
+    "status": 200,
+    "body": {
+      "status": "ok",
+      "contract_version": 1
+    }
+  },
+  "production_services": [
+    {
+      "name": "twichui-market-api-1",
+      "id": "f425852ec23f0ddda495697c7099fb32be280dfc311f8f82e2d91032a330f85e",
+      "image": "sha256:cae89b4d481ef017b1376b276e4792412172c38022103948df2a430c9c863cb9",
+      "state": "running",
+      "health": "healthy",
+      "restarts": 0
+    },
+    {
+      "name": "twichui-market-local-api-1",
+      "id": "e32ba80697643ab3cb5977b895454c9059a59c7d12dea74e323ac23f7c5cf861",
+      "image": "sha256:cae89b4d481ef017b1376b276e4792412172c38022103948df2a430c9c863cb9",
+      "state": "running",
+      "health": "healthy",
+      "restarts": 0
+    },
+    {
+      "name": "twichui-market-worker-1",
+      "id": "bf7cbad1b3b35c65fa5ed4af6688902f0c5be1b68f23a2e007dea2250c295a7d",
+      "image": "sha256:ec94420d36baf501d312f3cbc85e38b77222e5b5bff92b76aae82dd8df95575d",
+      "state": "running",
+      "health": null,
+      "restarts": 0
+    },
+    {
+      "name": "twichui-market-db-1",
+      "id": "1a138045d430554c64142f230fa1555e61d3414b2926ae9b2606f58fb8fb3642",
+      "image": "sha256:d3244e8ce3f165ee3c93d9c4a4b1d0fe48b3a89e2287b717fdcbbde92d405065",
+      "state": "running",
+      "health": "healthy",
+      "restarts": 0
+    },
+    {
+      "name": "twichui-market-proxy-1",
+      "id": "de1e7aceb146621a04cdea2151d46318fc3c4124b3aa4da9ac98c5282f4539ac",
+      "image": "sha256:f48f8f1a7e5a030432abde0792ee0be1aae0326950404e83036bc9c0172a6814",
+      "state": "running",
+      "health": null,
+      "restarts": 0
+    },
+    {
+      "name": "twichui-market-enrichment-1",
+      "id": "08ac2b64e749d094f88e9cce7157fd3c5a29ea867bb11ae24789247479a49c44",
+      "image": "sha256:3ef6f57964546a425f4c2ebe2bc44be2d9a516340325074dfb0fb2f32d7c3667",
+      "state": "running",
+      "health": null,
+      "restarts": 0
+    },
+    {
+      "name": "twichui-market-retention-1",
+      "id": "225f8fba07561eda9d4f64eb8ca98f3115ab50f5b0e6e4bdc050d75e30f81d43",
+      "image": "sha256:9712cd35a1f669343d20d42598717d0fcb370a4c358d3edb4c35f807b0d9295c",
+      "state": "running",
+      "health": null,
+      "restarts": 0
+    },
+    {
+      "name": "twichui-market-monitor-1",
+      "id": "00320ce44d3801ef902386a2f7956fe9f49e74decad5ea71782a3f8cdde1dcd5",
+      "image": "sha256:9712cd35a1f669343d20d42598717d0fcb370a4c358d3edb4c35f807b0d9295c",
+      "state": "running",
+      "health": null,
+      "restarts": 0
+    },
+    {
+      "name": "twichui-market-backup-manager-1",
+      "id": "0975558bb55d6a8216c43fdba4911b3a9cbfc46bc6f36188c3e88e88782f6ecf",
+      "image": "sha256:79cea119910ad3353f8a35ce21d079fafbcab0a757c0734bfe3bce6055c68565",
+      "state": "running",
+      "health": null,
+      "restarts": 0
+    },
+    {
+      "name": "twichui-market-backup-1",
+      "id": "1f1cbba535e2cd64cf900099a5fe92ee662fa9ced84f5f2ae4fa5b28b32d5f9c",
+      "image": "sha256:2669ec98d745fbb77942ed6696162436862334ebaebc71e884853226504b260b",
+      "state": "exited",
+      "health": null,
+      "restarts": 0
+    },
+    {
+      "name": "twichui-market-migrate-1",
+      "id": "d4336d00e3e028a60d6bbcb80af7136835897a6f07a5b27629ca35a01ac6f180",
+      "image": "sha256:4255007bdcf12a9b29e93a6be0e4be4a66480ce8139725ef3ba5e9fadae81550",
+      "state": "exited",
+      "health": null,
+      "restarts": 0
+    }
+  ],
+  "other_nine_production_container_ids_images_unchanged": true,
+  "provider_requests": 0,
+  "production_writes_for_this_verification": 0,
+  "coordinated_deployment": true,
+  "companion_beta12_published": false
+}

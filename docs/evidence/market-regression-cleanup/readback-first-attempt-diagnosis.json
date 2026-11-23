@@ -1,0 +1,14 @@
+{
+  "conditional_failure": "Operator assumed304 even when the sealed source was no longer current",
+  "sealed_observation": {
+    "observation_id": "2179",
+    "observed_at": "2026-11-23T17:01:20.664293Z",
+    "scope_complete": true
+  },
+  "scheduled_collection_after_it": "2026-11-23T17:06:23.248837+00:00",
+  "http_status_from_retained_api_log": 202,
+  "source_rule": "summary calls build before ETag handling; valid next-source preparation returns202/no-store",
+  "native_failure": "Capability-only fixture omitted required Prepared.lua and TOC; unchanged native prepared-layout guard correctly refused it",
+  "runtime_or_product_test_changes": false,
+  "failed_evidence_preserved": true
+}

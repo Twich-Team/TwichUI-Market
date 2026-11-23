@@ -1,0 +1,22 @@
+{
+  "verified_at": "2026-11-23T16:49:28.901579+00:00",
+  "image": "sha256:cae89b4d481ef017b1376b276e4792412172c38022103948df2a430c9c863cb9",
+  "returncode": 0,
+  "database": "isolated market_test",
+  "test_source": "e5576c9d66e50914d4bcbbf27aad962a8c9f372f",
+  "runtime_source_path": "/usr/local/lib/python3.12/site-packages/market",
+  "production_mounts_or_credentials": false,
+  "tests": [
+    "test_workshop_summary.py",
+    "test_workshop_prepared.py",
+    "test_bridge_export.py",
+    "test_companion_auth.py",
+    "test_auth.py",
+    "test_sync.py",
+    "test_retention_worker.py",
+    "test_retention_policy.py",
+    "test_migration_backfill.py",
+    "test_feed_collection.py",
+    "test_ingest_pricing.py"
+  ]
+}

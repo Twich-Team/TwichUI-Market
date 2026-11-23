@@ -1,0 +1,95 @@
+{
+  "market_source": "e5576c9d66e50914d4bcbbf27aad962a8c9f372f",
+  "addon_source": "84ca4842b9fdeac3aa9e2a3f697686fbb39eb655",
+  "market_checks": [
+    {
+      "id": 137856582420,
+      "name": "workshop-consumer",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 137852338223,
+      "name": "prepared-consumer",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 137849478480,
+      "name": "picker",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 137849478209,
+      "name": "signed-update / verify",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 137849478139,
+      "name": "prepared-publisher",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 137849477567,
+      "name": "windows",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 137849477387,
+      "name": "browser",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 137849475670,
+      "name": "postgres",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "addon_checks": [
+    {
+      "id": 137859729219,
+      "name": "internal",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 137854603946,
+      "name": "verify",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "canonical_runs": [
+    {
+      "id": 45219466268,
+      "n": "Backend",
+      "path": ".github/workflows/backend.yml",
+      "s": "completed",
+      "c": "success",
+      "sha": "e5576c9d66e50914d4bcbbf27aad962a8c9f372f"
+    },
+    {
+      "id": 45219466506,
+      "n": "Private website",
+      "path": ".github/workflows/web.yml",
+      "s": "completed",
+      "c": "success",
+      "sha": "e5576c9d66e50914d4bcbbf27aad962a8c9f372f"
+    },
+    {
+      "id": 45219466787,
+      "n": "Windows companion",
+      "path": ".github/workflows/desktop.yml",
+      "s": "completed",
+      "c": "success",
+      "sha": "e5576c9d66e50914d4bcbbf27aad962a8c9f372f"
+    }
+  ],
+  "passed": true
+}

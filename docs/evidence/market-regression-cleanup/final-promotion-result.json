@@ -1,0 +1,19 @@
+{
+  "started": "2026-11-23T17:01:32.870499+00:00",
+  "finished": "2026-11-23T17:01:51.727416+00:00",
+  "source_commit": "e5576c9d66e50914d4bcbbf27aad962a8c9f372f",
+  "image": "sha256:cae89b4d481ef017b1376b276e4792412172c38022103948df2a430c9c863cb9",
+  "prior_image": "sha256:a3f8226431fbef2794187df8f7a4667f7ef5b96ca1f7a294c1ae3ffdccf8f88c",
+  "compose_files": 28,
+  "scope": [
+    "api",
+    "local-api"
+  ],
+  "returncode": 0,
+  "database_migration": false,
+  "collector_replacement": false,
+  "rollback_operator": ".worktrees/packaging-report/deploy/prepared-market-20261123/rollback-api.sh",
+  "api_preservation_passed": true,
+  "other_nine_container_ids_images_unchanged": true,
+  "api_health": "healthy"
+}
