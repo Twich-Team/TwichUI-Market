@@ -1,0 +1,97 @@
+{
+  "synthetic": true,
+  "real_client": false,
+  "scope": "Per-sample sums of separately recorded non-overlapping root and pricing phases, not a new end-to-end client timing",
+  "records": 35116,
+  "recipes": 120,
+  "layouts": {
+    "193": {
+      "root_plus_pricing_cpu_ms": {
+        "median": 779.355,
+        "minimum": 756.5229999999999,
+        "maximum": 827.107
+      },
+      "root_plus_settlement_model_seconds": {
+        "median": 5.7,
+        "minimum": 5.55,
+        "maximum": 5.933333
+      },
+      "root_plus_first_price_cpu_ms": {
+        "median": 139.5115,
+        "minimum": 136.60399999999998,
+        "maximum": 150.746
+      },
+      "root_plus_first_price_model_seconds": {
+        "median": 0.875,
+        "minimum": 0.8666659999999999,
+        "maximum": 0.95
+      }
+    },
+    "13": {
+      "root_plus_pricing_cpu_ms": {
+        "median": 882.6824999999999,
+        "minimum": 866.241,
+        "maximum": 930.011
+      },
+      "root_plus_settlement_model_seconds": {
+        "median": 6.216667,
+        "minimum": 6.083333,
+        "maximum": 6.383334
+      },
+      "root_plus_first_price_cpu_ms": {
+        "median": 189.72650000000002,
+        "minimum": 185.101,
+        "maximum": 204.107
+      },
+      "root_plus_first_price_model_seconds": {
+        "median": 1.0,
+        "minimum": 0.95,
+        "maximum": 1.0499999999999998
+      }
+    },
+    "17": {
+      "root_plus_pricing_cpu_ms": {
+        "median": 881.9565,
+        "minimum": 865.767,
+        "maximum": 919.3620000000001
+      },
+      "root_plus_settlement_model_seconds": {
+        "median": 6.2666664999999995,
+        "minimum": 6.116666,
+        "maximum": 6.383333
+      },
+      "root_plus_first_price_cpu_ms": {
+        "median": 187.9065,
+        "minimum": 179.011,
+        "maximum": 196.236
+      },
+      "root_plus_first_price_model_seconds": {
+        "median": 1.0333329999999998,
+        "minimum": 1.0,
+        "maximum": 1.066667
+      }
+    },
+    "25": {
+      "root_plus_pricing_cpu_ms": {
+        "median": 894.527,
+        "minimum": 876.071,
+        "maximum": 956.0260000000001
+      },
+      "root_plus_settlement_model_seconds": {
+        "median": 6.391667,
+        "minimum": 6.266667,
+        "maximum": 6.733334
+      },
+      "root_plus_first_price_cpu_ms": {
+        "median": 178.3645,
+        "minimum": 174.364,
+        "maximum": 204.837
+      },
+      "root_plus_first_price_model_seconds": {
+        "median": 1.083333,
+        "minimum": 1.066667,
+        "maximum": 1.216667
+      }
+    }
+  }
+}

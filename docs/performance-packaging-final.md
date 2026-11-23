@@ -318,3 +318,32 @@ retry waits against a retained older algorithm baseline. They preserve earlier
 pipeline gains and **are not attributed to the25-addon physical layout**, since
 this compatibility fixture uses its pinned older addon.
 [Full Windows comparison evidence](evidence/market-packaging-final/windows-native-comparison-summary.json).
+
+
+## Supplemental root-admission measurement
+
+The complete20-process root-phase diagnostic (10 cold measurements per193/25
+layout plus discarded warmups) records actual CPU inside each root admission
+step. It uses a copy of the existing benchmark hook with only maximum-step
+instrumentation; the original hook, product code, scheduler, frozen35,116-record
+source and all economic results remain unchanged.
+[Root callback distributions and exact hook identities](evidence/market-packaging-final/root-admission-summary.json).
+Root admission does not depend on the current physical grouping: the13/17/25
+experiment uses identical root files. The supplemental25 measurement represents
+that same compressed-root path.
+
+Root source loading is about0.22ms; root validation is about55ms total across
+30 incremental steps (0.5seconds in the scheduler model). This phase was
+reported separately from every pricing comparison above. For completeness,
+per-sample sums of those already recorded phases give large-fixture120 medians
+193→25: **779.355→894.527ms CPU** (+14.8%), **5.700→6.392s modeled settlement**
+(+12.1%), and **139.512→178.365ms first-price CPU** (modeled0.875→1.083s).
+These are explicitly derived phase sums, not measured WoW elapsed times. The
+original after-admission metrics and their approximate-guideline edges remain
+visible; neither definition replaces or hides the other.
+[Root-inclusive calculations](evidence/market-packaging-final/root-inclusive-derived.json).
+
+The85 native core checks were also certified against clean immutable source
+0d510c5, with unchanged source hashes; the two ignored drivers are separately
+executed by the publication acceptance. Later pin/diagnostics updates change
+none of those Rust files. [Exact native unit receipt](evidence/market-packaging-final/final-native-core.json).

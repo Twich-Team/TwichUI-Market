@@ -1,0 +1,79 @@
+{
+  "synthetic": true,
+  "real_client": false,
+  "records": 35116,
+  "recipes": 120,
+  "repetitions": 10,
+  "discarded_warmups": 1,
+  "purpose": "Supplemental root-admission callback instrumentation; no product or scheduler change",
+  "market_head": "0d510c51f6c24a365b7f1ace298c93e2832882cf",
+  "addon_head": "cfc41d8b47d51c1be329aa3c46b994b70a742cf1",
+  "original_hook_sha256": "048ac62dc5561958b738ef733cba2e16e9e07153009fa83747ea17a2e0cf7d89",
+  "instrumented_hook_sha256": "115880dd6737abd8920859547542431a740273f278376648283505af9ba43883",
+  "fixture_sha256": "011e4a35f327237fd2eafc9ef224ef4a7659e23a882e2c1cc89a4026693e83da",
+  "native_driver_sha256": "c6cc8fc1b1c0344bb1d3ad5b5afa3828b5881a634a04b556462053e1a5523c3f",
+  "clock": "actual Lua process CPU; scheduler times remain modeled; cold reader, warm filesystem cache",
+  "economic_results_equal": true,
+  "original_hook_unchanged": true,
+  "layouts": {
+    "193": {
+      "root_step_max_ms": {
+        "median": 2.0545,
+        "minimum": 2.015,
+        "maximum": 2.076
+      },
+      "root_file_ms": {
+        "median": 0.2065,
+        "minimum": 0.203,
+        "maximum": 0.225
+      },
+      "root_validation_ms": {
+        "median": 53.149,
+        "minimum": 52.347,
+        "maximum": 55.383
+      },
+      "root_validation_slices": {
+        "median": 29.0,
+        "minimum": 29.0,
+        "maximum": 30.0
+      },
+      "root_admission_model_seconds": {
+        "median": 0.483333,
+        "minimum": 0.483333,
+        "maximum": 0.5
+      }
+    },
+    "25": {
+      "root_step_max_ms": {
+        "median": 2.034,
+        "minimum": 2.019,
+        "maximum": 2.099
+      },
+      "root_file_ms": {
+        "median": 0.2215,
+        "minimum": 0.207,
+        "maximum": 0.349
+      },
+      "root_validation_ms": {
+        "median": 53.201499999999996,
+        "minimum": 52.464,
+        "maximum": 54.904
+      },
+      "root_validation_slices": {
+        "median": 29.0,
+        "minimum": 29.0,
+        "maximum": 30.0
+      },
+      "root_admission_model_seconds": {
+        "median": 0.483333,
+        "minimum": 0.483333,
+        "maximum": 0.5
+      }
+    }
+  },
+  "full_receipt": {
+    "path": "root-admission-profile.json.gz",
+    "raw_sha256": "74b5a5740be12dbb40835814620d4db0d665e943190986d892172f3fa86b79ee",
+    "gzip_sha256": "24c57f1645ef3051985cd512f00a5d7a65d7c792f1f78649c6e8735fc034e2fc"
+  }
+}

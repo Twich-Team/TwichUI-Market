@@ -1,0 +1,17 @@
+{
+  "source_commit": "0d510c51f6c24a365b7f1ace298c93e2832882cf",
+  "source_clean": true,
+  "source_unchanged": true,
+  "source_sha256": {
+    "desktop/core/src/workshop_containers.rs": "42abf8dcd220f530307827a72c48911a5713d6d8386a57a9efd869944f554e4f",
+    "desktop/core/src/workshop_containers_tests.rs": "6daacbe7ad996b30612ab1a8bbdafb8565b9de76f62457dc3afad1029188fbf9",
+    "desktop/core/src/workshop_prepared.rs": "731370117a4291c56ac432f5d961e2f5b6b09863f67857c9649f1adb90e1f6e7",
+    "desktop/core/src/workshop_summary.rs": "00584abc3406d5a48116348549fb9d8de84fffdb453d6baa456edc57f7edf7a2"
+  },
+  "core_passed": 85,
+  "core_failed": 0,
+  "explicit_integration_drivers_ignored_in_unit_discovery": 2,
+  "separate_native_integration_already_passed": true,
+  "seconds": 28.52585488400655,
+  "exit_code": 0
+}
