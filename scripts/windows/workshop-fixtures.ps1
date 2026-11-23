@@ -131,10 +131,12 @@ if($Action -eq 'CancelFolder') {
     $edit=[SummaryPickerControls]::FindEdit((CheckedWindow $dialogWindow))
     if($edit -eq [IntPtr]::Zero){throw ('Actual native folder edit unavailable; classes: '+[SummaryPickerControls]::Classes($dialogWindow))}
     $window=CheckedWindow $edit;$result=[IntPtr]::Zero
-    # Focus via scalar WM_NEXTDLGCTL and type through the real keyboard so the
-    # shell observes edit notifications. A local WM_USER string pointer is not
-    # marshaled across processes, and WM_SETTEXT alone can leave a stale PIDL.
-    if([SummaryPickerControls]::SendMessageTimeoutW((CheckedWindow $dialogWindow),0x0028,$window,[IntPtr]1,2,3000,[ref]$result) -eq [IntPtr]::Zero){throw 'Actual native edit focus timed out'}
+    # Set and VERIFY keyboard focus through the native accessibility provider.
+    # A top-level foreground dialog alone does not establish edit focus.
+    $editElement=[System.Windows.Automation.AutomationElement]::FromHandle($window)
+    $editElement.SetFocus()
+    $focused=[System.Windows.Automation.AutomationElement]::FocusedElement
+    if((CheckedWindow $focused) -ne $window){throw 'Actual native folder edit did not receive keyboard focus'}
     if([SummaryPickerControls]::GetForegroundWindow() -ne $dialogWindow){throw 'Refusing keyboard input outside the checked folder dialog'}
     $keys=[Text.StringBuilder]::new()
     foreach($character in $resolved.ToCharArray()) {

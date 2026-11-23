@@ -1,0 +1,10 @@
+{
+  "source": "a7aa186d38143c8441afa292ab2b9c6af9b6d7db",
+  "run": 45088699374,
+  "job": 137413144069,
+  "conclusion": "failure",
+  "message": "Real native selection or edition/capability validation failed",
+  "actual_selected": "C:\\Users\\runneradmin",
+  "actual_valid": false,
+  "follow_up": "Native UIA SetFocus with exact focused HWND/process assertion before typing; preserve all prior selection and validation assertions"
+}
