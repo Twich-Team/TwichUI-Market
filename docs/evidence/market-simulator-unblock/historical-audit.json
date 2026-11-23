@@ -154,11 +154,25 @@
     "artifact_retained_locally": ".local/simulator-ci-correction/full-24-failed.zip",
     "job_specific_policy_removed": true
   },
-  "current_run": {
+  "pre_reconciliation_run": {
     "source": "d2c2e2ae69fc250050fbd8e7a1aecdef642cc563",
     "run": 45178795859,
     "job": 137706899572,
     "status": "in_progress",
     "command": "bash tests/run.sh full --profile cloud --jobs 2 --sim-jobs 1 --measure"
+  },
+  "current_run": {
+    "source": "c872d027bb78771cd50fbec9350a3df159c329e1",
+    "tree": "7dda0a4d76238a2ea07a6653dfcf4612299f4584",
+    "run": 45185533044,
+    "job": 137730027480,
+    "status": "in_progress",
+    "command": "bash tests/run.sh full --profile cloud --jobs 2 --sim-jobs 1 --measure",
+    "preserved_main": "5824b73eaf169cf60e7eea06391aed7d392a57e1",
+    "independent_prs": [
+      141,
+      142
+    ],
+    "market_pair": "e48e0eee828355ac1ed95c5be3eec46b032f9e82"
   }
 }

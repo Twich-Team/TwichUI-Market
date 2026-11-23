@@ -50,8 +50,9 @@ and removes that policy after the job. It creates only the existing empty/mnt/c
 path in the disposable VM. Production host security is untouched. No new runner
 infrastructure, simulator framework, binary or loader is introduced.
 
-Full current-source execution is in progress at run45176879766. A launcher
-preflight or old full pass is never represented as this full suite passing.
+The initial corrected-runner execution at run45176879766 failed the installation
+handoff described below. A launcher preflight or old full pass is never
+represented as a current full-suite pass.
 
 
 ## Read-only installation handoff correction
@@ -71,3 +72,19 @@ existing documented installation interface. Actual full run45178795859 is now
 in progress. Market final integration pins match this exact source at275aa4f.
 The prior full attempt remains FAIL and its31MiB exact artifact is retained
 locally with checksum, alongside all earlier failures.
+
+
+## Concurrent-main preservation
+
+During the full run, main advanced independently from364c4c2 to
+5824b73eaf169cf60e7eea06391aed7d392a57e1 through PR141 (RestedXP) and142
+(Spoken menu). Their11 changed files are disjoint from Market changes. The
+conflict-free merge c872d027bb78771cd50fbec9350a3df159c329e1 preserves both,
+with tree7dda0a4d76238a2ea07a6653dfcf4612299f4584. The unchanged full command
+is running again on that combined source in45185533044/job137730027480.
+Fast Market checks pass; complete regression status remains pending. Market
+e48e0eee828355ac1ed95c5be3eec46b032f9e82 pins this exact combined source
+in both native consumer checks and prepared contracts. Original full run
+45178795859 continues for retained evidence; its result cannot certify the new
+combined tree by itself. No coordinated merge, backend deployment or beta.12
+publication has occurred.
