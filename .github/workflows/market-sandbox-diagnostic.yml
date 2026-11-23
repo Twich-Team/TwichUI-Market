@@ -6,12 +6,22 @@ permissions:
   contents: read
 jobs:
   actual-bubblewrap:
-    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-22.04, ubuntu-24.04]
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 5
     steps:
       - name: Observe the existing sandbox command without changing security
         shell: bash
         run: |
+          echo "runner=${{ matrix.runner }}"
+          for entry in /proc/self/attr/current /proc/sys/kernel/apparmor_restrict_unprivileged_userns /proc/sys/kernel/unprivileged_userns_clone; do
+            if [ -r "$entry" ]; then echo "$entry"; cat "$entry"; fi
+          done
+          awk '/^(Uid|Cap|Seccomp|NoNewPrivs)/' /proc/self/status
+          unshare -U sh -c 'cat /proc/self/attr/current' || true
           deps="$RUNNER_TEMP/market-sandbox-diagnostic"
           mkdir -p "$deps/downloads" "$deps/root"
           cd "$deps/downloads"
@@ -32,6 +42,6 @@ jobs:
       - if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: actual-market-sandbox-diagnostic
+          name: actual-market-sandbox-diagnostic-${{ matrix.runner }}
           path: ${{ runner.temp }}/market-sandbox-diagnostic/actual-sandbox.log
           retention-days: 14
