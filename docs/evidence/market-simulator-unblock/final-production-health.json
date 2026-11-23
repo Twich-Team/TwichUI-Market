@@ -1,0 +1,60 @@
+{
+  "at": "2026-11-23T09:56:40.383683+00:00",
+  "market": {
+    "id": 2,
+    "house_id": 114,
+    "interval_seconds": 300,
+    "last_success": "2026-11-23T09:51:48.846212+00:00",
+    "failures": 0,
+    "last_error": null
+  },
+  "feeds": [
+    {
+      "source_kind": "auctions",
+      "last_success": "2026-11-23T09:51:48.846212+00:00",
+      "failures": 0,
+      "last_error": null,
+      "retry_after": null
+    },
+    {
+      "source_kind": "commodities",
+      "last_success": "2026-11-23T09:51:48.846212+00:00",
+      "failures": 0,
+      "last_error": null,
+      "retry_after": null
+    }
+  ],
+  "services": [
+    {
+      "name": "/twichui-market-worker-1",
+      "id": "bf7cbad1b3b35c65fa5ed4af6688902f0c5be1b68f23a2e007dea2250c295a7d",
+      "image": "sha256:ec94420d36baf501d312f3cbc85e38b77222e5b5bff92b76aae82dd8df95575d",
+      "running": true,
+      "oom_killed": false,
+      "restarts": 0
+    },
+    {
+      "name": "/twichui-market-api-1",
+      "id": "f68c1c2856cde5d686ae9d1acbfd1151aa7cd9ca5b4544231e31d97f45024af3",
+      "image": "sha256:a3f8226431fbef2794187df8f7a4667f7ef5b96ca1f7a294c1ae3ffdccf8f88c",
+      "running": true,
+      "oom_killed": false,
+      "restarts": 0
+    },
+    {
+      "name": "/twichui-market-local-api-1",
+      "id": "793d3eb45f58948e3502f40f5e96d64c9e7474a876fe9f988d91969c62c35a01",
+      "image": "sha256:a3f8226431fbef2794187df8f7a4667f7ef5b96ca1f7a294c1ae3ffdccf8f88c",
+      "running": true,
+      "oom_killed": false,
+      "restarts": 0
+    }
+  ],
+  "public_health": {
+    "status": 200,
+    "body": {
+      "status": "ok",
+      "contract_version": 1
+    }
+  }
+}

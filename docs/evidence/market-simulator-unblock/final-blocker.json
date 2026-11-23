@@ -1,0 +1,178 @@
+{
+  "at": "2026-11-23T09:57Z",
+  "result": "BLOCKED: no usable permitted simulator environment obtained through available access",
+  "approved_addon_count": 25,
+  "architecture_reopened": false,
+  "production_changed": false,
+  "merges_performed_this_task": [],
+  "policy_cause": {
+    "sysctl": "kernel.apparmor_restrict_unprivileged_userns=1",
+    "child_profile": "unprivileged_userns (enforce)",
+    "seccomp": 0,
+    "namespaced_capability_bits_granted": true,
+    "operation_denied": "CAP_NET_ADMIN-dependent RTM_NEWADDR; subsequent network namespace creation also EPERM",
+    "host_policy_changed": false
+  },
+  "environments": [
+    {
+      "name": "Ubuntu22.04 hosted",
+      "namespace_command_passed": true,
+      "diagnostic_run": 45148032576,
+      "diagnostic_job": 137602077788,
+      "full_runtime_passed": false,
+      "runtime_error": "Pinned wow-sim requires GLIBC_2.39; pinned ICU/ALSA require GLIBC_2.38",
+      "runtime_run": 45150372683,
+      "runtime_job": 137609962998
+    },
+    {
+      "name": "Ubuntu24.04 hosted",
+      "namespace_command_passed": false,
+      "error": "bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted",
+      "run": 45147627441,
+      "job": 137600740207,
+      "system_bwrap_present": false,
+      "system_probe_run": 45150766716,
+      "system_probe_job": 137611264928
+    },
+    {
+      "name": "Ubuntu26.04 hosted",
+      "namespace_command_passed": false,
+      "preinstalled_bwrap_present": true,
+      "error": "bwrap: No permissions to create a new namespace",
+      "run": 45151160389,
+      "job": 137612601810
+    }
+  ],
+  "full_attempt": {
+    "run": 45148721970,
+    "job": 137604377136,
+    "addon_head": "03b1dc3b1086a260f81b3139e0a940d1d08520ee",
+    "exit": 1,
+    "offline_passed": 328,
+    "offline_failed": 0,
+    "syntax_lua_files": 845,
+    "lab_guard_passed": 35,
+    "lab_guard_failed": 0,
+    "other_catalogs": 9,
+    "other_catalogs_executed": false,
+    "catalog_startup_error": "realpath: /home/runner/work/TwichUI/wow-ui-sim-lab: No such file or directory",
+    "artifact_id": 14804878979,
+    "artifact_bytes": 31187658,
+    "artifact_sha256": "d20a1e157972ff907f0b7f9cfaf1b4128849d79eeb7bab460693a4a266e05812",
+    "artifact_retained_locally": ".local/sandbox-unblock/full-simulator-03-failure.zip",
+    "local_milestone_passed": false,
+    "native_verification": false
+  },
+  "additional_failure": {
+    "run": 45148322762,
+    "reason": "luac5.1 missing from PATH; package already downloaded",
+    "assertions_changed": false
+  },
+  "beta12_pin_failure": {
+    "source": "5f8a6d917f8ff96f7ff54d7f3779ab4f84d0af73",
+    "job": 137605151805,
+    "reason": "Strict prepared-source declaration differed from checkout pin",
+    "corrected_source": "d463ee15d0ddcc52e322218970510143a4bd2e3c",
+    "artifact_id": 14805911566,
+    "artifact_sha256": "1801ff5e135b624550401979bb247627fcb8cce05162b10a2020abc6ffc9dd8f",
+    "assertions_unchanged": true
+  },
+  "final_addon_head": "f7ba519cc3320f375b3220edb2a64a1b7b4dac42",
+  "addon_runtime_unchanged_from": "daa674f58b33dc1640cf17f0ef9af8a8778fe702",
+  "final_market_candidate": "d463ee15d0ddcc52e322218970510143a4bd2e3c",
+  "market_checks": [
+    {
+      "name": "workshop-consumer",
+      "id": 137612318064,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45149632588/job/137612318064"
+    },
+    {
+      "name": "prepared-consumer",
+      "id": 137609230202,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45149632588/job/137609230202"
+    },
+    {
+      "name": "browser",
+      "id": 137607712814,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45149632611/job/137607712814"
+    },
+    {
+      "name": "postgres",
+      "id": 137607599874,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45149633136/job/137607599874"
+    },
+    {
+      "name": "windows-comparison",
+      "id": 137607552471,
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45149632713/job/137607552471"
+    },
+    {
+      "name": "picker",
+      "id": 137607547659,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45149632588/job/137607547659"
+    },
+    {
+      "name": "signed-update / verify",
+      "id": 137607547647,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45149632588/job/137607547647"
+    },
+    {
+      "name": "windows",
+      "id": 137607547482,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45149632588/job/137607547482"
+    },
+    {
+      "name": "prepared-publisher",
+      "id": 137607547018,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45149632588/job/137607547018"
+    }
+  ],
+  "addon_checks": [
+    {
+      "name": "verify",
+      "id": 137612802960,
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/Twich-Team/TwichUI/actions/runs/45150372783/job/137612802960"
+    },
+    {
+      "name": "market-performance",
+      "id": 137609963128,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI/actions/runs/45150372697/job/137609963128"
+    },
+    {
+      "name": "full-cloud",
+      "id": 137609962998,
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/Twich-Team/TwichUI/actions/runs/45150372683/job/137609962998"
+    }
+  ],
+  "companion_candidate": "2.0.0-beta.12 (metadata and ordinary CI only; not signed/published)",
+  "published_companion": "2.0.0-beta.11",
+  "market_main": "3f0421a2221e424df751b963f5b66b445e319018",
+  "addon_main": "364c4c28889d621335bc4b3a7b61d234c0b04ce0",
+  "next_requirement": "Approved nonproduction VM/runner with glibc>=2.39 and permitted user/mount/network namespace operations for unchanged bwrap, plus existing fixed /mnt/c environment; no host-capability grant or production-policy change",
+  "self_hosted_runner_discovery": "Unavailable through connected GitHub endpoint; this does not establish that none exist",
+  "vm_provisioner_available": false
+}
