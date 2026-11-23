@@ -124,3 +124,8 @@ pending checks have passed.
   restore and re-migration. Its hosted result is pending, not presumed passing.
 
 No existing assertion, timeout, automatic-sync repair or picker test is weakened.
+
+Resource review additionally reserves space for a complete legacy restoration
+before migration and preflights missing-byte capacity before copying a snapshot
+back. Ordinary packed updates validate only recovery paths they will touch,
+so the inactive legacy snapshot does not add repeated file/ACL validation.

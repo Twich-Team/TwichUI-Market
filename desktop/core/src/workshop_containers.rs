@@ -122,9 +122,14 @@ fn preflight_legacy(c:&delivery::Configuration,restoring:bool)->Result<()> {
         need(fs::read_dir(&backup)?.next().is_none()||backup.join(".twichui-delivery.json").is_file(),"unowned legacy recovery directory")?;
     }
     for n in legacy_names() {
-        for base in [&addons,&backup] {let dir=base.join(&n);if dir.try_exists()?{children(c,&dir,&n)?;}}
-        if !restoring && addons.join(&n).try_exists()? && backup.join(&n).try_exists()? {
-            need(same_files(&addons.join(&n),&backup.join(&n))?,"legacy recovery conflict; preserve both copies")?;
+        let live=addons.join(&n);let saved=backup.join(&n);let present=live.try_exists()?;
+        if present{children(c,&live,&n)?;}
+        // Ordinary packed-generation updates do not rescan inactive snapshots.
+        // Restore validates every saved child; migration validates live children
+        // and any destination it is about to reuse.
+        if (restoring||present)&&saved.try_exists()?{children(c,&saved,&n)?;}
+        if !restoring && present && saved.try_exists()? {
+            need(same_files(&live,&saved)?,"legacy recovery conflict; preserve both copies")?;
         }
     }
     Ok(())
@@ -156,6 +161,11 @@ fn archive_legacy(c:&delivery::Configuration)->Result<()> {
 pub fn restore_legacy(c:&delivery::Configuration)->Result<()> {
     let backup=archive(c);if !backup.try_exists()?{return Ok(())}preflight_legacy(c,true)?;
     let addons=c.installation.join("Interface/AddOns");
+    let mut required=32*1024*1024u64;
+    for n in legacy_names(){let from=backup.join(&n);if from.try_exists()?{for f in fs::read_dir(&from)?{let f=f?;
+        if !addons.join(&n).join(f.file_name()).try_exists()?{required=required.checked_add(f.metadata()?.len()).ok_or(Error::Invalid("legacy restore size"))?;}
+    }}}
+    need(delivery::free_space(&c.installation)?>=required,"insufficient recoverable legacy restore disk space")?;
     for n in legacy_names(){let from=backup.join(&n);if !from.try_exists()?{continue}
         let to=addons.join(&n);if to.try_exists()?{children(c,&to,&n)?;for f in fs::read_dir(&to)?{let f=f?;
             if f.file_name()!=".twichui-delivery.json"{need(delivery::read(&f.path(),prepared::MAX_PART*4+1024)?==delivery::read(&from.join(f.file_name()),prepared::MAX_PART*4+1024)?,"legacy restore conflict")?;}
@@ -205,7 +215,11 @@ pub fn publish(c:&delivery::Configuration,b:&Bundle,value:&Value,cancelled:&impl
             need(dir.join(".twichui-delivery.json").is_file()||fs::read_dir(&dir)?.next().is_none(),"unowned container destination")?;
         }
     }}}
-    let bytes:usize=outputs.values().map(Vec::len).sum();need(delivery::free_space(&c.installation)?>=(32*1024*1024+4*bytes)as u64,"container recoverable disk space")?;
+    let bytes:usize=outputs.values().map(Vec::len).sum();let mut legacy_reserve=0u64;
+    if migration{for n in legacy_names(){let dir=addons.join(n);if dir.try_exists()?{for f in fs::read_dir(&dir)?{
+        legacy_reserve=legacy_reserve.checked_add(f?.metadata()?.len()).ok_or(Error::Invalid("legacy recovery size"))?;
+    }}}}
+    need(delivery::free_space(&c.installation)?>=(32*1024*1024+4*bytes)as u64+legacy_reserve,"container recoverable disk space")?;
     let owner=bridge::canonical(&summary::identity(c)?)?;
     if !root.try_exists()?{fs::create_dir(&root)?;}summary::write_game(&root.join(".twichui-delivery.json"),&owner,cancelled)?;
     // Keep the exact legacy roots outside AddOns before any obsolete folder is
