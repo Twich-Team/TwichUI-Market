@@ -1,0 +1,130 @@
+{
+  "binary_introduced_commit": "f2a23cc3349cffd4b0f367871f1bb24adabc70b0",
+  "introduced_at": "2026-10-30T19:54:56Z",
+  "binary_version": "v0.1.37",
+  "binary_sha256": "66e9afa95b61619fb15af335c74a8e9e2b0cc645d9bbf078dca492ec8bf8dfae",
+  "binary_release_published_at": "2026-10-27T09:51:37Z",
+  "binary_pin_changes_after_introduction": 0,
+  "bubblewrap_unshare_all_introduced_same_commit": true,
+  "proven_full_cloud": {
+    "tested_commit": "febed289d7db429d00d02fcff73cdbf262d541c2",
+    "evidence_commit": "4e08bdceec5d717ffe5855bd8351bd19bd06ae88",
+    "report_sha256": "76ae61f287f9d28b673b616da4b706b0bf3af56cbaa70e10064beb3076d36bc4",
+    "console_sha256": "7aa18ff1a5fba4846f953bc26f553906df385aea39a2b10d2bc9e41b17d96207",
+    "command": "./tests/run.sh full --profile cloud --jobs 1",
+    "passed": true,
+    "exit_code_from_console": 0,
+    "units": 247,
+    "launches": 192,
+    "scenario_checks": 30552,
+    "seconds": 2446.2791130110054,
+    "local_milestone_passed": false,
+    "catalogs": [
+      {
+        "script": "lab-guard",
+        "passed": true,
+        "exit_code": 0,
+        "launches": 0,
+        "scenario_checks": 0
+      },
+      {
+        "script": "smoke",
+        "passed": true,
+        "exit_code": 0,
+        "launches": 2,
+        "scenario_checks": 0
+      },
+      {
+        "script": "interact",
+        "passed": true,
+        "exit_code": 0,
+        "launches": 4,
+        "scenario_checks": 244
+      },
+      {
+        "script": "diagnose",
+        "passed": true,
+        "exit_code": 0,
+        "launches": 6,
+        "scenario_checks": 101
+      },
+      {
+        "script": "auctionproof",
+        "passed": true,
+        "exit_code": 0,
+        "launches": 4,
+        "scenario_checks": 431
+      },
+      {
+        "script": "auctionpreview",
+        "passed": true,
+        "exit_code": 0,
+        "launches": 35,
+        "scenario_checks": 4563
+      },
+      {
+        "script": "workshop",
+        "passed": true,
+        "exit_code": 0,
+        "launches": 38,
+        "scenario_checks": 20187
+      },
+      {
+        "script": "testlab",
+        "passed": true,
+        "exit_code": 0,
+        "launches": 9,
+        "scenario_checks": 229
+      },
+      {
+        "script": "settings",
+        "passed": true,
+        "exit_code": 0,
+        "launches": 58,
+        "scenario_checks": 1029
+      },
+      {
+        "script": "reminders",
+        "passed": true,
+        "exit_code": 0,
+        "launches": 36,
+        "scenario_checks": 3768
+      }
+    ],
+    "os_not_recorded_in_archived_report": true
+  },
+  "documented_native_wsl_full": {
+    "commit": "83050a2b19995678e174dbe4843fee0502e5608e",
+    "environment": "Ubuntu26.04 x86_64 WSL2 per simulator lab documentation",
+    "offline_modules": 222,
+    "launches": 140,
+    "checks": 17487,
+    "seconds": 1674.207,
+    "documented_exit": 0,
+    "raw_report_not_committed": true
+  },
+  "documented_l3_full_cloud": {
+    "commit": "9e00d8e9a05a24461841514b9c717d3ca3c985b4",
+    "offline_modules": 251,
+    "launches": 198,
+    "checks": 31398,
+    "seconds": 5701.768,
+    "documented_exit": 0,
+    "raw_artifacts_explicitly_excluded_from_git": true
+  },
+  "historical_failed_full": {
+    "commit": "cbb48c8b90d3c6949a09537c5fedad67ebe2af23",
+    "seconds": 6790.094,
+    "exit": 1,
+    "passed": false
+  },
+  "policy_full_gate_predates_market_workflow": {
+    "commit": "003d0bba9165473aa079882934b6f276be7279f4",
+    "date": "2026-11-16",
+    "real_client_currently_owner_directed_not_new_release_gate": true
+  },
+  "new_workflow_introduced": "148c8fd0d32c3c8f5f54186a0fe28d98ba02ead1",
+  "incompatible_ubuntu22_switch": "f7f42425ff53d0057c9c4799cbd85ca7791b9f06",
+  "corrected_workflow_commit": "dd28236b30cb5504c18d38c30358e9643debbb42",
+  "correction": "Ubuntu24.04 glibc2.39; executable-specific owner-authorized temporary AppArmor userns permission in disposable hosted VM; global policy unchanged; same binary and test catalogs"
+}
