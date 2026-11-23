@@ -1,0 +1,122 @@
+{
+  "source": "154a20fb72b2fc1728cd08675abfa0b444bbd8b3",
+  "addon": "2da68dc6674fa71c92edfce38902197133177191",
+  "checks": [
+    {
+      "id": 137811001762,
+      "name": "workshop-consumer",
+      "head_sha": "154a20fb72b2fc1728cd08675abfa0b444bbd8b3",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45207171076/job/137811001762"
+    },
+    {
+      "id": 137808825756,
+      "name": "prepared-consumer",
+      "head_sha": "154a20fb72b2fc1728cd08675abfa0b444bbd8b3",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45207171076/job/137808825756"
+    },
+    {
+      "id": 137805899325,
+      "name": "postgres",
+      "head_sha": "154a20fb72b2fc1728cd08675abfa0b444bbd8b3",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45207171244/job/137805899325"
+    },
+    {
+      "id": 137805898822,
+      "name": "signed-update / verify",
+      "head_sha": "154a20fb72b2fc1728cd08675abfa0b444bbd8b3",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45207171076/job/137805898822"
+    },
+    {
+      "id": 137805898809,
+      "name": "windows",
+      "head_sha": "154a20fb72b2fc1728cd08675abfa0b444bbd8b3",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45207171076/job/137805898809"
+    },
+    {
+      "id": 137805898781,
+      "name": "picker",
+      "head_sha": "154a20fb72b2fc1728cd08675abfa0b444bbd8b3",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45207171076/job/137805898781"
+    },
+    {
+      "id": 137805898740,
+      "name": "windows-comparison",
+      "head_sha": "154a20fb72b2fc1728cd08675abfa0b444bbd8b3",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45207170973/job/137805898740"
+    },
+    {
+      "id": 137805898711,
+      "name": "browser",
+      "head_sha": "154a20fb72b2fc1728cd08675abfa0b444bbd8b3",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45207170945/job/137805898711"
+    },
+    {
+      "id": 137805898346,
+      "name": "prepared-publisher",
+      "head_sha": "154a20fb72b2fc1728cd08675abfa0b444bbd8b3",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45207171076/job/137805898346"
+    }
+  ],
+  "runs": [
+    {
+      "id": 45207171244,
+      "name": "Backend",
+      "path": ".github/workflows/backend.yml",
+      "head_sha": "154a20fb72b2fc1728cd08675abfa0b444bbd8b3",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45207171244"
+    },
+    {
+      "id": 45207170973,
+      "name": "Companion sync performance",
+      "path": ".github/workflows/sync-performance.yml",
+      "head_sha": "154a20fb72b2fc1728cd08675abfa0b444bbd8b3",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45207170973"
+    },
+    {
+      "id": 45207170945,
+      "name": "Private website",
+      "path": ".github/workflows/web.yml",
+      "head_sha": "154a20fb72b2fc1728cd08675abfa0b444bbd8b3",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45207170945"
+    },
+    {
+      "id": 45207171076,
+      "name": "Windows companion",
+      "path": ".github/workflows/desktop.yml",
+      "head_sha": "154a20fb72b2fc1728cd08675abfa0b444bbd8b3",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45207171076"
+    }
+  ],
+  "all_nine_passed": true,
+  "coordinated_merge_deployment_or_publication_executed": false
+}
