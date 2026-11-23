@@ -1,3 +1,8 @@
+> Historical 13-addon implementation record. The owner now authorizes final
+> refinement to the measured 25-addon layout, conditional on all gates. See
+> [current selection and release status](performance-packaging-final.md). The
+> original measurements and failed evidence below remain intact.
+
 # Final thirteen-addon packaging implementation
 
 **Review hold:** implementation/testing only. No merge, deployment, signing,

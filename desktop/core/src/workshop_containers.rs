@@ -1,4 +1,4 @@
-//! Fixed 2-current/4-history containers per bank. Only data literals enter WoW.
+//! Fixed 8-current/4-history containers per bank. Only data literals enter WoW.
 //! The server's canonical source and Merkle attestation remain unchanged.
 use crate::{bridge,delivery,installation,workshop_prepared as prepared,workshop_summary as summary,Error,Result};
 use base64::{engine::general_purpose::STANDARD,Engine};
@@ -10,6 +10,7 @@ use summary::{need,Bundle};
 pub const ROOT_PREFIX:&[u8]=b"TwichUIMarketData = { summary_version = 3, manifest = ";
 pub const BLOCK:usize=524288;
 pub const ENCODED:usize=700000;
+pub const CURRENT_CONTAINERS:usize=8;
 // A conservative admission bound on synchronous source compilation, not a frame
 // guarantee. Oversize generations refuse publication; never silently enlarge it.
 pub const CONTAINER_MAX:usize=8*1024*1024;
@@ -54,9 +55,10 @@ pub fn build(bundle:&Bundle,value:&Value,bank:&str)->Result<BTreeMap<String,Vec<
     need(bank=="A"||bank=="B","container bank")?;
     let(a,parts)=prepared::build(bundle,value)?;need(a.partitions_count==32,"container logical layout")?;
     let generation=bundle.manifest["generation_id"].as_str().unwrap();let mut output=BTreeMap::new();
-    for history in [false,true] {for group in 0..if history{4}else{2} {
+    for history in [false,true] {for group in 0..if history{4}else{CURRENT_CONTAINERS} {
         let g=global(history);let mut bytes=format!("{g} = {g} or {{}}\n").into_bytes();
-        for bucket in group*16..(group+1)*16 {
+        let width=if history{16}else{32/CURRENT_CONTAINERS};
+        for bucket in group*width..(group+1)*width {
             if history {
                 let Some(p)=bundle.manifest["history_partitions"].as_array().unwrap().iter().find(|p|p["bucket"]==bucket)else{continue};
                 let raw=&bundle.parts[&(bucket as u8+64)];
@@ -75,7 +77,8 @@ pub fn build(bundle:&Bundle,value:&Value,bank:&str)->Result<BTreeMap<String,Vec<
 fn verify_bytes(raw:&[u8],h:&Value,bank:&str,a:&prepared::Attestation,history:bool,group:usize)->Result<()> {
     need(raw.len()<=CONTAINER_MAX,"container source size")?;let g=global(history);
     let mut at=0;expect(raw,&mut at,format!("{g} = {g} or {{}}\n").as_bytes())?;
-    for bucket in group*16..(group+1)*16 {
+    let width=if history{16}else{32/CURRENT_CONTAINERS};
+    for bucket in group*width..(group+1)*width {
         if history {
             let Some(p)=h["history_partitions"].as_array().unwrap().iter().find(|p|p["bucket"]==bucket)else{continue};
             expect(raw,&mut at,&prefix(bank,bucket,true,h["generation_id"].as_str().unwrap(),p["sha256"].as_str().unwrap()))?;
@@ -95,7 +98,7 @@ fn verify_bytes(raw:&[u8],h:&Value,bank:&str,a:&prepared::Attestation,history:bo
 }
 pub fn verify_bank(c:&delivery::Configuration,h:&Value,bank:&str,value:&Value)->Result<()> {
     let a=prepared::metadata(value,h)?;need(a.partitions_count==32,"container layout")?;
-    for history in [false,true] {for group in 0..if history{4}else{2} {
+    for history in [false,true] {for group in 0..if history{4}else{CURRENT_CONTAINERS} {
         let n=name(bank,history,group);let dir=c.installation.join("Interface/AddOns").join(&n);
         summary::folder(&dir,&[&format!("{n}.toc"),"Data.lua",".twichui-delivery.json"])?;
         need(dir.join(".twichui-delivery.json").is_file(),"unowned container")?;summary::marker(c,&dir)?;
@@ -209,7 +212,7 @@ pub fn publish(c:&delivery::Configuration,b:&Bundle,value:&Value,cancelled:&impl
     }
     let bank=if current.as_ref().is_some_and(|(_,b)|b.as_deref()==Some("A")){"B"}else{"A"};
     let outputs=build(b,value,bank)?;let addons=c.installation.join("Interface/AddOns");
-    for history in [false,true]{for slot in ["A","B"]{for group in 0..if history{4}else{2}{
+    for history in [false,true]{for slot in ["A","B"]{for group in 0..if history{4}else{CURRENT_CONTAINERS}{
         let n=name(slot,history,group);let dir=addons.join(&n);if dir.try_exists()?{
             summary::folder(&dir,&[&format!("{n}.toc"),"Data.lua",".twichui-delivery.json"])?;summary::marker(c,&dir)?;
             need(dir.join(".twichui-delivery.json").is_file()||fs::read_dir(&dir)?.next().is_none(),"unowned container destination")?;
@@ -232,7 +235,7 @@ pub fn publish(c:&delivery::Configuration,b:&Bundle,value:&Value,cancelled:&impl
             summary::write_game(&backup.join("Previous.lua"),&delivery::read(&root.join("Previous.lua"),3*1024*1024)?,cancelled)?;
         }
     }}
-    for history in [false,true]{for slot in ["A","B"]{for group in 0..if history{4}else{2}{
+    for history in [false,true]{for slot in ["A","B"]{for group in 0..if history{4}else{CURRENT_CONTAINERS}{
         let n=name(slot,history,group);let dir=addons.join(&n);if !dir.try_exists()?{fs::create_dir(&dir)?;}
         summary::write_game(&dir.join(".twichui-delivery.json"),&owner,cancelled)?;
         if let Some(bytes)=outputs.get(&n){summary::write_game(&dir.join("Data.lua"),bytes,cancelled)?;need(delivery::read(&dir.join("Data.lua"),CONTAINER_MAX)?==*bytes,"container exact readback")?;}

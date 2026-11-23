@@ -10,7 +10,7 @@ def main():
  p=argparse.ArgumentParser(description=__doc__)
  p.add_argument('--addon-root',type=Path,required=True);p.add_argument('--rust-test-driver',type=Path,required=True);p.add_argument('--source',type=Path);p.add_argument('--out',type=Path,required=True)
  p.add_argument('--recipes',type=int,nargs='+',default=[120,500,1000,5000]);p.add_argument('--reps',type=int,choices=range(1,6),default=3);p.add_argument('--layouts',type=int,nargs='+',choices=[64,16,32],default=[64,16,32]);p.add_argument('--view',choices=['session','ui'],default='session');p.add_argument('--history-probe',action='store_true');p.add_argument('--scenario',choices=['none','reopen'],default='none')
- p.add_argument('--containers',action='store_true',help='Compare the 193-addon baseline with the fixed 13-addon transport; both use 32 current partitions')
+ p.add_argument('--containers',action='store_true',help='Compare the 193-addon baseline with the selected compressed transport; both use 32 current partitions')
  p.add_argument('--baseline-addon-root',type=Path);p.add_argument('--native-codec',type=Path,help='Offline system-zlib adapter, never actual Forever timing')
  a=p.parse_args();a.addon_root=a.addon_root.resolve();a.out.mkdir(parents=True,exist_ok=True)
  sys.path.insert(0,str(a.addon_root/'tools/experiments'));from measure_game_ready import numeric_metrics
@@ -50,7 +50,7 @@ def main():
     assert publication['ready'];native_ms=(time.perf_counter()-began)*1000
     config=base/'bench.json';config.write_text(json.dumps(dict(publication=str(game/'Interface/AddOns'),layout=layout,history_probe=a.history_probe,native_codec=str(a.native_codec.resolve())if containers else None)))
     for count in a.recipes:
-     case=dict(layout=layout,packaging=13 if containers else (193 if layout==32 else None),recipes=count,native_validation_publication_ms=native_ms,samples=[]);report['cases'].append(case);save()
+     case=dict(layout=layout,packaging=(1+2*(json.loads((a.addon_root/'TwichUI_Workshop/MarketDelivery.json').read_text())['current_containers']+4)) if containers else (193 if layout==32 else None),recipes=count,native_validation_publication_ms=native_ms,samples=[]);report['cases'].append(case);save()
      for repeat in range(a.reps+1):
       snapshot=base/'oracle.bin';env=dict(os.environ,BENCH_ORACLE_SNAPSHOT=str(snapshot));command=['lua5.1','tests/bench_market_opportunities.lua','opps',a.view,str(count),'60','3','1','off',a.scenario,'off','20',str(ROOT/'scripts/bench_workshop_prepared.lua'),str(config)]
       start=time.perf_counter();proc=subprocess.run(command,cwd=reader,env=env,capture_output=True,text=True,timeout=300)

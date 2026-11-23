@@ -102,7 +102,7 @@ def main():
                             account_id=1, market_id=h['market']['server_market_id'], source=str(path)))
             assert result['ready']
             publications[13 if packed else 193] = game / 'Interface/AddOns'
-        expected = inspect(publications[13], 'A', h['generation_id'])
+        expected = inspect(publications[13], 'A', h['generation_id'], 2)
         readers = {193: a.baseline_addon_root, 13: a.addon_root}
         for count in [4, 8]:
             footprint = 1 + 2 * (count + 4)

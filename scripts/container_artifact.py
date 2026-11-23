@@ -38,7 +38,7 @@ def stream(text, pos):
     return b''.join(out), pos + 2
 
 
-def read(addons, bank, generation, current_containers=2):
+def read(addons, bank, generation, current_containers=8):
     need(current_containers in (2, 4, 8), 'permitted physical current layout')
     result = {}
     for kind, groups in [('Current', current_containers), ('History', 4)]:

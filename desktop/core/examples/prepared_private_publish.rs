@@ -56,7 +56,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let before=read(&root,3*1024*1024)?;
         if !before.starts_with(twichui_market_core::workshop_prepared::ROOT_PREFIX){return Err("legacy prepared lifecycle baseline required".into());}
         let mut value:Value=serde_json::from_slice(&original)?;
-        for(k,v)in [("container_packaging_version",json!(1)),("container_codec",json!("raw-deflate-base64")),("container_block_bytes",json!(524288)),("current_containers",json!(2)),("history_containers",json!(4))]{value[k]=v;}
+        for(k,v)in [("container_packaging_version",json!(1)),("container_codec",json!("raw-deflate-base64")),("container_block_bytes",json!(524288)),("current_containers",json!(8)),("history_containers",json!(4))]{value[k]=v;}
         std::fs::write(&cap,serde_json::to_vec(&value)?)?;
         // Genuine Windows process inventory must prevent removal of old addons
         // while the versioned, long-running fixture executable is still alive.
@@ -65,7 +65,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         if blocked.is_ok() || read(&root,3*1024*1024)?!=before{return Err("running-game migration did not preserve old root".into());}
         if !workshop_summary::publish(&c,&bundle,&||false)?{return Err("container migration missing".into());}
         let count=std::fs::read_dir(c.installation.join("Interface/AddOns"))?.filter(|e|e.as_ref().is_ok_and(|e|e.file_name().to_string_lossy().starts_with("TwichUI_Market"))).count();
-        if count!=13{return Err("migration must leave thirteen physical Market addons".into());}
+        if count!=25{return Err("migration must leave twenty-five physical Market addons".into());}
         let mut disconnected=c.clone();disconnected.enabled=false;disconnected.save_confirmed(base,false)?;
         workshop_summary::restore_previous(base,&disconnected)?;
         if read(&root,3*1024*1024)?!=before{return Err("legacy restore changed exact root".into());}

@@ -10,7 +10,7 @@ ROOT=Path(__file__).resolve().parents[1]
 def main():
  p=argparse.ArgumentParser(description=__doc__)
  p.add_argument('--rust-client',type=Path,required=True);p.add_argument('--addon-root',type=Path,required=True);p.add_argument('--lua',default='lua5.1');p.add_argument('--lua-cpath');p.add_argument('--variants',type=int,default=129);p.add_argument('--out',type=Path,required=True);p.add_argument('--publish',action='store_true');p.add_argument('--history',action='store_true',help='Negotiate the installed paired history reader in staging mode');p.add_argument('--skip-lua',action='store_true',help='Windows producer only; paired Linux artifact consumer is mandatory in CI')
- p.add_argument('--containers',action='store_true',help='Explicit fixed 13-addon publication; requires prepared 32')
+ p.add_argument('--containers',action='store_true',help='Explicit fixed 25-addon publication; requires prepared 32')
  p.add_argument('--current',action='store_true',help='Explicit split-projection paired-addon acceptance; no live service')
  p.add_argument('--prepared',type=int,choices=[16,32],help='Opt-in actual prepared publication with the pinned Stage C addon')
  p.add_argument('--fixture-as-of',help='Shared UTC source instant for matched synthetic 16/32 publications; never changes client time/admission')
@@ -183,8 +183,8 @@ def main():
    if a.prepared:
     assert any(r['path'].endswith('/prepared/1/'+str(a.prepared))and r['status']==200 for r in requests),'missing real authoritative metadata request'
     if a.containers:
-     assert len([p for p in destination.iterdir()if p.name.startswith('TwichUI_Market')])==13
-     assert len(list(destination.glob('TwichUI_MarketCurrentContainer*')))==4 and len(list(destination.glob('TwichUI_MarketHistoryContainer*')))==8
+     assert len([p for p in destination.iterdir()if p.name.startswith('TwichUI_Market')])==25
+     assert len(list(destination.glob('TwichUI_MarketCurrentContainer*')))==16 and len(list(destination.glob('TwichUI_MarketHistoryContainer*')))==8
     else:assert len(list(destination.glob('TwichUI_MarketCurrentPart*')))==a.prepared
     if a.test_driver:assert (game/'WTF/Account/SyntheticOnly/SavedVariables/TwichUI.lua').read_bytes()==b'unchanged synthetic player data'
     report['declared_addon_commit']=(ROOT/'contracts/workshop-prepared/v1/addon-source.txt').read_text().strip()

@@ -73,3 +73,31 @@ made by this task. A healthy collection gate cannot currently be certified.
 
 Performance work and independent safe verification continue. No merge, deployment,
 signing, distribution-pointer change or installed-PC update has occurred.
+
+
+## Selected implementation checkpoint
+
+Current mapping is eight physical current containers per bank (four logical
+partitions each), four history containers per bank unchanged, plus the root:
+**25 Market addons**. Names extend current A/B slots through 07. Installed
+`current_containers: 8` is strictly required by the producer; different declared
+physical layouts fail before root activation. No API, pricing, compression,
+authentication or scheduler change accompanies this refinement.
+
+At the selected source checkpoint, all 85 native core tests pass (two explicit
+integration drivers remain ignored in ordinary discovery). The 42-module focused
+addon Market run passes; its local container could not read the external git
+metadata, so it is preliminary functional evidence, not immutable-source
+certification. Exact paired-addon CI remains mandatory. Native end-to-end
+publication initially failed for missing read-only worktree metadata, then for a
+retained partial output directory and an outdated exact-addon pin. Those receipts
+remain in ignored local evidence. None is claimed as passing acceptance.
+
+The complete simulator catalog is blocked before execution on both the local
+rootless host and standard Ubuntu 24.04 GitHub runner: `unshare -Ur true` fails
+writing `/proc/self/uid_map` with `Operation not permitted`. Hosted run
+[45119849609](https://github.com/Twich-Team/TwichUI/actions/runs/45119849609),
+job 137510875627, retains the failure; no suite was skipped into a passing verdict.
+The existing Bubblewrap sandbox and host security were not relaxed. This blocks
+the coordinated release even after production collection recovers. Independent
+collector repair and native/Windows/data verification continue.

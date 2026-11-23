@@ -461,7 +461,7 @@ pub fn compressed_containers(path:&Path)->Result<bool> {
     let value:Value=crate::bridge::parse(raw.strip_prefix(&[0xef,0xbb,0xbf]).unwrap_or(&raw),4096)?;
     if value.get("container_packaging_version").is_none(){return Ok(false)}
     need(value["container_packaging_version"]==1 && value["container_codec"]=="raw-deflate-base64"
-        && value["container_block_bytes"]==524288 && value["current_containers"]==2
+        && value["container_block_bytes"]==524288 && value["current_containers"]==crate::workshop_containers::CURRENT_CONTAINERS
         && value["history_containers"]==4 && prepared_layout(path)?==Some(32),"compressed container capability")?;
     addon_text(&folder.join("Containers.lua"),262144)?;
     need(addon_text(&folder.join("TwichUI_Workshop.toc"),32768)?.lines().any(|s|s.trim()=="Containers.lua"),"container TOC entry")?;
