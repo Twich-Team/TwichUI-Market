@@ -1,0 +1,3 @@
+thread 'main' (2) panicked at src/render/headless.rs:67:14:
+Failed to find GPU adapter: NotFound { active_backends: Backends(0x0), requested_backends: Backends(NOOP | VULKAN | GL | METAL | DX12 | BROWSER_WEBGPU), supported_backends: Backends(VULKAN | GL), no_fallback_backends: Backends(0x0), no_adapter_backends: Backends(0x0), incompatible_surface_backends: Backends(0x0) }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

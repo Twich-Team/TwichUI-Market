@@ -88,3 +88,42 @@ in both native consumer checks and prepared contracts. Original full run
 45178795859 continues for retained evidence; its result cannot certify the new
 combined tree by itself. No coordinated merge, backend deployment or beta.12
 publication has occurred.
+
+
+## Full execution after namespace/ABI repair
+
+Run45178795859 completed the exact full cloud command at d2c2e2a with source
+unchanged, exit1,3124.577seconds:328 offline modules passed,10 catalogs
+attempted,136 native launches and35,611 structured assertion executions.
+Only lab-guard and diagnose catalogs passed. Every rendering catalog encountered
+`src/render/headless.rs:67: Failed to find GPU adapter` with active_backends0.
+The new workflow had also omitted the documented Mesa software Vulkan runtime;
+previously prepared WSL/cloud environments already supplied it.
+
+The same disposable Ubuntu24 workflow is corrected at
+8aa42c16b6896555cd3bc857cf7ab0482dbf4116 by installing Ubuntu libvulkan1 and
+mesa-vulkan-drivers (with their package dependencies) and running the existing
+smoke catalog before full. No binary, sandbox, fixture or assertions change.
+Run45187769049/job137737762923 is pending. This is provisioning the documented
+environment, not another execution framework.
+
+The failed report also exposes genuine assertion mismatches before rendering:
+Workshop hardcodes pre-existing older tooltip catalog/default/button behavior,
+and TestLab records a structural label overflow (77pixels in74). These are not
+excused by the graphics failure and must not be waived. WorthLayout, WorthTip,
+Workshop/TestLab scenarios and TestLab product files have no diff between current
+main5824b73 and the corrected candidate. Git history shows the custom-heading
+change bc787b14 (November20) and outcome-catalog change208e0f9 (November19),
+while documented full L3 source9e00d8e is November16 and lacks bc787b14. The
+cloud-environment document already records baseline Workshop failures. Static
+ancestry and exact mismatches establish older fixture expectations; this is not
+a claim that a current-main baseline full suite has been executed. No assertions
+are changed to manufacture success. Final release remains held on actual
+verification.
+
+The exact failed report is preserved losslessly as
+[evidence/full-d2-failed-report.json.gz](evidence/market-simulator-unblock/full-d2-failed-report.json.gz),
+with [catalog/exit/artifact identities](evidence/market-simulator-unblock/full-d2-failed-summary.json)
+and the captured renderer panic. The87MB artifact remains local and on GitHub.
+Private candidate backend image2de5aa76 independently passes193 focused
+PostgreSQL checks and65 source-module hashes; it is not deployed.

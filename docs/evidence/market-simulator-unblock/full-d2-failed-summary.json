@@ -1,0 +1,117 @@
+{
+  "source": {
+    "commit": "d2c2e2ae69fc250050fbd8e7a1aecdef642cc563",
+    "dirty": false,
+    "working_tree_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "source_after": {
+    "commit": "d2c2e2ae69fc250050fbd8e7a1aecdef642cc563",
+    "dirty": false,
+    "working_tree_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "run": 45178795859,
+  "job": 137706899572,
+  "runner": "Ubuntu24.04.5 image20261116.376.1",
+  "seconds": 3124.576831101,
+  "command": "bash tests/run.sh full --profile cloud --jobs 2 --sim-jobs 1 --measure",
+  "passed": false,
+  "exit_code": 1,
+  "offline_passed": 328,
+  "offline_failed": 0,
+  "catalogs": [
+    {
+      "script": "lab-guard",
+      "passed": true,
+      "exit_code": 0,
+      "launches": 0,
+      "scenario_checks": 0,
+      "seconds": 0.4174869679999347
+    },
+    {
+      "script": "smoke",
+      "passed": false,
+      "exit_code": 101,
+      "launches": 2,
+      "scenario_checks": 0,
+      "seconds": 30.022070772000006
+    },
+    {
+      "script": "interact",
+      "passed": false,
+      "exit_code": 101,
+      "launches": 4,
+      "scenario_checks": 244,
+      "seconds": 26.438036160000024
+    },
+    {
+      "script": "diagnose",
+      "passed": true,
+      "exit_code": 0,
+      "launches": 6,
+      "scenario_checks": 101,
+      "seconds": 33.73332768700004
+    },
+    {
+      "script": "auctionproof",
+      "passed": false,
+      "exit_code": 101,
+      "launches": 13,
+      "scenario_checks": 1547,
+      "seconds": 140.15631245500003
+    },
+    {
+      "script": "auctionpreview",
+      "passed": false,
+      "exit_code": 101,
+      "launches": 52,
+      "scenario_checks": 7290,
+      "seconds": 693.932219726
+    },
+    {
+      "script": "workshop",
+      "passed": false,
+      "exit_code": 101,
+      "launches": 49,
+      "scenario_checks": 26178,
+      "seconds": 1576.559713582
+    },
+    {
+      "script": "testlab",
+      "passed": false,
+      "exit_code": 101,
+      "launches": 9,
+      "scenario_checks": 229,
+      "seconds": 55.40058469600035
+    },
+    {
+      "script": "settings",
+      "passed": false,
+      "exit_code": 101,
+      "launches": 1,
+      "scenario_checks": 22,
+      "seconds": 6.967559436000101
+    },
+    {
+      "script": "reminders",
+      "passed": false,
+      "exit_code": 101,
+      "launches": 0,
+      "scenario_checks": 0,
+      "seconds": 9.77194905999977
+    }
+  ],
+  "artifact_id": 14824481476,
+  "artifact_bytes": 86997349,
+  "artifact_sha256": "45583cc52d3c220eef7faa8db2278d55a4bedc1794002c32ce26a3ab8963dc6d",
+  "raw_report_sha256": "79e20c2cc22d41116c0c0a6c5d6007f4ad093e0c83559c2a004c81bec5d01034",
+  "report_gzip": "full-d2-failed-report.json.gz",
+  "renderer_failure": "src/render/headless.rs:67 Failed to find GPU adapter; active_backends0",
+  "correction_source": "8aa42c16b6896555cd3bc857cf7ab0482dbf4116",
+  "correction": "Install documented libvulkan1/mesa-vulkan-drivers on same disposableVM; existing smoke before full command, no simulator/assertion changes",
+  "new_run": 45187769049,
+  "new_job": 137737762923,
+  "new_result": "pending",
+  "additional_assertions_require_investigation": true,
+  "production_changed": false,
+  "no_native_forever_claim": true
+}
