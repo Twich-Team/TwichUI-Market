@@ -139,3 +139,9 @@ Owner-approved bounded thirteen-addon prototype: [native codec gate](performance
 The prerequisite cannot be established from the available native evidence, so
 packaging implementation stops before format changes. Finish independent CI
 repair without relaxing assertions; preserve native picker/upgrade failures.
+
+Owner-authorized final focused tasks: correct native picker interaction using
+actual control inventory and a lightweight development-branch workflow, then run
+the unchanged complete Windows checks. Focused run45092875675 passes; production
+code/format remains unchanged. Separate TwichUI development-only codec addon is
+owner-run evidence, not implementation or release of compressed packaging.

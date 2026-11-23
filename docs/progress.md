@@ -242,3 +242,12 @@ evidence. Independent Windows CI follow-up preserves original failure45084411116
 commits actual shell selection in the disposable picker, adds stale-selection
 coverage and diagnoses the unchanged legacy-close timeout. No product format,
 production, installed client, merge or release change.
+
+Final focused Windows repair: actual inventory establishes Edit14148 has native
+WS_TABSTOP/enabled state but a non-focusable UIA provider. Real edit click plus
+GetGUIThreadInfo, exact native text readback and real OK click pass cancellation,
+valid/invalid/changed folder and registry tests in run45092875675 at7e0c0738.
+The focused workflow avoids full installer campaigns while diagnosing. All
+previous failures remain evidence; final complete Windows verification is next.
+Separate removable native codec probe is explicitly owner-authorized, while
+production packaging, merges, signing, publishing and deployment remain held.

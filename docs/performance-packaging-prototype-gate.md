@@ -1,5 +1,10 @@
 # Thirteen-addon prototype: native codec gate
 
+**Current owner direction:** prepare a small removable native codec probe and
+finish the independent Windows CI repair. Production compression and packaging
+remain blocked. The historical stop below applies to production packaging, not
+to the subsequently authorized evidence-gathering tool.
+
 The owner approved only a bounded packaging prototype on 22 November 2026. The
 first instruction is binding: **if the required Forever behavior cannot be
 established, stop and report the blocker.** No merge, production deployment,
@@ -118,3 +123,32 @@ The WM_SETTEXT-plus-Enter intermediate `a6688c6` exits normally but fails the
 exact selection/validation assertion. The final correction uses typed input
 notifications as well, retaining the same assertion and adding actual result
 details to any failure. It does not declare the intermediate run passing.
+
+## Current focused Windows resolution
+
+Focused run [45092875675](https://github.com/Twich-Team/TwichUI-Market/actions/runs/45092875675)
+passes at `7e0c0738ad8565e77acbc3feb91853870b9bdd96`, including cancellation,
+valid first/second folders, invalid folder, changed-back selection and exact
+native returned paths/validation. Registry discovery assertions remain intact.
+
+Actual control inventory identifies one visible enabled Edit, ID14148, style
+`50010080` (including WS_TABSTOP). Its UIA provider nevertheless reports
+`IsKeyboardFocusable=false` and refuses SetFocus. The correction clicks that
+real edit and checks the target thread's actual focus using GetGUIThreadInfo.
+It then sets/readbacks exact text using system-marshaled messages and physically
+clicks the process-checked native OK button. Focus loss commits the edit; invoking
+the default button/Enter could retain the previous tree PIDL. No result is
+injected into the native picker/IPC and no cross-process WM_USER pointer is used.
+
+All process/path, original 20-second dialog/10-second exit deadlines, upgrade,
+retention and pricing assertions remain. The focused development-branch workflow
+builds only the existing installation_smoke example and picker tests; required
+final Windows verification still uses the complete existing workflow. It does
+not rerun the already repaired automatic-sync campaign or weaken final gates.
+Inventory, before/after focus and returned-path artifact digest:
+`49bcd54ee919b238b31c7a296fdd938776efcb59e4813e56a7c05181c2276aad`.
+
+This is Companion/Windows fixture evidence, not actual Forever codec evidence.
+The separate temporary addon in TwichUI tools/codec-probe obtains that evidence
+only when the owner explicitly runs it in the real game. No production format,
+publisher, migration, cache or pricing change is authorized by either task.

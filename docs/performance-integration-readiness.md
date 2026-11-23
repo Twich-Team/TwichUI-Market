@@ -9,6 +9,15 @@ close timeout receives stage evidence without increased waits or retries.
 
 # Prepared-current integration and private acceptance
 
+**Latest:** focused native-picker repair passes run45092875675. Native inventory
+shows Edit14148 is enabled/tab-stop but its UIA provider refuses focus. Real
+click/Win32 focus verification, exact edit readback and physical OK preserve all
+returned-path assertions. See the final section of the
+[gate report](performance-packaging-prototype-gate.md). Full final Windows checks
+on the repair PR remain required. The original automatic-sync repair stays green;
+it is not being reopened. Native codec results will come from a separate removable
+development probe; no compressed production format is implemented.
+
 Continuation of game-ready-current-results.md and the 22 November private-test readiness
 report. No merge, production deployment, signing or release publication is authorized.
 
