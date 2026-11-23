@@ -34,7 +34,7 @@ jobs:
         if: always()
         shell: pwsh
         run: |
-          Get-ChildItem "$env:RUNNER_TEMP/TwichUI-Actual-Picker/workshop-summary-fixtures/picker-controls-*.json" -ErrorAction SilentlyContinue | ForEach-Object { Get-Content $_.FullName -Raw }
+          Get-ChildItem "$env:RUNNER_TEMP/TwichUI-Actual-Picker/workshop-summary-fixtures/picker-*.json" -ErrorAction SilentlyContinue | ForEach-Object { Get-Content $_.FullName -Raw }
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -42,5 +42,5 @@ jobs:
           path: |
             ${{ runner.temp }}/TwichUI-Actual-Picker/*.json
             ${{ runner.temp }}/TwichUI-Actual-Picker/*.stderr
-            ${{ runner.temp }}/TwichUI-Actual-Picker/workshop-summary-fixtures/picker-controls-*.json
+            ${{ runner.temp }}/TwichUI-Actual-Picker/workshop-summary-fixtures/picker-*.json
           if-no-files-found: warn

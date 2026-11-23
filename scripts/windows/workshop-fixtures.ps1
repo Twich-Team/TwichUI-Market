@@ -64,6 +64,7 @@ Add-Type -AssemblyName UIAutomationTypes
 Add-Type -AssemblyName System.Windows.Forms
 $condition=[System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::ClassNameProperty,'#32770')
 $dialog=$null
+$dialogDeadline=[DateTime]::UtcNow.AddSeconds(20)
 for($i=0;$i -lt 200;$i++) {
     $all=[System.Windows.Automation.AutomationElement]::RootElement.FindAll([System.Windows.Automation.TreeScope]::Children,$condition)
     foreach($candidate in $all) {if($candidate.Current.ProcessId -eq [int]$env:MARKET_TEST_PRIMARY_PID){$dialog=$candidate;break}}
@@ -79,6 +80,19 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Collections.Generic;
 public static class SummaryPickerControls {
+ [StructLayout(LayoutKind.Sequential)] public struct Rect { public int Left,Top,Right,Bottom; }
+ [StructLayout(LayoutKind.Sequential)] public struct GuiThread { public uint cbSize,flags; public IntPtr Active,Focus,Capture,MenuOwner,MoveSize,Caret; public Rect CaretRect; }
+ [DllImport("user32.dll")] public static extern bool GetGUIThreadInfo(uint thread,ref GuiThread info);
+ [DllImport("user32.dll")] public static extern bool GetWindowRect(IntPtr window,out Rect rect);
+ [DllImport("user32.dll")] public static extern bool SetProcessDPIAware();
+ [DllImport("user32.dll")] public static extern bool SetCursorPos(int x,int y);
+ [DllImport("user32.dll")] public static extern void mouse_event(uint flags,uint x,uint y,uint data,UIntPtr extra);
+ public static IntPtr Focus(IntPtr window) {
+  uint pid;uint thread=GetWindowThreadProcessId(window,out pid);
+  var info=new GuiThread();info.cbSize=(uint)Marshal.SizeOf(typeof(GuiThread));
+  if(!GetGUIThreadInfo(thread,ref info))throw new InvalidOperationException("Native thread focus unavailable");
+  return info.Focus;
+ }
  public delegate bool EnumChild(IntPtr window,IntPtr data);
  [DllImport("user32.dll")] public static extern bool EnumChildWindows(IntPtr window,EnumChild callback,IntPtr data);
  [DllImport("user32.dll",CharSet=CharSet.Unicode)] public static extern int GetClassNameW(IntPtr window,StringBuilder name,int size);
@@ -116,6 +130,7 @@ public static class SummaryPickerControls {
 }
 '@
 $dialogWindow=[IntPtr]$dialog.Current.NativeWindowHandle
+$null=[SummaryPickerControls]::SetProcessDPIAware()
 $null=[SummaryPickerControls]::SetForegroundWindow($dialogWindow)
 if($env:TWICHUI_PICKER_DIAGNOSTICS -eq 'true') {
     $controls=@(foreach($handle in [SummaryPickerControls]::Children($dialogWindow)) {
@@ -152,13 +167,19 @@ if($Action -eq 'CancelFolder') {
     $edit=[SummaryPickerControls]::FindEdit((CheckedWindow $dialogWindow))
     if($edit -eq [IntPtr]::Zero){throw ('Actual native folder edit unavailable; classes: '+[SummaryPickerControls]::Classes($dialogWindow))}
     $window=CheckedWindow $edit;$result=[IntPtr]::Zero
-    # Set and VERIFY keyboard focus through the native accessibility provider.
-    # A top-level foreground dialog alone does not establish edit focus.
-    $editElement=[System.Windows.Automation.AutomationElement]::FromHandle($window)
-    $editElement.SetFocus()
-    $focused=[System.Windows.Automation.AutomationElement]::FocusedElement
-    if((CheckedWindow $focused) -ne $window){throw 'Actual native folder edit did not receive keyboard focus'}
+    # Actual inventory: enabled WS_TABSTOP Edit14148, but UIA reports it cannot
+    # receive focus. Click the real control and verify Win32 GUI-thread focus.
     if([SummaryPickerControls]::GetForegroundWindow() -ne $dialogWindow){throw 'Refusing keyboard input outside the checked folder dialog'}
+    $rect=[SummaryPickerControls+Rect]::new()
+    if(-not [SummaryPickerControls]::GetWindowRect($window,[ref]$rect) -or $rect.Right -le $rect.Left -or $rect.Bottom -le $rect.Top){throw 'Native folder edit rectangle unavailable'}
+    $null=[SummaryPickerControls]::SetCursorPos([int](($rect.Left+$rect.Right)/2),[int](($rect.Top+$rect.Bottom)/2))
+    [SummaryPickerControls]::mouse_event(2,0,0,0,[UIntPtr]::Zero)
+    [SummaryPickerControls]::mouse_event(4,0,0,0,[UIntPtr]::Zero)
+    while([SummaryPickerControls]::Focus($dialogWindow) -ne $window) {
+        if([DateTime]::UtcNow -ge $dialogDeadline){throw 'Actual native folder edit did not receive keyboard focus'}
+        Start-Sleep -Milliseconds 50
+    }
+    if($env:TWICHUI_PICKER_DIAGNOSTICS -eq 'true') {@{pid=$env:MARKET_TEST_PRIMARY_PID;dialog=$dialogWindow.ToInt64();edit=$window.ToInt64();focus=[SummaryPickerControls]::Focus($dialogWindow).ToInt64();native_focus_verified=$true}|ConvertTo-Json -Compress|Set-Content (Join-Path $base "picker-focus-$env:MARKET_TEST_PRIMARY_PID.json")}
     $keys=[Text.StringBuilder]::new()
     foreach($character in $resolved.ToCharArray()) {
         if('+^%~()[]{}'.Contains([string]$character)){$null=$keys.Append('{').Append($character).Append('}')}
