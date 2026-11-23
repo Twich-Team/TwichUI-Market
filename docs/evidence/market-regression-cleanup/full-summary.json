@@ -1,0 +1,152 @@
+{
+  "source": {
+    "commit": "2da68dc6674fa71c92edfce38902197133177191",
+    "dirty": false,
+    "working_tree_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "source_after": {
+    "commit": "2da68dc6674fa71c92edfce38902197133177191",
+    "dirty": false,
+    "working_tree_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "source_unchanged": true,
+  "run": 45207055063,
+  "job": 137805493964,
+  "url": "https://github.com/Twich-Team/TwichUI/actions/runs/45207055063",
+  "command": "bash tests/run.sh full --profile cloud --jobs 2 --sim-jobs 1 --measure",
+  "complete": true,
+  "exit_code": 0,
+  "seconds": 3281.717438821,
+  "offline_modules_passed": 328,
+  "offline_modules_failed": 0,
+  "python_test_methods": 244,
+  "syntax_selection_paths": 541,
+  "lua_syntax_files": 846,
+  "syntax_count_basis": "Completed job log: syntax (846 Lua files; runner/simulator Python and shell scripts)",
+  "syntax_passed": true,
+  "native_launches": 233,
+  "structured_check_executions": 40826,
+  "catalogs": [
+    {
+      "script": "lab-guard",
+      "passed": true,
+      "exit_code": 0,
+      "launches": 0,
+      "scenario_checks": 0,
+      "seconds": 0.353757122999923,
+      "raw_failed_markers": 0,
+      "raw_passed_markers": 0
+    },
+    {
+      "script": "smoke",
+      "passed": true,
+      "exit_code": 0,
+      "launches": 2,
+      "scenario_checks": 0,
+      "seconds": 22.977375150999933,
+      "raw_failed_markers": 0,
+      "raw_passed_markers": 0
+    },
+    {
+      "script": "interact",
+      "passed": true,
+      "exit_code": 0,
+      "launches": 4,
+      "scenario_checks": 244,
+      "seconds": 23.71617173599998,
+      "raw_failed_markers": 1,
+      "raw_passed_markers": 243
+    },
+    {
+      "script": "diagnose",
+      "passed": true,
+      "exit_code": 0,
+      "launches": 6,
+      "scenario_checks": 101,
+      "seconds": 25.258565798000063,
+      "raw_failed_markers": 0,
+      "raw_passed_markers": 101
+    },
+    {
+      "script": "auctionproof",
+      "passed": true,
+      "exit_code": 0,
+      "launches": 13,
+      "scenario_checks": 1547,
+      "seconds": 114.7125877200001,
+      "raw_failed_markers": 3,
+      "raw_passed_markers": 1544
+    },
+    {
+      "script": "auctionpreview",
+      "passed": true,
+      "exit_code": 0,
+      "launches": 52,
+      "scenario_checks": 7290,
+      "seconds": 603.555282931,
+      "raw_failed_markers": 1,
+      "raw_passed_markers": 7289
+    },
+    {
+      "script": "workshop",
+      "passed": true,
+      "exit_code": 0,
+      "launches": 49,
+      "scenario_checks": 26341,
+      "seconds": 1278.1818705200003,
+      "raw_failed_markers": 1,
+      "raw_passed_markers": 26340
+    },
+    {
+      "script": "testlab",
+      "passed": true,
+      "exit_code": 0,
+      "launches": 9,
+      "scenario_checks": 229,
+      "seconds": 57.792363128000034,
+      "raw_failed_markers": 0,
+      "raw_passed_markers": 229
+    },
+    {
+      "script": "settings",
+      "passed": true,
+      "exit_code": 0,
+      "launches": 62,
+      "scenario_checks": 1090,
+      "seconds": 393.8897512049998,
+      "raw_failed_markers": 0,
+      "raw_passed_markers": 1090
+    },
+    {
+      "script": "reminders",
+      "passed": true,
+      "exit_code": 0,
+      "launches": 36,
+      "scenario_checks": 3984,
+      "seconds": 340.84804518600004,
+      "raw_failed_markers": 0,
+      "raw_passed_markers": 3984
+    }
+  ],
+  "omitted_catalogs": [],
+  "unsupported_coverage": [
+    "game asset rendering, client fonts and visual fidelity"
+  ],
+  "local_milestone_passed": false,
+  "automated_release_gate_passed": false,
+  "coverage_not_established": [
+    "real-client acceptance",
+    "pixel baseline regression (structural screenshots only)",
+    "production mutation campaigns (separate policy)",
+    "real-client packaged-install acceptance"
+  ],
+  "native_forever_tested": false,
+  "artifact": {
+    "id": 14838464229,
+    "sha256": "0e65f1724869ada30266b19ff4c21b832c0afa05474f8e3fd5d46696dc63f1c9",
+    "bytes": 185150854,
+    "raw_report_sha256": "982cf0772082ad03a112e35938e0059ef32d35f82b841468ce2ac3f5967a0eac"
+  },
+  "count_caveat": "Raw failed markers include deliberately incorrect controls. Catalog verdicts and final suite exit retain their original control assertions.",
+  "coordinated_merge_deployment_or_publication_executed": false
+}
