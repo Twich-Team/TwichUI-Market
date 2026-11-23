@@ -1,0 +1,33 @@
+{
+  "addon_reader": {
+    "pr": 131,
+    "merge": "d1ae3cffc4dc48b87d3e1c91727736eb51e50659"
+  },
+  "addon_containers": {
+    "pr": 136,
+    "merge": "84ca4842b9fdeac3aa9e2a3f697686fbb39eb655",
+    "tree": "340bb00c4360897ae4cbdf2467b5d56e3dcd3f85",
+    "identical_to_full_tested_tree": true
+  },
+  "market_final": {
+    "pr": 50,
+    "merge": "e5576c9d66e50914d4bcbbf27aad962a8c9f372f",
+    "tree": "16f361e091619ee695124c1cd1b1e9a02ae7bae5",
+    "identical_to_all_nine_passed_tree": true,
+    "ancestor_prs": [
+      46,
+      47,
+      48,
+      49
+    ]
+  },
+  "stack_reconciliation": {
+    "46": "GitHub marked merged through included ancestry",
+    "47": "closed as incorporated through50",
+    "48": "closed as incorporated through50",
+    "49": "closed as incorporated through50"
+  },
+  "normal_protected_merges": true,
+  "force_or_bypass": false,
+  "production_deployed": false
+}

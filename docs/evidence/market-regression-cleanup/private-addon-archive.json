@@ -1,0 +1,26 @@
+{
+  "source_commit": "84ca4842b9fdeac3aa9e2a3f697686fbb39eb655",
+  "source_tree": "340bb00c4360897ae4cbdf2467b5d56e3dcd3f85",
+  "zip": "TwichUI-Market-25-84ca4842b9fd-private.zip",
+  "bytes": 26505073,
+  "sha256": "75513e53c6380788fd9acb28bc287a538e6d33dc94b1d09b38ca8f2a3f7e0d5c",
+  "version": "0.0.0-dev.g84ca4842b9fd",
+  "private_installable": true,
+  "public_release": false,
+  "native_certification": false,
+  "archive_errors": [],
+  "runtime_folders": [
+    "!!!TwichUI",
+    "TwichUI_Settings",
+    "TwichUI_NavData",
+    "TwichUI_Diagnostics",
+    "TwichUI_Layouts",
+    "TwichUI_LayoutWizard",
+    "TwichUI_Workshop"
+  ],
+  "market_data_addons_generated_by_companion": 25,
+  "pending_full_verification": false,
+  "pending_merge": false,
+  "full_cloud_run": 45207055063,
+  "full_cloud_source_tree_identical": true
+}

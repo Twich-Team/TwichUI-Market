@@ -1,0 +1,16 @@
+{
+  "files": 28,
+  "candidate_image": "sha256:cae89b4d481ef017b1376b276e4792412172c38022103948df2a430c9c863cb9",
+  "collector_image": "sha256:ec94420d36baf501d312f3cbc85e38b77222e5b5bff92b76aae82dd8df95575d",
+  "api_checks": {
+    "api": {
+      "image_correct": true,
+      "environment_mismatches": []
+    },
+    "local-api": {
+      "image_correct": true,
+      "environment_mismatches": []
+    }
+  },
+  "executed": false
+}

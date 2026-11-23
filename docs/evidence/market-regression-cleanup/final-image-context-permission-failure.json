@@ -1,0 +1,16 @@
+{
+  "at": "2026-11-23T16:45:15.865722+00:00",
+  "image": "sha256:01479880033875371d0247d3d2f6ae67027af00692475aef7a697c2e2c8d2621",
+  "source": "e5576c9d66e50914d4bcbbf27aad962a8c9f372f",
+  "source_modes": {
+    "backend/market/workshop_prepared.py": "0o600",
+    "backend/market/feed_collection.py": "0o600",
+    "backend/market/security.py": "0o600",
+    "backend/market/ingest.py": "0o600",
+    "backend/market/workshop_summary.py": "0o600"
+  },
+  "cause": "Operator umask077 applied to public source copies; image runtime10001 could not read root-owned0600 files",
+  "correction": "Public image-context files0644/directories0755; no secret files in build context",
+  "failed_before_tests": "Actual image import",
+  "production_changed": false
+}
