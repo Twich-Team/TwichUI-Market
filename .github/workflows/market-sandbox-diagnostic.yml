@@ -31,10 +31,20 @@ jobs:
           ls -ld /mnt
           if [ -d /mnt/c ]; then echo 'Existing /mnt/c is present'; else echo 'No /mnt/c on this runner'; fi
           set +e
-          "$deps/root/usr/bin/bwrap" --ro-bind / / --dev /dev --proc /proc \
-            --tmpfs /tmp --tmpfs "$HOME" --tmpfs /mnt/c --unshare-all \
-            --die-with-parent --new-session --clearenv --setenv PATH /usr/bin:/bin \
-            -- /usr/bin/true > "$deps/actual-sandbox.log" 2>&1
+          command=("$deps/root/usr/bin/bwrap" --ro-bind / / --dev /dev --proc /proc
+            --tmpfs /tmp --tmpfs "$HOME" --tmpfs /mnt/c --unshare-all
+            --die-with-parent --new-session --clearenv --setenv PATH /usr/bin:/bin
+            -- /usr/bin/true)
+          if [ '${{ matrix.runner }}' = ubuntu-22.04 ]; then
+            unshare --user --map-current-user --mount --keep-caps sh -ec '
+              test "$(id -u)" -ne 0
+              mount -t tmpfs -o size=1m,mode=0755 tmpfs /mnt
+              mkdir /mnt/c
+              exec "$@"
+            ' sh "${command[@]}" > "$deps/actual-sandbox.log" 2>&1
+          else
+            "${command[@]}" > "$deps/actual-sandbox.log" 2>&1
+          fi
           result=$?
           cat "$deps/actual-sandbox.log"
           printf 'actual_sandbox_exit=%s\n' "$result" >> "$deps/actual-sandbox.log"
