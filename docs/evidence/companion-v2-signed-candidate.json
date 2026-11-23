@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
-  "version": "2.0.0-beta.11",
-  "payload_source_commit": "b39a35c01676b50dbc159f4793e0ad547676acfc",
-  "windows_run_id": 45027451323,
-  "backend_run_id": 45027451269,
-  "website_run_id": 45027451254,
-  "installer_artifact_id": 14756114202,
-  "installer_sha256": "84dacad168dc212d8dda7d06f15ddc5a918f170ba1af0e9ece4e6373cd883129",
-  "installer_bytes": 4885541,
-  "executable_sha256": "91f595fcc9a5d9779a2f7054c7469359da915a30b9a39b14fa6ab1e4620f817d",
+  "version": "2.0.0-beta.12",
+  "payload_source_commit": "e5576c9d66e50914d4bcbbf27aad962a8c9f372f",
+  "windows_run_id": 45219466787,
+  "backend_run_id": 45219466268,
+  "website_run_id": 45219466506,
+  "installer_artifact_id": 14840208468,
+  "installer_sha256": "08200ab7f7600ebd7a005d049122d712de0b76036babaddc1307538830692096",
+  "installer_bytes": 4972080,
+  "executable_sha256": "2c5696be4bd53e9a6898a743273193686dec4f72fbae2033ddac8df4beb3c4e2",
   "updater_public_key_sha256": "5794736c840c7c09a49396e60cd569ff6b5f24f872eb0318ed95d55c16616ecf",
-  "updater_signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTSTBwUk5ybTY3SlVYMzB5cDdMTEM2M2NXV2ZIb01oaGxuSGtEY1hMV3FKL0dTYnBiR0hTK2FhdFAvRHhRWFB1dkt2VVFjVHRvNE1QVmJqcDh1cVBJazFBUUdBSXNXRkE0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzk1MzU0ODA0CWZpbGU6VHdpY2hVSS1NYXJrZXQtQ29tcGFuaW9uLTIuMC4wLWJldGEuMTEtd2luZG93cy14NjQuZXhlCXZlcnNpb246Mi4wLjAtYmV0YS4xMQoyejZmVE1pQ3dVT1FtZHJseFA0cW92QW9qNlhMYWNkMi9qWUpwdHJtMDdFQWRJME4zOUpLSi9odU54QmZBV21FMWFEL1RuemtwQU8xalRtcGhoc2ZDQT09Cg=="
+  "updater_signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTSTBwUk5ybTY3SlRZNmRvUHlCR0tEeDVYWHRDUUpEWDVLNlIyMGFGN1ZVcXlTYVdLSjQwTnJ3UUJUVG5jZDdsWXJSb2hMei9VZjUxOE1sWU5rMzQwV2toVm10Q2s3T0F3PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzk1NDUzOTcwCWZpbGU6VHdpY2hVSS1NYXJrZXQtQ29tcGFuaW9uLTIuMC4wLWJldGEuMTItd2luZG93cy14NjQuZXhlCXZlcnNpb246Mi4wLjAtYmV0YS4xMgptZ0NJcTgrTlNvNVRIbDBNcDhMd1NjNFEzajJocnVtRDEwV1dZd2VkcVJGWjdPK3BJY0Q4aGFxbXUwQmUySkVPZW1mbFpaeDZxWmZqTEpNY3lNTzNCdz09Cg=="
 }
