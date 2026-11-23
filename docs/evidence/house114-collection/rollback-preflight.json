@@ -1,0 +1,8 @@
+{
+  "previous_image": "sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b",
+  "previous_image_retained": true,
+  "original_environment_command_limits_logging_validated": true,
+  "worker_only": true,
+  "schema_or_data_restore_required": false,
+  "rollback_executed": false
+}

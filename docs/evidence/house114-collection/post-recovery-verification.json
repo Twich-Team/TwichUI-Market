@@ -1,0 +1,125 @@
+{
+  "verified_at": "2026-11-23T08:12:00.853123+00:00",
+  "collection": {
+    "at": "2026-11-23T08:11:35.869932+00:00",
+    "market": {
+      "id": 2,
+      "house_id": 114,
+      "enabled": true,
+      "verified": true,
+      "interval_seconds": 300,
+      "next_check": "2026-11-23T08:15:33.907615+00:00",
+      "last_success": "2026-11-23T08:10:33.907615+00:00",
+      "failures": 0,
+      "last_error": null
+    },
+    "feeds": [
+      {
+        "source_kind": "auctions",
+        "enabled": true,
+        "retry_after": null,
+        "last_check": "2026-11-23T08:10:33.907615+00:00",
+        "last_success": "2026-11-23T08:10:33.907615+00:00",
+        "failures": 0,
+        "last_error": null,
+        "capture_id": 212,
+        "listing_count": 171605,
+        "payload_bytes": 17243985,
+        "payload_hash": "883214afc128e35c408508758d124eb0f2315fe5147b63f40339dcaf61692b10",
+        "content_hash": "be4bd63a084f1dced7ce4debff8ec9a47a882a029afaa776428c3edc8021efd6",
+        "observed_at": "2026-11-23T08:10:33.907615+00:00"
+      },
+      {
+        "source_kind": "commodities",
+        "enabled": true,
+        "retry_after": null,
+        "last_check": "2026-11-23T08:10:33.907615+00:00",
+        "last_success": "2026-11-23T08:10:33.907615+00:00",
+        "failures": 0,
+        "last_error": null,
+        "capture_id": 211,
+        "listing_count": 121562,
+        "payload_bytes": 10605714,
+        "payload_hash": "f54d72f91a3603b0da1241b6b7e9c5bd6c2e99d364c20937fcb1c3ff051e8a29",
+        "content_hash": "353f3c92140deb5e06c129a55ab49a892215924906817381034b594572e1a4e5",
+        "observed_at": "2026-11-23T07:30:11.074866+00:00"
+      }
+    ],
+    "observation": {
+      "id": 2074,
+      "retrieved_at": "2026-11-23T08:10:33.907615+00:00",
+      "synthetic": false,
+      "source_manifest": "[{\"capture_id\":212,\"check_id\":3022,\"checked_at\":\"2026-11-23T08:10:33.907615+00:00\",\"house_id\":114,\"http_status\":200,\"namespace\":\"dynamic-forever-us\",\"payload_sha256\":\"883214afc128e35c408508758d124eb0f2315fe5147b63f40339dcaf61692b10\",\"region\":\"us\",\"ruleset_id\":2,\"source_kind\":\"auctions\",\"status\":\"collected\",\"upstream_modified\":\"Mon, 23 Nov 2026 07:25:11 GMT\",\"verification_sha256\":\"043fa13dbb6dcb7731e342e98290f4d3db44360080d703b6916b6a419b82894b\"},{\"capture_id\":211,\"check_id\":3023,\"checked_at\":\"2026-11-23T08:10:33.907615+00:00\",\"house_id\":114,\"http_status\":304,\"namespace\":\"dynamic-forever-us\",\"payload_sha256\":\"f54d72f91a3603b0da1241b6b7e9c5bd6c2e99d364c20937fcb1c3ff051e8a29\",\"region\":\"us\",\"ruleset_id\":2,\"source_kind\":\"commodities\",\"status\":\"unchanged\",\"upstream_modified\":\"Mon, 23 Nov 2026 07:25:11 GMT\",\"verification_sha256\":\"b838ed7d5c89de886e8344a8f4e2fd84f97eb009ccfc9986aa161cc5fda92e4c\"}]",
+      "snapshot_id": 181,
+      "listing_count": 293167
+    },
+    "previous_auction_capture_retained": true,
+    "worker": {
+      "Running": true,
+      "OOMKilled": false,
+      "Restarting": false,
+      "StartedAt": "2026-11-23T05:49:35.318458271Z",
+      "image": "sha256:ec94420d36baf501d312f3cbc85e38b77222e5b5bff92b76aae82dd8df95575d",
+      "restart_count": 0
+    }
+  },
+  "database": {
+    "actual_new_snapshot_listings": 293167,
+    "previous_observation_retained": true,
+    "previous_snapshot_retained": {
+      "id": 180,
+      "listing_count": 258726,
+      "raw_retained": true,
+      "statistics_retained": true
+    },
+    "auction_checks": [
+      {
+        "checked_at": "2026-11-23T08:10:33.907615+00:00",
+        "status": "collected",
+        "http_status": 200,
+        "error": null,
+        "capture_id": 212
+      }
+    ],
+    "enabled_markets": [
+      {
+        "id": 2,
+        "house_id": 114,
+        "interval_seconds": 300,
+        "failures": 0,
+        "last_success": "2026-11-23T08:10:33.907615+00:00"
+      }
+    ]
+  },
+  "resources": {
+    "memory.current": "146190336",
+    "memory.peak": "310743040",
+    "memory.max": "402653184",
+    "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+    "cpu.max": "50000 100000"
+  },
+  "only_worker_replaced": true,
+  "original_environment_command_limits_mounts_preserved": true,
+  "other_container_ids_unchanged": true,
+  "public_health": {
+    "status": 200,
+    "body": {
+      "status": "ok",
+      "contract_version": 1
+    }
+  },
+  "private_companion_unchanged": {
+    "version": "2.0.0-beta.11",
+    "source_commit": "b39a35c01676b50dbc159f4793e0ad547676acfc",
+    "bytes": 4885541,
+    "sha256": "84dacad168dc212d8dda7d06f15ddc5a918f170ba1af0e9ece4e6373cd883129"
+  },
+  "critical_log_counts": {
+    "Traceback": 0,
+    "MemoryError": 0,
+    "Out of memory": 0
+  },
+  "provider_requests_for_this_verification": 0,
+  "no_backoff_or_polling_change": true,
+  "rollback_image_retained": true
+}

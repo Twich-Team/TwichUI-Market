@@ -1,0 +1,12 @@
+{
+  "version": "2.0.0-beta.11",
+  "source_commit": "b39a35c01676b50dbc159f4793e0ad547676acfc",
+  "bytes": 4885541,
+  "sha256": "84dacad168dc212d8dda7d06f15ddc5a918f170ba1af0e9ece4e6373cd883129",
+  "verified_at": "2026-11-23T06:13:06Z",
+  "manifest_and_evidence_validated_by_deployed_private_loader": true,
+  "no_publication": true,
+  "new_update_available": false,
+  "previous_versions_retained": true,
+  "scope": "existing authorized private pilot store; no new grants or forced client installation"
+}

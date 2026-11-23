@@ -1,0 +1,16 @@
+{
+  "source": "3f0421a2221e424df751b963f5b66b445e319018",
+  "new_worker_id": "bf7cbad1b3b35c65fa5ed4af6688902f0c5be1b68f23a2e007dea2250c295a7d",
+  "image": "sha256:ec94420d36baf501d312f3cbc85e38b77222e5b5bff92b76aae82dd8df95575d",
+  "previous_image": "sha256:aab0d6585115da68811f6c3ecebde4233d8e1a73306b2fc8f2d5ba6b1daad50b",
+  "started_at": "2026-11-23T05:49:35.318458271Z",
+  "running": true,
+  "only_worker_replaced": true,
+  "environment_values_command_mounts_networks_limits_security_identical": true,
+  "environment_order_only_changed": true,
+  "original_postcheck_order_assertion_failed": true,
+  "postcheck_corrected_without_redeploy": true,
+  "original_backoff_preserved": true,
+  "recovery_image_retained": true,
+  "collection_recovered": false
+}

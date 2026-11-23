@@ -1,0 +1,10 @@
+{
+  "earliest_retained_market_failure": "2026-11-15T03:38:22.711308Z",
+  "earliest_failure_detail": "Transport or payload validation failed; no retained precise reason/body",
+  "second_legacy_failure": "2026-11-17T05:55:30.241046Z",
+  "earliest_retained_auction_feed_failure": "2026-11-18T04:25:25.955434Z",
+  "current_uninterrupted_auction_failure_starts": "2026-11-22T21:29:38.285896Z",
+  "last_successful_auction_conditional_check": "2026-11-22T21:24:35.749844Z",
+  "confirmed_current_cause": "Captured valid 178402 auction rows exceeds original 150000 listing guard",
+  "all_earlier_failures_same_cause_proven": false
+}

@@ -1,0 +1,24 @@
+{
+  "source": "3f0421a2221e424df751b963f5b66b445e319018",
+  "all_final_checks_passed": true,
+  "checks": {
+    "postgres": 137502844915,
+    "windows": 137502845695,
+    "picker": 137502845490,
+    "signed-update / verify": 137502845900,
+    "workshop-consumer": 137507208692,
+    "browser": 137508178978
+  },
+  "browser_original_failure": {
+    "run": 45117269059,
+    "job": 137502845474,
+    "ordinary_passed": 48,
+    "ordinary_failed": 1,
+    "cause": "Pre-existing delayed Explorer canonical URL effect undid the Administration click while markets settled",
+    "trace_preserved": true,
+    "same_tree_premerge_passed": true,
+    "evidence_based_unchanged_source_rerun": true,
+    "separate_correction_pr": 52
+  },
+  "test_timeouts_or_assertions_weakened": false
+}

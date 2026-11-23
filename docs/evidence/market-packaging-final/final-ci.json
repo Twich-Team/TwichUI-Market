@@ -104,5 +104,5 @@
   "full_simulator_gate_passed": false,
   "actual_sandbox_error": "bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted",
   "release_merged_or_published": false,
-  "production_health_gate": "awaiting original natural auction retry 2026-11-23T08:07:31.827206Z"
+  "production_health_gate": "passed: natural collection at2026-11-23T08:10:33.907615Z; exact post-recovery verification at08:12"
 }

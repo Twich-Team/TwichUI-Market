@@ -1,5 +1,17 @@
 # House 114 collection capacity repair
 
+**Production recovered — 2026-11-23 08:10:33 UTC.** The scheduled auction request
+returned HTTP200 and validated171,605 auctions, still above the old150,000 cap.
+Both feeds and the overall market now have zero failures; retry cleared normally.
+A complete non-synthetic293,167-listing snapshot is published, with the previous
+observation, snapshot and capture retained. The original300-second schedule,
+credentials, worker limits and other production services are unchanged.
+[Exact post-recovery acceptance](evidence/house114-collection/post-recovery-verification.json).
+The independent collector repair is complete; the coordinated prepared/Companion
+release remains held by the required unavailable full simulator sandbox.
+Earlier pending statements below are chronological checkpoints.
+
+
 The owner prioritizes this repair over packaging. The coordinated prepared-price /
 Companion release must not merge or deploy until production has a successful
 validated house-114 auction collection. A separately verified targeted collector
@@ -7,6 +19,13 @@ repair is authorized. Do not reset backoff, force live collection, change pollin
 delete history or change infrastructure.
 
 ## Exact diagnosis
+
+The **first retained house-114 collection failure** is **2026-11-15
+03:38:22.711308 UTC**, followed by another legacy failure November17 at
+05:55:30.241046. Both retain only `Transport or payload validation failed`,
+without precise exception/body, so their causes remain unknown. The first
+per-feed auction failure is November18 at04:25:25.955434. These are distinct
+from the current uninterrupted streak below. [Exact retained timeline](evidence/house114-collection/failure-timeline.json).
 
 The current uninterrupted auction failure streak starts at
 **2026-11-22 21:29:38.285896 UTC**. The last successful conditional check was
@@ -125,3 +144,89 @@ normal loop to reach its existing retry window and verify actual successful
 auction validation/publication, unchanged 300-second schedule and zero new errors.
 Only that genuine production result can clear the coordinated release gate.
 As of this checkpoint, **no production deployment or recovery is claimed**.
+
+
+## Targeted production deployment — 2026-11-23 05:49 UTC
+
+Repair PR [51](https://github.com/Twich-Team/TwichUI-Market/pull/51) is merged
+at **3f0421a2221e424df751b963f5b66b445e319018**. Its exact resulting main passes
+PostgreSQL, website, native Windows, folder picker, actual signed updater and
+paired addon-consumer checks. [Final CI and preserved failed browser attempt](evidence/house114-collection/final-ci.json).
+The original post-merge website attempt exposed an unchanged, pre-existing
+Explorer navigation race; a trace-based rerun passes without altering its source,
+timeouts or assertions. A separate focused correction is draft PR52. No frontend
+source from that correction is deployed with this worker repair.
+
+Only **twichui-market-worker-1** was replaced at **05:49:35.318458 UTC**, with
+immutable image
+`sha256:ec94420d36baf501d312f3cbc85e38b77222e5b5bff92b76aae82dd8df95575d`,
+labeled with merged source `3f0421a`. The actual image imports, exact content
+digest and complete module inventory pass: only `ingest.py` and
+`feed_collection.py` differ from original collector `aab0d6585115...`, in both
+module paths. All other production service IDs remain identical. Environment
+values, command, mounts, networks, restart policy, read-only root, security,
+logging, 0.5 CPU and 384 MiB remain identical. A postcheck initially compared
+environment lists by order and failed; dictionaries prove every key/value is
+identical. Only Compose's ordering changed; no second deployment was performed.
+[Deployment receipt](evidence/house114-collection/deployment.json).
+
+Both API health checks and PostgreSQL remain healthy; `/api/v1/health` returns
+HTTP200. House114 alone remains enabled at300seconds. Persisted auction retry
+is still **08:07:31.827206 UTC**; last successful auction remains November22
+21:24:35, auction failures7, last-good capture199 retained. Commodity collection
+was healthy immediately before replacement. **Production auction recovery is
+not yet established**: wait for the normal loop's existing retry window, with
+no forced request or scheduling change. The coordinated release remains held.
+
+The retained original collector image and verified original backup/restore path
+remain available. For worker-only rollback, take the retained resolved Compose
+command, replace its final release overlay with the versioned rollback overlay,
+and run the same `up -d --no-deps --no-build --pull never worker`. Verify only
+the worker image changes; retain all valid new observations and database schema.
+No database downgrade or destructive recovery is needed.
+
+
+At06:13 UTC the actual deployed private release loader validates the unchanged
+**2.0.0-beta.11** store, source`b39a35c01676b50dbc159f4793e0ad547676acfc`,
+installer4,885,541bytes/SHA256
+`84dacad168dc212d8dda7d06f15ddc5a918f170ba1af0e9ece4e6373cd883129`.
+This is private-store/evidence validation, not a new HTTPS authenticated
+distribution campaign. No grant, signature, installer, update pointer or installed
+client was changed. Older versions remain. No new Companion update is available.
+[Unchanged distribution receipt](evidence/house114-collection/unchanged-companion-distribution.json).
+
+
+## Natural production recovery and final acceptance — 08:12 UTC
+
+The original persisted auction retry08:07:31.827206 was never reset. The normal
+300-second loop began its next check at **08:10:33.907615 UTC** and successfully
+collected HTTP200 auction capture212: **171,605** validated listings,
+17,243,985 payload bytes, SHA256
+`883214afc128e35c408508758d124eb0f2315fe5147b63f40339dcaf61692b10`.
+Commodities conditionally validate HTTP304 against capture211's121,562 rows.
+Observation2074 / snapshot181 is complete, non-synthetic and has **293,167**
+actual stored listing rows, exactly equal to the two validated feed counts.
+Its source manifest proves US/ruleset2/house114/dynamic-forever-us and both
+feed checks/payload hashes. Auction, commodity and market failures are zero;
+errors/retry are null. [Scheduled recovery receipt](evidence/house114-collection/production-recovery.json).
+
+The08:12 bounded read-only verifier confirms old observation2073, snapshot180
+(including raw data/statistics), and auction capture199 remain. It makes zero
+provider requests. Public API health is HTTP200. All other production container
+identities, worker environment/command/mounts/limits/security and private beta.11
+manifest/installer are unchanged. No critical worker traceback/memory errors,
+restart or OOM occurred. Actual cgroup peak **310,743,040bytes (296.35MiB)**
+is below the original402,653,184-byte limit; cgroup max/high/OOM event counters remain
+zero and CPU remains0.5. No production schema/data/settings/backoff/poll changes
+or new Companion publication occurred.
+
+Rollback preflight still resolves to the retained original collector image,
+with the same environment/command/limits/logging and worker-only scope. No
+rollback was needed. [Rollback readiness](evidence/house114-collection/rollback-preflight.json).
+Keep this worktree: the live Compose label references its release overlay.
+
+Final Market main remains **3f0421a2221e424df751b963f5b66b445e319018**.
+The production-health gate is now satisfied. Coordinated PRs46–50/131/136 remain
+unmerged and no prepared backend/private Companion update is deployed: required
+full simulator verification remains blocked by the actual sandbox isolation
+failure. That independent gate is not waived by production recovery.

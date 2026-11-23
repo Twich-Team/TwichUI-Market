@@ -6,7 +6,7 @@ deploying the backend/private Companion through the existing signing/distributio
 process, provided all gates pass. No public addon release or temporary codec probe
 merge is authorized. Offline observations are never real Forever results.
 
-## Current result — 2026-11-23 07:43 UTC
+## Current result — 2026-11-23 08:13 UTC
 
 **25 addons selected and implemented.** At the larger frozen fixture, current
 physical-load p95 / maximum is4.326 /5.499ms, versus19.567 /20.889ms for13 and
@@ -26,8 +26,10 @@ local and standard CI environments. No failed check or security gate is waived.
 
 Only the independent collector repair has merged/deployed: Market main
 **3f0421a2221e424df751b963f5b66b445e319018**, PR51. The worker-only replacement
-is running with original limits, settings and retry; natural house114 recovery
-is still pending at08:07:31 UTC or its next normal poll. API/frontend and private
+is running with original limits/settings. Natural house114 collection recovered
+at08:10:33 UTC:171,605 valid auctions and293,167 complete stored snapshot rows;
+both feeds and market have zero failures, previous data is retained and actual
+worker peak is296MiB under the unchanged384MiB limit. API/frontend and private
 Companion2.0.0-beta.11 distribution are unchanged. No coordinated PR has merged,
 no prepared backend was deployed, and no new Companion or public addon release
 was published. The exact earlier checkpoints below remain chronological evidence.
@@ -406,3 +408,29 @@ prevents coordinated merging/deployment even after production collection recover
 No additional product change, test waiver or security relaxation is proposed.
 
 [Final-source Windows receipts](evidence/market-packaging-final/final-windows-receipts.json) also retain the exact artifact hashes, one-run confirmation counters, legacy installer retention, selected native publication and193→25 restore/remigration acceptance. The broader installed-UI fixture deliberately exercises its older compatible addon; the prepared publisher/consumer independently pins the final addon source. All fixtures remain explicitly synthetic and are not gameplay observations.
+
+
+## Production health gate satisfied — 08:12 UTC
+
+Independent collector repair PR51 / main3f0421a recovered on its original natural
+retry, without a reset or forced request. HTTP200 capture212 contains171,605
+valid auctions; HTTP304 validates121,562 commodity rows. Non-synthetic
+observation2074 / snapshot181 contains exactly293,167 actual stored rows.
+All feed/market failures are zero. Previous observation2073, snapshot180 and
+capture199 remain; all other service IDs, credentials, polling, worker limits,
+API/frontend and private beta.11 distribution are preserved. Peak worker memory
+is310,743,040bytes (296.35MiB), with zero OOM/limit events/restarts. Public health
+is HTTP200; original image and documented worker-only rollback remain available.
+[Production acceptance and rollback](house114-collection-repair.md) /
+[exact read-only verification](evidence/house114-collection/post-recovery-verification.json).
+Acceptance evidence is also pushed independently at collector-report commit174bc9b.
+
+**The coordinated release still cannot proceed:** the existing full simulator
+gate is required by addon testing policy for release certification/high-risk
+migration and cannot execute its sandbox in either available environment.
+All nine Market checks and addon328-module/fast checks pass at the final pair,
+but they do not replace that gate. No coordinated PR was merged, no prepared
+backend deployed, no new signed Companion distributed and no public addon
+release made. Next prerequisite is an approved environment where the existing
+unchanged full simulator sandbox works; do not remove isolation or weaken tests.
+Native Forever results remain unavailable and are a separate explicit uncertainty.
