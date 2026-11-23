@@ -1,0 +1,27 @@
+{
+  "source_commit": "b959601faf70624341c9416f64f7694e4e0b7299",
+  "run": 45225567483,
+  "job": 137871000697,
+  "artifact": 14844830929,
+  "artifact_sha256": "ed8b56f5b774ef592196e6be0350887d452afc37fc684187a2c35993e4ef778a",
+  "synthetic_fixture": true,
+  "failure": "saved helper five-second expect.poll timed out before asynchronous API request returned",
+  "patch": {
+    "started": "2026-11-23T17:19:54.062Z",
+    "milliseconds": 8.474,
+    "status": 200,
+    "revision": 4,
+    "explorer_days": 365
+  },
+  "read": {
+    "started": "2026-11-23T17:19:53.815Z",
+    "milliseconds": 10056.643,
+    "status": 200,
+    "revision": 4,
+    "explorer_days": 365
+  },
+  "product_save_correct": true,
+  "logout_assertions_not_reached_in_failed_attempt": true,
+  "correction": "Existing five-second UI save acknowledgement first, then one authoritative persisted-value assertion under unchanged API/test transport budget",
+  "timeouts_or_privacy_expectations_changed": false
+}

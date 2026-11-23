@@ -1,0 +1,10 @@
+{
+  "initial_read_failure": "Default image UID10001 cannot read existing owner-only publication lock",
+  "store_owner_uid": 0,
+  "lock_mode": "0600",
+  "operator_uid": 0,
+  "host_mapping": "0       1002          1\n         1     231072      65536",
+  "volume_modes_or_ownership_changed": false,
+  "existing_owner_context_used": true,
+  "read_only_inventory_passed": true
+}

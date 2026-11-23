@@ -14,6 +14,8 @@ operator=(
   --network
   none
   --read-only
+  --user
+  0
   --memory
   256m
   --memory-swap

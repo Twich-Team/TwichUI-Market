@@ -1,0 +1,12 @@
+{
+  "current": {
+    "schema_version": 1,
+    "version": "2.0.0-beta.11"
+  },
+  "total_bytes": 47653886,
+  "file_count": 113,
+  "unchanged_budget_bytes": 134217728,
+  "rootless_operator_uid": 0,
+  "host_uid_map": "0       1002          1\n         1     231072      65536",
+  "publication_executed": false
+}
