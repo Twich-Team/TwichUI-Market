@@ -1,0 +1,22 @@
+{
+  "source": "163e765",
+  "run": 45121026436,
+  "job": 137514680277,
+  "conclusion": "failure",
+  "assertion": "companion-workshop-native.cjs:50 price_runs delta must equal 1",
+  "expected": 1,
+  "actual": 2,
+  "artifact_id": 14793204515,
+  "artifact_sha256": "e334f99f795cbdae8d02e864d5ca394ea07965dafa0a383736f2049407d17e31",
+  "original_receipt_preserved": true,
+  "successful_installed_publication": true,
+  "precise_extra_request_status_not_retained": true,
+  "assertion_unchanged": true,
+  "product_code_changed": false,
+  "fixture_corrections": [
+    "Fence prior Resume completion before measuring confirmation",
+    "Use 120-second fixture access, still within native proactive-renewal window, longer than unchanged 90-second publication deadline",
+    "Retain bounded path/status/time events and strict before/after counters"
+  ],
+  "cause_limit": "Original evidence cannot distinguish an overlapping prior run from normal bounded authentication replay; both were admitted by the old measurement window"
+}

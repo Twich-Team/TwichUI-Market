@@ -10,5 +10,12 @@
   "local_rootless_same_failure": true,
   "security_relaxation": false,
   "suites_skipped_into_pass": false,
-  "release_blocked": true
+  "release_blocked": true,
+  "actual_bubblewrap": {
+    "run": 45121804607,
+    "job": 137517036003,
+    "local_and_ci_error": "bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted",
+    "actual_existing_sandbox_arguments_tested": true,
+    "security_relaxed": false
+  }
 }

@@ -222,3 +222,36 @@ and future manual certifications, rather than ordinary Workshop PRs. All runtime
 bytes are identical. Final paired Windows publication pins5a308810 explicitly.
 The full sandbox attempt remains failed, with no security relaxation; final
 coordinated merge, backend deployment and Companion publication remain blocked.
+
+
+## Preserved Windows confirmation failure and measurement correction
+
+Source163e765's native Windows install workflow fails its strict one-price-run
+assertion after successfully installing/publishing the fixture. The counter
+delta is2, expected1; the original assertion and90-second publication deadline
+are retained. [Failed run and exact artifact](evidence/market-packaging-final/windows-confirmation-failure.json).
+The receipt did not retain the extra request's status/timestamp, so it cannot
+prove duplicate successful preparation work or assign a sole historical cause.
+
+Two actual harness defects made that measurement ambiguous: it sampled its
+start counter without fencing the earlier Resume action; and its60-second
+access lifetime was shorter than the90-second prepared operation it permits.
+The unchanged native authorization owner legitimately retries a resumable
+operation once after an access rejection. The counter counts every activity
+attempt, including401. The corrected fixture stays at120seconds, within the
+existing native120-second proactive-renewal window (still forcing actual
+renewal), while allowing the bounded prepared operation to complete. It also
+requires the resumed run to finish and have a future schedule before capturing
+the confirmation baseline. No production token lifetime, authentication,
+scheduler or synchronization code changes. The exact `price_runs == 1`
+assertion stays; actual duplicate runs still fail. Bounded HTTP path/status/time
+events and before/after counters now survive both passing and failing cases.
+Only an exact-source Windows rerun can accept this harness correction.
+
+The actual required Bubblewrap command was separately tested, not inferred from
+`unshare`: both the local host and standard CI runner fail with
+`bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted`. Hosted diagnostic
+[45121804607](https://github.com/Twich-Team/TwichUI-Market/actions/runs/45121804607),
+job137517036003, retains the actual-command failure. No network-isolation flag,
+host policy or assertion was removed. The diagnostic-only branch is not part
+of the release. Full simulator execution therefore remains blocked.

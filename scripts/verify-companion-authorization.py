@@ -41,9 +41,11 @@ SERVER = '''
 import uvicorn
 from market import companion_auth
 from market.app import app
-import os, asyncio
-# Short-lived access is fixture-only; force the real native renewal path immediately.
-companion_auth.ACCESS_SECONDS=60
+import os, asyncio, time
+# Stay within the native 120-second proactive-renewal window, still forcing the
+# real renewal path. The separate 90-second prepared-publication assertion must
+# not accidentally test access expiry halfway through an otherwise valid run.
+companion_auth.ACCESS_SECONDS=120
 if os.environ.get('MARKET_NATIVE_UI_TEST')=='true':
     from pathlib import Path
     from fastapi.responses import FileResponse
@@ -74,9 +76,13 @@ if os.environ.get('MARKET_NATIVE_UI_TEST')=='true':
         else:raise ValueError('unknown fixture action')
         return {'synthetic':True,'action':action}
     native_network={'bearer_requests':0,'token_requests':0,'sync_requests':0,'price_runs':0,'summary_preparations':0}
+    native_network_events=[]
     @app.get('/__fixture__/native-network')
     def fixture_network():
         return native_network.copy()
+    @app.get('/__fixture__/native-network-events')
+    def fixture_network_events():
+        return native_network_events.copy()
     @app.middleware('http')
     async def observable_fixture_pages(request,call_next):
         if request.headers.get('authorization','').startswith('Bearer '):native_network['bearer_requests']+=1
@@ -88,6 +94,10 @@ if os.environ.get('MARKET_NATIVE_UI_TEST')=='true':
             request.scope['query_string']=query+(b'&' if query else b'')+b'limit=1'
         if request.url.path=='/api/v1/companion/activity':native_network['price_runs']+=1
         response=await call_next(request)
+        if (request.url.path in ('/api/v1/companion/activity','/api/v1/companion/token','/api/v1/companion/bootstrap')
+                or request.url.path.startswith('/api/v1/sync/markets/') or request.url.path.endswith('/summary')):
+            native_network_events.append({'at':time.monotonic(),'method':request.method,'path':request.url.path,'status':response.status_code})
+            del native_network_events[:-384]
         if request.url.path.endswith('/summary') and response.status_code==202:native_network['summary_preparations']+=1
         if request.url.path.endswith('/summary') and summary_fault['corrupt'] and response.status_code in (200,304):
             # Test-only post-authorization corruption; positive source is unchanged.
