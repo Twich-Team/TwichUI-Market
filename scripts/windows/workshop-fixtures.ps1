@@ -80,6 +80,9 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Collections.Generic;
 public static class SummaryPickerControls {
+ [StructLayout(LayoutKind.Sequential)] public struct Point { public int X,Y; public Point(int x,int y){X=x;Y=y;} }
+ [DllImport("user32.dll")] public static extern IntPtr WindowFromPoint(Point point);
+ [DllImport("user32.dll")] public static extern IntPtr GetAncestor(IntPtr window,uint flags);
  [StructLayout(LayoutKind.Sequential)] public struct Rect { public int Left,Top,Right,Bottom; }
  [StructLayout(LayoutKind.Sequential)] public struct GuiThread { public uint cbSize,flags; public IntPtr Active,Focus,Capture,MenuOwner,MoveSize,Caret; public Rect CaretRect; }
  [DllImport("user32.dll")] public static extern bool GetGUIThreadInfo(uint thread,ref GuiThread info);
@@ -170,17 +173,22 @@ if($Action -eq 'CancelFolder') {
     $window=CheckedWindow $edit;$result=[IntPtr]::Zero
     # Actual inventory: enabled WS_TABSTOP Edit14148, but UIA reports it cannot
     # receive focus. Click the real control and verify Win32 GUI-thread focus.
-    if([SummaryPickerControls]::GetForegroundWindow() -ne $dialogWindow){throw 'Refusing keyboard input outside the checked folder dialog'}
     $rect=[SummaryPickerControls+Rect]::new()
     if(-not [SummaryPickerControls]::GetWindowRect($window,[ref]$rect) -or $rect.Right -le $rect.Left -or $rect.Bottom -le $rect.Top){throw 'Native folder edit rectangle unavailable'}
-    $null=[SummaryPickerControls]::SetCursorPos([int](($rect.Left+$rect.Right)/2),[int](($rect.Top+$rect.Bottom)/2))
+    $point=[SummaryPickerControls+Point]::new([int](($rect.Left+$rect.Right)/2),[int](($rect.Top+$rect.Bottom)/2))
+    $hit=[SummaryPickerControls]::WindowFromPoint($point)
+    if($hit -eq [IntPtr]::Zero -or [SummaryPickerControls]::GetAncestor((CheckedWindow $hit),2) -ne $dialogWindow){throw 'Refusing native pointer input outside the checked folder dialog'}
+    # SetForegroundWindow may be denied or activation may still be pending.
+    # A single real click on the verified visible target activates the dialog;
+    # no keyboard/edit input is permitted until actual foreground AND focus agree.
+    $null=[SummaryPickerControls]::SetCursorPos($point.X,$point.Y)
     [SummaryPickerControls]::mouse_event(2,0,0,0,[UIntPtr]::Zero)
     [SummaryPickerControls]::mouse_event(4,0,0,0,[UIntPtr]::Zero)
-    while([SummaryPickerControls]::Focus($dialogWindow) -ne $window) {
-        if([DateTime]::UtcNow -ge $dialogDeadline){throw 'Actual native folder edit did not receive keyboard focus'}
+    while([SummaryPickerControls]::GetForegroundWindow() -ne $dialogWindow -or [SummaryPickerControls]::Focus($dialogWindow) -ne $window) {
+        if([DateTime]::UtcNow -ge $dialogDeadline){throw 'Actual native folder dialog did not receive foreground and edit focus'}
         Start-Sleep -Milliseconds 50
     }
-    if($env:TWICHUI_PICKER_DIAGNOSTICS -eq 'true') {@{pid=$env:MARKET_TEST_PRIMARY_PID;dialog=$dialogWindow.ToInt64();edit=$window.ToInt64();focus=[SummaryPickerControls]::Focus($dialogWindow).ToInt64();native_focus_verified=$true}|ConvertTo-Json -Compress|Set-Content (Join-Path $base "picker-focus-$env:MARKET_TEST_PRIMARY_PID.json")}
+    if($env:TWICHUI_PICKER_DIAGNOSTICS -eq 'true') {@{pid=$env:MARKET_TEST_PRIMARY_PID;dialog=$dialogWindow.ToInt64();edit=$window.ToInt64();focus=[SummaryPickerControls]::Focus($dialogWindow).ToInt64();native_focus_verified=$true;foreground=[SummaryPickerControls]::GetForegroundWindow().ToInt64();native_foreground_verified=([SummaryPickerControls]::GetForegroundWindow() -eq $dialogWindow)}|ConvertTo-Json -Compress|Set-Content (Join-Path $base "picker-focus-$env:MARKET_TEST_PRIMARY_PID.json")}
     # System-marshaled edit text plus a REAL click: focus loss commits the
     # shell's edit. Invoke/BM_CLICK/Enter can accept the old tree selection.
     if([SummaryPickerControls]::SetText($window,0x000C,[IntPtr]::Zero,$resolved,2,3000,[ref]$result) -eq [IntPtr]::Zero){throw 'Actual native edit timed out'}
@@ -191,7 +199,13 @@ if($Action -eq 'CancelFolder') {
     if(-not [SummaryPickerControls]::IsWindowEnabled($ok)){throw 'Native folder confirmation disabled'}
     if(-not [SummaryPickerControls]::GetWindowRect($ok,[ref]$rect)){throw 'Native confirmation rectangle unavailable'}
     if([SummaryPickerControls]::GetForegroundWindow() -ne $dialogWindow){throw 'Refusing native click outside the checked folder dialog'}
-    $null=[SummaryPickerControls]::SetCursorPos([int](($rect.Left+$rect.Right)/2),[int](($rect.Top+$rect.Bottom)/2))
+    $point=[SummaryPickerControls+Point]::new([int](($rect.Left+$rect.Right)/2),[int](($rect.Top+$rect.Bottom)/2))
+    $hit=[SummaryPickerControls]::WindowFromPoint($point)
+    if($hit -eq [IntPtr]::Zero -or [SummaryPickerControls]::GetAncestor((CheckedWindow $hit),2) -ne $dialogWindow){throw 'Refusing native pointer input outside the checked folder dialog'}
+    # SetForegroundWindow may be denied or activation may still be pending.
+    # A single real click on the verified visible target activates the dialog;
+    # no keyboard/edit input is permitted until actual foreground AND focus agree.
+    $null=[SummaryPickerControls]::SetCursorPos($point.X,$point.Y)
     [SummaryPickerControls]::mouse_event(2,0,0,0,[UIntPtr]::Zero)
     [SummaryPickerControls]::mouse_event(4,0,0,0,[UIntPtr]::Zero)
 }
