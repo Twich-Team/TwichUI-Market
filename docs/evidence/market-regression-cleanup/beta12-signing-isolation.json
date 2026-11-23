@@ -1,0 +1,12 @@
+{
+  "node_image": "sha256:e9f565d32859f0cbfb52125eafe8be39390f24dac302dc3cdf566e8ba3ab21ee",
+  "tauri_version": "2.12.4",
+  "network": "none",
+  "read_only_inputs": true,
+  "logging": "none; stdout/stderr redirected inside container",
+  "private_material_copied": false,
+  "github_credential_supplied": false,
+  "signer_returncode": 0,
+  "nested_node_modules_mountpoint_precreated": true,
+  "original_installer_bytes_unchanged": true
+}

@@ -1,0 +1,9 @@
+{
+  "version": "2.0.0-beta.12",
+  "stage": "Independent no-network verifier",
+  "returncode": 1,
+  "permission_error": true,
+  "cause": "Signer deliberately creates private0700/0600 public output; non-root verifier cannot read it until publication-asset permissions are set",
+  "correction": "Only signed public output directory0755/files0644; private key/passphrase remain untouched",
+  "cryptographic_verification_pass_claimed_for_failed_attempt": false
+}

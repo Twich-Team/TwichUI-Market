@@ -1,0 +1,109 @@
+{
+  "actual_trusted_https": true,
+  "synthetic": false,
+  "source_commit": "e5576c9d66e50914d4bcbbf27aad962a8c9f372f",
+  "legacy_contracts": [
+    {
+      "contract_version": 1,
+      "generation": "99e90a175c2f491c68da82c8becf8ede67fee51d4739ac97859df367906cdd24",
+      "records": 30336,
+      "parts": 64,
+      "history_parts": 0,
+      "current_bytes": 3591982,
+      "history_bytes": 0,
+      "source_observation": {
+        "observation_id": "2180",
+        "observed_at": "2026-11-23T17:06:23.248837Z",
+        "scope_complete": true
+      },
+      "observed_dates": 0,
+      "etag": "\"99e90a175c2f491c68da82c8becf8ede67fee51d4739ac97859df367906cdd24\"",
+      "schema_hash_canonical_identity_size_checks": true,
+      "authenticated_bound_304": true,
+      "conditional_status": 304,
+      "conditional_semantics_verified": true,
+      "anonymous_401_including_conditional": true,
+      "preparation_responses": 30
+    },
+    {
+      "contract_version": 2,
+      "generation": "c320d53f7663d50f5e424f688b88768edac6684180f0504f16f3d72bcea297e6",
+      "records": 30336,
+      "parts": 64,
+      "history_parts": 0,
+      "current_bytes": 9215035,
+      "history_bytes": 0,
+      "source_observation": {
+        "observation_id": "2180",
+        "observed_at": "2026-11-23T17:06:23.248837Z",
+        "scope_complete": true
+      },
+      "observed_dates": 10,
+      "etag": "\"c320d53f7663d50f5e424f688b88768edac6684180f0504f16f3d72bcea297e6\"",
+      "schema_hash_canonical_identity_size_checks": true,
+      "authenticated_bound_304": true,
+      "conditional_status": 304,
+      "conditional_semantics_verified": true,
+      "anonymous_401_including_conditional": true,
+      "preparation_responses": 0
+    },
+    {
+      "contract_version": 3,
+      "generation": "632772b667f91872d26d3b91e7fb40581675f8d8fe7776376a2753901552934f",
+      "records": 30336,
+      "parts": 64,
+      "history_parts": 64,
+      "current_bytes": 3591982,
+      "history_bytes": 9215035,
+      "source_observation": {
+        "observation_id": "2180",
+        "observed_at": "2026-11-23T17:06:23.248837Z",
+        "scope_complete": true
+      },
+      "observed_dates": 10,
+      "etag": "\"632772b667f91872d26d3b91e7fb40581675f8d8fe7776376a2753901552934f\"",
+      "schema_hash_canonical_identity_size_checks": true,
+      "authenticated_bound_304": true,
+      "conditional_status": 304,
+      "conditional_semantics_verified": true,
+      "anonymous_401_including_conditional": true,
+      "preparation_responses": 0
+    }
+  ],
+  "native_generation": "632772b667f91872d26d3b91e7fb40581675f8d8fe7776376a2753901552934f",
+  "native_source_observation": {
+    "observation_id": "2180",
+    "observed_at": "2026-11-23T17:06:23.248837Z",
+    "scope_complete": true
+  },
+  "market": {
+    "faction": "Horde",
+    "game": "wow-forever",
+    "house_id": 114,
+    "mapping_evidence_sha256": "9b638e0a304e77792d053750d8a2a20e70712a7ea92cb73bea724ba0ac800e2b",
+    "mapping_verified": true,
+    "player_ruleset": "Normal",
+    "realm_scope": "ruleset_house",
+    "region": "us",
+    "server_market_id": 2,
+    "source_kind": "auctions",
+    "transport_ruleset_id": 2
+  },
+  "exact_variants": 30336,
+  "source_parts": 128,
+  "prepared_partitions": 32,
+  "prepared_attestation_id": "f76ac54891d36bbce567bc8bdf7652342492236091155ae267d57d9214744824",
+  "history_partitions": 64,
+  "observed_dates": 10,
+  "warm": {
+    "generation": "632772b667f91872d26d3b91e7fb40581675f8d8fe7776376a2753901552934f",
+    "zero_byte_bound_304": true,
+    "request_count": 1,
+    "native_cache_mtimes_preserved": true,
+    "staging_is_not_windows_publication": true,
+    "binary_sha256": "0b8ceae847d885c74c82bd9bf94f39ad59b322c0be6963b9fc8b7b053e56c271",
+    "operator_harness_sha256": "64e3252985fcbf87dc3e3b9a62b4973faacea0276bbea946b63e50d4a1cda768"
+  },
+  "ordinary_windows_or_game_publication": false,
+  "product_guards_unchanged": true
+}

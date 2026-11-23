@@ -1,0 +1,12 @@
+{
+  "source_commit": "e5576c9d66e50914d4bcbbf27aad962a8c9f372f",
+  "runtime_source_files_exact": 34,
+  "runtime_modules_modified": false,
+  "rustc": "1.100.0",
+  "compiler_image": "sha256:7c7d4eb4d05b7781187a327809466cfddf29753f6defdc3d19a0e291951b7a37",
+  "binary_sha256": "0b8ceae847d885c74c82bd9bf94f39ad59b322c0be6963b9fc8b7b053e56c271",
+  "operator_example_sha256": "64e3252985fcbf87dc3e3b9a62b4973faacea0276bbea946b63e50d4a1cda768",
+  "download_only": true,
+  "game_installation_or_publication": false,
+  "production_invocation_yet": false
+}

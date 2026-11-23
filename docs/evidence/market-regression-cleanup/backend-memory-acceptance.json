@@ -1,0 +1,29 @@
+{
+  "at": "2026-11-23T17:16:31.981442+00:00",
+  "services": {
+    "api": {
+      "peak_bytes": 207949824,
+      "events": {
+        "low": "0",
+        "high": "0",
+        "max": "0",
+        "oom": "0",
+        "oom_kill": "0",
+        "oom_group_kill": "0"
+      },
+      "limit_mib": 384
+    },
+    "local-api": {
+      "peak_bytes": 95752192,
+      "events": {
+        "low": "0",
+        "high": "0",
+        "max": "0",
+        "oom": "0",
+        "oom_kill": "0",
+        "oom_group_kill": "0"
+      },
+      "limit_mib": 256
+    }
+  }
+}
