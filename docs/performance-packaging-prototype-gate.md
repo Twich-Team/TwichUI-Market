@@ -82,7 +82,8 @@ preserved in `evidence/prepared-integration-blockers/windows-ui-45084411116.json
 The fixture previously changed an Edit control and programmatically invoked
 the default button. Production `installation.rs:285` uses `SHBrowseForFolderW`,
 which returns the selected PIDL. The test-only correction focuses the real
-edit via scalar WM_NEXTDLGCTL, requires the checked dialog in the foreground,
+edit via scalar WM_NEXTDLGCTL, selects the old text via scalar EM_SETSEL (without
+depending on classic Edit supporting Ctrl+A), requires the dialog in the foreground,
 and types/accepts the path through real keyboard input (escaping SendKeys
 metacharacters). Additional real Windows tests switch first → second →
 invalid → first and verify the exact returned path, exit code and validation.

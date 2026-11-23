@@ -141,7 +141,9 @@ if($Action -eq 'CancelFolder') {
         if('+^%~()[]{}'.Contains([string]$character)){$null=$keys.Append('{').Append($character).Append('}')}
         else{$null=$keys.Append($character)}
     }
-    [System.Windows.Forms.SendKeys]::SendWait('^a')
+    # Classic Edit controls need not implement Ctrl+A. EM_SETSEL selects the
+    # complete old path using scalar offsets, including on repeated dialogs.
+    if([SummaryPickerControls]::SendMessageTimeoutW($window,0x00B1,[IntPtr]::Zero,[IntPtr](-1),2,3000,[ref]$result) -eq [IntPtr]::Zero){throw 'Actual native edit selection timed out'}
     [System.Windows.Forms.SendKeys]::SendWait($keys.ToString())
     [System.Windows.Forms.SendKeys]::SendWait('{ENTER}')
 }

@@ -30,7 +30,7 @@ try {
     foreach($target in @($fixture.second,$wrong,$fixture.first)) {
         BeginPicker ('replace-'+[IO.Path]::GetFileName($target));$null=& $helper -Action ChooseFolder -GamePath $target
         $chosen=ReadPicker
-        if($chosen.selected -ne $target -or $chosen.valid -ne ($target -ne $wrong)){throw 'Native picker reused a stale selection or validation'}
+        if($chosen.selected -ne $target -or $chosen.valid -ne ($target -ne $wrong)){throw ('Native picker reused a stale selection or validation: expected='+$target+' actual='+($chosen|ConvertTo-Json -Compress))}
     }
     $null=& $helper -Action Register
     $found=(& $exe discover)|ConvertFrom-Json
