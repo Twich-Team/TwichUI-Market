@@ -308,3 +308,13 @@ records,9.7% above the balanced mean. No new provider request or source generati
 was made. [Actual distribution](evidence/market-packaging-final/production-distribution.json).
 This is an observed distribution check, not a latency measurement on genuine
 production prices, and it does not establish real-client loading performance.
+
+
+The existing three-repeat native Windows regression comparison also passes
+with identical semantic values across baseline/candidate runs. Automatic
+publication is164.529→57.617seconds median; the separate full archive is
+34.758→33.561seconds. Those are actual native elapsed times including prescribed
+retry waits against a retained older algorithm baseline. They preserve earlier
+pipeline gains and **are not attributed to the25-addon physical layout**, since
+this compatibility fixture uses its pinned older addon.
+[Full Windows comparison evidence](evidence/market-packaging-final/windows-native-comparison-summary.json).

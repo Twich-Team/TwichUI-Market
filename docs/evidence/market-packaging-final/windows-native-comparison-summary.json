@@ -1,0 +1,52 @@
+{
+  "synthetic": true,
+  "production": false,
+  "physical_game": false,
+  "owner_pc": false,
+  "market_head": "dc54726c8e3af27800a4e2150a9c2820bfdccc2a",
+  "run": 45122379796,
+  "job": 137518915415,
+  "artifact_sha256": "ff5f559947849b7b5597feea4d0d79c6df7e7a663631a4643ec48903b4bcfcfe",
+  "scope": "Existing native pipeline regression comparison versus retained algorithm baseline; not the 25-addon layout speedup",
+  "modes": {
+    "archive": {
+      "variants": 26342,
+      "repetitions_per_binary": 3,
+      "exact_semantic_values_equal": true,
+      "seconds": {
+        "baseline": {
+          "median": 34.7577753,
+          "minimum": 33.596862,
+          "maximum": 38.3526803
+        },
+        "candidate": {
+          "median": 33.5611152,
+          "minimum": 33.545551,
+          "maximum": 33.817978600000004
+        }
+      }
+    },
+    "auto": {
+      "variants": 26342,
+      "repetitions_per_binary": 3,
+      "exact_semantic_values_equal": true,
+      "seconds": {
+        "baseline": {
+          "median": 164.5290263,
+          "minimum": 164.0673293,
+          "maximum": 164.9976696
+        },
+        "candidate": {
+          "median": 57.6166323,
+          "minimum": 57.2703159,
+          "maximum": 57.8403208
+        }
+      }
+    }
+  },
+  "full_receipt": {
+    "path": "windows-native-comparison.json.gz",
+    "raw_sha256": "466f2d8ed5a08df46b403e15047c2b8f190212885c251c27b26fa945a74c9329",
+    "gzip_sha256": "f10fe67f2fac7aaae200cc62a86982478d695d343c66ba24fe7b32d9159c0106"
+  }
+}
