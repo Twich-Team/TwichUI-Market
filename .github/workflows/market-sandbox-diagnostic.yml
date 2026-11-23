@@ -40,7 +40,7 @@ jobs:
               test "$(id -u)" -ne 0
               mount -t tmpfs -o size=1m,mode=0755 tmpfs /mnt
               mkdir /mnt/c
-              exec "$@"
+              exec setpriv --inh-caps=-all --ambient-caps=-all -- "$@"
             ' sh "${command[@]}" > "$deps/actual-sandbox.log" 2>&1
           else
             "${command[@]}" > "$deps/actual-sandbox.log" 2>&1
