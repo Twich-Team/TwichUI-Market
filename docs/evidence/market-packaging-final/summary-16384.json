@@ -791,5 +791,11 @@
         }
       }
     }
+  },
+  "full_receipt": {
+    "filename": "session-16384.json.gz",
+    "uncompressed_sha256": "ae4cf05973bb0a6edec65c14bb2bfc6ec2a122c0dd60fba59eaa1d3787b64340",
+    "uncompressed_bytes": 4133431,
+    "gzip_sha256": "62ba808bf8de40220ac3d5dd8f4819a59858be9fcc4ebd3ffbc444f83968bece"
   }
 }
