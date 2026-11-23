@@ -230,3 +230,11 @@ The production-health gate is now satisfied. Coordinated PRs46–50/131/136 rema
 unmerged and no prepared backend/private Companion update is deployed: required
 full simulator verification remains blocked by the actual sandbox isolation
 failure. That independent gate is not waived by production recovery.
+
+
+The next ordinary scheduled cycle also succeeds at **08:15:47.245915 UTC**:
+HTTP304 for both validated feeds, observation2075 reuses complete snapshot181,
+all feed/market failure counts remain zero, retry/error remain null, and worker
+still has no restart/OOM. The verifier makes no provider requests and does not
+change the300-second loop. [Normal follow-up receipt](evidence/house114-collection/normal-followup-collection.json).
+Production recovery is confirmed across two consecutive scheduled cycles.
