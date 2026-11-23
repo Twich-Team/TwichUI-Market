@@ -50,6 +50,8 @@ def main():
     p.add_argument('--native-codec', type=Path, required=True)
     p.add_argument('--out', type=Path, required=True)
     p.add_argument('--reps', type=int, default=30)
+    p.add_argument('--records', type=int, choices=[16384, 35116], default=16384,
+                   help='Original comparable fixture or observed production cardinality; both synthetic')
     p.add_argument('--recipes', type=int, nargs='+', default=[120, 1000, 5000])
     p.add_argument('--view', choices=['session', 'ui'], default='session')
     p.add_argument('--scenario', choices=['none', 'reopen'], default='none')
@@ -83,7 +85,7 @@ def main():
     save()
     with tempfile.TemporaryDirectory(prefix='prepared-campaign-') as directory:
         temp = Path(directory)
-        build(ROOT, temp / 'fixture', 16384, 60, 'mixed', counts=())
+        build(ROOT, temp / 'fixture', a.records, 60, 'mixed', counts=())
         source = temp / 'fixture/upstream.json'
         value = json.loads(source.read_bytes())
         h = value['manifest']
