@@ -21,6 +21,13 @@ jobs:
             if [ -r "$entry" ]; then echo "$entry"; cat "$entry"; fi
           done
           awk '/^(Uid|Cap|Seccomp|NoNewPrivs)/' /proc/self/status
+          if [ -x /usr/bin/bwrap ]; then
+            echo 'SYSTEM_BWRAP_PRESENT'
+            ls -l /usr/bin/bwrap
+            if [ -r /etc/apparmor.d/bwrap ]; then cat /etc/apparmor.d/bwrap; fi
+          else
+            echo 'SYSTEM_BWRAP_ABSENT'
+          fi
           unshare -U sh -c 'cat /proc/self/attr/current' || true
           deps="$RUNNER_TEMP/market-sandbox-diagnostic"
           mkdir -p "$deps/downloads" "$deps/root"
