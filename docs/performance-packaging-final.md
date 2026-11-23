@@ -347,3 +347,17 @@ The85 native core checks were also certified against clean immutable source
 0d510c5, with unchanged source hashes; the two ignored drivers are separately
 executed by the publication acceptance. Later pin/diagnostics updates change
 none of those Rust files. [Exact native unit receipt](evidence/market-packaging-final/final-native-core.json).
+
+
+## Diagnostics enumeration correction
+
+Final review found the existing in-game diagnostics aggregate still enumerated
+two current containers per bank. It now includes all eight for memory totals
+and addon/error attribution, with unchanged four history slots, sampler interval
+and per-call CPU scopes. Boundary tests include current07 in both banks and
+exclude current08/history04; the new test fails on the original domain and
+passes on the correction. All four focused diagnostics modules and Lua syntax
+pass. Offline benchmark heap measurements already included all allocations
+and do not change. No pricing, codec, loader, scheduler or publication logic
+changes. The final exact addon pin is now
+**daa674f58b33dc1640cf17f0ef9af8a8778fe702**; immutable paired CI runs again.
