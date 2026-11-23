@@ -38,9 +38,10 @@ def stream(text, pos):
     return b''.join(out), pos + 2
 
 
-def read(addons, bank, generation):
+def read(addons, bank, generation, current_containers=2):
+    need(current_containers in (2, 4, 8), 'permitted physical current layout')
     result = {}
-    for kind, groups in [('Current', 2), ('History', 4)]:
+    for kind, groups in [('Current', current_containers), ('History', 4)]:
         records = {}; result[kind] = records
         g = 'TwichUIMarketCompressed' + kind
         for group in range(groups):
@@ -54,7 +55,8 @@ def read(addons, bank, generation):
             while pos < len(text):
                 m = re.match(re.escape(g) + r'\["([AB])([0-9]{2})"\] = \{ version = 1, generation = (' + LITERAL + r'), content_id = (' + LITERAL + r'), data = ', text[pos:])
                 need(m, 'container part syntax')
-                bucket = int(m[2]); need(m[1] == bank and bucket // 16 == group and bucket not in records, 'container mapping')
+                width = 64 // groups if kind == 'History' else 32 // groups
+                bucket = int(m[2]); need(m[1] == bank and bucket // width == group and bucket not in records, 'container mapping')
                 need(literal(m[3]) == generation, 'container generation')
                 pos += m.end(); data, pos = stream(text, pos)
                 proofs = None

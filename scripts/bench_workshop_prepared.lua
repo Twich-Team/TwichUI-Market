@@ -4,6 +4,7 @@ local function read(path)local f=assert(io.open(path,'rb'));local v=f:read('*a')
 local function clock()return os.clock()*1000 end
 function X.setup(client)
     c=client;W=c.TwichUI.Workshop;J,B,P,Q=W.BridgeCodec,W.Bridge,W.Pricing,W.Summary
+    local loadSamples={};X.loadSamples=loadSamples
     cfg=J.Parse(read(assert(arg[12])));if type(cfg.native_codec)=='string'then c.C_EncodingUtil=assert(package.loadlib(cfg.native_codec,'luaopen_market_codec_offline'))();c.Enum={CompressionMethod={Deflate=0}}end;stats={loads=0,history_loads=0,compile_ms=0,execute_ms=0,source_bytes=0,worst_load_ms=0,load_peak_kib=0}
     local at=clock();local source=read(cfg.publication..'/TwichUI_MarketData/Data.lua')
     local began=clock();local root=assert(loadstring(source,'@TwichUI_MarketData/Data.lua'));setfenv(root,c);stats.root_compile_ms=clock()-began
@@ -20,12 +21,14 @@ function X.setup(client)
     local _,at=W.BridgeValidate.Time(h.generated_at);c.time=function()return at+60 end
     c.C_AddOns.LoadAddOn=function(name)
         assert(name:match('^TwichUI_MarketPart[AB]%d%d$')or name:match('^TwichUI_MarketCurrentPart[AB]%d%d$')or name:match('^TwichUI_MarketHistoryPart[AB]%d%d$')or name:match('^TwichUI_MarketCurrentContainer[AB]%d%d$')or name:match('^TwichUI_MarketHistoryContainer[AB]%d%d$'))
-        local began=clock();local source=read(cfg.publication..'/'..name..'/Data.lua')
-        local at=clock();local fn=assert(loadstring(source,'@'..name..'/Data.lua'));setfenv(fn,c);stats.compile_ms=stats.compile_ms+clock()-at
-        at=clock();fn();stats.execute_ms=stats.execute_ms+clock()-at
+        local before=collectgarbage('count');local began=clock();local source=read(cfg.publication..'/'..name..'/Data.lua');local readMS=clock()-began
+        local at=clock();local fn=assert(loadstring(source,'@'..name..'/Data.lua'));setfenv(fn,c);local compileMS=clock()-at;stats.compile_ms=stats.compile_ms+compileMS
+        at=clock();fn();local executeMS=clock()-at;stats.execute_ms=stats.execute_ms+executeMS
         stats.loads=stats.loads+1;stats.source_bytes=stats.source_bytes+#source
         if name:find('History',1,true)then stats.history_loads=stats.history_loads+1 end
-        stats.worst_load_ms=math.max(stats.worst_load_ms,clock()-began);stats.load_peak_kib=math.max(stats.load_peak_kib,collectgarbage('count'))
+        local duration=clock()-began;local after=collectgarbage('count')
+        stats.worst_load_ms=math.max(stats.worst_load_ms,duration);stats.load_peak_kib=math.max(stats.load_peak_kib,after)
+        loadSamples[#loadSamples+1]={name=name,total_ms=duration,read_ms=readMS,compile_ms=compileMS,execute_ms=executeMS,bytes=#source,heap_before_kib=before,heap_after_kib=after}
         return true
     end
     local semantic={};for _,p in ipairs(h.partitions)do semantic[#semantic+1]=p.bucket..':'..p.sha256 end
@@ -85,6 +88,14 @@ function X.finish(out,event)
         end
         local at=clock();local loads=stats.loads;B.History(1001,P.BaseKey(1001),'recent',{days=60})
         out.history_warm_ms=clock()-at;out.history_warm_loads=stats.loads-loads
+    end
+    -- The production JSON encoder deliberately accepts integer numbers only.
+    -- Preserve fractional observations as decimal strings in this test receipt.
+    out.physical_load_samples=J.Array()
+    for _,sample in ipairs(X.loadSamples)do
+        local row=J.Object()
+        for key,value in pairs(sample)do row[key]=type(value)=='number'and ('%.6f'):format(value)or value end
+        out.physical_load_samples[#out.physical_load_samples+1]=row
     end
 end
 return X
