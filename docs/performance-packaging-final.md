@@ -298,3 +298,13 @@ through ee412088; container136 retains that reader through cfc41d8. Its tree
 exactly matches already verified preview121434c3. Market runtime and benchmark
 inputs are unchanged. New head checks still run; required gates are not waived
 on the basis of tree equality. [Precise identities](evidence/market-packaging-final/verification-checkpoint.json).
+
+
+A bounded read-only check of the existing35,116-record production manifest
+also verifies that the fixture's scale is relevant: its largest logical current
+partition has1,290 records (below the same2,048-leaf proof-tree boundary as the
+larger synthetic campaign), and the largest four-bucket physical group has4,817
+records,9.7% above the balanced mean. No new provider request or source generation
+was made. [Actual distribution](evidence/market-packaging-final/production-distribution.json).
+This is an observed distribution check, not a latency measurement on genuine
+production prices, and it does not establish real-client loading performance.

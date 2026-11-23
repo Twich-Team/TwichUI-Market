@@ -1,0 +1,65 @@
+{
+  "source": "read-only existing production cached Contract 3 manifest; no provider request",
+  "queried_at": "2026-11-23T06:42Z",
+  "generation_id": "495732aa471f950231b4ab5de3a5ec82b51729348347e75081a52932e955fd5a",
+  "record_count": 35116,
+  "original_current_buckets": 64,
+  "prepared32_counts": [
+    1115,
+    1126,
+    1037,
+    1103,
+    1056,
+    947,
+    1188,
+    1079,
+    1232,
+    1171,
+    1290,
+    1124,
+    1109,
+    1012,
+    1030,
+    1050,
+    1031,
+    1097,
+    1147,
+    1048,
+    1062,
+    929,
+    1063,
+    1205,
+    984,
+    1197,
+    990,
+    1076,
+    1084,
+    1250,
+    1079,
+    1205
+  ],
+  "physical_current_records": {
+    "2": [
+      17669,
+      17447
+    ],
+    "4": [
+      8651,
+      9018,
+      8582,
+      8865
+    ],
+    "8": [
+      4381,
+      4270,
+      4817,
+      4201,
+      4323,
+      4259,
+      4247,
+      4618
+    ]
+  },
+  "maximum_logical_current_records": 1290,
+  "latency_measured_on_this_source": false
+}
