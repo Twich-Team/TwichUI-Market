@@ -177,8 +177,32 @@ const {createHash}=require('node:crypto');const fs=require('node:fs');const path
     await expect.poll(async()=>(await invoke('app_state')).delivery.status?.result,{timeout:60000}).toContain('unchanged');
     expect(fs.statSync(delivered).mtimeMs).toBe(mtime);expect(createHash('sha256').update(fs.readFileSync(delivered)).digest('hex')).toBe(deliveredHash);
     await page.screenshot({path:path.join(shots,'installed-m2-delivery.png'),fullPage:true});
-    await expect.poll(async()=>(await invoke('app_state')).sync.sync.running,{timeout:60000}).toBe(false);await page.locator('#delivery-disable').click();
-    await expect.poll(async()=>(await invoke('app_state')).delivery.configuration.enabled).toBe(false);
+    await expect.poll(async()=>(await invoke('app_state')).sync.sync.running,{timeout:60000}).toBe(false);
+    // Observe the genuine UI click and native result without changing either the
+    // input path or the original assertion/deadline. Keep failed-run evidence.
+    await page.evaluate(()=>{
+      window.__disableDeliveryTrace=[];
+      for(const type of ['pointerdown','pointerup','click'])document.addEventListener(type,event=>{
+        if(event.target.closest?.('#delivery-disable'))window.__disableDeliveryTrace.push({type,trusted:event.isTrusted,
+          disabled:document.getElementById('delivery-disable').disabled,deliveryBusy,archiveBusy,running:view?.sync?.sync?.running});
+      },true);
+    });
+    let disableVerified=false;
+    try{
+      await page.locator('#delivery-disable').click();
+      await expect.poll(async()=>(await invoke('app_state')).delivery.configuration.enabled).toBe(false);
+      disableVerified=true;
+    }finally{
+      const ui=await page.evaluate(()=>({events:window.__disableDeliveryTrace,message:document.getElementById('message').textContent,
+        error:document.getElementById('message').classList.contains('error'),deliveryBusy,archiveBusy,
+        disabled:document.getElementById('delivery-disable').disabled,running:view?.sync?.sync?.running}));
+      const native=await invoke('app_state');
+      const receipt={fixture:true,source_commit:sourceCommit,verified:disableVerified,ui,
+        native:{enabled:native.delivery?.configuration?.enabled,running:native.sync.sync.running,phase:native.sync.sync.phase}};
+      fs.writeFileSync(path.join(shots,'installed-disable-delivery.json'),JSON.stringify(receipt,null,2));
+      console.log('Disable delivery evidence: '+JSON.stringify(receipt));
+      if(!disableVerified)await page.screenshot({path:path.join(shots,'installed-disable-delivery-failure.png'),fullPage:true});
+    }
     fs.writeFileSync(path.join(shots,'installed-m2-delivery.json'),JSON.stringify({fixture:true,source_commit:sourceCommit,status:automatic.status,no_op_mtime_preserved:true,delivery_disabled:true,real_game:false},null,2));
     await page.locator('#disconnect').click();await expect.poll(async()=>(await invoke('app_state')).mode,{timeout:20000}).toBe('disconnected');
     expect((await invoke('app_state')).cache.item_count).toBe(2);

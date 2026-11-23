@@ -71,6 +71,17 @@
       "job": 137461324518,
       "reason": "process guard rejected pointer target; no pointer/text input was sent to a foreign window",
       "accepted_as_pass": false
+    },
+    {
+      "kind": "final installed native application",
+      "head": "acb6b0a9677c677bf30db1d37ae7bf4833f9d0da",
+      "run": 45105276740,
+      "job": 137465013314,
+      "reason": "installed application legacy delivery remained enabled after genuine Disable delivery click; original five-second assertion failed",
+      "artifact": 14787980131,
+      "artifact_sha256": "f4de94cc9043e07cd7dd95365b015a5770e65cbaf230f39faa1c3577c4b541a4",
+      "accepted_as_pass": false,
+      "resolution": "unresolved; scoped test observation added without changing click or assertion to distinguish UI input, command error and native state"
     }
   ],
   "final_market_checks": "Authoritative final-head results are linked from draft PR50 after its final verification; no pending or skipped dependent check is declared passing here.",
