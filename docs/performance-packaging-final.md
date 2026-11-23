@@ -257,6 +257,20 @@ host policy or assertion was removed. The diagnostic-only branch is not part
 of the release. Full simulator execution therefore remains blocked.
 
 
+## Current addon ancestry pin
+
+All nine Market checks pass at dc54726 (PostgreSQL, website, Windows install,
+picker, signed updater, both native publication/consumers and repeated Windows
+comparison). Addon main independently advanced through approved Execute Range
+PR137 to364c4c2. Reader131 now preserves that main at ee412088; containers136
+preserves that reader at **cfc41d8b47d51c1be329aa3c46b994b70a742cf1**. The
+container tree equals already verified preview121434c3; no Workshop runtime or
+benchmark input changed. The exact native publisher/consumer pin is updated
+to cfc41d8; final checks run again against that immutable source pair. Full
+simulator execution remains blocked by the actual sandbox error, and the
+production-health gate still waits for the unchanged natural auction retry.
+
+
 ## Final verification checkpoint and retained inputs
 
 Both exact frozen upstream fixture files were reconstructed independently and
