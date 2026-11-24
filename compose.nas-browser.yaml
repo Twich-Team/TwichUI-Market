@@ -25,7 +25,6 @@ services:
       BACKUP_MANAGER_TOKEN_FILE: /run/secrets/backup-manager-token
       PYTHONPATH: /app
       COMPANION_PRIVATE_BETA_DIRECTORY: /tmp/companion-private-beta-fixtures/incoming-2.0.0-beta.1
-      COMPANION_PRIVATE_BETA_USER_IDS: "10001"
       COMPANION_UPDATER_PUBLIC_KEY: synthetic-only-updater-public-key
     volumes: [./backend/market:/app/market:ro, ./artifacts/backup-nas/browser-token:/run/secrets/backup-manager-token:ro]
     tmpfs: [/tmp:size=32m]
