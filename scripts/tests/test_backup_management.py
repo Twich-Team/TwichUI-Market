@@ -117,6 +117,10 @@ class Backups(unittest.TestCase):
         self.assertEqual(self.manager._inventory_by_storage[nas]['count'],1)
         self.assertEqual(self.manager._inventory_by_storage['local']['count'],1)
         self.assertEqual(self.manager._inventory_by_storage[nas]['bytes'],self.manager._inventory_by_storage['local']['bytes'])
+        with patch.object(self.manager,'rows_current',return_value=([dict(entries[0],bytes=None)],[])):
+            self.manager.rows()
+        self.assertEqual(self.manager._inventory_by_storage['local']['count'],1)
+        self.assertIsNone(self.manager._inventory_by_storage['local']['bytes'])
 
     def test_keep_two_preview_and_rotation_deletes_only_a(self):
         a=self.archive('A','2026-11-01T00:00:00+00:00')
