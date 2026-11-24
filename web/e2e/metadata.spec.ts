@@ -51,7 +51,8 @@ test("administrator recovery, persistent jobs and data-source forms use local AP
   await page.screenshot({ path: `${directory}/03-batch-preview.png`, fullPage: true });
   await page.getByRole("link", { name: "Data Sources", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Data Sources", exact: true })).toBeVisible();
-  await expect(page.getByText(/Access forbidden/).first()).toBeVisible();
+  await page.getByText("Provider evidence",{exact:true}).click();
+  await expect(page.getByRole("table",{name:"provider health"}).getByText("Access forbidden",{exact:true})).toBeVisible();
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: `${directory}/05-data-sources.png`, fullPage: true });
   await expect(page.getByText("Edit settings",{exact:true})).toHaveCount(4);

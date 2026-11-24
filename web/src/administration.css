@@ -33,3 +33,22 @@
   .mobile-admin-section select { font-size: 16px; }
   .admin-log-filters { grid-template-columns: minmax(0,1fr); }
 }
+
+main:has(.mobile-admin-section) button:where(:not([class])),
+main:has(.account-task-nav) button:where(:not([class])) {
+  -webkit-appearance: none;
+  appearance: none;
+  border: 1px solid #826747;
+  border-radius: 4px;
+  background: #392b20;
+  color: #f0dfc2;
+  padding: .5rem .75rem;
+}
+main .admin-view-switch button[aria-pressed=true]:not(.primary) {
+  border-color: #c8a35e;
+  background: #4d3825;
+}
+@media (max-width: 760px) {
+  main:has(.mobile-admin-section) button:where(:not([class])),
+  main:has(.account-task-nav) button:where(:not([class])) { min-height: 44px; }
+}

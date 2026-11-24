@@ -8,7 +8,7 @@ test('automatic retention: exact authorization gates, real dry run and responsiv
   await page.getByRole('button',{name:'Sign in',exact:true}).click();
   await expect(page.getByRole('heading',{name:'Market Explorer',exact:true})).toBeVisible();
   await page.goto('/administration');
-  await page.getByRole('button',{name:'Storage & backups ↗',exact:true}).click();
+  await page.getByRole('link',{name:'Storage & Backups',exact:true}).click();
   await page.getByRole('navigation',{name:'Storage & Backups pages'}).getByRole('link',{name:'Maintenance',exact:true}).click();
   await page.getByText('Advanced database & legacy diagnostics',{exact:true}).click();
   const capacity=page.getByRole('region',{name:'Storage safeguards',exact:true});
@@ -38,7 +38,7 @@ test('automatic retention: enabled maintenance does not inherit obsolete legacy 
   });
   await page.goto('/');await page.getByLabel('Username',{exact:true}).fill('owner');await page.getByLabel('Password',{exact:true}).fill('synthetic browser owner password');await page.getByRole('button',{name:'Sign in',exact:true}).click();
   await expect(page.getByRole('heading',{name:'Market Explorer',exact:true})).toBeVisible();
-  await page.goto('/administration');await page.getByRole('button',{name:'Storage & backups ↗',exact:true}).click();
+  await page.goto('/administration');await page.getByRole('link',{name:'Storage & Backups',exact:true}).click();
   await page.getByRole('navigation',{name:'Storage & Backups pages'}).getByRole('link',{name:'Maintenance',exact:true}).click();
   await page.getByRole('button',{name:'Edit Retention Policy',exact:true}).click();
   await expect(page.getByRole('button',{name:'Pause automatic maintenance',exact:true})).toBeEnabled();
