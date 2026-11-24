@@ -56,8 +56,9 @@ class StorageConfiguration:
             health = self.get(db, 'storage_health', {})
             job = self.get(db, 'migration', {})
             restore = self.get(db,'restore',{})
+            recovery = self.get(db,'automatic_recovery',{})
         return dict(active_id=active, destinations=[self.public(c) for c in configs.values()], health=health, migration={**job,'plan':{k:v for k,v in job.get('plan',{}).items() if k!='items'}},restore=restore,restore_available=os.environ.get('BACKUP_RESTORE_TEST_ENABLED')=='true',
-            share_enumeration_supported=False,
+            automatic_recovery=recovery,automatic_restore_enabled=os.environ.get('BACKUP_AUTOMATIC_RESTORE')=='true',share_enumeration_supported=False,
             share_notice='This native SMB client does not enumerate server shares. Enter a known share; folders can then be browsed.',
             mounted_notice='Mounted filesystem uses the installation’s existing persistent backup directory. Native SMB needs no host mount.')
 
@@ -119,10 +120,18 @@ class StorageConfiguration:
         if key not in configs: raise Refused('Unknown storage destination')
         return configs[key]
 
+    def throttle(self,db,actor,category,limit):
+        from management import Refused
+        key='storage_attempts:'+str(actor)+':'+category
+        recent=[t for t in self.get(db,key,[]) if t>time.time()-60]
+        if len(recent)>=limit:raise Refused('Too many storage operations; wait one minute before retrying')
+        self.set(db,key,[*recent,time.time()]);db.commit()
+
     def storage_test(self, actor, key):
         from management import stamp
         with self.lock(), self.db() as db:
             self.idle(db)
+            self.throttle(db,actor,'connection',10)
             config=self.candidate(key)
             self._operation_deadline=time.monotonic()+20
             report=dict(id=key,revision=config['revision'],tested_at=stamp(),reachable=False,authenticated=False,share_accessible=False,
@@ -173,6 +182,7 @@ class StorageConfiguration:
         # Browser starts at the selected share, not a general remote filesystem.
         with self.lock(), self.db() as db:
             self.idle(db)
+            self.throttle(db,actor,'browse',60)
             browse_config={**config,'directory':''}
             store=SMB(browse_config,self.password(config),deadline=time.monotonic()+20)
             try:
@@ -189,6 +199,7 @@ class StorageConfiguration:
         relative(directory)
         with self.lock(), self.db() as db:
             self.idle(db)
+            self.throttle(db,actor,'browse',60)
             store=SMB({**config,'directory':''},self.password(config),deadline=time.monotonic()+20)
             try:store.mkdir(directory)
             finally:store.close()
@@ -215,7 +226,7 @@ class StorageConfiguration:
                 capacity=destination.capacity()
             total=sum(r['bytes'] for r in rows)
             return dict(source_id=active,destination_id=key,source_revision=configs[active]['revision'],destination_revision=configs[key]['revision'],
-                count=len(rows),bytes=total,available_bytes=capacity['available_bytes'],
+                count=len(rows),bytes=total,protected_count=sum(r['protected'] for r in rows),available_bytes=capacity['available_bytes'],
                 enough_space=capacity['available_bytes'] is None or capacity['available_bytes']>=total+2*1024**3,
                 originals_preserved=True,items=[dict(id=r['id'],filename=r['filename'],sha256=r['sha256'],bytes=r['bytes']) for r in rows])
 
@@ -299,7 +310,7 @@ class StorageConfiguration:
     def provider_for(self,key):
         with self.location(key) as store:return store
 
-    def migration_remove_originals(self,actor,job_id,confirmation):
+    def migration_remove_originals(self,actor,job_id,confirmation,*,confirm_protected=False):
         from management import Refused
         if confirmation!='REMOVE VERIFIED ORIGINALS':raise Refused('Type REMOVE VERIFIED ORIGINALS to confirm')
         with self.lock(),self.db() as db:
@@ -309,6 +320,8 @@ class StorageConfiguration:
             plan=job['plan'];configs,active=self.configs()
             if active!=plan['destination_id']:raise Refused('Migrated destination is no longer active')
             source=self.provider_for(plan['source_id']);destination=self.provider_for(active)
+            if plan.get('protected_count',0) and not confirm_protected:
+                raise Refused('Explicit protected original-copy deletion acknowledgement is required')
             results=[]
             # Revalidate every target before deleting ANY original. A disconnect cannot become an empty inventory.
             for row in plan['items']:
@@ -319,6 +332,7 @@ class StorageConfiguration:
                     if digest(source,name)!=row['sha256']:raise Refused('Original changed; retained')
                     with self.location(plan['source_id']):manifest=self.read_json(name[:-5]+'.json')
                     if manifest.get('required_by'):raise Refused('Original is still required by an active recovery operation')
+                    if manifest.get('protected') and not confirm_protected:raise Refused('Original became protected; explicit acknowledgement is required')
                     self.receipt(db,actor,'migration.original.deletion.intent',dict(job_id=job_id,filename=name));db.commit()
                     source.remove(name);source.remove(name[:-5]+'.json')
                     results.append(dict(filename=name,status='deleted'))

@@ -1,0 +1,50 @@
+# Additive private service. Never replaces or restores over the production db.
+services:
+  backup-restore:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: market_test
+      POSTGRES_USER: market
+      POSTGRES_PASSWORD_FILE: /run/secrets/backup-restore-password
+    secrets: [backup-restore-password]
+    volumes: [backup-restore-data:/var/lib/postgresql/data]
+    networks: [backup-control]
+    command: [postgres, -c, max_wal_size=256MB, -c, min_wal_size=64MB, -c, shared_buffers=64MB, -c, max_connections=10, -c, autovacuum_max_workers=1]
+    mem_limit: 512m
+    cpus: 0.25
+    pids_limit: 64
+    restart: unless-stopped
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    # PostgreSQL's initial data-directory setup needs these capabilities inside
+    # the already rootless namespace, never host privileges.
+    cap_add: [CHOWN, FOWNER, DAC_OVERRIDE, SETGID, SETUID]
+    shm_size: 64mb
+    healthcheck: {test: [CMD, pg_isready, -U, market, -d, market_test], interval: 5s, timeout: 3s, retries: 30}
+    logging: {driver: json-file, options: {max-size: "2m", max-file: "2"}}
+  backup-manager:
+    environment:
+      BACKUP_RESTORE_TEST_ENABLED: "true"
+      BACKUP_AUTOMATIC_RESTORE: "true"
+      RESTORE_PGHOST: backup-restore
+      RESTORE_PGUSER: market
+      RESTORE_PGPASSWORD_FILE: /run/secrets/backup-restore-password
+      RESTORE_FILESYSTEM_PATH: /restore-filesystem
+      RESTORE_MAX_DATABASE_BYTES: "34359738368"
+      RESTORE_MIN_FREE_BYTES: "34359738368"
+      BACKUP_RECOVERY_DIRECTORY: /retention-recovery
+      BACKUP_STATUS_DIRECTORY: /backup-status
+      RETENTION_LOCAL_RECOVERY_APPROVAL: owner-20261118-retention-local-only
+    secrets: [backup-manager-token, backup-restore-password]
+    volumes:
+      - backup-restore-data:/restore-filesystem:ro
+      - ${MARKET_RECOVERY_DIRECTORY:?Set the existing retention recovery directory}:/retention-recovery
+      - ${MARKET_BACKUP_STATUS_DIRECTORY:?Set the existing backup status directory}:/backup-status
+secrets:
+  backup-restore-password:
+    file: ${MARKET_RESTORE_PASSWORD_FILE:?Set the private restore password file}
+volumes:
+  backup-restore-data:
+networks:
+  backup-control:
+    internal: true

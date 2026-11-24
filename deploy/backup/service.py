@@ -103,7 +103,7 @@ class Handler(BaseHTTPRequestHandler):
                 threading.Thread(target=run_background,args=(manager,actor,job['id'],'migration'),daemon=True).start()
                 self.reply(202,job)
             elif url.path == '/storage/remove-originals' and self.command == 'POST':
-                self.reply(200,manager.migration_remove_originals(actor,body['id'],body['confirmation']))
+                self.reply(200,manager.migration_remove_originals(actor,body['id'],body['confirmation'],confirm_protected=body.get('confirm_protected') is True))
             elif url.path == '/delete-selected' and self.command == 'POST':
                 job=manager.deletion_queue(actor,body['items'])
                 threading.Thread(target=run_background,args=(manager,actor,job['id'],'deletion'),daemon=True).start()
@@ -136,6 +136,7 @@ class Handler(BaseHTTPRequestHandler):
                     with manager.download(actor, key) as (row, stream):
                         if action == 'manifest':
                             manifest = manager.read_json(row['filename'][:-5]+'.json')
+                            manifest=dict(manifest,explicitly_protected=manifest['protected'],protected=manifest['protected'] or manifest.get('recovery_pin') is True)
                             self.reply(200, manifest)
                         else:
                             self.send_response(200)
@@ -234,6 +235,8 @@ def main():
         while not stopped.wait(15):
             try:
                 tick(manager)
+                from recovery import automatic_tick
+                automatic_tick(manager)
             except Refused:
                 pass
             except Exception:

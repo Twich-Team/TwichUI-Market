@@ -199,3 +199,22 @@ def test_raw_deletion_refuses_missing_or_incomplete_aggregation(database):
         row.listing_count=0;db.flush()
         with pytest.raises(HTTPException):verify_statistics(db,[snapshot])
         assert db.scalar(select(func.count()).select_from(Listing).where(Listing.snapshot_id==snapshot))==1
+
+
+def test_raw_aggregation_proof_covers_prices_and_survives_partial_batches(database):
+    from market.compaction_safety import verify_statistics
+    from fastapi import HTTPException
+    from market.models import SecurityEvent
+    import pytest
+    seed(database)
+    with database.begin() as db:
+        row=db.scalar(select(SnapshotStatistic));snapshot=row.snapshot_id
+        row.recent_price+=1;db.flush()
+        with pytest.raises(HTTPException):verify_statistics(db,[snapshot])
+        row.recent_price-=1;db.flush()
+        verify_statistics(db,[snapshot]);db.flush()
+        assert db.scalar(select(SecurityEvent).where(SecurityEvent.action=='retention.aggregate.verified'))
+        listing=db.scalar(select(Listing).where(Listing.snapshot_id==snapshot));db.delete(listing);db.flush()
+        verify_statistics(db,[snapshot]) # proof lets interrupted raw pruning resume
+        row.supply+=1;db.flush()
+        with pytest.raises(HTTPException):verify_statistics(db,[snapshot])

@@ -97,6 +97,25 @@ try:
     result=manager.delete('admin:1',newest['id'],newest['filename'],confirm_protected=True,confirm_recovery_loss=True)
     assert result['status']=='deleted',result
     passed('Protected/newest/last-restored deletion requires explicit acknowledgement; metadata audited without unprotecting')
+    from recovery import automatic_tick
+    Path('/state/recovery').mkdir();Path('/state/status').mkdir()
+    os.environ['BACKUP_AUTOMATIC_RESTORE']='true'
+    assert automatic_tick(manager)
+    proof=json.loads(Path('/state/recovery/evidence.json').read_text())
+    assert proof['sha256']==initial['sha256'] and proof['expires_at'] and proof['automatic']
+    scheduled=manager.create('scheduler',origin='scheduled');assert scheduled['status']=='succeeded'
+    assert automatic_tick(manager)
+    first_scheduled=manager.overview()['items'][0]
+    assert first_scheduled['protected'] and 'automatic-retention' in first_scheduled['required_by']
+    assert manager.create('scheduler',origin='scheduled')['status']=='succeeded'
+    assert automatic_tick(manager)
+    status=manager.overview()
+    old=next(r for r in status['items'] if r['id']==first_scheduled['id'])
+    assert not old['protected'] and not old['required_by']
+    original=next(r for r in status['items'] if r['filename']==initial['filename'])
+    assert original['protected'], 'Explicit manual protection must never be cleared'
+    assert status['preview']['candidates']==[dict(id=old['id'],filename=old['filename'],bytes=old['bytes'])]
+    passed('Recurring actual isolated restore renews expiring evidence and safely transfers operation pins without clearing explicit protection')
     with manager.lock():
         store=manager.store
         large='.stream-test-'+uuid.uuid4().hex
@@ -118,7 +137,7 @@ try:
         except (StorageError,OSError):pass
     assert manager.overview()['total']>=1
     passed('Actual disconnected SMB transport fails safely and a fresh session reconnects')
-    removal=manager.migration_remove_originals('admin:1',migrated['id'],'REMOVE VERIFIED ORIGINALS')
+    removal=manager.migration_remove_originals('admin:1',migrated['id'],'REMOVE VERIFIED ORIGINALS',confirm_protected=True)
     assert removal['results'][0]['status']=='deleted',removal
     passed('Originals removed only through separate confirmation after rehashing NAS destination')
     print(json.dumps(dict(synthetic=True,protocol='actual SMB3 with required encryption/signing',checks=checks),indent=2))

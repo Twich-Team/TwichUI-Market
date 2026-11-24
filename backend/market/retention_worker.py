@@ -36,7 +36,9 @@ def recovery_policy():
 
 
 # A changed scope/version invalidates prior automatic authorization.
-SCOPE = {'version': 1, 'stages': ['daily_references','observations','raw_listings',
+SCOPE = {'version': 1, 'aggregation_guard_sha256':hashlib.sha256(Path(__file__).with_name('compaction_safety.py').read_bytes()).hexdigest(),
+    'resource_guard_sha256':hashlib.sha256(Path(__file__).with_name('maintenance_resources.py').read_bytes()).hexdigest(),
+    'production_health_guard':os.environ.get('RETENTION_PRODUCTION_HEALTH_GUARD')=='true', 'stages': ['daily_references','observations','raw_listings',
     'raw_feed_payloads','intraday_statistics','collection_logs','feed_checks','security_logs'],
     'daily_support_days':60, 'current_heads':'all markets including disabled',
     'shared_snapshots':'protect all retained observation dependencies',
@@ -235,6 +237,13 @@ def _work(factory, at, clock):
         else:
             # Recovery hashing has its own bounded 30-second HTTP deadline and
             # holds no collector lock. Give deletion work its reviewed budget.
+            from .maintenance_resources import health_reason,database_reason
+            unavailable=health_reason()
+            if unavailable:
+                with factory.begin() as health_db:
+                    pending=health_db.get(RetentionExecution,receipt_id)
+                    pending.status='paused';pending.reason=unavailable;pending.finished_at=now()
+                return {'status':'paused','reason':unavailable,'batches':0,'rows_processed':0}
             started=clock()
             for _ in range(limits.max_batches):
                 remaining=limits.max_seconds-(clock()-started)
@@ -253,6 +262,9 @@ def _work(factory, at, clock):
                         Market.next_check<=now()+timedelta(seconds=limits.collector_margin_seconds)).limit(1))
                     if due:
                         outcome='paused'; reason='Collector due; yielding maintenance budget'; break
+                    pressure=database_reason(db)
+                    if pressure:
+                        outcome='paused';reason=pressure;break
                     from .capacity import filesystem
                     disk=filesystem()
                     if disk['available_bytes'] is None or disk['available_bytes']<=max(disk['reserve_bytes'],document['scope']['minimum_filesystem_reserve_bytes']):
@@ -318,7 +330,9 @@ def recovery_evidence_view():
         stamp=off_stamp if policy['off_vm_required'] else aware(datetime.fromisoformat(evidence['local_restoration_verified_at']))
         recent=off_recent if policy['off_vm_required'] else (evidence.get('owner_approval_reference')==policy['owner_approval_reference'] and now()-timedelta(hours=24)<=stamp<=now())
         return {**base,'off_vm_verification_recent':off_recent,'required_evidence_recent':bool(recent),'verified_at':stamp,
-                'reason':None if recent else 'Required recovery verification is missing or stale'}
+                'reason':None if recent else 'Required recovery verification is missing or stale',
+                'expires_at':aware(datetime.fromisoformat(evidence['expires_at'])) if evidence.get('expires_at') else None,
+                'remediation':'Check Backup Storage and the latest isolated restore. Automatic verification refreshes the recovery receipt after a successful new backup; failed or expired verification keeps cleanup paused.'}
     except (OSError,KeyError,TypeError,ValueError):
         return {**base,'off_vm_verification_recent':False,'required_evidence_recent':False,'verified_at':None,
                 'reason':'Required recovery verification is missing or stale'}

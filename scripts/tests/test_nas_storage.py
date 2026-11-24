@@ -137,7 +137,7 @@ class NASStorage(unittest.TestCase):
         _,name=self.archive();result=self.migrate()
         with self.assertRaises(Refused):self.manager.migration_remove_originals('admin:1',result['id'],'yes')
         (self.remote/name).write_bytes(b'corrupt')
-        with self.assertRaises(Refused):self.manager.migration_remove_originals('admin:1',result['id'],'REMOVE VERIFIED ORIGINALS')
+        with self.assertRaises(Refused):self.manager.migration_remove_originals('admin:1',result['id'],'REMOVE VERIFIED ORIGINALS',confirm_protected=True)
         self.assertTrue((self.local/name).exists())
 
     def test_migration_preview_is_bounded_and_rejects_changed_source(self):
@@ -154,3 +154,25 @@ class NASStorage(unittest.TestCase):
         status=self.manager.storage_status()
         self.assertEqual(status['migration']['status'],'interrupted');self.assertEqual(status['active_id'],'local')
         self.assertEqual(len(status['destinations']),2)
+
+    def test_large_deletion_job_is_durable_and_preserves_confirmations(self):
+        key,name=self.archive()
+        queued=self.manager.deletion_queue('admin:1',[dict(id=key,confirmation=name,confirm_protected=True,confirm_recovery_loss=True)])
+        self.assertEqual(queued['status'],'queued')
+        with self.assertRaises(Refused):self.manager.queue('admin:1')
+        result=self.manager.deletion_run('admin:1',queued['id'])
+        self.assertEqual(result['status'],'succeeded');self.assertFalse((self.local/name).exists())
+
+    def test_network_attempt_rate_limit_is_persistent_and_bounded(self):
+        with self.manager.db() as db:
+            for _ in range(10):self.manager.throttle(db,'admin:1','connection',10)
+            with self.assertRaises(Refused):self.manager.throttle(db,'admin:1','connection',10)
+
+    def test_restore_target_refuses_production_server(self):
+        from recovery import target_environment
+        with patch.dict(os.environ,dict(PGHOST='production-db',PGDATABASE='market',RESTORE_PGHOST='production-db'),clear=True):
+            with self.assertRaises(Refused):target_environment()
+        with patch.dict(os.environ,dict(PGHOST='production-db',PGDATABASE='market'),clear=True):
+            with self.assertRaises(Refused):target_environment()
+        with patch.dict(os.environ,dict(PGHOST='production-db',PGDATABASE='market',RESTORE_PGHOST='isolated-db'),clear=True):
+            self.assertEqual(target_environment()['PGHOST'],'isolated-db')

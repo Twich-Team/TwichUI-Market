@@ -180,6 +180,7 @@ class Migration(Destination):
 
 class RemoveOriginals(Destination):
     confirmation: str = Field(max_length=80)
+    confirm_protected: bool = False
 
 
 class SelectedDeletion(Deletion):

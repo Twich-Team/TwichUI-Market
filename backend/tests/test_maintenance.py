@@ -24,7 +24,7 @@ def test_operational_retention_dry_run_and_apply(database):
     assert maintain(database,apply=True)['historical_observations']=='preserved_indefinitely'
     with database() as db:
         assert db.scalar(select(func.count()).select_from(CollectionRun))==1
-        assert db.scalar(select(func.count()).select_from(SecurityEvent))==0
+        assert db.scalar(select(func.count()).select_from(SecurityEvent).where(SecurityEvent.action!='maintenance.housekeeping.complete'))==0
         assert db.scalar(select(func.count()).select_from(Market))==1
         assert db.scalar(select(func.count()).select_from(Observation))==1
         assert db.scalar(select(func.count()).select_from(Listing))==1

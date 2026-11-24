@@ -33,6 +33,9 @@ services:
       PGPASSWORD: synthetic-test-only
       PGCONNECT_TIMEOUT: 5
       BACKUP_RESTORE_TEST_ENABLED: "true"
+      BACKUP_RECOVERY_DIRECTORY: /state/recovery
+      BACKUP_STATUS_DIRECTORY: /state/status
+      RETENTION_LOCAL_RECOVERY_APPROVAL: synthetic-owner-approval
       METADATA_KEYRING_FILE: /state/keyring.json
     tmpfs: ["/state:size=32m,mode=0700"]
     volumes: [local-fixtures:/backups, ./deploy/backup:/app:ro, ./backend/market/provider_secrets.py:/secrets-code/provider_secrets.py:ro, ./scripts:/checks:ro]
