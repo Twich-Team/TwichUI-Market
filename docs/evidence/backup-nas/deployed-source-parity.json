@@ -1,12 +1,14 @@
 {
+  "provenance": "actual production module hashes compared with the checked source tree",
+  "observed_at": "2026-11-24T16:58:46.700113+00:00",
   "api": {
     "modules": 68,
-    "all_deployed_hashes_match_tested_source": true
+    "all_deployed_hashes_match_tested_source": true,
+    "application_source": "5d520da210c75f0dc9cd5233015e5d92ea160925"
   },
   "manager": {
     "modules": 7,
-    "all_deployed_hashes_match_tested_source": true
-  },
-  "tested_application_commit": "5d520da210c75f0dc9cd5233015e5d92ea160925",
-  "merge_commit": "9f586678e897e10757bf5612277bf5f1b68f04bb"
+    "all_deployed_hashes_match_tested_source": true,
+    "application_source": "5b20fa135252803bcadd2bf134f9fd7dcb3c2238"
+  }
 }

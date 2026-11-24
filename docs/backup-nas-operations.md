@@ -1,6 +1,6 @@
 # Native NAS backup operations
 
-Status: implementation/verification candidate; see [progress](backup-nas-progress.md). Production migration and deletion of original recovery copies require the owner's configured destination and explicit action. Existing local storage and live scheduling are preserved on upgrade.
+Status: deployed through PRs54/55/57; see [release acceptance](backup-nas-release-acceptance.md) and [progress](backup-nas-progress.md). Production migration and deletion of original recovery copies require the owner's configured destination and explicit action. Existing local storage and live scheduling are preserved on upgrade.
 
 ## Browser workflow
 
@@ -84,3 +84,7 @@ Scheduled backup failures now record a terminal failed job and retry after30minu
 A migration retry subtracts existing same-size filenames when estimating remaining transfer space. That estimate never establishes integrity: the background job rehashes every existing candidate and refuses a checksum conflict before reuse. The dialog distinguishes existing copies from bytes still needing transfer. Source backups remain intact on all failures.
 
 Retention cycles reserve enough time for their final bounded transaction rather than starting it at the overall deadline. Aggregate integrity exceptions explicitly pause/disable future cleanup and retain the affected source; administration shows the cause. Successful budget exhaustion is distinct from an integrity failure. An operator must review and repair integrity before resuming; code/scope changes still invalidate the exact execution document.
+
+The manager image and focused release explicitly select `/opt/backup/bin/python`, independent of an existing installation's preserved PATH. Use this absolute interpreter for manager dependency/credential diagnostics; generic `python3` can select the system interpreter. Real SMB and browser fixtures deliberately preserve a PATH without the dependency environment to cover this upgrade condition.
+
+The full pre-NAS rollback definition is valid for the current local-only installation. After NAS activation, use a NAS-aware manager revision and retain the absolute interpreter; do not revert to a pre-provider manager that cannot understand the configured destination. The previous NAS-capable image and complete original rollback images remain retained. Pause cleanup before any rollback and preserve manager state/keyring separately.
