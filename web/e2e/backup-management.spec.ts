@@ -29,7 +29,8 @@ async function setup(page:Page){
   await expect(page.getByRole('heading',{name:'Market Explorer',exact:true})).toBeVisible();
   await page.goto('/administration');
   await page.getByRole('button',{name:'Storage & backups ↗',exact:true}).click();
-  await expect(page.getByRole('heading',{name:'Backup Management',exact:true})).toBeVisible();
+  await page.getByRole('navigation',{name:'Storage & Backups pages'}).getByRole('link',{name:'Backups',exact:true}).click();
+  await expect(page.getByRole('heading',{name:'Recovery points',exact:true})).toBeVisible();
   await mkdir(output,{recursive:true});return {data,deletions,policies};
 }
 async function axe(page:Page){expect((await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa']).analyze()).violations).toEqual([]);}
@@ -37,8 +38,8 @@ async function axe(page:Page){expect((await new AxeBuilder({page}).withTags(['wc
 test('backup management: inventory, details, pagination, exact-name deletion and policy review',async({page})=>{
   const {deletions,policies}=await setup(page);
   const management=page.getByRole('region',{name:'Backup Management',exact:true});
-  await expect(management.getByText('5.5 GiB',{exact:true})).toBeVisible();
-  await expect(page.getByRole('meter',{name:'Backup filesystem used or unavailable'})).toBeVisible();
+  await expect(management.getByRole('heading',{name:'Backup size history'})).toBeVisible();
+  await expect(management.getByRole('region',{name:'Backup reliability calendar'})).toBeVisible();
   const table=page.getByRole('table',{name:'Managed backup archives'});
   await expect(table.getByRole('row')).toHaveCount(11);
   await expect(table.getByRole('row').nth(1).locator('time')).toContainText('Nov 17, 2026');
@@ -57,8 +58,9 @@ test('backup management: inventory, details, pagination, exact-name deletion and
   expect(deletions).toEqual([{confirmation:name,confirm_recovery_loss:true}]);await expect(page.getByRole('status').filter({hasText:'unlinked'})).toBeVisible();
   await page.getByRole('button',{name:'Next backups',exact:true}).click();await expect(table.getByRole('row')).toHaveCount(3);
   await page.getByRole('button',{name:'Previous backups',exact:true}).click();
+  await page.getByRole('button',{name:'Backup Policy',exact:true}).click();
   await page.getByLabel('Daily backups to keep',{exact:true}).fill('3');await page.getByLabel('Enable scheduled backups',{exact:true}).check();
-  await page.getByRole('button',{name:'Review backup policy',exact:true}).click();await expect(page.getByRole('dialog')).toContainText('Enable scheduled backups every 24 hours');
+  await page.getByRole('button',{name:'Review backup policy',exact:true}).click();await expect(page.getByRole('dialog',{name:'Save backup retention policy',exact:true})).toContainText('Enable scheduled backups every 24 hours');
   await page.screenshot({path:`${output}/policy-confirmation.png`});await page.getByRole('button',{name:'Confirm backup policy'}).click();
   expect(policies).toHaveLength(1);expect((policies[0] as {values:{daily:number}}).values.daily).toBe(3);
 });
@@ -107,6 +109,7 @@ test('backup management real boundary: create protect download and delete throug
   expect((await page.request.post(`/api/v1/admin/backups/${older.id}/protect`,{headers,data:{protected:false}})).status()).toBe(200);
   await page.goto('/administration');
   await page.getByRole('button',{name:'Storage & backups ↗',exact:true}).click();
+  await page.getByRole('navigation',{name:'Storage & Backups pages'}).getByRole('link',{name:'Backups',exact:true}).click();
   const row=page.getByRole('row').filter({hasText:older.filename});await row.getByRole('button',{name:'Delete',exact:true}).click();
   await page.getByRole('dialog').getByLabel(`Type ${older.filename} to confirm`,{exact:true}).fill(older.filename);
   await page.getByRole('dialog').getByLabel('I acknowledge the risk of removing the newest or last known-good backup.',{exact:true}).check();
