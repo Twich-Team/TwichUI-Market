@@ -1,4 +1,5 @@
 import {useState, useMemo} from 'react';
+import {useCompactLayout} from './responsive';
 import {useQuery} from '@tanstack/react-query';
 import {api} from './api';
 import {LocalTime,Status} from './admin-table';
@@ -23,12 +24,13 @@ export function useMaintenanceHealth() {
  return useQuery({queryKey:['private','maintenance-health'],queryFn:({signal})=>api<MaintenanceData>('/admin/retention/health','GET',undefined,signal),retry:false,staleTime:60000,refetchInterval:60000});
 }
 export function MaintenanceDashboard({summary,readOnly}:{summary?:Storage;readOnly:boolean}) {
+ const compact=useCompactLayout();
  const query=useMaintenanceHealth(),data=query.data,[edit,setEdit]=useState(false),[range,setRange]=useState(7);
  const needsAttention=Boolean(data&&['paused','failed','interrupted','unauthorized'].includes(data.status));
  const composition=useMemo(()=>({animation:false,color:['#c8a35e','#658e86','#a77d5b','#918277','#705d50','#b4a389'],tooltip:{trigger:'item',renderMode:'richText',formatter:(p:unknown)=>{const d=(p as {data:{name:string;value:number}}).data;return `${d.name}\n${formatBytes(d.value)}`;}},series:[{type:'pie',radius:['57%','80%'],center:['50%','48%'],label:{show:false},data:data?.composition?.categories.map(c=>({name:c.label,value:c.bytes}))||[]}]}),[data?.composition]);
  const cutoff = new Date(Date.now()-(range-1)*86400000).toISOString().slice(0,10);
  const activityDays=data?.activity?.days.filter(day=>day.day>=cutoff)||[];
- const activity=useMemo(()=>({animation:false,color:['#c8a35e','#658e86'],grid:{left:68,right:18,top:35,bottom:45},legend:{top:0,left:'center',textStyle:{color:'#c9bba5'}},tooltip:{trigger:'axis',renderMode:'richText'},xAxis:{type:'category',data:activityDays.map(d=>d.day),axisLabel:{color:'#b8aa95',formatter:(v:string)=>v.slice(5)}},yAxis:{type:'value',name:'Records',nameTextStyle:{color:'#b8aa95'},axisLabel:{color:'#b8aa95',formatter:(v:number)=>Intl.NumberFormat(undefined,{notation:'compact'}).format(v)},splitLine:{lineStyle:{color:'#4a3926'}}},series:[{name:'Raw listings ingested',type:'bar',data:activityDays.map(d=>d.raw_added??null),barMaxWidth:25},{name:'Raw listings removed',type:'bar',data:activityDays.map(d=>d.raw_removed??null),barMaxWidth:25}]}),[activityDays]);
+ const activity=useMemo(()=>({animation:false,color:['#c8a35e','#658e86'],grid:{left:68,right:18,top:compact?75:35,bottom:45},legend:{top:0,left:'center',textStyle:{color:'#c9bba5'}},tooltip:{trigger:'axis',renderMode:'richText'},xAxis:{type:'category',data:activityDays.map(d=>d.day),axisLabel:{color:'#b8aa95',formatter:(v:string)=>v.slice(5)}},yAxis:{type:'value',name:'Records',nameTextStyle:{color:'#b8aa95'},axisLabel:{color:'#b8aa95',formatter:(v:number)=>Intl.NumberFormat(undefined,{notation:'compact'}).format(v)},splitLine:{lineStyle:{color:'#4a3926'}}},series:[{name:'Raw listings ingested',type:'bar',data:activityDays.map(d=>d.raw_added??null),barMaxWidth:25},{name:'Raw listings removed',type:'bar',data:activityDays.map(d=>d.raw_removed??null),barMaxWidth:25}]}),[activityDays,compact]);
  return <div className="maintenance-dashboard">
   <div className="storage-section-heading"><div><h3>Maintenance &amp; historical data</h3><p className="muted">Understand growth, retention and the safeguards protecting your history.</p></div><div className="backup-actions"><button onClick={()=>void query.refetch()}>Refresh maintenance</button><button onClick={()=>setEdit(true)}>Edit Retention Policy</button></div></div>
   {query.isPending&&<p role="status">Checking maintenance…</p>}{query.error&&<p role="alert" className="notice error">{query.error.message}. Maintenance health is unavailable.</p>}
