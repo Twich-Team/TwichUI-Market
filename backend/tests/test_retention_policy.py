@@ -220,13 +220,17 @@ def test_raw_aggregation_proof_covers_prices_and_survives_partial_batches(databa
         with pytest.raises(HTTPException):verify_statistics(db,[snapshot])
 
 
-def test_daily_canonical_aggregation_resumes_before_any_source_deletion(database):
+def test_daily_canonical_aggregation_resumes_before_any_source_deletion(database,monkeypatch,request):
     import pytest
     from fastapi import HTTPException
     from market.bridge_api import prepare_snapshot
     from market.compaction_safety import verify_statistics,prepare_canonical_daily
     from market import canonical_pricing as cp
     from market.models import BridgeDerivation,BridgeDerivedRecord
+    from market.bridge_contract import contract
+    from pathlib import Path
+    monkeypatch.setenv('BRIDGE_CONTRACT_ROOT',str(Path(__file__).resolve().parents[2]/'contracts/bridge/v1'))
+    contract.cache_clear();request.addfinalizer(contract.cache_clear)
     with database.begin() as db:
         m=Market(region='us',ruleset_id=2,house_id=113,source_kind='auctions',label='isolated canonical preservation')
         db.add(m);db.flush()
