@@ -197,11 +197,15 @@ class Manager(StorageConfiguration):
         with self.db() as db:
             previous = self.get(db, 'storage_previous')
         rows, other = [], []
+        self._inventory_by_storage = {}
         seen = set()
         for key in dict.fromkeys([active, previous]):
             if not key: continue
             with self.location(key):
                 entries, artifacts = self.rows_current()
+            # Physical copies, before recovery-point deduplication across migration locations.
+            self._inventory_by_storage[key] = dict(count=len(entries),
+                bytes=sum(row['bytes'] for row in entries) if all(row['bytes'] is not None for row in entries) else None)
             for row in entries:
                 # Migration creates verified duplicate copies; inventory identifies the active copy first.
                 if row['filename'] in seen: continue
@@ -320,15 +324,16 @@ class Manager(StorageConfiguration):
                     budget_exceeded=bool(policy['max_bytes'] and used > policy['max_bytes']),
                     scope='Only scheduled v2 archives outside retained UTC day/week/month buckets. Manual, release, legacy and protected archives are excluded. Saving never deletes files; rotation follows a successful new scheduled backup.')
 
-    def overview(self, offset=0, limit=20):
+    def overview(self, offset=0, limit=20, filters=None):
+        filters = self.inventory_filters(filters or {})
         try:
-            result = self.measured_overview(offset, limit)
+            result = self.measured_overview(offset, limit, filters)
             result['inventory_stale'] = False
             return result
         except (Refused, StorageError, OSError) as exc:
             if isinstance(exc,OSError) and exc.errno==errno.ELOOP: raise
             with self.db() as db:
-                cached = self.get(db, 'overview:'+str(offset)+':'+str(limit))
+                cached = self.get(db, self.inventory_cache_key(offset, limit, filters))
                 if cached is None:
                     raise Refused('Backup operation is busy; inventory measurements unavailable') from None
                 cached['service_status'] = 'operation_busy' if isinstance(exc,Refused) else 'storage_unavailable'
@@ -338,11 +343,64 @@ class Manager(StorageConfiguration):
                 cached['items'] = [dict(row,eligible=False,reason='Operation busy; refresh after completion' if isinstance(exc,Refused) else 'Storage unavailable; reconnect and refresh') for row in cached['items']]
                 return cached
 
-    def measured_overview(self, offset=0, limit=20):
+    @staticmethod
+    def inventory_filters(filters):
+        choices = {'protection': ('all','protected','unprotected'),
+                   'verification': ('all','restored','integrity','unknown'),
+                   'backup_type': ('all','scheduled','manual','release','restore-verification','legacy','unknown'),
+                   'sort': ('created_desc','created_asc','bytes_desc','bytes_asc')}
+        if not isinstance(filters,dict) or set(filters)-set(choices)-{'search','storage_id'}:
+            raise Refused('Invalid inventory filters')
+        for key,value in filters.items():
+            if not isinstance(value,str) or len(value)>190 or (key in choices and value not in choices[key]):
+                raise Refused('Invalid inventory filter: '+key)
+            if key=='storage_id' and value and not re.fullmatch(r'(local|[a-f0-9]{32})',value):
+                raise Refused('Invalid inventory storage')
+        return {key:value for key,value in filters.items()
+                if value and value!='all' and not (key=='sort' and value=='created_desc')}
+
+    @staticmethod
+    def inventory_cache_key(offset, limit, filters):
+        suffix = ':'+hashlib.sha256(json.dumps(filters,sort_keys=True).encode()).hexdigest()[:24] if filters else ''
+        return 'overview:'+str(offset)+':'+str(limit)+suffix
+
+    @staticmethod
+    def filter_inventory(rows, filters):
+        rows = [row for row in rows if
+            (not filters.get('search') or filters['search'].casefold() in (' '.join(str(row.get(key) or '') for key in ('filename','storage_name','created_at','origin'))).casefold()) and
+            (not filters.get('storage_id') or row.get('storage_id')==filters['storage_id']) and
+            (not filters.get('protection') or bool(row['protected'])==(filters['protection']=='protected')) and
+            (not filters.get('backup_type') or row.get('type')==filters['backup_type']) and
+            (not filters.get('verification') or
+             (bool(row.get('restoration_verified_at')) if filters['verification']=='restored' else
+              row.get('verification')=='archive_integrity_verified' if filters['verification']=='integrity' else
+              not row.get('restoration_verified_at') and row.get('verification')!='archive_integrity_verified'))]
+        order = filters.get('sort','created_desc')
+        return sorted(rows,key=lambda row: ((row.get('bytes') or 0) if order.startswith('bytes') else (row.get('created_at') or ''),row['filename']),reverse=order.endswith('desc'))
+
+    def reliability(self, db):
+        since = (datetime.now(timezone.utc)-timedelta(days=41)).replace(hour=0,minute=0,second=0,microsecond=0)
+        events = db.execute("SELECT at,actor,action,detail FROM receipts WHERE action IN ('backup.published','backup.failed') AND at>=? ORDER BY at DESC LIMIT 1001",(since.isoformat(),)).fetchall()
+        days = {}; attempts = []
+        for at,actor,action,payload in events[:1000]:
+            detail=json.loads(payload);manifest=detail.get('manifest',{})
+            outcome='succeeded' if action=='backup.published' else 'failed'
+            origin=manifest.get('origin',detail.get('origin','scheduled' if actor=='scheduler' else 'unknown'))
+            day=days.setdefault(at[:10],dict(succeeded=0,failed=0))
+            day[outcome]+=1
+            if len(attempts)<200:
+                attempts.append(dict(at=at,status=outcome,origin=origin,backup_id=detail.get('id') if outcome=='succeeded' else None,bytes=manifest.get('bytes')))
+        return dict(since=since.isoformat(),days=[dict(day=day,**counts) for day,counts in sorted(days.items())],
+            attempts=attempts,truncated=len(events)>1000,schedule_history_available=False,
+            notice='Recorded execution receipts only. Missing days and missed schedules are unknown; current policy is not historical schedule evidence.')
+
+    def measured_overview(self, offset=0, limit=20, filters=None):
+        filters = filters or {}
         with self.lock(), self.db() as db:
             self._operation_deadline=time.monotonic()+20
             self.reconcile(remote=True)
             rows, other = self.guarded_rows(db)
+            matching = self.filter_inventory(rows,filters)
             policy = self.get(db, 'policy')
             fs = self.filesystem()
             successes = [r for r in rows if r['verification'] == 'archive_integrity_verified']
@@ -352,14 +410,15 @@ class Manager(StorageConfiguration):
             result = dict(measured_at=stamp(), policy=policy, service_status='enabled' if policy['enabled'] else 'scheduled_backups_disabled',
                         last_success=successes[0]['created_at'] if successes else None,
                         last_restoration_verified_at=max(restores) if restores else None,
-                        total=len(rows), total_bytes=sum(r['bytes'] or 0 for r in rows), filesystem=fs,
+                        total=len(rows), matched_total=len(matching), total_bytes=sum(r['bytes'] or 0 for r in rows), filesystem=fs,
+                        inventory_by_storage=self._inventory_by_storage,reliability=self.reliability(db),
                         protected_count=sum(r['protected'] for r in rows),protected_bytes=sum(r['bytes'] or 0 for r in rows if r['protected']),storage=self.storage_status(),
                         storage_pressure=fs['available_bytes'] is not None and fs['available_bytes'] < policy['warning_free_bytes'], next_scheduled_at=next_at,
-                        estimate_bytes=self.estimate(rows), job=job, items=rows[offset:offset+limit], offset=offset, limit=limit,
+                        estimate_bytes=self.estimate(rows), job=job, items=matching[offset:offset+limit], offset=offset, limit=limit,
                         artifacts=other[:100], artifact_count=len(other), preview=self.preview(db, rows),
                         receipts=[dict(id=r[0], at=r[1], actor=r[2], action=r[3], detail=json.loads(r[4]))
                                   for r in db.execute('SELECT * FROM receipts ORDER BY at DESC LIMIT 20')])
-            self.set(db, 'overview:'+str(offset)+':'+str(limit), result)
+            self.set(db, self.inventory_cache_key(offset,limit,filters), result)
             # Bound cached pages; the immutable audit ledger is stored separately.
             db.execute("DELETE FROM settings WHERE key LIKE 'overview:%' AND rowid NOT IN (SELECT rowid FROM settings WHERE key LIKE 'overview:%' ORDER BY rowid DESC LIMIT 20)")
             return result
