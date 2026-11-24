@@ -6,4 +6,5 @@ ENV PATH="/opt/backup/bin:$PATH"
 WORKDIR /app
 COPY deploy/backup/*.py ./
 COPY backend/market/provider_secrets.py ./provider_secrets.py
-ENTRYPOINT ["python3", "/app/service.py"]
+ENTRYPOINT ["/opt/backup/bin/python"]
+CMD ["/app/service.py"]

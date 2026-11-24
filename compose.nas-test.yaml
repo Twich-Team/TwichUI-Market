@@ -37,9 +37,10 @@ services:
       BACKUP_STATUS_DIRECTORY: /state/status
       RETENTION_LOCAL_RECOVERY_APPROVAL: synthetic-owner-approval
       METADATA_KEYRING_FILE: /state/keyring.json
+      PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
     tmpfs: ["/state:size=32m,mode=0700"]
     volumes: [local-fixtures:/backups, ./deploy/backup:/app:ro, ./backend/market/provider_secrets.py:/secrets-code/provider_secrets.py:ro, ./scripts:/checks:ro]
-    entrypoint: [python3, /checks/verify-nas-storage.py]
+    command: [/checks/verify-nas-storage.py]
     mem_limit: 256m
     cpus: 0.5
     pids_limit: 64

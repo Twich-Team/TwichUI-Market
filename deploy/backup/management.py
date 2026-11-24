@@ -298,7 +298,8 @@ class Manager(StorageConfiguration):
         for points in ([r for r in rows if r['verification'] == 'archive_integrity_verified'],
                        [r for r in rows if r['restoration_verified_at']]):
             for row in points[:minimum]:
-                row.update(eligible=False, reason='Minimum recovery-point safeguard')
+                row['eligible']=False
+                if not row['active_use']:row['reason']='Minimum recovery-point safeguard'
         return rows, other
 
     def preview(self, db, rows):
