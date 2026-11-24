@@ -1,9 +1,8 @@
-# Explicit private pilot only. Inactive until scoped deployment/backup gates pass.
+# Member downloads require a verified publication in the signed beta store.
 services:
   api:
     environment: &private-beta-environment
       COMPANION_PRIVATE_BETA_DIRECTORY: /private-beta
-      COMPANION_PRIVATE_BETA_USER_IDS: ${COMPANION_PRIVATE_BETA_USER_IDS:-}
       COMPANION_UPDATER_PUBLIC_KEY: ${COMPANION_UPDATER_PUBLIC_KEY:-}
     volumes:
       - companion-private-beta:/private-beta:ro

@@ -21,7 +21,6 @@ services:
       METADATA_KEYRING_FILE: /tmp/metadata-browser-keyring.json
       SYNC_CURSOR_SECRET: synthetic-browser-signing-key-not-for-deployment
       COMPANION_PRIVATE_BETA_DIRECTORY: /tmp/companion-private-beta-fixtures/incoming-2.0.0-beta.1
-      COMPANION_PRIVATE_BETA_USER_IDS: "10001"
       COMPANION_UPDATER_PUBLIC_KEY: synthetic-only-updater-public-key
     volumes: !override [market-data:/database-filesystem:ro]
   proxy:

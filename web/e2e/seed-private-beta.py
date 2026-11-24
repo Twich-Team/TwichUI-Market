@@ -8,7 +8,6 @@ from market.models import User
 from market.security import hasher
 
 assert engine.url.database=='market_test','Refusing private-beta fixtures in a non-test database'
-assert os.environ.get('COMPANION_PRIVATE_BETA_USER_IDS')=='10001','Synthetic pilot allowlist required'
 sys.path.insert(0,'/app/tests')
 from test_companion_private_beta import fixture_beta
 with Session.begin() as db:

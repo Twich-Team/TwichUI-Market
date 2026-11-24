@@ -1,8 +1,7 @@
 """Inactive-by-default private NSIS delivery with required Tauri update signatures.
 
 The dedicated operator store is trusted to admit actual CI/owner receipts. These
-routes recheck identity, original evidence and bytes, and require an allowlisted
-active allowlisted identity on every request. Browser setup remains session-only.
+routes recheck active membership, original evidence and installer bytes on every request. Browser setup remains session-only.
 """
 from datetime import datetime
 import hashlib
@@ -69,13 +68,6 @@ def root():
 
 def reader(request:Request,user:User=Depends(identity)):
     if request.url.path.endswith('/current') and request.state.credential.kind!='session':raise HTTPException(403,'Website sign-in required')
-    configured=os.environ.get('COMPANION_PRIVATE_BETA_USER_IDS','')
-    entries=configured.split(',')
-    # This is explicitly a three-person pilot, not an implicit all-account feed.
-    if (len(configured)>128 or not 1<=len(entries)<=3 or len(set(entries))!=len(entries)
-            or not all(re.fullmatch(r'[1-9][0-9]{0,9}',entry) for entry in entries)
-            or str(user.id) not in entries):
-        raise HTTPException(404,'Private beta not available')
     return user
 
 

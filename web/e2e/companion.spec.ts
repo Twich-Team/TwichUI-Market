@@ -90,15 +90,16 @@ test.beforeAll(() => {
 test("setup resumes after refresh and sign-in without claiming installation from a download", async ({
   page,
 }) => {
+  await page.route("**/api/v1/companion/private-beta/current", route => route.fulfill({json:{ready:false}}));
   await login(page);
   await expect(
     page.getByRole("heading", {
-      name: "Your market, ready on your PC.",
+      name: "Desktop Companion",
       exact: true,
     }),
   ).toBeVisible();
   await expect(
-    page.getByText("Release verification is in progress.", { exact: true }),
+    page.getByText("A verified Windows installer is not available yet.", { exact: true }),
   ).toBeVisible();
   await expect(
     page.getByRole("link", { name: "Download for Windows" }),
@@ -205,7 +206,7 @@ test("system-browser approval route survives login, delivers a one-use code and 
       .getByRole("button", { name: "Check sync status", exact: true })
       .click();
     await expect(
-      page.getByText("Browser protocol Windows fixture is connected.", {
+      page.locator(".companion-recent").getByRole("heading", {name:"Browser protocol Windows fixture",
         exact: true,
       }),
     ).toBeVisible();
