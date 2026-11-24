@@ -26,7 +26,7 @@ test("Recovery Tracker: local evidence, server pages, journey and mobile cards",
   await journey.screenshot({path:`${gallery}/02-recovery-journey.png`});
   await page.getByText('Recovery efficiency and measurement scope',{exact:true}).click();
   await page.getByLabel('Measurement period').selectOption('1');await expect(page.getByText('50.0% useful recovery rate')).toBeVisible();
-  const loadChart=page.getByRole('button',{name:/Load recovery efficiency by provider/i});if(await loadChart.isVisible())await loadChart.click();await expect(page.getByLabel('Recovery efficiency by provider')).toBeVisible();
+  const chart=page.getByRole('region',{name:'Recovery Efficiency'}).locator('.chart-viewport');await chart.scrollIntoViewIfNeeded();await expect(chart.getByLabel('Recovery efficiency by provider')).toBeVisible();
   await journey.getByRole('button',{name:'Close journey'}).click();
   await page.getByLabel('Search recovery items').fill('');await page.getByRole('combobox',{name:'Missing metadata',exact:true}).selectOption('name');
   await expect(tracker.getByRole('row')).toHaveCount(21);
@@ -70,6 +70,6 @@ test("Recovery Tracker: loading, failure, empty state and audited manual action"
   await journey.press('Escape');await expect(journey).toHaveCount(0);await expect(desktop.getByRole('button',{name:/Synthetic recovery 01/})).toBeFocused();
   await page.getByText('Recovery efficiency and measurement scope',{exact:true}).click();
   const efficiency=page.getByRole('region',{name:'Recovery Efficiency'});await efficiency.scrollIntoViewIfNeeded();
-  const load=efficiency.getByRole('button',{name:/Load recovery efficiency by provider/i});if(await load.isVisible())await load.click();await expect(efficiency.locator('canvas')).toBeVisible();
+  await efficiency.locator('.chart-viewport').scrollIntoViewIfNeeded();await expect(efficiency.locator('canvas')).toBeVisible();
   await efficiency.screenshot({path:`${gallery}/06-efficiency.png`});
 });
