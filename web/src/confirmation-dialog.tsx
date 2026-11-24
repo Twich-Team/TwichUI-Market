@@ -14,11 +14,16 @@ export function ConfirmationDialog({ title, onClose, closeLabel = 'Close', retur
   useEffect(() => {
     const element = dialog.current!;
     const opener = returnFocus ?? document.activeElement;
+    if (returnFocus?.isConnected) returnFocus.focus({ preventScroll: true });
     heading.current!.setAttribute('autofocus', '');
     element.showModal();
     return () => {
       element.close();
-      if (opener instanceof HTMLElement && opener.isConnected) opener.focus({ preventScroll: true });
+      requestAnimationFrame(() => {
+        if (opener instanceof HTMLElement && opener.isConnected && document.activeElement === document.body) {
+          opener.focus({ preventScroll: true });
+        }
+      });
     };
   }, []);
   useEffect(() => {

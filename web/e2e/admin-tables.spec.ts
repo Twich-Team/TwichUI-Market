@@ -70,7 +70,7 @@ test("attempt date filters and failed or loading pages stay understandable",asyn
   await expect(attempts.getByRole("row").nth(1)).toBeVisible();
   await page.route("**/api/v1/admin/records/metadata-attempts?**",async route=>{await new Promise(resolve=>setTimeout(resolve,500));await route.fulfill({status:503,contentType:"application/json",body:'{"detail":"Provider history is temporarily unavailable"}'});});
   await page.getByLabel("Item name or ID",{exact:true}).fill("290000");
-  await expect(container.getByRole("status",{name:""}).filter({hasText:"Loading provider attempts"})).toBeVisible();
+  await expect(container.getByRole("status",{name:""}).filter({hasText:"Refreshing provider attempts"})).toBeVisible();
   await expect(container.getByRole("alert")).toContainText("Provider history is temporarily unavailable");
   await page.unroute("**/api/v1/admin/records/metadata-attempts?**");await page.getByLabel("Item name or ID",{exact:true}).fill("");await expect(attempts.getByRole("row").nth(1)).toBeVisible();
 });
