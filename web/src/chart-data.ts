@@ -51,7 +51,7 @@ const coinUnits = [
 ] as const;
 
 export function currencyAxis(ceiling: number) {
-  const unit = coinUnits.find(({ divisor }) => ceiling >= divisor) ?? coinUnits[2];
+  const unit = ceiling < 200 ? coinUnits[2] : ceiling < 10_000 ? coinUnits[1] : coinUnits[0];
   const formatter = new Intl.NumberFormat(undefined, {
     maximumFractionDigits: 2,
     ...(ceiling / unit.divisor >= 10_000 ? { notation: "compact" as const } : {}),

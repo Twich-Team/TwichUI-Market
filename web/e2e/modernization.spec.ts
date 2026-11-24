@@ -74,9 +74,10 @@ test("catalogue variants, accessible item facts, chart controls and bounded hist
   });
   await page.keyboard.press("Tab");
   await item.focus();
+  await page.keyboard.press("Enter");
   await expect(page.getByRole("dialog")).toBeVisible();
   await expect(page.getByRole("dialog")).toContainText("+10 Fixture Strength");
-  await expect(page.getByRole("dialog")).toContainText("Market estimates · asking listings");
+  await expect(page.getByRole("dialog")).toContainText("Asking prices and supply");
   await expect(page.getByRole("dialog").getByRole("region",{name:"Variant market ranges"})).toHaveCount(0);
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toHaveCount(0);

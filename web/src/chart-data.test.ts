@@ -34,6 +34,7 @@ it("rejects invalid or unbounded date spans", () => {
 
 it("chooses familiar denominations without converting a copper-scale chart to gold", () => {
   expect(currencyAxis(50).format(50)).toBe("50c");
+  expect(currencyAxis(132).format(50)).toBe("50c");
   expect(currencyAxis(480).format(125)).toBe("1.25s");
   expect(currencyAxis(20_000).format(12_000)).toBe("1.2g");
 });
