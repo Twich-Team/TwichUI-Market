@@ -8,7 +8,7 @@ import { ConfirmationDialog } from './confirmation-dialog';
 type Destination={id:string;revision:number;type:'local'|'smb'|'mounted';name:string;host?:string;port?:number;username?:string;domain?:string;share?:string;directory:string;require_encryption?:boolean;password_saved?:boolean};
 type Health={healthy:boolean;tested_at:string;last_success_at?:string;error?:string;capacity_bytes:number|null;available_bytes:number|null;read?:boolean;write?:boolean;create_directory?:boolean;rename?:boolean;delete?:boolean;cleanup_pending?:boolean};
 type Migration={id?:string;status?:string;copied?:number;bytes_copied?:number;error?:string;plan?:{count:number;bytes:number;protected_count?:number};originals_preserved?:boolean};
-type State={active_id:string;destinations:Destination[];health:Record<string,Health>;migration:Migration;restore?:{status?:string;error?:string};restore_available?:boolean;share_notice:string;mounted_notice:string;automatic_recovery?:{verified_at?:string;expires_at?:string};automatic_restore_enabled?:boolean};
+type State={pending_cleanup_count?:number;active_id:string;destinations:Destination[];health:Record<string,Health>;migration:Migration;restore?:{status?:string;error?:string};restore_available?:boolean;share_notice:string;mounted_notice:string;automatic_recovery?:{verified_at?:string;expires_at?:string};automatic_restore_enabled?:boolean};
 type Plan={source_id:string;destination_id:string;count:number;bytes:number;protected_count?:number;available_bytes:number|null;enough_space:boolean;originals_preserved:boolean;token:string};
 const fresh=():Partial<Destination>=>({type:'smb',name:'My NAS',host:'',port:445,username:'',domain:'',share:'',directory:'',require_encryption:true});
 
@@ -27,7 +27,7 @@ export function BackupStorage({readOnly=false}:{readOnly?:boolean}){
   const currentHealth=health||(selected?data?.health[selected]:undefined),activeHealth=active?data?.health[active.id]:undefined;
   const lastMigration=data?.migration;
   const saved=data?.destinations.find(d=>d.id===selected);
-  const dirty=Boolean(password)||!saved||(['name','host','username','domain','share','directory','require_encryption'] as const).some(k=>draft[k]!==saved[k]);
+  const dirty=Boolean(password)||!saved||(['name','host','port','username','domain','share','directory','require_encryption'] as const).some(k=>draft[k]!==saved[k]);
   return <section className="panel padded backup-storage" aria-label="Backup Storage">
     <div className="backup-heading"><div><span className="eyebrow">BACKUP DESTINATION</span><h2>Backup Storage</h2><p className="muted">Connect a NAS directly from Market. No server mount or Docker changes are needed.</p></div><button disabled={busy} onClick={()=>void query.refetch()}>Refresh storage</button></div>
     {query.isPending&&<p role="status">Loading backup destinations…</p>}
@@ -36,13 +36,14 @@ export function BackupStorage({readOnly=false}:{readOnly?:boolean}){
     {data&&<>
       <div className="backup-cards"><article><span>Active destination</span><strong>{active?.name||'Unavailable'}</strong><small>{active?.type==='smb'?`${active.host} / ${active.share}${active.directory?` / ${active.directory}`:''}`:'Persistent backup filesystem'}</small></article><article><span>Last storage test</span><strong>{activeHealth?(activeHealth.healthy?'Connected':'Needs attention'):'Not tested'}</strong><small><LocalTime value={activeHealth?.last_success_at}/></small></article><article><span>NAS filesystem capacity</span><strong>{formatBytes(activeHealth?.capacity_bytes??null)}</strong><small>Available: {formatBytes(activeHealth?.available_bytes??null)}. These totals include other NAS files.</small></article></div>
       <p className="small muted">Market backup totals and protected sizes appear in Backups above. Capacity is reported by the storage server; unavailable measurements are never estimated.</p>
-      <label>Destination to configure<select disabled={busy} value={selected} onChange={e=>edit(e.target.value)}><option value="">Add a destination</option>{data.destinations.map(d=><option key={d.id} value={d.id}>{d.name}{d.id===data.active_id?' (active)':''}</option>)}</select></label>
+      {Boolean(data.pending_cleanup_count)&&<p className="notice">{data.pending_cleanup_count} interrupted backup files need cleanup. Completed recovery copies are preserved. <button disabled={readOnly||busy} onClick={()=>void run(async()=>{await api('/admin/backups/storage/cleanup','POST',{});setNotice('Incomplete backup cleanup completed.');})}>Retry incomplete backup cleanup</button></p>}
+      <label>Destination to configure<select aria-label="Destination to configure" disabled={busy} value={selected} onChange={e=>edit(e.target.value)}><option value="">Add a destination</option>{data.destinations.map(d=><option key={d.id} value={d.id}>{d.name}{d.id===data.active_id?' (active)':''}</option>)}</select></label>
       <div className="backup-policy-grid">
-        <label>Storage type<select value={draft.type} disabled={busy||Boolean(draft.id)} onChange={e=>field('type',e.target.value as Destination['type'])}><option value="smb">SMB / NAS</option><option value="local">Local filesystem</option><option value="mounted">Existing mounted filesystem</option></select></label>
+        <label>Storage type<select aria-label="Storage type" value={draft.type} disabled={busy||Boolean(draft.id)} onChange={e=>field('type',e.target.value as Destination['type'])}><option value="smb">SMB / NAS</option><option value="local">Local filesystem</option><option value="mounted">Existing mounted filesystem</option></select></label>
         <label>Friendly storage name<input value={draft.name||''} maxLength={80} disabled={readOnly||busy} onChange={e=>field('name',e.target.value)}/></label>
         {draft.type==='smb'&&<>
           <label>NAS hostname or IP<input value={draft.host||''} maxLength={253} disabled={readOnly||busy} autoComplete="off" placeholder="192.168.1.20" onChange={e=>field('host',e.target.value)}/></label>
-          <label>SMB port<input type="number" value={445} readOnly/><small>TCP 445 only. SMB1 is never enabled.</small></label>
+          <label>SMB port<input aria-label="SMB port" type="number" min={445} max={65535} value={draft.port||445} disabled={readOnly||busy} onChange={e=>field('port',Number(e.target.value))}/><small>Default 445; custom high ports are supported. SMB1 is never enabled.</small></label>
           <label>NAS username<input value={draft.username||''} maxLength={160} disabled={readOnly||busy} autoComplete="off" onChange={e=>field('username',e.target.value)}/></label>
           <label>NAS password<input type="password" value={password} maxLength={1024} disabled={readOnly||busy} autoComplete="new-password" placeholder={draft.password_saved?'Saved securely; leave blank to keep':'Enter NAS password'} onChange={e=>setPassword(e.target.value)}/></label>
           <label>Domain or workgroup (optional)<input value={draft.domain||''} maxLength={100} disabled={readOnly||busy} onChange={e=>field('domain',e.target.value)}/></label>

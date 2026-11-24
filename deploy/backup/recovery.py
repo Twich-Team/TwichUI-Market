@@ -142,7 +142,8 @@ def publish_recovery(manager,db,actor,row,manifest):
     # Only release pins that this automation created. Explicit protection is never cleared.
     old=manager.get(db,'automatic_recovery')
     manager.set(db,'automatic_recovery',dict(backup_id=row['id'],storage_id=row['storage_id'],filename=row['filename'],
-        verified_at=manifest['restoration_verified_at'],expires_at=(created+timedelta(hours=24)).isoformat()))
+        verified_at=manifest['restoration_verified_at'],expires_at=(created+timedelta(hours=24)).isoformat(),
+        sha256=manifest['sha256'],bytes=manifest['bytes'],file_identity=manifest['file_identity']))
     manager.receipt(db,actor,'recovery.renewed',dict(backup_id=row['id'],expires_at=(created+timedelta(hours=24)).isoformat()))
     db.commit()
     if old and old['backup_id']!=row['id']:
@@ -172,8 +173,34 @@ def automatic_tick(manager):
         newest=eligible[0]
         current=manager.get(db,'automatic_recovery',{})
         if current.get('backup_id')==newest['id'] and current.get('verified_at'):return False
+        if newest.get('storage_id')=='local' and newest.get('restoration_verified_at') and datetime.now(timezone.utc)-date(newest['restoration_verified_at'])<timedelta(hours=24):
+            manager._location='local'
+            manifest=manager.read_json(newest['filename'][:-5]+'.json')
+            if manifest.get('restored') and manager.checksum(newest['filename'])==manifest['sha256']:
+                manifest['recovery_pin']=True
+                manifest['required_by']=sorted(set(manifest.get('required_by',[]))|{'automatic-retention'})
+                manager.write_json(newest['filename'][:-5]+'.json',manifest)
+                publish_recovery(manager,db,'scheduler',newest,manifest)
+                manager.receipt(db,'scheduler','recovery.adopted.verified_local',dict(backup_id=newest['id'],original_verified_at=manifest['restoration_verified_at']))
+                return True
         manager.set(db,'automatic_restore_retry',(datetime.now(timezone.utc)+timedelta(minutes=30)).isoformat())
         job=dict(id=uuid.uuid4().hex,status='queued',backup_id=newest['id'],actor='scheduler',requested_at=stamp(),automatic=True)
         manager.set(db,'restore',job);manager.receipt(db,'scheduler','restore.queued',job)
     restore(manager,'scheduler',job['id'],automatic=True)
     return True
+
+
+def proof(manager,key):
+    """Cheap identity check between full daily restore/checksum verifications."""
+    from management import Refused
+    with manager.lock(),manager.db() as db:
+        record=manager.get(db,'automatic_recovery',{})
+        if record.get('backup_id')!=key:raise Refused('A current verified recovery record is required')
+        row=manager.find(db,key)
+        manifest=manager.read_json(row['filename'][:-5]+'.json')
+        info=manager.store.info(row['filename'])
+        if (record.get('sha256')!=manifest.get('sha256') or record.get('bytes')!=info['bytes'] or
+            record.get('file_identity')!=info['identity'] or record.get('verified_at')!=manifest.get('restoration_verified_at') or
+            not row['protected'] or 'automatic-retention' not in row['required_by']):
+            raise Refused('Recovery archive identity changed; a new complete verification is required')
+        return dict(manifest,protected=True,integrity_checked_at=record['verified_at'],identity_checked_at=__import__('management').stamp())

@@ -114,7 +114,7 @@ def test_transport_hides_secrets_and_refuses_redirects(tmp_path,monkeypatch):
     ('/delete-selected',dict(items=[dict(id=KEY,confirmation='market-A.dump',confirm_protected=True,confirm_recovery_loss=True)])),
     ('/storage/migrate',dict(id=KEY,preview={'token':'fixture'})),
     ('/storage/remove-originals',dict(id=KEY,confirmation='REMOVE VERIFIED ORIGINALS')),
-    ('/restore-test',dict(id=KEY))])
+    ('/restore-test',dict(id=KEY)),('/storage/cleanup',{})])
 def test_new_admin_actions_require_browser_csrf(client,path,body):
     with patch.object(backups,'connect') as boundary:
         assert client.post('/api/v1/admin/backups'+path,json=body).status_code in (401,403)

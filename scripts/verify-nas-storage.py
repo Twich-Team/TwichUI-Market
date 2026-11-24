@@ -51,6 +51,8 @@ try:
     assert signed.connection.require_signing
     signed.close()
     passed('Signed session with optional encryption compatibility')
+    custom=SMB({**config,'port':1445},config['password']);custom.close()
+    passed('Actual SMB connection on an explicitly configured high port')
     started=time.monotonic()
     try:SMB({**config,'host':'10.255.255.254'},config['password'])
     except (StorageError,OSError):pass
@@ -115,17 +117,24 @@ try:
     original=next(r for r in status['items'] if r['filename']==initial['filename'])
     assert original['protected'], 'Explicit manual protection must never be cleared'
     assert status['preview']['candidates']==[dict(id=old['id'],filename=old['filename'],bytes=old['bytes'])]
+    from recovery import proof
+    good=proof(manager,status['items'][0]['id'])
+    assert good['protected'] and good['integrity_checked_at'] and good['identity_checked_at']
     passed('Recurring actual isolated restore renews expiring evidence and safely transfers operation pins without clearing explicit protection')
     with manager.lock():
         store=manager.store
         large='.stream-test-'+uuid.uuid4().hex
         block=os.urandom(CHUNK)
         with store.open(large,'xb') as out:
-            for _ in range(16):out.write(block)
-        expected=hashlib.sha256(block*16).hexdigest()
+            hasher=hashlib.sha256()
+            for _ in range(256):out.write(block);hasher.update(block)
+        expected=hasher.hexdigest()
         assert digest(store,large)==expected
         store.remove(large)
-    passed('16 MiB actual SMB streaming in bounded 1 MiB chunks')
+    import resource
+    peak_kib=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+    assert peak_kib<192*1024,peak_kib
+    passed(f'256 MiB actual SMB streaming in 1 MiB chunks; process peak RSS {peak_kib} KiB')
     with manager.lock():
         store=manager.store
         stream=store.open(initial['filename'])

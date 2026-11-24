@@ -90,6 +90,8 @@ class Handler(BaseHTTPRequestHandler):
                 self.reply(200,manager.storage_status())
             elif url.path == '/storage/save' and self.command == 'POST':
                 self.reply(200,manager.storage_save(actor,body))
+            elif url.path == '/storage/cleanup' and self.command == 'POST':
+                self.reply(200,manager.cleanup_incomplete(actor))
             elif url.path == '/storage/test' and self.command == 'POST':
                 self.reply(200,manager.storage_test(actor,body['id']))
             elif url.path == '/storage/browse' and self.command == 'POST':
@@ -118,6 +120,10 @@ class Handler(BaseHTTPRequestHandler):
                 job = manager.queue(actor)
                 threading.Thread(target=run_job, args=(manager, actor, job['id']), daemon=True).start()
                 self.reply(202, job)
+            elif match_proof := re.fullmatch(r'/backups/([a-f0-9]{32})/recovery-proof',url.path):
+                if self.command!='GET':raise Refused('Read-only recovery proof operation')
+                from recovery import proof
+                self.reply(200,proof(manager,match_proof.group(1)))
             elif match := re.fullmatch(r'/backups/([a-f0-9]{32})/(delete|protect|download|manifest)', url.path):
                 key, action = match.groups()
                 if action == 'delete' and self.command == 'POST':
@@ -141,6 +147,7 @@ class Handler(BaseHTTPRequestHandler):
                         else:
                             self.send_response(200)
                             self.send_header('Content-Type', 'application/octet-stream')
+                            self.send_header('X-Checksum-SHA256',row['sha256'])
                             self.send_header('Content-Length', str(row['bytes']))
                             self.send_header('Content-Disposition', 'attachment; filename="'+row['filename']+'"')
                             self.send_header('Cache-Control', 'no-store')

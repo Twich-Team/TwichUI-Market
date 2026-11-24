@@ -117,7 +117,7 @@ class NASStorage(unittest.TestCase):
         _,name=self.archive()
         real=self.remote_store.open
         def fail(name,mode='rb'):
-            if mode=='xb':raise StorageError('Injected network outage')
+            if mode=='xb' and name.startswith('.migration-'):raise StorageError('Injected network outage')
             return real(name,mode)
         with patch.object(self.remote_store,'open',side_effect=fail):result=self.migrate()
         self.assertEqual(result['status'],'failed');self.assertTrue((self.local/name).exists())
@@ -129,7 +129,7 @@ class NASStorage(unittest.TestCase):
         before=self.manager.overview()
         with patch('storage_config.SMB',side_effect=StorageError('Injected unavailable NAS')):
             cached=self.manager.overview()
-            self.assertTrue(cached['inventory_stale']);self.assertEqual(cached['items'],[dict(r,eligible=False,reason='Operation busy; refresh after completion') for r in before['items']])
+            self.assertTrue(cached['inventory_stale']);self.assertEqual([r['id'] for r in cached['items']],[r['id'] for r in before['items']]);self.assertTrue(all(not r['eligible'] for r in cached['items']));self.assertEqual(cached['service_status'],'storage_unavailable')
             self.assertEqual(cached['total'],1)
         self.assertEqual(self.manager.overview()['total'],1)
 
@@ -176,3 +176,44 @@ class NASStorage(unittest.TestCase):
             with self.assertRaises(Refused):target_environment()
         with patch.dict(os.environ,dict(PGHOST='production-db',PGDATABASE='market',RESTORE_PGHOST='isolated-db'),clear=True):
             self.assertEqual(target_environment()['PGHOST'],'isolated-db')
+
+    def test_destination_alias_is_rejected_before_migration_or_deletion(self):
+        self.archive()
+        with patch('storage_config.SMB',return_value=Local(self.manager.fd,self.manager.open)):
+            with self.assertRaises(Refused):self.manager.migration_plan(self.key)
+        self.assertEqual(self.manager.overview()['total'],1)
+        self.assertEqual(list(self.local.glob('.market-location-*')),[])
+
+    def test_restart_tracks_only_journaled_incomplete_files_and_cleanup_retries(self):
+        name='market-interrupted-fixture.partial'
+        (self.local/name).write_bytes(b'incomplete')
+        (self.local/'market-unknown.partial').write_bytes(b'unknown provenance')
+        with self.manager.db() as db:
+            self.manager.set(db,'job',dict(id='c'*32,status='running',temporary=name,storage_id='local'))
+        self.manager.close();self.manager=Manager(self.local,Path(self.temp.name)/'state',require_mount=False)
+        self.assertEqual(self.manager.storage_status()['pending_cleanup_count'],1)
+        result=self.manager.cleanup_incomplete('admin:1')
+        self.assertEqual(result['receipts_reconciled'],1)
+        self.assertFalse((self.local/name).exists());self.assertTrue((self.local/'market-unknown.partial').exists())
+
+    def test_startup_serves_configuration_without_connecting_to_an_unavailable_nas(self):
+        with self.manager.db() as db:
+            self.manager.set(db,'storage_active',self.key)
+            self.manager.receipt(db,'admin:1','deletion.intent',dict(backup=dict(filename='market-gone.dump',storage_id=self.key),manifest={}))
+        self.manager.close()
+        with patch('storage_config.SMB',side_effect=StorageError('Unavailable')) as connect:
+            self.manager=Manager(self.local,Path(self.temp.name)/'state',require_mount=False)
+            self.assertEqual(self.manager.storage_status()['active_id'],self.key)
+            connect.assert_not_called()
+
+    def test_recovery_proof_rejects_changed_archive_identity(self):
+        from recovery import proof
+        key,name=self.archive()
+        manifest=self.manager.read_json(name[:-5]+'.json')
+        manifest.update(recovery_pin=True,required_by=['automatic-retention'],restoration_verified_at=stamp(),restored={'tables':1})
+        self.manager.write_json(name[:-5]+'.json',manifest)
+        with self.manager.db() as db:
+            self.manager.set(db,'automatic_recovery',dict(backup_id=key,sha256=manifest['sha256'],bytes=manifest['bytes'],file_identity=manifest['file_identity'],verified_at=manifest['restoration_verified_at']))
+        self.assertTrue(proof(self.manager,key)['protected'])
+        (self.local/name).write_bytes(b'changed')
+        with self.assertRaises(Refused):proof(self.manager,key)

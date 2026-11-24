@@ -92,7 +92,9 @@ class Manager(StorageConfiguration):
         with self.lock():
             with self.db() as db:
                 db.executescript('CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT NOT NULL);'
-                                 'CREATE TABLE IF NOT EXISTS receipts (id TEXT PRIMARY KEY, at TEXT NOT NULL, actor TEXT NOT NULL, action TEXT NOT NULL, detail TEXT NOT NULL);')
+                                 'CREATE TABLE IF NOT EXISTS receipts (id TEXT PRIMARY KEY, at TEXT NOT NULL, actor TEXT NOT NULL, action TEXT NOT NULL, detail TEXT NOT NULL);'
+                                 "CREATE INDEX IF NOT EXISTS receipts_action_reference ON receipts(action,json_extract(detail,'$.receipt_id'));"
+                                 'CREATE INDEX IF NOT EXISTS receipts_action_time ON receipts(action,at DESC);')
                 if not db.execute("SELECT 1 FROM settings WHERE key='policy'").fetchone():
                     self.set(db, 'policy', dict(revision=1, **DEFAULT))
                     self.receipt(db, 'migration', 'policy.initialized', {'policy': DEFAULT, 'notice': 'Schedule disabled; no legacy archives adopted or deleted'})
@@ -103,8 +105,10 @@ class Manager(StorageConfiguration):
                     self.set(db,'restore',{**restore,'status':'interrupted','finished_at':stamp()})
                 migration = self.get(db, 'migration', {})
                 if migration.get('status') in ('queued', 'running'):
+                    self.remember_temporary(db,migration)
                     self.set(db, 'migration', {**migration, 'status':'interrupted', 'finished_at':stamp(), 'originals_preserved':True})
                 if job.get('status') in ('queued', 'running'):
+                    self.remember_temporary(db,job)
                     self.set(db, 'job', {**job, 'status': 'interrupted', 'finished_at': stamp()})
             self.reconcile()
 
@@ -299,15 +303,17 @@ class Manager(StorageConfiguration):
                 cached = self.get(db, 'overview:'+str(offset)+':'+str(limit))
                 if cached is None:
                     raise Refused('Backup operation is busy; inventory measurements unavailable') from None
-                cached['service_status'] = 'storage_unavailable_or_busy'
+                cached['service_status'] = 'operation_busy' if isinstance(exc,Refused) else 'storage_unavailable'
                 cached['inventory_stale'] = True
                 cached['job'] = self.get(db, 'job', {})
                 cached['storage_error'] = 'Storage is unavailable or an operation is in progress; showing the last successful inventory'
-                cached['items'] = [dict(row, eligible=False, reason='Operation busy; refresh after completion') for row in cached['items']]
+                cached['items'] = [dict(row,eligible=False,reason='Operation busy; refresh after completion' if isinstance(exc,Refused) else 'Storage unavailable; reconnect and refresh') for row in cached['items']]
                 return cached
 
     def measured_overview(self, offset=0, limit=20):
         with self.lock(), self.db() as db:
+            self._operation_deadline=time.monotonic()+20
+            self.reconcile(remote=True)
             rows, other = self.guarded_rows(db)
             policy = self.get(db, 'policy')
             fs = self.filesystem()
@@ -374,6 +380,7 @@ class Manager(StorageConfiguration):
 
     def delete(self, actor, key, confirmation, *, automatic=False, confirm_protected=False, confirm_recovery_loss=False, job_id=None):
         with self.lock(), self.db() as db:
+            self._operation_deadline=time.monotonic()+7200
             if job_id:
                 job=self.get(db,'job',{})
                 if job.get('id')!=job_id or job.get('kind')!='deletion' or job.get('status')!='running':raise Refused('Deletion job changed')
@@ -424,20 +431,23 @@ class Manager(StorageConfiguration):
             self.receipt(db, actor, 'deletion.result', result)
             return result
 
-    def reconcile(self):
+    def reconcile(self, *, remote=False):
         # Called on restart under the same lock. Only remove a leftover manifest when
         # a durable deletion intent names it, the archive is gone, and metadata matches.
         with self.db() as db:
-            for key, payload in db.execute("SELECT id,detail FROM receipts WHERE action='deletion.intent'").fetchall():
+            for key, payload in db.execute("SELECT i.id,i.detail FROM receipts i LEFT JOIN receipts r ON r.action='deletion.result' AND json_extract(r.detail,'$.receipt_id')=i.id LEFT JOIN receipts done ON done.action='deletion.reconciled' AND json_extract(done.detail,'$.receipt_id')=i.id WHERE i.action='deletion.intent' AND done.id IS NULL AND (r.id IS NULL OR (json_extract(r.detail,'$.archive_removed')=1 AND json_extract(r.detail,'$.manifest_removed')=0)) ORDER BY i.at DESC LIMIT 100").fetchall():
                 data = json.loads(payload)
                 name = data['backup']['filename']
                 self._location = data['backup'].get('storage_id','local')
+                if not remote and self._location!='local':continue
                 try:
                     if name in self.store.names(): continue
                     if self.read_json(name[:-5]+'.json') != data['manifest']:
                         continue
                     self.store.remove(name[:-5]+'.json')
                     self.receipt(db, 'restart', 'deletion.reconciled', {'receipt_id': key, 'manifest_removed': True})
+                except StorageError:
+                    break
                 except (OSError, ValueError, Refused):
                     pass
             self._location = None
@@ -447,7 +457,7 @@ class Manager(StorageConfiguration):
         with self.lock(), self.db() as db:
             self.idle(db)
             row = self.find(db, key)
-            if row['verification'] != 'archive_integrity_verified' or self.checksum(row['filename']) != row['sha256']:
+            if row['verification'] != 'archive_integrity_verified' or (self.store.kind=='local' and self.checksum(row['filename']) != row['sha256']):
                 raise Refused('Verified ownership and matching SHA-256 are required to download')
             self.receipt(db, actor, 'download.authorized', dict(id=key, sha256=row['sha256']))
             db.commit()
@@ -462,6 +472,7 @@ class Manager(StorageConfiguration):
     def queue(self, actor):
         with self.lock(), self.db() as db:
             self.idle(db)
+            self.cleanup_temporaries(db)
             previous = self.get(db, 'job', {})
             if previous.get('status') in ('queued', 'running'):
                 raise Refused('A backup is already queued or running')
@@ -493,8 +504,12 @@ class Manager(StorageConfiguration):
             db.commit()
             name = 'market-'+origin+'-'+datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')+'-'+uuid.uuid4().hex[:12]+'.dump'
             temporary = name[:-5]+'.partial'
+            _,active=self.configs()
+            job.update(temporary=temporary,storage_id=active)
+            self.set(db,'job',job);db.commit()
             published = False
             try:
+                self.cleanup_temporaries(db)
                 estimate = self.estimate(rows)
                 self.capacity(db, rows, estimate)
                 server = subprocess.check_output(['psql', '-Atc', 'SHOW server_version_num'], timeout=20, stderr=subprocess.DEVNULL).decode().strip()
@@ -550,6 +565,9 @@ class Manager(StorageConfiguration):
                 # Manifest first; inventory publishes the pair only when the completed archive appears.
                 self.write_json(name[:-5]+'.json', manifest)
                 self.store.rename(temporary, name)
+                if self.store.kind=='smb':
+                    manifest['file_identity']=self.store.info(name)['identity']
+                    self.write_json(name[:-5]+'.json',manifest)
                 published = True
                 job.update(status='succeeded', finished_at=stamp(), backup_id=self.archive_id(name))
                 self.set(db, 'job', job)
@@ -565,6 +583,7 @@ class Manager(StorageConfiguration):
                     pass
                 except OSError:
                     job['cleanup_pending'] = True
+                    self.remember_temporary(db,job)
                     self.set(db, 'job', job)
                     self.receipt(db, actor, 'backup.cleanup_pending', {'id': job['id']})
             db.commit()
@@ -598,7 +617,12 @@ class Manager(StorageConfiguration):
                         try:offset+=os.write(process.stdin.fileno(),chunk[offset:])
                         except BlockingIOError:pass
             process.stdin.close()
-            if process.wait(timeout=60)!=0:raise Refused('Archive decode or restore failed')
+            while process.poll() is None:
+                if time.monotonic()-started>7200:raise Refused('Archive verification deadline reached')
+                if check:check()
+                try:process.wait(timeout=1)
+                except subprocess.TimeoutExpired:pass
+            if process.returncode!=0:raise Refused('Archive decode or restore failed')
         finally:
             selector.close()
             if process.poll() is None:process.kill();process.wait()
@@ -607,8 +631,10 @@ class Manager(StorageConfiguration):
     def bulk_delete(self,actor,items,*,job_id=None):
         if not isinstance(items,list) or not 1<=len(items)<=50:raise Refused('Select between 1 and 50 backups')
         results=[]
+        started=time.monotonic()
         for item in items:
             try:
+                if time.monotonic()-started>7200:raise Refused('Bulk deletion deadline reached; remaining copies retained')
                 result=self.delete(actor,item['id'],item['confirmation'],confirm_protected=item.get('confirm_protected') is True,
                     confirm_recovery_loss=item.get('confirm_recovery_loss') is True,job_id=job_id)
                 results.append(dict(id=item['id'],**result))
@@ -638,8 +664,8 @@ class Manager(StorageConfiguration):
         with self.lock(),self.db() as db:
             self.idle(db)
             for item in items:
-                row=self.find(db,item['id'])
-                if row['filename']!=item.get('confirmation'):raise Refused('Backup filename confirmation changed')
+                if not ID.fullmatch(item.get('id','')) or not NAME.fullmatch(item.get('confirmation','')):
+                    raise Refused('Select a valid backup identifier and exact filename')
             job=dict(id=uuid.uuid4().hex,kind='deletion',status='queued',actor=str(actor),requested_at=stamp(),items=items)
             self.set(db,'job',job);self.receipt(db,actor,'deletion.queued',dict(id=job['id'],count=len(items)))
             return {k:v for k,v in job.items() if k!='items'}
@@ -654,3 +680,34 @@ class Manager(StorageConfiguration):
             job.update(status='succeeded' if results['status']=='complete' else 'partial_failure',finished_at=stamp(),result=results)
             self.set(db,'job',job);self.receipt(db,actor,'deletion.job.finished',dict(id=job_id,status=job['status']))
         return job
+
+    def remember_temporary(self,db,job):
+        name=job.get('temporary');location=job.get('storage_id')
+        if not name or not location:return
+        if not re.fullmatch(r'(market-[A-Za-z0-9_.-]+\.partial|\.migration-[a-f0-9]{32}-market-[A-Za-z0-9_.-]+\.dump)',name):
+            raise Refused('Unsafe incomplete-file receipt')
+        pending=self.get(db,'pending_cleanup',[])
+        item=dict(name=name,storage_id=location)
+        if item not in pending:pending.append(item)
+        if len(pending)>50:raise Refused('Incomplete backup cleanup limit reached')
+        self.set(db,'pending_cleanup',pending)
+
+    def cleanup_temporaries(self,db):
+        pending=self.get(db,'pending_cleanup',[])
+        remaining=[]
+        for item in pending:
+            try:
+                with self.location(item['storage_id']) as store:store.remove(item['name'])
+            except FileNotFoundError:pass
+            except Exception:remaining.append(item)
+        self.set(db,'pending_cleanup',remaining)
+        db.commit()
+        if remaining:raise Refused('Incomplete backup cleanup is pending; restore storage access and retry cleanup before starting another transfer')
+        return len(pending)
+
+    def cleanup_incomplete(self,actor):
+        with self.lock(),self.db() as db:
+            self.idle(db)
+            removed=self.cleanup_temporaries(db)
+            self.receipt(db,actor,'incomplete.cleanup',dict(receipts_reconciled=removed))
+            return dict(status='complete',receipts_reconciled=removed)

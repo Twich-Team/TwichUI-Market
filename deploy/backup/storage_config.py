@@ -47,8 +47,9 @@ class StorageConfiguration:
 
     @staticmethod
     def password(config):
-        from provider_secrets import decrypt
-        return decrypt('backup-smb:'+config['id'], config['key_id'], base64.b64decode(config['secret']))
+        from provider_secrets import decrypt,SecretUnavailable
+        try:return decrypt('backup-smb:'+config['id'],config['key_id'],base64.b64decode(config['secret']))
+        except SecretUnavailable:raise StorageError('Saved NAS credentials cannot be unlocked; restore the original encryption key or update the password') from None
 
     def storage_status(self):
         configs, active = self.configs()
@@ -57,8 +58,9 @@ class StorageConfiguration:
             job = self.get(db, 'migration', {})
             restore = self.get(db,'restore',{})
             recovery = self.get(db,'automatic_recovery',{})
+            pending=self.get(db,'pending_cleanup',[])
         return dict(active_id=active, destinations=[self.public(c) for c in configs.values()], health=health, migration={**job,'plan':{k:v for k,v in job.get('plan',{}).items() if k!='items'}},restore=restore,restore_available=os.environ.get('BACKUP_RESTORE_TEST_ENABLED')=='true',
-            automatic_recovery=recovery,automatic_restore_enabled=os.environ.get('BACKUP_AUTOMATIC_RESTORE')=='true',share_enumeration_supported=False,
+            pending_cleanup_count=len(pending),automatic_recovery=recovery,automatic_restore_enabled=os.environ.get('BACKUP_AUTOMATIC_RESTORE')=='true',share_enumeration_supported=False,
             share_notice='This native SMB client does not enumerate server shares. Enter a known share; folders can then be browsed.',
             mounted_notice='Mounted filesystem uses the installation’s existing persistent backup directory. Native SMB needs no host mount.')
 
@@ -90,15 +92,16 @@ class StorageConfiguration:
             if c['type'] == 'smb':
                 if not isinstance(c.get('host'),str) or not isinstance(c.get('username'),str) or not 1<=len(c['username'])<=160 or len(c.get('domain',''))>100:
                     raise Refused('Enter a NAS address and dedicated account username')
-                if c.get('port',445) != 445: raise Refused('Only SMB TCP port 445 is supported')
+                if type(c.get('port',445)) is not int or not (c.get('port',445)==445 or 1024<=c.get('port',445)<=65535): raise Refused('Choose SMB TCP445 or a high port from1024 to65535')
                 relative(c.get('share',''))
                 if '/' in c['share'] or c['share'].endswith('$'): raise Refused('Choose a regular NAS share')
                 if type(c.get('require_encryption',True)) is not bool: raise Refused('Choose an encryption setting')
                 if values.get('password') is not None:
                     password=values['password']
                     if not isinstance(password,str) or not 1<=len(password)<=1024: raise Refused('Enter a password, or leave it unchanged when editing')
-                    from provider_secrets import encrypt
-                    kid,secret=encrypt('backup-smb:'+key,password)
+                    from provider_secrets import encrypt,SecretUnavailable
+                    try:kid,secret=encrypt('backup-smb:'+key,password)
+                    except SecretUnavailable:raise Refused('Secure NAS credential storage is unavailable; restore the original server encryption key') from None
                     c.update(key_id=kid,secret=base64.b64encode(secret).decode())
                 elif old.get('secret'): c.update(secret=old['secret'],key_id=old['key_id'])
                 else: raise Refused('Enter the NAS account password')
@@ -206,11 +209,32 @@ class StorageConfiguration:
             self.receipt(db,actor,'storage.folder.created',dict(id=key))
             return dict(created=True)
 
+    @staticmethod
+    def distinct_folders(source,destination):
+        from management import Refused
+        # A harmless unique marker catches aliases, including a mounted share
+        # configured again through SMB. Removing originals must never remove
+        # the active destination through a second name for the same folder.
+        marker='.market-location-'+uuid.uuid4().hex
+        token=os.urandom(32)
+        created=False
+        try:
+            with destination.open(marker,'xb') as stream:stream.write(token)
+            created=True
+            try:
+                with source.open(marker) as stream:shared=stream.read(33)==token
+            except FileNotFoundError:shared=False
+            if shared:raise Refused('These destinations refer to the same backup folder; choose a separate destination')
+        finally:
+            if created:destination.remove(marker)
+
     def migration_assessment(self, key):
         from management import Refused
         self.candidate(key)
         with self.lock(),self.db() as db:
             self.idle(db)
+            self.cleanup_temporaries(db)
+            self._operation_deadline=time.monotonic()+20
             configs,active=self.configs()
             if key==active:raise Refused('Destination is already active')
             if configs[key]['type']!='smb' and configs[active]['type']!='smb':
@@ -223,6 +247,7 @@ class StorageConfiguration:
             with self.location(active):rows,other=self.rows_current()
             if any(r['verification']!='archive_integrity_verified' for r in rows):raise Refused('Unverified legacy archives need separate classification before migration')
             with self.location(key) as destination:
+                self.distinct_folders(self.provider_for(active),destination)
                 capacity=destination.capacity()
             total=sum(r['bytes'] for r in rows)
             return dict(source_id=active,destination_id=key,source_revision=configs[active]['revision'],destination_revision=configs[key]['revision'],
@@ -272,6 +297,8 @@ class StorageConfiguration:
                 for row in current:
                     if time.monotonic()-started>7200:raise Refused('Migration time budget reached; verified copies can be reused on retry')
                     name=row['filename'];temporary='.migration-'+job_id+'-'+name
+                    job.update(temporary=temporary,storage_id=destination_id)
+                    self.set(db,'migration',job);db.commit()
                     try:
                         existing=destination.info(name)
                     except FileNotFoundError:existing=None
@@ -291,6 +318,10 @@ class StorageConfiguration:
                         finally:
                             try:destination.remove(temporary)
                             except FileNotFoundError:pass
+                            except Exception:
+                                self.remember_temporary(db,job)
+                                raise
+                    job['temporary']=None
                     with self.location(source_id):manifest=self.read_json(name[:-5]+'.json')
                     manifest['file_identity']=destination.info(name)['identity']
                     with self.location(destination_id):self.write_json(name[:-5]+'.json',manifest)
@@ -320,6 +351,7 @@ class StorageConfiguration:
             plan=job['plan'];configs,active=self.configs()
             if active!=plan['destination_id']:raise Refused('Migrated destination is no longer active')
             source=self.provider_for(plan['source_id']);destination=self.provider_for(active)
+            self.distinct_folders(source,destination)
             if plan.get('protected_count',0) and not confirm_protected:
                 raise Refused('Explicit protected original-copy deletion acknowledgement is required')
             results=[]

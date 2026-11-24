@@ -33,8 +33,8 @@ def relative(value, *, empty=False):
 
 
 def endpoint(host, port):
-    if type(port) is not int or port != 445:
-        raise StorageError('Native SMB uses TCP port 445; other ports are not permitted')
+    if type(port) is not int or not (port==445 or 1024<=port<=65535):
+        raise StorageError('Choose SMB TCP445 or an explicitly configured high port (1024–65535)')
     if not isinstance(host, str) or len(host) > 253 or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9.:-]*', host):
         raise StorageError('Enter a NAS hostname or IP address, without a URL or path')
     # DNS resolution also has a deadline, independently of the SMB connect deadline.
@@ -49,7 +49,7 @@ def endpoint(host, port):
         ip = ipaddress.ip_address(address)
         # Dedicated LAN functionality: no internet, loopback, link-local/metadata or multicast probes.
         networks = ('10.0.0.0/8','172.16.0.0/12','192.168.0.0/16','fc00::/7')
-        if not any(ip in ipaddress.ip_network(n) for n in networks):
+        if ip==ipaddress.ip_address('fd00:ec2::254') or not any(ip in ipaddress.ip_network(n) for n in networks):
             raise StorageError('Choose a private LAN NAS address; loopback, link-local and public addresses are refused')
     return addresses[0]
 
@@ -166,7 +166,7 @@ class SMB:
         self.connection = None
         try:
             address = endpoint(config['host'], config.get('port', 445))
-            self.connection = Connection(uuid.uuid4(), address, 445, require_signing=True)
+            self.connection = Connection(uuid.uuid4(), address, config.get('port',445), require_signing=True)
             # Open/Session/Tree operations use this bounded receive path too.
             receive = self.connection.receive
             self.connection.receive = lambda request, **kw: receive(request, **dict(kw, timeout=self.remaining()))
@@ -253,7 +253,7 @@ class SMB:
             if standard['number_of_links'].get_value() != 1:
                 raise StorageError('Backup files with multiple links are refused')
             size = standard['end_of_file'].get_value()
-            return dict(bytes=size, identity=['smb', size, basic['last_write_time'].get_value()])
+            return dict(bytes=size, identity=['smb',size,basic['last_write_time'].get_value(),basic['change_time'].get_value()])
         finally: h.close()
 
     def entries(self, directory='', *, maximum=MAX_ENTRIES):

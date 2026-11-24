@@ -87,7 +87,7 @@ def approved_document(db, row):
 def recovery_ready(actor_id):
     """Rehash a protected restored archive and enforce the reviewed recovery mode.
 
-    The operator-owned receipt is mounted read-only; it cannot be written by API
+    The operator/service-owned receipt is mounted read-only; it cannot be written by API
     policy saves. No configured path or absent external evidence is ready.
     """
     try:
@@ -102,7 +102,7 @@ def recovery_ready(actor_id):
             if evidence.get('off_vm_verified') is not True or not evidence.get('failure_domain'): return False
         if not re.fullmatch('[a-f0-9]{32}', evidence['backup_id']): return False
         from .backup_management import connect
-        manifest = connect(actor_id, '/backups/'+evidence['backup_id']+'/manifest')
+        manifest = connect(actor_id, '/backups/'+evidence['backup_id']+'/recovery-proof')
         dump = aware(datetime.fromisoformat(manifest['created_at']))
         restored = aware(datetime.fromisoformat(manifest['restoration_verified_at']))
         if not policy['off_vm_required']:
@@ -319,7 +319,7 @@ def recovery_evidence_view():
     """Cheap, honest status; live execution separately rehashes the local archive."""
     policy = recovery_policy()
     base = {'policy':policy, 'off_vm_required':policy['off_vm_required'],
-            'local_archive_status':'Revalidated under the backup lock before execution'}
+            'local_archive_status':'Identity and protected restore receipt rechecked under the backup lock; full checksum and isolated restoration run during automatic verification'}
     try:
         if not policy['valid']: raise ValueError()
         path=Path(os.environ.get('RETENTION_RECOVERY_EVIDENCE','/retention-recovery/evidence.json'))

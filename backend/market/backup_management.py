@@ -137,6 +137,9 @@ def download(backup_id: BackupId, user: User = Depends(admin), db: Session = Dep
     response = connect(user.id, f'/backups/{backup_id}/download', streaming=True)
     disposition = response.headers.get('Content-Disposition', '')
     length = response.headers.get('Content-Length', '')
+    checksum=response.headers.get('X-Checksum-SHA256','')
+    if checksum and not re.fullmatch('[a-f0-9]{64}',checksum):
+        response.close();raise HTTPException(503,'Invalid backup checksum response')
     if not re.fullmatch(r'attachment; filename="[A-Za-z0-9][A-Za-z0-9_.-]{0,180}\.dump"', disposition) or not length.isdigit():
         response.close()
         raise HTTPException(503, 'Invalid backup download response')
@@ -156,7 +159,7 @@ class StorageInput(Strict):
     type: str = Field(pattern=r'^(local|smb|mounted)$')
     name: str = Field(min_length=1, max_length=80)
     host: str | None = Field(default=None, max_length=253)
-    port: int = Field(default=445, ge=445, le=445)
+    port: int = Field(default=445, ge=445, le=65535)
     username: str | None = Field(default=None, max_length=160)
     password: str | None = Field(default=None, min_length=1, max_length=1024)
     domain: str = Field(default='', max_length=100)
@@ -240,3 +243,8 @@ def delete_selected(body: BulkDeletion, user: User = Depends(admin), db: Session
 @router.post('/restore-test',status_code=202)
 def test_restore(body: Destination, user: User = Depends(admin), db: Session = Depends(session)):
     return mutation(db,user,'restore-test','/restore-test',body.model_dump())
+
+
+@router.post('/storage/cleanup')
+def cleanup_incomplete(user: User = Depends(admin),db: Session = Depends(session)):
+    return mutation(db,user,'storage.cleanup','/storage/cleanup',{})
