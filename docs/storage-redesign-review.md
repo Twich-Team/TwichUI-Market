@@ -30,14 +30,24 @@ Database growth uses actual hourly samples, range controls, tooltips, an area li
 - 776 PostgreSQL tests pass in 442.68 seconds in an independent temporary market_test PostgreSQL container; it was removed after testing.
 - 157 operational checks pass in 25.385 seconds, including 26 manager and 30 NAS safety checks.
 - 149 frontend tests and TypeScript/production Vite build pass.
-- 16 isolated dashboard Chromium scenarios pass in 49.8 seconds, including direct navigation/history, dialogs, filters, bulk safeguards, empty/stale/error states, local/NAS health, active/failed/interrupted/completed migration, recovery expiry and cleanup pause.
-- axe checks pass in the dashboard workflow. Responsive captures cover 1280×720, 1920×1080, 2560×1080 and 800px desktop widths.
+- 17 isolated dashboard Chromium scenarios pass in 52.7 seconds, including direct navigation/history, dialogs, filters, bulk safeguards, empty/stale/error states, local/NAS health, active/failed/interrupted/completed migration, recovery expiry and cleanup pause.
+- axe checks pass in the dashboard workflow. Responsive captures cover 1280×720, 1920×1080, 2560×1080 and 2560×1440, 800px desktop and 320px phone widths.
+- Three existing backup-management fixture scenarios also pass locally in Chromium (9.4 seconds) and WebKit (21.7 seconds), including empty/unavailable inventory. An additional 2560×1440 check passes across all four pages (7.4 seconds); its captures were visually reviewed.
 - A separate unmodified c6946cd baseline screenshot capture passes. Existing integration browser selectors were updated while retaining their assertions.
 - All four pages, drawers/dialogs, warning/failure and narrow states were actually viewed. Refinements fixed chart-axis/legend collisions, drawer sizing, excessive header height, incomplete capacity attribution and lazy-chart capture.
 
-[Before/after gallery](evidence/storage-redesign/review.html). All screenshots use synthetic fixtures and are not live operational evidence. Fixture full-page height fell from 7,385px for the original combined page to 1,171px for Overview (84% reduction); monitoring content through capacity fits approximately 1080px, with footer below. At 1280×720 primary cards are visible immediately while charts/details require vertical scrolling. No text was globally shrunk to achieve this.
+[Before/after gallery](evidence/storage-redesign/review.html). All screenshots use synthetic fixtures and are not live operational evidence. Fixture full-page height fell from 7,143px for the original combined page to 1,171px for Overview (84% reduction); monitoring content through capacity fits approximately 1080px, with footer below. At 1280×720 primary cards are visible immediately while charts/details require vertical scrolling. No text was globally shrunk to achieve this.
 
-CI: final exact-source [Native NAS protocol and browser workflow](https://github.com/Twich-Team/TwichUI-Market/actions/runs/45464248061) passes, including real configuration, folder browsing/creation, migration, protected/bulk deletion, outage and accessibility checks against isolated SMB/PostgreSQL. Backend, website and Windows checks are still in progress. Initial browser failures identified a status selector mismatch and terminal-operation cached-inventory refresh race; they were corrected, not waived.
+All four CI workflows pass test commit `8d12051a95f410b1204c6dec24f5088add731069`, whose application code is `1137602dd7d7c1fb2917b7df2f2b3f7d204200c5`:
+
+- [Backend](https://github.com/Twich-Team/TwichUI-Market/actions/runs/45469809879): success.
+- [Private website](https://github.com/Twich-Team/TwichUI-Market/actions/runs/45469810015): success.
+- [Native NAS storage](https://github.com/Twich-Team/TwichUI-Market/actions/runs/45469810010): success.
+- [Windows companion](https://github.com/Twich-Team/TwichUI-Market/actions/runs/45469810364): success.
+
+The website workflow includes Chromium and WebKit backup administration against the actual isolated management boundary. Native NAS CI exercises real SMB configuration, folders, migration, protected/bulk deletion, outage and accessibility checks. Windows CI includes prepared package consumption, signed SDK updates and installed release checks. Initial failures identified a status selector mismatch, terminal-operation cached-inventory refresh race, phone unavailable-metric overflow and an incorrect empty-state test expectation; each was corrected and rerun. [CI record](evidence/storage-redesign/ci-results.json).
+
+The closing evidence commit does not change application code. Its baseline-only fixture paging correction was exercised separately against the original build; the baseline test remains skipped in ordinary CI.
 
 ## Performance and limits
 
@@ -58,3 +68,10 @@ Before deployment the owner must review/approve this draft, verify current desti
 - 2ad5d30: bounded history and axis readability.
 - 24bf8d4: busy cached inventories retain fast refresh until current measurements return.
 - 467135a: regression reproduces the terminal-job cache race under the real manager lock.
+- 94c579d / c98663b: phone navigation wraps and unavailable summary metrics remain readable without horizontal overflow; the actual service-error phone state has a browser regression.
+
+- 0e3e24b: compact charts reserve space for wrapped legends.
+- 1137602: sparse and isolated database measurements retain visible markers while dense continuous lines remain clear.
+
+- 8d12051: retain the distinct empty-inventory assertion in the existing backup-management suite.
+- Final evidence-only commit: corrected baseline fixture paging, reviewed screenshots and reports; no application behavior changes.

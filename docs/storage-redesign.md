@@ -43,13 +43,12 @@ Hourly PostgreSQL allocated bytes are recorded data with gaps. Logical deletion 
 
 Read-only SQLite URI inspection at task start found migration 4dd02526379c4e0083f62f68fab4674c running, with copied=3 and bytes_copied=6321127985. No manager operation, service restart, storage mutation, backup deletion or actual cleanup was initiated. Recheck before any separately authorized future deployment.
 
-## Validation checkpoint
+## Validation
 
-- Backend: 776 PostgreSQL tests pass in 442.68 s on a separate bounded temporary market_test PostgreSQL container; task container removed. Operational suite: 156 pass, including 25 manager and 30 NAS safety checks.
-- Frontend: 148 unit/component tests and TypeScript/Vite build pass. Uses existing dependencies; no package changes.
-- First browser pass: 13 synthetic route-isolated dashboard scenarios pass, including expired recovery, failed/interrupted/completed migration, NAS failure, storage pressure, empty/stale data, navigation/history, dialogs, filtering, bulk confirmation and axe.
-- Existing integration selectors updated for secondary navigation and dialogs; all destructive integration exercises remain fixture-only.
-- Browser screenshot refinement corrected account-available/free-space distinctions, unknown physical totals, oversized Overview header, drawer width and lazy chart capture. Final source screenshot pass follows.
+All four final hosted workflows pass: Backend, Private website, Native NAS storage and Windows companion. [CI record](evidence/storage-redesign/ci-results.json).
 
+Application `1137602` and test assertion correction `8d12051` pass 776 PostgreSQL, 157 operational, 149 frontend and 17 dashboard browser checks locally, plus three existing backup-management fixture checks in each of Chromium and WebKit and an all-four-page 2560×1440 review. TypeScript/Vite build and axe checks pass. Existing integration selectors retain their assertions under the new navigation and dialogs. No package changes were introduced.
 
-Final local application checkpoint 467135a: 776 PostgreSQL, 157 operational, 149 frontend and 16 browser checks pass. [Review report](storage-redesign-review.md) and [gallery](evidence/storage-redesign/review.html) retain the full evidence. The live migration independently completed at 18:30:35 UTC; no originals were removed by this task. Final Native NAS CI passes actual protocol and browser integration; broader CI continues.
+The visual review corrected capacity accounting, header/drawer sizing, chart axes and legends, phone unavailable metrics, and lazy-chart capture. The baseline capture honors its original requested inventory page size. [Review report](storage-redesign-review.md) and [before/after gallery](evidence/storage-redesign/review.html) retain the final evidence.
+
+The live migration independently completed at 11:30:35 a.m. America/Denver on November 24; durable state records six archives and originals preserved. This task did not remove originals or change production services/settings. Deployment requires separate owner authorization and a fresh operational preflight.
