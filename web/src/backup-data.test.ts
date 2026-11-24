@@ -1,11 +1,41 @@
-import {describe,it,expect} from 'vitest';
-import {backupQueryParams,reliabilityFromInventory,recordedReliabilityDays,type RecoveryPoint,type BackupFilters} from './backup-data';
-const filters:BackupFilters={search:'',storage:'all',protection:'all',verified:'all',backupType:'all',sort:'created_desc'};
-const items:RecoveryPoint[]=[{id:'a',filename:'manual-a.dump',created_at:'2026-11-20T10:00:00Z',type:'manual',bytes:100,protected:true,verification:'archive_integrity_verified',restoration_verified_at:'2026-11-20T11:00:00Z',storage_id:'nas',storage_name:'Vault'},{id:'b',filename:'scheduled-b.dump',created_at:'2026-11-21T10:00:00Z',type:'scheduled',bytes:200,protected:false,verification:'archive_integrity_verified',restoration_verified_at:null,storage_id:'local'}];
-describe('recovery point transforms',()=>{
- it('keeps the default overview URL compatible and shares the cache',()=>{expect(backupQueryParams(0,filters).toString()).toBe('offset=0&limit=100');});
- it('preserves encoded search and all server filter names across batches',()=>{const params=backupQueryParams(100,{...filters,search:'NAS & vault',storage:'nas',protection:'protected',backupType:'manual',verified:'restored',sort:'bytes_asc'});expect(params.get('search')).toBe('NAS & vault');expect(params.get('protection')).toBe('protected');expect(params.get('verification')).toBe('restored');expect(params.get('backup_type')).toBe('manual');expect(params.get('sort')).toBe('bytes_asc');expect(params.get('offset')).toBe('100');});
- it('pads sparse execution history with unknown days instead of collapsing the calendar',()=>{const days=recordedReliabilityDays([{day:'2026-11-20',succeeded:2,failed:1}],new Date('2026-11-24T12:00:00Z'));expect(days).toHaveLength(42);expect(days.find(d=>d.date==='2026-11-20')?.status).toBe('mixed');expect(days.at(-1)?.status).toBe('unknown');});
- it('never treats an empty day as a failed or missed schedule',()=>{const days=reliabilityFromInventory(items,[],new Date('2026-11-24T10:00:00Z'));expect(days).toHaveLength(42);expect(days.find(d=>d.date==='2026-11-20')?.status).toBe('success');expect(days.find(d=>d.date==='2026-11-24')?.status).toBe('unknown');});
- it('records only explicit failure receipts and preserves mixed outcomes',()=>{const days=reliabilityFromInventory(items,[{at:'2026-11-20T09:00:00Z',action:'backup.failed'},{at:'2026-11-23T09:00:00Z',action:'protection.updated'}],new Date('2026-11-24T10:00:00Z'));expect(days.find(d=>d.date==='2026-11-20')?.status).toBe('mixed');expect(days.find(d=>d.date==='2026-11-23')?.status).toBe('unknown');});
+import { describe, it, expect } from 'vitest';
+import { backupOutcome, backupQueryParams, reliabilityCounts, utcBackupDay, type BackupFilters } from './backup-data';
+
+const filters: BackupFilters = { search: '', storage: 'all', protection: 'all', verified: 'all', backupType: 'all', sort: 'created_desc' };
+const inventory = [
+  { created_at: '2026-11-19T23:59:00-02:00', verification: 'archive_integrity_verified' },
+  { created_at: '2026-11-22T10:00:00Z', verification: 'legacy_metadata_only' },
+];
+
+describe('backup inventory and reliability', () => {
+  it('preserves the overview request and applies filters and sorting server-side', () => {
+    expect(backupQueryParams(0, filters).toString()).toBe('offset=0&limit=100');
+    const params = backupQueryParams(10, { ...filters, search: 'NAS & vault', storage: 'nas', protection: 'protected', backupType: 'manual', verified: 'restored', sort: 'bytes_asc' }, 10);
+    expect(Object.fromEntries(params)).toEqual({ offset: '10', limit: '10', search: 'NAS & vault', storage_id: 'nas', protection: 'protected', verification: 'restored', backup_type: 'manual', sort: 'bytes_asc' });
+  });
+
+  it('uses UTC day boundaries including leap day', () => {
+    expect(utcBackupDay('2024-02-28T23:55:00-02:00')).toBe('2024-02-29');
+    expect(utcBackupDay('2024-03-01T00:05:00+02:00')).toBe('2024-02-29');
+  });
+
+  it('trusts recorded outcomes before archive counts and omits future evidence', () => {
+    const days = reliabilityCounts(inventory, [], [
+      { day: '2026-11-20', succeeded: 1, failed: 1 }, { day: '2026-11-21', succeeded: 0, failed: 1 },
+    ]);
+    expect(backupOutcome('2026-11-20', '2026-11-20', days)).toBe('mixed');
+    expect(backupOutcome('2026-11-21', '2026-11-20', days)).toBe('unknown');
+    expect(backupOutcome('2026-11-21', '2026-11-21', days)).toBe('failed');
+  });
+
+  it('distinguishes fallback archive evidence, recorded failures and missing days', () => {
+    const days = reliabilityCounts(inventory, [
+      { at: '2026-11-21T09:00:00Z', action: 'backup.failed' }, { at: '2026-11-23T09:00:00Z', action: 'protection.updated' },
+    ]);
+    expect(backupOutcome('2026-11-20', '2026-11-24', days)).toBe('success');
+    expect(backupOutcome('2026-11-21', '2026-11-24', days)).toBe('failed');
+    expect(backupOutcome('2026-11-22', '2026-11-24', days)).toBe('unknown');
+    expect(backupOutcome('2026-11-23', '2026-11-24', days)).toBe('unknown');
+    expect(backupOutcome('2026-11-24', '2026-11-24', days)).toBe('unknown');
+  });
 });
