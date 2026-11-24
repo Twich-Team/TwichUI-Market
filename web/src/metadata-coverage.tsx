@@ -12,10 +12,22 @@ function CoverageBars({label,rows,series}:{label:string;rows:string[];series:{na
   return <div className="coverage-chart"><DeferredChart label={label} option={option}/></div>;
 }
 export function MetadataSummary({state}:{state:MetadataOverview}) {
-  const cards=[['Observed item IDs',state.observed],['Items with names',state.resolved_names],['Missing names',state.missing_names],['Name coverage',state.name_percent===null?'No observations':`${state.name_percent}%`],['Icons available',state.icons_available],['Icons missing',state.icons_missing],['Useful attributes',state.attributes_available],['Missing attributes',state.observed-state.attributes_available],['Pending recovery items',state.scoped_pending_items]];
+  const fields = [
+    ["Item names", state.resolved_names],
+    ["Icons", state.icons_available],
+    ["Essential attributes", state.attributes_available],
+  ] as const;
   return <section aria-label="Item metadata summary">
-    <div className="metadata-stats">{cards.map(([label,value])=><div className="panel padded" key={label}><span className="small muted">{label}</span><strong>{typeof value==='number'?value.toLocaleString():value}</strong></div>)}</div>
-    <p className="small muted">Measured <LocalTime value={state.measured_at}/>. {state.coverage_identity} {state.attributes_definition}</p>
+    <section className="panel padded">
+      <h2>Coverage in the selected market</h2>
+      <ul className="admin-health-list">{fields.map(([field, count])=><li key={field}>
+        <strong>{field}</strong><span>{state.observed ? `${count.toLocaleString()} / ${state.observed.toLocaleString()} available` : "No item observations"}</span>
+      </li>)}</ul>
+      <p className="muted">{state.scoped_pending_items.toLocaleString()} items queued or in progress in this market.</p>
+      {state.failed_or_blocked > 0 && <p className="notice">{state.failed_or_blocked.toLocaleString()} items remain unnamed after a provider error or access restriction. Review Provider evidence or the Recovery Tracker.</p>}
+    </section>
+    <details className="panel padded"><summary>Coverage charts and measurement details</summary>
+    <p className="muted">Measured <LocalTime value={state.measured_at}/> · {state.coverage_identity} {state.attributes_definition}</p>
     <div className="coverage-grid">
       <section className="panel padded"><h3>Stored field coverage</h3><p className="small muted">Each bar uses the same {state.observed.toLocaleString()} observed IDs. Available plus missing equals that denominator.</p><CoverageBars label="Stored names, icons and attributes; available versus missing" rows={['Names','Icons','Attributes']} series={[
         {name:'Available',values:[state.resolved_names,state.icons_available,state.attributes_available],color:'#d9b365'},
@@ -33,6 +45,7 @@ export function MetadataSummary({state}:{state:MetadataOverview}) {
       <p className="small muted">{state.recovery_notice} Unavailable means an observed 404 without a recorded error; errors include blocked access and rate limits.</p>
       <p className="small">{state.scoped_pending_items} observed items with queued/running tasks · {state.pending_queue} tasks queued across all markets · {state.active_jobs} active jobs · Last enrichment <LocalTime value={state.last_enrichment}/></p>
     </section>
+    </details>
   </section>;
 }
 export function ProviderCoverage({state}:{state:MetadataOverview}) {
@@ -43,7 +56,7 @@ export function ProviderCoverage({state}:{state:MetadataOverview}) {
       return <article className="provider-coverage" key={provider} aria-label={`${providerNames[provider]} coverage`}>
         <h4><ProviderEmblem provider={provider}/></h4>
         <dl className="coverage-facts"><div><dt>Retained names</dt><dd>{record?.names_available||0}</dd></div><div><dt>Attribute records</dt><dd>{record?.detailed_records||0}</dd></div><div><dt>Name only</dt><dd>{record?.name_only||0}</dd></div><div><dt>Overlapping names</dt><dd>{record?.overlapping_names||0}</dd></div><div><dt>Conflicting names</dt><dd>{record?.conflicting_names||0}</dd></div></dl>
-        <details><summary>Field breakdown</summary><DataTable label={`${providerNames[provider]} field coverage`} getRowId={row=>row.field} data={Object.entries(record?.fields_available||{}).map(([field,count])=>({field,available:count,missing:state.observed-count}))} columns={[
+        <details><summary>Field breakdown</summary><DataTable compact label={`${providerNames[provider]} field coverage`} getRowId={row=>row.field} data={Object.entries(record?.fields_available||{}).map(([field,count])=>({field,available:count,missing:state.observed-count}))} columns={[
           {accessorKey:'field',header:'Field',enableHiding:false,cell:({row})=>row.original.field.replaceAll('_',' ')},
           {accessorKey:'available',header:'Available',meta:{numeric:true}},{accessorKey:'missing',header:'Missing / unknown',meta:{numeric:true}},
         ]}/></details>

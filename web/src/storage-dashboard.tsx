@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from './api';
 import { navigate, useLocation } from './navigation';
 import { LocalTime, Status } from './admin-table';
-import { BackupManagement, BackupCreateButton, useBackupOverview } from './backup-management';
+import { BackupManagement, useBackupOverview } from './backup-management';
 import { BackupStorage, useBackupStorage, MigrationProgress } from './backup-storage';
 import { DatabaseGrowth } from './storage-growth';
 import { StorageOperationsPanel } from './storage-operations';
@@ -19,13 +19,13 @@ export function useStorageSummary(enabled=true) {
 const tabs:[StorageView,string,string][]=[['overview','Overview','◈'],['backups','Backups','▤'],['storage','Storage','▰'],['maintenance','Maintenance','⚙']];
 export function StorageDashboard({readOnly=false}:{readOnly?:boolean}) {
   const url=useLocation(),view=storageView(url.split('?')[1]||''),client=useQueryClient();
-  const summary=useStorageSummary();
+  const summary=useStorageSummary(), destinations=useBackupStorage(view==='backups');
   return <div className="storage-dashboard">
-    <div className="storage-title"><div><span className="eyebrow">THE RECOVERY LEDGER</span><h1>Storage &amp; Backups</h1><p>Keep your history safe. See what needs your attention.</p></div><div className="backup-actions"><button aria-label="Refresh storage dashboard" onClick={()=>{for(const key of ['storage-summary','backup-management','backup-storage','maintenance-health'])void client.invalidateQueries({queryKey:['private',key]});}}>↻ Refresh</button><BackupCreateButton readOnly={readOnly}/></div></div>
+    <div className="storage-title"><div><span className="eyebrow">THE RECOVERY LEDGER</span><h1>Storage &amp; Backups</h1><p>Keep your history safe. See what needs your attention.</p></div>{view==='overview'&&<div className="backup-actions"><button aria-label="Refresh storage dashboard" onClick={()=>{for(const key of ['storage-summary','backup-management','backup-storage','maintenance-health'])void client.invalidateQueries({queryKey:['private',key]});}}>↻ Refresh</button></div>}</div>
     <nav className="storage-subnav" aria-label="Storage & Backups pages">{tabs.map(([key,label,icon])=><a key={key} href={storageUrl(key)} aria-current={view===key?'page':undefined} onClick={event=>{if(!event.metaKey&&!event.ctrlKey&&!event.shiftKey&&event.button===0){event.preventDefault();navigate(storageUrl(key));}}}><span aria-hidden="true">{icon}</span>{label}</a>)}</nav>
     <div className="storage-page" key={view}>
       {view==='overview'&&<StorageOverview summary={summary.data} summaryError={summary.error?.message}/>}
-      {view==='backups'&&<BackupManagement readOnly={readOnly}/>}
+      {view==='backups'&&<BackupManagement readOnly={readOnly} destinations={destinations.data?.destinations}/>}
       {view==='storage'&&<><BackupStorage readOnly={readOnly} databaseStorage={summary.data}/><section className="panel padded"><h3>PostgreSQL storage</h3><CapacityRow title="Database filesystem" total={summary.data?.operations?.capacity.filesystem.total_bytes} available={summary.data?.operations?.capacity.filesystem.available_bytes}/><p className="small muted">The database stays on its current server when backups move to a NAS.</p></section></>}
       {view==='maintenance'&&<MaintenanceDashboard summary={summary.data} readOnly={readOnly}/>}
     </div>

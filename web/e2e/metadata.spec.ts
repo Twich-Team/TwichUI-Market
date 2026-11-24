@@ -17,12 +17,13 @@ test("administrator recovery, persistent jobs and data-source forms use local AP
   const existing=await (await page.request.get("/api/v1/admin/item-metadata/jobs")).json();
   for(const job of existing.jobs) if(["queued","running","paused"].includes(job.state)) await page.request.post(`/api/v1/admin/item-metadata/jobs/${job.id}/cancel`,{headers:{"X-CSRF-Token":initialSession.csrf_token}});
   await page.getByRole("button", { name: "Administration", exact: true }).click();
-  await page.getByRole("tab", { name: "Item Metadata", exact: true }).click();
+  await page.getByRole("link", { name: "Item Metadata", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Item Metadata", exact: true })).toBeVisible();
-  await expect(page.getByText("Observed item IDs", { exact: true })).toBeVisible();
+  await expect(page.getByRole("heading",{name:"Coverage in the selected market",exact:true})).toBeVisible();
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: `${directory}/01-overview.png`, fullPage: true });
   expect((await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze()).violations).toEqual([]);
+  await page.getByRole("button",{name:"Recovery jobs",exact:true}).click();
   await page.getByLabel("Numeric item ID").fill("20002");
   await page.getByRole("button", { name: "Preview recovery", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Recovery preview" })).toBeVisible();
@@ -48,13 +49,14 @@ test("administrator recovery, persistent jobs and data-source forms use local AP
   await expect(page.getByRole("heading", { name: "Recovery preview" })).toBeVisible();
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: `${directory}/03-batch-preview.png`, fullPage: true });
-  await page.getByRole("tab", { name: "Data Sources", exact: true }).click();
+  await page.getByRole("link", { name: "Data Sources", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Data Sources", exact: true })).toBeVisible();
-  await expect(page.getByText("Access forbidden", { exact: true })).toBeVisible();
+  await expect(page.getByText(/Access forbidden/).first()).toBeVisible();
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: `${directory}/05-data-sources.png`, fullPage: true });
-  await expect(page.getByRole("button", { name: "Test Connection", exact: true })).toHaveCount(4);
+  await expect(page.getByText("Edit settings",{exact:true})).toHaveCount(4);
   const everloot = page.getByRole("region", { name: "Everloot connection", exact: true });
+  await everloot.getByText("Edit settings",{exact:true}).click();
   await everloot.getByRole("button", { name: "Add API Key", exact: true }).click();
   await expect(page.getByLabel("New API key", { exact: true })).toBeVisible();
   // Capture an empty secret form only. No screenshots/traces contain credential values.

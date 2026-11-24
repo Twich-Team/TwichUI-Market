@@ -1,0 +1,28 @@
+dialog.confirmation-dialog {
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
+  overscroll-behavior: contain;
+  scroll-padding-block-start: 5rem;
+}
+.confirmation-heading {
+  position: sticky;
+  z-index: 1;
+  top: -1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: .75rem;
+  padding-block: .75rem;
+  background: #211a14;
+  border-bottom: 1px solid var(--line,#73572f);
+}
+.confirmation-heading h3 { margin: 0; }
+.confirmation-heading > button { flex: none; min-height: 44px; margin: 0; }
+@media (max-width: 650px) {
+  dialog.confirmation-dialog {
+    width: calc(100vw - 1rem);
+    max-height: calc(100dvh - 1rem - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  }
+  .confirmation-heading { top: -1rem; }
+  dialog.confirmation-dialog input:not([type=checkbox]), dialog.confirmation-dialog select { font-size: 16px; }
+}

@@ -1,38 +1,26 @@
 import type { StorageOperations } from "./storage-operations";
 import { StorageDashboard, useStorageSummary } from "./storage-dashboard";
 import { navigate, useLocation } from "./navigation";
+import { administrationGroups, administrationSection } from "./admin-navigation";
+import { useQuery } from "@tanstack/react-query";
+import { useBackupOverview } from "./backup-management";
+import "./administration.css";
 import { Loading } from "./loading";
 import { AdministrationOverview } from "./admin-overview";
 import type { MetadataOverview } from "./metadata-admin";
-import { formatBytes as bytes } from "./size";
 import { MemberArchive } from "./member-archive";
 import { CollectionHistory, SecurityHistory } from "./admin-histories";
-import { LocalTime } from "./admin-table";
+import { LocalTime, Status } from "./admin-table";
 import { DataSources, ItemMetadataAdmin } from "./metadata-admin";
 import { MyPreferences } from "./user-preferences";
 import { MarketConfiguration } from "./market-configuration";
 import { CompanionDevices } from "./companion-devices";
 import { useState } from "react";
 import { DataTable } from "./data-table";
-import { api, User, when } from "./api";
+import { api, User } from "./api";
 import { Market } from "./types";
 import { useLoad } from "./research";
 
-interface Enrichment {
-  name_coverage?: {
-    item_ids: number;
-    primary_names: number;
-    supplemental_names: number;
-    unresolved: number;
-    percent: number | null;
-  };
-  rich_items: number;
-  community_items: number;
-  community_enabled: boolean;
-  icon_cache_budget_bytes: number;
-  icon_states: { status: string; count: number; bytes: number }[];
-  media_failures: MetadataFailure[];
-}
 interface Device {
   id: number;
   user_id?: number;
@@ -44,31 +32,6 @@ interface Invitation {
   id: number;
   expires_at: string;
   used: boolean;
-}
-interface Run {
-  id: number;
-  market_id: number;
-  checked_at: string;
-  status: string;
-  http_status: number | null;
-  duration_seconds: number;
-  payload_bytes: number;
-  error: string | null;
-}
-interface MetadataFailure {
-  region: string;
-  item_id: number;
-  status: string;
-  http_status: number | null;
-  checked_at: string;
-  retry_after: string;
-}
-interface Event {
-  id: number;
-  actor_id: number | null;
-  action: string;
-  detail: string;
-  created_at: string;
 }
 export interface Storage {
   operations?: StorageOperations;
@@ -130,11 +93,10 @@ export function Account({
   }
   return (
     <>
-      <div className="eyebrow">YOUR PRIVATE WORKSHOP</div>
-      <h1>Account & devices</h1>
-      <p className="intro">
-        Manage the companion’s access and keep your account secure.
-      </p>
+      <h1>Account &amp; devices</h1>
+      <nav className="account-task-nav" aria-label="Account tasks">
+        <a href="#account-devices">Devices</a><a href="#account-preferences">Preferences</a><a href="#account-security" onClick={()=>{const section=document.querySelector<HTMLDetailsElement>("#account-security");if(section)section.open=true;}}>Security</a>
+      </nav>
       {(error || devices.error) && (
         <p className="notice error" role="alert">
           {error || devices.error}
@@ -146,9 +108,8 @@ export function Account({
         </p>
       )}
       {working && <Loading label="Updating your account…"/>}
-      <MyPreferences />
-      <section className="panel padded"><div className="eyebrow">WINDOWS COMPANION</div><h2>Your market, ready on your PC.</h2><p>Install the companion, then approve this device in your browser. Your password stays on the website.</p><button className="primary" onClick={openCompanion}>Get Desktop Companion</button></section>
-      <CompanionDevices userId={userId}/>
+      <div id="account-devices"><CompanionDevices userId={userId} readOnly={readOnly} openCompanion={openCompanion}/></div>
+      <div id="account-preferences"><MyPreferences /></div>
       <section className="panel padded">
         <details className="legacy-device-access"><summary>Older companions &amp; API clients</summary>
         <h2>Legacy device tokens</h2>
@@ -202,6 +163,9 @@ export function Account({
         )}
         <DataTable<Device>
           label="devices"
+          loading={devices.loading || devices.refreshing}
+          error={devices.error}
+          emptyMessage="No legacy device tokens."
           data={devices.data || []}
           getRowId={row=>String(row.id)}
           columns={[
@@ -244,13 +208,10 @@ export function Account({
           ]}
         />
 
-        {devices.data?.length === 0 && (
-          <p className="empty">No connected devices.</p>
-        )}
         </details>
       </section>
-      <section className="panel padded">
-        <h2>Change password</h2>
+      <details id="account-security" className="panel padded account-security">
+        <summary>Security · Change password</summary>
         <p>
           Changing your password signs out every browser and revokes all device
           tokens.
@@ -295,7 +256,7 @@ export function Account({
             Change password and sign out
           </button>
         </form>
-      </section>
+      </details>
     </>
   );
 }
@@ -311,47 +272,20 @@ export function Administration({
   refreshMarkets: () => Promise<void>;
   readOnly?: boolean;
 }) {
-  const [includeArchived, setIncludeArchived] = useState(false);
+  const [memberHistory, setMemberHistory] = useState(false);
   const url = useLocation();
-  const params = new URLSearchParams(url.split("?")[1] || "");
-  const requestedTab = params.get("admin_tab");
-  const tab = requestedTab && ["overview","members","markets","collection","storage","devices","security","metadata","sources"].includes(requestedTab) ? requestedTab : params.get("metadata_view")==="tracker"?"metadata":"overview";
-  function setTab(value:string) {const next=new URLSearchParams(location.search);next.set("admin_tab",value);navigate("/administration?"+next);}
+  const tab = administrationSection(url);
+  const title = administrationGroups.flatMap(group => group.sections).find(section => section.id === tab)?.label;
+  function setTab(value: string) { navigate(value === "overview" ? "/administration" : `/administration?admin_tab=${value}`); }
   const storageQuery = useStorageSummary(tab === "overview");
-  const
-    [message, setMessage] = useState(""),
-    [error, setError] = useState(""),
-    [invitation, setInvitation] = useState(""),
-    [working, setBusy] = useState(false);
-  const data = useLoad(
-    "administration",
-    async () => {
-      const [
-        users,
-        invitations,
-        devices,
-        enrichment,
-        deviceSummary,
-        coverage,
-      ] = await Promise.all([
-        api<User[]>(`/admin/users?include_archived=${includeArchived}`),
-        api<Invitation[]>("/admin/invitations"),
-        api<Device[]>("/admin/devices"),
-        api<Enrichment>("/admin/item-enrichment"),
-        api<{authorized:number;revoked:number;expired:number;recently_connected:number;authorized_names:string[];live_status:string}>("/companion/admin/device-summary"),
-        api<MetadataOverview>("/admin/item-metadata"),
-      ]);
-      return {
-        users,
-        invitations,
-        devices,
-        enrichment,
-        deviceSummary,
-        coverage,
-      };
-    },
-    [includeArchived],
-  );
+  const backupQuery = useBackupOverview(0, undefined, 100, tab === "overview");
+  const users = useAdminSection<User[]>(`/admin/users?include_archived=${memberHistory}`, tab === "members" || tab === "devices");
+  const invitations = useAdminSection<Invitation[]>("/admin/invitations", tab === "invitations");
+  const devices = useAdminSection<Device[]>("/admin/devices", tab === "devices");
+  const deviceSummary = useAdminSection<{authorized:number;revoked:number;expired:number;recently_connected:number;authorized_names:string[];live_status:string}>("/companion/admin/device-summary", tab === "overview");
+  const coverage = useAdminSection<MetadataOverview>("/admin/item-metadata", tab === "overview");
+  const [message, setMessage] = useState(""), [error, setError] = useState(""),
+    [invitation, setInvitation] = useState(""), [working, setBusy] = useState(false);
   const busy = working || readOnly;
   async function action(job: () => Promise<void>) {
     if (readOnly) return;
@@ -360,25 +294,13 @@ export function Administration({
     setMessage("");
     try {
       await job();
-      data.refresh();
+      await Promise.all([users, invitations, devices].filter(query=>query.fetchStatus !== "paused" && query.isEnabled).map(query=>query.refetch()));
     } catch (error) {
       setError((error as Error).message);
     } finally {
       setBusy(false);
     }
   }
-  const state = data.data;
-  const titles: Record<string, string> = {
-    overview: "Overview",
-    members: "Members & invitations",
-    markets: "Markets & schedules",
-    collection: "Collection",
-    storage: "Storage & backups",
-    devices: "Devices",
-    security: "Security events",
-    metadata: "Item Metadata",
-    sources: "Data Sources",
-  };
   const invite = () =>
     action(async () => {
       const result = await api<{ token: string }>("/admin/invitations", "POST");
@@ -388,70 +310,43 @@ export function Administration({
       setMessage(
         "Invitation created. It expires in seven days and can be used once.",
       );
-      setTab("members");
     });
   return (
     <>
-      {tab!=="storage"&&<>
-      <div className="eyebrow">KEEP THE LEDGER RUNNING</div>
-      <div className="title-row">
-        <div>
-          <h1>Administration</h1>
-          <p className="intro">
-            Members, market collection, storage, and security.
-          </p>
-        </div>
-        <button className="primary" disabled={busy} onClick={invite}>
-          Invite a friend
-        </button>
-      </div>
-      </>}
-      {(error || data.error) && (
-        <p className="notice error" role="alert">
-          {error || data.error}
-        </p>
-      )}
-      {message && (
-        <p className="notice success" role="status">
-          {message}
-        </p>
-      )}
-      {data.loading && (
-        <Loading label="Loading administration…" />
-      )}
-      {(working || data.refreshing) && <Loading inline label="Updating administration…"/>}
-      <label className="mobile-admin-section">Administration section<select value={tab} onChange={event=>setTab(event.target.value)}>{Object.entries(titles).map(([key,title])=><option key={key} value={key}>{title}</option>)}</select></label>
-      <div className="admin-tabs" role="tablist">
-        {Object.entries(titles).map(([key, title]) => (
-          <button
-            key={key}
-            role="tab"
-            aria-selected={tab === key}
-            className={tab === key ? "selected" : ""}
-            onClick={() => setTab(key)}
-          >
-            {title}
-          </button>
-        ))}
-      </div>
+      <label className="mobile-admin-section">Administration section
+        <select value={tab} onChange={event=>setTab(event.target.value)}>
+          {administrationGroups.map(group=><optgroup key={group.label} label={group.label}>
+            {group.sections.map(section=><option key={section.id} value={section.id}>{section.label}</option>)}
+          </optgroup>)}
+        </select>
+      </label>
+      {!["storage","metadata","sources"].includes(tab) && <h1>{tab === "overview" ? "Administration" : title}</h1>}
+      {error && <p className="notice error" role="alert">{error}</p>}
+      {message && <p className="notice success" role="status">{message}</p>}
+      {working && <Loading inline label="Updating administration…"/>}
       {tab === "metadata" && <ItemMetadataAdmin markets={markets} readOnly={readOnly} />}
       {tab === "sources" && <DataSources readOnly={readOnly} />}
-      {tab === "storage" && <StorageDashboard readOnly={readOnly}/> }
-      {state && (
-        <>
-          {tab === "overview" && storageQuery.isPending && <Loading label="Loading storage summary…"/>}
-          {tab === "overview" && storageQuery.error && <p role="alert" className="notice error">Storage summary is unavailable. <button onClick={()=>void storageQuery.refetch()}>Retry storage summary</button></p>}
-          {tab === "overview" && storageQuery.data && <AdministrationOverview storage={storageQuery.data} coverage={state.coverage} devices={state.deviceSummary} markets={markets} open={setTab}/>}
+      {tab === "storage" && <StorageDashboard readOnly={readOnly}/>}
+      {tab === "overview" &&
+        <AdministrationOverview storage={storageQuery.data} backups={backupQuery.data} coverage={coverage.data} devices={deviceSummary.data} markets={markets} open={setTab}
+          loading={[storageQuery, backupQuery, coverage, deviceSummary].some(query=>query.isPending)}
+          errors={[storageQuery, backupQuery, coverage, deviceSummary].some(query=>Boolean(query.error))}/>}
           {tab === "members" && (
-            <>
               <section className="panel padded">
-                <h3>Members</h3>
-                <p className="small muted">Disabled accounts remain listed. Archiving hides an account and retains its audit and owned records. Restoring a listing does not restore access.</p>
-                <label className="checkbox"><input type="checkbox" checked={includeArchived} onChange={e => setIncludeArchived(e.target.checked)}/>Include archived accounts</label>
+                <div className="admin-view-switch" aria-label="Member views">
+                  <button aria-pressed={!memberHistory} onClick={()=>setMemberHistory(false)}>Active members</button>
+                  <button aria-pressed={memberHistory} onClick={()=>setMemberHistory(true)}>Disabled &amp; archived</button>
+                  <button onClick={()=>setTab("invitations")}>Invitations</button>
+                </div>
+                {memberHistory && <p className="muted">Restoring an archived account returns it to the member list. Enable access separately.</p>}
                 <DataTable<User>
                   label="members"
-                  filters={[{id:"role",label:"Filter member role",options:[{value:"admin",label:"Administrator"},{value:"member",label:"Member"}]},{id:"status",label:"Filter member status",options:[{value:"Active",label:"Active"},{value:"Disabled",label:"Disabled"},{value:"Archived",label:"Archived"}]}]}
-                  data={state.users}
+                  compact
+                  filters={[{id:"role",label:"Filter member role",options:[{value:"admin",label:"Administrator"},{value:"member",label:"Member"}]}]}
+                  loading={users.isFetching}
+                  error={users.error?.message}
+                  emptyMessage={memberHistory ? "No disabled or archived members." : "No active members."}
+                  data={(users.data||[]).filter(member=>memberHistory ? !member.active || member.archived_at : member.active && !member.archived_at)}
                   getRowId={(row) => String(row.id)}
                   columns={[
                     {
@@ -491,7 +386,8 @@ export function Administration({
                     {
                       id: "status",
                       header: "Status",
-                      accessorFn: (row) => (row.archived_at ? "Archived" : row.active ? "Active" : "Disabled"),
+                      accessorFn: (row) => row.archived_at ? "Archived" : row.active ? "Active" : "Disabled",
+                      cell: ({getValue}) => <Status tone={getValue()==="Active"?"success":"neutral"}>{String(getValue())}</Status>,
                     },
                     {
                       id: "action",
@@ -525,8 +421,13 @@ export function Administration({
                   ]}
                 />
               </section>
+          )}
+          {tab === "invitations" && (
               <section className="panel padded">
-                <h3>Invitations</h3>
+                <div className="admin-view-switch">
+                  <button onClick={()=>setTab("members")}>Members</button>
+                  <button className="primary" disabled={busy} onClick={invite}>Create invitation</button>
+                </div>
                 {invitation && (
                   <label className="token">
                     New invitation link · shown only now
@@ -547,7 +448,11 @@ export function Administration({
                 <DataTable<Invitation>
                   label="invitations"
                   filters={[{id:"status",label:"Filter invitation status",options:[{value:"Available",label:"Available"},{value:"Used or revoked",label:"Used or revoked"},{value:"Expired",label:"Expired"}]}]}
-                  data={state.invitations}
+                  data={invitations.data||[]}
+                  compact
+                  loading={invitations.isFetching}
+                  error={invitations.error?.message}
+                  emptyMessage="No matching invitations. Create one to invite a member."
                   getRowId={row=>String(row.id)}
                   columns={[
                     { accessorKey: "id", header: "Invitation" },
@@ -591,7 +496,6 @@ export function Administration({
                   ]}
                 />
               </section>
-            </>
           )}
           {tab === "markets" && (
             <MarketConfiguration
@@ -603,13 +507,16 @@ export function Administration({
           )}
           {tab === "collection" && <CollectionHistory markets={markets}/>}
           {tab === "devices" && (
-            <section className="panel padded">
-              <CompanionDevices userId={user.id} admin readOnly={readOnly} owners={Object.fromEntries(state.users.map(member=>[member.id,member.username]))}/>
-              <h3>Connected devices</h3>
+            <>
+              <CompanionDevices userId={user.id} admin readOnly={readOnly} owners={Object.fromEntries((users.data||[]).map(member=>[member.id,member.username]))}/>
+              <details className="panel padded"><summary>Older device tokens</summary>
               <DataTable<Device>
-                label="connected devices"
+                compact label="legacy device tokens"
+                loading={devices.isFetching}
+                error={devices.error?.message}
+                emptyMessage="No matching legacy device tokens."
                 filters={[{id:"access",label:"Filter legacy device access",options:[{value:"Active",label:"Active"},{value:"Revoked",label:"Revoked"},{value:"Expired",label:"Expired"}]}]}
-                data={state.devices}
+                data={devices.data||[]}
                 getRowId={row=>String(row.id)}
                 columns={[
                   {
@@ -621,7 +528,7 @@ export function Administration({
                     id: "member",
                     header: "Member",
                     accessorFn: (row) =>
-                      state.users.find((user) => user.id === row.user_id)
+                      users.data?.find((user) => user.id === row.user_id)
                         ?.username || `#${row.user_id}`,
                   },
                   {
@@ -661,14 +568,15 @@ export function Administration({
                 ]}
               />
 
-              {!state.devices.length && (
-                <p className="empty">No companion devices registered.</p>
-              )}
-            </section>
+              </details>
+            </>
           )}
           {tab === "security" && <SecurityHistory/>}
-        </>
-      )}
     </>
   );
+}
+
+function useAdminSection<T>(path: string, enabled: boolean) {
+  return useQuery({ queryKey: ["private", "administration", path], enabled, retry: false,
+    queryFn: ({signal}) => api<T>(path, "GET", undefined, signal) });
 }

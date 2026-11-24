@@ -17,12 +17,16 @@ test("provider rate limits: editable allowances, quota observations, cooldowns a
   await page.getByRole("button",{name:"Sign in",exact:true}).click();
   await expect(page.getByRole("heading",{name:"Market Explorer",exact:true})).toBeVisible();
   await page.getByRole("button",{name:"Administration",exact:true}).click();
-  await page.getByRole("tab",{name:"Data Sources",exact:true}).click();
+  await page.getByRole("link",{name:"Data Sources",exact:true}).click();
   await expect(page.getByRole("heading",{name:"Data Sources",exact:true})).toBeVisible();
   await page.screenshot({path:`${output}/01-data-sources.png`,fullPage:true});
   const forever=page.getByRole("region",{name:"ForeverDB connection",exact:true});
   const ever=page.getByRole("region",{name:"Everloot connection",exact:true});
   const wow=page.getByRole("region",{name:"TheWoWDB connection",exact:true});
+  for (const card of [forever, ever, wow]) {
+    await card.getByText("Edit settings",{exact:true}).click();
+    await card.getByText("Rate limits and usage",{exact:true}).click();
+  }
   await expect(forever.getByLabel("Requests per minute",{exact:true})).toHaveValue("60");
   await forever.screenshot({path:`${output}/02-foreverdb-limits.png`});
   await expect(ever.getByLabel("Hourly budget",{exact:true})).toHaveValue("2000");
@@ -47,20 +51,25 @@ test("provider rate limits: editable allowances, quota observations, cooldowns a
   expect(after.hour_used).toBe(before.hour_used);expect(after.day_used).toBe(before.day_used);
   expect(after.cooldown_until).toBe(before.cooldown_until);expect(after.enabled).toBe(before.enabled);expect(after.automatic).toBe(before.automatic);
   await page.reload();
-  await page.getByRole("tab",{name:"Data Sources",exact:true}).click();
+  await page.getByRole("link",{name:"Data Sources",exact:true}).click();
+  await forever.getByText("Edit settings",{exact:true}).click();
+  await forever.getByText("Rate limits and usage",{exact:true}).click();
   await expect(page.getByLabel("Requests per minute",{exact:true})).toHaveValue("120");
   await forever.locator(".provider-usage").screenshot({path:`${output}/08-http-429-cooldown.png`});
   const session=await (await page.request.get("/api/v1/auth/session")).json();
   const invalid=await page.request.patch("/api/v1/admin/metadata-providers/foreverdb/rate-limits",{headers:{"X-CSRF-Token":session.csrf_token},data:{...after.rate_limits.configured,minimum_interval:0}});
   expect(invalid.status()).toBe(422);
-  await page.getByRole("tab",{name:"Item Metadata",exact:true}).click();
+  await page.getByRole("link",{name:"Item Metadata",exact:true}).click();
+  await page.getByRole("button",{name:"Recovery jobs",exact:true}).click();
   await expect(page.getByText(/Waiting for ForeverDB rate limit — resumes at/).first()).toBeVisible();
   await page.getByRole("heading",{name:"Recovery jobs",exact:true}).locator("..").screenshot({path:`${output}/09-recovery-waiting-for-quota.png`});
-  await page.getByRole("tab",{name:"Data Sources",exact:true}).click();
+  await page.getByRole("link",{name:"Data Sources",exact:true}).click();
   const desktopAxe=await new AxeBuilder({page}).withTags(["wcag2a","wcag2aa"]).analyze();expect(desktopAxe.violations).toEqual([]);
   await page.setViewportSize({width:390,height:844});
   await page.screenshot({path:`${output}/10-mobile-administration.png`,fullPage:true});
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  await forever.getByText("Edit settings",{exact:true}).click();
+  await forever.getByText("Rate limits and usage",{exact:true}).click();
   const presetBounds=await forever.getByLabel("Documented allowance preset",{exact:true}).boundingBox();
   const formBounds=await forever.getByRole("region",{name:"ForeverDB rate limits",exact:true}).boundingBox();
   expect(presetBounds!.x+presetBounds!.width).toBeLessThanOrEqual(formBounds!.x+formBounds!.width+1);

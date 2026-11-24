@@ -2,8 +2,8 @@ export interface RecoveryPoint {
  id:string;filename:string;created_at:string|null;type:string;bytes:number|null;protected:boolean;verification:string;restoration_verified_at:string|null;storage_id?:string;storage_name?:string;
 }
 export interface BackupFilters {search:string;storage:string;protection:string;verified:string;backupType:string;sort:string}
-export function backupQueryParams(offset:number,filters?:BackupFilters):URLSearchParams {
- const params=new URLSearchParams({offset:String(offset),limit:'100'});
+export function backupQueryParams(offset:number,filters?:BackupFilters,limit=100):URLSearchParams {
+ const params=new URLSearchParams({offset:String(offset),limit:String(limit)});
  if(filters){if(filters.search)params.set('search',filters.search);if(filters.storage!=='all')params.set('storage_id',filters.storage);if(filters.protection!=='all')params.set('protection',filters.protection);if(filters.verified!=='all')params.set('verification',filters.verified);if(filters.backupType!=='all')params.set('backup_type',filters.backupType);if(filters.sort!=='created_desc')params.set('sort',filters.sort);}
  return params;
 }

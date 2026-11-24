@@ -16,6 +16,7 @@
     "@tanstack/react-virtual": "3.14.26",
     "echarts": "6.1.0",
     "react": "19.3.1",
+    "react-day-picker": "9.14.0",
     "react-dom": "19.3.1"
   },
   "devDependencies": {

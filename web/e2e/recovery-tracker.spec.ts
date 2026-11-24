@@ -11,7 +11,7 @@ test("Recovery Tracker: local evidence, server pages, journey and mobile cards",
   await page.goto('/administration?metadata_view=tracker');
   await expect(page.getByRole('heading',{name:'Recovery Tracker',exact:true})).toBeVisible();
   await page.getByRole('combobox',{name:'Market',exact:true}).selectOption('500');
-  await expect(page.getByText('60', {exact:true}).first()).toBeVisible();
+  await expect(page.getByText(/60 records/)).toBeVisible();
   const tracker=page.getByRole('table',{name:'Metadata recovery tracker',exact:true});
   await expect(tracker).toBeVisible();await expect(tracker.getByRole('button',{name:/Synthetic recovery 01/})).toBeVisible();
   await page.screenshot({path:`${gallery}/01-desktop-overview.png`,fullPage:false});
@@ -24,6 +24,7 @@ test("Recovery Tracker: local evidence, server pages, journey and mobile cards",
   await journey.getByText('Known fields and provenance',{exact:true}).click();await expect(journey.locator('.recovery-field-value').filter({hasText:'Synthetic recovery 01'})).toBeVisible();
   await expect(journey.getByText('Already known',{exact:true})).toBeVisible();
   await journey.screenshot({path:`${gallery}/02-recovery-journey.png`});
+  await page.getByText('Recovery efficiency and measurement scope',{exact:true}).click();
   await page.getByLabel('Measurement period').selectOption('1');await expect(page.getByText('50.0% useful recovery rate')).toBeVisible();
   const loadChart=page.getByRole('button',{name:/Load recovery efficiency by provider/i});if(await loadChart.isVisible())await loadChart.click();await expect(page.getByLabel('Recovery efficiency by provider')).toBeVisible();
   await journey.getByRole('button',{name:'Close journey'}).click();
@@ -31,11 +32,13 @@ test("Recovery Tracker: local evidence, server pages, journey and mobile cards",
   await expect(tracker.getByRole('row')).toHaveCount(21);
   await page.getByRole('combobox',{name:'Missing metadata',exact:true}).selectOption('all');
   await page.setViewportSize({width:390,height:844});
-  const cards=page.locator('.recovery-mobile');await expect(cards).toBeVisible();await expect(tracker).not.toBeVisible();
-  await cards.getByRole('button',{name:'Next',exact:true}).click();await expect(cards.getByText(/Page 2/)).toBeVisible();
-  await cards.getByRole('button',{name:'Previous',exact:true}).click();
-  await cards.locator('summary').first().click();await expect(cards.getByText(/Next:/).first()).toBeVisible();
-  await cards.scrollIntoViewIfNeeded();await page.screenshot({path:`${gallery}/03-mobile-records.png`,fullPage:false});
+  await expect(tracker).toBeVisible();
+  await page.getByRole('button',{name:'Next Metadata recovery tracker',exact:true}).click();
+  await expect(page.getByText(/Page 2/)).toBeVisible();
+  await page.getByRole('button',{name:'Previous Metadata recovery tracker',exact:true}).click();
+  await tracker.getByRole('button',{name:/Show details for Metadata recovery tracker/}).first().click();
+  await expect(tracker.getByText(/Last useful recovery/).first()).toBeVisible();
+  await tracker.scrollIntoViewIfNeeded();await page.screenshot({path:`${gallery}/03-mobile-records.png`,fullPage:false});
   for(const width of [320,344,390,768,1440]){await page.setViewportSize({width,height:900});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);}
   expect((await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa']).analyze()).violations).toEqual([]);
   expect(errors).toEqual([]);expect(external).toEqual([]);
@@ -48,13 +51,13 @@ test("Recovery Tracker: loading, failure, empty state and audited manual action"
   const route=/\/api\/v1\/admin\/item-metadata\/tracker\?/;
   await page.route(route,async r=>{await gate;await r.fulfill({status:503,contentType:'application/json',body:'{"detail":"Synthetic tracker unavailable"}'});});
   await page.goto('/administration?metadata_view=tracker');
-  const desktop=page.locator('.recovery-desktop');await expect(desktop.getByText('Loading Metadata recovery tracker…',{exact:true})).toBeVisible();release();
+  const desktop=page.locator('.managed-table').filter({has:page.getByRole('table',{name:'Metadata recovery tracker'})});await expect(desktop.getByText('Loading Metadata recovery tracker…',{exact:true})).toBeVisible();release();
   await expect(desktop.getByRole('alert')).toContainText('Synthetic tracker unavailable');
   await page.screenshot({path:`${gallery}/04-error-state.png`,fullPage:false});
   await page.unroute(route);await page.getByRole('button',{name:'Refresh local evidence'}).click();
   await page.getByRole('combobox',{name:'Market',exact:true}).selectOption('500');
   await expect(desktop.getByRole('button',{name:/Synthetic recovery 01/})).toBeVisible();
-  await page.getByLabel('Search recovery items').fill('2147483647');await expect(desktop.getByText('No matching records.',{exact:true})).toBeVisible();
+  await page.getByLabel('Search recovery items').fill('2147483647');await expect(desktop.getByText('No recovery items match these filters.',{exact:true})).toBeVisible();
   await page.screenshot({path:`${gallery}/05-empty-filter.png`,fullPage:false});
   await page.getByLabel('Search recovery items').fill('80001');await desktop.getByRole('button',{name:/Synthetic recovery 01/}).click();
   const journey=page.getByRole('region',{name:'Item recovery journey'});await expect(journey).toBeFocused();
@@ -65,6 +68,7 @@ test("Recovery Tracker: loading, failure, empty state and audited manual action"
   const csrf=(await (await page.request.get('/api/v1/auth/session')).json()).csrf_token;
   expect((await page.request.post(`/api/v1/admin/item-metadata/jobs/${job}/cancel`,{headers:{'X-CSRF-Token':csrf}})).status()).toBe(200);
   await journey.press('Escape');await expect(journey).toHaveCount(0);await expect(desktop.getByRole('button',{name:/Synthetic recovery 01/})).toBeFocused();
+  await page.getByText('Recovery efficiency and measurement scope',{exact:true}).click();
   const efficiency=page.getByRole('region',{name:'Recovery Efficiency'});await efficiency.scrollIntoViewIfNeeded();
   const load=efficiency.getByRole('button',{name:/Load recovery efficiency by provider/i});if(await load.isVisible())await load.click();await expect(efficiency.locator('canvas')).toBeVisible();
   await efficiency.screenshot({path:`${gallery}/06-efficiency.png`});

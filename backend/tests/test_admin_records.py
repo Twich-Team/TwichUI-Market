@@ -154,3 +154,48 @@ def test_attempt_default_includes_other_markets_search_dates_sort_and_historical
     page2=owner.get('/api/v1/admin/records/metadata-attempts?limit=1&offset=1&sort=at&desc=false').json()
     assert page1['rows'][0]['id']!=page2['rows'][0]['id']
     assert owner.get('/api/v1/admin/records/metadata-attempts?q=%25').json()['total']==0
+
+
+def test_security_time_category_and_outcome_filters(owner, database):
+    at = now()
+    with database.begin() as db:
+        db.add_all([
+            SecurityEvent(action='login.failed', created_at=at),
+            SecurityEvent(action='login.failed', created_at=at - timedelta(days=8)),
+            SecurityEvent(action='login.succeeded', created_at=at),
+            SecurityEvent(action='user.archive.restored', created_at=at),
+            SecurityEvent(action='companion.device.denied', created_at=at),
+            SecurityEvent(action='metadata.credential.rejected', created_at=at),
+        ])
+    window = {'since': (at - timedelta(days=7)).isoformat()}
+    rejected_signins = owner.get('/api/v1/admin/records/security', params={
+        **window, 'category': 'login', 'outcome': 'rejected'
+    }).json()
+    assert rejected_signins['total'] == 1
+    event = rejected_signins['rows'][0]
+    assert event['action'] == 'login.failed' and event['actor_id'] is None
+    access_changes = owner.get('/api/v1/admin/records/security', params={
+        **window, 'category': 'access'
+    }).json()
+    assert {row['action'] for row in access_changes['rows']} == {'user.archive.restored', 'companion.device.denied'}
+
+
+def test_collection_snapshot_time_does_not_advance_on_unchanged_check(owner, database):
+    from datetime import datetime
+    from market.models import CollectionRun, Snapshot
+    from market.security import aware
+
+    market = setup(database)
+    at = now().replace(microsecond=0)
+    with database.begin() as db:
+        db.add_all([
+            Snapshot(market_id=market, content_hash='a'*64, listing_count=1, created_at=at-timedelta(hours=1)),
+            CollectionRun(market_id=market, status='collected', checked_at=at - timedelta(hours=1)),
+            CollectionRun(market_id=market, status='unchanged', checked_at=at),
+        ])
+    response = owner.get('/api/v1/admin/records/collection', params={'market_id': market, 'status': 'unchanged'})
+    assert response.status_code == 200
+    result = response.json()
+    assert result['total'] == 1
+    assert aware(datetime.fromisoformat(result['latest_snapshot_at'])) == at - timedelta(hours=1)
+    assert aware(datetime.fromisoformat(result['rows'][0]['checked_at'])) == at

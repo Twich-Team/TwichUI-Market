@@ -17,7 +17,7 @@ export function ProviderEmblem({ provider }: { provider: string }) {
   const name = providerNames[provider] || "Unknown source";
   return <span className="provider-emblem" title={`${name} metadata source`}><span className={`source-symbol source-${provider}`} aria-hidden="true">{({blizzard:"❄",everloot:"◆",foreverdb:"∞",thewowdb:"▤"} as Record<string,string>)[provider] || "?"}</span><span>{name}</span></span>;
 }
-export function useRecordPage<T>(path: string, filters: Record<string, string>, initialSort: string, desc = true) {
+export function useRecordPage<T>(path: string, filters: Record<string, string>, initialSort: string, desc = true, enabled = true) {
   const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 25 });
   const [sorting, setSorting] = useState<SortingState>([{ id: initialSort, desc }]);
   const params = new URLSearchParams(filters);
@@ -25,6 +25,6 @@ export function useRecordPage<T>(path: string, filters: Record<string, string>, 
   params.set("limit", String(pagination.pageSize));
   params.set("sort", sorting[0]?.id || initialSort);
   params.set("desc", String(sorting[0]?.desc ?? desc));
-  const query = useQuery({ queryKey: ["private", "admin-records", path, params.toString()], placeholderData:keepPreviousData, queryFn: ({ signal }) => api<{ rows: T[]; total: number; summary?: Record<string, number> }>(`/admin/records/${path}?${params}`, "GET", undefined, signal), refetchInterval: 5000 });
+  const query = useQuery({ enabled, queryKey: ["private", "admin-records", path, params.toString()], placeholderData:keepPreviousData, queryFn: ({ signal }) => api<{ rows: T[]; total: number; summary?: Record<string, number>; latest_snapshot_at?: string | null }>(`/admin/records/${path}?${params}`, "GET", undefined, signal), refetchInterval: 5000 });
   return { query, pagination, reset: () => setPagination(value => ({ ...value, pageIndex: 0 })), server: { rowCount: query.data?.total || 0, pagination, sorting, onPaginationChange: setPagination, onSortingChange: setSorting } };
 }
