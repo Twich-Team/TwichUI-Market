@@ -8,11 +8,11 @@ export function DatabaseGrowth({samples,current}:{samples:StorageSample[];curren
   const all=useMemo(()=>growthView(samples),[samples]);
   const view=useMemo(()=>growthView(samples,range==='all'?null:Number(range)),[samples,range]);
   const option=useMemo(()=>({animation:false,grid:{left:85,right:25,top:30,bottom:65},
-    textStyle:{color:'#c1b296'},xAxis:{type:'time',axisLabel:{formatter:(value:number)=>new Date(value).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric'})}},
+    textStyle:{color:'#c1b296'},xAxis:{type:'time',axisLabel:{hideOverlap:true,formatter:(value:number)=>new Date(value).toLocaleString(undefined,{month:'short',day:'numeric',...(range==='1'?{hour:'numeric'}:{})})}},
     yAxis:{type:'value',scale:true,axisLabel:{formatter:(value:number)=>formatBytes(value,2)},splitLine:{lineStyle:{color:'#4a3926'}}},
     tooltip:{trigger:'axis',renderMode:'richText',formatter:(params:unknown)=>{const p=(params as {value:[number,number|null]}[])[0]?.value;return p ? `${new Date(p[0]).toLocaleString()}\n${formatBytes(p[1])}` : '';}},
     series:[{type:'line',name:'Database allocation',data:view.points,connectNulls:false,showSymbol:false,symbolSize:5,lineStyle:{color:'#d9b365',width:2},areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'#c49b493e'},{offset:1,color:'#c49b4903'}]}},itemStyle:{color:'#d9b365'}}],
-  }),[view]);
+  }),[view,range]);
   return <section className="panel padded database-growth" aria-labelledby="database-growth-heading">
     <div className="panel-heading"><h3 id="database-growth-heading">Database Growth</h3><label>Measurement range<select value={range} onChange={e=>setRange(e.target.value)}><option value="all">All available ({all.availableDays.toFixed(1)} days)</option>{[[1,'24 hours'],[7,'7 days'],[30,'30 days'],[90,'90 days']].filter(([days])=>Number(days)<=all.availableDays).map(([days,label])=><option key={days} value={days}>{label}</option>)}</select></label></div>
     <div className="metadata-stats">

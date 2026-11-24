@@ -56,9 +56,11 @@ test('storage dashboard: overview, routes/history, dialogs, filters, safeguards 
 test('actual operation states, failures, stale and empty observations are explicit',async({page})=>{
  test.setTimeout(90000);await setup(page,f=>{f.storage.migration={id:'migration-fixture',status:'running',started_at:f.at(.5),copied:3,bytes_copied:4*1024**3,plan:{source_id:'local',destination_id:'nas',count:12,bytes:18*1024**3}} as never;f.storage.active_id='local';});await page.setViewportSize({width:1920,height:1080});await open(page);await expect(page.getByRole('region',{name:'Attention and activity'})).toContainText('copied and verified');await shot(page,'overview-active-migration');await page.getByRole('button',{name:'Open migration →'}).click();await shot(page,'migration-progress');
 });
-for(const scenario of ['nas-disconnected','capacity-warning','backup-failed','restore-expired','cleanup-paused','migration-failed','migration-interrupted','migration-completed','empty-history','stale-inventory'] as const){
+for(const scenario of ['local-healthy','backup-running','nas-disconnected','capacity-warning','backup-failed','restore-expired','cleanup-paused','migration-failed','migration-interrupted','migration-completed','empty-history','stale-inventory'] as const){
  test(`honest ${scenario} presentation`,async({page})=>{
   await setup(page,f=>{
+   if(scenario==='local-healthy')f.storage.active_id='local';
+   if(scenario==='backup-running')f.backups.job.status='running';
    if(scenario==='nas-disconnected'){f.storage.health.nas.healthy=false;(f.storage.health.nas as Record<string,unknown>).error='NAS authentication failed';}
    if(scenario==='capacity-warning')f.backups.storage_pressure=true;
    if(scenario==='backup-failed')f.backups.job.status='failed';
@@ -68,7 +70,7 @@ for(const scenario of ['nas-disconnected','capacity-warning','backup-failed','re
    if(scenario==='empty-history'){f.summary.growth.samples=[];f.maintenance.activity.days=[];f.backups.items=[];f.backups.total=0;f.backups.total_bytes=0;}
    if(scenario==='stale-inventory'){f.backups.inventory_stale=true;f.backups.measured_at=f.at(2);}
   });await open(page);
-  if(scenario==='migration-completed')await expect(page.getByRole('region',{name:'Attention and activity'})).toHaveCount(0);
+  if(scenario==='migration-completed'||scenario==='local-healthy')await expect(page.getByRole('region',{name:'Attention and activity'})).toHaveCount(0);
   else if(scenario!=='empty-history')await expect(page.getByRole('region',{name:'Attention and activity'})).toBeVisible();
   if(scenario==='restore-expired')await expect(page.locator('.storage-metric').filter({hasText:'Restore verification'})).toContainText('Needs attention');
   if(scenario==='empty-history')await expect(page.getByText('No recorded storage measurements yet.')).toBeVisible();
@@ -79,3 +81,9 @@ for(const scenario of ['nas-disconnected','capacity-warning','backup-failed','re
 test('subsystem failure leaves other monitoring and navigation available',async({page})=>{
  await setup(page);await page.route('**/api/v1/admin/backups?**',route=>route.fulfill({status:503,json:{detail:'Isolated backup service unavailable'}}));await open(page);await expect(page.getByRole('region',{name:'Attention and activity'})).toContainText('Backup service unavailable');await expect(page.getByText('System health',{exact:true})).toBeVisible();await expect(page.locator('.storage-metric').filter({hasText:'Database size'})).toContainText('GiB');
 });
+
+ test('all detail pages and dialogs remain usable at narrow desktop widths',async({page})=>{
+ test.setTimeout(90000);await setup(page);
+ for(const width of [1280,800]){await page.setViewportSize({width,height:720});for(const view of ['backups','storage','maintenance']){await open(page,view);await shot(page,`${view}-${width}`);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);}}
+ await page.setViewportSize({width:1280,height:720});await open(page,'storage');await page.locator('.storage-device').filter({has:page.getByRole('heading',{name:'Network vault',exact:true})}).getByRole('button',{name:'Configure',exact:true}).click();await shot(page,'nas-configuration-1280');await expect(page.getByRole('dialog')).toBeVisible();await page.getByRole('button',{name:'Close storage settings'}).click();await expect(page.getByRole('dialog')).toHaveCount(0);
+ });

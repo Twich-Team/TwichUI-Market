@@ -10,7 +10,7 @@ import { StorageOperationsPanel } from './storage-operations';
 import { MaintenanceDashboard, useMaintenanceHealth } from './maintenance-dashboard';
 import type { Storage } from './settings';
 import { formatBytes } from './size';
-import { capacityParts, isFresh, storageUrl, storageView, type StorageView } from './storage-dashboard-data';
+import { capacityParts, physicalBackupBytes, isFresh, storageUrl, storageView, type StorageView } from './storage-dashboard-data';
 import './storage-dashboard-shell.css';
 
 export function useStorageSummary(enabled=true) {
@@ -43,13 +43,13 @@ function StorageOverview({summary,summaryError}:{summary?:Storage;summaryError?:
   const backups=useBackupOverview(),storage=useBackupStorage(),maintenance=useMaintenanceHealth();
   const b=backups.data,s=storage.data,m=maintenance.data;
   const lastBackup=b?.last_success?Date.parse(b.last_success):NaN;
-  const backupAge=Number.isFinite(lastBackup)?Math.max(0,(Date.now()-lastBackup)/3600000):null;
+  const backupAge=Number.isFinite(lastBackup)&&lastBackup<=Date.now()+60000?Math.max(0,(Date.now()-lastBackup)/3600000):null;
   const backupTime=backupAge===null?'Not recorded':backupAge<1?'Less than 1h ago':backupAge<24?`${Math.floor(backupAge)} hours ago`:`${Math.floor(backupAge/24)} days ago`;
   const active=s?.destinations.find(d=>d.id===s.active_id),health=active?s?.health[active.id]:undefined;
   const fresh=Boolean(b&&!backups.error&&!b.inventory_stale&&isFresh(b.measured_at));
   const recovery=m?.automation.recovery;
-  const physical=b?.inventory_by_storage?Object.values(b.inventory_by_storage):undefined;
-  const backupBytes=physical ? physical.length&&physical.every(location=>typeof location.bytes==='number')?physical.reduce((sum,location)=>sum+location.bytes!,0):null : b?.total_bytes;
+  const dbSample=summary?.growth.samples.at(-1)?.sampled_at;
+  const backupBytes=physicalBackupBytes(b?.inventory_by_storage);
   const verified=Boolean(!maintenance.error&&m&&isFresh(m.measured_at)&&recovery?.required_evidence_recent&&recovery.expires_at&&Date.parse(recovery.expires_at)>Date.now());
   const running=['queued','running'].includes(s?.migration.status||'');
   const backupCapacity=health&&typeof health.capacity_bytes==='number'&&typeof health.available_bytes==='number'?{total:health.capacity_bytes,available:health.available_bytes,free:health.free_bytes}:{total:b?.filesystem.capacity_bytes,available:b?.filesystem.available_bytes,free:undefined};
@@ -65,7 +65,7 @@ function StorageOverview({summary,summaryError}:{summary?:Storage;summaryError?:
   return <>
     <div className="storage-freshness">{b?.measured_at?<>Backup inventory measured <LocalTime value={b.measured_at}/>{!fresh&&' · Stale or unavailable'}</>:'Waiting for backup inventory…'}</div>
     <div className="storage-metrics">
-      <Metric icon="◉" label="Database size" value={formatBytes(summary?.database_bytes)}>{summary?.growth.bytes_per_day!=null?`${summary.growth.bytes_per_day>=0?'+':''}${formatBytes(summary.growth.bytes_per_day)} / day`:'Waiting for growth measurements'}</Metric>
+      <Metric icon="◉" label="Database size" value={formatBytes(summary?.database_bytes)}>{summary?.growth.bytes_per_day!=null?`${summary.growth.bytes_per_day>=0?'+':''}${formatBytes(summary.growth.bytes_per_day)} / day`:'Waiting for growth measurements'}{dbSample&&!isFresh(dbSample,Date.now(),7200000)&&' · measurement is old'}</Metric>
       <Metric icon="▤" label="Backup storage" value={b?formatBytes(backupBytes):'Unavailable'}>{b?`${b.total} recovery points${!fresh?' · last known inventory':''}`:'Recovery point count unavailable'}</Metric>
       <Metric icon="↶" label="Latest successful backup" value={b?.last_success?<time dateTime={b.last_success} title={new Date(b.last_success).toLocaleString()}>{backupTime}</time>:backups.isPending?'Checking…':'Not recorded'}>{b?.next_scheduled_at?<>Next <LocalTime value={b.next_scheduled_at}/></>:b?.policy.enabled?'Next backup time unavailable':'Automatic backups disabled or unavailable'}</Metric>
       <Metric icon="◇" label="Restore verification" value={maintenance.isPending?'Checking…':verified?'Verified':recovery?'Needs attention':'Unknown'}>{recovery?.verified_at?<>Last restored <LocalTime value={recovery.verified_at}/></>:'No current recovery evidence available'}</Metric>
