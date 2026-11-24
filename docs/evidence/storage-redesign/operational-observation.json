@@ -1,0 +1,13 @@
+{
+  "observation": "Read-only durable manager SQLite state; no manager method or production mutation invoked",
+  "observed_at": "2026-11-24T18:49:20.746761+00:00",
+  "migration": {
+    "id": "4dd02526379c4e0083f62f68fab4674c",
+    "status": "succeeded",
+    "copied": 6,
+    "bytes_copied": 9420978411,
+    "started_at": "2026-11-24T18:19:09.504848+00:00",
+    "finished_at": "2026-11-24T18:30:35.511844+00:00",
+    "originals_preserved": true
+  }
+}

@@ -1,0 +1,2 @@
+Isolated PostgreSQL market_test database. Production was not used.
+776 passed in 442.68s (0:07:22)

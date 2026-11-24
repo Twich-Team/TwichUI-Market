@@ -50,3 +50,6 @@ Read-only SQLite URI inspection at task start found migration 4dd02526379c4e0083
 - First browser pass: 13 synthetic route-isolated dashboard scenarios pass, including expired recovery, failed/interrupted/completed migration, NAS failure, storage pressure, empty/stale data, navigation/history, dialogs, filtering, bulk confirmation and axe.
 - Existing integration selectors updated for secondary navigation and dialogs; all destructive integration exercises remain fixture-only.
 - Browser screenshot refinement corrected account-available/free-space distinctions, unknown physical totals, oversized Overview header, drawer width and lazy chart capture. Final source screenshot pass follows.
+
+
+Final local application checkpoint 467135a: 776 PostgreSQL, 157 operational, 149 frontend and 16 browser checks pass. [Review report](storage-redesign-review.md) and [gallery](evidence/storage-redesign/review.html) retain the full evidence. The live migration independently completed at 18:30:35 UTC; no originals were removed by this task. Final Native NAS CI passes actual protocol and browser integration; broader CI continues.

@@ -1,0 +1,15 @@
+
+> twichui-market-web@0.1.0 test
+> vitest run --maxWorkers=1
+
+
+ RUN  v5.1.0 /home/marketdev/.codex/worktrees/storage-backups-dashboard/TwichUI-Market/web
+
+
+ Test Files  25 passed (25)
+      Tests  149 passed (149)
+   Start at  18:53:03
+   Duration  3.90s (import 65%, tests 20%, transform 10%, worker 5%)
+
+    Isolate  25 workers spawned · ~82ms startup each (spawn + environment, per file)
+             at least ~1.97s faster with isolate: false — reuses workers across files instead of one per file

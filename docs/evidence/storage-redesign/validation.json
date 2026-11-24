@@ -1,0 +1,70 @@
+{
+  "application_commit": "467135a667d62c09a3ca93f3bcffb1e6c40a7e78",
+  "baseline": "c6946cd2fd106eff66c69e48357e360256e052da",
+  "fixture_provenance": "All UI screenshots use explicitly synthetic isolated route fixtures. They are not production metrics.",
+  "postgresql_tests": {
+    "passed": 776,
+    "seconds": 442.68
+  },
+  "operational_tests": {
+    "passed": 157,
+    "seconds": 25.385
+  },
+  "frontend_tests": {
+    "passed": 149
+  },
+  "dashboard_browser_tests": {
+    "passed": 16,
+    "seconds": 49.8
+  },
+  "baseline_screenshot_test": {
+    "passed": 1
+  },
+  "build": "TypeScript and production Vite passed; existing large ECharts chunk warning retained",
+  "screenshots": [
+    "backup-details.png",
+    "backup-failed.png",
+    "backup-policy.png",
+    "backup-running.png",
+    "backups-1280.png",
+    "backups-800.png",
+    "backups.png",
+    "before-storage.png",
+    "capacity-warning.png",
+    "cleanup-paused.png",
+    "empty-history.png",
+    "local-healthy.png",
+    "maintenance-1280.png",
+    "maintenance-800.png",
+    "maintenance.png",
+    "migration-completed.png",
+    "migration-failed.png",
+    "migration-interrupted.png",
+    "migration-progress.png",
+    "nas-configuration-1280.png",
+    "nas-configuration.png",
+    "nas-disconnected.png",
+    "nas-folders.png",
+    "overview-1280.png",
+    "overview-1920.png",
+    "overview-2560.png",
+    "overview-800.png",
+    "overview-active-migration.png",
+    "protected-delete.png",
+    "restore-expired.png",
+    "retention-policy.png",
+    "stale-inventory.png",
+    "storage-1280.png",
+    "storage-800.png",
+    "storage.png"
+  ],
+  "ci": {
+    "application_commit": "467135a667d62c09a3ca93f3bcffb1e6c40a7e78",
+    "native_nas": {
+      "run_id": 45464248061,
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45464248061"
+    },
+    "remaining": "Backend, Private website and Windows checks still in progress at this checkpoint"
+  }
+}
