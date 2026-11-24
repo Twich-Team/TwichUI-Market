@@ -85,6 +85,28 @@ class Backups(unittest.TestCase):
             self.assertEqual([r['filename'] for r in data['items']],['market-A.dump'])
             with self.assertRaises(Refused):self.manager.overview(filters=dict(search='uncached'))
 
+    def test_busy_cached_inventory_can_have_a_completed_job_until_remeasured(self):
+        self.archive('old','2026-11-02T01:00:00+00:00')
+        # Browser and external observer use independently cached page sizes.
+        browser=self.manager.overview(0,100)
+        new_id,_=self.archive('new','2026-11-03T01:00:00+00:00')
+        with self.manager.db() as db:
+            self.manager.set(db,'job',dict(id='completed-job',status='succeeded',backup_id=new_id))
+        observer=self.manager.overview(0,20)
+        self.assertEqual(observer['total'],2)
+        # A concurrent measurement/operation owns the real coordination lock.
+        # A terminal job alone is not evidence the older inventory is current.
+        with self.manager.lock():
+            stale=self.manager.overview(0,100)
+        self.assertTrue(stale['inventory_stale'])
+        self.assertEqual(stale['service_status'],'operation_busy')
+        self.assertEqual(stale['job']['status'],'succeeded')
+        self.assertEqual(stale['items'],[dict(row,eligible=False,reason='Operation busy; refresh after completion') for row in browser['items']])
+        self.assertFalse(any(row['id']==new_id for row in stale['items']))
+        fresh=self.manager.overview(0,100)
+        self.assertFalse(fresh['inventory_stale'])
+        self.assertTrue(any(row['id']==new_id for row in fresh['items']))
+
     def test_dashboard_reliability_uses_bounded_recorded_outcomes(self):
         with self.manager.db() as db:
             self.assertEqual(self.manager.reliability(db)['days'],[])
