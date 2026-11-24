@@ -77,7 +77,7 @@ export function BackupCalendar({ data, onSelect, onShowInventory, refreshing, er
         : selected > today ? 'Future date. No outcomes expected yet.'
         : 'No recorded outcomes for this date.'}</p>
       {archives.length > 0 && <ul>{archives.slice(0,3).map(row => <li key={row.id}>
-        <button type="button" onClick={event => onSelect(row,event.currentTarget)}>{row.filename}</button>
+        <button type="button" id={`backup-calendar-point-${row.id}`} onClick={event => onSelect(row,event.currentTarget)}>{row.filename}</button>
       </li>)}</ul>}
       {(archives.length > 0 || Boolean(selectedCounts?.successes)) &&
         <button type="button" onClick={() => onShowInventory(selected)}>Find archives from this date</button>}

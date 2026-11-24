@@ -5,7 +5,7 @@ export function ConfirmationDialog({ title, onClose, closeLabel = 'Close', retur
   title: string;
   onClose: () => void;
   closeLabel?: string;
-  returnFocus?: HTMLElement;
+  returnFocus?: () => HTMLElement | null;
   children: ReactNode;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
@@ -13,15 +13,16 @@ export function ConfirmationDialog({ title, onClose, closeLabel = 'Close', retur
   const id = useId();
   useEffect(() => {
     const element = dialog.current!;
-    const opener = returnFocus ?? document.activeElement;
-    if (returnFocus?.isConnected) returnFocus.focus({ preventScroll: true });
+    const opener = document.activeElement;
+    returnFocus?.()?.focus({ preventScroll: true });
     heading.current!.setAttribute('autofocus', '');
     element.showModal();
     return () => {
       element.close();
       requestAnimationFrame(() => {
-        if (opener instanceof HTMLElement && opener.isConnected && document.activeElement === document.body) {
-          opener.focus({ preventScroll: true });
+        const target = returnFocus?.() ?? opener;
+        if (target instanceof HTMLElement && target.isConnected && document.activeElement === document.body) {
+          target.focus({ preventScroll: true });
         }
       });
     };
