@@ -1,0 +1,1062 @@
+{
+  "observed_at": "2026-11-24T15:50:25.638914+00:00",
+  "provenance": "actual read-only production",
+  "database_bytes": 15510771379,
+  "schema": "retention_20261118",
+  "policy": {
+    "raw_days": 7,
+    "intraday_days": 90,
+    "daily_days": 365,
+    "operational_days": 90,
+    "security_days": 365,
+    "revision": 3,
+    "policy_hash": "9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7",
+    "application_authorized": true,
+    "daily_support_days": 60,
+    "batch_row_limit": 5000
+  },
+  "eligible_by_stage": {
+    "daily_references": 0,
+    "observations": 0,
+    "raw_listings": 9894323,
+    "raw_feed_payloads": 0,
+    "intraday_statistics": 0,
+    "derived_pricing_cache": 0,
+    "collection_logs": 0,
+    "feed_checks": 0,
+    "security_logs": 0
+  },
+  "removed_by_stage": {},
+  "actual_listing_rows": 36984050,
+  "statistics_rows": 5937809,
+  "observations": [
+    2385,
+    "2026-11-14 02:45:34.522262+00:00",
+    "2026-11-24 15:46:18.150569+00:00"
+  ],
+  "daily": [
+    12,
+    "2026-11-14",
+    "2026-11-24"
+  ],
+  "markets": [
+    {
+      "id": 2,
+      "house_id": 114,
+      "interval_seconds": 300,
+      "failures": 0,
+      "last_success": "2026-11-24 15:46:18.150569+00:00",
+      "next_check": "2026-11-24 15:51:18.150569+00:00"
+    }
+  ],
+  "tables": [
+    {
+      "relname": "listings",
+      "n_live_tup": 36848563,
+      "n_dead_tup": 0,
+      "last_autovacuum": "2026-11-24 05:32:06.230060+00:00",
+      "last_autoanalyze": "2026-11-24 02:28:55.141511+00:00",
+      "heap_bytes": 6575931392,
+      "index_bytes": 3230113792,
+      "total_bytes": 9807888384
+    },
+    {
+      "relname": "bridge_derived_records",
+      "n_live_tup": 2648220,
+      "n_dead_tup": 40483,
+      "last_autovacuum": "2026-11-24 07:51:42.978155+00:00",
+      "last_autoanalyze": "2026-11-24 14:29:27.175310+00:00",
+      "heap_bytes": 2824019968,
+      "index_bytes": 389890048,
+      "total_bytes": 3214712832
+    },
+    {
+      "relname": "snapshot_statistics",
+      "n_live_tup": 5917624,
+      "n_dead_tup": 0,
+      "last_autovacuum": "2026-11-24 09:29:25.535228+00:00",
+      "last_autoanalyze": "2026-11-24 06:27:05.264594+00:00",
+      "heap_bytes": 1017880576,
+      "index_bytes": 877862912,
+      "total_bytes": 1896046592
+    },
+    {
+      "relname": "feed_captures",
+      "n_live_tup": 272,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": "2026-11-24 05:32:01.379954+00:00",
+      "heap_bytes": 65536,
+      "index_bytes": 90112,
+      "total_bytes": 290824192
+    },
+    {
+      "relname": "metadata_tasks",
+      "n_live_tup": 31836,
+      "n_dead_tup": 3871,
+      "last_autovacuum": "2026-11-22 22:05:37.684220+00:00",
+      "last_autoanalyze": "2026-11-23 12:00:14.756167+00:00",
+      "heap_bytes": 48414720,
+      "index_bytes": 8847360,
+      "total_bytes": 57311232
+    },
+    {
+      "relname": "metadata_versions",
+      "n_live_tup": 29533,
+      "n_dead_tup": 4,
+      "last_autovacuum": null,
+      "last_autoanalyze": "2026-11-22 22:06:37.616951+00:00",
+      "heap_bytes": 39378944,
+      "index_bytes": 2654208,
+      "total_bytes": 47398912
+    },
+    {
+      "relname": "metadata_sources",
+      "n_live_tup": 19213,
+      "n_dead_tup": 3843,
+      "last_autovacuum": "2026-11-22 17:18:24.193199+00:00",
+      "last_autoanalyze": "2026-11-23 13:31:18.533504+00:00",
+      "heap_bytes": 23126016,
+      "index_bytes": 5447680,
+      "total_bytes": 36880384
+    },
+    {
+      "relname": "bridge_records",
+      "n_live_tup": 512,
+      "n_dead_tup": 96,
+      "last_autovacuum": "2026-11-24 15:17:26.721290+00:00",
+      "last_autoanalyze": "2026-11-24 15:33:27.494839+00:00",
+      "heap_bytes": 98304,
+      "index_bytes": 204800,
+      "total_bytes": 35897344
+    },
+    {
+      "relname": "item_metadata",
+      "n_live_tup": 7540,
+      "n_dead_tup": 1336,
+      "last_autovacuum": "2026-11-22 16:52:23.234520+00:00",
+      "last_autoanalyze": "2026-11-24 04:16:57.980921+00:00",
+      "heap_bytes": 12902400,
+      "index_bytes": 1531904,
+      "total_bytes": 28647424
+    },
+    {
+      "relname": "item_media",
+      "n_live_tup": 73,
+      "n_dead_tup": 51,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "heap_bytes": 3301376,
+      "index_bytes": 253952,
+      "total_bytes": 23142400
+    },
+    {
+      "relname": "metadata_attempts",
+      "n_live_tup": 17568,
+      "n_dead_tup": 341,
+      "last_autovacuum": "2026-11-22 22:59:39.343478+00:00",
+      "last_autoanalyze": "2026-11-24 10:30:14.685227+00:00",
+      "heap_bytes": 16891904,
+      "index_bytes": 1998848,
+      "total_bytes": 18931712
+    },
+    {
+      "relname": "metadata_recovery_items",
+      "n_live_tup": 7426,
+      "n_dead_tup": 1337,
+      "last_autovacuum": "2026-11-24 14:58:26.280625+00:00",
+      "last_autoanalyze": "2026-11-24 15:48:28.110078+00:00",
+      "heap_bytes": 12967936,
+      "index_bytes": 409600,
+      "total_bytes": 13418496
+    },
+    {
+      "relname": "security_events",
+      "n_live_tup": 82138,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": "2026-11-22 21:27:35.138883+00:00",
+      "heap_bytes": 8814592,
+      "index_bytes": 3719168,
+      "total_bytes": 12566528
+    },
+    {
+      "relname": "metadata_jobs",
+      "n_live_tup": 31518,
+      "n_dead_tup": 2282,
+      "last_autovacuum": "2026-11-22 22:24:37.673104+00:00",
+      "last_autoanalyze": "2026-11-22 23:02:39.111946+00:00",
+      "heap_bytes": 5758976,
+      "index_bytes": 3915776,
+      "total_bytes": 9715712
+    },
+    {
+      "relname": "observations",
+      "n_live_tup": 2385,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": "2026-11-24 01:06:49.188584+00:00",
+      "heap_bytes": 1761280,
+      "index_bytes": 425984,
+      "total_bytes": 2228224
+    },
+    {
+      "relname": "feed_checks",
+      "n_live_tup": 3742,
+      "n_dead_tup": 8,
+      "last_autovacuum": null,
+      "last_autoanalyze": "2026-11-24 05:51:02.167485+00:00",
+      "heap_bytes": 483328,
+      "index_bytes": 245760,
+      "total_bytes": 770048
+    },
+    {
+      "relname": "retention_executions",
+      "n_live_tup": 1698,
+      "n_dead_tup": 44,
+      "last_autovacuum": null,
+      "last_autoanalyze": "2026-11-24 12:22:19.210593+00:00",
+      "heap_bytes": 360448,
+      "index_bytes": 114688,
+      "total_bytes": 507904
+    },
+    {
+      "relname": "collection_runs",
+      "n_live_tup": 2955,
+      "n_dead_tup": 43,
+      "last_autovacuum": null,
+      "last_autoanalyze": "2026-11-24 15:31:27.374579+00:00",
+      "heap_bytes": 253952,
+      "index_bytes": 212992,
+      "total_bytes": 499712
+    },
+    {
+      "relname": "bridge_generations",
+      "n_live_tup": 6,
+      "n_dead_tup": 35,
+      "last_autovacuum": "2026-11-24 13:40:22.536584+00:00",
+      "last_autoanalyze": "2026-11-24 15:33:27.489341+00:00",
+      "heap_bytes": 98304,
+      "index_bytes": 65536,
+      "total_bytes": 425984
+    },
+    {
+      "relname": "item_source_coverage",
+      "n_live_tup": 18,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "heap_bytes": 180224,
+      "index_bytes": 188416,
+      "total_bytes": 401408
+    },
+    {
+      "relname": "credentials",
+      "n_live_tup": 503,
+      "n_dead_tup": 32,
+      "last_autovacuum": "2026-11-24 14:11:23.940843+00:00",
+      "last_autoanalyze": "2026-11-24 15:16:26.710837+00:00",
+      "heap_bytes": 147456,
+      "index_bytes": 147456,
+      "total_bytes": 327680
+    },
+    {
+      "relname": "companion_devices",
+      "n_live_tup": 8,
+      "n_dead_tup": 23,
+      "last_autovacuum": "2026-11-24 14:43:25.339542+00:00",
+      "last_autoanalyze": "2026-11-24 14:44:25.365506+00:00",
+      "heap_bytes": 163840,
+      "index_bytes": 65536,
+      "total_bytes": 270336
+    },
+    {
+      "relname": "market_feeds",
+      "n_live_tup": 2,
+      "n_dead_tup": 30,
+      "last_autovacuum": "2026-11-24 05:10:00.378831+00:00",
+      "last_autoanalyze": "2026-11-24 15:01:26.179379+00:00",
+      "heap_bytes": 196608,
+      "index_bytes": 16384,
+      "total_bytes": 253952
+    },
+    {
+      "relname": "metadata_quota_buckets",
+      "n_live_tup": 104,
+      "n_dead_tup": 23,
+      "last_autovacuum": "2026-11-24 12:30:19.619234+00:00",
+      "last_autoanalyze": "2026-11-24 12:30:19.631681+00:00",
+      "heap_bytes": 49152,
+      "index_bytes": 163840,
+      "total_bytes": 245760
+    },
+    {
+      "relname": "companion_refresh_history",
+      "n_live_tup": 222,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": "2026-11-23 18:14:30.711965+00:00",
+      "heap_bytes": 65536,
+      "index_bytes": 65536,
+      "total_bytes": 155648
+    },
+    {
+      "relname": "snapshots",
+      "n_live_tup": 37,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "heap_bytes": 32768,
+      "index_bytes": 81920,
+      "total_bytes": 139264
+    },
+    {
+      "relname": "metadata_providers",
+      "n_live_tup": 4,
+      "n_dead_tup": 21,
+      "last_autovacuum": "2026-11-24 10:29:19.492619+00:00",
+      "last_autoanalyze": "2026-11-24 14:27:24.629849+00:00",
+      "heap_bytes": 81920,
+      "index_bytes": 16384,
+      "total_bytes": 139264
+    },
+    {
+      "relname": "login_attempts",
+      "n_live_tup": 21,
+      "n_dead_tup": 6,
+      "last_autovacuum": "2026-11-24 13:03:20.974011+00:00",
+      "last_autoanalyze": "2026-11-24 04:47:59.302885+00:00",
+      "heap_bytes": 32768,
+      "index_bytes": 65536,
+      "total_bytes": 131072
+    },
+    {
+      "relname": "companion_authorizations",
+      "n_live_tup": 0,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "heap_bytes": 8192,
+      "index_bytes": 81920,
+      "total_bytes": 98304
+    },
+    {
+      "relname": "users",
+      "n_live_tup": 0,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "heap_bytes": 24576,
+      "index_bytes": 32768,
+      "total_bytes": 90112
+    },
+    {
+      "relname": "metadata_resources",
+      "n_live_tup": 0,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "heap_bytes": 8192,
+      "index_bytes": 16384,
+      "total_bytes": 90112
+    },
+    {
+      "relname": "player_market_mappings",
+      "n_live_tup": 0,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "heap_bytes": 8192,
+      "index_bytes": 49152,
+      "total_bytes": 81920
+    },
+    {
+      "relname": "daily_observations",
+      "n_live_tup": 12,
+      "n_dead_tup": 45,
+      "last_autovacuum": "2026-11-24 11:59:18.162107+00:00",
+      "last_autoanalyze": "2026-11-24 15:46:27.999071+00:00",
+      "heap_bytes": 8192,
+      "index_bytes": 32768,
+      "total_bytes": 73728
+    },
+    {
+      "relname": "user_preferences",
+      "n_live_tup": 0,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "heap_bytes": 16384,
+      "index_bytes": 16384,
+      "total_bytes": 65536
+    },
+    {
+      "relname": "storage_measurements",
+      "n_live_tup": 50,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "heap_bytes": 16384,
+      "index_bytes": 16384,
+      "total_bytes": 57344
+    },
+    {
+      "relname": "metadata_recovery_state",
+      "n_live_tup": 1,
+      "n_dead_tup": 40,
+      "last_autovacuum": "2026-11-24 15:04:26.280959+00:00",
+      "last_autoanalyze": "2026-11-24 15:04:26.286141+00:00",
+      "heap_bytes": 8192,
+      "index_bytes": 16384,
+      "total_bytes": 57344
+    },
+    {
+      "relname": "markets",
+      "n_live_tup": 2,
+      "n_dead_tup": 42,
+      "last_autovacuum": null,
+      "last_autoanalyze": "2026-11-24 14:11:23.961238+00:00",
+      "heap_bytes": 8192,
+      "index_bytes": 32768,
+      "total_bytes": 49152
+    },
+    {
+      "relname": "market_verifications",
+      "n_live_tup": 0,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "heap_bytes": 8192,
+      "index_bytes": 32768,
+      "total_bytes": 49152
+    },
+    {
+      "relname": "invitations",
+      "n_live_tup": 0,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "heap_bytes": 8192,
+      "index_bytes": 32768,
+      "total_bytes": 40960
+    },
+    {
+      "relname": "archive_checkpoints",
+      "n_live_tup": 0,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "heap_bytes": 0,
+      "index_bytes": 32768,
+      "total_bytes": 40960
+    },
+    {
+      "relname": "retention_automation",
+      "n_live_tup": 1,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": "2026-11-24 13:28:21.975802+00:00",
+      "heap_bytes": 8192,
+      "index_bytes": 16384,
+      "total_bytes": 32768
+    },
+    {
+      "relname": "retention_policy_changes",
+      "n_live_tup": 0,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "heap_bytes": 8192,
+      "index_bytes": 16384,
+      "total_bytes": 32768
+    },
+    {
+      "relname": "retention_policy",
+      "n_live_tup": 0,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "heap_bytes": 8192,
+      "index_bytes": 16384,
+      "total_bytes": 24576
+    },
+    {
+      "relname": "bridge_derivations",
+      "n_live_tup": 31,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "heap_bytes": 8192,
+      "index_bytes": 16384,
+      "total_bytes": 24576
+    },
+    {
+      "relname": "alembic_version",
+      "n_live_tup": 0,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "heap_bytes": 8192,
+      "index_bytes": 16384,
+      "total_bytes": 24576
+    },
+    {
+      "relname": "archive_digests",
+      "n_live_tup": 0,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "heap_bytes": 8192,
+      "index_bytes": 16384,
+      "total_bytes": 24576
+    },
+    {
+      "relname": "retention_batches",
+      "n_live_tup": 0,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "heap_bytes": 0,
+      "index_bytes": 16384,
+      "total_bytes": 16384
+    },
+    {
+      "relname": "archive_members",
+      "n_live_tup": 0,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "heap_bytes": 0,
+      "index_bytes": 8192,
+      "total_bytes": 16384
+    }
+  ],
+  "indexes": [
+    {
+      "relname": "listings",
+      "indexrelname": "listings_snapshot_id_auction_id_key",
+      "bytes": 1555857408
+    },
+    {
+      "relname": "listings",
+      "indexrelname": "listings_pkey",
+      "bytes": 830726144
+    },
+    {
+      "relname": "snapshot_statistics",
+      "indexrelname": "snapshot_statistics_pkey",
+      "bytes": 803160064
+    },
+    {
+      "relname": "bridge_derived_records",
+      "indexrelname": "bridge_derived_records_pkey",
+      "bytes": 389791744
+    },
+    {
+      "relname": "listings",
+      "indexrelname": "ix_listings_variant_key",
+      "bytes": 340467712
+    },
+    {
+      "relname": "listings",
+      "indexrelname": "ix_listings_item_id",
+      "bytes": 264003584
+    },
+    {
+      "relname": "listings",
+      "indexrelname": "ix_listings_snapshot_id",
+      "bytes": 239058944
+    },
+    {
+      "relname": "snapshot_statistics",
+      "indexrelname": "ix_snapshot_statistics_item_variant",
+      "bytes": 74702848
+    },
+    {
+      "relname": "metadata_tasks",
+      "indexrelname": "ix_metadata_tasks_identity",
+      "bytes": 2834432
+    },
+    {
+      "relname": "metadata_jobs",
+      "indexrelname": "ix_metadata_jobs_dedupe_key",
+      "bytes": 2760704
+    },
+    {
+      "relname": "metadata_tasks",
+      "indexrelname": "ix_metadata_tasks_queue",
+      "bytes": 2514944
+    },
+    {
+      "relname": "metadata_sources",
+      "indexrelname": "ix_metadata_sources_due",
+      "bytes": 2490368
+    },
+    {
+      "relname": "metadata_versions",
+      "indexrelname": "uq_metadata_version",
+      "bytes": 1974272
+    },
+    {
+      "relname": "security_events",
+      "indexrelname": "security_events_pkey",
+      "bytes": 1859584
+    },
+    {
+      "relname": "security_events",
+      "indexrelname": "ix_security_events_created_at",
+      "bytes": 1859584
+    },
+    {
+      "relname": "metadata_tasks",
+      "indexrelname": "uq_metadata_job_item",
+      "bytes": 1835008
+    },
+    {
+      "relname": "metadata_sources",
+      "indexrelname": "ix_metadata_sources_recent",
+      "bytes": 1728512
+    },
+    {
+      "relname": "metadata_sources",
+      "indexrelname": "metadata_sources_pkey",
+      "bytes": 1179648
+    },
+    {
+      "relname": "item_metadata",
+      "indexrelname": "ix_item_metadata_catalog_search",
+      "bytes": 901120
+    },
+    {
+      "relname": "metadata_tasks",
+      "indexrelname": "metadata_tasks_pkey",
+      "bytes": 860160
+    },
+    {
+      "relname": "metadata_tasks",
+      "indexrelname": "ix_metadata_tasks_job_id",
+      "bytes": 778240
+    },
+    {
+      "relname": "metadata_attempts",
+      "indexrelname": "ix_metadata_attempts_period",
+      "bytes": 778240
+    },
+    {
+      "relname": "metadata_attempts",
+      "indexrelname": "ix_metadata_attempts_item",
+      "bytes": 753664
+    },
+    {
+      "relname": "metadata_jobs",
+      "indexrelname": "metadata_jobs_pkey",
+      "bytes": 745472
+    },
+    {
+      "relname": "metadata_versions",
+      "indexrelname": "metadata_versions_pkey",
+      "bytes": 679936
+    },
+    {
+      "relname": "metadata_attempts",
+      "indexrelname": "metadata_attempts_pkey",
+      "bytes": 466944
+    },
+    {
+      "relname": "metadata_recovery_items",
+      "indexrelname": "metadata_recovery_items_pkey",
+      "bytes": 409600
+    },
+    {
+      "relname": "metadata_jobs",
+      "indexrelname": "ix_metadata_jobs_state",
+      "bytes": 409600
+    },
+    {
+      "relname": "item_metadata",
+      "indexrelname": "ix_item_metadata_region_name",
+      "bytes": 311296
+    },
+    {
+      "relname": "item_metadata",
+      "indexrelname": "item_metadata_pkey",
+      "bytes": 294912
+    },
+    {
+      "relname": "item_media",
+      "indexrelname": "item_media_pkey",
+      "bytes": 253952
+    },
+    {
+      "relname": "observations",
+      "indexrelname": "observations_request_key_key",
+      "bytes": 196608
+    },
+    {
+      "relname": "item_source_coverage",
+      "indexrelname": "item_source_coverage_pkey",
+      "bytes": 188416
+    },
+    {
+      "relname": "bridge_records",
+      "indexrelname": "bridge_records_pkey",
+      "bytes": 180224
+    },
+    {
+      "relname": "metadata_quota_buckets",
+      "indexrelname": "metadata_quota_buckets_pkey",
+      "bytes": 139264
+    },
+    {
+      "relname": "feed_checks",
+      "indexrelname": "feed_checks_pkey",
+      "bytes": 106496
+    },
+    {
+      "relname": "feed_checks",
+      "indexrelname": "ix_feed_checks_checked_at",
+      "bytes": 98304
+    },
+    {
+      "relname": "collection_runs",
+      "indexrelname": "ix_collection_runs_checked_at",
+      "bytes": 81920
+    },
+    {
+      "relname": "collection_runs",
+      "indexrelname": "collection_runs_pkey",
+      "bytes": 81920
+    },
+    {
+      "relname": "credentials",
+      "indexrelname": "credentials_token_hash_key",
+      "bytes": 81920
+    },
+    {
+      "relname": "observations",
+      "indexrelname": "ix_observations_retrieved_at",
+      "bytes": 73728
+    },
+    {
+      "relname": "observations",
+      "indexrelname": "observations_pkey",
+      "bytes": 73728
+    },
+    {
+      "relname": "feed_captures",
+      "indexrelname": "feed_captures_market_id_source_kind_payload_hash_key",
+      "bytes": 57344
+    },
+    {
+      "relname": "retention_executions",
+      "indexrelname": "ix_retention_executions_started_at",
+      "bytes": 57344
+    },
+    {
+      "relname": "retention_executions",
+      "indexrelname": "retention_executions_pkey",
+      "bytes": 57344
+    },
+    {
+      "relname": "collection_runs",
+      "indexrelname": "ix_collection_runs_market_id",
+      "bytes": 49152
+    },
+    {
+      "relname": "snapshots",
+      "indexrelname": "snapshots_market_id_content_hash_key",
+      "bytes": 49152
+    },
+    {
+      "relname": "companion_refresh_history",
+      "indexrelname": "companion_refresh_history_pkey",
+      "bytes": 49152
+    },
+    {
+      "relname": "feed_checks",
+      "indexrelname": "ix_feed_checks_market_id",
+      "bytes": 40960
+    },
+    {
+      "relname": "login_attempts",
+      "indexrelname": "login_attempts_pkey",
+      "bytes": 40960
+    },
+    {
+      "relname": "observations",
+      "indexrelname": "ix_observations_market_id",
+      "bytes": 40960
+    },
+    {
+      "relname": "observations",
+      "indexrelname": "ix_observations_snapshot_id",
+      "bytes": 40960
+    },
+    {
+      "relname": "credentials",
+      "indexrelname": "credentials_pkey",
+      "bytes": 32768
+    },
+    {
+      "relname": "metadata_recovery_state",
+      "indexrelname": "metadata_recovery_state_pkey",
+      "bytes": 16384
+    },
+    {
+      "relname": "users",
+      "indexrelname": "users_pkey",
+      "bytes": 16384
+    },
+    {
+      "relname": "users",
+      "indexrelname": "users_username_key",
+      "bytes": 16384
+    },
+    {
+      "relname": "credentials",
+      "indexrelname": "ix_credentials_user_id",
+      "bytes": 16384
+    },
+    {
+      "relname": "invitations",
+      "indexrelname": "invitations_pkey",
+      "bytes": 16384
+    },
+    {
+      "relname": "invitations",
+      "indexrelname": "invitations_token_hash_key",
+      "bytes": 16384
+    },
+    {
+      "relname": "markets",
+      "indexrelname": "markets_pkey",
+      "bytes": 16384
+    },
+    {
+      "relname": "markets",
+      "indexrelname": "markets_region_ruleset_id_house_id_source_kind_key",
+      "bytes": 16384
+    },
+    {
+      "relname": "snapshots",
+      "indexrelname": "snapshots_pkey",
+      "bytes": 16384
+    },
+    {
+      "relname": "snapshots",
+      "indexrelname": "ix_snapshots_market_id",
+      "bytes": 16384
+    },
+    {
+      "relname": "daily_observations",
+      "indexrelname": "daily_observations_pkey",
+      "bytes": 16384
+    },
+    {
+      "relname": "daily_observations",
+      "indexrelname": "ix_daily_observations_observation_id",
+      "bytes": 16384
+    },
+    {
+      "relname": "storage_measurements",
+      "indexrelname": "storage_measurements_pkey",
+      "bytes": 16384
+    },
+    {
+      "relname": "market_verifications",
+      "indexrelname": "market_verifications_pkey",
+      "bytes": 16384
+    },
+    {
+      "relname": "market_verifications",
+      "indexrelname": "ix_market_verifications_market_id",
+      "bytes": 16384
+    },
+    {
+      "relname": "player_market_mappings",
+      "indexrelname": "player_market_mappings_pkey",
+      "bytes": 16384
+    },
+    {
+      "relname": "player_market_mappings",
+      "indexrelname": "player_market_mappings_region_ruleset_faction_source_kind_key",
+      "bytes": 16384
+    },
+    {
+      "relname": "player_market_mappings",
+      "indexrelname": "player_market_mappings_region_house_id_source_kind_key",
+      "bytes": 16384
+    },
+    {
+      "relname": "retention_policy",
+      "indexrelname": "retention_policy_pkey",
+      "bytes": 16384
+    },
+    {
+      "relname": "retention_policy_changes",
+      "indexrelname": "retention_policy_changes_pkey",
+      "bytes": 16384
+    },
+    {
+      "relname": "user_preferences",
+      "indexrelname": "user_preferences_pkey",
+      "bytes": 16384
+    },
+    {
+      "relname": "companion_devices",
+      "indexrelname": "companion_devices_pkey",
+      "bytes": 16384
+    },
+    {
+      "relname": "companion_devices",
+      "indexrelname": "companion_devices_refresh_hash_key",
+      "bytes": 16384
+    },
+    {
+      "relname": "companion_devices",
+      "indexrelname": "companion_devices_previous_refresh_hash_key",
+      "bytes": 16384
+    },
+    {
+      "relname": "companion_devices",
+      "indexrelname": "ix_companion_devices_user_id",
+      "bytes": 16384
+    },
+    {
+      "relname": "credentials",
+      "indexrelname": "ix_credentials_companion_device_id",
+      "bytes": 16384
+    },
+    {
+      "relname": "companion_authorizations",
+      "indexrelname": "companion_authorizations_pkey",
+      "bytes": 16384
+    },
+    {
+      "relname": "companion_authorizations",
+      "indexrelname": "companion_authorizations_state_hash_key",
+      "bytes": 16384
+    },
+    {
+      "relname": "companion_authorizations",
+      "indexrelname": "companion_authorizations_code_hash_key",
+      "bytes": 16384
+    },
+    {
+      "relname": "companion_authorizations",
+      "indexrelname": "ix_companion_authorizations_user_id",
+      "bytes": 16384
+    },
+    {
+      "relname": "companion_authorizations",
+      "indexrelname": "ix_companion_authorizations_expires_at",
+      "bytes": 16384
+    },
+    {
+      "relname": "companion_refresh_history",
+      "indexrelname": "ix_companion_refresh_history_device_id",
+      "bytes": 16384
+    },
+    {
+      "relname": "metadata_providers",
+      "indexrelname": "metadata_providers_pkey",
+      "bytes": 16384
+    },
+    {
+      "relname": "bridge_derivations",
+      "indexrelname": "bridge_derivations_pkey",
+      "bytes": 16384
+    },
+    {
+      "relname": "bridge_generations",
+      "indexrelname": "bridge_generations_pkey",
+      "bytes": 16384
+    },
+    {
+      "relname": "bridge_generations",
+      "indexrelname": "ix_bridge_generations_market_id",
+      "bytes": 16384
+    },
+    {
+      "relname": "bridge_generations",
+      "indexrelname": "ix_bridge_generations_source_signature",
+      "bytes": 16384
+    },
+    {
+      "relname": "bridge_generations",
+      "indexrelname": "ix_bridge_generations_created_at",
+      "bytes": 16384
+    },
+    {
+      "relname": "metadata_resources",
+      "indexrelname": "metadata_resources_pkey",
+      "bytes": 16384
+    },
+    {
+      "relname": "archive_digests",
+      "indexrelname": "archive_digests_pkey",
+      "bytes": 16384
+    },
+    {
+      "relname": "alembic_version",
+      "indexrelname": "alembic_version_pkc",
+      "bytes": 16384
+    },
+    {
+      "relname": "feed_captures",
+      "indexrelname": "feed_captures_pkey",
+      "bytes": 16384
+    },
+    {
+      "relname": "feed_captures",
+      "indexrelname": "ix_feed_captures_market_id",
+      "bytes": 16384
+    },
+    {
+      "relname": "market_feeds",
+      "indexrelname": "market_feeds_pkey",
+      "bytes": 16384
+    },
+    {
+      "relname": "retention_automation",
+      "indexrelname": "retention_automation_pkey",
+      "bytes": 16384
+    },
+    {
+      "relname": "archive_checkpoints",
+      "indexrelname": "ix_archive_checkpoints_created_at",
+      "bytes": 8192
+    },
+    {
+      "relname": "archive_checkpoints",
+      "indexrelname": "ix_archive_checkpoints_user_id",
+      "bytes": 8192
+    },
+    {
+      "relname": "archive_checkpoints",
+      "indexrelname": "ix_archive_checkpoints_market_id",
+      "bytes": 8192
+    },
+    {
+      "relname": "archive_checkpoints",
+      "indexrelname": "archive_checkpoints_pkey",
+      "bytes": 8192
+    },
+    {
+      "relname": "archive_members",
+      "indexrelname": "archive_members_pkey",
+      "bytes": 8192
+    },
+    {
+      "relname": "retention_batches",
+      "indexrelname": "retention_batches_pkey",
+      "bytes": 8192
+    },
+    {
+      "relname": "retention_batches",
+      "indexrelname": "ix_retention_batches_created_at",
+      "bytes": 8192
+    }
+  ],
+  "wal_allocated_bytes": "369098752"
+}

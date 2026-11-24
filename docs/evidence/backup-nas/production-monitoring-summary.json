@@ -1,0 +1,30 @@
+{
+  "provenance": "actual20-second sampled operational watchdog, not a continuous latency benchmark",
+  "first_sample": "2026-11-24T15:53:39.654844+00:00",
+  "last_sample": "2026-11-24T17:42:43.977035+00:00",
+  "samples": 269,
+  "successful_functional_probes": 269,
+  "functional_p95_seconds": 0.282,
+  "functional_max_seconds": 1.196,
+  "health_max_seconds": 0.21,
+  "max_host_load1": 2.4326171875,
+  "host_logical_cpus": 16,
+  "minimum_available_bytes": 116753608704,
+  "measurement_errors": [],
+  "automatic_pauses": [
+    {
+      "at": "2026-11-24T16:00:51.736567+00:00",
+      "reason": "Resource threshold; single-core CPU condition reviewed before revised host-pressure criterion",
+      "functional_seconds": 0.075,
+      "load": [
+        0.6240234375,
+        0.720703125,
+        0.7861328125
+      ]
+    }
+  ],
+  "max_collection_failures": 0,
+  "long_lock_samples": 0,
+  "peak_container_memory_percent": 94.95,
+  "raw_sample_sha256": "379babed2bd37cf9e284af1606501b927c078fba0cbd67df72c43d62ab502a57"
+}

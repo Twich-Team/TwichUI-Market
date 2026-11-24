@@ -1,0 +1,72 @@
+{
+  "provenance": "completed local full-source runs plus exact-head GitHub CI; synthetic fixtures are not production observations",
+  "local": {
+    "backend": {
+      "passed": 770,
+      "log_sha256": "b1a0f1199ff40f570a9e143017c941e6066d1ccd69aef77c0c4e0aa1246a28cb"
+    },
+    "frontend": {
+      "passed": 132,
+      "log_sha256": "5b6be109936d05c204ff3e9d801b017f10ccdd6dd1538a8f823ad7fc89ccdb94"
+    },
+    "operational": {
+      "passed": 152,
+      "log_sha256": "b3ea56fc2c74a9e20aa444c62a58a7ffa1692c416594d67f151d0e641d6bb8bb"
+    },
+    "storage_faults": {
+      "passed": 30,
+      "log_sha256": "b82fad85b27b448584ef7cfbd604306b2bfef5b8edfd23ee8ffd47158aa7810b"
+    },
+    "native_browser": {
+      "passed": 1,
+      "log_sha256": "13cdf008b21715659d3b7a40bb104787864d12292a7f05a9c4623a26d1d84c9c",
+      "seconds": 39.6
+    }
+  },
+  "github_actions": {
+    "Backend": {
+      "id": 45433164573,
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45433164573"
+    },
+    "Private website": {
+      "id": 45433164874,
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45433164874"
+    },
+    "Windows companion": {
+      "id": 45433164972,
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45433164972"
+    },
+    "Native NAS storage": {
+      "id": 45433164501,
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45433164501"
+    }
+  },
+  "api_frontend_application_commit": "5d520da210c75f0dc9cd5233015e5d92ea160925",
+  "manager_application_commit": "5b20fa135252803bcadd2bf134f9fd7dcb3c2238",
+  "latest_combined_ci": {
+    "Backend": {
+      "id": 45440593596,
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45440593596"
+    },
+    "Private website": {
+      "id": 45440594393,
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45440594393"
+    },
+    "Windows companion": {
+      "id": 45440593844,
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45440593844"
+    },
+    "Native NAS storage": {
+      "id": 45440593828,
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45440593828"
+    }
+  }
+}

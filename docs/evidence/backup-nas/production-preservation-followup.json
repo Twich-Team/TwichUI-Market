@@ -1,0 +1,10 @@
+{
+  "provenance": "actual production database/keyring/distribution fingerprints before and after scoped deployment",
+  "unchanged": {
+    "users": true,
+    "preferences": true,
+    "provider_credentials": true,
+    "keyring_sha256": true,
+    "private_beta_files": true
+  }
+}

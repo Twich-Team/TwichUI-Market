@@ -1,0 +1,245 @@
+{
+  "provenance": "actual bounded read-only production audit",
+  "observed_at": "2026-11-24T17:41:08.589948+00:00",
+  "validated_history_constraints": [
+    {
+      "table_name": "snapshots",
+      "conname": "snapshots_market_id_content_hash_key",
+      "contype": "u",
+      "convalidated": true
+    },
+    {
+      "table_name": "snapshots",
+      "conname": "snapshots_market_id_fkey",
+      "contype": "f",
+      "convalidated": true
+    },
+    {
+      "table_name": "snapshots",
+      "conname": "snapshots_pkey",
+      "contype": "p",
+      "convalidated": true
+    },
+    {
+      "table_name": "listings",
+      "conname": "listings_pkey",
+      "contype": "p",
+      "convalidated": true
+    },
+    {
+      "table_name": "listings",
+      "conname": "listings_snapshot_id_auction_id_key",
+      "contype": "u",
+      "convalidated": true
+    },
+    {
+      "table_name": "listings",
+      "conname": "listings_snapshot_id_fkey",
+      "contype": "f",
+      "convalidated": true
+    },
+    {
+      "table_name": "observations",
+      "conname": "observations_market_id_fkey",
+      "contype": "f",
+      "convalidated": true
+    },
+    {
+      "table_name": "observations",
+      "conname": "observations_pkey",
+      "contype": "p",
+      "convalidated": true
+    },
+    {
+      "table_name": "observations",
+      "conname": "observations_request_key_key",
+      "contype": "u",
+      "convalidated": true
+    },
+    {
+      "table_name": "observations",
+      "conname": "observations_snapshot_id_fkey",
+      "contype": "f",
+      "convalidated": true
+    },
+    {
+      "table_name": "snapshot_statistics",
+      "conname": "snapshot_statistics_pkey",
+      "contype": "p",
+      "convalidated": true
+    },
+    {
+      "table_name": "snapshot_statistics",
+      "conname": "snapshot_statistics_snapshot_id_fkey",
+      "contype": "f",
+      "convalidated": true
+    },
+    {
+      "table_name": "bridge_derived_records",
+      "conname": "bridge_derived_records_pkey",
+      "contype": "p",
+      "convalidated": true
+    },
+    {
+      "table_name": "bridge_derived_records",
+      "conname": "bridge_derived_records_snapshot_id_fkey",
+      "contype": "f",
+      "convalidated": true
+    },
+    {
+      "table_name": "bridge_records",
+      "conname": "bridge_records_generation_id_fkey",
+      "contype": "f",
+      "convalidated": true
+    },
+    {
+      "table_name": "bridge_records",
+      "conname": "bridge_records_pkey",
+      "contype": "p",
+      "convalidated": true
+    }
+  ],
+  "collection_comparison": [
+    {
+      "window": "baseline 12-13UTC",
+      "status": "collected",
+      "checks": 1,
+      "min_seconds": 29,
+      "max_seconds": 29,
+      "mean_seconds": "29.0000000000000000"
+    },
+    {
+      "window": "baseline 12-13UTC",
+      "status": "unchanged",
+      "checks": 11,
+      "min_seconds": 0,
+      "max_seconds": 0,
+      "mean_seconds": "0E-20"
+    },
+    {
+      "window": "since initial deployment 15:42UTC",
+      "status": "collected",
+      "checks": 2,
+      "min_seconds": 31,
+      "max_seconds": 37,
+      "mean_seconds": "34.0000000000000000"
+    },
+    {
+      "window": "since initial deployment 15:42UTC",
+      "status": "unchanged",
+      "checks": 21,
+      "min_seconds": 0,
+      "max_seconds": 0,
+      "mean_seconds": "0E-20"
+    }
+  ],
+  "market_feeds": [
+    {
+      "market_id": 2,
+      "source_kind": "auctions",
+      "failures": 0,
+      "last_success": "2026-11-24 17:37:22.369046+00:00",
+      "last_check": "2026-11-24 17:37:22.369046+00:00"
+    },
+    {
+      "market_id": 2,
+      "source_kind": "commodities",
+      "failures": 0,
+      "last_success": "2026-11-24 17:37:22.369046+00:00",
+      "last_check": "2026-11-24 17:37:22.369046+00:00"
+    }
+  ],
+  "generation_inventory": [
+    {
+      "algorithm": "workshop-summary-v1:twichui-pricing-v1",
+      "generations": 2,
+      "oldest": "2026-11-23 17:05:17.633559+00:00",
+      "newest": "2026-11-23 17:10:11.456940+00:00"
+    },
+    {
+      "algorithm": "workshop-summary-v2:twichui-pricing-v1",
+      "generations": 2,
+      "oldest": "2026-11-24 16:39:36.774246+00:00",
+      "newest": "2026-11-24 17:11:10.544317+00:00"
+    },
+    {
+      "algorithm": "workshop-summary-v3:twichui-pricing-v1",
+      "generations": 2,
+      "oldest": "2026-11-24 14:45:23.669798+00:00",
+      "newest": "2026-11-24 15:17:04.349284+00:00"
+    }
+  ],
+  "vacuum_settings": [
+    {
+      "name": "autovacuum",
+      "setting": "on",
+      "unit": null
+    },
+    {
+      "name": "autovacuum_max_workers",
+      "setting": "3",
+      "unit": null
+    },
+    {
+      "name": "autovacuum_naptime",
+      "setting": "60",
+      "unit": "s"
+    },
+    {
+      "name": "autovacuum_vacuum_cost_delay",
+      "setting": "2",
+      "unit": "ms"
+    },
+    {
+      "name": "autovacuum_vacuum_cost_limit",
+      "setting": "-1",
+      "unit": null
+    },
+    {
+      "name": "autovacuum_vacuum_scale_factor",
+      "setting": "0.2",
+      "unit": null
+    },
+    {
+      "name": "autovacuum_vacuum_threshold",
+      "setting": "50",
+      "unit": null
+    }
+  ],
+  "active_vacuum": [],
+  "current_lock_waits": [],
+  "raw_snapshots_created_before_seven_days": [
+    {
+      "id": 13,
+      "created_at": "2026-11-14 14:18:41.297314+00:00",
+      "listing_count": 84318,
+      "first_observed": "2026-11-14 14:18:39.390535+00:00",
+      "last_observed": "2026-11-14 15:14:21.190053+00:00"
+    },
+    {
+      "id": 88,
+      "created_at": "2026-11-17 17:29:27.267404+00:00",
+      "listing_count": 94027,
+      "first_observed": "2026-11-17 17:29:24.170807+00:00",
+      "last_observed": "2026-11-17 18:19:59.574937+00:00"
+    }
+  ],
+  "raw_beyond_latest_observation_window": [
+    {
+      "id": 13,
+      "market_id": 1,
+      "created_at": "2026-11-14 14:18:41.297314+00:00",
+      "listing_count": 84318,
+      "actual_raw_rows": 84318,
+      "last_observed": "2026-11-14 15:14:21.190053+00:00"
+    }
+  ],
+  "raw_tier": [
+    {
+      "oldest_snapshot": "2026-11-14 14:18:41.297314+00:00",
+      "newest_snapshot": "2026-11-24 17:27:23.546361+00:00",
+      "snapshots": 127,
+      "original_listing_rows": 27293190
+    }
+  ]
+}

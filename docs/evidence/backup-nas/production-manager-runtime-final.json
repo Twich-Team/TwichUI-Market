@@ -1,0 +1,11 @@
+{
+  "provenance": "actual running production manager after scoped replacement",
+  "service_interpreter": "/opt/backup/bin/python",
+  "encrypted_round_trip": true,
+  "persisted_credentials": false,
+  "dependencies": {
+    "smbprotocol": "1.17.0",
+    "cryptography": "50.0.0",
+    "pyspnego": "0.12.0"
+  }
+}

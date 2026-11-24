@@ -1,0 +1,55 @@
+{
+  "capture": {
+    "actual_public_https": true,
+    "normal_maintenance_enabled": true,
+    "original_session_preserved": true,
+    "mobile_geometry": true,
+    "nas_configured": false,
+    "errors": [],
+    "at": "2026-11-24T17:41:22.431Z"
+  },
+  "images": [
+    {
+      "file": "production-screenshots/before-backups.png",
+      "width": 1128,
+      "height": 1864,
+      "sha256": "1ad03a7c5ba36d3f8d04173d9455ed8a64d7a9aa4b10c79cd7936510c48406e4",
+      "provenance": "actual public HTTPS production; local storage remains active"
+    },
+    {
+      "file": "production-screenshots/production-backups.png",
+      "width": 1128,
+      "height": 2038,
+      "sha256": "b8da6e49155635fdff11396a7ffd09cf208eb1114b8197297b80930fcd356c8a",
+      "provenance": "actual public HTTPS production; local storage remains active"
+    },
+    {
+      "file": "production-screenshots/production-storage.png",
+      "width": 1128,
+      "height": 1229,
+      "sha256": "d60536f82c68a7ffb6efa0b51538a78c8ed56052b58d5449b815c454920dc65e",
+      "provenance": "actual public HTTPS production; local storage remains active"
+    },
+    {
+      "file": "production-screenshots/production-maintenance.png",
+      "width": 1128,
+      "height": 1082,
+      "sha256": "72ef2e03e1d2f082f963b1ab9b71ad0c6c8ee97801543075ac750cb7dcb611c9",
+      "provenance": "actual public HTTPS production; local storage remains active"
+    },
+    {
+      "file": "production-screenshots/production-storage-mobile.png",
+      "width": 366,
+      "height": 2486,
+      "sha256": "aaa961ba2cee90b1dc381f4cf11918461308f2ca2da1b83a3d2a35c490bc008e",
+      "provenance": "actual public HTTPS production; local storage remains active"
+    },
+    {
+      "file": "production-screenshots/production-maintenance-mobile.png",
+      "width": 366,
+      "height": 1958,
+      "sha256": "99b5eb6b5c7d9f5995d0002d789d843bfffba215bb70d4554a7aa51c2282e6ab",
+      "provenance": "actual public HTTPS production; local storage remains active"
+    }
+  ]
+}

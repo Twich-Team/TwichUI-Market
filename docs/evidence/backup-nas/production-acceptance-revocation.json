@@ -1,0 +1,18 @@
+{
+  "revoked_credential_ids": [
+    500,
+    501
+  ],
+  "original_credentials_untouched": true,
+  "http_revocation_checks": [
+    {
+      "kind": "session",
+      "status": 401
+    },
+    {
+      "kind": "device",
+      "status": 401
+    }
+  ],
+  "temporary_token_file_removed": true
+}

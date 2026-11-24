@@ -1,0 +1,33 @@
+{
+  "synthetic": true,
+  "protocol": "actual SMB3 with required encryption/signing",
+  "checks": [
+    "Image startup uses its dependency interpreter with the preserved production-style PATH",
+    "SMB3 encryption/signing, authentication, streaming read/write, create, rename, delete and actual capacity",
+    "Manual share, bounded folder browsing/creation, saved credential preservation and redaction",
+    "Actual authentication failure is sanitized",
+    "Actual read-only share permission failure",
+    "Signed session with optional encryption compatibility",
+    "Actual SMB connection on an explicitly configured high port",
+    "Actual unreachable private destination has bounded connect failure",
+    "Traversal, alternate stream, public/loopback/metadata peers refused",
+    "Real pg_dump, local-to-SMB checksum migration, activation and original/protection preservation",
+    "Native NAS pg_dump streaming, full pg_restore decode, finalization, inventory and download; no local fallback",
+    "Actual NAS backup restoration into unique isolated PostgreSQL database",
+    "Protected/newest/last-restored deletion requires explicit acknowledgement; metadata audited without unprotecting",
+    "Recurring actual isolated restore renews expiring evidence and safely transfers operation pins without clearing explicit protection",
+    "256 MiB actual SMB streaming in 1 MiB chunks; process peak RSS 49808 KiB",
+    "Actual disconnected SMB transport fails safely and a fresh session reconnects",
+    "Actual unreachable NAS scheduled failure becomes terminal, backs off30minutes and creates a verified native backup after recovery without restart or local fallback",
+    "Originals removed only through separate confirmation after rehashing NAS destination"
+  ],
+  "provenance": "actual SMB3 and isolated PostgreSQL protocol tests, synthetic fixtures only",
+  "local_run_source_commit": "74ca8960a27c68e5bd3e2ede5b9be1de767ce412",
+  "final_combined_ci_commit": "5b20fa135252803bcadd2bf134f9fd7dcb3c2238",
+  "final_exact_head_ci_run": 45440593828,
+  "service_umask": "077",
+  "preserved_system_path": true,
+  "large_stream_bytes": 268435456,
+  "chunk_bytes": 1048576,
+  "peak_process_rss_kib": 49808
+}

@@ -1,0 +1,86 @@
+{
+  "new_snapshots": [
+    {
+      "sample_day": "2026-11-17",
+      "snapshots": 8,
+      "listing_rows": 839266
+    },
+    {
+      "sample_day": "2026-11-18",
+      "snapshots": 20,
+      "listing_rows": 4010193
+    },
+    {
+      "sample_day": "2026-11-19",
+      "snapshots": 18,
+      "listing_rows": 3691103
+    },
+    {
+      "sample_day": "2026-11-20",
+      "snapshots": 19,
+      "listing_rows": 4056966
+    },
+    {
+      "sample_day": "2026-11-21",
+      "snapshots": 19,
+      "listing_rows": 4332135
+    },
+    {
+      "sample_day": "2026-11-22",
+      "snapshots": 10,
+      "listing_rows": 2276637
+    },
+    {
+      "sample_day": "2026-11-23",
+      "snapshots": 16,
+      "listing_rows": 3678183
+    },
+    {
+      "sample_day": "2026-11-24",
+      "snapshots": 15,
+      "listing_rows": 4026470
+    }
+  ],
+  "derived_records": [
+    {
+      "sample_day": "2026-11-17",
+      "derivations": 1,
+      "derived_records": 25208
+    },
+    {
+      "sample_day": "2026-11-18",
+      "derivations": 2,
+      "derived_records": 54132
+    },
+    {
+      "sample_day": "2026-11-19",
+      "derivations": 14,
+      "derived_records": 369283
+    },
+    {
+      "sample_day": "2026-11-20",
+      "derivations": 10,
+      "derived_records": 293714
+    },
+    {
+      "sample_day": "2026-11-21",
+      "derivations": 16,
+      "derived_records": 489957
+    },
+    {
+      "sample_day": "2026-11-22",
+      "derivations": 9,
+      "derived_records": 290208
+    },
+    {
+      "sample_day": "2026-11-23",
+      "derivations": 15,
+      "derived_records": 507845
+    },
+    {
+      "sample_day": "2026-11-24",
+      "derivations": 10,
+      "derived_records": 365357
+    }
+  ]
+}
