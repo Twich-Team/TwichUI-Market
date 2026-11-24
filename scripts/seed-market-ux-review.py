@@ -16,6 +16,12 @@ assert os.environ['SESSION_COOKIE_NAME'] == 'market_ux_review_session'
 passwords = json.load(sys.stdin)
 assert set(passwords) == {'review_member', 'review_admin'}
 with Session.begin() as db:
+    initialized = set(db.scalars(select(User.username).where(User.username.in_(passwords))))
+    if initialized == passwords.keys():
+        print('Review accounts already initialized.')
+        raise SystemExit(0)
+    if initialized:
+        raise RuntimeError('Partial review account bootstrap. Inspect the isolated database.')
     for account in db.scalars(select(User)):
         if account.username in ('owner', 'member_fixture'):
             account.username = 'review_admin' if account.role == 'admin' else 'review_member'

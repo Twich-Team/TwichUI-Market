@@ -1,7 +1,7 @@
 import { administrationGroups, administrationSection } from "./admin-navigation";
 import { Loading } from "./loading";
 import {parseRoute,useLocation,navigate,restoration} from "./navigation";
-import { QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { queryClient, clearPrivateCache, setQueryIdentity } from "./query";
 import { announceSessionChange, onSessionChange } from "./auth-channel";
 import React, { lazy, Suspense, useEffect, useRef, useState } from "react";
@@ -201,25 +201,24 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
     if(focus())return;
     const observer=new MutationObserver(()=>{if(focus())observer.disconnect();});observer.observe(document.body,{childList:true,subtree:true});return()=>observer.disconnect();
   },[location.pathname]);
-  const [markets,setMarkets]=useState<Market[]>([]);
-  const [error,setError]=useState("");
-  const [readOnly,setReadOnly]=useState(true);
-  const [fixtureReview,setFixtureReview]=useState(false);
-  const [environmentReady,setEnvironmentReady]=useState(false);
-  const [marketsReady,setMarketsReady]=useState(false);
+  const marketList = useQuery({
+    queryKey:["private","workspace-markets",user.id],
+    queryFn:({signal})=>api<{markets:Market[]}>("/markets","GET",undefined,signal),
+    refetchInterval:60_000,
+  });
+  const environment = useQuery({
+    queryKey:["private","environment"],
+    queryFn:({signal})=>api<{read_only:boolean;review_fixtures?:boolean}>("/environment","GET",undefined,signal),
+  });
+  const markets = marketList.data?.markets ?? [];
+  const marketsReady = Boolean(marketList.data);
+  const environmentReady = Boolean(environment.data);
+  const readOnly = environment.data?.read_only ?? true;
+  const fixtureReview = environment.data?.review_fixtures;
   const preferences=usePreferences();
   const market=preferredMarket(markets,preferences.values.market_id);
   const setMarket=(id:number)=>preferences.update({market_id:id});
-  const loadMarkets=async()=>{
-    const result=await api<{markets:Market[]}>("/markets");
-    setMarkets(result.markets);setMarketsReady(true);
-  };
-  useEffect(()=>{
-    loadMarkets().catch(error=>{setError(error.message);setMarketsReady(true);});
-    api<{read_only:boolean; review_fixtures?:boolean}>("/environment").then(result=>{
-      queryClient.setQueryData(["private","environment"],result);setFixtureReview(result.review_fixtures === true);setReadOnly(result.read_only);setEnvironmentReady(true);
-    }).catch(error=>setError(error.message));
-  },[]);
+  const loadMarkets=async()=>{await marketList.refetch({throwOnError:true});};
   async function logout() { await preferences.flush(); await signOut(); }
   const names: Record<string, string> = {
     explorer: "Market Explorer",
@@ -290,13 +289,11 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
           {environmentReady && readOnly && <p className="notice" role="status">Interactive preview · Your preferences save automatically. Collection and account administration are read-only.</p>}
           <PreferenceStatus />
           {page!=="item" && preferences.values.market_id !== null && !markets.some(m => m.id === preferences.values.market_id) && markets.length > 0 && <p className="notice">Your preferred market is unavailable. Your saved choice is retained.</p>}
-          {(error || authError) && (
-            <div className="notice error" role="alert">
-              {error || authError}
-            </div>
-          )}
+          {authError && <p className="notice error" role="alert">{authError}</p>}
+          {marketList.error && <p className="notice error" role="alert">The list of markets could not be refreshed. <button onClick={()=>marketList.refetch()}>Retry markets</button></p>}
+          {environment.error && <p className="notice error" role="alert">The website could not check which actions are available. <button onClick={()=>environment.refetch()}>Retry access check</button></p>}
           <Suspense fallback={<Loading label="Opening page…" skeleton/>}>
-          {page === "explorer" && (
+          {page === "explorer" && (marketsReady || !marketList.error) && (
             <Explorer
               marketsReady={marketsReady}
               markets={markets}
@@ -305,7 +302,7 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
               searchParams={new URL(url,location.origin).search}
             />
           )}{" "}
-          {page === "deals" && (
+          {page === "deals" && (marketsReady || !marketList.error) && (
             <Deals
               marketsReady={marketsReady}
               markets={markets}
@@ -314,7 +311,8 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
               searchParams={new URL(url,location.origin).search}
             />
           )}{" "}
-          {page === "admin" && user.role === "admin" && (
+          {page === "admin" && user.role === "admin" && (!environmentReady || !marketsReady) && !environment.error && !marketList.error && <Loading label="Loading administration…" skeleton/>}
+          {page === "admin" && user.role === "admin" && environmentReady && marketsReady && (
             <Administration
               user={user}
               markets={markets}
@@ -322,7 +320,8 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
               refreshMarkets={loadMarkets}
             />
           )}{" "}
-          {page === "account" && (
+          {page === "account" && !environmentReady && !environment.error && <Loading label="Loading account settings…" skeleton/>}
+          {page === "account" && environmentReady && (
             <Account readOnly={readOnly} userId={user.id} openCompanion={()=>navigate('/companion?setup=1')}
               signedOut={signedOut}
             />

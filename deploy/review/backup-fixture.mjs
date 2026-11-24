@@ -39,7 +39,7 @@ backups.reliability.attempts = [mixed.day,failed].map(day=>({at:day+'T10:00:00Z'
 function inventory(params) {
   let matches = rows.filter(row => {
     const verification = params.get('verification');
-    return (!params.get('search') || row.filename.toLowerCase().includes(params.get('search').toLowerCase())) &&
+    return (!params.get('search') || [row.filename,row.created_at,row.storage_name].join(' ').toLowerCase().includes(params.get('search').toLowerCase())) &&
       (!params.get('storage_id') || row.storage_id === params.get('storage_id')) &&
       (!params.get('backup_type') || row.type === params.get('backup_type')) &&
       (!params.get('protection') || row.protected === (params.get('protection')==='protected')) &&
