@@ -252,3 +252,31 @@ def test_daily_canonical_aggregation_resumes_before_any_source_deletion(database
         # An interrupted/corrupt cache cannot authorize raw deletion.
         db.delete(db.scalar(select(BridgeDerivedRecord).where(BridgeDerivedRecord.snapshot_id==old_id)));db.flush()
         with pytest.raises(HTTPException):verify_statistics(db,[old_id])
+
+
+def test_opt_in_derived_cache_cleanup_preserves_daily_and_current_support(database,monkeypatch):
+    from market.models import BridgeDerivedRecord,BridgeDerivation
+    from market import canonical_pricing as cp
+    at,market,variant=seed(database)
+    with database.begin() as db:
+        observations=list(db.scalars(select(Observation).where(Observation.market_id==market).order_by(Observation.retrieved_at)))
+        old=next(o for o in observations if o.retrieved_at.date()==(at-timedelta(days=100)).date())
+        daily=next(o for o in observations if o.retrieved_at.date()==(at-timedelta(days=400)).date())
+        current=observations[-1]
+        db.delete(db.get(DailyObservation,(market,old.retrieved_at.date())))
+        for o in [old,daily,current]:
+            db.add(BridgeDerivation(snapshot_id=o.snapshot_id,algorithm=cp.ALGORITHM,revision=1,record_count=1))
+            db.add(BridgeDerivedRecord(snapshot_id=o.snapshot_id,algorithm=cp.ALGORITHM,revision=1,item_id=25,variant_key=variant,source_kind='auctions',record_json='{}'))
+        db.flush();policy=retention.policy_view(db)
+        assert 'derived_pricing_cache' not in [name for name,_,_ in retention.candidates(db,policy,at)]
+        monkeypatch.setenv('RETENTION_CANONICAL_CACHE_PRUNING','true')
+        name,model,predicate=next(s for s in retention.candidates(db,policy,at) if s[0]=='derived_pricing_cache')
+        keys=retention.primary_keys(model);ids=[list(r) for r in db.execute(select(*keys).where(predicate))]
+        assert len(ids)==1 and ids[0][0]==old.snapshot_id
+        result=retention.execute_selected(db,policy,(name,model,ids),at,1)
+        assert result['rows_removed']==1
+        assert db.get(BridgeDerivation,(old.snapshot_id,cp.ALGORITHM,1)) is None
+        assert db.get(BridgeDerivation,(daily.snapshot_id,cp.ALGORITHM,1)) is not None
+        assert db.get(BridgeDerivation,(current.snapshot_id,cp.ALGORITHM,1)) is not None
+        assert db.scalar(select(func.count()).select_from(model).where(predicate))==0
+        assert retention.execute_selected(db,policy,(name,model,ids),at,1)['rows_removed']==0

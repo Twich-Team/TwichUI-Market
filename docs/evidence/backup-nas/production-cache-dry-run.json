@@ -1,0 +1,7 @@
+{
+  "provenance": "actual read-only production dry run; proposed cache tier remains disabled in production",
+  "eligible_rows": 0,
+  "intraday_days": 90,
+  "daily_days": 365,
+  "preserved": "all current market heads, all observations within90days, and every retained daily closing snapshot including60days of supporting provenance"
+}

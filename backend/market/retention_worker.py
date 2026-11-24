@@ -40,8 +40,8 @@ from .bridge_api import prepare_snapshot as canonical_aggregation
 
 SCOPE = {'version': 1, 'canonical_aggregation_sha256':hashlib.sha256(inspect.getsource(canonical_aggregation).encode()).hexdigest(), 'aggregation_guard_sha256':hashlib.sha256(Path(__file__).with_name('compaction_safety.py').read_bytes()).hexdigest(),
     'resource_guard_sha256':hashlib.sha256(Path(__file__).with_name('maintenance_resources.py').read_bytes()).hexdigest(),
-    'production_health_guard':os.environ.get('RETENTION_PRODUCTION_HEALTH_GUARD')=='true', 'stages': ['daily_references','observations','raw_listings',
-    'raw_feed_payloads','intraday_statistics','collection_logs','feed_checks','security_logs'],
+    'production_health_guard':os.environ.get('RETENTION_PRODUCTION_HEALTH_GUARD')=='true', 'canonical_cache_pruning':os.environ.get('RETENTION_CANONICAL_CACHE_PRUNING')=='true', 'stages': ['daily_references','observations','raw_listings',
+    'raw_feed_payloads','intraday_statistics','derived_pricing_cache (only when separately enabled)','collection_logs','feed_checks','security_logs'],
     'daily_support_days':60, 'current_heads':'all markets including disabled',
     'shared_snapshots':'protect all retained observation dependencies',
     'sync':'existing 409/full refresh', 'concurrent_executions':1,

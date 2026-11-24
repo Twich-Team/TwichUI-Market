@@ -88,7 +88,8 @@
         "retries": 5
       },
       "environment": {
-        "RETENTION_PRODUCTION_HEALTH_GUARD": "true"
+        "RETENTION_PRODUCTION_HEALTH_GUARD": "true",
+        "RETENTION_CANONICAL_CACHE_PRUNING": "${MARKET_RETENTION_CANONICAL_CACHE_PRUNING:-false}"
       }
     },
     "local-api": {
@@ -178,7 +179,8 @@
         "retries": 5
       },
       "environment": {
-        "RETENTION_PRODUCTION_HEALTH_GUARD": "true"
+        "RETENTION_PRODUCTION_HEALTH_GUARD": "true",
+        "RETENTION_CANONICAL_CACHE_PRUNING": "${MARKET_RETENTION_CANONICAL_CACHE_PRUNING:-false}"
       }
     },
     "worker": {
@@ -284,7 +286,8 @@
         }
       ],
       "environment": {
-        "RETENTION_PRODUCTION_HEALTH_GUARD": "true"
+        "RETENTION_PRODUCTION_HEALTH_GUARD": "true",
+        "RETENTION_CANONICAL_CACHE_PRUNING": "${MARKET_RETENTION_CANONICAL_CACHE_PRUNING:-false}"
       }
     },
     "proxy": {
