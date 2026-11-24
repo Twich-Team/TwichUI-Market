@@ -1,0 +1,12 @@
+[
+  {
+    "receipt": "evidence.json",
+    "mode": "0o644",
+    "existing_payload_preserved": true
+  },
+  {
+    "receipt": "status.json",
+    "mode": "0o644",
+    "existing_payload_preserved": true
+  }
+]

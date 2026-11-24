@@ -1,0 +1,23 @@
+{
+  "provenance": "actual authenticated public HTTPS and retained closed historical points",
+  "closed_daily_points": 10,
+  "shared_closed_intraday_points": 34,
+  "passed": true,
+  "pre_cleanup_cursor_continuation_status": 200,
+  "companion_contract_version": 3,
+  "companion_synthetic": false,
+  "companion_partitions": [
+    {
+      "category": "parts",
+      "bytes": 62804,
+      "sha256": "ea535750d630fe29e977d28739ec6084de323adf106381a3d6d9f57a483e1877",
+      "verified": true
+    },
+    {
+      "category": "history",
+      "bytes": 169656,
+      "sha256": "e4fbe668a3713effe28d22e6fdf567255b67dd91184e23d7886400b80609742d",
+      "verified": true
+    }
+  ]
+}
