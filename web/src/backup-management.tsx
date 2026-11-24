@@ -37,10 +37,34 @@ const BackupCalendar = lazy(() => import('./backup-calendar').then(module=>({def
 const GIB=1024**3;
 const verification=(row:Backup)=>row.restoration_verified_at?'Restore rehearsal recorded':row.verification==='archive_integrity_verified'?'Archive integrity checked':row.verification==='legacy_metadata_only'?'Legacy metadata only':'Verification unavailable';
 
+// Summary and paged inventory share a nonblocking lock in the backup service.
+// Sequence this tab's measurements so one refresh cannot make the other stale.
+let previousInventoryRead = Promise.resolve();
+function readBackupInventory(params: URLSearchParams, signal: AbortSignal) {
+  const result = previousInventoryRead.then(() => {
+    signal.throwIfAborted();
+    return api<BackupOverview>(`/admin/backups?${params}`, 'GET', undefined, signal);
+  });
+  previousInventoryRead = result.then(() => {}, () => {});
+  return result;
+}
+
 export function useBackupOverview(offset=0,filters?:BackupFilters,limit=100,enabled=true) {
   const params=backupQueryParams(offset,filters,limit);
   const filtered=params.size>2;
-  return useQuery({enabled,queryKey:filtered?['private','backup-management',offset,params.toString()]:['private','backup-management',offset,limit],queryFn:({signal})=>api<BackupOverview>(`/admin/backups?${params}`,'GET',undefined,signal),staleTime:30000,refetchInterval:q=>filtered?false:(['queued','running'].includes(q.state.data?.job.status||'')||(q.state.data?.inventory_stale&&q.state.data.service_status==='operation_busy'))?5000:60000,retry:false});
+  return useQuery({
+    enabled,
+    queryKey:filtered ? ['private','backup-management',offset,params.toString()] : ['private','backup-management',offset,limit],
+    queryFn:({signal})=>readBackupInventory(params,signal),
+    staleTime:30000,
+    refetchInterval:query=>{
+      const data=query.state.data;
+      if(data?.inventory_stale && data.service_status==='operation_busy') return 5000;
+      if(filtered) return false;
+      return ['queued','running'].includes(data?.job.status||'') ? 5000 : 60000;
+    },
+    retry:false,
+  });
 }
 
 export function BackupCreateButton({readOnly=false,label='Create Backup'}:{readOnly?:boolean;label?:string}) {
@@ -120,7 +144,7 @@ export function BackupManagement({readOnly=false,destinations=[]}:{readOnly?:boo
         <div className="backup-inventory-heading"><h3 id="backup-inventory" tabIndex={-1}>Backup inventory</h3>
           <button disabled={readOnly||busy||!bulk.length} onClick={()=>{setBulkReview(true);setConfirmation('');setProtectedAck(false);setRecoveryAck(false);}}>Delete selected ({bulk.length})</button>
           {bulk.length > 0 && <button disabled={busy} onClick={() => setBulk([])}>Clear selection</button>}
-          <p className="muted">Times in your local timezone{data.inventory_stale?' · Last known inventory':''}. Select up to 50 archives for review.</p>
+          <p className="muted">Times in your local timezone. Select up to 50 archives for review.</p>
         </div>
         <form className="recovery-search" onSubmit={event=>{event.preventDefault();filterChange(setSearchTerm,search.trim());}}>
           <label>Search recovery points<input type="search" placeholder="Date, filename or destination" value={search} maxLength={190} onChange={e=>{setSearch(e.target.value);if(!e.target.value)filterChange(setSearchTerm,'');}}/></label>
@@ -135,6 +159,9 @@ export function BackupManagement({readOnly=false,destinations=[]}:{readOnly?:boo
             <label>Backup type<select value={backupType} onChange={e=>filterChange(setBackupType,e.target.value)}><option value="all">All types</option>{['manual','scheduled','release','restore-verification','legacy','unknown'].map(type=><option key={type} value={type}>{type.replaceAll('-',' ')}</option>)}</select></label>
           </div>
         </details>
+        {query.data?.inventory_stale && !data.inventory_stale && <p role="status" className="notice">{query.data.service_status==='operation_busy'
+          ? 'Showing the last measured inventory while another backup operation runs. This list refreshes automatically.'
+          : 'Showing the last measured inventory. Reconnect backup storage, then refresh the list.'}</p>}
         <DataTable<Backup> compact label="Managed backup archives" data={query.data?.items||[]}
           getRowId={row=>row.id}
           loading={query.isFetching} error={query.error ? `${query.error.message}. Storage measurements and archive eligibility are unavailable until the operations service responds.` : undefined}

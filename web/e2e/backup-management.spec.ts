@@ -155,3 +155,36 @@ test('backup management calendar preserves UTC dates and accessible month naviga
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   await axe(page);
 });
+
+test('backup management serializes summary and page reads and rechecks a busy filtered inventory', async ({page}) => {
+  const {data}=await setup(page);
+  const measuredLimits = new Set<string>();
+  let active = 0, peak = 0, filteredReads = 0;
+  await page.route('**/api/v1/admin/backups?*', async route => {
+    const params = new URL(route.request().url()).searchParams;
+    const limit = Number(params.get('limit'));
+    measuredLimits.add(String(limit));
+    const filtered = params.get('protection')==='protected';
+    if(filtered) filteredReads++;
+    const busy = filtered && filteredReads===1;
+    const rows = filtered ? data.items.filter(row=>row.protected) : data.items;
+    active++;
+    peak=Math.max(peak,active);
+    try {
+      await new Promise(resolve=>setTimeout(resolve,120));
+      await route.fulfill({json:{...data,matched_total:rows.length,items:rows.slice(0,limit),
+        inventory_stale:busy,service_status:busy?'operation_busy':data.service_status}});
+    } finally { active--; }
+  });
+  await page.getByRole('button',{name:'Refresh backups',exact:true}).click();
+  await expect.poll(()=>[...measuredLimits].sort()).toEqual(['10','100']);
+  await expect.poll(()=>active).toBe(0);
+  expect(peak).toBe(1);
+  await page.getByText('Inventory filters',{exact:true}).click();
+  await page.getByRole('combobox',{name:'Protection',exact:true}).selectOption('protected');
+  const busy=page.getByText('Showing the last measured inventory while another backup operation runs. This list refreshes automatically.');
+  await expect(busy).toBeVisible();
+  await expect.poll(()=>filteredReads,{timeout:10000}).toBeGreaterThan(1);
+  await expect(busy).toHaveCount(0);
+  await expect(page.getByRole('table',{name:'Managed backup archives'})).toContainText(data.items[0].filename);
+});
