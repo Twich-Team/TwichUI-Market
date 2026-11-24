@@ -78,13 +78,13 @@ test("administrator recovery, persistent jobs and data-source forms use local AP
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   expect((await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze()).violations).toEqual([]);
   await page.setViewportSize({ width: 1440, height: 1000 });
-  await page.getByRole("button", { name: "Market Explorer", exact: true }).click();
+  await page.goto("/?market=1");
   await page.getByLabel("Search items", { exact: true }).fill("Recovered Gloves");
   await page.getByRole("button", { name: "Search", exact: true }).click();
   await expect(page.getByText("Synthetic Recovered Gloves", { exact: true }).first()).toBeVisible();
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: `${directory}/07-explorer.png`, fullPage: true });
-  await page.getByRole("button", { name: /Synthetic Recovered Gloves/ }).first().click();
+  await page.getByRole("button", { name: "Item details for Synthetic Recovered Gloves", exact: true }).click();
   await page.getByRole("dialog").getByText("Technical details",{exact:true}).click();
   await expect(page.getByRole("dialog").getByText("Field provenance", { exact: true })).toBeVisible();
   await page.evaluate(() => window.scrollTo(0, 0));
