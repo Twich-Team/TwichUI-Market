@@ -41,6 +41,6 @@ case "${1:-status}" in
     [ "$reviewed" = 2 ] && [ "$stock" = 0 ] || { echo "Review bootstrap is incomplete; inspect the private database." >&2; exit 1; }
     dc up -d --no-deps proxy
     dc cp proxy:/data/caddy/pki/authorities/local/root.crt "$review/preview-root.crt"
-    curl --retry 5 --retry-connrefused --max-time 10 -fsS --cacert "$review/preview-root.crt" https://localhost:18444/api/v1/health ;;
+    curl --retry 5 --retry-all-errors --retry-delay 1 --max-time 10 -fsS --cacert "$review/preview-root.crt" https://localhost:18444/api/v1/health ;;
   *) echo "Usage: $0 start|stop|status" >&2; exit 2 ;;
 esac
