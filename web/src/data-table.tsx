@@ -247,7 +247,7 @@ export function DataTable<T>({
             {loading && !data.length && <tr aria-hidden="true"><td colSpan={table.getVisibleLeafColumns().length+(renderDetails?1:0)+(selection?1:0)}><div className="loading-skeleton"><span/><span/><span/></div></td></tr>}
             {table.getRowModel().rows.map((row) => (
               <Fragment key={row.id}><tr>
-                {selection && <td data-label="Select"><label className="table-select-target"><input type="checkbox"
+                {selection && <td data-label="Select"><span className="table-cell-label">Select</span><label className="table-select-target"><input type="checkbox"
                   checked={row.getIsSelected()} disabled={!row.getCanSelect()} aria-label={selection.label(row.original)}
                   onChange={row.getToggleSelectedHandler()} /></label></td>}
                 {renderDetails && <td data-label="Details"><button aria-label={`${expanded[row.id] ? "Hide" : "Show"} details for ${label} ${row.id}`} aria-expanded={!!expanded[row.id]} aria-controls={`${tableId}-${row.id}`} onClick={() => setExpanded(value => ({ ...value, [row.id]: !value[row.id] }))}>{expanded[row.id] ? "Hide" : "Details"}</button></td>}
@@ -262,6 +262,7 @@ export function DataTable<T>({
                         : undefined
                     }
                   >
+                    <span className="table-cell-label">{columnLabel(cell.column)}</span>
                     <div className="table-cell-value">{flexRender(cell.column.columnDef.cell, cell.getContext())}</div>
                   </td>
                 ))}

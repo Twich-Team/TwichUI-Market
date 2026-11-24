@@ -585,6 +585,7 @@
 
 @media (max-width: 700px) {
   .variant-panel .managed-table tbody > tr {
+    display:grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 5px 9px;
   }
@@ -594,12 +595,12 @@
     min-width: 0;
   }
 
-  .variant-panel .managed-table td::before {
+  .variant-panel .managed-table td > .table-cell-label {
     display: block;
   }
 
-  .variant-panel .managed-table td:first-child::before,
-  .variant-panel .managed-table td:last-child::before {
+  .variant-panel .managed-table td:first-child > .table-cell-label,
+  .variant-panel .managed-table td:last-child > .table-cell-label {
     display: none;
   }
 

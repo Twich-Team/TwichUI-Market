@@ -1969,7 +1969,7 @@ a.secondary { display:inline-block; padding:10px 14px; border:1px solid var(--bo
 .backup-table td:nth-child(2){min-width:190px;max-width:270px}
 .backup-table input[type=checkbox]{width:20px;height:20px;min-height:20px;padding:0;accent-color:var(--gold)}
 
-.table-phone-sort,.table-phone-selection {display:none}
+.table-phone-sort,.table-phone-selection,.table-cell-label {display:none}
 .managed-table-controls:empty {display:none}
 .table-select-target {display:inline-flex; min-width:44px; min-height:44px; align-items:center; justify-content:center; cursor:pointer}
 .table-select-target input[type=checkbox] {width:20px; height:20px; margin:0}
@@ -1985,7 +1985,7 @@ a.secondary { display:inline-block; padding:10px 14px; border:1px solid var(--bo
   .managed-table tbody tr {display:block; background:var(--panel,#231e19); border:1px solid var(--edge); border-radius:8px; padding:8px 12px}
   .managed-table tbody td {display:block; white-space:normal; text-align:left; max-width:none; min-width:0; border:0; padding:5px 0}
   .managed-table tbody td[data-label] {display:grid; grid-template-columns:minmax(6rem,36%) minmax(0,1fr);align-items:baseline;gap:8px}
-  .managed-table td[data-label]::before {content:attr(data-label);color:var(--muted);font-size:.875rem}
+  .managed-table .table-cell-label {display:block;color:var(--muted);font-size:.875rem}
   .managed-table .table-cell-value {max-width:100%}
   .managed-table td.numeric {text-align:left}
   .managed-table td button,.managed-table td a.secondary {margin:0}
