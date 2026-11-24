@@ -436,15 +436,11 @@ export function Variants({
   }
   const sort = sorting[0] ?? { id: "lowest_buyout", desc: false };
   const linkedRange = new URLSearchParams(location.search);
-  function destination(key: string) {
-    const url = itemUrl(market, item.item_id, key);
-    if (!replaceSelection) return url;
-    for (const [name, allowed] of [["days", [7, 14, 60, 365, 3650]], ["hours", [24, 48]]] as const) {
-      const value = Number(linkedRange.get(name));
-      if ((allowed as readonly number[]).includes(value)) return `${url}&${name}=${value}`;
-    }
-    return url;
-  }
+  const linkedHours = Number(linkedRange.get("hours"));
+  const linkedDays = Number(linkedRange.get("days"));
+  const rangeSuffix = !replaceSelection ? "" : [24, 48].includes(linkedHours)
+    ? `&hours=${linkedHours}`
+    : [7, 14, 60, 365, 3650].includes(linkedDays) ? `&days=${linkedDays}` : "";
   const result = useQuery({
     queryKey: ["private", "variants", market, item.item_id, pagination, snapshot, sort, pricedOnly],
     queryFn: ({ signal }) => {
@@ -460,40 +456,43 @@ export function Variants({
     retry: false,
   });
   const snapshotChanged = result.error instanceof ApiError && result.error.status === 409;
-  const columns: ColumnDef<Variant>[] = [
-    {
-      id: "variant",
-      header: "Variant",
-      enableHiding: false,
-      enableSorting: false,
-      cell: ({ row }) => <div className="variant-caption">
-        <strong>{variantLabel(row.original.variant)}</strong>
-        <details><summary>Variant identifier</summary><code className="variant-key">{row.original.variant_key}</code></details>
-      </div>,
-    },
-    { accessorKey: "lowest_buyout", header: "Lowest / unit", meta: { numeric: true }, cell: ({ row }) => <Currency value={row.original.lowest_buyout}/> },
-    { accessorKey: "recent_price", header: "Recent / unit", meta: { numeric: true }, cell: ({ row }) => <Currency value={row.original.recent_price}/> },
-    { accessorKey: "market_value", header: "14-day reference", meta: { numeric: true }, cell: ({ row }) => <><Currency value={row.original.market_value}/><small>{row.original.coverage_days} observed days</small></> },
-    { accessorKey: "supply", header: "Supply", meta: { numeric: true }, cell: ({ row }) => row.original.supply.toLocaleString() },
-    { accessorKey: "listing_count", header: "Listings", meta: { numeric: true }, cell: ({ row }) => row.original.listing_count.toLocaleString() },
-    {
-      id: "inspect", header: "Research", enableSorting: false, enableHiding: false,
-      cell: ({ row }) => <a className="secondary" id={`variant-${row.id}`} aria-current={selectedVariant === row.id ? "page" : undefined}
-        href={destination(row.id)}
-        onClick={(event) => {
-          if (selectedVariant === row.id && !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey) {
-            event.preventDefault();
-          } else if (replaceSelection && event.button === 0 && !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey) {
-            event.preventDefault();
-            navigate(destination(row.id), true);
-            document.getElementById("research-title")?.focus();
-          } else followItem(event);
-        }}
-        aria-label={`Inspect ${item.name}: ${variantLabel(row.original.variant)}`}>
-        {selectedVariant === row.id ? "Selected" : "Inspect variant"}
-      </a>,
-    },
-  ];
+  const columns = useMemo<ColumnDef<Variant>[]>(() => {
+    const destination = (key: string) => itemUrl(market, item.item_id, key) + rangeSuffix;
+    return [
+      {
+        id: "variant",
+        header: "Variant",
+        enableHiding: false,
+        enableSorting: false,
+        cell: ({ row }) => <div className="variant-caption">
+          <strong>{variantLabel(row.original.variant)}</strong>
+          <details><summary>Variant identifier</summary><code className="variant-key">{row.original.variant_key}</code></details>
+        </div>,
+      },
+      { accessorKey: "lowest_buyout", header: "Lowest / unit", meta: { numeric: true }, cell: ({ row }) => <Currency value={row.original.lowest_buyout}/> },
+      { accessorKey: "recent_price", header: "Recent / unit", meta: { numeric: true }, cell: ({ row }) => <Currency value={row.original.recent_price}/> },
+      { accessorKey: "market_value", header: "14-day reference", meta: { numeric: true }, cell: ({ row }) => <><Currency value={row.original.market_value}/><small>{row.original.coverage_days} observed days</small></> },
+      { accessorKey: "supply", header: "Supply", meta: { numeric: true }, cell: ({ row }) => row.original.supply.toLocaleString() },
+      { accessorKey: "listing_count", header: "Listings", meta: { numeric: true }, cell: ({ row }) => row.original.listing_count.toLocaleString() },
+      {
+        id: "inspect", header: "Research", enableSorting: false, enableHiding: false,
+        cell: ({ row }) => <a className="secondary" id={`variant-${row.id}`} aria-current={selectedVariant === row.id ? "page" : undefined}
+          href={destination(row.id)}
+          onClick={(event) => {
+            if (selectedVariant === row.id && !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey) {
+              event.preventDefault();
+            } else if (replaceSelection && event.button === 0 && !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey) {
+              event.preventDefault();
+              navigate(destination(row.id), true);
+              document.getElementById("research-title")?.focus();
+            } else followItem(event);
+          }}
+          aria-label={`Inspect ${item.name}: ${variantLabel(row.original.variant)}`}>
+          {selectedVariant === row.id ? "Selected" : "Inspect variant"}
+        </a>,
+      },
+    ];
+  }, [market, item.item_id, item.name, rangeSuffix, replaceSelection, selectedVariant]);
   return (
     <div className="variant-panel">
       <DataTable
