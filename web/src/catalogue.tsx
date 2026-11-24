@@ -455,7 +455,8 @@ export function Variants({
       && query.queryKey[5] === snapshot ? previous : undefined,
     retry: false,
   });
-  const snapshotChanged = result.error instanceof ApiError && result.error.status === 409;
+  const snapshotChanged = result.error instanceof ApiError && result.error.status === 409
+    && result.error.message.startsWith("Market snapshot changed");
   const columns = useMemo<ColumnDef<Variant>[]>(() => {
     const destination = (key: string) => itemUrl(market, item.item_id, key) + rangeSuffix;
     return [
