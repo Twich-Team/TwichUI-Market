@@ -60,3 +60,36 @@ export function backupOutcome(day: string, today: string, counts: Map<string, Re
   if (count?.successes) return 'success';
   return count?.failures ? 'failed' : 'unknown';
 }
+
+interface BackupProtection {
+  protected: boolean;
+  keep_flag?: boolean;
+  recovery_pin?: boolean;
+  type: string;
+  origin: string;
+  reason: string;
+  required_by: string[];
+  active_use?: boolean;
+  verification: string;
+}
+
+export function backupKeepFlag(row: BackupProtection) {
+  // Older managers only report the effective protection state.
+  const set = row.keep_flag ?? row.protected;
+  const label = set ? 'Remove keep flag' : 'Set keep flag';
+  const blocked = row.type === 'legacy' || row.verification !== 'archive_integrity_verified'
+    ? 'Changing the keep flag requires a verified, managed archive.'
+    : row.required_by.length ? 'A recovery reservation blocks changes to this flag.' : '';
+  const restrictions: string[] = [];
+  if (row.origin !== 'scheduled') {
+    restrictions.push('Automatic cleanup applies only to scheduled backups. This archive stays outside rotation.');
+  } else {
+    restrictions.push('Scheduled backups can rotate only after a successful replacement, outside the retained tiers and above the minimum recovery count.');
+  }
+  if (row.recovery_pin || row.active_use || row.required_by.length) {
+    restrictions.push('Recovery protection is managed separately and remains in effect.');
+  } else if (row.reason === 'Minimum recovery-point safeguard') {
+    restrictions.push('This archive is currently within the minimum recovery count.');
+  }
+  return { set, label, blocked, restrictions: restrictions.join(' ') };
+}
