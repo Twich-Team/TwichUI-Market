@@ -8,7 +8,7 @@ import { Currency, StackUnitPrice } from "./currency";
 import { compareCopper } from "./listing-prices";
 import { DataTable } from "./data-table";
 import { Loading } from "./loading";
-import { useCompactLayout } from "./responsive";
+import { useMarketTouchLayout } from "./responsive";
 
 const palette = {
   price: "#dab567",
@@ -27,7 +27,7 @@ const historySeries = [
 ] as const;
 
 export function PriceHistory({ market, item, variant, days }: { market: number; item: number; variant: string; days: number }) {
-  const compact = useCompactLayout();
+  const compact = useMarketTouchLayout();
   const history = useQuery({
     queryKey: ["private", "chart-history", market, item, variant, days],
     refetchInterval: 60_000,

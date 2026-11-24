@@ -97,8 +97,12 @@ export function useRestoreView(ready: boolean, identity: string) {
     function stopWaiting() {
       pending?.disconnect();
       clearTimeout(deadline);
-      window.removeEventListener("pointerdown", stopWaiting);
-      window.removeEventListener("keydown", stopWaiting);
+      window.removeEventListener("pointerdown", finishWaiting);
+      window.removeEventListener("keydown", finishWaiting);
+    }
+    function finishWaiting() {
+      restored.current = key;
+      stopWaiting();
     }
     function restoreIfReady() {
       const target = saved?.focus ? document.getElementById(saved.focus) : null;
@@ -113,9 +117,9 @@ export function useRestoreView(ready: boolean, identity: string) {
       window.scrollTo(0, saved.scroll);
       pending = new MutationObserver(() => { if (restoreIfReady()) stopWaiting(); });
       pending.observe(document.querySelector("main") ?? document.body, { childList: true, subtree: true });
-      deadline = window.setTimeout(stopWaiting, 2500);
-      window.addEventListener("pointerdown", stopWaiting);
-      window.addEventListener("keydown", stopWaiting);
+      deadline = window.setTimeout(finishWaiting, 2500);
+      window.addEventListener("pointerdown", finishWaiting);
+      window.addEventListener("keydown", finishWaiting);
     });
     return () => {
       cancelAnimationFrame(frame);

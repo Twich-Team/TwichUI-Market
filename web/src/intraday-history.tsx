@@ -8,11 +8,11 @@ import { DataTable } from "./data-table";
 import { LocalTime } from "./admin-table";
 import { compareCopper } from "./listing-prices";
 import { currencyAxis, priceDetailWindow, chartTooltipText } from "./chart-data";
-import { useCompactLayout } from "./responsive";
+import { useMarketTouchLayout } from "./responsive";
 import { withMissingHours, intradayLabel, intradayTooltip, type IntradayPoint, type IntradayResponse } from "./intraday-data";
 
 export function IntradayHistory({ market, item, variant, hours }: { market: number; item: number; variant: string; hours: 24 | 48 }) {
-  const compact = useCompactLayout();
+  const compact = useMarketTouchLayout();
   const query = useQuery({
     queryKey: ["private", "intraday-history", market, item, variant, hours],
     queryFn: ({ signal }) => api<IntradayResponse>(`/markets/${market}/items/${item}/${variant}/intraday-history?hours=${hours}`, "GET", undefined, signal),
