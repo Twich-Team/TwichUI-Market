@@ -78,7 +78,7 @@ test('backup management: mobile storage pressure, safeguards and disclosures',as
 
 test('backup management: unavailable and empty states show no fabricated measurements',async({page})=>{
   const {data}=await setup(page);data.items=[];data.total=0;data.total_bytes=0;data.last_success=null;data.last_restoration_verified_at=null;
-  await page.getByRole('button',{name:'Refresh backups',exact:true}).click();await expect(page.getByText(/No recovery points match these filters/)).toBeVisible();
+  await page.getByRole('button',{name:'Refresh backups',exact:true}).click();await expect(page.getByText(/No managed archives are available/)).toBeVisible();
   await page.screenshot({path:`${output}/empty-state.png`,fullPage:true});
   await page.route('**/api/v1/admin/backups?*',route=>route.fulfill({status:503,json:{detail:'Backup management service is unavailable'}}));
   await page.getByRole('button',{name:'Refresh backups',exact:true}).click();await expect(page.getByRole('alert').filter({hasText:'Storage measurements'})).toBeVisible();
