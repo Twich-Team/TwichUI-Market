@@ -173,14 +173,23 @@ def automatic_tick(manager):
         newest=eligible[0]
         current=manager.get(db,'automatic_recovery',{})
         if current.get('backup_id')==newest['id'] and current.get('verified_at'):return False
+        # Persist backoff before hashing/adopting an existing multi-gigabyte archive.
+        manager.set(db,'automatic_restore_retry',(datetime.now(timezone.utc)+timedelta(minutes=30)).isoformat());db.commit()
         if newest.get('storage_id')=='local' and newest.get('restoration_verified_at') and datetime.now(timezone.utc)-date(newest['restoration_verified_at'])<timedelta(hours=24):
             manager._location='local'
             manifest=manager.read_json(newest['filename'][:-5]+'.json')
             if manifest.get('restored') and manager.checksum(newest['filename'])==manifest['sha256']:
+                original=dict(manifest)
                 manifest['recovery_pin']=True
                 manifest['required_by']=sorted(set(manifest.get('required_by',[]))|{'automatic-retention'})
                 manager.write_json(newest['filename'][:-5]+'.json',manifest)
-                publish_recovery(manager,db,'scheduler',newest,manifest)
+                try:publish_recovery(manager,db,'scheduler',newest,manifest)
+                except Exception:
+                    # Publication did not establish a trusted point; retain its original protection.
+                    manager.write_json(newest['filename'][:-5]+'.json',original)
+                    manager.receipt(db,'scheduler','recovery.adoption.failed',dict(backup_id=newest['id']))
+                    return False
+                manager.set(db,'automatic_restore_retry',None)
                 manager.receipt(db,'scheduler','recovery.adopted.verified_local',dict(backup_id=newest['id'],original_verified_at=manifest['restoration_verified_at']))
                 return True
         manager.set(db,'automatic_restore_retry',(datetime.now(timezone.utc)+timedelta(minutes=30)).isoformat())
@@ -203,4 +212,5 @@ def proof(manager,key):
             record.get('file_identity')!=info['identity'] or record.get('verified_at')!=manifest.get('restoration_verified_at') or
             not row['protected'] or 'automatic-retention' not in row['required_by']):
             raise Refused('Recovery archive identity changed; a new complete verification is required')
+        manager.set(db,'recovery_lease_until',(datetime.now(timezone.utc)+timedelta(seconds=120)).isoformat())
         return dict(manifest,protected=True,integrity_checked_at=record['verified_at'],identity_checked_at=__import__('management').stamp())

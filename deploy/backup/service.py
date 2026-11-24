@@ -105,7 +105,9 @@ class Handler(BaseHTTPRequestHandler):
                 threading.Thread(target=run_background,args=(manager,actor,job['id'],'migration'),daemon=True).start()
                 self.reply(202,job)
             elif url.path == '/storage/remove-originals' and self.command == 'POST':
-                self.reply(200,manager.migration_remove_originals(actor,body['id'],body['confirmation'],confirm_protected=body.get('confirm_protected') is True))
+                job=manager.original_cleanup_queue(actor,body['id'],body['confirmation'],body.get('confirm_protected') is True,body.get('confirm_reserved') is True)
+                threading.Thread(target=run_background,args=(manager,actor,job['id'],'original_cleanup'),daemon=True).start()
+                self.reply(202,job)
             elif url.path == '/delete-selected' and self.command == 'POST':
                 job=manager.deletion_queue(actor,body['items'])
                 threading.Thread(target=run_background,args=(manager,actor,job['id'],'deletion'),daemon=True).start()
@@ -135,7 +137,7 @@ class Handler(BaseHTTPRequestHandler):
                         job=manager.deletion_queue(actor,[dict(body,id=key)])
                         threading.Thread(target=run_background,args=(manager,actor,job['id'],'deletion'),daemon=True).start()
                         self.reply(202,job)
-                    else:self.reply(200,manager.delete(actor,key,body['confirmation'],confirm_protected=body.get('confirm_protected') is True,confirm_recovery_loss=body.get('confirm_recovery_loss') is True))
+                    else:self.reply(200,manager.delete(actor,key,body['confirmation'],confirm_protected=body.get('confirm_protected') is True,confirm_recovery_loss=body.get('confirm_recovery_loss') is True,confirm_reserved=body.get('confirm_reserved') is True))
                 elif action == 'protect' and self.command == 'POST' and type(body.get('protected')) is bool:
                     self.reply(200, manager.protect(actor, key, body['protected']))
                 elif action in ('download', 'manifest') and self.command == 'GET':
@@ -189,8 +191,8 @@ def run_job(manager, actor, key):
 
 
 def run_background(manager,actor,key,kind):
-    callback={'migration':manager.migrate,'restore':manager.restore_test,'deletion':manager.deletion_run}[kind]
-    setting={'migration':'migration','restore':'restore','deletion':'job'}[kind]
+    callback={'migration':manager.migrate,'restore':manager.restore_test,'deletion':manager.deletion_run,'original_cleanup':manager.original_cleanup_run}[kind]
+    setting={'migration':'migration','restore':'restore','deletion':'job','original_cleanup':'job'}[kind]
     for _ in range(30):
         try:
             callback(actor,key)

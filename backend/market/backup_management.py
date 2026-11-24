@@ -42,6 +42,7 @@ class Deletion(Strict):
     confirmation: str = Field(min_length=1, max_length=190)
     confirm_protected: bool = False
     confirm_recovery_loss: bool = False
+    confirm_reserved: bool = False
 
 
 class Protection(Strict):
@@ -184,6 +185,7 @@ class Migration(Destination):
 class RemoveOriginals(Destination):
     confirmation: str = Field(max_length=80)
     confirm_protected: bool = False
+    confirm_reserved: bool = False
 
 
 class SelectedDeletion(Deletion):

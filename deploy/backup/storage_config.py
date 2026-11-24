@@ -59,8 +59,9 @@ class StorageConfiguration:
             restore = self.get(db,'restore',{})
             recovery = self.get(db,'automatic_recovery',{})
             pending=self.get(db,'pending_cleanup',[])
+            original_cleanup=self.get(db,'original_cleanup',{})
         return dict(active_id=active, destinations=[self.public(c) for c in configs.values()], health=health, migration={**job,'plan':{k:v for k,v in job.get('plan',{}).items() if k!='items'}},restore=restore,restore_available=os.environ.get('BACKUP_RESTORE_TEST_ENABLED')=='true',
-            pending_cleanup_count=len(pending),automatic_recovery=recovery,automatic_restore_enabled=os.environ.get('BACKUP_AUTOMATIC_RESTORE')=='true',share_enumeration_supported=False,
+            original_cleanup=original_cleanup,pending_cleanup_count=len(pending),automatic_recovery=recovery,automatic_restore_enabled=os.environ.get('BACKUP_AUTOMATIC_RESTORE')=='true',share_enumeration_supported=False,
             share_notice='This native SMB client does not enumerate server shares. Enter a known share; folders can then be browsed.',
             mounted_notice='Mounted filesystem uses the installation’s existing persistent backup directory. Native SMB needs no host mount.')
 
@@ -251,7 +252,7 @@ class StorageConfiguration:
                 capacity=destination.capacity()
             total=sum(r['bytes'] for r in rows)
             return dict(source_id=active,destination_id=key,source_revision=configs[active]['revision'],destination_revision=configs[key]['revision'],
-                count=len(rows),bytes=total,protected_count=sum(r['protected'] for r in rows),available_bytes=capacity['available_bytes'],
+                count=len(rows),bytes=total,protected_count=sum(r['protected'] for r in rows),reserved_count=sum(bool(r['required_by']) for r in rows),available_bytes=capacity['available_bytes'],
                 enough_space=capacity['available_bytes'] is None or capacity['available_bytes']>=total+2*1024**3,
                 originals_preserved=True,items=[dict(id=r['id'],filename=r['filename'],sha256=r['sha256'],bytes=r['bytes']) for r in rows])
 
@@ -341,11 +342,14 @@ class StorageConfiguration:
     def provider_for(self,key):
         with self.location(key) as store:return store
 
-    def migration_remove_originals(self,actor,job_id,confirmation,*,confirm_protected=False):
+    def migration_remove_originals(self,actor,job_id,confirmation,*,confirm_protected=False,confirm_reserved=False,operation_id=None):
         from management import Refused
         if confirmation!='REMOVE VERIFIED ORIGINALS':raise Refused('Type REMOVE VERIFIED ORIGINALS to confirm')
         with self.lock(),self.db() as db:
-            self.idle(db)
+            if operation_id:
+                owner=self.get(db,'job',{})
+                if owner.get('id')!=operation_id or owner.get('kind')!='original_cleanup' or owner.get('status')!='running':raise Refused('Original cleanup job changed')
+            else:self.idle(db)
             job=self.get(db,'migration',{})
             if job.get('id')!=job_id or job.get('status')!='succeeded':raise Refused('A completed verified migration is required')
             plan=job['plan'];configs,active=self.configs()
@@ -363,7 +367,10 @@ class StorageConfiguration:
                 try:
                     if digest(source,name)!=row['sha256']:raise Refused('Original changed; retained')
                     with self.location(plan['source_id']):manifest=self.read_json(name[:-5]+'.json')
-                    if manifest.get('required_by'):raise Refused('Original is still required by an active recovery operation')
+                    active,known,_=self.active_backup_references(db)
+                    source_key=__import__('management').identifier(name) if plan['source_id']=='local' else __import__('management').identifier(plan['source_id']+':'+name)
+                    if source_key in active or (manifest.get('required_by') and not known):raise Refused('Original is still required by an active recovery operation')
+                    if manifest.get('required_by') and not confirm_reserved:raise Refused('Inactive recovery reservations require explicit acknowledgement')
                     if manifest.get('protected') and not confirm_protected:raise Refused('Original became protected; explicit acknowledgement is required')
                     self.receipt(db,actor,'migration.original.deletion.intent',dict(job_id=job_id,filename=name));db.commit()
                     source.remove(name);source.remove(name[:-5]+'.json')
@@ -372,3 +379,32 @@ class StorageConfiguration:
                 except Exception:results.append(dict(filename=name,status='retained',error='Original could not be safely removed'))
             self.receipt(db,actor,'migration.originals.result',dict(job_id=job_id,results=results))
             return dict(results=results)
+
+    def original_cleanup_queue(self,actor,key,confirmation,confirm_protected,confirm_reserved):
+        from management import Refused,stamp
+        if confirmation!='REMOVE VERIFIED ORIGINALS':raise Refused('Type REMOVE VERIFIED ORIGINALS to confirm')
+        with self.lock(),self.db() as db:
+            self.idle(db)
+            migration=self.get(db,'migration',{})
+            if migration.get('id')!=key or migration.get('status')!='succeeded':raise Refused('A completed migration is required')
+            job=dict(id=uuid.uuid4().hex,kind='original_cleanup',status='queued',actor=str(actor),requested_at=stamp(),
+                migration_id=key,confirmation=confirmation,confirm_protected=confirm_protected,confirm_reserved=confirm_reserved)
+            self.set(db,'job',job);self.set(db,'original_cleanup',job)
+            self.receipt(db,actor,'original_cleanup.queued',dict(id=job['id'],migration_id=key))
+            return dict(id=job['id'],status='queued')
+
+    def original_cleanup_run(self,actor,job_id):
+        from management import Refused,stamp
+        with self.lock(),self.db() as db:
+            job=self.get(db,'job',{})
+            if job.get('id')!=job_id or job.get('status')!='queued' or job.get('kind')!='original_cleanup':raise Refused('Original cleanup job changed')
+            job.update(status='running',started_at=stamp());self.set(db,'job',job);self.set(db,'original_cleanup',job)
+        try:
+            result=self.migration_remove_originals(actor,job['migration_id'],job['confirmation'],confirm_protected=job['confirm_protected'],confirm_reserved=job['confirm_reserved'],operation_id=job_id)
+            job.update(status='succeeded',removed=sum(r['status']=='deleted' for r in result['results']),retained=sum(r['status']!='deleted' for r in result['results']),results=result['results'][:100],result_count=len(result['results']))
+        except Exception:
+            job.update(status='failed',error='Original copies could not be safely removed; check storage and recovery reservations')
+        job['finished_at']=stamp()
+        with self.lock(),self.db() as db:
+            self.set(db,'job',job);self.set(db,'original_cleanup',job);self.receipt(db,actor,'original_cleanup.finished',dict(id=job_id,status=job['status']))
+        return job

@@ -264,9 +264,36 @@ class Manager(StorageConfiguration):
         archive_manifests = {r['filename'][:-5]+'.json' for r in rows}
         return sorted(rows, key=lambda r: (r['created_at'] or '', r['filename']), reverse=True), [o for o in other if o['name'] not in archive_manifests]
 
+    def active_backup_references(self,db):
+        active=set()
+        for kind in ('restore','migration'):
+            job=self.get(db,kind,{})
+            if job.get('status') not in ('queued','running'):continue
+            if job.get('backup_id'):active.add(job['backup_id'])
+            for row in job.get('plan',{}).get('items',[]):active.add(row['id'])
+        current=self.get(db,'automatic_recovery',{}).get('backup_id')
+        lease=self.get(db,'recovery_lease_until')
+        if current and lease and date(lease)>datetime.now(timezone.utc):active.add(current)
+        # Unknown installations remain conservative. A configured current receipt
+        # distinguishes completed release reservations from actual use.
+        known=bool(current)
+        directory=os.environ.get('BACKUP_RECOVERY_DIRECTORY')
+        if directory:
+            try:
+                evidence=json.loads((Path(directory)/'evidence.json').read_text())
+                known=bool(evidence.get('backup_id'))
+            except (OSError,ValueError):pass
+        return active,known,current
+
     def guarded_rows(self, db):
         rows, other = self.rows()
         minimum = self.get(db, 'policy')['minimum_recovery_points']
+        active,known,current=self.active_backup_references(db)
+        for row in rows:
+            row['active_use']=row['id'] in active or (bool(row['required_by']) and not known)
+            row['reserved']=bool(row['required_by']) and not row['active_use']
+            row['current_recovery']=row['id']==current
+            if row['active_use']:row.update(eligible=False,reason='In use by recovery or restoration; pause cleanup and wait for its short recovery lease to expire')
         # Preserve the newest N archive-integrity points AND restored recovery points.
         for points in ([r for r in rows if r['verification'] == 'archive_integrity_verified'],
                        [r for r in rows if r['restoration_verified_at']]):
@@ -378,7 +405,7 @@ class Manager(StorageConfiguration):
     def checksum(self, name):
         return digest(self.store, name)
 
-    def delete(self, actor, key, confirmation, *, automatic=False, confirm_protected=False, confirm_recovery_loss=False, job_id=None):
+    def delete(self, actor, key, confirmation, *, automatic=False, confirm_protected=False, confirm_recovery_loss=False, confirm_reserved=False, job_id=None):
         with self.lock(), self.db() as db:
             self._operation_deadline=time.monotonic()+7200
             if job_id:
@@ -391,7 +418,8 @@ class Manager(StorageConfiguration):
             if automatic and not row['eligible']: raise Refused(row['reason'])
             if not automatic and row['reason']=='Minimum recovery-point safeguard' and not confirm_recovery_loss:
                 raise Refused('Explicit acknowledgement is required to delete the newest or last recovery point')
-            if row['required_by']: raise Refused('An active recovery operation still requires this backup')
+            if row.get('active_use'):raise Refused('An active recovery operation still requires this backup; pause cleanup and wait for the recovery lease to expire')
+            if row['required_by'] and not confirm_reserved:raise Refused('Explicit acknowledgement of inactive recovery reservations is required')
             if row['type'] == 'legacy' or row['verification'] != 'archive_integrity_verified':
                 raise Refused('Verified ownership is required for backup deletion')
             if row['protected'] and (automatic or not confirm_protected):
@@ -416,7 +444,7 @@ class Manager(StorageConfiguration):
                 raise Refused('The final intact restored recovery point must be retained')
             manifest_name = row['filename'][:-5]+'.json'
             manifest = self.read_json(manifest_name)
-            receipt = self.receipt(db, actor, 'deletion.intent', dict(backup=row, manifest=manifest, automatic=automatic, confirm_protected=confirm_protected, confirm_recovery_loss=confirm_recovery_loss, policy_revision=self.get(db, 'policy')['revision']))
+            receipt = self.receipt(db, actor, 'deletion.intent', dict(backup=row, manifest=manifest, automatic=automatic, confirm_protected=confirm_protected, confirm_recovery_loss=confirm_recovery_loss, confirm_reserved=confirm_reserved, policy_revision=self.get(db, 'policy')['revision']))
             db.commit()  # durable authorization and metadata survive any filesystem failure
             removed, manifest_removed = False, False
             try:
@@ -636,7 +664,7 @@ class Manager(StorageConfiguration):
             try:
                 if time.monotonic()-started>7200:raise Refused('Bulk deletion deadline reached; remaining copies retained')
                 result=self.delete(actor,item['id'],item['confirmation'],confirm_protected=item.get('confirm_protected') is True,
-                    confirm_recovery_loss=item.get('confirm_recovery_loss') is True,job_id=job_id)
+                    confirm_recovery_loss=item.get('confirm_recovery_loss') is True,confirm_reserved=item.get('confirm_reserved') is True,job_id=job_id)
                 results.append(dict(id=item['id'],**result))
             except Exception as exc:
                 results.append(dict(id=item.get('id'),status='retained',error=str(exc) if isinstance(exc,Refused) else 'Backup unavailable; no deletion was confirmed'))

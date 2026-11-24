@@ -1,0 +1,65 @@
+[
+  {
+    "name": "nas-backups-inventory",
+    "file": "screenshots/nas-backups-inventory.png",
+    "bytes": 632712,
+    "sha256": "1a49a9678bd0017ed508feb4548dcba4e3add8863804a1368fdf8f7e16d71d0a",
+    "provenance": "actual Chromium UI with isolated market_test and actual disposable SMB server"
+  },
+  {
+    "name": "nas-connected-desktop",
+    "file": "screenshots/nas-connected-desktop.png",
+    "bytes": 910162,
+    "sha256": "0073c6eacb2c668dced2a47b60b5c3b02c4d5fbc9229439e6cbcaad3432ae6a0",
+    "provenance": "actual Chromium UI with isolated market_test and actual disposable SMB server"
+  },
+  {
+    "name": "nas-folder-browser",
+    "file": "screenshots/nas-folder-browser.png",
+    "bytes": 980899,
+    "sha256": "810df34a3a8fdc336e69f505198fcc356205772a180e0dafd32f31106024b32d",
+    "provenance": "actual Chromium UI with isolated market_test and actual disposable SMB server"
+  },
+  {
+    "name": "migration-confirmation",
+    "file": "screenshots/migration-confirmation.png",
+    "bytes": 244716,
+    "sha256": "182ad58096388d04fb99ddeb6c50f8a3997775f5ecfc80cdfe5ae8b47cd37de0",
+    "provenance": "actual Chromium UI with isolated market_test and actual disposable SMB server"
+  },
+  {
+    "name": "migration-success",
+    "file": "screenshots/migration-success.png",
+    "bytes": 629355,
+    "sha256": "93625fa1bcedfad2e28a50e92ebeb1d9d9c5ba3c6c6b5d7503f23822401f7ed7",
+    "provenance": "actual Chromium UI with isolated market_test and actual disposable SMB server"
+  },
+  {
+    "name": "protected-delete-confirmation",
+    "file": "screenshots/protected-delete-confirmation.png",
+    "bytes": 211935,
+    "sha256": "1c2e04ce3bf0d8a13fb1953d60d6c29726fbccfa48c2b8af76f551d8181bc468",
+    "provenance": "actual Chromium UI with isolated market_test and actual disposable SMB server"
+  },
+  {
+    "name": "bulk-delete-confirmation",
+    "file": "screenshots/bulk-delete-confirmation.png",
+    "bytes": 229207,
+    "sha256": "ce835e3d8d0d4a22cd03dcddaadd824fe5c13e5d2636cd87c49b52d46a76f990",
+    "provenance": "actual Chromium UI with isolated market_test and actual disposable SMB server"
+  },
+  {
+    "name": "nas-offline-mobile",
+    "file": "screenshots/nas-offline-mobile.png",
+    "bytes": 214254,
+    "sha256": "4005e5c43004d8131a9f9cfeb95c619435bbc5460dd5c23f17aae5833a47f962",
+    "provenance": "actual Chromium UI with isolated market_test and actual disposable SMB server"
+  },
+  {
+    "name": "maintenance-mobile",
+    "file": "screenshots/maintenance-mobile.png",
+    "bytes": 171698,
+    "sha256": "6099bda2cc9d3c822370ae563d9516b6be76a219eb694274c4604a26b5d5443c",
+    "provenance": "actual Chromium UI with isolated market_test and actual disposable SMB server"
+  }
+]

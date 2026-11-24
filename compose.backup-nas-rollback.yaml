@@ -1,0 +1,448 @@
+{
+  "name": "twichui-market",
+  "services": {
+    "api": {
+      "image": "sha256:cae89b4d481ef017b1376b276e4792412172c38022103948df2a430c9c863cb9",
+      "env_file": [
+        ".local/backup-nas/production/api.env"
+      ],
+      "restart": "unless-stopped",
+      "read_only": true,
+      "mem_limit": 402653184,
+      "memswap_limit": 805306368,
+      "cpus": 0.5,
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-file": "2",
+          "max-size": "5m"
+        }
+      },
+      "networks": [
+        "backup-control",
+        "default"
+      ],
+      "command": [
+        "uvicorn",
+        "market.app:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8000",
+        "--no-proxy-headers"
+      ],
+      "pids_limit": 100,
+      "tmpfs": [
+        "/tmp:size=32m"
+      ],
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/home/marketdev/projects/TwichUI-Market/artifacts/backup-status",
+          "target": "/backup-status",
+          "read_only": true
+        },
+        {
+          "type": "volume",
+          "source": "twichui-market_market-data",
+          "target": "/database-filesystem",
+          "read_only": true
+        },
+        {
+          "type": "volume",
+          "source": "twichui-market_companion-private-beta",
+          "target": "/private-beta",
+          "read_only": true
+        },
+        {
+          "type": "bind",
+          "source": "/home/marketdev/projects/TwichUI-Market/.local/retention-recovery",
+          "target": "/retention-recovery",
+          "read_only": true
+        },
+        {
+          "type": "bind",
+          "source": "/home/marketdev/.local/share/twichui-market-metadata/keyring.json",
+          "target": "/run/metadata/keyring.json",
+          "read_only": true
+        },
+        {
+          "type": "bind",
+          "source": "/home/marketdev/projects/TwichUI-Market/.local/backup-management/token",
+          "target": "/run/secrets/backup-manager-token",
+          "read_only": true
+        }
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health',timeout=3)"
+        ],
+        "interval": "15s",
+        "timeout": "5s",
+        "retries": 5
+      }
+    },
+    "local-api": {
+      "image": "sha256:cae89b4d481ef017b1376b276e4792412172c38022103948df2a430c9c863cb9",
+      "env_file": [
+        ".local/backup-nas/production/local-api.env"
+      ],
+      "restart": "unless-stopped",
+      "read_only": true,
+      "mem_limit": 268435456,
+      "memswap_limit": 536870912,
+      "cpus": 0.25,
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-file": "2",
+          "max-size": "5m"
+        }
+      },
+      "networks": [
+        "backup-control",
+        "default"
+      ],
+      "command": [
+        "uvicorn",
+        "market.app:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8000",
+        "--no-proxy-headers"
+      ],
+      "pids_limit": 100,
+      "tmpfs": [
+        "/tmp:size=16m"
+      ],
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/home/marketdev/projects/TwichUI-Market/artifacts/backup-status",
+          "target": "/backup-status",
+          "read_only": true
+        },
+        {
+          "type": "volume",
+          "source": "twichui-market_market-data",
+          "target": "/database-filesystem",
+          "read_only": true
+        },
+        {
+          "type": "volume",
+          "source": "twichui-market_companion-private-beta",
+          "target": "/private-beta",
+          "read_only": true
+        },
+        {
+          "type": "bind",
+          "source": "/home/marketdev/projects/TwichUI-Market/.local/retention-recovery",
+          "target": "/retention-recovery",
+          "read_only": true
+        },
+        {
+          "type": "bind",
+          "source": "/home/marketdev/.local/share/twichui-market-metadata/keyring.json",
+          "target": "/run/metadata/keyring.json",
+          "read_only": true
+        },
+        {
+          "type": "bind",
+          "source": "/home/marketdev/projects/TwichUI-Market/.local/backup-management/token",
+          "target": "/run/secrets/backup-manager-token",
+          "read_only": true
+        }
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health',timeout=3)"
+        ],
+        "interval": "15s",
+        "timeout": "5s",
+        "retries": 5
+      }
+    },
+    "worker": {
+      "image": "sha256:ec94420d36baf501d312f3cbc85e38b77222e5b5bff92b76aae82dd8df95575d",
+      "env_file": [
+        ".local/backup-nas/production/worker.env"
+      ],
+      "restart": "unless-stopped",
+      "read_only": true,
+      "mem_limit": 402653184,
+      "memswap_limit": 805306368,
+      "cpus": 0.5,
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-file": "2",
+          "max-size": "5m"
+        }
+      },
+      "networks": [
+        "default"
+      ],
+      "command": [
+        "python",
+        "-m",
+        "market.worker"
+      ],
+      "tmpfs": [
+        "/tmp:size=32m"
+      ],
+      "volumes": [
+        {
+          "type": "volume",
+          "source": "twichui-market_market-data",
+          "target": "/database-filesystem",
+          "read_only": true
+        }
+      ]
+    },
+    "retention": {
+      "image": "sha256:9712cd35a1f669343d20d42598717d0fcb370a4c358d3edb4c35f807b0d9295c",
+      "env_file": [
+        ".local/backup-nas/production/retention.env"
+      ],
+      "restart": "unless-stopped",
+      "read_only": true,
+      "mem_limit": 201326592,
+      "memswap_limit": 402653184,
+      "cpus": 0.25,
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-file": "2",
+          "max-size": "2m"
+        }
+      },
+      "networks": [
+        "backup-control",
+        "default"
+      ],
+      "command": [
+        "python",
+        "-m",
+        "market.retention_worker"
+      ],
+      "pids_limit": 64,
+      "cap_drop": [
+        "ALL"
+      ],
+      "tmpfs": [
+        "/tmp:size=16m"
+      ],
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/home/marketdev/projects/TwichUI-Market/artifacts/backup-status",
+          "target": "/backup-status",
+          "read_only": true
+        },
+        {
+          "type": "volume",
+          "source": "twichui-market_market-data",
+          "target": "/database-filesystem",
+          "read_only": true
+        },
+        {
+          "type": "bind",
+          "source": "/home/marketdev/projects/TwichUI-Market/.local/retention-recovery",
+          "target": "/retention-recovery",
+          "read_only": true
+        },
+        {
+          "type": "bind",
+          "source": "/home/marketdev/projects/TwichUI-Market/.local/backup-management/token",
+          "target": "/run/secrets/backup-manager-token",
+          "read_only": true
+        }
+      ]
+    },
+    "proxy": {
+      "image": "sha256:f48f8f1a7e5a030432abde0792ee0be1aae0326950404e83036bc9c0172a6814",
+      "env_file": [
+        ".local/backup-nas/production/proxy.env"
+      ],
+      "restart": "unless-stopped",
+      "read_only": false,
+      "mem_limit": 134217728,
+      "memswap_limit": 268435456,
+      "cpus": 0.25,
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-file": "2",
+          "max-size": "5m"
+        }
+      },
+      "networks": [
+        "default"
+      ],
+      "command": [
+        "caddy",
+        "run",
+        "--config",
+        "/etc/caddy/Caddyfile",
+        "--adapter",
+        "caddyfile"
+      ],
+      "volumes": [
+        {
+          "type": "volume",
+          "source": "twichui-market_caddy-data",
+          "target": "/data",
+          "read_only": false
+        },
+        {
+          "type": "bind",
+          "source": "/home/marketdev/projects/TwichUI-Market/deploy/Caddyfile.production",
+          "target": "/etc/caddy/Caddyfile",
+          "read_only": true
+        },
+        {
+          "type": "bind",
+          "source": "/home/marketdev/projects/TwichUI-Market/deploy/routes.local.caddy",
+          "target": "/etc/caddy/routes.local.caddy",
+          "read_only": true
+        },
+        {
+          "type": "bind",
+          "source": "/home/marketdev/projects/TwichUI-Market/deploy/routes.production.caddy",
+          "target": "/etc/caddy/routes.production.caddy",
+          "read_only": true
+        }
+      ],
+      "ports": [
+        {
+          "target": 443,
+          "published": "18443",
+          "host_ip": "127.0.0.1",
+          "protocol": "tcp"
+        },
+        {
+          "target": 80,
+          "published": "18780",
+          "host_ip": "10.0.4.46",
+          "protocol": "tcp"
+        }
+      ]
+    },
+    "backup-manager": {
+      "image": "sha256:79cea119910ad3353f8a35ce21d079fafbcab0a757c0734bfe3bce6055c68565",
+      "env_file": [
+        ".local/backup-nas/production/backup-manager.env"
+      ],
+      "restart": "unless-stopped",
+      "read_only": true,
+      "mem_limit": 268435456,
+      "memswap_limit": 536870912,
+      "cpus": 0.25,
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-file": "2",
+          "max-size": "2m"
+        }
+      },
+      "networks": [
+        "backup-control",
+        "default"
+      ],
+      "entrypoint": [
+        "python3",
+        "/app/service.py"
+      ],
+      "pids_limit": 64,
+      "cap_drop": [
+        "ALL"
+      ],
+      "tmpfs": [
+        "/tmp:size=16m"
+      ],
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/home/marketdev/projects/TwichUI-Market/backups",
+          "target": "/backups",
+          "read_only": false
+        },
+        {
+          "type": "volume",
+          "source": "twichui-market_backup-management-state",
+          "target": "/state",
+          "read_only": false
+        },
+        {
+          "type": "bind",
+          "source": "/home/marketdev/projects/TwichUI-Market/.local/backup-management/token",
+          "target": "/run/secrets/backup-manager-token",
+          "read_only": true
+        },
+        {
+          "type": "volume",
+          "source": "89b31260a39f7faef1ff871012dfdeabe98c483f13ccfd9a372f986ee4a0b8db",
+          "target": "/var/lib/postgresql/data",
+          "read_only": false
+        }
+      ]
+    }
+  },
+  "networks": {
+    "backup-control": {
+      "external": true,
+      "name": "twichui-market_backup-control"
+    },
+    "default": {
+      "external": true,
+      "name": "twichui-market_default"
+    }
+  },
+  "volumes": {
+    "twichui-market_market-data": {
+      "external": true,
+      "name": "twichui-market_market-data"
+    },
+    "twichui-market_companion-private-beta": {
+      "external": true,
+      "name": "twichui-market_companion-private-beta"
+    },
+    "twichui-market_caddy-data": {
+      "external": true,
+      "name": "twichui-market_caddy-data"
+    },
+    "twichui-market_backup-management-state": {
+      "external": true,
+      "name": "twichui-market_backup-management-state"
+    },
+    "89b31260a39f7faef1ff871012dfdeabe98c483f13ccfd9a372f986ee4a0b8db": {
+      "external": true,
+      "name": "89b31260a39f7faef1ff871012dfdeabe98c483f13ccfd9a372f986ee4a0b8db"
+    }
+  }
+}

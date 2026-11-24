@@ -217,3 +217,49 @@ class NASStorage(unittest.TestCase):
         self.assertTrue(proof(self.manager,key)['protected'])
         (self.local/name).write_bytes(b'changed')
         with self.assertRaises(Refused):proof(self.manager,key)
+
+    def test_completed_reservations_can_be_explicitly_deleted_without_unprotecting(self):
+        key,name=self.archive()
+        manifest=self.manager.read_json(name[:-5]+'.json');manifest['required_by']=['release:completed','restore-recovery-gate']
+        self.manager.write_json(name[:-5]+'.json',manifest)
+        directory=Path(self.temp.name)/'recovery';directory.mkdir();(directory/'evidence.json').write_text(json.dumps({'backup_id':'f'*32}))
+        with patch.dict(os.environ,{'BACKUP_RECOVERY_DIRECTORY':str(directory)}):
+            row=self.manager.overview()['items'][0]
+            self.assertTrue(row['reserved']);self.assertFalse(row['active_use'])
+            with self.assertRaises(Refused):self.manager.delete('admin:1',key,name,confirm_protected=True,confirm_recovery_loss=True)
+            result=self.manager.delete('admin:1',key,name,confirm_protected=True,confirm_recovery_loss=True,confirm_reserved=True)
+            self.assertEqual(result['status'],'deleted')
+
+    def test_live_cleanup_lease_prevents_recovery_deletion_until_expiration(self):
+        from recovery import proof
+        from datetime import datetime,timezone,timedelta
+        key,name=self.archive()
+        manifest=self.manager.read_json(name[:-5]+'.json')
+        manifest.update(recovery_pin=True,required_by=['automatic-retention'],restoration_verified_at=stamp(),restored={'tables':1})
+        self.manager.write_json(name[:-5]+'.json',manifest)
+        with self.manager.db() as db:self.manager.set(db,'automatic_recovery',dict(backup_id=key,sha256=manifest['sha256'],bytes=manifest['bytes'],file_identity=manifest['file_identity'],verified_at=manifest['restoration_verified_at']))
+        proof(self.manager,key)
+        with self.assertRaises(Refused):self.manager.delete('admin:1',key,name,confirm_protected=True,confirm_recovery_loss=True,confirm_reserved=True)
+        with self.manager.db() as db:self.manager.set(db,'recovery_lease_until',(datetime.now(timezone.utc)-timedelta(seconds=1)).isoformat())
+        self.assertEqual(self.manager.delete('admin:1',key,name,confirm_protected=True,confirm_recovery_loss=True,confirm_reserved=True)['status'],'deleted')
+
+    def test_original_copy_cleanup_is_a_durable_background_operation(self):
+        _,name=self.archive();migration=self.migrate();self.assertEqual(migration['status'],'succeeded')
+        queued=self.manager.original_cleanup_queue('admin:1',migration['id'],'REMOVE VERIFIED ORIGINALS',True,True)
+        self.assertTrue((self.local/name).exists())
+        result=self.manager.original_cleanup_run('admin:1',queued['id'])
+        self.assertEqual(result['status'],'succeeded',result);self.assertEqual(result['removed'],1)
+        self.assertTrue((self.remote/name).exists());self.assertFalse((self.local/name).exists())
+
+    def test_local_adoption_publication_failure_backs_off_and_preserves_protection(self):
+        from recovery import automatic_tick
+        key,name=self.archive()
+        manifest=self.manager.read_json(name[:-5]+'.json')
+        manifest.update(created_at=stamp(),restoration_verified_at=stamp(),restored={'tables':1})
+        self.manager.write_json(name[:-5]+'.json',manifest)
+        with patch.dict(os.environ,{'BACKUP_AUTOMATIC_RESTORE':'true'}),patch('recovery.publish_recovery',side_effect=Refused('Unavailable evidence directory')) as publish:
+            self.assertFalse(automatic_tick(self.manager))
+            self.assertFalse(automatic_tick(self.manager))
+            self.assertEqual(publish.call_count,1)
+        self.assertEqual(self.manager.read_json(name[:-5]+'.json'),manifest)
+        with self.manager.db() as db:self.assertTrue(self.manager.get(db,'automatic_restore_retry'))
