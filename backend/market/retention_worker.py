@@ -36,8 +36,12 @@ def recovery_policy():
 
 
 # A changed scope/version invalidates prior automatic authorization.
-SCOPE = {'version': 1, 'stages': ['daily_references','observations','raw_listings',
-    'raw_feed_payloads','intraday_statistics','collection_logs','feed_checks','security_logs'],
+from .bridge_api import prepare_snapshot as canonical_aggregation
+
+SCOPE = {'version': 1, 'canonical_aggregation_sha256':hashlib.sha256(inspect.getsource(canonical_aggregation).encode()).hexdigest(), 'aggregation_guard_sha256':hashlib.sha256(Path(__file__).with_name('compaction_safety.py').read_bytes()).hexdigest(),
+    'resource_guard_sha256':hashlib.sha256(Path(__file__).with_name('maintenance_resources.py').read_bytes()).hexdigest(),
+    'production_health_guard':os.environ.get('RETENTION_PRODUCTION_HEALTH_GUARD')=='true', 'canonical_cache_pruning':os.environ.get('RETENTION_CANONICAL_CACHE_PRUNING')=='true', 'stages': ['daily_references','observations','raw_listings',
+    'raw_feed_payloads','intraday_statistics','derived_pricing_cache (only when separately enabled)','collection_logs','feed_checks','security_logs'],
     'daily_support_days':60, 'current_heads':'all markets including disabled',
     'shared_snapshots':'protect all retained observation dependencies',
     'sync':'existing 409/full refresh', 'concurrent_executions':1,
@@ -85,7 +89,7 @@ def approved_document(db, row):
 def recovery_ready(actor_id):
     """Rehash a protected restored archive and enforce the reviewed recovery mode.
 
-    The operator-owned receipt is mounted read-only; it cannot be written by API
+    The operator/service-owned receipt is mounted read-only; it cannot be written by API
     policy saves. No configured path or absent external evidence is ready.
     """
     try:
@@ -100,7 +104,7 @@ def recovery_ready(actor_id):
             if evidence.get('off_vm_verified') is not True or not evidence.get('failure_domain'): return False
         if not re.fullmatch('[a-f0-9]{32}', evidence['backup_id']): return False
         from .backup_management import connect
-        manifest = connect(actor_id, '/backups/'+evidence['backup_id']+'/manifest')
+        manifest = connect(actor_id, '/backups/'+evidence['backup_id']+'/recovery-proof')
         dump = aware(datetime.fromisoformat(manifest['created_at']))
         restored = aware(datetime.fromisoformat(manifest['restoration_verified_at']))
         if not policy['off_vm_required']:
@@ -235,7 +239,27 @@ def _work(factory, at, clock):
         else:
             # Recovery hashing has its own bounded 30-second HTTP deadline and
             # holds no collector lock. Give deletion work its reviewed budget.
+            from .maintenance_resources import health_reason,database_reason
+            unavailable=health_reason()
+            if unavailable:
+                with factory.begin() as health_db:
+                    pending=health_db.get(RetentionExecution,receipt_id)
+                    pending.status='paused';pending.reason=unavailable;pending.finished_at=now()
+                return {'status':'paused','reason':unavailable,'batches':0,'rows_processed':0}
             started=clock()
+            # Daily canonical caches are separate from legacy statistics. Prepare
+            # at most one immutable closing snapshot without holding collection's lock.
+            with factory.begin() as aggregation_db:
+                aggregation_db.execute(text("SET LOCAL statement_timeout='2000ms'"))
+                aggregation_db.execute(text("SET LOCAL lock_timeout='250ms'"))
+                aggregation_db.execute(text("SELECT set_config('transaction_timeout', :value, true)"),{'value':str(min(20000,limits.max_seconds*1000))})
+                from .compaction_safety import prepare_canonical_daily
+                prepared=prepare_canonical_daily(aggregation_db,retention.policy_view(aggregation_db),at)
+            if prepared:
+                with factory.begin() as aggregation_db:
+                    pending=aggregation_db.get(RetentionExecution,receipt_id)
+                    pending.status='budget_exhausted';pending.reason='Prepared a bounded canonical daily aggregate batch; raw data preserved this cycle';pending.finished_at=now()
+                return {'status':'budget_exhausted','reason':'Canonical daily aggregation progressed','batches':0,'rows_processed':0}
             for _ in range(limits.max_batches):
                 remaining=limits.max_seconds-(clock()-started)
                 if remaining <= 0: break
@@ -253,6 +277,9 @@ def _work(factory, at, clock):
                         Market.next_check<=now()+timedelta(seconds=limits.collector_margin_seconds)).limit(1))
                     if due:
                         outcome='paused'; reason='Collector due; yielding maintenance budget'; break
+                    pressure=database_reason(db)
+                    if pressure:
+                        outcome='paused';reason=pressure;break
                     from .capacity import filesystem
                     disk=filesystem()
                     if disk['available_bytes'] is None or disk['available_bytes']<=max(disk['reserve_bytes'],document['scope']['minimum_filesystem_reserve_bytes']):
@@ -307,7 +334,7 @@ def recovery_evidence_view():
     """Cheap, honest status; live execution separately rehashes the local archive."""
     policy = recovery_policy()
     base = {'policy':policy, 'off_vm_required':policy['off_vm_required'],
-            'local_archive_status':'Revalidated under the backup lock before execution'}
+            'local_archive_status':'Identity and protected restore receipt rechecked under the backup lock; full checksum and isolated restoration run during automatic verification'}
     try:
         if not policy['valid']: raise ValueError()
         path=Path(os.environ.get('RETENTION_RECOVERY_EVIDENCE','/retention-recovery/evidence.json'))
@@ -317,8 +344,12 @@ def recovery_evidence_view():
         off_recent=bool(off_stamp and evidence.get('off_vm_verified') is True and evidence.get('failure_domain') and now()-timedelta(hours=24)<=off_stamp<=now())
         stamp=off_stamp if policy['off_vm_required'] else aware(datetime.fromisoformat(evidence['local_restoration_verified_at']))
         recent=off_recent if policy['off_vm_required'] else (evidence.get('owner_approval_reference')==policy['owner_approval_reference'] and now()-timedelta(hours=24)<=stamp<=now())
+        if evidence.get('expires_at'):
+            recent=recent and now()<aware(datetime.fromisoformat(evidence['expires_at']))
         return {**base,'off_vm_verification_recent':off_recent,'required_evidence_recent':bool(recent),'verified_at':stamp,
-                'reason':None if recent else 'Required recovery verification is missing or stale'}
+                'reason':None if recent else 'Required recovery verification is missing or stale',
+                'expires_at':aware(datetime.fromisoformat(evidence['expires_at'])) if evidence.get('expires_at') else None,
+                'remediation':'Check Backup Storage and the latest isolated restore. Automatic verification refreshes the recovery receipt after a successful new backup; failed or expired verification keeps cleanup paused.'}
     except (OSError,KeyError,TypeError,ValueError):
         return {**base,'off_vm_verification_recent':False,'required_evidence_recent':False,'verified_at':None,
                 'reason':'Required recovery verification is missing or stale'}

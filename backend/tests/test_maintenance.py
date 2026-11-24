@@ -24,7 +24,7 @@ def test_operational_retention_dry_run_and_apply(database):
     assert maintain(database,apply=True)['historical_observations']=='preserved_indefinitely'
     with database() as db:
         assert db.scalar(select(func.count()).select_from(CollectionRun))==1
-        assert db.scalar(select(func.count()).select_from(SecurityEvent))==0
+        assert db.scalar(select(func.count()).select_from(SecurityEvent).where(SecurityEvent.action!='maintenance.housekeeping.complete'))==0
         assert db.scalar(select(func.count()).select_from(Market))==1
         assert db.scalar(select(func.count()).select_from(Observation))==1
         assert db.scalar(select(func.count()).select_from(Listing))==1
@@ -58,3 +58,17 @@ def test_legacy_history_application_rejects_non_test_database_identity(database,
     monkeypatch.setattr(engine,'url',make_url('postgresql+psycopg://synthetic/production'))
     with pytest.raises(ValueError,match='signed bounded retention'):
         maintain(database,apply=True,compact=True)
+
+
+def test_bounded_housekeeping_reports_actual_deletions_and_durable_receipt(database):
+    with database.begin() as db:
+        db.add_all(SecurityEvent(action='old.fixture',created_at=now()-timedelta(days=400)) for _ in range(5010))
+    first=maintain(database,apply=True)
+    assert first['eligible']['security_events']==5010
+    assert first['deleted']['security_events']==5000
+    second=maintain(database,apply=True)
+    assert second['deleted']['security_events']==10
+    assert maintain(database,apply=True)['deleted']['security_events']==0
+    with database() as db:
+        receipts=list(db.scalars(select(SecurityEvent).where(SecurityEvent.action=='maintenance.housekeeping.complete')))
+        assert len(receipts)==3

@@ -1,0 +1,50 @@
+# Owner-authorized fresh live archive rehearsal, never the production database.
+name: twichui-market-nas-recovery-check
+services:
+  nas-restore:
+    image: postgres:17-alpine
+    environment: {POSTGRES_DB: market_test, POSTGRES_USER: market, POSTGRES_PASSWORD_FILE: /run/secrets/restore-password}
+    secrets: [restore-password]
+    volumes: [restore-data:/var/lib/postgresql/data]
+    command: [postgres, -c, max_wal_size=256MB, -c, min_wal_size=64MB, -c, shared_buffers=64MB, -c, max_connections=10]
+    mem_limit: 512m
+    cpus: 0.25
+    pids_limit: 64
+    shm_size: 64mb
+    healthcheck: {test: [CMD, pg_isready, -U, market, -d, market_test], interval: 5s, timeout: 3s, retries: 30}
+    logging: {driver: json-file, options: {max-size: "2m", max-file: "2"}}
+  verifier:
+    image: twichui-market-backup-manager:nas-test
+    profiles: [verification]
+    env_file: [.local/backup-nas/rehearsal.env]
+    environment:
+      RESTORE_PGHOST: nas-restore
+      RESTORE_PGPASSWORD_FILE: /run/secrets/restore-password
+      RESTORE_FILESYSTEM_PATH: /restore-filesystem
+      RESTORE_MAX_DATABASE_BYTES: "34359738368"
+      RESTORE_MIN_FREE_BYTES: "34359738368"
+      BACKUP_RESTORE_TEST_ENABLED: "true"
+    secrets: [restore-password]
+    volumes:
+      - /home/marketdev/projects/TwichUI-Market/backups:/backups
+      - ./.local/backup-nas/verification-state:/verification-state
+      - restore-data:/restore-filesystem:ro
+      - ./deploy/backup:/app:ro
+      - ./scripts:/checks:ro
+    networks: [default, production-read]
+    mem_limit: 256m
+    cpus: 0.25
+    pids_limit: 64
+    read_only: true
+    tmpfs: [/tmp:size=16m]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    cap_add: [DAC_READ_SEARCH]
+    logging: {driver: json-file, options: {max-size: "2m", max-file: "1"}}
+    entrypoint: [python3, /checks/verify-live-backup-isolated.py]
+secrets:
+  restore-password: {file: ./.local/backup-nas/restore-password}
+volumes:
+  restore-data:
+networks:
+  production-read: {external: true, name: twichui-market_default}

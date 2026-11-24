@@ -1,0 +1,53 @@
+# Disposable fixtures only: never combine with production Compose.
+name: twichui-market-nas-test
+services:
+  smb:
+    build: {context: ., dockerfile: deploy/backup/SMBTest.Dockerfile}
+    image: twichui-market-smb:nas-test
+    mem_limit: 256m
+    cpus: 0.5
+    pids_limit: 64
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    volumes: [nas-fixtures:/share]
+    logging: {driver: json-file, options: {max-size: "1m", max-file: "1"}}
+    networks: [fixtures]
+  db:
+    image: postgres:17-alpine
+    environment: {POSTGRES_DB: market_test, POSTGRES_USER: market, POSTGRES_PASSWORD: synthetic-test-only}
+    tmpfs: [/var/lib/postgresql/data:size=512m]
+    command: [postgres, -c, max_wal_size=64MB, -c, min_wal_size=32MB]
+    mem_limit: 512m
+    cpus: 0.5
+    logging: {driver: json-file, options: {max-size: "1m", max-file: "1"}}
+    healthcheck: {test: [CMD, pg_isready, -U, market, -d, market_test], interval: 2s, timeout: 2s, retries: 30}
+    networks: [fixtures]
+  check:
+    build: {context: ., dockerfile: deploy/backup/Management.Dockerfile}
+    image: twichui-market-backup-manager:nas-test
+    depends_on: {db: {condition: service_healthy}, smb: {condition: service_started}}
+    environment:
+      PGHOST: db
+      PGUSER: market
+      PGDATABASE: market_test
+      PGPASSWORD: synthetic-test-only
+      PGCONNECT_TIMEOUT: 5
+      BACKUP_RESTORE_TEST_ENABLED: "true"
+      BACKUP_RECOVERY_DIRECTORY: /state/recovery
+      BACKUP_STATUS_DIRECTORY: /state/status
+      RETENTION_LOCAL_RECOVERY_APPROVAL: synthetic-owner-approval
+      METADATA_KEYRING_FILE: /state/keyring.json
+    tmpfs: ["/state:size=32m,mode=0700"]
+    volumes: [local-fixtures:/backups, ./deploy/backup:/app:ro, ./backend/market/provider_secrets.py:/secrets-code/provider_secrets.py:ro, ./scripts:/checks:ro]
+    entrypoint: [python3, /checks/verify-nas-storage.py]
+    mem_limit: 256m
+    cpus: 0.5
+    pids_limit: 64
+    logging: {driver: json-file, options: {max-size: "1m", max-file: "1"}}
+    networks: [fixtures]
+networks:
+  fixtures: {internal: true}
+
+volumes:
+  nas-fixtures:
+  local-fixtures:

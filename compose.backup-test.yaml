@@ -25,8 +25,8 @@ services:
   backup-check:
     user: "${BACKUP_TEST_UID:-0}:${BACKUP_TEST_GID:-0}"
     build:
-      context: ./deploy/backup
-      dockerfile: Management.Dockerfile
+      context: .
+      dockerfile: deploy/backup/Management.Dockerfile
     image: twichui-market-backup-manager:review
     environment: {PGHOST: db, PGUSER: market, PGDATABASE: market_test, PGPASSWORD: synthetic-backup-test-only, PGCONNECT_TIMEOUT: "10"}
     depends_on: {db: {condition: service_healthy}}

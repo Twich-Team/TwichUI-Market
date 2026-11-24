@@ -1950,3 +1950,21 @@ a.secondary { display:inline-block; padding:10px 14px; border:1px solid var(--bo
 .backup-management button:disabled {opacity:.45;cursor:default;}
 .backup-management .backup-row-actions button {padding:5px 8px;font-size:.75rem;}
 .backup-management .backup-actions a {color:#e3bf84;}
+
+.backup-storage select,.backup-storage input:not([type=checkbox]){width:100%;min-width:0}
+.backup-storage nav{display:flex;flex-wrap:wrap;gap:.5rem;margin-block:1rem}
+.nas-folders{list-style:none;display:flex;flex-wrap:wrap;gap:.5rem;padding:0;max-height:20rem;overflow:auto}
+.backup-storage dl>div{display:contents}
+.backup-storage .backup-cards strong{overflow-wrap:anywhere}
+.backup-check{display:flex;align-items:flex-start;gap:.6rem;margin-block:.8rem}
+.backup-check input{flex:none;margin-top:.2rem}
+@media(max-width:600px){.backup-storage .backup-actions{align-items:stretch}.backup-storage .backup-actions>*{width:100%}.backup-storage .backup-policy-grid{grid-template-columns:1fr}}
+
+.backup-storage button:not(.primary),.maintenance-health button:not(.primary){background:#33271c;color:#e2caa5;border:1px solid #745936;border-radius:4px;padding:8px 12px;font:inherit;font-size:.8rem;cursor:pointer}
+.backup-storage button:not(.primary):hover:not(:disabled),.maintenance-health button:not(.primary):hover:not(:disabled){background:#4a3724;border-color:#b18a54}
+.backup-storage button:disabled,.maintenance-health button:disabled{opacity:.45;cursor:default}
+.confirmation-dialog .backup-check{display:flex;flex-direction:row;align-items:flex-start;gap:10px}
+.backup-check input[type=checkbox]{width:18px;height:18px;min-height:18px;padding:0;margin:.2rem 0 0;accent-color:var(--gold);flex-shrink:0}
+.backup-table td:first-child{min-width:44px;max-width:44px;width:44px}
+.backup-table td:nth-child(2){min-width:190px;max-width:270px}
+.backup-table input[type=checkbox]{width:20px;height:20px;min-height:20px;padding:0;accent-color:var(--gold)}

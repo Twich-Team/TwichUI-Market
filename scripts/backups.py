@@ -16,9 +16,27 @@ RESERVE_BYTES = 2 * 1024**3
 BUDGET_BYTES = 2 * 1024**3
 
 
+def require_local_for_legacy_helper():
+    """Never let the old operator helper silently write locally after NAS cutover."""
+    command=['docker','--context','rootless']
+    ids=subprocess.check_output(command+['ps','-aq','--filter','label=com.docker.compose.project=twichui-market',
+        '--filter','label=com.docker.compose.service=backup-manager'],timeout=10).decode().split()
+    if not ids:return  # Original local-only installation, without the manager.
+    if len(ids)!=1:raise ValueError('Backup management identity is ambiguous; use Market administration')
+    code="import sqlite3,json;d=sqlite3.connect('file:/state/management.sqlite?mode=ro',uri=True);r=d.execute(\"SELECT value FROM settings WHERE key='storage_active'\").fetchone();print(r[0] if r else json.dumps('local'))"
+    try:active=json.loads(subprocess.check_output(command+['exec',ids[0],'python3','-c',code],timeout=10,stderr=subprocess.DEVNULL))
+    except (OSError,ValueError,subprocess.SubprocessError):raise ValueError('Backup management is unavailable; no local backup will be written') from None
+    if active!='local':raise ValueError('Configured storage is managed by Market; create backups in administration instead of the legacy local helper')
+    container=json.loads(subprocess.check_output(command+['inspect',ids[0]],timeout=10))[0]
+    root=next((m['Source'] for m in container['Mounts'] if m['Destination']=='/backups'),None)
+    if root!=str(DIRECTORY):raise ValueError('This checkout does not own the active backup directory; use Market administration')
+
+
 def locked(function):
     @wraps(function)
     def wrapper(*args,**kwargs):
+        if function.__name__=='backup' and (args[0] if args else kwargs.get('project','development'))=='development':
+            require_local_for_legacy_helper()
         DIRECTORY.mkdir(mode=0o700,exist_ok=True)
         with os.fdopen(os.open(DIRECTORY/'.backup.lock', os.O_CREAT|os.O_WRONLY|os.O_NOFOLLOW, 0o600), 'a') as lock:
             fcntl.flock(lock,fcntl.LOCK_EX)

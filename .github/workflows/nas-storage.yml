@@ -1,0 +1,53 @@
+name: Native NAS storage
+on:
+  push:
+    branches: [main, 'integration/**']
+  pull_request:
+concurrency:
+  group: nas-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  protocol-and-browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - run: python3 scripts/verify-ci-checkout.py
+        env:
+          CI_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      - run: mkdir -p artifacts/backup-nas && npm ci --prefix web
+      - run: docker compose -f compose.nas-test.yaml build smb check
+      - name: Actual SMB encryption, permissions, streaming, migration, restore and reconnect
+        run: |
+          docker compose -f compose.nas-test.yaml up -d --wait db smb
+          docker compose -f compose.nas-test.yaml run --rm check | tee artifacts/backup-nas/protocol.log
+      - if: always()
+        run: docker compose -f compose.nas-test.yaml down --volumes
+      - name: Build isolated browser images
+        run: |
+          docker build -f backend/Dockerfile -t twichui-market-backend:nas-candidate .
+          docker build -f deploy/web.Dockerfile -t twichui-market-web:nas-candidate .
+          python3 -c "from pathlib import Path;p=Path('artifacts/backup-nas/browser-token');p.write_text('synthetic-browser-backup-service-token-not-for-production');p.chmod(0o644)"
+          docker compose -f compose.nas-browser.yaml up -d --wait
+          docker compose -f compose.nas-browser.yaml exec -T api alembic upgrade head
+          docker compose -f compose.nas-browser.yaml exec -T api python - < web/e2e/seed.py
+          docker compose -f compose.nas-browser.yaml exec -T api python - < web/e2e/seed-admin.py
+          docker compose -f compose.nas-browser.yaml exec -T api python - < web/e2e/seed-quality.py
+          docker compose -f compose.nas-browser.yaml exec -T api python - < web/e2e/seed-private-beta.py
+      - name: Complete native NAS browser workflow
+        run: docker run --rm --network twichui-market-nas-browser_default -v "$PWD:/work" -w /work/web mcr.microsoft.com/playwright:v1.65.1-noble npm run test:e2e -- backup-nas.spec.ts
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-nas-evidence
+          path: |
+            artifacts/backup-nas
+            artifacts/web-e2e
+      - if: always()
+        run: docker compose -f compose.nas-browser.yaml down --volumes

@@ -13,8 +13,8 @@ services:
     user: "${BACKUP_TEST_UID:-0}:${BACKUP_TEST_GID:-0}"
     image: twichui-market-backup-manager:review
     build:
-      context: ./deploy/backup
-      dockerfile: Management.Dockerfile
+      context: .
+      dockerfile: deploy/backup/Management.Dockerfile
     environment:
       PGHOST: db
       PGUSER: market

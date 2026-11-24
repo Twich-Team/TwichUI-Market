@@ -290,3 +290,32 @@ def test_empty_raw_backlog_skips_retained_listing_heap(database, automation):
             # Proving that no snapshot is eligible must not scan its retained heap.
             assert listing_visits(plan) < 100
         assert db.scalar(select(func.count()).select_from(Listing)) == 101001
+
+
+def test_api_health_failure_pauses_before_source_deletion(database,automation,monkeypatch):
+    require_pg(database)
+    monkeypatch.setattr('market.maintenance_resources.health_reason',lambda:'Market API health check failed; cleanup paused')
+    result=work_once(database)
+    assert result['status']=='paused' and result['batches']==0
+    with database() as db:assert db.scalar(select(func.count()).select_from(Listing))==1000
+
+
+def test_database_pressure_pauses_before_source_deletion(database,automation,monkeypatch):
+    require_pg(database)
+    monkeypatch.setattr('market.maintenance_resources.database_reason',lambda db:'Database activity or lock waits exceed the cleanup safety threshold')
+    result=work_once(database)
+    assert result['status']=='paused' and result['batches']==0
+
+
+def test_recovery_health_respects_archive_expiry_even_when_restore_is_recent(tmp_path,monkeypatch):
+    from market.retention_worker import recovery_evidence_view
+    path=tmp_path/'receipt.json'
+    monkeypatch.setenv('RETENTION_RECOVERY_EVIDENCE',str(path))
+    monkeypatch.setenv('RETENTION_RECOVERY_MODE','local_only')
+    monkeypatch.setenv('RETENTION_LOCAL_RECOVERY_APPROVAL','fixture-approval')
+    evidence=dict(local_restoration_verified_at=now().isoformat(),owner_approval_reference='fixture-approval',
+                  expires_at=(now()-timedelta(seconds=1)).isoformat())
+    path.write_text(json.dumps(evidence))
+    assert recovery_evidence_view()['required_evidence_recent'] is False
+    evidence['expires_at']=(now()+timedelta(hours=1)).isoformat();path.write_text(json.dumps(evidence))
+    assert recovery_evidence_view()['required_evidence_recent'] is True

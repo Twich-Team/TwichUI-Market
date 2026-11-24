@@ -1,0 +1,13 @@
+{
+  "live_image": "sha256:cae89b4d481ef017b1376b276e4792412172c38022103948df2a430c9c863cb9",
+  "compared_modules": 65,
+  "differences": [
+    "retention.py",
+    "backup_management.py",
+    "app.py"
+  ],
+  "candidate_new_modules": [
+    "compaction_safety.py",
+    "maintenance_health.py"
+  ]
+}

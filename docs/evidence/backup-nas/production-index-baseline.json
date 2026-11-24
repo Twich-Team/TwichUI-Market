@@ -1,0 +1,982 @@
+{
+  "provenance": "actual read-only production before deployment and cleanup",
+  "indexes": [
+    {
+      "schemaname": "public",
+      "table_name": "listings",
+      "index_name": "listings_snapshot_id_auction_id_key",
+      "bytes": 1555857408,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "listings",
+      "index_name": "listings_pkey",
+      "bytes": 830726144,
+      "idx_scan": 2,
+      "idx_tup_read": 28113091,
+      "idx_tup_fetch": 28113091
+    },
+    {
+      "schemaname": "public",
+      "table_name": "snapshot_statistics",
+      "index_name": "snapshot_statistics_pkey",
+      "bytes": 803160064,
+      "idx_scan": 205326,
+      "idx_tup_read": 2101875601,
+      "idx_tup_fetch": 2062084188
+    },
+    {
+      "schemaname": "public",
+      "table_name": "bridge_derived_records",
+      "index_name": "bridge_derived_records_pkey",
+      "bytes": 389791744,
+      "idx_scan": 38984703,
+      "idx_tup_read": 22686060,
+      "idx_tup_fetch": 3784305
+    },
+    {
+      "schemaname": "public",
+      "table_name": "listings",
+      "index_name": "ix_listings_variant_key",
+      "bytes": 340467712,
+      "idx_scan": 217,
+      "idx_tup_read": 652653,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "listings",
+      "index_name": "ix_listings_item_id",
+      "bytes": 264003584,
+      "idx_scan": 219,
+      "idx_tup_read": 653934,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "listings",
+      "index_name": "ix_listings_snapshot_id",
+      "bytes": 239058944,
+      "idx_scan": 3315,
+      "idx_tup_read": 380014342,
+      "idx_tup_fetch": 22218581
+    },
+    {
+      "schemaname": "public",
+      "table_name": "snapshot_statistics",
+      "index_name": "ix_snapshot_statistics_item_variant",
+      "bytes": 74702848,
+      "idx_scan": 5719509,
+      "idx_tup_read": 419951610,
+      "idx_tup_fetch": 12661
+    },
+    {
+      "schemaname": "public",
+      "table_name": "metadata_tasks",
+      "index_name": "ix_metadata_tasks_identity",
+      "bytes": 2834432,
+      "idx_scan": 483,
+      "idx_tup_read": 9,
+      "idx_tup_fetch": 1
+    },
+    {
+      "schemaname": "public",
+      "table_name": "metadata_jobs",
+      "index_name": "ix_metadata_jobs_dedupe_key",
+      "bytes": 2760704,
+      "idx_scan": 3805,
+      "idx_tup_read": 3846,
+      "idx_tup_fetch": 3820
+    },
+    {
+      "schemaname": "public",
+      "table_name": "metadata_tasks",
+      "index_name": "ix_metadata_tasks_queue",
+      "bytes": 2514944,
+      "idx_scan": 115675,
+      "idx_tup_read": 4437309,
+      "idx_tup_fetch": 79018
+    },
+    {
+      "schemaname": "public",
+      "table_name": "metadata_sources",
+      "index_name": "ix_metadata_sources_due",
+      "bytes": 2490368,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "metadata_versions",
+      "index_name": "uq_metadata_version",
+      "bytes": 1974272,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "security_events",
+      "index_name": "security_events_pkey",
+      "bytes": 1859584,
+      "idx_scan": 3,
+      "idx_tup_read": 11937,
+      "idx_tup_fetch": 11937
+    },
+    {
+      "schemaname": "public",
+      "table_name": "security_events",
+      "index_name": "ix_security_events_created_at",
+      "bytes": 1859584,
+      "idx_scan": 116,
+      "idx_tup_read": 58,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "metadata_tasks",
+      "index_name": "uq_metadata_job_item",
+      "bytes": 1835008,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "metadata_sources",
+      "index_name": "ix_metadata_sources_recent",
+      "bytes": 1728512,
+      "idx_scan": 88980,
+      "idx_tup_read": 482977552,
+      "idx_tup_fetch": 18075
+    },
+    {
+      "schemaname": "public",
+      "table_name": "metadata_sources",
+      "index_name": "metadata_sources_pkey",
+      "bytes": 1179648,
+      "idx_scan": 1056944,
+      "idx_tup_read": 172391991,
+      "idx_tup_fetch": 56207584
+    },
+    {
+      "schemaname": "public",
+      "table_name": "item_metadata",
+      "index_name": "ix_item_metadata_catalog_search",
+      "bytes": 901120,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "metadata_tasks",
+      "index_name": "metadata_tasks_pkey",
+      "bytes": 860160,
+      "idx_scan": 22834,
+      "idx_tup_read": 31060,
+      "idx_tup_fetch": 22834
+    },
+    {
+      "schemaname": "public",
+      "table_name": "metadata_tasks",
+      "index_name": "ix_metadata_tasks_job_id",
+      "bytes": 778240,
+      "idx_scan": 53730,
+      "idx_tup_read": 65990,
+      "idx_tup_fetch": 28843
+    },
+    {
+      "schemaname": "public",
+      "table_name": "metadata_attempts",
+      "index_name": "ix_metadata_attempts_period",
+      "bytes": 778240,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "metadata_attempts",
+      "index_name": "ix_metadata_attempts_item",
+      "bytes": 753664,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "metadata_jobs",
+      "index_name": "metadata_jobs_pkey",
+      "bytes": 745472,
+      "idx_scan": 80219,
+      "idx_tup_read": 87942,
+      "idx_tup_fetch": 70650
+    },
+    {
+      "schemaname": "public",
+      "table_name": "metadata_versions",
+      "index_name": "metadata_versions_pkey",
+      "bytes": 679936,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "metadata_attempts",
+      "index_name": "metadata_attempts_pkey",
+      "bytes": 466944,
+      "idx_scan": 7975,
+      "idx_tup_read": 7975,
+      "idx_tup_fetch": 7975
+    },
+    {
+      "schemaname": "public",
+      "table_name": "metadata_recovery_items",
+      "index_name": "metadata_recovery_items_pkey",
+      "bytes": 409600,
+      "idx_scan": 1160261,
+      "idx_tup_read": 1352884,
+      "idx_tup_fetch": 1160168
+    },
+    {
+      "schemaname": "public",
+      "table_name": "metadata_jobs",
+      "index_name": "ix_metadata_jobs_state",
+      "bytes": 409600,
+      "idx_scan": 10271,
+      "idx_tup_read": 11914,
+      "idx_tup_fetch": 4472
+    },
+    {
+      "schemaname": "public",
+      "table_name": "item_metadata",
+      "index_name": "ix_item_metadata_region_name",
+      "bytes": 311296,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "item_metadata",
+      "index_name": "item_metadata_pkey",
+      "bytes": 294912,
+      "idx_scan": 925771,
+      "idx_tup_read": 963829,
+      "idx_tup_fetch": 123793
+    },
+    {
+      "schemaname": "public",
+      "table_name": "item_media",
+      "index_name": "item_media_pkey",
+      "bytes": 253952,
+      "idx_scan": 806813,
+      "idx_tup_read": 813449,
+      "idx_tup_fetch": 4664
+    },
+    {
+      "schemaname": "public",
+      "table_name": "observations",
+      "index_name": "observations_request_key_key",
+      "bytes": 196608,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "item_source_coverage",
+      "index_name": "item_source_coverage_pkey",
+      "bytes": 188416,
+      "idx_scan": 3909822,
+      "idx_tup_read": 155282,
+      "idx_tup_fetch": 79
+    },
+    {
+      "schemaname": "public",
+      "table_name": "bridge_records",
+      "index_name": "bridge_records_pkey",
+      "bytes": 180224,
+      "idx_scan": 6719,
+      "idx_tup_read": 15126,
+      "idx_tup_fetch": 14646
+    },
+    {
+      "schemaname": "public",
+      "table_name": "metadata_quota_buckets",
+      "index_name": "metadata_quota_buckets_pkey",
+      "bytes": 139264,
+      "idx_scan": 64567,
+      "idx_tup_read": 777099,
+      "idx_tup_fetch": 3226
+    },
+    {
+      "schemaname": "public",
+      "table_name": "feed_checks",
+      "index_name": "feed_checks_pkey",
+      "bytes": 106496,
+      "idx_scan": 86,
+      "idx_tup_read": 89,
+      "idx_tup_fetch": 89
+    },
+    {
+      "schemaname": "public",
+      "table_name": "feed_checks",
+      "index_name": "ix_feed_checks_checked_at",
+      "bytes": 98304,
+      "idx_scan": 110,
+      "idx_tup_read": 1422,
+      "idx_tup_fetch": 1372
+    },
+    {
+      "schemaname": "public",
+      "table_name": "collection_runs",
+      "index_name": "ix_collection_runs_checked_at",
+      "bytes": 81920,
+      "idx_scan": 129,
+      "idx_tup_read": 1717,
+      "idx_tup_fetch": 1716
+    },
+    {
+      "schemaname": "public",
+      "table_name": "collection_runs",
+      "index_name": "collection_runs_pkey",
+      "bytes": 81920,
+      "idx_scan": 626,
+      "idx_tup_read": 626,
+      "idx_tup_fetch": 626
+    },
+    {
+      "schemaname": "public",
+      "table_name": "credentials",
+      "index_name": "credentials_token_hash_key",
+      "bytes": 81920,
+      "idx_scan": 41085,
+      "idx_tup_read": 41089,
+      "idx_tup_fetch": 41085
+    },
+    {
+      "schemaname": "public",
+      "table_name": "observations",
+      "index_name": "ix_observations_retrieved_at",
+      "bytes": 73728,
+      "idx_scan": 165557,
+      "idx_tup_read": 104419956,
+      "idx_tup_fetch": 104375617
+    },
+    {
+      "schemaname": "public",
+      "table_name": "observations",
+      "index_name": "observations_pkey",
+      "bytes": 73728,
+      "idx_scan": 189542,
+      "idx_tup_read": 654811,
+      "idx_tup_fetch": 620581
+    },
+    {
+      "schemaname": "public",
+      "table_name": "feed_captures",
+      "index_name": "feed_captures_market_id_source_kind_payload_hash_key",
+      "bytes": 57344,
+      "idx_scan": 85,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "retention_executions",
+      "index_name": "ix_retention_executions_started_at",
+      "bytes": 57344,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "retention_executions",
+      "index_name": "retention_executions_pkey",
+      "bytes": 57344,
+      "idx_scan": 1175,
+      "idx_tup_read": 1196,
+      "idx_tup_fetch": 1196
+    },
+    {
+      "schemaname": "public",
+      "table_name": "collection_runs",
+      "index_name": "ix_collection_runs_market_id",
+      "bytes": 49152,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "snapshots",
+      "index_name": "snapshots_market_id_content_hash_key",
+      "bytes": 49152,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "companion_refresh_history",
+      "index_name": "companion_refresh_history_pkey",
+      "bytes": 49152,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "feed_checks",
+      "index_name": "ix_feed_checks_market_id",
+      "bytes": 40960,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "login_attempts",
+      "index_name": "login_attempts_pkey",
+      "bytes": 40960,
+      "idx_scan": 93,
+      "idx_tup_read": 83,
+      "idx_tup_fetch": 81
+    },
+    {
+      "schemaname": "public",
+      "table_name": "observations",
+      "index_name": "ix_observations_market_id",
+      "bytes": 40960,
+      "idx_scan": 311,
+      "idx_tup_read": 251037,
+      "idx_tup_fetch": 220877
+    },
+    {
+      "schemaname": "public",
+      "table_name": "observations",
+      "index_name": "ix_observations_snapshot_id",
+      "bytes": 40960,
+      "idx_scan": 5100,
+      "idx_tup_read": 76473,
+      "idx_tup_fetch": 58469
+    },
+    {
+      "schemaname": "public",
+      "table_name": "credentials",
+      "index_name": "credentials_pkey",
+      "bytes": 32768,
+      "idx_scan": 20,
+      "idx_tup_read": 27,
+      "idx_tup_fetch": 26
+    },
+    {
+      "schemaname": "public",
+      "table_name": "metadata_recovery_state",
+      "index_name": "metadata_recovery_state_pkey",
+      "bytes": 16384,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "users",
+      "index_name": "users_pkey",
+      "bytes": 16384,
+      "idx_scan": 112,
+      "idx_tup_read": 112,
+      "idx_tup_fetch": 112
+    },
+    {
+      "schemaname": "public",
+      "table_name": "users",
+      "index_name": "users_username_key",
+      "bytes": 16384,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "credentials",
+      "index_name": "ix_credentials_user_id",
+      "bytes": 16384,
+      "idx_scan": 28,
+      "idx_tup_read": 30,
+      "idx_tup_fetch": 26
+    },
+    {
+      "schemaname": "public",
+      "table_name": "invitations",
+      "index_name": "invitations_pkey",
+      "bytes": 16384,
+      "idx_scan": 14,
+      "idx_tup_read": 84,
+      "idx_tup_fetch": 84
+    },
+    {
+      "schemaname": "public",
+      "table_name": "invitations",
+      "index_name": "invitations_token_hash_key",
+      "bytes": 16384,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "markets",
+      "index_name": "markets_pkey",
+      "bytes": 16384,
+      "idx_scan": 448,
+      "idx_tup_read": 448,
+      "idx_tup_fetch": 448
+    },
+    {
+      "schemaname": "public",
+      "table_name": "markets",
+      "index_name": "markets_region_ruleset_id_house_id_source_kind_key",
+      "bytes": 16384,
+      "idx_scan": 47528,
+      "idx_tup_read": 95056,
+      "idx_tup_fetch": 95056
+    },
+    {
+      "schemaname": "public",
+      "table_name": "snapshots",
+      "index_name": "snapshots_pkey",
+      "bytes": 16384,
+      "idx_scan": 21483,
+      "idx_tup_read": 22048,
+      "idx_tup_fetch": 21609
+    },
+    {
+      "schemaname": "public",
+      "table_name": "snapshots",
+      "index_name": "ix_snapshots_market_id",
+      "bytes": 16384,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "daily_observations",
+      "index_name": "daily_observations_pkey",
+      "bytes": 16384,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "daily_observations",
+      "index_name": "ix_daily_observations_observation_id",
+      "bytes": 16384,
+      "idx_scan": 323,
+      "idx_tup_read": 323,
+      "idx_tup_fetch": 319
+    },
+    {
+      "schemaname": "public",
+      "table_name": "storage_measurements",
+      "index_name": "storage_measurements_pkey",
+      "bytes": 16384,
+      "idx_scan": 11,
+      "idx_tup_read": 11,
+      "idx_tup_fetch": 11
+    },
+    {
+      "schemaname": "public",
+      "table_name": "market_verifications",
+      "index_name": "market_verifications_pkey",
+      "bytes": 16384,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "market_verifications",
+      "index_name": "ix_market_verifications_market_id",
+      "bytes": 16384,
+      "idx_scan": 239,
+      "idx_tup_read": 239,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "player_market_mappings",
+      "index_name": "player_market_mappings_pkey",
+      "bytes": 16384,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "player_market_mappings",
+      "index_name": "player_market_mappings_region_ruleset_faction_source_kind_key",
+      "bytes": 16384,
+      "idx_scan": 1390,
+      "idx_tup_read": 1390,
+      "idx_tup_fetch": 1390
+    },
+    {
+      "schemaname": "public",
+      "table_name": "player_market_mappings",
+      "index_name": "player_market_mappings_region_house_id_source_kind_key",
+      "bytes": 16384,
+      "idx_scan": 7298,
+      "idx_tup_read": 7072,
+      "idx_tup_fetch": 7072
+    },
+    {
+      "schemaname": "public",
+      "table_name": "retention_policy",
+      "index_name": "retention_policy_pkey",
+      "bytes": 16384,
+      "idx_scan": 23047,
+      "idx_tup_read": 23047,
+      "idx_tup_fetch": 23047
+    },
+    {
+      "schemaname": "public",
+      "table_name": "retention_policy_changes",
+      "index_name": "retention_policy_changes_pkey",
+      "bytes": 16384,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "user_preferences",
+      "index_name": "user_preferences_pkey",
+      "bytes": 16384,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "companion_devices",
+      "index_name": "companion_devices_pkey",
+      "bytes": 16384,
+      "idx_scan": 61111,
+      "idx_tup_read": 165592,
+      "idx_tup_fetch": 242
+    },
+    {
+      "schemaname": "public",
+      "table_name": "companion_devices",
+      "index_name": "companion_devices_refresh_hash_key",
+      "bytes": 16384,
+      "idx_scan": 36,
+      "idx_tup_read": 92,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "companion_devices",
+      "index_name": "companion_devices_previous_refresh_hash_key",
+      "bytes": 16384,
+      "idx_scan": 36,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "companion_devices",
+      "index_name": "ix_companion_devices_user_id",
+      "bytes": 16384,
+      "idx_scan": 47,
+      "idx_tup_read": 90,
+      "idx_tup_fetch": 60
+    },
+    {
+      "schemaname": "public",
+      "table_name": "credentials",
+      "index_name": "ix_credentials_companion_device_id",
+      "bytes": 16384,
+      "idx_scan": 58,
+      "idx_tup_read": 2754,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "companion_authorizations",
+      "index_name": "companion_authorizations_pkey",
+      "bytes": 16384,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "companion_authorizations",
+      "index_name": "companion_authorizations_state_hash_key",
+      "bytes": 16384,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "companion_authorizations",
+      "index_name": "companion_authorizations_code_hash_key",
+      "bytes": 16384,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "companion_authorizations",
+      "index_name": "ix_companion_authorizations_user_id",
+      "bytes": 16384,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "companion_authorizations",
+      "index_name": "ix_companion_authorizations_expires_at",
+      "bytes": 16384,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "companion_refresh_history",
+      "index_name": "ix_companion_refresh_history_device_id",
+      "bytes": 16384,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "metadata_providers",
+      "index_name": "metadata_providers_pkey",
+      "bytes": 16384,
+      "idx_scan": 122416,
+      "idx_tup_read": 251281,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "bridge_derivations",
+      "index_name": "bridge_derivations_pkey",
+      "bytes": 16384,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "bridge_generations",
+      "index_name": "bridge_generations_pkey",
+      "bytes": 16384,
+      "idx_scan": 11833,
+      "idx_tup_read": 12719,
+      "idx_tup_fetch": 5674
+    },
+    {
+      "schemaname": "public",
+      "table_name": "bridge_generations",
+      "index_name": "ix_bridge_generations_market_id",
+      "bytes": 16384,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "bridge_generations",
+      "index_name": "ix_bridge_generations_source_signature",
+      "bytes": 16384,
+      "idx_scan": 1943,
+      "idx_tup_read": 2405,
+      "idx_tup_fetch": 1235
+    },
+    {
+      "schemaname": "public",
+      "table_name": "bridge_generations",
+      "index_name": "ix_bridge_generations_created_at",
+      "bytes": 16384,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "metadata_resources",
+      "index_name": "metadata_resources_pkey",
+      "bytes": 16384,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "archive_digests",
+      "index_name": "archive_digests_pkey",
+      "bytes": 16384,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "alembic_version",
+      "index_name": "alembic_version_pkc",
+      "bytes": 16384,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "feed_captures",
+      "index_name": "feed_captures_pkey",
+      "bytes": 16384,
+      "idx_scan": 3010,
+      "idx_tup_read": 3010,
+      "idx_tup_fetch": 3010
+    },
+    {
+      "schemaname": "public",
+      "table_name": "feed_captures",
+      "index_name": "ix_feed_captures_market_id",
+      "bytes": 16384,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "market_feeds",
+      "index_name": "market_feeds_pkey",
+      "bytes": 16384,
+      "idx_scan": 2232,
+      "idx_tup_read": 3420,
+      "idx_tup_fetch": 1982
+    },
+    {
+      "schemaname": "public",
+      "table_name": "retention_automation",
+      "index_name": "retention_automation_pkey",
+      "bytes": 16384,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "archive_checkpoints",
+      "index_name": "ix_archive_checkpoints_created_at",
+      "bytes": 8192,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "archive_checkpoints",
+      "index_name": "ix_archive_checkpoints_user_id",
+      "bytes": 8192,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "archive_checkpoints",
+      "index_name": "ix_archive_checkpoints_market_id",
+      "bytes": 8192,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "archive_checkpoints",
+      "index_name": "archive_checkpoints_pkey",
+      "bytes": 8192,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "archive_members",
+      "index_name": "archive_members_pkey",
+      "bytes": 8192,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "retention_batches",
+      "index_name": "retention_batches_pkey",
+      "bytes": 8192,
+      "idx_scan": 0,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    },
+    {
+      "schemaname": "public",
+      "table_name": "retention_batches",
+      "index_name": "ix_retention_batches_created_at",
+      "bytes": 8192,
+      "idx_scan": 10,
+      "idx_tup_read": 0,
+      "idx_tup_fetch": 0
+    }
+  ],
+  "settings": [
+    [
+      "autovacuum",
+      "on",
+      null
+    ],
+    [
+      "autovacuum_analyze_scale_factor",
+      "0.1",
+      null
+    ],
+    [
+      "autovacuum_max_workers",
+      "3",
+      null
+    ],
+    [
+      "autovacuum_vacuum_cost_limit",
+      "-1",
+      null
+    ],
+    [
+      "autovacuum_vacuum_scale_factor",
+      "0.2",
+      null
+    ],
+    [
+      "max_wal_size",
+      "1024",
+      "MB"
+    ]
+  ]
+}

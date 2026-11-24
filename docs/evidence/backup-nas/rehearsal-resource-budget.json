@@ -1,0 +1,10 @@
+{
+  "observed_host_cpus": 16,
+  "observed_load_1m": 1.01,
+  "scope": "isolated rehearsal PostgreSQL only",
+  "memory_bytes": 536870912,
+  "initial_cpus": 0.25,
+  "temporary_cpus": 0.5,
+  "production_resources_changed": false,
+  "recurring_service_cpus": 0.25
+}

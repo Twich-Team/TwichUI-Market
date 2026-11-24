@@ -32,22 +32,28 @@ def maintain(factory=Session, *, apply=False, at=None, compact=None):
             return {'status':'busy'}
         if db.bind.dialect.name=='postgresql' and not db.scalar(text('SELECT pg_try_advisory_xact_lock(7140232)')):
             return {'status':'busy'}
+        if db.bind.dialect.name=='postgresql':
+            db.execute(text("SET LOCAL statement_timeout='3s'"))
+            db.execute(text("SET LOCAL lock_timeout='250ms'"))
         policy=db.get(RetentionPolicy,1)
         if policy:
             # Proposals may extend preservation immediately; only explicit batches shorten it.
             predicates[0]=(CollectionRun,CollectionRun.checked_at<at-timedelta(days=max(collection_days,policy.operational_days)))
             predicates[1]=(SecurityEvent,(SecurityEvent.created_at<at-timedelta(days=max(security_days,policy.security_days))) & ~SecurityEvent.action.like('retention.%'))
         result={'status':'applied' if apply else 'dry_run','historical_observations':'preserved_indefinitely',
-                'compaction_enabled':compact,'deleted':{}}
+                'compaction_enabled':compact,'deleted':{},'eligible':{}}
         for model,predicate in predicates:
             count=db.scalar(select(func.count()).select_from(model).where(predicate))
-            result['deleted'][model.__tablename__]=count
+            result['eligible'][model.__tablename__]=count
+            result['deleted'][model.__tablename__]=count if not apply else 0
             if apply:
                 keys=list(model.__table__.primary_key.columns)
                 from sqlalchemy import tuple_
                 ids=list(db.execute(select(*keys).where(predicate).order_by(*keys).limit(5000)))
-                if ids:db.execute(delete(model).where(tuple_(*keys).in_([tuple(row) for row in ids])))
+                if ids:result['deleted'][model.__tablename__]=db.execute(delete(model).where(tuple_(*keys).in_([tuple(row) for row in ids]))).rowcount
         if not compact:
+            if apply:
+                db.add(SecurityEvent(action='maintenance.housekeeping.complete',detail=json.dumps(result['deleted'],separators=(',',':'))))
             return result
         # Keep every provenance observation and the last UTC-day reference forever.
         ranked=select(Observation.snapshot_id,func.row_number().over(partition_by=Observation.market_id,

@@ -40,11 +40,11 @@
       "repository": "Twich-Team/TwichUI-Market",
       "commit": "230465e1adf7c13f40344cc073383031d4a55f8d",
       "path": "backend/market/bridge_api.py",
-      "sha256": "17d08e1812ab6d66a492396ccbd07539b286b1e28effdac2d279cca7fadf5652",
+      "sha256": "1b1f1eaeedb6e6c95cd774a1a058351d3ee63ceadd5510e75dc8404416b724c7",
       "classification": "source_verified",
       "proves": "source behavior/API shape only; no native descriptor equivalence",
       "foundation_sha256": "c9f3c2f0c29fe166b0d444ada4a64a934da684a1776d8a98462ae8d4d3621131",
-      "candidate_amendment": "Automatic delivery candidate reconciles merged #30 source-aware coverage and independent nonblocking derived-cache reservation; original foundation fingerprint retained. No native identity equivalence inferred."
+      "candidate_amendment": "Automatic delivery candidate reconciles merged #30 source-aware coverage and independent nonblocking derived-cache reservation; original foundation fingerprint retained. No native identity equivalence inferred. Native NAS/retention safety at 6c204531 adds resumable complete-variant cache batches and seals derivations only after full source-count validation. Pricing formulas, source bounds, canonical variant serialization and every existing fixture vector remain unchanged. Previous candidate fingerprint 17d08e1812ab6d66a492396ccbd07539b286b1e28effdac2d279cca7fadf5652 is retained here; no native identity equivalence inferred."
     },
     {
       "repository": "Twich-Team/TwichUI",

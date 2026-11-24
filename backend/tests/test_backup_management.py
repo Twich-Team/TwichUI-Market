@@ -105,3 +105,39 @@ def test_transport_hides_secrets_and_refuses_redirects(tmp_path,monkeypatch):
             with pytest.raises(HTTPException) as result:backups.connect(1,'/overview')
         assert result.value.status_code==503
         assert 'secret' not in result.value.detail
+
+
+@pytest.mark.parametrize('path,body',[
+    ('/storage/save',dict(type='smb',name='NAS',host='192.168.1.20',username='backup',password='private-test-secret',share='Backups')),
+    ('/storage/test',dict(id=KEY)),('/storage/browse',dict(id=KEY,directory='Market')),
+    ('/storage/mkdir',dict(id=KEY,directory='Market')),
+    ('/delete-selected',dict(items=[dict(id=KEY,confirmation='market-A.dump',confirm_protected=True,confirm_recovery_loss=True)])),
+    ('/storage/migrate',dict(id=KEY,preview={'token':'fixture'})),
+    ('/storage/remove-originals',dict(id=KEY,confirmation='REMOVE VERIFIED ORIGINALS')),
+    ('/restore-test',dict(id=KEY)),('/storage/cleanup',{})])
+def test_new_admin_actions_require_browser_csrf(client,path,body):
+    with patch.object(backups,'connect') as boundary:
+        assert client.post('/api/v1/admin/backups'+path,json=body).status_code in (401,403)
+        boundary.assert_not_called()
+
+
+def test_storage_credentials_not_copied_to_security_events(owner,database):
+    with patch.object(backups,'connect',return_value={'id':KEY,'password_saved':True}) as boundary:
+        response=owner.post('/api/v1/admin/backups/storage/save',json=dict(type='smb',name='NAS',host='192.168.1.20',username='backup',password='never-log-this-secret',share='Backups'))
+        assert response.status_code==200
+        assert 'never-log-this-secret' not in response.text
+        assert boundary.call_args.args[2]['password']=='never-log-this-secret'
+    with database() as db:
+        for event in db.scalars(select(SecurityEvent)):
+            assert 'never-log-this-secret' not in str(event.__dict__)
+
+
+def test_maintenance_health_is_read_only_and_reports_paused_recovery(owner,database):
+    from market.models import RetentionExecution
+    from market.db import now
+    with database.begin() as db:
+        db.add(RetentionExecution(policy_hash='a'*64,status='paused',reason='Protected recovery verification expired',finished_at=now()))
+    response=owner.get('/api/v1/admin/retention/health')
+    assert response.status_code==200,response.text
+    assert response.json()['recent_runs'][0]['reason']=='Protected recovery verification expired'
+    assert response.json()['automation']['rows_by_stage']=={}

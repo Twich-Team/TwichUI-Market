@@ -103,19 +103,26 @@ def legacy_distribution(rows):
         'quartiles':None,'tiers':[],'tail_quantity':0,'tail_listing_count':0,'bands':bands}
 
 
-def prepare_snapshot(db,snapshot,algorithm,source):
+def prepare_snapshot(db,snapshot,algorithm,source,*,max_variants=None):
     """At most 150k original rows, streamed/grouped by exact variant; atomically cached."""
     # Summary and detailed exports share derived rows. This independent cache
     # reservation never acquires or blocks the collector's ingest lock here.
     if db.bind.dialect.name=='postgresql' and not db.scalar(
             text('SELECT pg_try_advisory_xact_lock(7140289, :snapshot)'),{'snapshot':snapshot.id}):
         raise HTTPException(409,'Snapshot derivation is preparing; retry export')
-    if derivation(db,snapshot,algorithm):return
+    if derivation(db,snapshot,algorithm):return True
     if not snapshot.raw_retained:
         raise HTTPException(409,'Canonical originals unavailable; request asking-v1-provisional explicitly')
+    if snapshot.listing_count>2*cp.MAX_LISTINGS:raise HTTPException(413,'Snapshot listing bound')
     query=select(Listing).where(Listing.snapshot_id==snapshot.id).order_by(Listing.item_id,Listing.variant_key)
-    count=records=0;pending=[]
+    previous=db.execute(select(BridgeDerivedRecord.item_id,BridgeDerivedRecord.variant_key).where(
+        BridgeDerivedRecord.snapshot_id==snapshot.id,BridgeDerivedRecord.algorithm==algorithm,
+        BridgeDerivedRecord.revision==REVISION).order_by(BridgeDerivedRecord.item_id.desc(),BridgeDerivedRecord.variant_key.desc()).limit(1)).first()
+    if previous:query=query.where(tuple_(Listing.item_id,Listing.variant_key)>tuple(previous))
+    count=records=0;pending=[];complete=True
     for (item,key),group in groupby(db.scalars(query.execution_options(yield_per=1000)),key=lambda x:(x.item_id,x.variant_key)):
+        if max_variants is not None and records>=max_variants:
+            complete=False;break
         rows=[];descriptor=None;kinds=set()
         for r in group:
             count+=1
@@ -142,9 +149,15 @@ def prepare_snapshot(db,snapshot,algorithm,source):
         if len(pending)==100:
             db.execute(insert(BridgeDerivedRecord),pending);pending=[]
     if pending:db.execute(insert(BridgeDerivedRecord),pending)
-    if count!=snapshot.listing_count:raise HTTPException(409,'Incomplete retained snapshot')
-    db.add(BridgeDerivation(snapshot_id=snapshot.id,algorithm=algorithm,revision=REVISION,record_count=records))
+    if not complete:return False
+    # A partial aggregate is never a usable derivation. Seal only complete variant
+    # groups whose original listing totals exactly cover this immutable snapshot.
+    expression="(record_json::jsonb->'summary'->>'listing_count')::bigint" if db.bind.dialect.name=='postgresql' else "json_extract(record_json,'$.summary.listing_count')"
+    totals=db.execute(text('SELECT count(*),coalesce(sum('+expression+'),0) FROM bridge_derived_records WHERE snapshot_id=:snapshot AND algorithm=:algorithm AND revision=:revision'),dict(snapshot=snapshot.id,algorithm=algorithm,revision=REVISION)).one()
+    if totals[1]!=snapshot.listing_count:raise HTTPException(409,'Incomplete retained snapshot')
+    db.add(BridgeDerivation(snapshot_id=snapshot.id,algorithm=algorithm,revision=REVISION,record_count=totals[0]))
     db.flush()
+    return True
 
 
 def selected_observations(db,market,at,algorithm):

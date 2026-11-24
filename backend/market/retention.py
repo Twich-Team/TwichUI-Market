@@ -6,6 +6,7 @@ from administrator proposal/confirmation and invalidated on every policy edit.
 import hashlib
 import hmac
 import json
+import os
 from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
@@ -63,7 +64,7 @@ def candidates(db, policy, at):
     daily_snapshots = select(Observation.snapshot_id).where(Observation.id.in_(surviving_daily))
     raw_snapshots = select(Snapshot.id).where(Snapshot.id.not_in(current),Snapshot.id.not_in(recent_raw))
     stat_snapshots = select(Snapshot.id).where(Snapshot.id.not_in(current),Snapshot.id.not_in(recent_statistics),Snapshot.id.not_in(daily_snapshots))
-    return [
+    stages=[
         ('daily_references',DailyObservation,DailyObservation.day<daily_cutoff),
         ('observations',Observation,(Observation.retrieved_at<at-timedelta(days=policy['intraday_days'])) & Observation.id.not_in(heads) & Observation.id.not_in(surviving_daily)),
         ('raw_listings',Listing,Listing.snapshot_id.in_(raw_snapshots)),
@@ -73,6 +74,10 @@ def candidates(db, policy, at):
         ('feed_checks', FeedCheck, FeedCheck.checked_at < at-timedelta(days=policy['operational_days'])),
         ('security_logs',SecurityEvent,(SecurityEvent.created_at<at-timedelta(days=policy['security_days'])) & ~SecurityEvent.action.like('retention.%')),
     ]
+    if os.environ.get('RETENTION_CANONICAL_CACHE_PRUNING')=='true':
+        from .models import BridgeDerivedRecord
+        stages.insert(5,('derived_pricing_cache',BridgeDerivedRecord,BridgeDerivedRecord.snapshot_id.in_(stat_snapshots)))
+    return stages
 
 
 def primary_keys(model):
@@ -220,8 +225,15 @@ def execute_selected(db, policy, first, at, actor_id):
     predicate=tuple_(*keys).in_([tuple(row) for row in ids])
     if model in (Listing,SnapshotStatistic):
         snapshot_ids=list(db.scalars(select(model.snapshot_id).where(predicate).distinct()))
+        if model is Listing:
+            from .compaction_safety import verify_statistics
+            verify_statistics(db,snapshot_ids)
         flag=Snapshot.raw_retained if model is Listing else Snapshot.statistics_retained
         db.execute(update(Snapshot).where(Snapshot.id.in_(snapshot_ids)).values({flag:False}))
+    if name=='derived_pricing_cache':
+        from .models import BridgeDerivation
+        snapshot_ids=list(db.scalars(select(model.snapshot_id).where(predicate).distinct()))
+        db.execute(delete(BridgeDerivation).where(BridgeDerivation.snapshot_id.in_(snapshot_ids)))
     removed = (db.execute(update(FeedCapture).where(predicate).values(compressed_payload=None)).rowcount
         if model is FeedCapture else db.execute(delete(model).where(predicate)).rowcount)
     db.add(RetentionBatch(actor_id=actor_id,policy_hash=policy['policy_hash'],stage=name,rows_removed=removed,cutoff=at,history_floor=at-timedelta(days=policy["daily_days"]) if name=="daily_references" else None))
