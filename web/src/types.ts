@@ -35,12 +35,19 @@ export interface History {
   recent_price: string | null;
   supply: number;
 }
+export interface ReferenceQuality {
+  state: "available" | "limited" | "needs_review" | "unavailable";
+  reason: string;
+}
 export interface Valuation extends PriceSummary {
+  reference_quality?: ReferenceQuality;
+  historical_reference_quality?: ReferenceQuality;
   observed_at: string | null;
   algorithm: string;
   history: History[];
 }
 export interface Detail {
+  variant?: unknown;
   quality?: string | null;
   market: Market;
   item_id: number;

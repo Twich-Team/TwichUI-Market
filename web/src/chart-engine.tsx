@@ -26,16 +26,19 @@ export default function ChartEngine({
   label,
   onZoom,
   onSelect,
+  touchInspect = false,
 }: {
   option: EChartsCoreOption;
   label: string;
   onZoom?: (start: number, end: number) => void;
   onSelect?: (index: number) => void;
+  touchInspect?: boolean;
 }) {
   const container = useRef<HTMLDivElement>(null),
     chart = useRef<echarts.EChartsType | null>(null),
     zoomCallback = useRef(onZoom);
   zoomCallback.current = onZoom;
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
   const selectCallback = useRef(onSelect);
   selectCallback.current = onSelect;
   useEffect(() => {
@@ -77,6 +80,17 @@ export default function ChartEngine({
       className="interactive-chart"
       role="img"
       aria-label={label}
+      onPointerDown={touchInspect ? (event) => {
+        if (event.pointerType === "touch") touchStart.current = { x: event.clientX, y: event.clientY };
+      } : undefined}
+      onPointerCancel={touchInspect ? () => { touchStart.current = null; } : undefined}
+      onPointerUp={touchInspect ? (event) => {
+        const origin = touchStart.current;
+        touchStart.current = null;
+        if (!origin || Math.hypot(event.clientX - origin.x, event.clientY - origin.y) > 10) return;
+        const bounds = event.currentTarget.getBoundingClientRect();
+        chart.current?.dispatchAction({ type: "showTip", x: event.clientX - bounds.left, y: event.clientY - bounds.top });
+      } : undefined}
     />
   );
 }

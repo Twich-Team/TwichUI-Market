@@ -40,8 +40,8 @@ test("private Explorer, history, listings, Deal Finder and browser reload use re
     page.getByRole("img", { name: "Observed asking-price history" }),
   ).toBeVisible();
   await page
-    .getByLabel("Advanced auction diagnostics", { exact: true })
-    .check();
+    .getByRole("button", { name: "Show auction IDs and bids", exact: true })
+    .click();
   await expect(
     page.getByRole("cell", { name: "9007199254740993", exact: true }),
   ).toBeVisible();
@@ -76,13 +76,11 @@ test("private Explorer, history, listings, Deal Finder and browser reload use re
     .click();
   await page.getByRole("tab", { name: "Supply changes", exact: true }).click();
   await expect(
-    page.getByText("Listed supply changed -50.0%", { exact: false }),
+    page.getByText("-50%", { exact: true }),
   ).toBeVisible();
   await page.getByRole("tab", { name: "Price changes", exact: true }).click();
   await expect(
-    page.getByText("Quantity-weighted asking price changed -50.0%", {
-      exact: false,
-    }),
+    page.getByText("Current ask / unit", { exact: true }),
   ).toBeVisible();
   await page
     .getByRole("combobox", { name: "Evidence", exact: true })
@@ -100,9 +98,7 @@ test("private Explorer, history, listings, Deal Finder and browser reload use re
     .getByRole("button", { name: "Apply filters", exact: true })
     .click();
   await expect(
-    page.getByText("Quantity-weighted asking price changed -50.0%", {
-      exact: false,
-    }),
+    page.getByText("Current ask / unit", { exact: true }),
   ).toBeVisible();
   await page
     .getByRole("link", { name: "Inspect item ↗", exact: true })
@@ -118,8 +114,9 @@ test("private Explorer, history, listings, Deal Finder and browser reload use re
   await page
     .getByRole("button", { name: "Administration", exact: true })
     .click();
+  await page.getByRole("link",{name:"Invitations",exact:true}).click();
   await page
-    .getByRole("button", { name: "Invite a friend", exact: true })
+    .getByRole("button", { name: "Create invitation", exact: true })
     .click();
   await expect(page.getByLabel("New invitation link")).toHaveValue(/invite=/);
   await page.setViewportSize({ width: 390, height: 844 });
@@ -138,8 +135,9 @@ test("invitation acceptance, member permissions, device sync/revocation and pass
   await page
     .getByRole("button", { name: "Administration", exact: true })
     .click();
+  await page.getByRole("link",{name:"Invitations",exact:true}).click();
   await page
-    .getByRole("button", { name: "Invite a friend", exact: true })
+    .getByRole("button", { name: "Create invitation", exact: true })
     .click();
   const invitation = await page.getByLabel("New invitation link").inputValue();
   await page.getByRole("button", { name: "Sign out", exact: true }).click();
@@ -197,6 +195,7 @@ test("invitation acceptance, member permissions, device sync/revocation and pass
       })
     ).status(),
   ).toBe(401);
+  await page.locator('#account-security > summary').click();
   await page
     .getByLabel("Current password", { exact: true })
     .fill("synthetic friend password");
@@ -220,7 +219,7 @@ test("administrator roles, disabled mappings, schedules, storage and security ev
     .getByRole("button", { name: "Administration", exact: true })
     .click();
   await page
-    .getByRole("tab", { name: "Members & invitations", exact: true })
+    .getByRole("link", { name: "Members", exact: true })
     .click();
   await page
     .getByLabel("Role for member_fixture", { exact: true })
@@ -235,8 +234,9 @@ test("administrator roles, disabled mappings, schedules, storage and security ev
     page.getByLabel("Role for member_fixture", { exact: true }),
   ).toHaveValue("member");
   await page
-    .getByRole("tab", { name: "Markets & schedules", exact: true })
+    .getByRole("link", { name: "Markets & schedules", exact: true })
     .click();
+  await page.getByText("Add a market",{exact:true}).click();
   await expect(page.getByLabel("Region", { exact: true })).toHaveValue("us");
   await expect(page.getByLabel("Ruleset", { exact: true })).toHaveValue(
     "Normal",
@@ -248,15 +248,14 @@ test("administrator roles, disabled mappings, schedules, storage and security ev
     page.getByRole("button", { name: "Add disabled market", exact: true }),
   ).toBeDisabled();
   await expect(
-    page.getByText("US — Normal — Horde: identity verification is pending.", {
+    page.getByText("This market still needs identity verification before it can be added.", {
       exact: false,
     }),
   ).toBeVisible();
-  const schedule = page
-    .getByRole("table", { name: "market schedules", exact: true })
-    .getByRole("row")
-    .filter({ hasText: "Synthetic Alliance" })
-    .locator("form.schedule");
+  const marketTable = page.getByRole("table", { name: "market schedules", exact: true });
+  await marketTable.getByRole("row").filter({hasText:"Synthetic Alliance"}).getByRole("button",{name:/Show details/}).click();
+  await marketTable.getByText("Edit collection schedule",{exact:true}).click();
+  const schedule = marketTable.locator("form.schedule");
   await expect(schedule.getByRole("checkbox")).toBeDisabled();
   await schedule.getByLabel("Interval (minutes)", { exact: true }).fill("60");
   await Promise.all([
@@ -271,7 +270,7 @@ test("administrator roles, disabled mappings, schedules, storage and security ev
       .click(),
   ]);
   await page
-    .getByRole("tab", { name: "Storage & backups", exact: true })
+    .getByRole("link", { name: "Storage & Backups", exact: true })
     .click();
   await expect(
     page.getByRole("heading", { name: "Storage & Backups", exact: true }),
@@ -298,7 +297,7 @@ test("administrator roles, disabled mappings, schedules, storage and security ev
     retention.getByRole("button", { name: "Apply confirmed batch", exact: true }),
   ).toBeDisabled();
   await retention.getByRole('button',{name:'Close retention policy',exact:true}).click();
-  await page.getByRole("tab", { name: "Security events", exact: true }).click();
+  await page.getByRole("link", { name: "Security events", exact: true }).click();
   await expect(
     page
       .getByRole("cell", { name: "market schedule updated", exact: true })

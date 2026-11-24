@@ -44,7 +44,13 @@ export function safeBrowseUrl(value:unknown):string|null {
 const event='market-location-change';
 export function currentLocation(){return location.pathname+location.search;}
 export function useLocation(){const [url,setUrl]=useState(currentLocation);useEffect(()=>{const read=()=>setUrl(currentLocation());window.addEventListener('popstate',read);window.addEventListener(event,read);return()=>{window.removeEventListener('popstate',read);window.removeEventListener(event,read);};},[]);return url;}
-interface Restoration {scroll:number; focus?:string; draft?:string; expanded?:Record<number,boolean>; dealDraft?:DealFilters}
+interface VariantComparison {
+  pageIndex: number;
+  pageSize: number;
+  sorting: {id:string;desc:boolean}[];
+  pricedOnly: boolean;
+}
+interface Restoration {scroll:number; focus?:string; draft?:string; expanded?:Record<number,boolean>; catalogueScrollLeft?:number; variantComparison?:Record<number,VariantComparison>; dealDraft?:DealFilters}
 // Optional view state is private, bounded and disposable; applied controls live in URLs.
 const restorations=new Map<string,Restoration>();
 let sequence=0;

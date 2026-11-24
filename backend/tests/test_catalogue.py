@@ -29,6 +29,7 @@ def test_catalogue_groups_variants_without_blending_price_and_pages_stably(owner
     item=response['items'][0]
     assert item['sole_variant_key'] is None
     assert item['variant_count']==2 and item['supply']==5 and item['listing_count']==2
+    assert item['price_ranges']['lowest_buyout']=={'minimum':'200','maximum':'500'}
     assert item['price_ranges']['recent_price']=={'minimum':'200','maximum':'500'}
     assert item['price_ranges']['market_value']=={'minimum':'200','maximum':'500'}
     assert owner.get(f'/api/v1/markets/{ident}/catalogue?page=1&page_size=1').json()['items'][0]['item_id']==26
@@ -227,3 +228,40 @@ def test_last_seen_is_variant_observation_not_latest_market_check(owner,database
     assert after['last_seen_at']==before['last_seen_at']
     unknown=owner.get(f'/api/v1/markets/{ident}/items/999999/{variant}').json()
     assert unknown['last_seen_at'] is None
+
+
+def test_variant_comparison_sorts_across_pages_and_filters_buyout_only(owner,database):
+    ident=seed(database)
+    with database.begin() as db:
+        ingest(db,ident,json.dumps({'auctions':[
+            {'id':1,'item':{'id':25,'bonus_lists':[1]},'quantity':2,'buyout':400},
+            {'id':2,'item':{'id':25,'bonus_lists':[2]},'quantity':3,'buyout':1500},
+            {'id':3,'item':{'id':25,'bonus_lists':[12730]},'quantity':1,'bid':50},
+        ]}).encode(),request_key='variant-comparison',retrieved_at=now()+timedelta(seconds=1),synthetic=True)
+    path=f'/api/v1/markets/{ident}/catalogue/25/variants'
+    all_rows=owner.get(path+'?sort=lowest_buyout&direction=desc').json()
+    assert all_rows['total_variants']==3
+    assert [row['lowest_buyout'] for row in all_rows['variants']]==['500','200',None]
+    paged=owner.get(path+'?sort=supply&direction=desc&page_size=1&page=1&priced_only=true').json()
+    assert paged['total_variants']==2 and paged['variants'][0]['variant']['bonus_lists']==[1]
+    assert owner.get(path+'?sort=invalid').status_code==422
+    key=all_rows['variants'][-1]['variant_key']
+    assert owner.get(f'/api/v1/markets/{ident}/items/25/{key}').json()['variant']['bonus_lists']==[12730]
+
+
+def test_distribution_measures_the_exact_cheapest_fraction_not_the_first_band(owner,database):
+    with database.begin() as db:
+        market=Market(region='us',ruleset_id=2,house_id=110,source_kind='auctions',label='Fraction fixture')
+        db.add(market);db.flush();ident=market.id
+        auctions=[{'id':1,'item':{'id':25},'quantity':4,'buyout':201},
+                  {'id':2,'item':{'id':25},'quantity':8,'buyout':402},
+                  {'id':3,'item':{'id':25},'quantity':2,'buyout':101},
+                  {'id':4,'item':{'id':25},'quantity':10,'buyout':10_000},
+                  {'id':5,'item':{'id':25},'quantity':6,'bid':10}]
+        observation=ingest(db,ident,json.dumps({'auctions':auctions}).encode(),request_key='distribution-fractions',synthetic=True)
+        key=db.scalar(select(Listing.variant_key).where(Listing.snapshot_id==observation.snapshot_id).limit(1))
+    result=owner.get(f'/api/v1/markets/{ident}/distribution/25/{key}').json()
+    assert result['priced_supply']==24
+    assert result['unpriced_supply']==6
+    assert result['bands'][0]['supply']==14
+    assert result['cheapest']=={'numerator':'201','denominator':4,'supply':12,'listing_count':2}

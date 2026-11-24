@@ -1,6 +1,5 @@
 import { InfoTooltip } from "./info-tooltip";
 import { ListingsFreshness } from "./local-time";
-import { Loading } from "./loading";
 import { useState } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { SortingState } from "@tanstack/react-table";
@@ -71,32 +70,24 @@ export function CurrentListings({
 
   return (
     <section
-      className="panel padded"
+      className="panel padded research-listings"
       aria-label="Current auctions"
       aria-busy={response.isFetching}
     >
       <div className="panel-heading">
-        <h3>Current listings</h3>
-        <span className="muted">
-          All observed listings · {response.data?.total.toLocaleString() || 0}{" "}
-          total
-        </span>
+        <h2>Current listings</h2>
+        {response.data && <span className="muted">{response.data.total.toLocaleString()} listings</span>}
       </div>
-      <div><ListingsFreshness value={response.data?.observed_at}/><InfoTooltip label="current listings">Current asking listings, not completed sales. The timestamp is when this displayed snapshot was observed. Time remaining is an upstream duration category; exact expiry is unavailable.</InfoTooltip></div>
-      {response.data?.synthetic && <p className="small muted">Synthetic fixture listings · not live observations.</p>}
-      <label className="checkbox">
-        <input
-          type="checkbox"
-          checked={advanced}
-          onChange={(e) => setAdvanced(e.target.checked)}
-        />
-        Advanced auction diagnostics
-      </label>
-      {response.error && <p role="alert">{response.error.message} <button onClick={()=>response.refetch()}>Retry current auctions</button></p>}
-      {response.isFetching && <Loading label="Loading current listings…" />}
+      {response.data && <div><ListingsFreshness value={response.data.observed_at}/><InfoTooltip label="current listings">Asking prices and stack sizes in this market snapshot. The time-remaining category is supplied by the auction house.</InfoTooltip></div>}
+      {response.data?.synthetic && <p className="research-fixture">Fixture data</p>}
       <DataTable<Auction>
+        compact
         label="current listings"
         data={listings}
+        loading={response.isFetching}
+        emptyMessage="No current listings for this variant."
+        error={response.error && <>Listings could not refresh. <button onClick={() => response.refetch()}>Retry current auctions</button></>}
+        toolbar={<button className="secondary" aria-pressed={advanced} onClick={() => setAdvanced(!advanced)}>{advanced ? "Hide auction IDs and bids" : "Show auction IDs and bids"}</button>}
         server={{
           rowCount: response.data?.total || 0,
           pagination,

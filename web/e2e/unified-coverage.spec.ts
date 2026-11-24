@@ -26,7 +26,8 @@ for(const width of [390,1440])test(`unified commodities search prices and item d
  await expect(table).toContainText('Unit price');await expect(table).toContainText('Total listing cost');
  await expect(table.getByRole('img',{name:'0 gold, 1 silver, 23 copper',exact:true})).toBeVisible();
  await expect(table.getByRole('img',{name:'0 gold, 24 silver, 60 copper',exact:true})).toBeVisible();
- await page.getByRole('button',{name:'24H',exact:true}).click();
+ if(width===390)await page.getByRole('combobox',{name:'History range',exact:true}).selectOption('24h');
+ else await page.getByRole('button',{name:'24H',exact:true}).click();
  await expect(page.getByRole('region',{name:'Price history',exact:true})).toBeVisible();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBe(width);
  expect((await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa']).analyze()).violations).toEqual([]);

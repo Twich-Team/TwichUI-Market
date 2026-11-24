@@ -96,44 +96,19 @@ test("catalogue variants, accessible item facts, chart controls and bounded hist
       exact: true,
     }),
   ).toBeVisible();
-  await page.getByText("Advanced chart controls", { exact: true }).click();
+  await page.getByText("Chart options", { exact: true }).click();
   await page.getByLabel("60-day reference", { exact: true }).check();
-  await page.getByLabel("Zoom start (%)").fill("20");
-  await page.getByRole("button", { name: "Reset zoom", exact: true }).click();
-  await expect(page.getByLabel("Zoom start (%)")).toHaveValue("0");
+  await page.getByLabel("Start",{exact:true}).fill("20");
+  await page.getByRole("button", { name: "Reset dates", exact: true }).click();
+  await expect(page.getByLabel("Start",{exact:true})).toHaveValue("0");
   await page.getByText("Read exact chart data", { exact: true }).click();
-  await page.getByLabel("Virtual scrolling", { exact: false }).check();
-  const virtual = page.getByRole("table", {
-    name: "Virtual historical observations",
-    exact: true,
-  });
-  await expect(virtual).toBeVisible();
-  const virtualRows = await virtual.locator("tbody tr").count();
-  expect(virtualRows).toBeLessThan(40);
-  fs.mkdirSync("../artifacts/modernization", { recursive: true });
-  fs.writeFileSync(
-    "../artifacts/modernization/row-window-measurements.json",
-    JSON.stringify(
-      {
-        synthetic: true,
-        catalogue_rows: 25,
-        calendar_days: 3651,
-        virtual_rows: virtualRows,
-        paginated_history_rows: 50,
-      },
-      null,
-      2,
-    ),
-  );
-  await page.getByLabel("Virtual scrolling", { exact: false }).uncheck();
-  await expect(
-    page
-      .getByRole("table", {
-        name: "Exact historical observations",
-        exact: true,
-      })
-      .locator("tbody tr"),
-  ).toHaveCount(50);
+  const history = page.getByRole("table", { name: "Exact historical observations", exact: true });
+  await expect(history.locator("tbody tr")).toHaveCount(25);
+  await expect(history.locator("tbody tr").first()).toContainText("UTC bucket");
+  await page.getByRole("button", { name: "Next Exact historical observations", exact: true }).click();
+  await expect(history.locator("tbody tr")).toHaveCount(25);
+  await page.getByLabel("Search Exact historical observations").fill(new Date().toISOString().slice(0,10));
+  await expect(history.locator("tbody tr")).toHaveCount(1);
   const axe = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
     .analyze();
@@ -226,7 +201,7 @@ test("shared deal tooltips and manageable account/admin tables", async ({
   await page
     .getByRole("button", { name: "Administration", exact: true })
     .click();
-  await page.getByRole("tab", { name: "Collection", exact: true }).click();
+  await page.getByRole("link", { name: "Collection", exact: true }).click();
   await expect(
     page.getByRole("combobox", { name: "Collection market", exact: true }),
   ).toBeVisible();

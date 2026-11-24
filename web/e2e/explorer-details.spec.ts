@@ -40,7 +40,7 @@ test('Explorer stays browse-only and Back restores URL controls, expansion, focu
  await link.scrollIntoViewIfNeeded();const scroll=await page.evaluate(()=>scrollY);await link.click();await expect(page).toHaveURL(new URL(href!,page.url()).href);await expect(page.getByRole('heading',{name:'Item metadata',exact:true})).toBeVisible();await page.goBack();await expect(page).toHaveURL(saved);await expect(table.getByRole('status',{name:'Catalogue page'})).toHaveText('Page 2 of 2');await expect(table.getByRole('link',{name:label!,exact:true})).toBeFocused();await expect.poll(async()=>Math.abs((await page.evaluate(()=>scrollY))-scroll)).toBeLessThan(80);
  await page.goForward();await expect(page).toHaveURL(new URL(href!,page.url()).href);await page.getByRole('link',{name:'← Back to Explorer',exact:true}).click();await expect(page).toHaveURL(saved);
  await page.getByLabel('Search items',{exact:true}).fill('Synthetic');await page.getByRole('button',{name:'Search',exact:true}).click();await table.getByRole('button',{name:/Supply/}).click();await table.getByLabel('Items per page').selectOption('50');await expect(page).toHaveURL(/page_size=50/);await expect(table.locator('tbody>tr')).toHaveCount(8);await capture(page,'explorer-search-filters');await accessible(page,'explorer');
- const blade=table.getByRole('row').filter({hasText:'Synthetic Enchanted Blade'});await blade.getByRole('button',{name:/2 variants/}).click();await expect(page.getByRole('table',{name:'Variants of Synthetic Enchanted Blade'})).toBeVisible();
+ const blade=table.locator('.catalogue-table > tbody > tr').filter({has:page.getByRole('link',{name:'Research Synthetic Enchanted Blade',exact:true})});await blade.getByRole('button',{name:/2 variants/}).click();await expect(page.getByRole('table',{name:'Variants of Synthetic Enchanted Blade'})).toBeVisible();
  const origin=page.url();await blade.getByRole('link',{name:'Research Synthetic Enchanted Blade',exact:true}).click();await expect(page.getByRole('heading',{name:'Synthetic Enchanted Blade',exact:true})).toBeVisible();await expect(page.getByLabel('Variant ranges and total supply')).toContainText('5 units');await expect(page.getByRole('heading',{name:'Price history',exact:true})).toHaveCount(0);await capture(page,'details-multiple-variants');
  await page.goBack();await expect(page).toHaveURL(origin);await expect(page.getByRole('table',{name:'Variants of Synthetic Enchanted Blade'})).toBeVisible();await expect(page.getByLabel('Search items',{exact:true})).toHaveValue('Synthetic');
  const fresh=await context.newPage();await fresh.goto(new URL(href!,page.url()).href);await expect(fresh.getByRole('heading',{name:'Item metadata',exact:true})).toBeVisible();await fresh.close();
@@ -52,7 +52,7 @@ test('deep links authenticate independently and exact variants preserve prices, 
  await expect(page.getByLabel('Exact variant current market')).toContainText('10 units');await expect(page.getByLabel('Exact variant current market')).toContainText('50');await expect(page.getByRole('region',{name:'Item metadata',exact:true})).toContainText('+10 Fixture Strength');
  await expect(page.getByRole('heading',{name:'Synthetic Arcane Crystal',exact:true}).locator('.item-name')).toHaveCSS('color','rgb(30, 255, 0)');
  await page.locator('.chart-viewport').first().scrollIntoViewIfNeeded();await expect(page.getByRole('img',{name:'Observed asking-price history',exact:true})).toBeVisible();
- await page.locator('.chart-viewport').nth(1).scrollIntoViewIfNeeded();await expect(page.getByRole('img',{name:'Current listed supply by price',exact:true})).toBeVisible();await capture(page,'details-price-supply-charts');await accessible(page,'details');
+ await expect(page.getByRole('region',{name:'Supply information',exact:true})).toContainText('10 units at');await capture(page,'details-price-supply-charts');await accessible(page,'details');
  await page.getByRole('region',{name:'Current auctions',exact:true}).scrollIntoViewIfNeeded();await expect(page.getByRole('table',{name:'current listings',exact:true})).toContainText('10');await capture(page,'details-current-auctions');
  await page.getByRole('button',{name:'60D',exact:true}).click();await expect(page).toHaveURL(/days=60/);await page.reload();await expect(page.getByRole('button',{name:'60D',exact:true})).toHaveAttribute('aria-pressed','true');
  await page.setViewportSize({width:390,height:844});await capture(page,'details-mobile');expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await accessible(page,'details-mobile');
@@ -104,6 +104,7 @@ test('bounded isolated browser measurements retain lazy charts and cached return
 });
 test('direct research retains supplemental attribution and neutral unknown quality',async({page})=>{
  await signIn(page,'/markets/1/items/20001');await expect(page.getByRole('heading',{name:'Synthetic Recovered Gloves',exact:true})).toBeVisible();
+ await page.getByRole('heading',{name:'Item metadata',exact:true}).click();
  await expect(page.getByRole('link',{name:'Data from Everloot, CC BY-SA 4.0',exact:true}).first()).toHaveAttribute('href','https://everloot.app');
  await page.getByRole('region',{name:'Item metadata',exact:true}).getByText('Technical details',{exact:true}).click();await expect(page.getByRole('region',{name:'Item metadata',exact:true})).toContainText('everloot');await expect(page.getByRole('heading',{name:'Synthetic Recovered Gloves',exact:true}).locator('.item-name')).toHaveCSS('color','rgb(214, 208, 196)');
 });
@@ -116,4 +117,32 @@ test('a disappeared exact variant keeps its URL and retained historical chart wi
  await page.route(`**/items/20000/${gone.variant_key}/listings?*`,r=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({listings:[],total:0,snapshot_id:data.snapshot_id})}));
  await page.goto(`/markets/1/items/20000?variant=${gone.variant_key}`);await expect(page.getByText('This exact variant is not currently listed',{exact:false})).toBeVisible();await expect(page).toHaveURL(new RegExp(gone.variant_key));
  await page.locator('.chart-viewport').first().scrollIntoViewIfNeeded();await expect(page.getByRole('img',{name:'Observed asking-price history',exact:true})).toBeVisible();await expect(page.getByLabel('Exact variant current market')).toContainText('0 units');
+});
+
+test('refreshing Explorer updates check and view time independently of source age', async ({page}) => {
+ const staleSource = new Date(Date.now() - 6 * 3_600_000).toUTCString();
+ const newSource = new Date(Date.now() - 60_000).toUTCString();
+ const checks = ["2026-11-22T10:00:00Z", "2026-11-22T11:00:00Z", "2026-11-22T12:00:00Z"];
+ let refreshed = 0;
+ await page.route("**/api/v1/markets/1/catalogue?*", async (route) => {
+  const response = await route.fetch();
+  if (!response.ok()) return route.fulfill({response});
+  const data = await response.json();
+  const index = Math.min(2, refreshed++);
+  await route.fulfill({json: {...data, market: {...data.market, last_modified: index === 2 ? newSource : staleSource, last_success: checks[index]}}});
+ });
+ await signIn(page);
+ const freshness = page.locator(".player-freshness");
+ await expect(freshness).toContainText("Source updated 6 hours ago");
+ await freshness.getByText("Timing", {exact:true}).click();
+ const times = freshness.locator("dd");
+ await expect(times).toHaveCount(3);
+ const initial = await times.allTextContents();
+ await page.getByRole("button", {name:"Refresh catalogue"}).click();
+ await expect(times.nth(1)).not.toHaveText(initial[1]);
+ await expect(times.nth(0)).toHaveText(initial[0]);
+ await expect(times.nth(2)).not.toHaveText("Not recorded");
+ await page.getByRole("button", {name:"Refresh catalogue"}).click();
+ await expect(times.nth(0)).not.toHaveText(initial[0]);
+ await expect(freshness).toContainText("Source updated 1 minute ago");
 });

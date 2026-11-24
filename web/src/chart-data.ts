@@ -43,3 +43,43 @@ export function withMissingDays(points: HistoryPoint[]): HistoryPoint[] {
 export function exactPriceTooltip(row: HistoryPoint): string {
   return `${row.observed_at ? localTimestamp(row.observed_at) : "Observation time unrecorded"}\nUTC-day bucket: ${row.date}\nRecent: ${money(row.recent_price)}\n14-day: ${money(row.market_value)}\n60-day: ${money(row.historical_value)}\nSupply: ${row.supply?.toLocaleString() ?? "Unobserved"}`;
 }
+
+const coinUnits = [
+  { divisor: 10_000, suffix: "g" },
+  { divisor: 100, suffix: "s" },
+  { divisor: 1, suffix: "c" },
+] as const;
+
+export function currencyAxis(ceiling: number) {
+  const unit = coinUnits.find(({ divisor }) => ceiling >= divisor) ?? coinUnits[2];
+  const formatter = new Intl.NumberFormat(undefined, {
+    maximumFractionDigits: 2,
+    ...(ceiling / unit.divisor >= 10_000 ? { notation: "compact" as const } : {}),
+  });
+  return {
+    label: `Price / unit (${unit.suffix})`,
+    format: (value: number) => `${formatter.format(value / unit.divisor)}${unit.suffix}`,
+  };
+}
+
+export function priceDetailWindow(values: readonly unknown[]) {
+  const prices = values.flatMap((value) => {
+    if (typeof value !== "string" && typeof value !== "number") return [];
+    const price = Number(value);
+    return Number.isFinite(price) && price >= 0 ? [price] : [];
+  }).sort((a, b) => a - b);
+  const maximum = prices.at(-1) ?? 0;
+  const usual = prices[Math.floor((prices.length - 1) / 2)] ?? 0;
+  const cap = usual > 0 ? Math.ceil(usual * 5) : 0;
+  const omitted = prices.filter((price) => price > cap).length;
+  return {
+    maximum,
+    detail: prices.length >= 3 && usual > 0 && maximum >= usual * 100 && omitted < prices.length / 2
+      ? { cap, omitted } : null,
+  };
+}
+
+
+export function chartTooltipText(text: string): string {
+  return text.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+}

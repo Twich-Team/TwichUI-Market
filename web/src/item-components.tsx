@@ -2,9 +2,10 @@ import { Loading } from "./loading";
 import { ForeverDBFacts, type RichFacts } from "./foreverdb-facts";
 import { ItemName } from "./item-name";
 import { Currency } from "./currency";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useId, useState, useRef, useSyncExternalStore } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Popover } from "@base-ui/react/popover";
+import { Dialog } from "@base-ui/react/dialog";
 import { requestItemMetadata } from "./metadata-priority";
 import { api, when } from "./api";
 export interface ItemIdentity {
@@ -163,6 +164,13 @@ export function ItemAttribution({ item }: { item: ItemIdentity }) {
   const credits = item.metadata_attributions?.length ? item.metadata_attributions : [item.metadata_attribution || item.icon_attribution].filter(Boolean);
   return <>{credits.map((source, index) => source && <a key={index} className="item-credit small" href={source.url} target="_blank" rel="noopener noreferrer">{source.text}</a>)}</>;
 }
+const itemInfoSheet = "(max-width: 700px), (pointer: coarse) and (max-width: 900px)";
+function subscribeToSheetLayout(callback: () => void) {
+  const query = matchMedia(itemInfoSheet);
+  query.addEventListener("change", callback);
+  return () => query.removeEventListener("change", callback);
+}
+
 export function ItemInfo({
   item,
   market,
@@ -186,6 +194,9 @@ export function ItemInfo({
   };
 }) {
   const [open, setOpen] = useState(false);
+  const sheet = useSyncExternalStore(subscribeToSheetLayout, () => matchMedia(itemInfoSheet).matches, () => false);
+  const title = useRef<HTMLHeadingElement>(null);
+  const titleId = useId();
   const cache = useQueryClient();
   const profile = useQuery({
     queryKey: ["private", "item-profile", market, item.item_id],
@@ -211,91 +222,52 @@ export function ItemInfo({
       cache.invalidateQueries({ queryKey: ["private", "catalogue", market] });
   }, [profile.data, market, item.name, item.quality, cache]);
   const displayItem = profile.data || item;
-  return (
-    <Popover.Root open={open} onOpenChange={setOpen}>
-      <Popover.Trigger
-        className="item-info-trigger"
-        openOnHover
-        delay={180}
-        closeDelay={160}
-        onFocus={(event) => {
-          if (event.currentTarget.matches(":focus-visible")) setOpen(true);
-        }}
-        aria-label={`Item details for ${displayItem.name}`}
-      >
-        <ItemIcon item={displayItem} />
-        {label && (
-          <span
-            className="item-trigger-label"
-          >
-            <ItemName name={displayItem.name} quality={displayItem.quality}/>
-          </span>
-        )}
-      </Popover.Trigger>
-      <Popover.Portal>
-        <Popover.Positioner
-          side="right"
-          sideOffset={10}
-          className="item-popover-positioner"
-        >
-          <Popover.Popup className="wow-tooltip" initialFocus={false} onClick={event=>event.stopPropagation()}>
-            <Popover.Title className="sr-only">
-              {item.name} item details
-            </Popover.Title>
-            {profile.data ? (
-              <>
-                <ItemIcon item={profile.data} />
-                <ItemFacts profile={profile.data} />
-              </>
-            ) : (
-              profile.error ? <p role="alert">Item metadata could not be loaded.</p> : <Loading label="Loading verified item facts…"/>
-
-            )}
-            {ranges && (
-              <section
-                className="tooltip-market"
-                aria-label="Variant market ranges"
-              >
-                <strong>Asking-price ranges across variants</strong>
-                <div>
-                  Recent: <Currency value={ranges.recent_price.minimum} /> –{" "}
-                  <Currency value={ranges.recent_price.maximum} />
-                </div>
-                <div>
-                  14-day: <Currency value={ranges.market_value.minimum} /> –{" "}
-                  <Currency value={ranges.market_value.maximum} />
-                </div>
-                <small>
-                  Expand variants for exact prices. These are not completed
-                  sales.
-                </small>
-              </section>
-            )}
-            {prices && (
-              <section className="tooltip-market" aria-label="Market estimates">
-                <strong>Market estimates · asking listings</strong>
-                {prices.recent_price !== undefined && (
-                  <div>
-                    Recent: <Currency value={prices.recent_price} />
-                  </div>
-                )}
-                {prices.market_value !== undefined && (
-                  <div>
-                    14-day reference: <Currency value={prices.market_value} />
-                  </div>
-                )}
-                {prices.supply !== undefined && (
-                  <div>Supply: {prices.supply.toLocaleString()}</div>
-                )}
-
-              </section>
-            )}
-            <Popover.Close className="text-button">
-              Close item details
-            </Popover.Close>
-          </Popover.Popup>
-        </Popover.Positioner>
-      </Popover.Portal>
-    </Popover.Root>
-  );
+  const triggerLabel = `Item details for ${displayItem.name}`;
+  const triggerContent = <>
+    <ItemIcon item={displayItem}/>
+    {label && <span className="item-trigger-label"><ItemName name={displayItem.name} quality={displayItem.quality}/></span>}
+  </>;
+  const content = <>
+    {profile.data ? <ItemFacts profile={profile.data}/> : profile.error
+      ? <p role="alert">Item facts could not be loaded. <button onClick={() => profile.refetch()}>Retry item facts</button></p>
+      : <Loading label="Loading item facts…"/>}
+    {ranges && <section className="tooltip-market" aria-label="Variant market ranges">
+      <strong>Asking prices across variants</strong>
+      <div>Recent range <Currency value={ranges.recent_price.minimum}/> – <Currency value={ranges.recent_price.maximum}/></div>
+      <div>14-day reference range <Currency value={ranges.market_value.minimum}/> – <Currency value={ranges.market_value.maximum}/></div>
+    </section>}
+    {prices && <section className="tooltip-market" aria-label="Market estimates">
+      <strong>Asking prices and supply</strong>
+      {prices.recent_price !== undefined && <div>Recent <Currency value={prices.recent_price}/></div>}
+      {prices.market_value !== undefined && <div>14-day reference <Currency value={prices.market_value}/></div>}
+      {prices.supply !== undefined && <div>Supply {prices.supply.toLocaleString()} units</div>}
+    </section>}
+  </>;
+  if (sheet) return <Dialog.Root open={open} onOpenChange={setOpen}>
+    <Dialog.Trigger className="item-info-trigger" aria-label={triggerLabel}>{triggerContent}</Dialog.Trigger>
+    <Dialog.Portal>
+      <Dialog.Backdrop className="item-sheet-backdrop"/>
+      <Dialog.Popup className="item-sheet" initialFocus={title} aria-labelledby={titleId}>
+        <div className="item-sheet-heading">
+          <Dialog.Title id={titleId} ref={title} tabIndex={-1}>{displayItem.name} item details</Dialog.Title>
+          <Dialog.Close className="secondary" aria-label="Close item details">Close</Dialog.Close>
+        </div>
+        <div className="item-sheet-content">{content}</div>
+      </Dialog.Popup>
+    </Dialog.Portal>
+  </Dialog.Root>;
+  return <Popover.Root open={open} onOpenChange={setOpen}>
+    <Popover.Trigger className="item-info-trigger" aria-label={triggerLabel} openOnHover delay={180} closeDelay={160}>
+      {triggerContent}
+    </Popover.Trigger>
+    <Popover.Portal>
+      <Popover.Positioner side="right" sideOffset={10} className="item-popover-positioner">
+        <Popover.Popup className="wow-tooltip" initialFocus={false} onClick={(event) => event.stopPropagation()}>
+          <Popover.Title className="sr-only">{item.name} item details</Popover.Title>
+          {content}
+          <Popover.Close className="text-button">Close item details</Popover.Close>
+        </Popover.Popup>
+      </Popover.Positioner>
+    </Popover.Portal>
+  </Popover.Root>;
 }
