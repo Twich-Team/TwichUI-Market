@@ -55,6 +55,14 @@ test('deep links authenticate independently and exact variants preserve prices, 
  await expect(page.getByLabel('Exact variant current market')).toContainText('10 units');await expect(page.getByLabel('Exact variant current market')).toContainText('50');await expect(page.getByRole('region',{name:'Item metadata',exact:true})).toContainText('+10 Fixture Strength');
  await expect(page.getByRole('heading',{name:'Synthetic Arcane Crystal',exact:true}).locator('.item-name')).toHaveCSS('color','rgb(30, 255, 0)');
  await page.locator('.chart-viewport').first().scrollIntoViewIfNeeded();await expect(page.getByRole('img',{name:'Observed asking-price history',exact:true})).toBeVisible();
+ await page.getByRole('img',{name:'Observed asking-price history',exact:true}).locator('canvas').first().waitFor();
+ const zoomWidth = await page.evaluate(() => {
+   document.documentElement.style.zoom = '2';
+   const width = { viewport: innerWidth, scroll: document.documentElement.scrollWidth };
+   document.documentElement.style.zoom = '';
+   return width;
+ });
+ expect(zoomWidth.scroll).toBeLessThanOrEqual(zoomWidth.viewport);
  await expect(page.getByRole('region',{name:'Supply information',exact:true})).toContainText('10 units at');await capture(page,'details-price-supply-charts');await accessible(page,'details');
  await page.getByRole('region',{name:'Current auctions',exact:true}).scrollIntoViewIfNeeded();await expect(page.getByRole('table',{name:'current listings',exact:true})).toContainText('10');await capture(page,'details-current-auctions');
  await page.getByRole('button',{name:'60D',exact:true}).click();await expect(page).toHaveURL(/days=60/);await page.reload();await expect(page.getByRole('button',{name:'60D',exact:true})).toHaveAttribute('aria-pressed','true');

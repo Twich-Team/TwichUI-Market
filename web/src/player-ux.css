@@ -283,6 +283,8 @@
 
 .research-chart-body .interactive-chart {
   height: 285px;
+  overflow: hidden;
+  overflow: clip;
   touch-action: pan-y;
 }
 
