@@ -198,3 +198,26 @@ def test_single_cheap_stack_does_not_disqualify_a_consistent_unit_reference(owne
     deal = owner.get(path).json()['deals'][0]
     assert deal['total_buyout'] == '1' and deal['reference_quality']['state'] == 'available'
     assert deal['discount_percent'] == 99.99 and '100%' not in deal['reason']
+
+
+def test_group_representative_uses_exact_stack_unit_prices(owner, database):
+    with database.begin() as db:
+        if db.get_bind().dialect.name != 'postgresql':
+            import pytest
+            pytest.skip('PostgreSQL numeric-division precision regression')
+        market = Market(region='eu', ruleset_id=2, house_id=113, source_kind='auctions', label='Close unit asks')
+        db.add(market)
+        db.flush()
+        for day in (3, 2, 1, 0):
+            rows = [{'id': 1, 'item': {'id': 117}, 'quantity': 1, 'buyout': 10}]
+            if day == 0:
+                # Default numeric division rounds these distinct ratios to a tie.
+                rows = [
+                    {'id': 1, 'item': {'id': 117}, 'quantity': 1999999999, 'buyout': 2000000000},
+                    {'id': 2, 'item': {'id': 117}, 'quantity': 2000000000, 'buyout': 2000000001},
+                ]
+            ingest(db, market.id, json.dumps({'auctions': rows}).encode(), request_key=f'close-stack-{day}',
+                   retrieved_at=now()-timedelta(days=day), synthetic=True)
+        path = f'/api/v1/markets/{market.id}/deals'
+    result = owner.get(path, params={'grouped': 'true', 'maximum_spend': 2000000001}).json()['deals']
+    assert len(result) == 1 and result[0]['auction_id'] == '2' and result[0]['matching_listings'] == 2

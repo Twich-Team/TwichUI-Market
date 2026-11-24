@@ -41,7 +41,10 @@ def below_reference(db, market, latest, *, minimum_discount, maximum_spend, mini
         daily_stats = daily_stats.where(stat.item_id == item_id, stat.variant_key == variant_key)
     refs = daily_stats.group_by(stat.item_id, stat.variant_key).subquery()
     total = case((Listing.buyout.is_not(None), Listing.buyout), else_=Listing.unit_price * Listing.quantity)
-    price = cast(total, Numeric) / Listing.quantity
+    # PostgreSQL's default division scale can tie distinct stack prices. With
+    # 63-bit copper and 31-bit quantities, 60 fraction digits distinguish even
+    # ratios compared against different 63-bit references when paging deals.
+    price = cast(total, Numeric(80, 60)) / Listing.quantity
     discount = (1 - price / func.nullif(refs.c.reference_price, 0)) * 100
     keys = [Listing.item_id, Listing.variant_key]
     # Rank only eligible listings, so the representative and count respect spend and discount.
