@@ -60,6 +60,8 @@ class StorageConfiguration:
             recovery = self.get(db,'automatic_recovery',{})
             pending=self.get(db,'pending_cleanup',[])
             original_cleanup=self.get(db,'original_cleanup',{})
+            current=self.get(db,'job',{})
+            if current.get('kind')=='original_cleanup' and current.get('id')==original_cleanup.get('id'):original_cleanup=current
         return dict(active_id=active, destinations=[self.public(c) for c in configs.values()], health=health, migration={**job,'plan':{k:v for k,v in job.get('plan',{}).items() if k!='items'}},restore=restore,restore_available=os.environ.get('BACKUP_RESTORE_TEST_ENABLED')=='true',
             original_cleanup=original_cleanup,pending_cleanup_count=len(pending),automatic_recovery=recovery,automatic_restore_enabled=os.environ.get('BACKUP_AUTOMATIC_RESTORE')=='true',share_enumeration_supported=False,
             share_notice='This native SMB client does not enumerate server shares. Enter a known share; folders can then be browsed.',

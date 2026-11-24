@@ -263,3 +263,9 @@ class NASStorage(unittest.TestCase):
             self.assertEqual(publish.call_count,1)
         self.assertEqual(self.manager.read_json(name[:-5]+'.json'),manifest)
         with self.manager.db() as db:self.assertTrue(self.manager.get(db,'automatic_restore_retry'))
+
+    def test_interrupted_original_cleanup_is_visible_after_restart(self):
+        self.archive();migration=self.migrate()
+        self.manager.original_cleanup_queue('admin:1',migration['id'],'REMOVE VERIFIED ORIGINALS',True,True)
+        self.manager.close();self.manager=Manager(self.local,Path(self.temp.name)/'state',require_mount=False)
+        self.assertEqual(self.manager.storage_status()['original_cleanup']['status'],'interrupted')

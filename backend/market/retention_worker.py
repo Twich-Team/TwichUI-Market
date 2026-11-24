@@ -329,6 +329,8 @@ def recovery_evidence_view():
         off_recent=bool(off_stamp and evidence.get('off_vm_verified') is True and evidence.get('failure_domain') and now()-timedelta(hours=24)<=off_stamp<=now())
         stamp=off_stamp if policy['off_vm_required'] else aware(datetime.fromisoformat(evidence['local_restoration_verified_at']))
         recent=off_recent if policy['off_vm_required'] else (evidence.get('owner_approval_reference')==policy['owner_approval_reference'] and now()-timedelta(hours=24)<=stamp<=now())
+        if evidence.get('expires_at'):
+            recent=recent and now()<aware(datetime.fromisoformat(evidence['expires_at']))
         return {**base,'off_vm_verification_recent':off_recent,'required_evidence_recent':bool(recent),'verified_at':stamp,
                 'reason':None if recent else 'Required recovery verification is missing or stale',
                 'expires_at':aware(datetime.fromisoformat(evidence['expires_at'])) if evidence.get('expires_at') else None,

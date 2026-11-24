@@ -1,0 +1,67 @@
+{
+  "provenance": "actual last24h logs bounded to1000lines/service; counts only to exclude credentials",
+  "services": {
+    "api": {
+      "sample_lines": 1000,
+      "tracebacks": 0,
+      "error_lines": 0,
+      "http_5xx": 0
+    },
+    "local-api": {
+      "sample_lines": 1000,
+      "tracebacks": 0,
+      "error_lines": 0,
+      "http_5xx": 0
+    },
+    "worker": {
+      "sample_lines": 0,
+      "tracebacks": 0,
+      "error_lines": 0,
+      "http_5xx": 0
+    },
+    "retention": {
+      "sample_lines": 0,
+      "tracebacks": 0,
+      "error_lines": 0,
+      "http_5xx": 0
+    },
+    "monitor": {
+      "sample_lines": 0,
+      "tracebacks": 0,
+      "error_lines": 0,
+      "http_5xx": 0
+    },
+    "backup-manager": {
+      "sample_lines": 344,
+      "tracebacks": 0,
+      "error_lines": 0,
+      "http_5xx": 0
+    },
+    "db": {
+      "sample_lines": 587,
+      "tracebacks": 0,
+      "error_lines": 3,
+      "http_5xx": 0
+    }
+  },
+  "database_errors": [
+    {
+      "message": "2026-11-23 23:25:43.529 UTC [155344] ERROR:  canceling statement due to statement timeout",
+      "statement_relations": [
+        "ONLY"
+      ]
+    },
+    {
+      "message": "2026-11-24 09:27:55.038 UTC [142222] ERROR:  canceling statement due to statement timeout",
+      "statement_relations": [
+        "ONLY"
+      ]
+    },
+    {
+      "message": "2026-11-24 12:55:49.585 UTC [237422] ERROR:  syntax error at or near \"::\" at character 182",
+      "statement_relations": [
+        "retention_automation"
+      ]
+    }
+  ]
+}
