@@ -1,5 +1,5 @@
 """Bounded administration record queries; never contact external providers."""
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 import json
 from typing import Literal
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -181,6 +181,54 @@ def security(q: str = Query('',max_length=64), category: str = Query('',max_leng
     count,rows=page(db,query,((column.desc() if desc else column.asc()),SecurityEvent.id.desc()),offset,limit)
     return {'total':count,'rows':[{'id':r.id,'actor_id':r.actor_id,'account':name,'action':r.action,'at':r.created_at,
         'detail':r.detail} for r,name in rows]}
+
+
+@router.get('/collection-activity')
+def collection_activity(
+    market_id: int | None = Query(None, ge=1),
+    days: int = Query(14, ge=7, le=90),
+    user: User = Depends(admin),
+    db: Session = Depends(session),
+):
+    """Count retained checks and newly saved snapshot records in each UTC day."""
+    at = now().astimezone(timezone.utc)
+    today = at.replace(hour=0, minute=0, second=0, microsecond=0)
+    start = today - timedelta(days=days - 1)
+    outcomes = ('collected', 'unchanged', 'partial', 'failed', 'other')
+    checked_at = CollectionRun.checked_at
+    # PostgreSQL stores timestamptz. Do not let the DB session timezone move a run to another day.
+    postgres = db.get_bind().dialect.name == 'postgresql'
+    def utc_day(column):
+        return func.date(func.timezone('UTC', column)) if postgres else func.date(column)
+
+    check_day = utc_day(checked_at)
+    snapshot_day = utc_day(Snapshot.created_at)
+    outcome = case(
+        (CollectionRun.status == 'partial', 'partial'),
+        (or_(CollectionRun.status == 'failed', CollectionRun.error.is_not(None)), 'failed'),
+        (CollectionRun.status == 'collected', 'collected'),
+        (CollectionRun.status == 'unchanged', 'unchanged'),
+        else_='other',
+    )
+    checks = select(check_day, outcome, func.count()).where(checked_at >= start, checked_at <= at)
+    snapshots = select(snapshot_day, func.count()).where(Snapshot.created_at >= start, Snapshot.created_at <= at)
+    latest_snapshot = select(func.max(Snapshot.created_at)).where(Snapshot.created_at <= at)
+    if market_id is not None:
+        checks = checks.where(CollectionRun.market_id == market_id)
+        snapshots = snapshots.where(Snapshot.market_id == market_id)
+        latest_snapshot = latest_snapshot.where(Snapshot.market_id == market_id)
+
+    buckets = {}
+    for offset in range(days):
+        date = (start + timedelta(days=offset)).date().isoformat()
+        buckets[date] = {'date': date, 'checks': 0, 'snapshots': 0, **dict.fromkeys(outcomes, 0)}
+    for date, result, count in db.execute(checks.group_by(check_day, outcome)):
+        bucket = buckets[str(date)]
+        bucket[result] = count
+        bucket['checks'] += count
+    for date, count in db.execute(snapshots.group_by(snapshot_day)):
+        buckets[str(date)]['snapshots'] = count
+    return {'days': list(buckets.values()), 'latest_snapshot_at': db.scalar(latest_snapshot)}
 
 
 @router.get('/collection')
