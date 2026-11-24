@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
-import { ProviderRateLimits, ProviderUsage, type RateStatus } from "./provider-rate-limits";
+import { ProviderRateLimits, ProviderUsage, SourceUsage, type RateStatus } from "./provider-rate-limits";
 import type { MetadataProvider } from "./metadata-admin";
 
 const status: RateStatus = {
@@ -21,6 +21,30 @@ describe("provider rate controls",()=>{
     expect(html).toContain("Provider-reported observation: 12 remaining");
     expect(html).toContain("Rate limit cooldown");expect(html).toContain("Gradual recovery active");
     expect(html).not.toContain("of 2,000");
+  });
+  it("shows rolling application usage, preserving zero, an unmetered window and an unknown reading",()=>{
+    const data={...status,effective:{...status.effective,minute_budget:null},
+      windows:{hour:{used:0,limit:60,remaining:60,source:"application_estimate"}}};
+    const html=renderToStaticMarkup(<SourceUsage name="Everloot" status={data} availableForRecovery={false}/>);
+    expect(html).toContain('aria-label="Everloot application usage, last hour"');
+    expect(html).toContain('aria-valuetext="0 of 60 requests reserved"');
+    expect(html).toContain("Last 24 hours");
+    expect(html).toContain("Usage unavailable");
+    expect(html).toContain("No limit set");
+    expect(html).toContain("No reading reported");
+    expect(html.match(/role="meter"/g)).toHaveLength(1);
+  });
+  it("keeps provider quota distinct from over-limit application counts and supports unavailable data",()=>{
+    const data={...status,windows:{day:{used:550,limit:500,remaining:0,source:"application_estimate"}},
+      provider_reported:{remaining:0,limit:2000,reset_at:null,observed_at:"2026-11-16T12:00:00Z"}};
+    const html=renderToStaticMarkup(<SourceUsage name="ForeverDB" status={data} availableForRecovery/>);
+    expect(html).toContain('aria-valuenow="500"');
+    expect(html).toContain('aria-valuetext="550 of 500 requests reserved"');
+    expect(html).toContain("0 remaining of 2,000");
+    expect(html).toContain("Application limit reached");
+    const unavailable=renderToStaticMarkup(<SourceUsage name="ForeverDB" availableForRecovery={false}/>);
+    expect(unavailable).toContain("Application usage unavailable");
+    expect(unavailable).not.toContain('role="meter"');
   });
   it("shows documented ForeverDB presets and keeps advanced safeguards collapsible",()=>{
     const provider={provider:"foreverdb",name:"ForeverDB",rate_limits:status} as MetadataProvider;

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { LocalTime } from "./admin-table";
+import { MetadataMeter } from "./metadata-meter";
 import type { MetadataProvider } from "./metadata-admin";
 
 export interface RateConfiguration {
@@ -18,6 +19,48 @@ export interface RateStatus {
 }
 const sources: Record<string,string> = { officially_documented: "Officially documented", administrator_configured: "Administrator-configured", conservative_application_default: "Conservative application default" };
 const numbers = (n: number) => n.toLocaleString();
+
+const requestWindows = [
+  {key: 'minute', label: 'Last minute', limit: 'minute_budget'},
+  {key: 'hour', label: 'Last hour', limit: 'hourly_budget'},
+  {key: 'day', label: 'Last 24 hours', limit: 'daily_budget'},
+] as const;
+
+export function SourceUsage({name, status, availableForRecovery}: {name: string; status?: RateStatus; availableForRecovery: boolean}) {
+  const reported = status?.provider_reported;
+  const limitReached = requestWindows.some(({key}) => {
+    const usage = status?.windows[key];
+    return usage && usage.limit > 0 && usage.used >= usage.limit;
+  });
+
+  return <section className="source-usage" aria-label={`${name} usage`}>
+    <h3>Application usage</h3>
+    {status ? <ul className="source-usage-windows">
+      {requestWindows.map(({key, label, limit})=>{
+        const usage = status.windows[key];
+        const measured = usage && Number.isFinite(usage.used) && usage.used >= 0 && Number.isFinite(usage.limit) && usage.limit > 0;
+        const tally = measured ? `${numbers(usage.used)} / ${numbers(usage.limit)}` : null;
+        return <li key={key}>
+          <div className="source-window-label">
+            <span>{label}</span>
+            <span>{measured ? <b>{tally}</b> : status.effective[limit] === null ? 'No limit set' : 'Usage unavailable'}</span>
+          </div>
+          {measured && <MetadataMeter label={`${name} application usage, ${label.toLowerCase()}`} value={usage.used} total={usage.limit}
+            valueText={`${numbers(usage.used)} of ${numbers(usage.limit)} requests reserved`}
+            atLimit={usage.used >= usage.limit}/>}
+        </li>;
+      })}
+    </ul> : <p className="source-quota-note">Application usage unavailable</p>}
+    {status && availableForRecovery && (status.cooling_down || limitReached) &&
+      <p className="source-window-hold">{status.cooling_down ? 'Provider cooldown' : 'Application limit reached'} · Next eligible request <LocalTime value={status.next_eligible_at}/></p>}
+    <p className="source-quota-note"><b>Provider quota</b> · {reported
+      ? <>{reported.remaining === null
+        ? reported.limit === null ? 'Limit and remaining unknown' : `${numbers(reported.limit)} limit · remaining unknown`
+        : `${numbers(reported.remaining)} remaining${reported.limit === null ? ' · limit unknown' : ` of ${numbers(reported.limit)}`}`}
+        {reported.observed_at && <> · Reported <LocalTime value={reported.observed_at}/></>}</>
+      : status ? 'No reading reported' : 'Reading unavailable'}</p>
+  </section>;
+}
 
 export function ProviderUsage({ status }: { status: RateStatus }) {
   const reported = status.provider_reported;

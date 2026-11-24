@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { DeferredChart } from './deferred-chart';
 import { DataTable } from './data-table';
 import { ProviderEmblem, providerNames, LocalTime } from './admin-table';
+import { MetadataMeter } from './metadata-meter';
 import type { MetadataOverview } from './metadata-admin';
 function CoverageBars({label,rows,series}:{label:string;rows:string[];series:{name:string;values:number[];color:string}[]}) {
   const option=useMemo(()=>({animation:false,grid:{left:125,right:25,top:45,bottom:35},legend:{top:0,textStyle:{color:'#c1b296'}},
@@ -11,20 +12,50 @@ function CoverageBars({label,rows,series}:{label:string;rows:string[];series:{na
   }),[rows,series]);
   return <div className="coverage-chart"><DeferredChart label={label} option={option}/></div>;
 }
-export function MetadataSummary({state}:{state:MetadataOverview}) {
+const percentage = new Intl.NumberFormat(undefined, { style: 'percent', maximumFractionDigits: 1 });
+
+function coveragePercent(value: number, total: number) {
+  if (value > 0 && value / total < .001) return '<' + percentage.format(.001);
+  if (value < total && value / total > .999) return '>' + percentage.format(.999);
+  return percentage.format(value / total);
+}
+
+export function MetadataSummary({state, openRecovery}: {state: MetadataOverview; openRecovery: () => void}) {
   const fields = [
-    ["Item names", state.resolved_names],
-    ["Icons", state.icons_available],
-    ["Essential attributes", state.attributes_available],
-  ] as const;
-  return <section aria-label="Item metadata summary">
-    <section className="panel padded">
-      <h2>Coverage in the selected market</h2>
-      <ul className="admin-health-list">{fields.map(([field, count])=><li key={field}>
-        <strong>{field}</strong><span>{state.observed ? `${count.toLocaleString()} / ${state.observed.toLocaleString()} available` : "No item observations"}</span>
-      </li>)}</ul>
-      <p className="muted">{state.scoped_pending_items.toLocaleString()} items queued or in progress in this market.</p>
-      {state.failed_or_blocked > 0 && <p className="notice">{state.failed_or_blocked.toLocaleString()} items remain unnamed after a provider error or access restriction. Review Provider evidence or the Recovery Tracker.</p>}
+    { label: 'Item names', count: state.resolved_names },
+    { label: 'Local icons', count: state.icons_available },
+    { label: 'Item attributes', count: state.attributes_available, description: 'At least one field beyond name and icon' },
+  ];
+  const observed = state.observed;
+  return <section className="metadata-coverage-summary" aria-label="Item metadata summary">
+    <div className="coverage-summary-heading">
+      <div>
+        <h2>Coverage in the selected market</h2>
+        <p>{observed > 0 ? `${observed.toLocaleString()} distinct items in the latest snapshot` : 'No item observations in this market yet'}</p>
+      </div>
+      <p>Measured <LocalTime value={state.measured_at}/></p>
+    </div>
+    <div className="coverage-summary-grid">
+      {fields.map(({label, count, description})=>{
+        const measured = observed > 0 && Number.isFinite(count) && count >= 0 && count <= observed;
+        const tally = measured ? `${count.toLocaleString()} of ${observed.toLocaleString()} items` : null;
+        return <article key={label} className="coverage-summary-card">
+          <div className="coverage-card-heading"><h3>{label}</h3><strong>{measured ? coveragePercent(count, observed) : 'Unavailable'}</strong></div>
+          {measured && <MetadataMeter label={label} value={count} total={observed} valueText={tally!}/>}
+          <p>{tally || (observed === 0 ? 'Awaiting an item snapshot' : 'Coverage measurement unavailable')}</p>
+          {description && <p className="coverage-summary-definition">{description}</p>}
+        </article>;
+      })}
+    </div>
+    <section className="panel padded coverage-recovery-summary" aria-label="Metadata recovery">
+      <div>
+        <h3>Recovery</h3>
+        <p>{state.scoped_pending_items > 0
+          ? `${state.scoped_pending_items.toLocaleString()} items queued or in progress`
+          : 'No items queued or in progress'}</p>
+        {state.failed_or_blocked > 0 && <p>{state.failed_or_blocked.toLocaleString()} items remain unnamed after a provider error or access restriction.</p>}
+      </div>
+      {(state.scoped_pending_items > 0 || state.failed_or_blocked > 0) && <button onClick={openRecovery}>Open Recovery Tracker</button>}
     </section>
     <details className="panel padded"><summary>Coverage charts and measurement details</summary>
     <p className="muted">Measured <LocalTime value={state.measured_at}/> · {state.coverage_identity} {state.attributes_definition}</p>

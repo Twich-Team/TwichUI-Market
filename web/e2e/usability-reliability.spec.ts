@@ -75,7 +75,7 @@ test('usability M2: operational overview, measured coverage tables and allocatio
   await page.getByRole('region',{name:'Operational overview',exact:true}).screenshot({path:`${output}/administration-overview.png`});await axe(page);
   await page.getByRole('link',{name:'Item Metadata',exact:true}).click();
   await expect(page.getByRole('region',{name:'Item metadata summary',exact:true})).toBeVisible();
-  await expect(page.getByText('Essential attributes',{exact:true})).toBeVisible();
+  await expect(page.getByRole('heading',{name:'Item attributes',exact:true})).toBeVisible();
   await page.getByText('Coverage charts and measurement details',{exact:true}).click();
   await page.getByRole('heading',{name:'Stored field coverage',exact:true}).scrollIntoViewIfNeeded();
   await expect(page.getByRole('img',{name:'Stored names, icons and attributes; available versus missing',exact:true})).toBeVisible();

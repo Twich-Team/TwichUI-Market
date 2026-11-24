@@ -23,6 +23,12 @@ test("provider rate limits: editable allowances, quota observations, cooldowns a
   const forever=page.getByRole("region",{name:"ForeverDB connection",exact:true});
   const ever=page.getByRole("region",{name:"Everloot connection",exact:true});
   const wow=page.getByRole("region",{name:"TheWoWDB connection",exact:true});
+  const defaultUsage=ever.getByRole("region",{name:"Everloot usage",exact:true});
+  const hourlyMeter=defaultUsage.getByRole("meter",{name:"Everloot application usage, last hour",exact:true});
+  await expect(hourlyMeter).toBeVisible();
+  await expect(hourlyMeter).toHaveAttribute("aria-valuetext","350 of 2,000 requests reserved");
+  await expect(defaultUsage).toContainText("1,650 remaining of 2,000");
+  await expect(ever.getByRole("button",{name:"Save rate limits",exact:true})).toHaveCount(0);
   for (const card of [forever, ever, wow]) {
     await card.getByText("Edit settings",{exact:true}).click();
     await card.getByText("Rate limits and usage",{exact:true}).click();

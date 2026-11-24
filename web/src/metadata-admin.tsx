@@ -1,7 +1,7 @@
 import { RecoveryTracker } from "./recovery-tracker";
 import { Loading } from "./loading";
 import { MetadataSummary, ProviderCoverage } from "./metadata-coverage";
-import { ProviderRateLimits, type RateStatus } from "./provider-rate-limits";
+import { ProviderRateLimits, SourceUsage, type RateStatus } from "./provider-rate-limits";
 import { useEffect, useState } from "react";
 import { DataTable } from "./data-table";
 import { LocalTime, ProviderEmblem, Status, useRecordPage } from "./admin-table";
@@ -49,8 +49,8 @@ const labels: Record<string, string> = {
 };
 export const metadataStatus = (value: string | null | undefined) => value ? labels[value] || value.replaceAll("_", " ") : "None";
 
-function useProviders() {
-  return useQuery({ queryKey: ["private", "metadata-providers"], queryFn: ({ signal }) => api<Providers>("/admin/metadata-providers", "GET", undefined, signal), refetchInterval: 5000 });
+function useProviders(enabled = true) {
+  return useQuery({ enabled, queryKey: ["private", "metadata-providers"], queryFn: ({ signal }) => api<Providers>("/admin/metadata-providers", "GET", undefined, signal), refetchInterval: 5000 });
 }
 function ErrorNotice({ error }: { error: string }) { return error ? <p className="notice error" role="alert">{error}</p> : null; }
 
@@ -68,18 +68,36 @@ export function DataSources({ readOnly = false }: { readOnly?: boolean }) {
     <ErrorNotice error={error || data.error?.message || ""} />
     {busy && <Loading label="Submitting metadata operation…"/>}
     {message && <p role="status" className="notice success">{message}</p>}
-    {data.data && !data.data.credential_storage_ready && <p className="notice">API key storage needs an owner-managed encryption key file. Keyless recovery remains available.</p>}
-    <div className="metadata-provider-grid">{data.data?.providers.map(provider => <section className="panel padded metadata-provider" key={provider.provider} aria-label={`${provider.name} connection`}>
-      <h2>{provider.name}</h2>
-      <dl className="provider-summary">
-        <div><dt>Source</dt><dd><Status tone={provider.enabled?"success":"neutral"}>{provider.enabled?"Enabled":"Disabled"}</Status></dd></div>
-        <div><dt>Authentication</dt><dd>{provider.validation_pending ? "Validation queued" : provider.expiration_warning==="expired" ? "Key expired" : provider.validation_error ? "Validation failed" : provider.last_validated_at ? "Validated" : provider.configured ? "Key configured" : provider.key_required ? "Key needed" : "Keyless access"}</dd></div>
-        <div><dt>Automatic recovery</dt><dd>{!provider.enabled ? "Source disabled" : provider.automatic ? "Enabled" : "Off"}</dd></div>
-        <div><dt>Quota</dt><dd>{!provider.enabled ? "Source disabled" : provider.rate_limits?.cooling_down ? <>Wait until <LocalTime value={provider.rate_limits.next_eligible_at}/></> : provider.rate_limits?.windows.day ? `${provider.rate_limits.windows.day.remaining.toLocaleString()} estimated requests left today` : "No current quota reading"}</dd></div>
-      </dl>
-      {provider.enabled && (provider.validation_error || provider.expiration_warning==="expired" || provider.key_required&&!provider.configured) && <p className="notice">{provider.validation_error ? metadataStatus(provider.validation_error)+". " : ""}Review credentials in Edit settings.</p>}
-      {provider.enabled && provider.recent_error && !provider.validation_error &&
-        <p className="notice">{metadataStatus(provider.recent_error)}. Review the connection test and quota before retrying.</p>}
+    <p className="source-usage-intro">Application usage counts reserved requests in rolling windows. Provider-reported quota is separate.
+      {data.error && data.data && " Showing the last available readings."}</p>
+    <div className="metadata-provider-grid source-provider-grid">{data.data?.providers.map(provider => {
+      const needsKey = provider.key_required && !provider.configured;
+      const expired = provider.expiration_warning === "expired";
+      const coolingDown = provider.rate_limits?.cooling_down;
+      const recovery = !provider.enabled ? "Source disabled"
+        : needsKey ? provider.validation_pending ? "Waiting for key check" : "Recovery blocked"
+        : expired ? "Recovery blocked"
+        : coolingDown ? "Recovery cooling down"
+        : provider.validation_error || provider.recent_error ? "Review connection"
+        : provider.automatic ? "Automatic recovery on" : "Automatic recovery off";
+      const auth = provider.validation_pending ? "Validation queued"
+        : expired ? "Key expired"
+        : provider.validation_error ? "Last validation failed"
+        : needsKey ? "Key needed"
+        : provider.last_validated_at ? "Validated"
+        : provider.configured ? "Key configured" : "Keyless access";
+      return <section className="panel padded metadata-provider source-provider" key={provider.provider} aria-label={`${provider.name} connection`}>
+      <div className="source-provider-heading"><h2>{provider.name}</h2><Status tone={!provider.enabled?"neutral":needsKey||expired||coolingDown||provider.validation_error||provider.recent_error?"warning":provider.automatic?"success":"neutral"}>{recovery}</Status></div>
+      <p className="source-authentication">Authentication · {auth}</p>
+      {provider.enabled && (needsKey || expired) && <p className="source-action-note">
+        {provider.validation_pending ? "A key check is queued."
+          : provider.provider === "blizzard" ? "Ask the host administrator to configure Blizzard credentials."
+          : !data.data?.credential_storage_ready ? "Ask the host administrator to enable credential storage."
+          : needsKey ? "Add an API key in Edit settings to enable recovery." : "Replace the expired key in Edit settings."}
+      </p>}
+      {provider.enabled && !needsKey && !expired && !coolingDown && (provider.validation_error || provider.recent_error) &&
+        <p className="source-action-note">{metadataStatus(provider.validation_error || provider.recent_error)}. Review the connection in Edit settings.</p>}
+      <SourceUsage name={provider.name} status={provider.rate_limits} availableForRecovery={provider.enabled&&!needsKey&&!expired}/>
       <details className="provider-edit"><summary>Edit settings</summary>
       {provider.expiration_warning && <p className="notice" role="status">{metadataStatus(provider.expiration_warning)}. Replace this key to keep access.</p>}
       <form className="metadata-config" key={`${provider.provider}-${provider.enabled}-${provider.automatic}-${provider.hourly_budget}-${provider.daily_budget}`} onSubmit={event => {
@@ -110,7 +128,9 @@ export function DataSources({ readOnly = false }: { readOnly?: boolean }) {
       {provider.website_verification && <p className="muted">Website verification: unknown. Check your <a href="https://foreverdb.net/developers" target="_blank" rel="noopener noreferrer">ForeverDB account</a> and <a href={provider.website_verification.proof_url} target="_blank" rel="noopener noreferrer">ownership proof</a>.</p>}
       <a href={provider.url} target="_blank" rel="noopener noreferrer" className="small">Provider documentation &amp; attribution</a>
       </details>
-    </section>)}</div>
+    </section>;
+    })}</div>
+    {data.data && !data.data.credential_storage_ready && <p className="source-configuration-note">API key storage requires a host-managed encryption key. Keyless access remains available.</p>}
     {!!data.data?.providers.length && <details className="panel padded"><summary>Provider evidence</summary><ProviderHealth providers={data.data.providers}/></details>}
   </section>;
 }
@@ -129,7 +149,7 @@ export function ItemMetadataAdmin({ markets, readOnly = false }: { markets: Mark
   const [error, setError] = useState(""), [message, setMessage] = useState(""), [busy, setBusy] = useState(false), [jobId, setJobId] = useState<number | null>(null), [resultAfter, setResultAfter] = useState(0);
   useEffect(()=>{if(!market&&markets.length)setMarket(markets.find(m=>m.enabled)?.id||markets[0].id);},[market,markets]);
   const [input, setInput] = useState({ item_id: "", limit: 100, request_budget: 100 });
-  const providers = useProviders();
+  const providers = useProviders(view === "jobs");
   const stats = useQuery({ queryKey: ["private", "metadata-overview", market], enabled: !!market, queryFn: ({ signal }) => api<MetadataOverview>(`/admin/item-metadata?market_id=${market}`, "GET", undefined, signal), refetchInterval: 60_000 });
   const [relatedResource,setRelatedResource] = useState("professions/alchemy"), [relatedPages,setRelatedPages] = useState(1);
   const [jobState, setJobState] = useState(""), [jobSearch,setJobSearch]=useState("");
@@ -148,7 +168,7 @@ export function ItemMetadataAdmin({ markets, readOnly = false }: { markets: Mark
     <ErrorNotice error={error || (view==="overview"?stats.error?.message:view==="jobs"?jobs.error?.message||detail.error?.message:undefined) || ""} />
     {message && <p className="notice success" role="status">{message}</p>}
     {!market && <p>Choose a configured market to see its item metadata.</p>}
-    {view==="overview" && !!market && <>{stats.isPending && <Loading label="Loading catalog measurements…" />}{state && <MetadataSummary state={state}/>}</>}
+    {view==="overview" && !!market && <>{stats.isPending && <Loading label="Loading catalog measurements…" />}{state && <MetadataSummary state={state} openRecovery={()=>setView("tracker")}/>}</>}
     {view==="tracker" && !!market && <RecoveryTracker key={market} market={market} readOnly={readOnly}/>}
     {view==="missing" && !!market && <UnresolvedNames key={market} market={market} chooseItem={id=>{setMode("single");setInput({...input,item_id:String(id)});resetPreview();setView("jobs");}}/>}
     {view==="evidence" && !!market && <>
