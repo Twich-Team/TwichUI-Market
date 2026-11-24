@@ -99,8 +99,11 @@ class NASStorage(unittest.TestCase):
 
     def test_conflicting_destination_never_overwritten(self):
         _,name=self.archive();(self.remote/name).write_bytes(b'different')
-        result=self.migrate()
-        self.assertEqual(result['status'],'failed');self.assertEqual((self.remote/name).read_bytes(),b'different')
+        with self.assertRaises(Refused):self.manager.migration_plan(self.key)
+        self.assertEqual((self.remote/name).read_bytes(),b'different')
+        same_size=b'X'*(self.local/name).stat().st_size;(self.remote/name).write_bytes(same_size)
+        result=self.migrate();self.assertEqual(result['status'],'failed')
+        self.assertEqual((self.remote/name).read_bytes(),same_size)
         self.assertEqual(self.manager.storage_status()['active_id'],'local')
         self.assertTrue((self.local/name).exists())
 
