@@ -1,6 +1,6 @@
 # Browser acceptance
 
-Application source `0c2b3540bffa0ac55a6e7c2de8f500ab4737e258` was deployed to the isolated review environment and tested on November 24, 2026. The environment uses synthetic auctions and simulated backup management. [Review access and fixture provenance](../../market-ux-preview.md)
+Application source `08ced0fbebb3b746bb15dfa68f1ae97875ef09cc` was deployed to the isolated review environment and tested on November 24, 2026. The environment uses synthetic auctions and simulated backup management. [Review access and fixture provenance](../../market-ux-preview.md)
 
 The matrix covers 22 views as a member or administrator in Playwright Chromium and WebKit. Phone profiles used touch and mobile emulation at 375×667, 390×844, 430×932, and 844×390 CSS pixels. Desktop profiles used 980×800, 1280×900, and 1728×1080, plus 1280×800 with 200% document CSS zoom. The zoom case exercises CSS zoom. Native browser toolbar zoom and physical iPhone Safari were outside this run.
 
@@ -10,7 +10,7 @@ A pass requires the expected authenticated view, no page-level horizontal overfl
 | --- | ---: | ---: | ---: | ---: | --- |
 | Explorer | 4/4 | 4/4 | 4/4 | 4/4 | Search results for Training Sword, item cards on phones, and market controls. |
 | Explorer · variants | 4/4 | 4/4 | 4/4 | 4/4 | Expanded exact variants with inspect links and contained comparison. |
-| Item Research | 4/4 | 4/4 | 4/4 | 3/4 | Tough Jerky’s canonical detail view, price summary, and history. |
+| Item Research | 4/4 | 4/4 | 4/4 | 4/4 | Tough Jerky’s canonical detail view, price summary, and history. |
 | Deal Finder · Below Reference | 4/4 | 4/4 | 4/4 | 4/4 | Selected mode and grouped opportunity results. |
 | Deal Finder · Supply Changes | 4/4 | 4/4 | 4/4 | 4/4 | Selected mode and supply-change results. |
 | Deal Finder · Price Changes | 4/4 | 4/4 | 4/4 | 4/4 | Selected mode and price-change results. |
@@ -31,14 +31,14 @@ A pass requires the expected authenticated view, no page-level horizontal overfl
 | Storage & Backups · Storage | 4/4 | 4/4 | 4/4 | 4/4 | Selected storage view and destination management. |
 | Storage & Backups · Maintenance | 4/4 | 4/4 | 4/4 | 4/4 | Selected maintenance view and retention health. |
 
-**351/352 route checks passed on `0c2b354`.** All 88 Axe scans reported zero violations. The one failure was Item Research at WebKit 200% CSS zoom. The chart initially widened the page to 1720px in a 1280px viewport and returned to 1280px once the canvas resized.
+**352/352 route checks passed.** All 88 Axe scans reported zero violations. The emitted document width stayed within the viewport at all sizes. Both engines measured 1280px immediately after applying 200% zoom to the already rendered research chart, and 1280px after layout settled.
 
-Follow-up `8182b50` contains the chart canvas during the resize. The sequence Explorer → expanded Training Sword variants → Tough Jerky reproduced the overflow in five of five WebKit runs. With the containment rule applied in the browser, all five runs held the page to 1280px immediately and after the resize. The repository regression measures page width immediately after applying zoom.
+The earlier `0c2b354` matrix passed 351/352 checks. Its WebKit research chart briefly widened the page to 1720px in a 1280px viewport while the canvas resized. The same route sequence reproduced the overflow in five of five WebKit runs. The current candidate contains the canvas inside the chart while it resizes and includes a regression check for immediate overflow.
 
 ## Focused interactions
 
 - Explorer covered Enter/Search, Clear, Training Sword’s stable bonus IDs, sort and filter across 40 variants, pagination, and browser Back restoring the comparison, scroll, and focus. The dedicated desktop check used 1024×720 and 1220×720 in both engines. [Explorer and Item Research browser tests](../../../web/e2e/explorer-details.spec.ts)
-- Research touch checks covered a long exact reference, a bounded item sheet and its restored trigger focus, tap tooltips, the lower-price view, full exact history, and the hourly range selector. A Chromium touch swipe beginning on the chart scrolled the page. [Research browser tests](../../../web/e2e/usability-reliability.spec.ts)
+- Research touch checks covered a long exact reference, a bounded item sheet and its restored trigger focus, tap tooltips, the lower-price view, full exact history, and the hourly range selector. On the deployed candidate, both engines at 390×844 retained bounded tap tooltips after the zoom fix. A separate Chromium touch swipe beginning on the chart scrolled the page. [Research browser tests](../../../web/e2e/usability-reliability.spec.ts)
 - Deal Finder browser tests cover grouped exact variants, stack expansion and paging, questionable references, and saved filters for all three modes. [Deal Finder browser tests](../../../web/e2e/deal-redesign.spec.ts)
 - Backup browser tests cover UTC calendar navigation and daily summaries, inventory paging, protected eligibility, dialog dismissal, and empty and unavailable states. Preview data represents simulated operational outcomes. [Backup browser tests](../../../web/e2e/backup-management.spec.ts)
 - Each profile signed in with fresh administrator and member sessions and verified both roles against the API. The member received HTTP 403 from the admin backup API and downloaded beta.12 with the advertised SHA-256 digest. [Installer provenance](../../market-ux-preview.md#provenance-and-isolation)
