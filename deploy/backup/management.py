@@ -522,7 +522,6 @@ class Manager(StorageConfiguration):
         if origin not in ('scheduled', 'manual', 'release', 'restore-verification'):
             raise Refused('Invalid backup origin')
         with self.lock(), self.db() as db:
-            rows, _ = self.rows()
             job = self.get(db, 'job', {})
             if (job_id and (job.get('id') != job_id or job.get('status') != 'queued')) or (not job_id and job.get('status') in ('queued', 'running')):
                 raise Refused('Backup job changed')
@@ -537,6 +536,7 @@ class Manager(StorageConfiguration):
             self.set(db,'job',job);db.commit()
             published = False
             try:
+                rows, _ = self.rows()
                 self.cleanup_temporaries(db)
                 estimate = self.estimate(rows)
                 self.capacity(db, rows, estimate)
@@ -609,7 +609,7 @@ class Manager(StorageConfiguration):
                     self.store.remove(temporary)
                 except FileNotFoundError:
                     pass
-                except OSError:
+                except (OSError,StorageError):
                     job['cleanup_pending'] = True
                     self.remember_temporary(db,job)
                     self.set(db, 'job', job)

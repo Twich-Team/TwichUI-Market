@@ -222,7 +222,25 @@ def tick(manager):
         job = dict(id=uuid.uuid4().hex, status='queued', actor='scheduler', requested_at=stamp())
         manager.set(db, 'job', job)
         manager.receipt(db, 'scheduler', 'backup.queued', job)
-    manager.create('scheduler', origin='scheduled', job_id=job['id'])
+    try:
+        result=manager.create('scheduler', origin='scheduled', job_id=job['id'])
+    except Exception:
+        # Storage preflight or a competing download can fail before creation starts.
+        # Never leave the durable reservation queued forever after that attempt exits.
+        with manager.db() as db:
+            result=manager.get(db,'job',{})
+            if result.get('id')==job['id'] and result.get('status') in ('queued','running'):
+                result.update(status='failed',finished_at=stamp(),error='Backup storage or coordination unavailable; scheduled retry will follow')
+                manager.set(db,'job',result);manager.receipt(db,'scheduler','backup.failed',dict(id=job['id']))
+    if result.get('id',job['id'])==job['id'] and result.get('status')=='failed':
+        with manager.db() as db:
+            current=manager.get(db,'policy')
+            if current['enabled'] and current['revision']==policy['revision']:
+                retry=datetime.now(timezone.utc)+timedelta(seconds=min(1800,current['interval_seconds']))
+                scheduled=manager.get(db,'next_at')
+                if not scheduled or date(scheduled)>retry:
+                    manager.set(db,'next_at',retry.isoformat())
+                    manager.receipt(db,'scheduler','backup.retry.scheduled',dict(id=job['id'],next_at=retry.isoformat()))
     return True
 
 

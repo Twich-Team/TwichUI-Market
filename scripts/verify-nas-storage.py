@@ -146,6 +146,25 @@ try:
         except (StorageError,OSError):pass
     assert manager.overview()['total']>=1
     passed('Actual disconnected SMB transport fails safely and a fresh session reconnects')
+    # Fault-inject the saved peer only inside this disposable fixture. A failed
+    # scheduled preflight must become terminal and retry without a service restart.
+    from service import tick
+    from datetime import datetime,timezone,timedelta
+    with manager.db() as db:
+        configs=manager.get(db,'storage_configs');original_host=configs[key]['host']
+        configs[key]['host']='10.255.255.254';manager.set(db,'storage_configs',configs)
+        policy=manager.get(db,'policy');policy['enabled']=True;manager.set(db,'policy',policy)
+        manager.set(db,'next_at',(datetime.now(timezone.utc)-timedelta(seconds=1)).isoformat())
+    started=time.monotonic();assert tick(manager);assert time.monotonic()-started<30
+    with manager.db() as db:
+        assert manager.get(db,'job')['status']=='failed'
+        assert datetime.fromisoformat(manager.get(db,'next_at'))>datetime.now(timezone.utc)+timedelta(minutes=29)
+        configs=manager.get(db,'storage_configs');configs[key]['host']=original_host;manager.set(db,'storage_configs',configs)
+    assert not tick(manager) # do not retry early or spend another scheduled budget
+    with manager.db() as db:manager.set(db,'next_at',(datetime.now(timezone.utc)-timedelta(seconds=1)).isoformat())
+    assert tick(manager)
+    with manager.db() as db:assert manager.get(db,'job')['status']=='succeeded'
+    passed('Actual unreachable NAS scheduled failure becomes terminal, backs off30minutes and creates a verified native backup after recovery without restart or local fallback')
     removal=manager.migration_remove_originals('admin:1',migrated['id'],'REMOVE VERIFIED ORIGINALS',confirm_protected=True)
     assert removal['results'][0]['status']=='deleted',removal
     passed('Originals removed only through separate confirmation after rehashing NAS destination')

@@ -289,3 +289,32 @@ class NASStorage(unittest.TestCase):
         with self.assertRaises(Refused):self.manager.storage_save('admin:1',values)
         with self.assertRaises(Refused):self.manager.storage_save('admin:1',dict(values,type='mounted'))
         self.assertEqual(self.manager.candidate(self.key)['host'],'192.168.1.2')
+
+    def test_unavailable_nas_preflight_records_terminal_failure_and_bounded_retry(self):
+        from service import tick
+        from datetime import datetime,timezone,timedelta
+        _,name=self.archive()
+        with self.manager.db() as db:
+            self.manager.set(db,'storage_active',self.key)
+            policy=self.manager.get(db,'policy');policy['enabled']=True;self.manager.set(db,'policy',policy)
+            self.manager.set(db,'next_at',(datetime.now(timezone.utc)-timedelta(seconds=1)).isoformat())
+        with patch('storage_config.SMB',side_effect=StorageError('NAS unavailable')) as connect:
+            self.assertTrue(tick(self.manager))
+            attempts=connect.call_count
+            self.assertFalse(tick(self.manager));self.assertEqual(connect.call_count,attempts)
+        with self.manager.db() as db:
+            self.assertEqual(self.manager.get(db,'job')['status'],'failed')
+            retry=datetime.fromisoformat(self.manager.get(db,'next_at'))
+            self.assertGreater(retry,datetime.now(timezone.utc)+timedelta(minutes=29))
+            self.assertLess(retry,datetime.now(timezone.utc)+timedelta(minutes=31))
+        self.assertTrue((self.local/name).exists())
+
+    def test_scheduled_coordination_failure_does_not_leave_permanent_reservation(self):
+        from service import tick
+        from datetime import datetime,timezone,timedelta
+        with self.manager.db() as db:
+            policy=self.manager.get(db,'policy');policy['enabled']=True;self.manager.set(db,'policy',policy)
+            self.manager.set(db,'next_at',(datetime.now(timezone.utc)-timedelta(seconds=1)).isoformat())
+        with patch.object(self.manager,'create',side_effect=Refused('Competing download')):
+            self.assertTrue(tick(self.manager))
+        with self.manager.db() as db:self.assertEqual(self.manager.get(db,'job')['status'],'failed')
