@@ -41,6 +41,9 @@ def atomic_json(directory,name,value):
     temporary=root/('.recovery-'+uuid.uuid4().hex)
     try:
         fd=os.open(temporary,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o644)
+        # These contain non-secret verification facts. API/worker UIDs read the
+        # shared receipts through read-only mounts despite the service's077umask.
+        os.fchmod(fd,0o644)
         with os.fdopen(fd,'w') as stream:
             json.dump(value,stream);stream.write('\n');stream.flush();os.fsync(stream.fileno())
         os.replace(temporary,root/name)

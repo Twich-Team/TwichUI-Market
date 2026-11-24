@@ -318,3 +318,12 @@ class NASStorage(unittest.TestCase):
         with patch.object(self.manager,'create',side_effect=Refused('Competing download')):
             self.assertTrue(tick(self.manager))
         with self.manager.db() as db:self.assertEqual(self.manager.get(db,'job')['status'],'failed')
+
+    def test_shared_recovery_receipt_remains_readable_under_service_umask(self):
+        from recovery import atomic_json
+        root=Path(self.temp.name)/'shared';root.mkdir()
+        previous=os.umask(0o077)
+        try:atomic_json(root,'evidence.json',dict(backup_id='f'*32))
+        finally:os.umask(previous)
+        self.assertEqual((root/'evidence.json').stat().st_mode&0o777,0o644)
+        self.assertEqual(json.loads((root/'evidence.json').read_text()),dict(backup_id='f'*32))
