@@ -26,15 +26,19 @@ const requestWindows = [
   {key: 'day', label: 'Last 24 hours', limit: 'daily_budget'},
 ] as const;
 
+export function applicationLimitReached(status?: RateStatus) {
+  return requestWindows.some(({key}) => {
+    const usage = status?.windows[key];
+    return !!usage && usage.limit > 0 && usage.used >= usage.limit;
+  });
+}
+
 export function SourceUsage({name, status, availableForRecovery}: {name: string; status?: RateStatus; availableForRecovery: boolean}) {
   const reported = status?.provider_reported;
-  const limitReached = requestWindows.some(({key}) => {
-    const usage = status?.windows[key];
-    return usage && usage.limit > 0 && usage.used >= usage.limit;
-  });
+  const limitReached = applicationLimitReached(status);
 
   return <section className="source-usage" aria-label={`${name} usage`}>
-    <h3>Application usage</h3>
+    <h3>Application usage <span className="source-window-unit">· reserved requests</span></h3>
     {status ? <ul className="source-usage-windows">
       {requestWindows.map(({key, label, limit})=>{
         const usage = status.windows[key];

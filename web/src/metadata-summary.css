@@ -70,7 +70,7 @@
 .coverage-recovery-summary h3, .coverage-recovery-summary p { margin: 0; }
 .coverage-recovery-summary p { margin-top: .32rem; }
 
-.source-usage-intro, .source-configuration-note {
+.source-configuration-note {
   color: #c8b79c;
   font-size: .9rem;
   margin: .25rem 0 .85rem;
@@ -147,3 +147,10 @@
   .source-provider-grid .source-provider { padding: .65rem .8rem; }
   .source-provider > .provider-edit:not([open]) { margin: 0; }
 }
+
+
+.source-recovery-summary { margin: .45rem 0 .85rem; }
+.source-recovery-summary h2 { margin: 0 0 .35rem; font-size: 1rem; }
+.source-recovery-summary ul { display: flex; flex-wrap: wrap; gap: .35rem 1rem; list-style: none; padding: 0; margin: 0; }
+.source-recovery-summary li, .source-window-unit { color: #c8b79c; font-size: .86rem; font-weight: normal; }
+.source-recovery-summary strong { color: #ecd39f; font-size: 1rem; font-variant-numeric: tabular-nums; }

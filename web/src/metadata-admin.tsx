@@ -1,7 +1,7 @@
 import { RecoveryTracker } from "./recovery-tracker";
 import { Loading } from "./loading";
 import { MetadataSummary, ProviderCoverage } from "./metadata-coverage";
-import { ProviderRateLimits, SourceUsage, type RateStatus } from "./provider-rate-limits";
+import { ProviderRateLimits, SourceUsage, applicationLimitReached, type RateStatus } from "./provider-rate-limits";
 import { useEffect, useState } from "react";
 import { DataTable } from "./data-table";
 import { LocalTime, ProviderEmblem, Status, useRecordPage } from "./admin-table";
@@ -54,6 +54,23 @@ function useProviders(enabled = true) {
 }
 function ErrorNotice({ error }: { error: string }) { return error ? <p className="notice error" role="alert">{error}</p> : null; }
 
+function sourceRecovery(provider: MetadataProvider) {
+  if (!provider.enabled) return { group: 'Disabled', label: 'Source disabled', tone: 'neutral' } as const;
+  if (provider.key_required && !provider.configured && provider.validation_pending)
+    return { group: 'Waiting', label: 'Waiting for key check', tone: 'warning' } as const;
+  if ((provider.key_required && !provider.configured) || provider.expiration_warning === 'expired')
+    return { group: 'To review', label: 'Recovery blocked', tone: 'warning' } as const;
+  if (provider.rate_limits?.cooling_down)
+    return { group: 'Waiting', label: 'Recovery cooling down', tone: 'warning' } as const;
+  if (applicationLimitReached(provider.rate_limits))
+    return { group: 'Waiting', label: 'Waiting for quota', tone: 'warning' } as const;
+  if (provider.validation_error || provider.recent_error)
+    return { group: 'To review', label: 'Review connection', tone: 'warning' } as const;
+  return provider.automatic
+    ? { group: 'Automatic on', label: 'Automatic recovery on', tone: 'success' } as const
+    : { group: 'Automatic off', label: 'Automatic recovery off', tone: 'neutral' } as const;
+}
+
 export function DataSources({ readOnly = false }: { readOnly?: boolean }) {
   const data = useProviders();
   const [editing, setEditing] = useState<string | null>(null), [error, setError] = useState(""), [message, setMessage] = useState(""), [busy, setBusy] = useState(false);
@@ -62,24 +79,25 @@ export function DataSources({ readOnly = false }: { readOnly?: boolean }) {
     try { await work(); setMessage(message); await data.refetch(); } catch (e) { setError((e as Error).message); } finally { setBusy(false); }
   }
   if (data.isPending) return <><h1>Data Sources</h1><Loading label="Loading data sources…"/></>;
+  const sources = (data.data?.providers || []).map(provider => ({provider, recovery: sourceRecovery(provider)}));
+  const groups = new Map<string, number>();
+  for (const { recovery } of sources) groups.set(recovery.group, (groups.get(recovery.group) ?? 0) + 1);
   return <section aria-labelledby="data-sources-heading" className="metadata-admin">
     <h1 id="data-sources-heading">Data Sources</h1>
     {data.error && <button onClick={()=>void data.refetch()}>Retry data sources</button>}
     <ErrorNotice error={error || data.error?.message || ""} />
     {busy && <Loading label="Submitting metadata operation…"/>}
     {message && <p role="status" className="notice success">{message}</p>}
-    <p className="source-usage-intro">Application usage counts reserved requests in rolling windows. Provider-reported quota is separate.
-      {data.error && data.data && " Showing the last available readings."}</p>
-    <div className="metadata-provider-grid source-provider-grid">{data.data?.providers.map(provider => {
+    {sources.length > 0 && <section className="source-recovery-summary" aria-labelledby="source-recovery-summary-heading">
+      <h2 id="source-recovery-summary-heading">Recovery across {sources.length} sources</h2>
+      <ul>{['Automatic on','To review','Waiting','Automatic off','Disabled'].filter(group=>groups.has(group)).map(group=>
+        <li key={group}><strong>{groups.get(group)}</strong> {group.toLowerCase()}</li>)}</ul>
+    </section>}
+    {data.error && data.data && <p role="status">Showing the last available readings.</p>}
+    <div className="metadata-provider-grid source-provider-grid">{sources.map(({provider, recovery}) => {
       const needsKey = provider.key_required && !provider.configured;
       const expired = provider.expiration_warning === "expired";
       const coolingDown = provider.rate_limits?.cooling_down;
-      const recovery = !provider.enabled ? "Source disabled"
-        : needsKey ? provider.validation_pending ? "Waiting for key check" : "Recovery blocked"
-        : expired ? "Recovery blocked"
-        : coolingDown ? "Recovery cooling down"
-        : provider.validation_error || provider.recent_error ? "Review connection"
-        : provider.automatic ? "Automatic recovery on" : "Automatic recovery off";
       const auth = provider.validation_pending ? "Validation queued"
         : expired ? "Key expired"
         : provider.validation_error ? "Last validation failed"
@@ -87,7 +105,7 @@ export function DataSources({ readOnly = false }: { readOnly?: boolean }) {
         : provider.last_validated_at ? "Validated"
         : provider.configured ? "Key configured" : "Keyless access";
       return <section className="panel padded metadata-provider source-provider" key={provider.provider} aria-label={`${provider.name} connection`}>
-      <div className="source-provider-heading"><h2>{provider.name}</h2><Status tone={!provider.enabled?"neutral":needsKey||expired||coolingDown||provider.validation_error||provider.recent_error?"warning":provider.automatic?"success":"neutral"}>{recovery}</Status></div>
+      <div className="source-provider-heading"><h2>{provider.name}</h2><Status tone={recovery.tone}>{recovery.label}</Status></div>
       <p className="source-authentication">Authentication · {auth}</p>
       {provider.enabled && (needsKey || expired) && <p className="source-action-note">
         {provider.validation_pending ? "A key check is queued."
