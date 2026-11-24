@@ -323,7 +323,7 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
             />
           )}{" "}
           {page === "account" && (
-            <Account readOnly={readOnly} userId={user.id} openCompanion={()=>setPage('companion')}
+            <Account readOnly={readOnly} userId={user.id} openCompanion={()=>navigate('/companion?setup=1')}
               signedOut={signedOut}
             />
           )}

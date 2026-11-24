@@ -1,0 +1,77 @@
+name: market-ux-review
+x-limits: &limits
+  cpus: 1
+  mem_limit: 512m
+  pids_limit: 128
+  logging: {driver: json-file, options: {max-size: 2m, max-file: "2"}}
+  security_opt: [no-new-privileges:true]
+services:
+  db:
+    <<: *limits
+    image: postgres:17-alpine
+    command: [postgres, -c, max_wal_size=64MB, -c, min_wal_size=32MB, -c, checkpoint_timeout=60s]
+    environment:
+      POSTGRES_USER: market
+      POSTGRES_DB: market_test
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Review database password required}
+    # Disposable, size-bounded PostgreSQL filesystem. Re-seed after a database restart.
+    tmpfs: [/var/lib/postgresql/data:size=768m]
+    mem_limit: 1024m
+    healthcheck:
+      test: [CMD, pg_isready, -U, market, -d, market_test]
+      interval: 3s
+      retries: 20
+  preview-api:
+    <<: *limits
+    image: market-ux-review-api:${REVIEW_TAG:-candidate}
+    build: {context: ., dockerfile: backend/Dockerfile}
+    depends_on: {db: {condition: service_healthy}}
+    environment:
+      DATABASE_URL: postgresql+psycopg://market:${POSTGRES_PASSWORD}@db:5432/market_test
+      APP_ORIGIN: https://localhost:18444
+      COOKIE_SECURE: "true"
+      SESSION_COOKIE_NAME: market_ux_review_session
+      SYNC_CURSOR_SECRET: ${SYNC_CURSOR_SECRET:?Review sync secret required}
+      COMPANION_UPDATER_PUBLIC_KEY: ${COMPANION_UPDATER_PUBLIC_KEY}
+      COMPANION_PRIVATE_BETA_DIRECTORY: /review-beta
+      MARKET_UX_REVIEW: "true"
+      BACKUP_MANAGEMENT_ENABLED: "true"
+      BACKUP_MANAGER_TOKEN_FILE: /review-token
+      MAX_DATABASE_BYTES: "268435456"
+    command: [sh, -ec, 'alembic upgrade head && exec uvicorn market.app:app --host 0.0.0.0 --port 8000 --no-proxy-headers']
+    volumes: [./.local/review/beta:/review-beta:ro, ./.local/review/backup-token:/review-token:ro]
+    read_only: true
+    tmpfs: [/tmp:size=32m]
+  backup-manager:
+    <<: *limits
+    image: node:24-bookworm-slim
+    user: node
+    command: [node, /fixture/backup-fixture.mjs]
+    read_only: true
+    mem_limit: 96m
+    cpus: 0.15
+    volumes:
+      - ./deploy/review/backup-fixture.mjs:/fixture/backup-fixture.mjs:ro
+      - ./web/e2e/storage-dashboard-fixtures.ts:/fixture/storage-dashboard-fixtures.ts:ro
+      - ./.local/review/backup-token:/review-token:ro
+  proxy:
+    <<: *limits
+    image: market-ux-review-web:${REVIEW_TAG:-candidate}
+    build: {context: ., dockerfile: deploy/web.Dockerfile}
+    depends_on: [preview-api]
+    cpus: 0.25
+    mem_limit: 128m
+    networks: [default, review-ingress]
+    ports: ["127.0.0.1:18444:443"]
+    volumes:
+      - ./deploy/Caddyfile.preview:/etc/caddy/Caddyfile:ro
+      - ./deploy/routes.preview.caddy:/etc/caddy/routes.preview.caddy:ro
+      - review-ca:/data
+    read_only: true
+    tmpfs: [/tmp:size=16m, /config:size=4m]
+volumes:
+  review-ca:
+networks:
+  default:
+    internal: true
+  review-ingress: {}

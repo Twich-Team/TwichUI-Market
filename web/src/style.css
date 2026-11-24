@@ -2010,3 +2010,13 @@ a.secondary { display:inline-block; padding:10px 14px; border:1px solid var(--bo
   .mobile-admin-section {display:grid; margin:12px 0 18px}
   .mobile-admin-section select {width:100%; min-width:0}
 }
+/* Newly loaded page titles receive focus for announcements. Interactive controls keep their focus ring. */
+main h1[tabindex="-1"]:focus {outline:0}
+:where(button) {background:#31251d; color:#eadac2; border:1px solid #786044; border-radius:4px}
+@media (max-width:700px) {
+  .companion-steps {display:grid; grid-template-columns:1fr 1fr; gap:4px; padding-bottom:12px; margin-bottom:14px}
+  .companion-steps button {font-size:.92rem;min-height:44px}
+  .companion-installer .companion-download {margin-top:4px}
+  .windows-page-link summary {min-height:44px;align-content:center}
+  .companion-step {min-height:0}
+}

@@ -49,7 +49,8 @@ interface PrivateBeta extends Release {
 }
 export function CompanionSetup({ user }: { user: User }) {
   const key = `market-companion-setup-v1:${user.id}`;
-  const [progress, setProgress] = useState(() => restore(key)),
+  const requestedSetup = new URLSearchParams(location.search).get("setup") === "1";
+  const [progress, setProgress] = useState<SetupProgress>(() => requestedSetup ? {schema_version:1,step:0,since:Date.now()} : restore(key)),
     [storageError, setStorageError] = useState(""),
     [pollUntil, setPollUntil] = useState(() =>
       restore(key).step >= 2 ? Date.now() + 5 * 60_000 : 0,
@@ -104,7 +105,7 @@ export function CompanionSetup({ user }: { user: User }) {
   const connected = current[0];
   const synced = current.filter(device => device.last_sync_at)
     .sort((a,b) => Date.parse(b.last_sync_at!) - Date.parse(a.last_sync_at!))[0];
-  const [editingSetup,setEditingSetup] = useState(false);
+  const [editingSetup,setEditingSetup] = useState(requestedSetup);
   const [channel,setChannel] = useState<"stable"|"beta">("stable");
   const [copied,setCopied] = useState(false);
   const selected = bootstrap.data?.markets.find(

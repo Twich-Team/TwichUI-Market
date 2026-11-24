@@ -217,7 +217,10 @@ def login(body: Login, request: Request, response: Response, db: Session = Depen
 
 @app.get('/api/v1/environment')
 def environment(user: User=Depends(identity)):
-    return {'read_only':settings.READ_ONLY,'origin':ORIGIN}
+    result = {'read_only':settings.READ_ONLY,'origin':ORIGIN}
+    if os.environ.get('MARKET_UX_REVIEW') == 'true':
+        result['review_fixtures'] = True
+    return result
 
 
 @app.get("/api/v1/auth/me")

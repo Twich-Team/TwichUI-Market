@@ -182,7 +182,7 @@ test("system-browser approval route survives login, delivers a one-use code and 
     await page.goto("/companion");
     await page.locator(".companion-steps button").nth(3).click();
     await expect(
-      page.getByText("Waiting for first sync", { exact: true }),
+      page.locator(".companion-recent").getByText("Waiting for first sync", { exact: true }),
     ).toBeVisible();
     const headers = { Authorization: `Bearer ${grant.access_token}` };
     const first = await (
