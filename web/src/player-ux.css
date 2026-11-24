@@ -551,6 +551,14 @@
     grid-column: 1 / -1;
   }
 
+  .mobile-item-heading {
+    grid-template-columns: 44px minmax(0, 1fr);
+  }
+
+  .mobile-item-heading .item-info-trigger {
+    min-width: 44px;
+  }
+
   .mobile-item-heading .select-item {
     display: flex;
     align-items: center;

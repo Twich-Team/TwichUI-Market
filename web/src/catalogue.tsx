@@ -510,7 +510,7 @@ export function Variants({
           </button>
         </>}
         emptyMessage={pricedOnly ? "No variants with a buyout. Change the filter to see all variants." : "No variants are listed in this snapshot."}
-        toolbar={<label className="variant-filter">Show
+        toolbar={<label className="variant-filter">Filter variants
           <select aria-label="Filter variants" value={pricedOnly ? "priced" : "all"} onChange={(event) => {
             changeComparison({ pricedOnly: event.target.value === "priced", pageIndex: 0 });
           }}>
