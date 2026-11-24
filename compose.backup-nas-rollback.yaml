@@ -411,6 +411,52 @@
           "read_only": false
         }
       ]
+    },
+    "monitor": {
+      "image": "sha256:9712cd35a1f669343d20d42598717d0fcb370a4c358d3edb4c35f807b0d9295c",
+      "env_file": [
+        ".local/backup-nas/production/monitor.env"
+      ],
+      "command": [
+        "python",
+        "-m",
+        "market.storage"
+      ],
+      "restart": "unless-stopped",
+      "read_only": true,
+      "mem_limit": 134217728,
+      "memswap_limit": 268435456,
+      "cpus": 0.25,
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-file": "2",
+          "max-size": "5m"
+        }
+      },
+      "networks": [
+        "default"
+      ],
+      "tmpfs": [
+        "/tmp:size=16m"
+      ],
+      "volumes": [
+        {
+          "type": "volume",
+          "source": "twichui-market_market-data",
+          "target": "/database-filesystem",
+          "read_only": true
+        },
+        {
+          "type": "bind",
+          "source": "/home/marketdev/projects/TwichUI-Market/.local/retention-recovery",
+          "target": "/retention-recovery",
+          "read_only": true
+        }
+      ]
     }
   },
   "networks": {
