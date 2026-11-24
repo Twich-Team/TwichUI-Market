@@ -379,6 +379,10 @@ class StorageConfiguration:
                     results.append(dict(filename=name,status='deleted'))
                 except FileNotFoundError:results.append(dict(filename=name,status='already_missing'))
                 except Exception:results.append(dict(filename=name,status='retained',error='Original could not be safely removed'))
+            with self.location(plan['source_id']):remaining,_=self.rows_current()
+            if not remaining and self.get(db,'storage_previous')==plan['source_id']:
+                self.set(db,'storage_previous',None)
+                self.receipt(db,actor,'storage.previous.retired',dict(storage_id=plan['source_id'],migration_id=job_id))
             self.receipt(db,actor,'migration.originals.result',dict(job_id=job_id,results=results))
             return dict(results=results)
 

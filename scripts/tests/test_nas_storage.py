@@ -269,3 +269,13 @@ class NASStorage(unittest.TestCase):
         self.manager.original_cleanup_queue('admin:1',migration['id'],'REMOVE VERIFIED ORIGINALS',True,True)
         self.manager.close();self.manager=Manager(self.local,Path(self.temp.name)/'state',require_mount=False)
         self.assertEqual(self.manager.storage_status()['original_cleanup']['status'],'interrupted')
+
+    def test_verified_original_cleanup_retires_empty_previous_nas(self):
+        self.archive();self.assertEqual(self.migrate()['status'],'succeeded')
+        self.assertTrue(self.manager.storage_test('admin:1','local')['healthy'])
+        plan=self.manager.migration_plan('local');queued=self.manager.migration_queue('admin:1','local',plan)
+        result=self.manager.migrate('admin:1',queued['id']);self.assertEqual(result['status'],'succeeded',result)
+        removed=self.manager.migration_remove_originals('admin:1',result['id'],'REMOVE VERIFIED ORIGINALS',confirm_protected=True)
+        self.assertEqual(removed['results'][0]['status'],'deleted')
+        with patch('storage_config.SMB',side_effect=StorageError('Old NAS is offline')) as old:
+            self.assertFalse(self.manager.overview()['inventory_stale']);old.assert_not_called()
