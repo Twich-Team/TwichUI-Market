@@ -37,7 +37,7 @@ export function safeBrowseUrl(value:unknown):string|null {
   if(typeof value!=='string'||value.length>2048||!value.startsWith('/')||value.startsWith('//')||/[\\\r\n]/.test(value))return null;
   const u=new URL(value,'https://market.invalid');
   if(u.origin!=='https://market.invalid'||!['/','/deals'].includes(u.pathname))return null;
-  const allowed=u.pathname==='/'?['market','q','sort','direction','page','page_size']:['market','mode','change','spend','coverage','confidence','direction'];
+  const allowed=u.pathname==='/'?['market','q','sort','direction','page','page_size']:['market','mode','change','spend','coverage','confidence','direction','page'];
   const p=new URLSearchParams();for(const k of allowed){const v=u.searchParams.get(k);if(v!==null)p.set(k,v.slice(0,64));}
   return u.pathname+(p.size?'?'+p:'');
 }

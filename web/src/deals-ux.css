@@ -1,0 +1,55 @@
+.deals-view { max-width: 76rem; }
+.deals-view h1 { margin-bottom: .65rem; }
+.deal-modes { display: inline-grid; grid-template-columns: repeat(3, minmax(0, 1fr)); padding: .18rem; border: 1px solid var(--border, #655039); border-radius: .55rem; background: #211b16; }
+.deal-modes button { border: 0; background: transparent; min-height: 44px; padding: .45rem 1rem; border-radius: .36rem; color: #decfba; }
+.deal-modes button[aria-selected=true] { color: #fff0d3; background: #4a3828; box-shadow: inset 0 0 0 1px #927044; }
+.deal-controls.panel { margin: .85rem 0; padding: 0 .95rem; }
+.deal-filter-toggle { color: inherit; background: transparent; border: none; padding: .5rem 0; width: 100%; min-height: 44px; display:flex; align-items: center; gap:.75rem; text-align: left; }
+.deal-filter-toggle span, .deal-note, .deal-variant, .deals-view .muted, .fixture-label { color: #d2c0a8; font-size: .9rem; }
+.deal-filter-toggle b { margin-left: auto; color: #e5c38a; }
+.deal-filter-form:not([hidden]) { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(10rem, 100%), 1fr)); align-items: end; gap: .7rem; padding: .65rem 0 1rem; }
+.deal-filter-form label { display: grid; gap: .35rem; min-width: 0; }
+.deal-filter-form :is(input,select,button) { min-width: 0; width: 100%; min-height: 44px; }
+.deal-result-heading, .deal-actions, .deal-pager, .deal-heading { display:flex; align-items:center; justify-content:space-between; gap:.65rem; }
+.deal-result-heading h2, .deal-heading h3 { margin:0; }
+.deal-result-heading h2 { font-size:1.4rem; }
+.deal-result-heading { margin: 1.15rem 0 .3rem; }
+.deal-list { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,28rem),1fr)); align-items:start; gap:.8rem; margin-top:.75rem; }
+.deal-list .deal { display:block; min-width:0; margin:0; padding:1rem; }
+.deal-heading { align-items:flex-start; }
+.deal-heading h3 { font-size:1.17rem; }
+.deal-heading > div { min-width:0; }
+.deal-heading .item-name, .deal-heading .item-trigger { white-space:normal; overflow-wrap:anywhere; }
+.deal-variant { display:block; margin-top:.2rem; overflow-wrap:anywhere; }
+.deal-review { color:#ead8b6; font-weight:600; font-size:.9rem; }
+.deal-stack-id { display:block; font-size:.85rem; color:#d2c0a8; overflow-wrap:anywhere; white-space:normal; }
+.deal-change { color:#edd09a; font-variant-numeric: tabular-nums; }
+.deal-metrics { display:grid; grid-template-columns: repeat(auto-fit, minmax(min(9rem, 100%), 1fr)); gap: .65rem 1rem; margin:.85rem 0 .5rem; }
+.deal-metrics div { min-width:0; }
+.deal-metrics dt { color:#d2c0a8; line-height:1.3; font-size:.87rem; }
+.deal-metrics dd { color:#fff1dc; margin:.2rem 0 0; overflow-wrap:anywhere; }
+.deals-view .currency, .deals-view .currency > span[aria-hidden], .deals-view .currency > span[aria-hidden=true] { white-space:normal; flex-wrap:wrap; }
+.deals-view .currency-part { display:inline-flex; white-space:nowrap; }
+.deal-note { margin:.5rem 0; line-height:1.45; }
+.deal-actions { border-top:1px solid #524535; margin-top:.65rem; flex-wrap:wrap; }
+.deal-actions a,.deal-actions button, .deal-pager button { min-height:44px; display:inline-flex; align-items:center; padding:.3rem .15rem; }
+.deal-actions a { color:#f1cf96; }
+.deal-pager { justify-content:center; margin:.8rem 0; }
+.deal-pager button { padding:.35rem .8rem; }
+.deals-view .deal .table-scroll table { min-width:0; width:100%; }
+.deals-view .deal .table-scroll-hint { display:none; }
+@media(max-width:700px) {
+  .deal-modes { width:100%; }
+  .deal-modes button { font-size:.9rem; padding:.3rem .15rem; }
+  .deal-filter-form:not([hidden]) { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .deal-filter-form .market-select, .deal-filter-form label:has(select), .deal-filter-form button { grid-column:1 / -1; }
+  .deal-filter-form :is(input,select) { font-size:16px; }
+  .deal-filter-toggle { gap:.5rem; }
+  .deal-result-heading { margin-top:.75rem; }
+  .deal-list .deal { padding:.8rem; }
+  .deal-heading { flex-wrap:wrap; gap:.25rem .6rem; }
+  .deal-heading .deal-review { width:100%; }
+  .deal-metrics { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .deal-actions { align-items:center; }
+  .deal-actions a,.deal-actions button { font-size:.9rem; }
+}
