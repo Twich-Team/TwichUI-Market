@@ -39,6 +39,7 @@ case "${1:-status}" in
     reviewed=$(dc exec -T db psql -U market -d market_test -Atc "SELECT count(*) FROM users WHERE active AND username IN ('review_member','review_admin')")
     stock=$(dc exec -T db psql -U market -d market_test -Atc "SELECT count(*) FROM users WHERE active AND (username IN ('owner','member_fixture') OR username LIKE 'prefs_%')")
     [ "$reviewed" = 2 ] && [ "$stock" = 0 ] || { echo "Review bootstrap is incomplete; inspect the private database." >&2; exit 1; }
+    dc exec -T preview-api python - < scripts/seed-market-ux-activity.py
     dc up -d --no-deps proxy
     dc cp proxy:/data/caddy/pki/authorities/local/root.crt "$review/preview-root.crt"
     curl --retry 5 --retry-all-errors --retry-delay 1 --max-time 10 -fsS --cacert "$review/preview-root.crt" https://localhost:18444/api/v1/health ;;
