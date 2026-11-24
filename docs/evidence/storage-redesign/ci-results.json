@@ -1,0 +1,31 @@
+{
+  "application_commit": "1137602dd7d7c1fb2917b7df2f2b3f7d204200c5",
+  "test_commit": "8d12051a95f410b1204c6dec24f5088add731069",
+  "notice": "Final closing commit changes only review evidence and the independently exercised baseline-only screenshot fixture; application code is unchanged.",
+  "workflows": [
+    {
+      "name": "Backend",
+      "run_id": 45469809879,
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45469809879"
+    },
+    {
+      "name": "Private website",
+      "run_id": 45469810015,
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45469810015"
+    },
+    {
+      "name": "Native NAS storage",
+      "run_id": 45469810010,
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45469810010"
+    },
+    {
+      "name": "Windows companion",
+      "run_id": 45469810364,
+      "conclusion": "success",
+      "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45469810364"
+    }
+  ]
+}

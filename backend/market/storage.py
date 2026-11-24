@@ -44,7 +44,10 @@ def history(db):
     rows=list(db.scalars(select(StorageMeasurement).order_by(StorageMeasurement.sampled_at)))
     elapsed=(rows[-1].sampled_at-rows[0].sampled_at).total_seconds() if len(rows)>1 else 0
     delta=rows[-1].database_bytes-rows[0].database_bytes if elapsed else None
-    return {'samples':[{'sampled_at':r.sampled_at,'database_bytes':r.database_bytes} for r in rows],
+    return {'samples':[{'sampled_at':r.sampled_at,'database_bytes':r.database_bytes,
+                       'filesystem_available_bytes':r.filesystem_available_bytes,
+                       'retention_eligible_rows':r.retention_eligible_rows,
+                       'retention_processed_rows':r.retention_processed_rows} for r in rows],
             'delta_bytes':delta,'elapsed_seconds':elapsed,
             'bytes_per_day':round(delta*86400/elapsed) if elapsed else None,
             'retention_days':90,'interval_seconds':3600,

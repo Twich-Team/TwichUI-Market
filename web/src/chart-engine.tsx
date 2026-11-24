@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import * as echarts from "echarts/core";
-import { LineChart, BarChart } from "echarts/charts";
+import { LineChart, BarChart, PieChart } from "echarts/charts";
 import {
   GridComponent,
   TooltipComponent,
@@ -13,6 +13,7 @@ import type { EChartsCoreOption } from "echarts/core";
 echarts.use([
   LineChart,
   BarChart,
+  PieChart,
   GridComponent,
   TooltipComponent,
   DataZoomComponent,
@@ -24,20 +25,25 @@ export default function ChartEngine({
   option,
   label,
   onZoom,
+  onSelect,
 }: {
   option: EChartsCoreOption;
   label: string;
   onZoom?: (start: number, end: number) => void;
+  onSelect?: (index: number) => void;
 }) {
   const container = useRef<HTMLDivElement>(null),
     chart = useRef<echarts.EChartsType | null>(null),
     zoomCallback = useRef(onZoom);
   zoomCallback.current = onZoom;
+  const selectCallback = useRef(onSelect);
+  selectCallback.current = onSelect;
   useEffect(() => {
     const instance = echarts.init(container.current!, undefined, {
       renderer: "canvas",
     });
     chart.current = instance;
+    instance.on("click", (event) => {if(typeof event.dataIndex === "number") selectCallback.current?.(event.dataIndex);});
     instance.on("datazoom", (event) => {
       const zoom = event as {
         start?: number;

@@ -85,7 +85,8 @@ class Handler(BaseHTTPRequestHandler):
                 offset, limit = int(query.get('offset', ['0'])[0]), int(query.get('limit', ['20'])[0])
                 if not 0 <= offset <= 100000 or not 1 <= limit <= 100:
                     raise Refused('Invalid pagination')
-                self.reply(200, manager.overview(offset, limit))
+                filters={key:values[0] for key,values in query.items() if key not in ('offset','limit')}
+                self.reply(200, manager.overview(offset, limit, filters))
             elif url.path == '/storage' and self.command == 'GET':
                 self.reply(200,manager.storage_status())
             elif url.path == '/storage/save' and self.command == 'POST':

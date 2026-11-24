@@ -6,6 +6,8 @@ import re
 import urllib.request
 import urllib.error
 from typing import Annotated
+from typing import Literal
+from urllib.parse import urlencode
 from fastapi import APIRouter, Depends, HTTPException, Path as ApiPath, Query
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, ConfigDict, Field
@@ -100,8 +102,18 @@ def mutation(db, user, action, path, body):
 
 
 @router.get('')
-def inventory(offset: int = Query(0, ge=0, le=100000), limit: int = Query(20, ge=1, le=100), user: User = Depends(admin)):
-    return connect(user.id, f'/overview?offset={offset}&limit={limit}')
+def inventory(offset: int = Query(0, ge=0, le=100000), limit: int = Query(20, ge=1, le=100),
+              search: str = Query('',max_length=190), storage_id: str = Query('',pattern=r'^(local|[a-f0-9]{32})?$'),
+              protection: Literal['all','protected','unprotected'] = 'all',
+              verification: Literal['all','restored','integrity','unknown'] = 'all',
+              backup_type: Literal['all','scheduled','manual','release','restore-verification','legacy','unknown'] = 'all',
+              sort: Literal['created_desc','created_asc','bytes_desc','bytes_asc'] = 'created_desc',
+              user: User = Depends(admin)):
+    filters={key:value for key,value in dict(search=search,storage_id=storage_id,protection=protection,
+        verification=verification,backup_type=backup_type,sort=sort).items()
+        if value and value!='all' and not (key=='sort' and value=='created_desc')}
+    suffix='&'+urlencode(filters) if filters else ''
+    return connect(user.id, f'/overview?offset={offset}&limit={limit}'+suffix)
 
 
 @router.post('/policy')

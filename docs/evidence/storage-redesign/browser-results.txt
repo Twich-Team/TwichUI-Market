@@ -1,0 +1,22 @@
+
+Running 17 tests using 1 worker
+
+  ✓   1 e2e/storage-dashboard.spec.ts:37:1 › storage dashboard: overview, routes/history, dialogs, filters, safeguards and screenshots (15.2s)
+  ✓   2 e2e/storage-dashboard.spec.ts:56:1 › actual operation states, failures, stale and empty observations are explicit (2.7s)
+  ✓   3 e2e/storage-dashboard.spec.ts:60:2 › honest local-healthy presentation (1.4s)
+  ✓   4 e2e/storage-dashboard.spec.ts:60:2 › honest backup-running presentation (1.5s)
+  ✓   5 e2e/storage-dashboard.spec.ts:60:2 › honest nas-disconnected presentation (1.6s)
+  ✓   6 e2e/storage-dashboard.spec.ts:60:2 › honest capacity-warning presentation (1.4s)
+  ✓   7 e2e/storage-dashboard.spec.ts:60:2 › honest backup-failed presentation (1.5s)
+  ✓   8 e2e/storage-dashboard.spec.ts:60:2 › honest restore-expired presentation (1.5s)
+  ✓   9 e2e/storage-dashboard.spec.ts:60:2 › honest cleanup-paused presentation (1.5s)
+  ✓  10 e2e/storage-dashboard.spec.ts:60:2 › honest migration-failed presentation (1.6s)
+  ✓  11 e2e/storage-dashboard.spec.ts:60:2 › honest migration-interrupted presentation (1.6s)
+  ✓  12 e2e/storage-dashboard.spec.ts:60:2 › honest migration-completed presentation (1.4s)
+  ✓  13 e2e/storage-dashboard.spec.ts:60:2 › honest empty-history presentation (1.1s)
+  ✓  14 e2e/storage-dashboard.spec.ts:60:2 › honest stale-inventory presentation (1.5s)
+  ✓  15 e2e/storage-dashboard.spec.ts:81:1 › subsystem failure leaves other monitoring and navigation available (1.0s)
+  ✓  16 e2e/storage-dashboard.spec.ts:85:2 › all detail pages and dialogs remain usable at narrow desktop widths (13.2s)
+  ✓  17 e2e/storage-dashboard.spec.ts:91:1 › phone service errors preserve readable metrics without horizontal overflow (1.3s)
+
+  17 passed (52.7s)

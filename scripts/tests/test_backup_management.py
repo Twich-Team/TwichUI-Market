@@ -61,6 +61,89 @@ class Backups(unittest.TestCase):
         self.assertNotIn('database_bytes',data)
         self.assertEqual(data['total_bytes'],sum(p.stat().st_size for p in self.root.glob('*.dump')))
 
+    def test_dashboard_filters_apply_before_pagination_and_preserve_global_totals(self):
+        self.archive('protected-large','2026-11-02T01:00:00+00:00',origin='manual',protected=True,restored=True)
+        self.archive('scheduled','2026-11-03T01:00:00+00:00')
+        self.archive('other','2026-11-01T01:00:00+00:00',origin='manual')
+        data=self.manager.overview(0,1,dict(protection='protected',verification='restored',backup_type='manual',storage_id='local',search='PROTECTED'))
+        self.assertEqual((data['total'],data['matched_total'],len(data['items'])),(3,1,1))
+        self.assertEqual(data['items'][0]['filename'],'market-protected-large.dump')
+        self.assertEqual(self.manager.overview(0,1,dict(sort='created_asc'))['items'][0]['filename'],'market-other.dump')
+        self.assertEqual(self.manager.overview(0,1,dict(sort='bytes_desc'))['items'][0]['filename'],'market-protected-large.dump')
+        self.assertEqual(data['inventory_by_storage']['local']['count'],3)
+        with self.assertRaises(Refused):self.manager.overview(filters={'sort':'DROP TABLE'})
+        with self.assertRaises(Refused):self.manager.overview(filters={'storage_id':'../../secret'})
+
+    def test_dashboard_filtered_stale_cache_does_not_return_another_query(self):
+        self.archive('A','2026-11-02T01:00:00+00:00')
+        self.archive('B','2026-11-03T01:00:00+00:00')
+        self.manager.overview(filters=dict(search='market-A'))
+        self.manager.overview(filters=dict(search='market-B'))
+        with patch.object(self.manager,'measured_overview',side_effect=Refused('busy')):
+            data=self.manager.overview(filters=dict(search='market-A'))
+            self.assertTrue(data['inventory_stale'])
+            self.assertEqual([r['filename'] for r in data['items']],['market-A.dump'])
+            with self.assertRaises(Refused):self.manager.overview(filters=dict(search='uncached'))
+
+    def test_busy_cached_inventory_can_have_a_completed_job_until_remeasured(self):
+        self.archive('old','2026-11-02T01:00:00+00:00')
+        # Browser and external observer use independently cached page sizes.
+        browser=self.manager.overview(0,100)
+        new_id,_=self.archive('new','2026-11-03T01:00:00+00:00')
+        with self.manager.db() as db:
+            self.manager.set(db,'job',dict(id='completed-job',status='succeeded',backup_id=new_id))
+        observer=self.manager.overview(0,20)
+        self.assertEqual(observer['total'],2)
+        # A concurrent measurement/operation owns the real coordination lock.
+        # A terminal job alone is not evidence the older inventory is current.
+        with self.manager.lock():
+            stale=self.manager.overview(0,100)
+        self.assertTrue(stale['inventory_stale'])
+        self.assertEqual(stale['service_status'],'operation_busy')
+        self.assertEqual(stale['job']['status'],'succeeded')
+        self.assertEqual(stale['items'],[dict(row,eligible=False,reason='Operation busy; refresh after completion') for row in browser['items']])
+        self.assertFalse(any(row['id']==new_id for row in stale['items']))
+        fresh=self.manager.overview(0,100)
+        self.assertFalse(fresh['inventory_stale'])
+        self.assertTrue(any(row['id']==new_id for row in fresh['items']))
+
+    def test_dashboard_reliability_uses_bounded_recorded_outcomes(self):
+        with self.manager.db() as db:
+            self.assertEqual(self.manager.reliability(db)['days'],[])
+            self.manager.receipt(db,'scheduler','backup.published',dict(id='a'*32,manifest=dict(origin='scheduled',bytes=100)))
+            self.manager.receipt(db,'scheduler','backup.failed',dict(id='b'*32))
+            result=self.manager.reliability(db)
+            self.assertEqual(result['days'][0]['succeeded'],1)
+            self.assertEqual(result['days'][0]['failed'],1)
+            self.assertFalse(result['schedule_history_available'])
+            self.assertTrue(all(r['origin']=='scheduled' for r in result['attempts']))
+            self.assertFalse(result['truncated'])
+            db.executemany('INSERT INTO receipts VALUES (?,?,?,?,?)',[(str(i),result['attempts'][0]['at'],'scheduler','backup.failed','{}') for i in range(1000)])
+            result=self.manager.reliability(db)
+            self.assertTrue(result['truncated'])
+            self.assertEqual(len(result['attempts']),200)
+            self.assertEqual(sum(day['succeeded']+day['failed'] for day in result['days']),1000)
+
+    def test_dashboard_physical_inventory_counts_retained_migration_copies(self):
+        from contextlib import nullcontext
+        self.archive('same','2026-11-02T01:00:00+00:00')
+        entries,_=self.manager.rows_current()
+        nas='a'*32
+        with self.manager.db() as db:self.manager.set(db,'storage_previous','local')
+        with patch.object(self.manager,'configs',return_value=({'local':{'name':'Local'},nas:{'name':'NAS'}},nas)), \
+             patch.object(self.manager,'location',side_effect=lambda _:nullcontext()), \
+             patch.object(self.manager,'rows_current',side_effect=[([dict(row) for row in entries],[]),([dict(row) for row in entries],[])]):
+            rows,_=self.manager.rows()
+        self.assertEqual(len(rows),1)
+        self.assertEqual(rows[0]['storage_id'],nas)
+        self.assertEqual(self.manager._inventory_by_storage[nas]['count'],1)
+        self.assertEqual(self.manager._inventory_by_storage['local']['count'],1)
+        self.assertEqual(self.manager._inventory_by_storage[nas]['bytes'],self.manager._inventory_by_storage['local']['bytes'])
+        with patch.object(self.manager,'rows_current',return_value=([dict(entries[0],bytes=None)],[])):
+            self.manager.rows()
+        self.assertEqual(self.manager._inventory_by_storage['local']['count'],1)
+        self.assertIsNone(self.manager._inventory_by_storage['local']['bytes'])
+
     def test_keep_two_preview_and_rotation_deletes_only_a(self):
         a=self.archive('A','2026-11-01T00:00:00+00:00')
         b=self.archive('B','2026-11-02T00:00:00+00:00')

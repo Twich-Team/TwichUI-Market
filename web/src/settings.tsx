@@ -1,11 +1,9 @@
-import { StorageOperationsPanel, type StorageOperations } from "./storage-operations";
+import type { StorageOperations } from "./storage-operations";
+import { StorageDashboard, useStorageSummary } from "./storage-dashboard";
+import { navigate, useLocation } from "./navigation";
 import { Loading } from "./loading";
 import { AdministrationOverview } from "./admin-overview";
 import type { MetadataOverview } from "./metadata-admin";
-import { MaintenanceHealth } from './maintenance-health';
-import { BackupStorage } from './backup-storage';
-import { BackupManagement } from "./backup-management";
-import { DatabaseGrowth } from "./storage-growth";
 import { formatBytes as bytes } from "./size";
 import { MemberArchive } from "./member-archive";
 import { CollectionHistory, SecurityHistory } from "./admin-histories";
@@ -13,7 +11,6 @@ import { LocalTime } from "./admin-table";
 import { DataSources, ItemMetadataAdmin } from "./metadata-admin";
 import { MyPreferences } from "./user-preferences";
 import { MarketConfiguration } from "./market-configuration";
-import { RetentionControls } from "./retention-controls";
 import { CompanionDevices } from "./companion-devices";
 import { useState } from "react";
 import { DataTable } from "./data-table";
@@ -315,7 +312,13 @@ export function Administration({
   readOnly?: boolean;
 }) {
   const [includeArchived, setIncludeArchived] = useState(false);
-  const [tab, setTab] = useState(new URLSearchParams(location.search).get("metadata_view")==="tracker"?"metadata":"overview"),
+  const url = useLocation();
+  const params = new URLSearchParams(url.split("?")[1] || "");
+  const requestedTab = params.get("admin_tab");
+  const tab = requestedTab && ["overview","members","markets","collection","storage","devices","security","metadata","sources"].includes(requestedTab) ? requestedTab : params.get("metadata_view")==="tracker"?"metadata":"overview";
+  function setTab(value:string) {const next=new URLSearchParams(location.search);next.set("admin_tab",value);navigate("/administration?"+next);}
+  const storageQuery = useStorageSummary(tab === "overview");
+  const
     [message, setMessage] = useState(""),
     [error, setError] = useState(""),
     [invitation, setInvitation] = useState(""),
@@ -327,7 +330,6 @@ export function Administration({
         users,
         invitations,
         devices,
-        storage,
         enrichment,
         deviceSummary,
         coverage,
@@ -335,7 +337,6 @@ export function Administration({
         api<User[]>(`/admin/users?include_archived=${includeArchived}`),
         api<Invitation[]>("/admin/invitations"),
         api<Device[]>("/admin/devices"),
-        api<Storage>("/admin/storage"),
         api<Enrichment>("/admin/item-enrichment"),
         api<{authorized:number;revoked:number;expired:number;recently_connected:number;authorized_names:string[];live_status:string}>("/companion/admin/device-summary"),
         api<MetadataOverview>("/admin/item-metadata"),
@@ -344,7 +345,6 @@ export function Administration({
         users,
         invitations,
         devices,
-        storage,
         enrichment,
         deviceSummary,
         coverage,
@@ -392,6 +392,7 @@ export function Administration({
     });
   return (
     <>
+      {tab!=="storage"&&<>
       <div className="eyebrow">KEEP THE LEDGER RUNNING</div>
       <div className="title-row">
         <div>
@@ -404,6 +405,7 @@ export function Administration({
           Invite a friend
         </button>
       </div>
+      </>}
       {(error || data.error) && (
         <p className="notice error" role="alert">
           {error || data.error}
@@ -434,9 +436,12 @@ export function Administration({
       </div>
       {tab === "metadata" && <ItemMetadataAdmin markets={markets} readOnly={readOnly} />}
       {tab === "sources" && <DataSources readOnly={readOnly} />}
+      {tab === "storage" && <StorageDashboard readOnly={readOnly}/> }
       {state && (
         <>
-          {tab === "overview" && <AdministrationOverview storage={state.storage} coverage={state.coverage} devices={state.deviceSummary} markets={markets} open={setTab}/>}
+          {tab === "overview" && storageQuery.isPending && <Loading label="Loading storage summary…"/>}
+          {tab === "overview" && storageQuery.error && <p role="alert" className="notice error">Storage summary is unavailable. <button onClick={()=>void storageQuery.refetch()}>Retry storage summary</button></p>}
+          {tab === "overview" && storageQuery.data && <AdministrationOverview storage={storageQuery.data} coverage={state.coverage} devices={state.deviceSummary} markets={markets} open={setTab}/>}
           {tab === "members" && (
             <>
               <section className="panel padded">
@@ -597,104 +602,6 @@ export function Administration({
             />
           )}
           {tab === "collection" && <CollectionHistory markets={markets}/>}
-          {tab === "storage" && (
-            <>
-              <BackupManagement readOnly={readOnly}/>
-              <BackupStorage readOnly={readOnly}/>
-              <DatabaseGrowth samples={state.storage.growth.samples} current={state.storage.database_bytes}/>
-              <StorageOperationsPanel value={state.storage.operations} />
-              <MaintenanceHealth/>
-              <RetentionControls readOnly={readOnly} />
-              <section className="panel padded">
-                <h3>Database & historical retention</h3>
-                <dl>
-                  <dt>Database size</dt>
-                  <dd>{bytes(state.storage.database_bytes)}</dd>
-                  <dt>Measured change</dt>
-                  <dd>
-                    {state.storage.growth.delta_bytes === null
-                      ? "Waiting for two hourly measurements"
-                      : `${state.storage.growth.delta_bytes < 0 ? "−" : "+"}${bytes(Math.abs(state.storage.growth.delta_bytes))} over ${(state.storage.growth.elapsed_seconds / 86400).toFixed(1)} days`}
-                  </dd>
-                  <dt>Average daily change</dt>
-                  <dd>
-                    {state.storage.growth.bytes_per_day === null
-                      ? "Unavailable"
-                      : `${state.storage.growth.bytes_per_day < 0 ? "−" : "+"}${bytes(Math.abs(state.storage.growth.bytes_per_day))} per day`}
-                  </dd>
-                  <dt>Distinct snapshots</dt>
-                  <dd>{state.storage.snapshots.toLocaleString()}</dd>
-                  <dt>Fetch observations</dt>
-                  <dd>{state.storage.observations.toLocaleString()}</dd>
-                  <dt>Historical retention</dt>
-                  <dd>
-                    The saved policy and current maintenance state are shown
-                    above. Saving a proposal does not start deletion.
-                  </dd>
-
-                </dl>
-                <p>
-                  Operational logs have separate configurable retention.
-                  Historical listings are never treated as completed sales.
-                </p>
-                <p className="notice">
-                  Database size measures PostgreSQL allocation. Logical row
-                  removal permits reuse; filesystem space recovery is unknown.
-                </p>
-              </section>
-              <section className="panel padded">
-                <h3>Backups & restoration</h3>
-                <p className="small muted">Legacy operations receipts below describe the previous backup worker. Current archive availability, filesystem measurements and management controls are shown in Backup Management above.</p>
-                <dl>
-                  <dt>Legacy backup service</dt>
-                  <dd>{state.storage.backup.status.replaceAll("_", " ")}</dd>
-                  <dt>Legacy last successful dump</dt>
-                  <dd>{when(state.storage.backup.last_success)}</dd>
-                  <dt>Legacy restore rehearsal</dt>
-                  <dd>
-                    {when(state.storage.backup.last_restoration_verified_at)}
-                  </dd>
-                  <dt>Legacy archive size</dt>
-                  <dd>{bytes(state.storage.backup.bytes)}</dd>
-                </dl>
-                <p className="muted">
-                  Hourly database measurements are retained for 90 days. Changes
-                  include PostgreSQL allocation and maintenance, and do not
-                  predict future growth.
-                </p>
-                <details>
-                  <summary>Recent storage measurements</summary>
-                  <DataTable<{ sampled_at: string; database_bytes: number }>
-                    label="storage measurements"
-                    data={state.storage.growth.samples}
-                    getRowId={row=>row.sampled_at}
-                    initialSorting={[{ id: "sampled_at", desc: true }]}
-                    columns={[
-                      {
-                        accessorKey: "sampled_at",
-                        header: "Measured at",
-                        cell: ({ row }) => <LocalTime value={row.original.sampled_at}/>,
-                      },
-                      {
-                        accessorKey: "database_bytes",
-                        header: "Database allocation",
-                        meta: { numeric: true },
-                        cell: ({ row }) => bytes(row.original.database_bytes),
-                      },
-                    ]}
-                  />
-                </details>
-                {state.storage.backup.error && (
-                  <p className="notice error">{state.storage.backup.error}</p>
-                )}
-                <p>
-                  Local backups are managed by the operations service. An
-                  owner-managed encrypted off-host copy is still needed for
-                  disaster recovery.
-                </p>
-              </section>
-            </>
-          )}
           {tab === "devices" && (
             <section className="panel padded">
               <CompanionDevices userId={user.id} admin readOnly={readOnly} owners={Object.fromEntries(state.users.map(member=>[member.id,member.username]))}/>

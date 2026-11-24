@@ -274,30 +274,30 @@ test("administrator roles, disabled mappings, schedules, storage and security ev
     .getByRole("tab", { name: "Storage & backups", exact: true })
     .click();
   await expect(
-    page.getByRole("heading", { name: "Backups & restoration", exact: true }),
+    page.getByRole("heading", { name: "Storage & Backups", exact: true }),
   ).toBeVisible();
-  await expect(
-    page.getByRole("heading", {
-      name: "Historical retention policy",
-      exact: true,
-    }),
-  ).toBeVisible();
-  await expect(
-    page.getByText("+1.0 MiB over 1.0 days", { exact: true }),
-  ).toBeVisible();
-  await page.getByText("Recent storage measurements", { exact: true }).click();
+  const growth=page.getByRole('region',{name:'Database Growth',exact:true});
+  await expect(growth.getByText('Selected period change',{exact:true}).locator('..')).toContainText('+1.0 MiB');
+  await expect(growth.getByRole('combobox',{name:'Measurement range'})).toContainText('All available (1.0 days)');
+  await page.getByRole('navigation',{name:'Storage & Backups pages'}).getByRole('link',{name:'Maintenance',exact:true}).click();
+  await page.getByText('Advanced database & legacy diagnostics',{exact:true}).click();
+  await page.getByText('Recorded storage measurements',{exact:true}).click();
   await expect(
     page.getByRole("cell", { name: "11.0 MiB", exact: true }),
   ).toBeVisible();
-  await page
+  await page.getByRole('button',{name:'Edit Retention Policy',exact:true}).click();
+  const retention=page.getByRole('dialog',{name:'Edit Retention Policy',exact:true});
+  await expect(retention.getByRole('heading',{name:'Historical retention policy',exact:true})).toBeVisible();
+  await retention
     .getByRole("button", { name: "Preview retention impact", exact: true })
     .click();
   await expect(
-    page.getByRole("table", { name: "retention preview", exact: true }),
+    retention.getByRole("table", { name: "retention preview", exact: true }),
   ).toBeVisible();
   await expect(
-    page.getByRole("button", { name: "Apply confirmed batch", exact: true }),
+    retention.getByRole("button", { name: "Apply confirmed batch", exact: true }),
   ).toBeDisabled();
+  await retention.getByRole('button',{name:'Close retention policy',exact:true}).click();
   await page.getByRole("tab", { name: "Security events", exact: true }).click();
   await expect(
     page

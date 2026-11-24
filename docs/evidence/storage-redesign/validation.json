@@ -1,0 +1,121 @@
+{
+  "application_commit": "1137602dd7d7c1fb2917b7df2f2b3f7d204200c5",
+  "baseline": "c6946cd2fd106eff66c69e48357e360256e052da",
+  "fixture_provenance": "All UI screenshots use explicitly synthetic isolated route fixtures. They are not production metrics.",
+  "postgresql_tests": {
+    "passed": 776,
+    "seconds": 442.68
+  },
+  "operational_tests": {
+    "passed": 157,
+    "seconds": 25.385
+  },
+  "frontend_tests": {
+    "passed": 149
+  },
+  "dashboard_browser_tests": {
+    "passed": 17,
+    "seconds": 52.7
+  },
+  "baseline_screenshot_test": {
+    "passed": 1
+  },
+  "build": "TypeScript and production Vite passed; existing large ECharts chunk warning retained",
+  "screenshots": [
+    "backup-details.png",
+    "backup-failed.png",
+    "backup-policy.png",
+    "backup-running.png",
+    "backups-1280.png",
+    "backups-2560x1440.png",
+    "backups-320.png",
+    "backups-800.png",
+    "backups.png",
+    "before-storage.png",
+    "capacity-warning.png",
+    "cleanup-paused.png",
+    "empty-history.png",
+    "local-healthy.png",
+    "maintenance-1280.png",
+    "maintenance-2560x1440.png",
+    "maintenance-320.png",
+    "maintenance-800.png",
+    "maintenance.png",
+    "migration-completed.png",
+    "migration-failed.png",
+    "migration-interrupted.png",
+    "migration-progress.png",
+    "nas-configuration-1280.png",
+    "nas-configuration.png",
+    "nas-disconnected.png",
+    "nas-folders.png",
+    "overview-1280.png",
+    "overview-1920.png",
+    "overview-2560.png",
+    "overview-2560x1440.png",
+    "overview-800.png",
+    "overview-active-migration.png",
+    "overview-phone-unavailable.png",
+    "protected-delete.png",
+    "restore-expired.png",
+    "retention-policy.png",
+    "stale-inventory.png",
+    "storage-1280.png",
+    "storage-2560x1440.png",
+    "storage-320.png",
+    "storage-800.png",
+    "storage.png"
+  ],
+  "ci": {
+    "application_commit": "1137602dd7d7c1fb2917b7df2f2b3f7d204200c5",
+    "test_commit": "8d12051a95f410b1204c6dec24f5088add731069",
+    "notice": "Final closing commit changes only review evidence and the independently exercised baseline-only screenshot fixture; application code is unchanged.",
+    "workflows": [
+      {
+        "name": "Backend",
+        "run_id": 45469809879,
+        "conclusion": "success",
+        "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45469809879"
+      },
+      {
+        "name": "Private website",
+        "run_id": 45469810015,
+        "conclusion": "success",
+        "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45469810015"
+      },
+      {
+        "name": "Native NAS storage",
+        "run_id": 45469810010,
+        "conclusion": "success",
+        "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45469810010"
+      },
+      {
+        "name": "Windows companion",
+        "run_id": 45469810364,
+        "conclusion": "success",
+        "url": "https://github.com/Twich-Team/TwichUI-Market/actions/runs/45469810364"
+      }
+    ]
+  },
+  "layout_fixture_comparison": {
+    "baseline_height_px": 7143,
+    "overview_height_px": 1171,
+    "notice": "Synthetic fixture layout comparison. Each inventory response honors its requested page size."
+  },
+  "test_commit": "8d12051a95f410b1204c6dec24f5088add731069",
+  "supplemental_browser_tests": {
+    "backup_management_fixtures": {
+      "passed": 3,
+      "seconds": 9.4
+    },
+    "wide_2560x1440_all_four_pages": {
+      "passed": 1,
+      "seconds": 7.4,
+      "visually_reviewed": true
+    },
+    "backup_management_fixtures_webkit": {
+      "passed": 3,
+      "seconds": 21.7
+    }
+  }
+}
