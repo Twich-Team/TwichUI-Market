@@ -1,0 +1,32 @@
+{
+  "provenance": "actual read-only production recomputation of all affected daily closing canonical aggregates",
+  "snapshots": [
+    {
+      "provenance": "actual read-only production; full canonical derived records recomputed against original listings",
+      "snapshot_id": 23,
+      "raw_listings": 130399,
+      "variants": 25473,
+      "match": true,
+      "sha256": "d6071c990e513787de2801f8bf5100fa2294f1920b4482e42370f03017973da9",
+      "seconds": 23.882
+    },
+    {
+      "provenance": "actual read-only production; full canonical derived records recomputed against original listings",
+      "snapshot_id": 47,
+      "raw_listings": 135956,
+      "variants": 27691,
+      "match": true,
+      "sha256": "9ffbd9ab208dff38040c36178641561dd14fad531dfd0292f26549057a71a4a4",
+      "seconds": 24.9
+    },
+    {
+      "provenance": "actual read-only production; full canonical derived records recomputed against original listings",
+      "snapshot_id": 71,
+      "raw_listings": 113711,
+      "variants": 25011,
+      "match": true,
+      "sha256": "f2486a99e41c245b557456f020178bb6739078ac46b60792e5249bb2364880bd",
+      "seconds": 21.896
+    }
+  ]
+}

@@ -218,3 +218,37 @@ def test_raw_aggregation_proof_covers_prices_and_survives_partial_batches(databa
         verify_statistics(db,[snapshot]) # proof lets interrupted raw pruning resume
         row.supply+=1;db.flush()
         with pytest.raises(HTTPException):verify_statistics(db,[snapshot])
+
+
+def test_daily_canonical_aggregation_resumes_before_any_source_deletion(database):
+    import pytest
+    from fastapi import HTTPException
+    from market.bridge_api import prepare_snapshot
+    from market.compaction_safety import verify_statistics,prepare_canonical_daily
+    from market import canonical_pricing as cp
+    from market.models import BridgeDerivation,BridgeDerivedRecord
+    with database.begin() as db:
+        m=Market(region='us',ruleset_id=2,house_id=113,source_kind='auctions',label='isolated canonical preservation')
+        db.add(m);db.flush()
+        for label,age in [('old',10),('current',0)]:
+            ingest(db,m.id,json.dumps({'auctions':[{'id':n+1,'item':{'id':n+25},'buyout':101+n+age,'quantity':1} for n in range(3)]}).encode(),request_key=label,retrieved_at=now()-timedelta(days=age),synthetic=True)
+        observations=list(db.scalars(select(Observation).where(Observation.market_id==m.id).order_by(Observation.id)))
+        old,current=[db.get(Snapshot,o.snapshot_id) for o in observations]
+        assert old.id!=current.id
+        prepare_snapshot(db,current,cp.ALGORITHM,'auctions')
+        with pytest.raises(HTTPException):verify_statistics(db,[old.id])
+        assert prepare_snapshot(db,old,cp.ALGORITHM,'auctions',max_variants=1) is False
+        assert db.get(BridgeDerivation,(old.id,cp.ALGORITHM,1)) is None
+        old_id=old.id
+    # A new transaction resumes after complete variant groups without duplicates.
+    with database.begin() as db:
+        with pytest.raises(HTTPException):verify_statistics(db,[old_id])
+        assert prepare_canonical_daily(db,retention.policy_view(db),now()) is True
+        assert db.get(BridgeDerivation,(old_id,cp.ALGORITHM,1)).record_count==3
+        assert db.scalar(select(func.count()).select_from(BridgeDerivedRecord).where(BridgeDerivedRecord.snapshot_id==old_id))==3
+        verify_statistics(db,[old_id])
+        assert db.get(Snapshot,old_id).raw_retained
+        assert prepare_canonical_daily(db,retention.policy_view(db),now()) is False
+        # An interrupted/corrupt cache cannot authorize raw deletion.
+        db.delete(db.scalar(select(BridgeDerivedRecord).where(BridgeDerivedRecord.snapshot_id==old_id)));db.flush()
+        with pytest.raises(HTTPException):verify_statistics(db,[old_id])

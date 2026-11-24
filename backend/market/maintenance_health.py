@@ -19,6 +19,8 @@ def health(user=Depends(admin),db=Depends(session)):
             last.status if last and last.status in ('running','failed','paused','interrupted') else 'enabled')
     absent=db.scalar(select(func.count()).select_from(Snapshot).where(Snapshot.statistics_retained.is_(True),
         ~select(SnapshotStatistic.snapshot_id).where(SnapshotStatistic.snapshot_id==Snapshot.id).exists()))
+    from .compaction_safety import canonical_daily_pending
+    canonical_pending=db.scalar(select(func.count()).select_from(canonical_daily_pending(db,policy_view(db),now()).subquery()))
     tiers={}
     for name,model,field in [('observations',Observation,Observation.retrieved_at),('snapshots',Snapshot,Snapshot.created_at),('daily',DailyObservation,DailyObservation.day)]:
         count,oldest,newest=db.execute(select(func.count(),func.min(field),func.max(field)).select_from(model)).one()
@@ -30,7 +32,7 @@ def health(user=Depends(admin),db=Depends(session)):
         allocation=db.scalar(text('SELECT pg_database_size(current_database())'))
         tables=[dict(r._mapping) for r in db.execute(text('SELECT relname AS name,n_live_tup AS estimated_live_rows,n_dead_tup AS estimated_dead_rows,last_autovacuum,last_autoanalyze,pg_total_relation_size(relid) AS allocated_bytes FROM pg_stat_user_tables ORDER BY pg_total_relation_size(relid) DESC LIMIT 10'))]
     return dict(measured_at=now(),status=status,policy=policy_view(db),automation=automation,tiers=tiers,
-        aggregation=dict(missing_statistic_snapshots=absent,status='attention' if absent else 'present',
+        aggregation=dict(missing_statistic_snapshots=absent,pending_canonical_daily_snapshots=canonical_pending,status='attention' if absent or canonical_pending else 'present',
             notice='Compact snapshot statistics and UTC daily references are produced during ingestion. Presence alone does not prove complete aggregation; destructive batches require their own validation.'),
         database_bytes=allocation,tables=tables,housekeeping=dict(last_success_at=housekeeping.created_at,removed=json.loads(housekeeping.detail)) if housekeeping else None,
         recent_runs=[dict(id=r.id,started_at=r.started_at,finished_at=r.finished_at,status=r.status,reason=r.reason,

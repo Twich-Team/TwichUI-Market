@@ -49,6 +49,7 @@ def raw_fingerprint(db,snapshot_id):
 
 def verify_statistics(db,snapshot_ids):
     for snapshot in db.scalars(select(Snapshot).where(Snapshot.id.in_(snapshot_ids))):
+        require_canonical_daily(db,snapshot)
         compact=compact_fingerprint(db,snapshot.id)
         expected={'s':snapshot.id,'c':snapshot.content_hash,'h':compact[0],'n':snapshot.listing_count}
         previous=db.scalar(select(SecurityEvent.detail).where(SecurityEvent.action=='retention.aggregate.verified',
@@ -60,3 +61,37 @@ def verify_statistics(db,snapshot_ids):
         if raw!=compact:
             raise HTTPException(409,'Compact history does not match raw variant prices, supply and listing totals; source data is preserved')
         db.add(SecurityEvent(action='retention.aggregate.verified',detail=json.dumps(expected,separators=(',',':'))))
+
+
+def canonical_daily_pending(db,policy,at):
+    """Only markets already using canonical pricing; never activates an opt-in."""
+    from datetime import timedelta
+    from .models import BridgeDerivation,DailyObservation,Observation
+    from . import canonical_pricing as cp
+    active=select(Snapshot.market_id).join(BridgeDerivation,BridgeDerivation.snapshot_id==Snapshot.id).where(BridgeDerivation.algorithm==cp.ALGORITHM)
+    daily=select(Observation.snapshot_id).join(DailyObservation,DailyObservation.observation_id==Observation.id).where(DailyObservation.day>=(at-timedelta(days=policy['daily_days']+60)).date())
+    recent=select(Observation.snapshot_id).where(Observation.retrieved_at>=at-timedelta(days=policy['raw_days']))
+    derived=select(BridgeDerivation.snapshot_id).where(BridgeDerivation.algorithm==cp.ALGORITHM,BridgeDerivation.revision==1)
+    return select(Snapshot).where(Snapshot.market_id.in_(active),Snapshot.id.in_(daily),Snapshot.id.not_in(recent),Snapshot.raw_retained.is_(True),Snapshot.id.not_in(derived)).order_by(Snapshot.id)
+
+
+def prepare_canonical_daily(db,policy,at):
+    from .bridge_api import prepare_snapshot
+    from . import canonical_pricing as cp
+    from .models import Market
+    snapshot=db.scalar(canonical_daily_pending(db,policy,at).limit(1))
+    if snapshot is None:return False
+    prepare_snapshot(db,snapshot,cp.ALGORITHM,db.get(Market,snapshot.market_id).source_kind,max_variants=500)
+    return True
+
+
+def require_canonical_daily(db,snapshot):
+    from .models import BridgeDerivation,BridgeDerivedRecord,DailyObservation,Observation
+    from . import canonical_pricing as cp
+    active=db.scalar(select(BridgeDerivation.snapshot_id).join(Snapshot,Snapshot.id==BridgeDerivation.snapshot_id).where(Snapshot.market_id==snapshot.market_id,BridgeDerivation.algorithm==cp.ALGORITHM).limit(1))
+    daily=db.scalar(select(DailyObservation.observation_id).join(Observation,Observation.id==DailyObservation.observation_id).where(Observation.snapshot_id==snapshot.id).limit(1))
+    if active is None or daily is None:return
+    derived=db.get(BridgeDerivation,(snapshot.id,cp.ALGORITHM,1))
+    if derived is None:raise HTTPException(409,'Canonical daily history must finish aggregation before its source can be removed')
+    count=db.scalar(select(func.count()).select_from(BridgeDerivedRecord).where(BridgeDerivedRecord.snapshot_id==snapshot.id,BridgeDerivedRecord.algorithm==cp.ALGORITHM,BridgeDerivedRecord.revision==1))
+    if count!=derived.record_count:raise HTTPException(409,'Canonical daily history is incomplete; raw source is preserved')

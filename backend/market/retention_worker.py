@@ -36,7 +36,9 @@ def recovery_policy():
 
 
 # A changed scope/version invalidates prior automatic authorization.
-SCOPE = {'version': 1, 'aggregation_guard_sha256':hashlib.sha256(Path(__file__).with_name('compaction_safety.py').read_bytes()).hexdigest(),
+from .bridge_api import prepare_snapshot as canonical_aggregation
+
+SCOPE = {'version': 1, 'canonical_aggregation_sha256':hashlib.sha256(inspect.getsource(canonical_aggregation).encode()).hexdigest(), 'aggregation_guard_sha256':hashlib.sha256(Path(__file__).with_name('compaction_safety.py').read_bytes()).hexdigest(),
     'resource_guard_sha256':hashlib.sha256(Path(__file__).with_name('maintenance_resources.py').read_bytes()).hexdigest(),
     'production_health_guard':os.environ.get('RETENTION_PRODUCTION_HEALTH_GUARD')=='true', 'stages': ['daily_references','observations','raw_listings',
     'raw_feed_payloads','intraday_statistics','collection_logs','feed_checks','security_logs'],
@@ -245,6 +247,19 @@ def _work(factory, at, clock):
                     pending.status='paused';pending.reason=unavailable;pending.finished_at=now()
                 return {'status':'paused','reason':unavailable,'batches':0,'rows_processed':0}
             started=clock()
+            # Daily canonical caches are separate from legacy statistics. Prepare
+            # at most one immutable closing snapshot without holding collection's lock.
+            with factory.begin() as aggregation_db:
+                aggregation_db.execute(text("SET LOCAL statement_timeout='2000ms'"))
+                aggregation_db.execute(text("SET LOCAL lock_timeout='250ms'"))
+                aggregation_db.execute(text("SELECT set_config('transaction_timeout', :value, true)"),{'value':str(min(20000,limits.max_seconds*1000))})
+                from .compaction_safety import prepare_canonical_daily
+                prepared=prepare_canonical_daily(aggregation_db,retention.policy_view(aggregation_db),at)
+            if prepared:
+                with factory.begin() as aggregation_db:
+                    pending=aggregation_db.get(RetentionExecution,receipt_id)
+                    pending.status='budget_exhausted';pending.reason='Prepared a bounded canonical daily aggregate batch; raw data preserved this cycle';pending.finished_at=now()
+                return {'status':'budget_exhausted','reason':'Canonical daily aggregation progressed','batches':0,'rows_processed':0}
             for _ in range(limits.max_batches):
                 remaining=limits.max_seconds-(clock()-started)
                 if remaining <= 0: break
