@@ -242,6 +242,8 @@ class NASStorage(unittest.TestCase):
         self.manager.write_json(name[:-5]+'.json',manifest)
         with self.manager.db() as db:self.manager.set(db,'automatic_recovery',dict(backup_id=key,sha256=manifest['sha256'],bytes=manifest['bytes'],file_identity=manifest['file_identity'],verified_at=manifest['restoration_verified_at']))
         proof(self.manager,key)
+        row=self.manager.overview()['items'][0]
+        self.assertTrue(row['active_use']);self.assertIn('pause cleanup',row['reason'])
         with self.assertRaises(Refused):self.manager.delete('admin:1',key,name,confirm_protected=True,confirm_recovery_loss=True,confirm_reserved=True)
         with self.manager.db() as db:self.manager.set(db,'recovery_lease_until',(datetime.now(timezone.utc)-timedelta(seconds=1)).isoformat())
         self.assertEqual(self.manager.delete('admin:1',key,name,confirm_protected=True,confirm_recovery_loss=True,confirm_reserved=True)['status'],'deleted')
