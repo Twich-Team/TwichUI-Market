@@ -216,11 +216,11 @@ def deals(market_id: MarketId, minimum_discount: int = Query(15,ge=1,le=99),
     latest = latest_observation(db,market_id)
     view=market_view(market)
     history_coverage=coverage_status(db,market_id,minimum_coverage)
-    if not latest:
     if (item_id is None) != (variant_key is None):
         raise HTTPException(422,'Filtering listings requires an item and its exact variant.')
     if expected_snapshot is not None and (not latest or latest.snapshot_id != expected_snapshot):
         raise HTTPException(409,'Market listings have changed. Refresh the results to see the current stacks.')
+    if not latest:
         return {'history_coverage':history_coverage,'deals':[],'candidates_truncated':False,'synthetic':False,'market':view}
     rows,truncated=below_reference(db,market,latest,minimum_discount=minimum_discount,
         maximum_spend=maximum_spend,minimum_coverage=minimum_coverage,minimum_confidence=minimum_confidence,
@@ -258,23 +258,23 @@ def signals(market_id: MarketId,kind: Literal['supply','price'],minimum_change: 
     rows,truncated=change_signals(db,market,latest,kind=kind,minimum_change=minimum_change,
         minimum_coverage=minimum_coverage,minimum_confidence=minimum_confidence,direction=direction,freshness=view['freshness'],offset=offset,limit=limit)
     result=[]
-    for record in rows:
     descriptors = dict(db.execute(select(Listing.variant_key, Listing.variant).where(
         Listing.snapshot_id == latest.snapshot_id, Listing.item_id.in_({row.item_id for row in rows}),
         Listing.variant_key.in_({row.variant_key for row in rows})).distinct()).all()) if rows else {}
+    for record in rows:
         row=record._mapping
         coverage=row['price_days'] if kind=='price' else row['supply_days']
         change=round(float(row['change']),2)
-        if kind=='price':
         if row['change'] < 0 and (row['current_price'] if kind == 'price' else row['current_supply']):
             change = max(-99.99, change)
         quality = reference_quality(row['reference_price'], row['current_price'], row['daily_low'], row['daily_high'], row['price_days'])
+        if kind=='price':
             reason=quality['reason'] if quality['state']=='needs_review' else f'Quantity-weighted asking price changed {change:+}% against {coverage} priced UTC days before today (within 14 days).'
         else:
             reason=f'Listed supply changed {change:+}% against an average {row["reference_supply"]:.2f} units across {row["market_days"]} prior market days; {coverage} days had this variant listed.'
         result.append({'kind':kind,'item_id':row['item_id'],'variant_key':row['variant_key'],
-            **metadata_name(row['ItemMetadata'],row['item_id']),
             'variant':json.loads(descriptors[row['variant_key']]) if row['variant_key'] in descriptors else None,
+            **metadata_name(row['ItemMetadata'],row['item_id']),
             'current_price':int(row['current_price']) if row['current_price'] is not None else None,
             'reference_price':int(row['reference_price']) if row['reference_price'] is not None else None,
             'current_supply':int(row['current_supply']),'reference_supply':round(float(row['reference_supply']),2),
