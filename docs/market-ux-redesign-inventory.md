@@ -1,6 +1,6 @@
 # Market UX redesign inventory
 
-Evidence reviewed: current source and focused artifacts under ignored `.local/review/`. This is a source/verification map, not an access guide. No credentials or private review details are included. Physical iPhone Safari and real operational services are outside this verification; browser fixtures/simulated states are not evidence of live operations.
+The route and table maps below identify implementation and behavioral checks. See the [review guide](market-ux-preview.md) for access and fixture provenance.
 
 ## Routes and shared implementation
 
@@ -15,7 +15,7 @@ Evidence reviewed: current source and focused artifacts under ignored `.local/re
 | `?admin_tab=metadata` and `?metadata_view=tracker` | metadata coverage/records, recovery jobs and tracker; shared tables, Query, filters and server pagination. | metadata-coverage, metadata-attempts, recovery-tracker tests; admin/recovery matrices |
 | `?admin_tab=sources` | provider/source records and attempts; shared tables and status primitives. | provider-rate and metadata tests; admin screenshots/matrix |
 | `?admin_tab=members`, `invitations`, `devices`, `security` | Account access views in `settings.tsx`; `DataTable` members/invites/devices and security history. | settings/admin-history tests; all four phone views in both browser matrices |
-| `?admin_tab=storage` + `storage_view=overview\|backups\|storage\|maintenance` | `storage-dashboard.tsx`; shared shell/status, `DataTable` backup inventory, retention stages and maintenance evidence; `react-day-picker`-backed calendar in `backup-calendar.tsx`. | storage/backup/retention tests; phone screenshots; UTC calendar test log |
+| `?admin_tab=storage` + `storage_view=overview\|backups\|storage\|maintenance` | `storage-dashboard.tsx`; shared shell/status, `DataTable` backup inventory, maintenance diagnostics and retention policy stages; `react-day-picker`-backed calendar in `backup-calendar.tsx`. | storage/backup/retention tests; phone screenshots; UTC calendar test log |
 | `/account` | preferences, authorized devices and security; shared tables/Query. | preferences, account/cache tests and phone matrix |
 | `/companion` | setup, connection/delivery status and beta download; shared Query. | companion-download tests, beta focused log and phone matrix |
 | `/companion/authorize` | approval route; authentication/session gate then approval view. | companion callback/auth tests |
@@ -26,11 +26,11 @@ Shared libraries verified in `web/package.json`: TanStack Table, Query and Virtu
 
 ## Logical application data tables
 
-Each item below is rendered through shared `DataTable`/TanStack except **Catalogue + variants**, which use TanStack directly with specialized rendering. Exact historical chart data and supply bands are disclosed tables, not separate chart-specific sorting engines.
+The catalogue uses TanStack directly with specialized link, art and card rendering. Exact variants and the other data grids use the shared `DataTable`. The calendar supplies its own semantic grid.
 
 | Logical table | Route(s) | Shared mapping / mobile behavior |
 |---|---|---|
-| Catalogue items; exact variants | Explorer | TanStack catalogue; phone item cards and expandable variant cards |
+| Catalogue items; exact variants | Explorer | TanStack catalogue with phone item cards. Expanded variant comparison uses shared `DataTable`, a stable variant key, server sorting/paging and responsive cards. |
 | Current auction listings | Item Research / listing detail | `DataTable`; contained mobile table |
 | Matching listings / grouped deal stacks | Deal Finder | `DataTable`; expandable grouped results |
 | Exact price-history observations; intraday observations; supply-by-price bands | Item Research | `DataTable` disclosures beside ECharts; scroll-contained on narrow screens |
@@ -39,16 +39,35 @@ Each item below is rendered through shared `DataTable`/TanStack except **Catalog
 | Recovery efficiency by provider; recovery items | Recovery Tracker | `DataTable`; server pagination/sorting for items |
 | Members, invitations, authorized devices | Admin access; Account | `DataTable`; phone matrix covers these routes |
 | Security events | Admin Security, Account | `DataTable`; filtered/server-backed history |
-| Managed backup inventory; retention stages | Storage Backups | `DataTable`; inventory selection/actions retained in responsive contained presentation |
-| Ingestion/cleanup counts, database growth samples, storage measurements | Storage Maintenance | `DataTable` in progressive disclosures |
+| Managed backup inventory | Storage Backups | `DataTable`; inventory selection/actions retained in responsive contained presentation |
+| Ingestion/cleanup counts, measured database allocation history, retention policy stages | Storage Maintenance | `DataTable` in progressive disclosures |
 | Backup calendar day outcomes | Storage Backups | Calendar component, intentionally not forced through TanStack; selectable date summaries |
 
 This inventory was assembled from all `DataTable`/`useReactTable` call sites and application `<table>` markup under `web/src` (catalogue’s table is the only separate application grid found).
 
-## Focused verification and concrete gaps
+## Behavioral checks
 
-- Dependencies and per-route implementation were verified in current source; targeted test logs include exact-stack review (11 passed), pricing shadow (2 passed), and beta checks (48 passed). Phone screenshot matrices cover member/admin views at 375, 390, 430 and landscape 844 CSS px in Chromium and WebKit emulation. They do not establish physical iPhone Safari behavior.
-- Existing browser artifacts record WebKit serious color-contrast violations on Markets, Collection, Members/Invitations, Security, Account and Companion selector controls. These remain concrete accessibility follow-ups unless fixed in newer source/evidence.
-- The recorded phone matrices pass layout checks, but their 844-wide variant action locator times out in both browsers; the separate player verification also records a desktop focus-restoration failure for the Training Sword variant link. Treat variant focus/automation coverage as unresolved, not a demonstrated phone layout failure.
-- `.local/review/backend-tests.log` records 770 passed and two failures in pricing-shadow tests; the later focused `pricing-shadow.log` records 2 passed. The full recorded run therefore needs a clean rerun before claiming the broader backend suite is green. No full suite was run for this inventory task.
-- No physical iPhone, native Safari, authenticated live operational service, or production mutation was verified here. Verify these through the review procedure separately; simulated operational states and desktop-browser WebKit remain limited evidence.
+| User task | Implementation and verification |
+|---|---|
+| Compare exact items and return to search | The pinned item identity and separate variant headings keep the two tables legible while scrolling. Both engines restored focus to the original variant after Back and a background refresh. A 40-variant synthetic item exercised comparison and paging. |
+| Read prices and supply | Currency axes use copper, silver or gold according to the range. The history keeps extreme daily observations, with a separate recent-detail view and exact tables. Cheapest-tier concentration is measured from current supply. A touch swipe starting on the chart moved the page 129 CSS pixels in Chromium. |
+| Interpret freshness | Source age comes from the freshest applicable upstream observation. Last checked records a successful check, including an unchanged result. View refreshed comes from the current query. Regression tests cover the separate clocks. |
+| Decide whether a reference helps | Seven synthetic daily unit asks reproduce the reported 373,157,356-copper average, including both recorded extreme asks. The original source listings are unavailable. The website flags daily asks spanning at least 100×, a current average at least 10× away from the reference, or a unit ask rounded to zero. Fewer than three priced UTC days gives limited evidence when no review flag applies. Freshness and coverage are independent. Focused PostgreSQL and SQLite tests cover normalization, questionable references and all 65 grouped stacks. Historical data, Workshop and Companion calculations retain their existing semantics. |
+| Find a problem in Administration | Navigation groups operations, metadata and access. Separate permission and activity evidence informs device status. Focused browser tests exercise recovery outcomes, quota cooldowns and saving, intentional configuration, and security history. Fourteen Administration/Account screens passed focused WebKit axe checks. |
+| Inspect backup safety and time | React DayPicker preserves UTC and a locale-aligned week. Tests exercise leap days, outside-month dates, mixed and missing evidence, keyboard selection, protected eligibility, bulk confirmation, and focus and scroll restoration. All four Storage pages passed focused reflow tests at 200% in both engines. Preview archives are simulated. |
+| Download the existing Windows beta | Forty-eight backend checks cover signed-in and disabled accounts, publication and download integrity, website and device authentication, and update eligibility. Fresh member sessions fetched the actual 4,972,080-byte installer and matched the published SHA-256. Signed-out and ordinary-member admin requests returned 401 and 403 as appropriate. |
+| Check the integrated application | The PostgreSQL suite passed 778 tests. The Alembic upgrade, drift check, downgrade and re-upgrade passed. The production web build and 150 frontend tests passed. Operational and contract suites passed 157 and 16 tests respectively. The deployed page-by-page results are in the [acceptance matrix](evidence/market-ux/acceptance.md). |
+
+Device testing used Chromium and Playwright WebKit. The [review guide](market-ux-preview.md) includes the physical iPhone Safari, software keyboard and VoiceOver checks that require an owner device.
+
+## Implementation and review ownership
+
+| Worker configuration | Ownership |
+|---|---|
+| GPT-6-Luna, medium | Initial route and table inventory |
+| GPT-6.2-Sol, medium | Explorer, exact variants, chart interactions, and responsive player-page acceptance |
+| GPT-6.2-Sol, medium | Administration, Account, UTC calendar, backup tables, and responsive operations workflows |
+| GPT-6.2-Astra, high | Normalization, reference suitability and exact-variant opportunity grouping |
+| Fresh GPT-6.2-Astra, high | Independent review of active-member authorization, stack ordering, setup state, fresh-session isolation and regressions |
+
+The coordinator integrated the shared UI, active-member beta access, isolated deployment and final checks. Independent review caught closely spaced fractional stack prices ranking incorrectly in PostgreSQL and an abandoned additional-PC setup hiding the last delivered sync. Both received regressions.
