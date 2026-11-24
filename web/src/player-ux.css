@@ -104,6 +104,19 @@
   height: auto;
 }
 
+.catalogue-panel .catalogue-table > thead > tr > th:first-child,
+.catalogue-panel .catalogue-table > tbody > tr:not(.variant-container) > td:first-child {
+  position: sticky;
+  top: auto;
+  inset-inline-start: 0;
+  z-index: 1;
+  background: #261d15;
+}
+
+.catalogue-panel .catalogue-table > tbody > tr:not(.variant-container):hover > td:first-child {
+  background: #2d2319;
+}
+
 .catalogue-panel .catalogue-table > tbody > tr > td {
   padding-block: 7px;
 }

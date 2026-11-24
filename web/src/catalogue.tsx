@@ -325,7 +325,7 @@ export function ItemCatalogue({market,query,state,onChange,onSummary}: {
                         header.getContext(),
                       )}
                       <SortIndicator direction={header.column.getIsSorted()} />
-                    </button> : <span className="sr-only">Variants</span>}
+                    </button> : flexRender(header.column.columnDef.header, header.getContext())}
                   </th>
                 ))}
               </tr>
