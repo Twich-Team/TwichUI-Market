@@ -36,7 +36,7 @@ const verification=(row:Backup)=>row.restoration_verified_at?'Restore rehearsal 
 export function useBackupOverview(offset=0,filters?:BackupFilters) {
   const params=backupQueryParams(offset,filters);
   const filtered=params.size>2;
-  return useQuery({queryKey:filtered?['private','backup-management',offset,params.toString()]:['private','backup-management',offset],queryFn:({signal})=>api<BackupOverview>(`/admin/backups?${params}`,'GET',undefined,signal),staleTime:30000,refetchInterval:q=>filtered?false:['queued','running'].includes(q.state.data?.job.status||'')?5000:60000,retry:false});
+  return useQuery({queryKey:filtered?['private','backup-management',offset,params.toString()]:['private','backup-management',offset],queryFn:({signal})=>api<BackupOverview>(`/admin/backups?${params}`,'GET',undefined,signal),staleTime:30000,refetchInterval:q=>filtered?false:(['queued','running'].includes(q.state.data?.job.status||'')||(q.state.data?.inventory_stale&&q.state.data.service_status==='operation_busy'))?5000:60000,retry:false});
 }
 
 export function BackupCreateButton({readOnly=false}:{readOnly?:boolean}) {
