@@ -48,7 +48,7 @@ interface PrivateBeta extends Release {
   updater_signature_verified: true;
   tray_actions_verified: false;
 }
-export function CompanionSetup({ user }: { user: User }) {
+export function CompanionSetup({ user, fixtureReview = false }: { user: User; fixtureReview?: boolean }) {
   const key = `market-companion-setup-v1:${user.id}`;
   const requestedSetup = new URLSearchParams(location.search).get("setup") === "1";
   const [progress, setProgress] = useState<SetupProgress>(() => requestedSetup ? {schema_version:1,step:0,since:Date.now()} : restore(key)),
@@ -179,6 +179,7 @@ export function CompanionSetup({ user }: { user: User }) {
               {installerUrl && installer ? <div className="companion-installer">
                 <p><strong>{betaSelected ? "Beta" : "Stable"}</strong> · {installer.version} · Windows x64 · {formatBytes(installer.bytes)}</p>
                 <a className="primary companion-download" href={installerUrl} download onClick={()=>step(1)}>Download for Windows</a>
+                {fixtureReview && <p className="small">This installer opens the production Market service. Use this preview to review the download only.</p>}
                 <p className="small">Windows may show an unknown-publisher warning. Updates are signed and require your consent.</p>
                 <details><summary>Download integrity and Windows warnings</summary>
                   <p>Compare the downloaded file’s SHA-256 with this value. If Windows blocks the installer, contact your administrator.</p>

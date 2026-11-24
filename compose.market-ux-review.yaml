@@ -44,15 +44,12 @@ services:
     tmpfs: [/tmp:size=32m]
   backup-manager:
     <<: *limits
-    image: node:24-bookworm-slim
-    user: node
-    command: [node, /fixture/backup-fixture.mjs]
+    image: market-ux-review-backups:${REVIEW_TAG:-candidate}
+    build: {context: ., dockerfile: deploy/review/backup-fixture.Dockerfile}
     read_only: true
     mem_limit: 96m
     cpus: 0.15
     volumes:
-      - ./deploy/review/backup-fixture.mjs:/fixture/backup-fixture.mjs:ro
-      - ./web/e2e/storage-dashboard-fixtures.ts:/fixture/storage-dashboard-fixtures.ts:ro
       - ./.local/review/backup-token:/review-token:ro
   proxy:
     <<: *limits

@@ -2020,3 +2020,8 @@ main h1[tabindex="-1"]:focus {outline:0}
   .windows-page-link summary {min-height:44px;align-content:center}
   .companion-step {min-height:0}
 }
+@media (max-width:700px) {
+  .managed-table tbody tr {display:flex; flex-direction:column}
+  .managed-table tbody td[data-label="Details"] {display:flex; order:1; justify-content:flex-end}
+  .managed-table tbody td[data-label="Details"]::before {content:none}
+}

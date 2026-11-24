@@ -326,7 +326,7 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
               signedOut={signedOut}
             />
           )}
-          {page === 'companion' && <Companion user={user}/>}
+          {page === 'companion' && <Companion user={user} fixtureReview={fixtureReview}/>}
           {route.kind==='item'&&<ItemDetails route={route} markets={markets} marketsReady={marketsReady}/>}
           {(page==='missing'||(page==='admin'&&user.role!=='admin'))&&<section className="empty panel"><h1>{page==='admin'?'Administrator access required':'Page not found'}</h1><p>{route.kind==='missing'?route.error:'This account does not have administration access.'}</p><a href="/" onClick={e=>{e.preventDefault();navigate('/');}}>Back to Explorer</a></section>}
           </Suspense>
