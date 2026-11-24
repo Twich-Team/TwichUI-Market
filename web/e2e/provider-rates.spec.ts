@@ -80,6 +80,7 @@ test("provider rate limits: editable allowances, quota observations, cooldowns a
   await forever.getByLabel("Requests per minute",{exact:true}).fill("121");
   await page.waitForResponse(response=>response.url().endsWith("/api/v1/admin/metadata-providers")&&response.request().method()==="GET");
   await expect(forever.getByLabel("Requests per minute",{exact:true})).toHaveValue("121");
+  await ever.getByText("Edit settings",{exact:true}).click();
   await ever.getByRole("button",{name:"Replace API Key",exact:true}).click();
   await expect(ever.getByLabel("New API key",{exact:true})).toBeVisible();
   await ever.getByRole("button",{name:"Cancel",exact:true}).click();

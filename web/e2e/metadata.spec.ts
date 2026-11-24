@@ -58,7 +58,7 @@ test("administrator recovery, persistent jobs and data-source forms use local AP
   await expect(page.getByText("Edit settings",{exact:true})).toHaveCount(4);
   const everloot = page.getByRole("region", { name: "Everloot connection", exact: true });
   await everloot.getByText("Edit settings",{exact:true}).click();
-  await everloot.getByRole("button", { name: "Add API Key", exact: true }).click();
+  await everloot.getByRole("button", { name: /^(Add|Replace) API Key$/ }).click();
   await expect(page.getByLabel("New API key", { exact: true })).toBeVisible();
   // Capture an empty secret form only. No screenshots/traces contain credential values.
   await page.evaluate(() => window.scrollTo(0, 0));
