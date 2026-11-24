@@ -10,7 +10,7 @@ test('native NAS administration: real configuration, folders, migration, protect
  await expect(page.getByRole('heading',{name:'Market Explorer',exact:true})).toBeVisible();
  const session=await (await page.request.get('/api/v1/auth/session')).json();const headers={'X-CSRF-Token':session.csrf_token};
  const inventory=async()=>await (await page.request.get('/api/v1/admin/backups')).json();
- const create=async()=>{const response=await page.request.post('/api/v1/admin/backups/create',{headers,data:{}});expect(response.status(),await response.text()).toBe(202);const job=await response.json();await expect.poll(async()=>{const d=await inventory();return d.job?.id===job.id?d.job.status:'waiting';},{timeout:60000}).toBe('succeeded');};
+ const create=async()=>{const response=await page.request.post('/api/v1/admin/backups/create',{headers,data:{}});expect(response.status(),await response.text()).toBe(202);const job=await response.json();await expect.poll(async()=>{const d=await inventory();return d.job?.id===job.id&&!d.inventory_stale&&d.items.some((r:{id:string})=>r.id===d.job.backup_id)?d.job.status:'waiting';},{timeout:60000}).toBe('succeeded');};
  await create();
  await page.goto('/administration');await page.getByRole('button',{name:'Storage & backups ↗',exact:true}).click();
  const storage=page.getByRole('region',{name:'Backup Storage',exact:true});
