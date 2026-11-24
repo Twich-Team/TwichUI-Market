@@ -63,15 +63,15 @@ export function saveRestoration(extra:Partial<Restoration>={}) {
   if(restorations.size>50)restorations.delete(restorations.keys().next().value!);
 }
 export function restoration(){return restorations.get(entryKey());}
-export function navigate(url:string,replace=false){
+export function navigate(url:string,replace=false,focus?:string){
   if(replace)history.replaceState(history.state,'',url);
-  else {saveRestoration();const origin=safeBrowseUrl(currentLocation());history.pushState(origin?{marketOrigin:origin}:{},'',url);window.scrollTo(0,0);}
+  else {saveRestoration(focus ? {focus} : undefined);const origin=safeBrowseUrl(currentLocation());history.pushState(origin?{marketOrigin:origin}:{},'',url);window.scrollTo(0,0);}
   window.dispatchEvent(new Event(event));
 }
 export function followItem(event:MouseEvent<HTMLAnchorElement>){
-  saveRestoration({focus:event.currentTarget.id||undefined});
   if(event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
-  event.preventDefault();navigate(event.currentTarget.getAttribute('href')!);
+  event.preventDefault();
+  navigate(event.currentTarget.getAttribute('href')!, false, event.currentTarget.id);
 }
 export function backDestination(market:number){return safeBrowseUrl(history.state?.marketOrigin)??`/?market=${market}`;}
 export function returnToBrowse(event:MouseEvent<HTMLAnchorElement>){
@@ -86,7 +86,40 @@ export function dealState(search:string,defaults:DealState):DealState {
   return {market:supportedId(p.get('market'))??defaults.market,mode:selected,filters:{change:bounded('change',defaults.filters.change,1,selected==='listings'?99:1000,true),spend:bounded('spend',defaults.filters.spend,0.01,100000000),coverage:bounded('coverage',defaults.filters.coverage,1,selected==='listings'?15:14,true),confidence:['limited','moderate','strong'].includes(p.get('confidence')??'')?p.get('confidence')!:defaults.filters.confidence,direction:['any','increase','decrease'].includes(p.get('direction')??'')?p.get('direction')!:defaults.filters.direction}};
 }
 export function dealUrl(state:DealState){return '/deals?'+new URLSearchParams({market:String(state.market),mode:state.mode,...Object.fromEntries(Object.entries(state.filters).map(([k,v])=>[k,String(v)]))});}
-export function useRestoreView(ready:boolean,identity:string){
-  const restored=useRef<string|null>(null);
-  useEffect(()=>{const key=entryKey()+'|'+identity;if(!ready||restored.current===key)return;const saved=restoration();if(!saved)return;const frame=requestAnimationFrame(()=>{if(saved.focus)document.getElementById(saved.focus)?.focus({preventScroll:true});window.scrollTo(0,saved.scroll);restored.current=key;});return()=>cancelAnimationFrame(frame);},[ready,identity]);
+export function useRestoreView(ready: boolean, identity: string) {
+  const restored = useRef<string | null>(null);
+  useEffect(() => {
+    const key = `${entryKey()}|${identity}`;
+    const saved = restoration();
+    if (!ready || !saved || restored.current === key) return;
+    let pending: MutationObserver | undefined;
+    let deadline: number | undefined;
+    function stopWaiting() {
+      pending?.disconnect();
+      clearTimeout(deadline);
+      window.removeEventListener("pointerdown", stopWaiting);
+      window.removeEventListener("keydown", stopWaiting);
+    }
+    function restoreIfReady() {
+      const target = saved?.focus ? document.getElementById(saved.focus) : null;
+      if (saved?.focus && !target) return false;
+      target?.focus({ preventScroll: true });
+      if (saved) window.scrollTo(0, saved.scroll);
+      restored.current = key;
+      return true;
+    }
+    const frame = requestAnimationFrame(() => {
+      if (restoreIfReady()) return;
+      window.scrollTo(0, saved.scroll);
+      pending = new MutationObserver(() => { if (restoreIfReady()) stopWaiting(); });
+      pending.observe(document.querySelector("main") ?? document.body, { childList: true, subtree: true });
+      deadline = window.setTimeout(stopWaiting, 2500);
+      window.addEventListener("pointerdown", stopWaiting);
+      window.addEventListener("keydown", stopWaiting);
+    });
+    return () => {
+      cancelAnimationFrame(frame);
+      stopWaiting();
+    };
+  }, [ready, identity]);
 }
