@@ -88,6 +88,10 @@
   color: #e2bd8d;
 }
 
+.mobile-catalogue:empty + .empty {
+  padding: 8px 12px;
+}
+
 .mobile-catalogue:empty {
   min-height: 0;
 }
