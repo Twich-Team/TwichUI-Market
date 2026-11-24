@@ -23,6 +23,7 @@ test("administrator recovery, persistent jobs and data-source forms use local AP
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: `${directory}/01-overview.png`, fullPage: true });
   expect((await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze()).violations).toEqual([]);
+  await page.getByRole("combobox",{name:"Market",exact:true}).selectOption({label:"Synthetic Alliance"});
   await page.getByRole("button",{name:"Recovery jobs",exact:true}).click();
   await page.getByLabel("Numeric item ID").fill("20002");
   await page.getByRole("button", { name: "Preview recovery", exact: true }).click();

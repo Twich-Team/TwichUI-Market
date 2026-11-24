@@ -60,6 +60,7 @@ test("provider rate limits: editable allowances, quota observations, cooldowns a
   const invalid=await page.request.patch("/api/v1/admin/metadata-providers/foreverdb/rate-limits",{headers:{"X-CSRF-Token":session.csrf_token},data:{...after.rate_limits.configured,minimum_interval:0}});
   expect(invalid.status()).toBe(422);
   await page.getByRole("link",{name:"Item Metadata",exact:true}).click();
+  await page.getByRole("combobox",{name:"Market",exact:true}).selectOption({label:"Synthetic Alliance"});
   await page.getByRole("button",{name:"Recovery jobs",exact:true}).click();
   await expect(page.getByText(/Waiting for ForeverDB rate limit — resumes at/).first()).toBeVisible();
   await page.getByRole("heading",{name:"Recovery jobs",exact:true}).locator("..").screenshot({path:`${output}/09-recovery-waiting-for-quota.png`});
