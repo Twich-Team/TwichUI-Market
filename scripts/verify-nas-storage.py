@@ -22,6 +22,9 @@ manager=Manager()
 checks=[]
 def passed(label):checks.append(label);print('PASS '+label,flush=True)
 try:
+    assert '/opt/backup/bin' not in os.environ['PATH'].split(os.pathsep)
+    assert Path(sys.executable).parent == Path('/opt/backup/bin')
+    passed('Image startup uses its dependency interpreter with the preserved production-style PATH')
     for _ in range(20):
         try:
             saved=manager.storage_save('admin:1',config); key=saved['id']; result=manager.storage_test('admin:1',key)

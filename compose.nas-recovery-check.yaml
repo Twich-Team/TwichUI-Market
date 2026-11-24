@@ -41,7 +41,7 @@ services:
     cap_drop: [ALL]
     cap_add: [DAC_READ_SEARCH]
     logging: {driver: json-file, options: {max-size: "2m", max-file: "1"}}
-    entrypoint: [python3, /checks/verify-live-backup-isolated.py]
+    command: [/checks/verify-live-backup-isolated.py]
 secrets:
   restore-password: {file: ./.local/backup-nas/restore-password}
 volumes:

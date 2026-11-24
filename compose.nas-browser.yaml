@@ -55,7 +55,9 @@ services:
       PGCONNECT_TIMEOUT: 5
       METADATA_KEYRING_FILE: /state/keyring.json
       BACKUP_RESTORE_TEST_ENABLED: "true"
-    entrypoint: [python3, /checks/start-nas-fixture.py]
+      # Reproduce an existing installation's environment without the image's venv PATH.
+      PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    command: [/checks/start-nas-fixture.py]
     volumes: [browser-backups:/backups, browser-state:/state, ./deploy/backup:/app:ro, ./backend/market/provider_secrets.py:/secrets-code/provider_secrets.py:ro, ./scripts:/checks:ro, ./artifacts/backup-nas/browser-token:/run/secrets/backup-manager-token:ro]
     read_only: true
     tmpfs: [/tmp:size=16m]

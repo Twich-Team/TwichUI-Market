@@ -387,7 +387,7 @@
         "default"
       ],
       "entrypoint": [
-        "python3",
+        "/opt/backup/bin/python",
         "/app/service.py"
       ],
       "pids_limit": 64,
