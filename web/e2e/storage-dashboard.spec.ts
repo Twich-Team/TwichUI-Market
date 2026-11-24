@@ -87,3 +87,7 @@ test('subsystem failure leaves other monitoring and navigation available',async(
  for(const width of [320,1280,800]){await page.setViewportSize({width,height:720});for(const view of ['backups','storage','maintenance']){await open(page,view);await shot(page,`${view}-${width}`);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);}}
  await page.setViewportSize({width:1280,height:720});await open(page,'storage');await page.locator('.storage-device').filter({has:page.getByRole('heading',{name:'Network vault',exact:true})}).getByRole('button',{name:'Configure',exact:true}).click();await shot(page,'nas-configuration-1280');await expect(page.getByRole('dialog')).toBeVisible();await page.getByRole('button',{name:'Close storage settings'}).click();await expect(page.getByRole('dialog')).toHaveCount(0);
  });
+
+test('phone service errors preserve readable metrics without horizontal overflow',async({page})=>{
+ await setup(page);await page.setViewportSize({width:320,height:900});await page.route('**/api/v1/admin/backups?**',route=>route.fulfill({status:503,json:{detail:'Isolated backup service unavailable'}}));await open(page);await expect(page.getByRole('region',{name:'Attention and activity'})).toContainText('Backup service unavailable');expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBe(320);await shot(page,'overview-phone-unavailable');
+});

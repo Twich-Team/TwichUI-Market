@@ -439,6 +439,8 @@ export function Administration({
       {tab === "storage" && <StorageDashboard readOnly={readOnly}/> }
       {state && (
         <>
+          {tab === "overview" && storageQuery.isPending && <Loading label="Loading storage summary…"/>}
+          {tab === "overview" && storageQuery.error && <p role="alert" className="notice error">Storage summary is unavailable. <button onClick={()=>void storageQuery.refetch()}>Retry storage summary</button></p>}
           {tab === "overview" && storageQuery.data && <AdministrationOverview storage={storageQuery.data} coverage={state.coverage} devices={state.deviceSummary} markets={markets} open={setTab}/>}
           {tab === "members" && (
             <>
