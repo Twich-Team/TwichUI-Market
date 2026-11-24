@@ -279,3 +279,13 @@ class NASStorage(unittest.TestCase):
         self.assertEqual(removed['results'][0]['status'],'deleted')
         with patch('storage_config.SMB',side_effect=StorageError('Old NAS is offline')) as old:
             self.assertFalse(self.manager.overview()['inventory_stale']);old.assert_not_called()
+
+    def test_previous_storage_identity_cannot_be_relocated_while_originals_are_tracked(self):
+        self.archive();self.assertEqual(self.migrate()['status'],'succeeded')
+        self.assertTrue(self.manager.storage_test('admin:1','local')['healthy'])
+        plan=self.manager.migration_plan('local');job=self.manager.migration_queue('admin:1','local',plan)
+        self.assertEqual(self.manager.migrate('admin:1',job['id'])['status'],'succeeded')
+        values=dict(id=self.key,revision=1,type='smb',name='Previous NAS',host='192.168.9.9',port=445,username='fixture',share='backups',directory='')
+        with self.assertRaises(Refused):self.manager.storage_save('admin:1',values)
+        with self.assertRaises(Refused):self.manager.storage_save('admin:1',dict(values,type='mounted'))
+        self.assertEqual(self.manager.candidate(self.key)['host'],'192.168.1.2')

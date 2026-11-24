@@ -82,9 +82,11 @@ class StorageConfiguration:
             old = configs.get(key,{})
             if old and values.get('revision') != old['revision']:
                 raise Refused('Storage configuration changed; refresh before saving')
+            if old and values.get('type',old['type'])!=old['type']:raise Refused('Storage type cannot change; create a new destination')
+            previous=self.get(db,'storage_previous')
             identity=('type','directory','host','port','share') if old.get('type')=='smb' else ('type','directory')
-            if key == active and any(values.get(k,old.get(k)) != old.get(k) for k in identity):
-                raise Refused('Configure a new destination to change the active backup location; existing files are preserved')
+            if key in (active,previous) and any(values.get(k,old.get(k)) != old.get(k) for k in identity):
+                raise Refused('Configure a new destination to relocate tracked backups; existing files are preserved')
             # One active, one previous and one candidate keeps location tracking deliberately small.
             previous = self.get(db, 'storage_previous')
             keep = {active, previous, 'local'}
