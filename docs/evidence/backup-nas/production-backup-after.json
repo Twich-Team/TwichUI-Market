@@ -1,0 +1,36 @@
+{
+  "measured_at": "2026-11-24T17:41:11.860085+00:00",
+  "policy": {
+    "revision": 2,
+    "enabled": true,
+    "interval_seconds": 86400,
+    "daily": 2,
+    "weekly": 0,
+    "monthly": 0,
+    "max_bytes": null,
+    "minimum_recovery_points": 1,
+    "warning_free_bytes": 3221225472
+  },
+  "service_status": "enabled",
+  "last_success": "2026-11-24T13:39:40.297859+00:00",
+  "last_restoration_verified_at": "2026-11-24T14:14:43.398263+00:00",
+  "total": 6,
+  "total_bytes": 9420978411,
+  "protected_count": 5,
+  "protected_bytes": 7288747534,
+  "filesystem": {
+    "capacity_bytes": 266736099328,
+    "available_bytes": 117006008320,
+    "free_bytes": 128981757952,
+    "filesystem_id": "64512",
+    "measurement": "backup filesystem; available excludes privileged reserve",
+    "reserve_bytes": 2147483648
+  },
+  "next_scheduled_at": "2026-11-25T04:30:38.787973+00:00",
+  "inventory_stale": false,
+  "artifact_count": 30,
+  "original_five_archives_present_with_same_sizes": true,
+  "nas_configured": false,
+  "production_migration_performed": false,
+  "production_archive_deletions": 0
+}

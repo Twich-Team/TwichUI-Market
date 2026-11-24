@@ -1,0 +1,10 @@
+{
+  "provenance": "actual before/after database/keyring/distribution fingerprints; no credential values published",
+  "unchanged": {
+    "users": true,
+    "preferences": true,
+    "provider_credentials": true,
+    "keyring_sha256": true,
+    "private_beta_files": true
+  }
+}

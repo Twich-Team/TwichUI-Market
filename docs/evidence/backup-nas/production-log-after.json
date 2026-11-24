@@ -1,0 +1,47 @@
+{
+  "provenance": "actual current production container logs sampled since2026-11-24T12:55:00Z; retired container logs are not claimed",
+  "observed_at": "2026-11-24T17:44:05.069156+00:00",
+  "services": {
+    "api": {
+      "sampled_lines": 3017,
+      "error_lines": 0,
+      "http_5xx_lines": 1
+    },
+    "local-api": {
+      "sampled_lines": 317,
+      "error_lines": 0,
+      "http_5xx_lines": 0
+    },
+    "worker": {
+      "sampled_lines": 0,
+      "error_lines": 0,
+      "http_5xx_lines": 0
+    },
+    "retention": {
+      "sampled_lines": 0,
+      "error_lines": 0,
+      "http_5xx_lines": 0
+    },
+    "backup-manager": {
+      "sampled_lines": 0,
+      "error_lines": 0,
+      "http_5xx_lines": 0
+    },
+    "db": {
+      "sampled_lines": 128,
+      "error_lines": 6,
+      "http_5xx_lines": 0,
+      "error_categories": {
+        "bounded_statement_timeout": 0,
+        "bounded_transaction_timeout": 3,
+        "read_only_audit_syntax": 2,
+        "read_only_audit_missing_column": 1
+      }
+    },
+    "monitor": {
+      "sampled_lines": 0,
+      "error_lines": 0,
+      "http_5xx_lines": 0
+    }
+  }
+}

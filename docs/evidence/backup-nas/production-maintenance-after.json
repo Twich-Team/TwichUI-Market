@@ -1,0 +1,503 @@
+{
+  "measured_at": "2026-11-24 17:45:20.832899+00:00",
+  "status": "enabled",
+  "policy": {
+    "raw_days": 7,
+    "intraday_days": 90,
+    "daily_days": 365,
+    "operational_days": 90,
+    "security_days": 365,
+    "revision": 3,
+    "policy_hash": "9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7",
+    "application_authorized": true,
+    "daily_support_days": 60,
+    "batch_row_limit": 5000
+  },
+  "automation": {
+    "installed": true,
+    "enabled": true,
+    "authorized": true,
+    "authorization": {
+      "execution_hash": "47d5b28e5ada6d217574943b78209f2df4189cb05459f418ef4967953642dc81",
+      "limits": {
+        "collector_margin_seconds": 30,
+        "contention_retry_seconds": 60,
+        "interval_seconds": 300,
+        "lock_ms": 250,
+        "max_batches": 12,
+        "max_seconds": 20,
+        "max_wal_bytes": 2147483648,
+        "payloads_per_batch": 25,
+        "rows_per_batch": 5000,
+        "statement_ms": 2000
+      },
+      "policy_hash": "9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7",
+      "policy_revision": 3,
+      "scope": {
+        "aggregation_guard_sha256": "c421a96583ab8c634fefd3faccdd9a1d7ba46e7c0f92f55e073d7cb94493eb0e",
+        "canonical_aggregation_sha256": "7ac47b6fa412d09e64540de35a7ba9bfbd90401e3afbf625cb2ecdd45aa39fbb",
+        "canonical_cache_pruning": true,
+        "concurrent_executions": 1,
+        "current_heads": "all markets including disabled",
+        "daily_support_days": 60,
+        "engine_sha256": "83031234080982b617ce0784087612c3b5cb0714af591de33fd3de0b0bc8f130",
+        "minimum_filesystem_reserve_bytes": 34359738368,
+        "operations": "DELETE candidate rows except raw_feed_payloads, which clears compressed_payload",
+        "production_health_guard": true,
+        "recovery_policy": {
+          "mode": "local_only",
+          "off_vm_required": false,
+          "owner_approval_reference": "owner-20261118-retention-local-only",
+          "valid": true
+        },
+        "resource_guard_sha256": "9f35c0b402dcc14f563a90f992c374f94d20ebaeb12f0c423b68f37d56b054a4",
+        "scheduler_sha256": "a88e49abac2cc4326ae835ce42546d6772639eab550be907a910c80c38cb7fb7",
+        "shared_snapshots": "protect all retained observation dependencies",
+        "stages": [
+          "daily_references",
+          "observations",
+          "raw_listings",
+          "raw_feed_payloads",
+          "intraday_statistics",
+          "derived_pricing_cache (only when separately enabled)",
+          "collection_logs",
+          "feed_checks",
+          "security_logs"
+        ],
+        "sync": "existing 409/full refresh",
+        "version": 1
+      }
+    },
+    "proposal": {
+      "policy_hash": "9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7",
+      "policy_revision": 3,
+      "scope": {
+        "version": 1,
+        "canonical_aggregation_sha256": "7ac47b6fa412d09e64540de35a7ba9bfbd90401e3afbf625cb2ecdd45aa39fbb",
+        "aggregation_guard_sha256": "c421a96583ab8c634fefd3faccdd9a1d7ba46e7c0f92f55e073d7cb94493eb0e",
+        "resource_guard_sha256": "9f35c0b402dcc14f563a90f992c374f94d20ebaeb12f0c423b68f37d56b054a4",
+        "production_health_guard": true,
+        "canonical_cache_pruning": true,
+        "stages": [
+          "daily_references",
+          "observations",
+          "raw_listings",
+          "raw_feed_payloads",
+          "intraday_statistics",
+          "derived_pricing_cache (only when separately enabled)",
+          "collection_logs",
+          "feed_checks",
+          "security_logs"
+        ],
+        "daily_support_days": 60,
+        "current_heads": "all markets including disabled",
+        "shared_snapshots": "protect all retained observation dependencies",
+        "sync": "existing 409/full refresh",
+        "concurrent_executions": 1,
+        "operations": "DELETE candidate rows except raw_feed_payloads, which clears compressed_payload",
+        "scheduler_sha256": "a88e49abac2cc4326ae835ce42546d6772639eab550be907a910c80c38cb7fb7",
+        "minimum_filesystem_reserve_bytes": 34359738368,
+        "recovery_policy": {
+          "mode": "local_only",
+          "valid": true,
+          "off_vm_required": false,
+          "owner_approval_reference": "owner-20261118-retention-local-only"
+        },
+        "engine_sha256": "83031234080982b617ce0784087612c3b5cb0714af591de33fd3de0b0bc8f130"
+      },
+      "limits": {
+        "rows_per_batch": 5000,
+        "payloads_per_batch": 25,
+        "max_batches": 12,
+        "max_seconds": 20,
+        "statement_ms": 2000,
+        "lock_ms": 250,
+        "interval_seconds": 300,
+        "collector_margin_seconds": 30,
+        "contention_retry_seconds": 60,
+        "max_wal_bytes": 2147483648
+      },
+      "execution_hash": "47d5b28e5ada6d217574943b78209f2df4189cb05459f418ef4967953642dc81"
+    },
+    "recovery": {
+      "policy": {
+        "mode": "local_only",
+        "valid": true,
+        "off_vm_required": false,
+        "owner_approval_reference": "owner-20261118-retention-local-only"
+      },
+      "off_vm_required": false,
+      "local_archive_status": "Identity and protected restore receipt rechecked under the backup lock; full checksum and isolated restoration run during automatic verification",
+      "off_vm_verification_recent": false,
+      "required_evidence_recent": true,
+      "verified_at": "2026-11-24 14:14:43.398263+00:00",
+      "reason": null,
+      "expires_at": "2026-11-25 13:39:40.297859+00:00",
+      "remediation": "Check Backup Storage and the latest isolated restore. Automatic verification refreshes the recovery receipt after a successful new backup; failed or expired verification keeps cleanup paused."
+    },
+    "next_run_at": "2026-11-24 17:46:19.669595+00:00",
+    "last_success_at": "2026-11-24 17:41:19.776133+00:00",
+    "rows_by_stage": {
+      "raw_listings": 10079343
+    },
+    "last_run": {
+      "id": 1799,
+      "started_at": "2026-11-24 17:41:19.675439+00:00",
+      "finished_at": "2026-11-24 17:41:19.776133+00:00",
+      "status": "complete",
+      "reason": null,
+      "batches": 0,
+      "rows_processed": 0
+    },
+    "paused_reason": null,
+    "recovery_notice": "Automatic execution requires a present, rehashed, protected restored archive within 24 hours. The owner waived off-VM recovery for now; local backups do not protect against loss of this VM."
+  },
+  "tiers": {
+    "observations": {
+      "records": 2408,
+      "oldest": "2026-11-14 02:45:34.522262+00:00",
+      "newest": "2026-11-24 17:42:24.921696+00:00"
+    },
+    "snapshots": {
+      "records": 213,
+      "oldest": "2026-11-14 02:45:36.952369+00:00",
+      "newest": "2026-11-24 17:27:23.546361+00:00"
+    },
+    "daily": {
+      "records": 12,
+      "oldest": "2026-11-14",
+      "newest": "2026-11-24"
+    }
+  },
+  "aggregation": {
+    "missing_statistic_snapshots": 0,
+    "pending_canonical_daily_snapshots": 0,
+    "status": "present",
+    "canonical_cache_retention_enabled": true,
+    "notice": "Compact snapshot statistics and UTC daily references are produced during ingestion. Presence alone does not prove complete aggregation; destructive batches require their own validation."
+  },
+  "database_bytes": 15639156403,
+  "tables": [
+    {
+      "name": "listings",
+      "estimated_live_rows": 27387318,
+      "estimated_dead_rows": 3234742,
+      "last_autovacuum": "2026-11-24 16:53:18.875348+00:00",
+      "last_autoanalyze": "2026-11-24 17:27:34.736389+00:00",
+      "allocated_bytes": 9874104320
+    },
+    {
+      "name": "bridge_derived_records",
+      "estimated_live_rows": 2679253,
+      "estimated_dead_rows": 40483,
+      "last_autovacuum": "2026-11-24 07:51:42.978155+00:00",
+      "last_autoanalyze": "2026-11-24 14:29:27.175310+00:00",
+      "allocated_bytes": 3251429376
+    },
+    {
+      "name": "snapshot_statistics",
+      "estimated_live_rows": 5980749,
+      "estimated_dead_rows": 0,
+      "last_autovacuum": "2026-11-24 09:29:25.535228+00:00",
+      "last_autoanalyze": "2026-11-24 06:27:05.264594+00:00",
+      "allocated_bytes": 1916149760
+    },
+    {
+      "name": "feed_captures",
+      "estimated_live_rows": 276,
+      "estimated_dead_rows": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": "2026-11-24 05:32:01.379954+00:00",
+      "allocated_bytes": 295329792
+    },
+    {
+      "name": "metadata_tasks",
+      "estimated_live_rows": 31841,
+      "estimated_dead_rows": 3884,
+      "last_autovacuum": "2026-11-22 22:05:37.684220+00:00",
+      "last_autoanalyze": "2026-11-23 12:00:14.756167+00:00",
+      "allocated_bytes": 57327616
+    },
+    {
+      "name": "metadata_versions",
+      "estimated_live_rows": 29538,
+      "estimated_dead_rows": 4,
+      "last_autovacuum": null,
+      "last_autoanalyze": "2026-11-22 22:06:37.616951+00:00",
+      "allocated_bytes": 47407104
+    },
+    {
+      "name": "metadata_sources",
+      "estimated_live_rows": 19214,
+      "estimated_dead_rows": 3852,
+      "last_autovacuum": "2026-11-22 17:18:24.193199+00:00",
+      "last_autoanalyze": "2026-11-23 13:31:18.533504+00:00",
+      "allocated_bytes": 36880384
+    },
+    {
+      "name": "bridge_records",
+      "estimated_live_rows": 512,
+      "estimated_dead_rows": 0,
+      "last_autovacuum": "2026-11-24 17:11:32.012556+00:00",
+      "last_autoanalyze": "2026-11-24 17:11:32.020384+00:00",
+      "allocated_bytes": 35897344
+    },
+    {
+      "name": "item_metadata",
+      "estimated_live_rows": 7541,
+      "estimated_dead_rows": 1339,
+      "last_autovacuum": "2026-11-22 16:52:23.234520+00:00",
+      "last_autoanalyze": "2026-11-24 04:16:57.980921+00:00",
+      "allocated_bytes": 28647424
+    },
+    {
+      "name": "item_media",
+      "estimated_live_rows": 74,
+      "estimated_dead_rows": 53,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "allocated_bytes": 23150592
+    }
+  ],
+  "housekeeping": {
+    "last_success_at": "2026-11-24 15:42:48.052869+00:00",
+    "removed": {
+      "collection_runs": 0,
+      "security_events": 0,
+      "login_attempts": 0,
+      "credentials": 0,
+      "invitations": 0
+    }
+  },
+  "recent_runs": [
+    {
+      "id": 1799,
+      "started_at": "2026-11-24 17:41:19.675439+00:00",
+      "finished_at": "2026-11-24 17:41:19.776133+00:00",
+      "status": "complete",
+      "reason": null,
+      "rows_processed": 0,
+      "batches": 0,
+      "removed_by_category": {}
+    },
+    {
+      "id": 1798,
+      "started_at": "2026-11-24 17:36:47.105631+00:00",
+      "finished_at": "2026-11-24 17:36:49.544687+00:00",
+      "status": "complete",
+      "reason": null,
+      "rows_processed": 10564,
+      "batches": 3,
+      "removed_by_category": {
+        "raw_listings": 10564
+      }
+    },
+    {
+      "id": 1797,
+      "started_at": "2026-11-24 17:31:43.487694+00:00",
+      "finished_at": "2026-11-24 17:31:46.940340+00:00",
+      "status": "paused",
+      "reason": "Collector due; yielding maintenance budget",
+      "rows_processed": 20000,
+      "batches": 4,
+      "removed_by_category": {
+        "raw_listings": 20000
+      }
+    },
+    {
+      "id": 1796,
+      "started_at": "2026-11-24 17:26:32.823860+00:00",
+      "finished_at": "2026-11-24 17:26:43.336284+00:00",
+      "status": "budget_exhausted",
+      "reason": null,
+      "rows_processed": 60000,
+      "batches": 12,
+      "removed_by_category": {
+        "raw_listings": 60000
+      }
+    },
+    {
+      "id": 1795,
+      "started_at": "2026-11-24 17:21:32.584073+00:00",
+      "finished_at": "2026-11-24 17:21:32.678438+00:00",
+      "status": "complete",
+      "reason": null,
+      "rows_processed": 0,
+      "batches": 0,
+      "removed_by_category": {}
+    },
+    {
+      "id": 1794,
+      "started_at": "2026-11-24 17:16:32.334935+00:00",
+      "finished_at": "2026-11-24 17:16:32.403837+00:00",
+      "status": "complete",
+      "reason": null,
+      "rows_processed": 0,
+      "batches": 0,
+      "removed_by_category": {}
+    },
+    {
+      "id": 1793,
+      "started_at": "2026-11-24 17:14:02.033246+00:00",
+      "finished_at": "2026-11-24 17:14:02.245618+00:00",
+      "status": "complete",
+      "reason": null,
+      "rows_processed": 0,
+      "batches": 0,
+      "removed_by_category": {}
+    },
+    {
+      "id": 1792,
+      "started_at": "2026-11-24 17:12:53.752168+00:00",
+      "finished_at": "2026-11-24 17:13:01.995074+00:00",
+      "status": "complete",
+      "reason": null,
+      "rows_processed": 108779,
+      "batches": 11,
+      "removed_by_category": {
+        "raw_listings": 108779
+      }
+    },
+    {
+      "id": 1791,
+      "started_at": "2026-11-24 17:11:53.677414+00:00",
+      "finished_at": "2026-11-24 17:11:53.721451+00:00",
+      "status": "paused",
+      "reason": "Collector due; yielding maintenance budget",
+      "rows_processed": 0,
+      "batches": 0,
+      "removed_by_category": {}
+    },
+    {
+      "id": 1790,
+      "started_at": "2026-11-24 17:10:53.350669+00:00",
+      "finished_at": "2026-11-24 17:11:08.652317+00:00",
+      "status": "budget_exhausted",
+      "reason": null,
+      "rows_processed": 200000,
+      "batches": 20,
+      "removed_by_category": {
+        "raw_listings": 200000
+      }
+    },
+    {
+      "id": 1789,
+      "started_at": "2026-11-24 17:09:52.769176+00:00",
+      "finished_at": "2026-11-24 17:10:08.322930+00:00",
+      "status": "budget_exhausted",
+      "reason": null,
+      "rows_processed": 200000,
+      "batches": 20,
+      "removed_by_category": {
+        "raw_listings": 200000
+      }
+    },
+    {
+      "id": 1788,
+      "started_at": "2026-11-24 17:08:52.271651+00:00",
+      "finished_at": "2026-11-24 17:09:07.743455+00:00",
+      "status": "budget_exhausted",
+      "reason": null,
+      "rows_processed": 200000,
+      "batches": 20,
+      "removed_by_category": {
+        "raw_listings": 200000
+      }
+    },
+    {
+      "id": 1787,
+      "started_at": "2026-11-24 17:07:51.414015+00:00",
+      "finished_at": "2026-11-24 17:08:07.248473+00:00",
+      "status": "budget_exhausted",
+      "reason": null,
+      "rows_processed": 200000,
+      "batches": 20,
+      "removed_by_category": {
+        "raw_listings": 200000
+      }
+    },
+    {
+      "id": 1786,
+      "started_at": "2026-11-24 17:06:51.337095+00:00",
+      "finished_at": "2026-11-24 17:06:51.382521+00:00",
+      "status": "paused",
+      "reason": "Collector due; yielding maintenance budget",
+      "rows_processed": 0,
+      "batches": 0,
+      "removed_by_category": {}
+    },
+    {
+      "id": 1785,
+      "started_at": "2026-11-24 17:05:49.767704+00:00",
+      "finished_at": "2026-11-24 17:06:06.312086+00:00",
+      "status": "budget_exhausted",
+      "reason": null,
+      "rows_processed": 200000,
+      "batches": 20,
+      "removed_by_category": {
+        "raw_listings": 200000
+      }
+    },
+    {
+      "id": 1784,
+      "started_at": "2026-11-24 17:04:47.075445+00:00",
+      "finished_at": "2026-11-24 17:05:04.742554+00:00",
+      "status": "budget_exhausted",
+      "reason": null,
+      "rows_processed": 140000,
+      "batches": 14,
+      "removed_by_category": {
+        "raw_listings": 140000
+      }
+    },
+    {
+      "id": 1783,
+      "started_at": "2026-11-24 17:03:32.075639+00:00",
+      "finished_at": "2026-11-24 17:03:47.037060+00:00",
+      "status": "budget_exhausted",
+      "reason": null,
+      "rows_processed": 200000,
+      "batches": 20,
+      "removed_by_category": {
+        "raw_listings": 200000
+      }
+    },
+    {
+      "id": 1782,
+      "started_at": "2026-11-24 17:02:30.977100+00:00",
+      "finished_at": "2026-11-24 17:02:47.052029+00:00",
+      "status": "budget_exhausted",
+      "reason": null,
+      "rows_processed": 200000,
+      "batches": 20,
+      "removed_by_category": {
+        "raw_listings": 200000
+      }
+    },
+    {
+      "id": 1781,
+      "started_at": "2026-11-24 17:01:19.875452+00:00",
+      "finished_at": "2026-11-24 17:01:30.944525+00:00",
+      "status": "paused",
+      "reason": "Collector due; yielding maintenance budget",
+      "rows_processed": 140000,
+      "batches": 14,
+      "removed_by_category": {
+        "raw_listings": 140000
+      }
+    },
+    {
+      "id": 1780,
+      "started_at": "2026-11-24 17:00:19.477790+00:00",
+      "finished_at": "2026-11-24 17:00:34.850087+00:00",
+      "status": "budget_exhausted",
+      "reason": null,
+      "rows_processed": 200000,
+      "batches": 20,
+      "removed_by_category": {
+        "raw_listings": 200000
+      }
+    }
+  ],
+  "storage_notice": "DELETE makes PostgreSQL space reusable after vacuum. It does not promise smaller files or reclaimed host space."
+}

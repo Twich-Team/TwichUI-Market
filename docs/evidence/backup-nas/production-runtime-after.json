@@ -1,0 +1,541 @@
+{
+  "provenance": "actual rootless Docker production inspection; no environment values or secret mount paths included",
+  "observed_at": "2026-11-24T17:41:06.822358+00:00",
+  "containers": [
+    {
+      "service": "api",
+      "id": "99f1e36f5d4d3cc20c36795a669c1029221125ae7534486abd1045f6a71e3404",
+      "image": "sha256:d05cac0444afaccd9b95dbe5f31d9b575a1f354ff769b6fd6666e8073543aa7f",
+      "source": "5d520da210c75f0dc9cd5233015e5d92ea160925",
+      "started_at": "2026-11-24T16:21:18.802255529Z",
+      "status": "running",
+      "oom": false,
+      "restarts": 0,
+      "cpus": 0.5,
+      "memory_bytes": 402653184,
+      "entrypoint": null,
+      "command": [
+        "uvicorn",
+        "market.app:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8000",
+        "--no-proxy-headers"
+      ],
+      "volumes": [
+        {
+          "name": null,
+          "destination": "/backup-status",
+          "writable": false
+        },
+        {
+          "name": "twichui-market_market-data",
+          "destination": "/database-filesystem",
+          "writable": false
+        },
+        {
+          "name": "twichui-market_companion-private-beta",
+          "destination": "/private-beta",
+          "writable": false
+        },
+        {
+          "name": null,
+          "destination": "/retention-recovery",
+          "writable": false
+        },
+        {
+          "name": null,
+          "destination": "/run/metadata/keyring.json",
+          "writable": false
+        },
+        {
+          "name": null,
+          "destination": "/run/secrets/backup-manager-token",
+          "writable": false
+        }
+      ]
+    },
+    {
+      "service": "local-api",
+      "id": "17debdcf30f4cee54caedcdc06e80287074e2323c343d68080a344dfc46bd838",
+      "image": "sha256:d05cac0444afaccd9b95dbe5f31d9b575a1f354ff769b6fd6666e8073543aa7f",
+      "source": "5d520da210c75f0dc9cd5233015e5d92ea160925",
+      "started_at": "2026-11-24T16:21:18.410767079Z",
+      "status": "running",
+      "oom": false,
+      "restarts": 0,
+      "cpus": 0.25,
+      "memory_bytes": 268435456,
+      "entrypoint": null,
+      "command": [
+        "uvicorn",
+        "market.app:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8000",
+        "--no-proxy-headers"
+      ],
+      "volumes": [
+        {
+          "name": null,
+          "destination": "/backup-status",
+          "writable": false
+        },
+        {
+          "name": "twichui-market_market-data",
+          "destination": "/database-filesystem",
+          "writable": false
+        },
+        {
+          "name": "twichui-market_companion-private-beta",
+          "destination": "/private-beta",
+          "writable": false
+        },
+        {
+          "name": null,
+          "destination": "/retention-recovery",
+          "writable": false
+        },
+        {
+          "name": null,
+          "destination": "/run/metadata/keyring.json",
+          "writable": false
+        },
+        {
+          "name": null,
+          "destination": "/run/secrets/backup-manager-token",
+          "writable": false
+        }
+      ]
+    },
+    {
+      "service": "worker",
+      "id": "577112a666ade615bd57a3fbb978d9fc4bc241c5ca6578905f0a5d9306caced3",
+      "image": "sha256:fb64eb049f4c715e31c95c4d2252c680c14f66eb3d00d9d934107ec202298418",
+      "source": "9660fe8c828a89f8d31848024df7fcfc48d4bd17",
+      "started_at": "2026-11-24T15:42:45.778967784Z",
+      "status": "running",
+      "oom": false,
+      "restarts": 0,
+      "cpus": 0.5,
+      "memory_bytes": 402653184,
+      "entrypoint": null,
+      "command": [
+        "python",
+        "-m",
+        "market.worker"
+      ],
+      "volumes": [
+        {
+          "name": "twichui-market_market-data",
+          "destination": "/database-filesystem",
+          "writable": false
+        }
+      ]
+    },
+    {
+      "service": "retention",
+      "id": "75da753a56a1640220758e879391b5b68c404116a3236d2096e2d6694cb48051",
+      "image": "sha256:d05cac0444afaccd9b95dbe5f31d9b575a1f354ff769b6fd6666e8073543aa7f",
+      "source": "5d520da210c75f0dc9cd5233015e5d92ea160925",
+      "started_at": "2026-11-24T16:21:18.191126414Z",
+      "status": "running",
+      "oom": false,
+      "restarts": 0,
+      "cpus": 0.25,
+      "memory_bytes": 201326592,
+      "entrypoint": null,
+      "command": [
+        "python",
+        "-m",
+        "market.retention_worker"
+      ],
+      "volumes": [
+        {
+          "name": null,
+          "destination": "/backup-status",
+          "writable": false
+        },
+        {
+          "name": "twichui-market_market-data",
+          "destination": "/database-filesystem",
+          "writable": false
+        },
+        {
+          "name": null,
+          "destination": "/retention-recovery",
+          "writable": false
+        },
+        {
+          "name": null,
+          "destination": "/run/secrets/backup-manager-token",
+          "writable": false
+        }
+      ]
+    },
+    {
+      "service": "monitor",
+      "id": "86d8d362f4ad9ee8abdb222a4836116d2028f5c9c8d5e207cdb68c88e76aabc8",
+      "image": "sha256:d05cac0444afaccd9b95dbe5f31d9b575a1f354ff769b6fd6666e8073543aa7f",
+      "source": "5d520da210c75f0dc9cd5233015e5d92ea160925",
+      "started_at": "2026-11-24T16:21:18.626629234Z",
+      "status": "running",
+      "oom": false,
+      "restarts": 0,
+      "cpus": 0.25,
+      "memory_bytes": 134217728,
+      "entrypoint": null,
+      "command": [
+        "python",
+        "-m",
+        "market.storage"
+      ],
+      "volumes": [
+        {
+          "name": "twichui-market_market-data",
+          "destination": "/database-filesystem",
+          "writable": false
+        },
+        {
+          "name": null,
+          "destination": "/retention-recovery",
+          "writable": false
+        }
+      ]
+    },
+    {
+      "service": "backup-manager",
+      "id": "2d12da84642a1b0cef867345615e1294575d575a5f2cf1231428f3c1fe41d86c",
+      "image": "sha256:f8b2490c9f7adb336581657901221539f050485ba1f9d235f0161ec5f7264cd3",
+      "source": "5b20fa135252803bcadd2bf134f9fd7dcb3c2238",
+      "started_at": "2026-11-24T16:56:38.043110446Z",
+      "status": "running",
+      "oom": false,
+      "restarts": 0,
+      "cpus": 0.25,
+      "memory_bytes": 268435456,
+      "entrypoint": [
+        "/opt/backup/bin/python",
+        "/app/service.py"
+      ],
+      "command": null,
+      "volumes": [
+        {
+          "name": null,
+          "destination": "/backup-status",
+          "writable": true
+        },
+        {
+          "name": null,
+          "destination": "/backups",
+          "writable": true
+        },
+        {
+          "name": "twichui-market_backup-restore-data",
+          "destination": "/restore-filesystem",
+          "writable": false
+        },
+        {
+          "name": null,
+          "destination": "/retention-recovery",
+          "writable": true
+        },
+        {
+          "name": "twichui-market_backup-management-state",
+          "destination": "/state",
+          "writable": true
+        },
+        {
+          "name": null,
+          "destination": "/run/secrets/backup-manager-token",
+          "writable": false
+        },
+        {
+          "name": null,
+          "destination": "/run/secrets/backup-restore-password",
+          "writable": false
+        },
+        {
+          "name": null,
+          "destination": "/run/secrets/backup-storage-keyring.json",
+          "writable": false
+        },
+        {
+          "name": "89b31260a39f7faef1ff871012dfdeabe98c483f13ccfd9a372f986ee4a0b8db",
+          "destination": "/var/lib/postgresql/data",
+          "writable": true
+        }
+      ]
+    },
+    {
+      "service": "proxy",
+      "id": "1d307b2f284c58d542e05a1321c82dd7c9a4e90cf428dbf30aedfb8b3c928fd6",
+      "image": "sha256:c6b7aa8e28ff7213a1c80ea4ee1bcf3c36a0e0380e6534170ba585db4184a4cc",
+      "source": "5d520da210c75f0dc9cd5233015e5d92ea160925",
+      "started_at": "2026-11-24T16:21:35.695120828Z",
+      "status": "running",
+      "oom": false,
+      "restarts": 0,
+      "cpus": 0.25,
+      "memory_bytes": 134217728,
+      "entrypoint": null,
+      "command": [
+        "caddy",
+        "run",
+        "--config",
+        "/etc/caddy/Caddyfile",
+        "--adapter",
+        "caddyfile"
+      ],
+      "volumes": [
+        {
+          "name": "twichui-market_caddy-data",
+          "destination": "/data",
+          "writable": true
+        },
+        {
+          "name": null,
+          "destination": "/etc/caddy/Caddyfile",
+          "writable": false
+        },
+        {
+          "name": null,
+          "destination": "/etc/caddy/routes.local.caddy",
+          "writable": false
+        },
+        {
+          "name": null,
+          "destination": "/etc/caddy/routes.production.caddy",
+          "writable": false
+        }
+      ]
+    },
+    {
+      "service": "db",
+      "id": "1a138045d430554c64142f230fa1555e61d3414b2926ae9b2606f58fb8fb3642",
+      "image": "sha256:d3244e8ce3f165ee3c93d9c4a4b1d0fe48b3a89e2287b717fdcbbde92d405065",
+      "source": null,
+      "started_at": "2026-11-22T14:25:14.726106577Z",
+      "status": "running",
+      "oom": false,
+      "restarts": 0,
+      "cpus": 1.0,
+      "memory_bytes": 805306368,
+      "entrypoint": [
+        "docker-entrypoint.sh"
+      ],
+      "command": [
+        "postgres"
+      ],
+      "volumes": [
+        {
+          "name": "twichui-market_market-data",
+          "destination": "/var/lib/postgresql/data",
+          "writable": true
+        }
+      ]
+    },
+    {
+      "service": "enrichment",
+      "id": "08ac2b64e749d094f88e9cce7157fd3c5a29ea867bb11ae24789247479a49c44",
+      "image": "sha256:3ef6f57964546a425f4c2ebe2bc44be2d9a516340325074dfb0fb2f32d7c3667",
+      "source": "bf8a04a0539fb4c3e2468c70a2e5155ba1150f95",
+      "started_at": "2026-11-22T14:25:14.640992375Z",
+      "status": "running",
+      "oom": false,
+      "restarts": 0,
+      "cpus": 0.25,
+      "memory_bytes": 201326592,
+      "entrypoint": null,
+      "command": [
+        "python",
+        "-m",
+        "market.enrichment"
+      ],
+      "volumes": [
+        {
+          "name": null,
+          "destination": "/run/metadata/keyring.json",
+          "writable": false
+        }
+      ]
+    },
+    {
+      "service": "backup-restore",
+      "id": "3748b1ba6d2222076f0fdf1e7f9fd066b5fcdefc7d5ce552ee2d17fae030e0d2",
+      "image": "sha256:d3244e8ce3f165ee3c93d9c4a4b1d0fe48b3a89e2287b717fdcbbde92d405065",
+      "source": null,
+      "started_at": "2026-11-24T15:42:36.543121924Z",
+      "status": "running",
+      "oom": false,
+      "restarts": 0,
+      "cpus": 0.25,
+      "memory_bytes": 536870912,
+      "entrypoint": [
+        "docker-entrypoint.sh"
+      ],
+      "command": [
+        "postgres",
+        "-c",
+        "max_wal_size=256MB",
+        "-c",
+        "min_wal_size=64MB",
+        "-c",
+        "shared_buffers=64MB",
+        "-c",
+        "max_connections=10",
+        "-c",
+        "autovacuum_max_workers=1"
+      ],
+      "volumes": [
+        {
+          "name": null,
+          "destination": "/run/secrets/backup-restore-password",
+          "writable": false
+        },
+        {
+          "name": "twichui-market_backup-restore-data",
+          "destination": "/var/lib/postgresql/data",
+          "writable": true
+        }
+      ]
+    }
+  ],
+  "original_environment": {
+    "api": {
+      "original_variable_count": 31,
+      "changed_original_variable_names": [],
+      "all_original_values_preserved": true
+    },
+    "local-api": {
+      "original_variable_count": 27,
+      "changed_original_variable_names": [],
+      "all_original_values_preserved": true
+    },
+    "worker": {
+      "original_variable_count": 24,
+      "changed_original_variable_names": [],
+      "all_original_values_preserved": true
+    },
+    "retention": {
+      "original_variable_count": 15,
+      "changed_original_variable_names": [],
+      "all_original_values_preserved": true
+    },
+    "monitor": {
+      "original_variable_count": 22,
+      "changed_original_variable_names": [],
+      "all_original_values_preserved": true
+    },
+    "backup-manager": {
+      "original_variable_count": 13,
+      "changed_original_variable_names": [],
+      "all_original_values_preserved": true
+    },
+    "proxy": {
+      "original_variable_count": 6,
+      "changed_original_variable_names": [],
+      "all_original_values_preserved": true
+    }
+  },
+  "original_mounts": {
+    "api": {
+      "unchanged_destinations": [
+        "/backup-status",
+        "/database-filesystem",
+        "/private-beta",
+        "/retention-recovery",
+        "/run/metadata/keyring.json",
+        "/run/secrets/backup-manager-token"
+      ],
+      "changed_destinations": [],
+      "documented_exceptions": []
+    },
+    "local-api": {
+      "unchanged_destinations": [
+        "/backup-status",
+        "/database-filesystem",
+        "/private-beta",
+        "/retention-recovery",
+        "/run/metadata/keyring.json",
+        "/run/secrets/backup-manager-token"
+      ],
+      "changed_destinations": [],
+      "documented_exceptions": []
+    },
+    "worker": {
+      "unchanged_destinations": [
+        "/database-filesystem"
+      ],
+      "changed_destinations": [],
+      "documented_exceptions": []
+    },
+    "retention": {
+      "unchanged_destinations": [
+        "/backup-status",
+        "/database-filesystem",
+        "/retention-recovery",
+        "/run/secrets/backup-manager-token"
+      ],
+      "changed_destinations": [],
+      "documented_exceptions": []
+    },
+    "monitor": {
+      "unchanged_destinations": [
+        "/database-filesystem",
+        "/retention-recovery"
+      ],
+      "changed_destinations": [],
+      "documented_exceptions": []
+    },
+    "backup-manager": {
+      "unchanged_destinations": [
+        "/backups",
+        "/state",
+        "/run/secrets/backup-manager-token"
+      ],
+      "changed_destinations": [],
+      "documented_exceptions": [
+        {
+          "destination": "/var/lib/postgresql/data",
+          "reason": "Unused original anonymous PostgreSQL image volume preserved separately for rollback; current manager has a bounded tmpfs"
+        }
+      ]
+    },
+    "proxy": {
+      "unchanged_destinations": [
+        "/data",
+        "/etc/caddy/Caddyfile",
+        "/etc/caddy/routes.local.caddy",
+        "/etc/caddy/routes.production.caddy"
+      ],
+      "changed_destinations": [],
+      "documented_exceptions": []
+    }
+  },
+  "volumes": {
+    "production_postgresql": {
+      "apparent_bytes": 16368564632,
+      "filesystem_allocated_bytes": 16369090560
+    },
+    "isolated_restore_postgresql": {
+      "apparent_bytes": 48534376,
+      "filesystem_allocated_bytes": 48607232
+    },
+    "backup_archives": {
+      "apparent_bytes": 9421013917,
+      "filesystem_allocated_bytes": 9421172736
+    },
+    "backup_management_state": {
+      "apparent_bytes": 712704,
+      "filesystem_allocated_bytes": 716800
+    }
+  },
+  "host_filesystem": {
+    "total_bytes": 266736099328,
+    "used_bytes": 137754320896,
+    "available_bytes": 117006028800
+  }
+}
