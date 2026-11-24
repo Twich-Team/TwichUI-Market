@@ -84,6 +84,6 @@ test('subsystem failure leaves other monitoring and navigation available',async(
 
  test('all detail pages and dialogs remain usable at narrow desktop widths',async({page})=>{
  test.setTimeout(90000);await setup(page);
- for(const width of [1280,800]){await page.setViewportSize({width,height:720});for(const view of ['backups','storage','maintenance']){await open(page,view);await shot(page,`${view}-${width}`);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);}}
+ for(const width of [320,1280,800]){await page.setViewportSize({width,height:720});for(const view of ['backups','storage','maintenance']){await open(page,view);await shot(page,`${view}-${width}`);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);}}
  await page.setViewportSize({width:1280,height:720});await open(page,'storage');await page.locator('.storage-device').filter({has:page.getByRole('heading',{name:'Network vault',exact:true})}).getByRole('button',{name:'Configure',exact:true}).click();await shot(page,'nas-configuration-1280');await expect(page.getByRole('dialog')).toBeVisible();await page.getByRole('button',{name:'Close storage settings'}).click();await expect(page.getByRole('dialog')).toHaveCount(0);
  });
