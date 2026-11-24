@@ -94,7 +94,7 @@ class StorageConfiguration:
                     raise Refused('Enter a NAS address and dedicated account username')
                 if type(c.get('port',445)) is not int or not (c.get('port',445)==445 or 1024<=c.get('port',445)<=65535): raise Refused('Choose SMB TCP445 or a high port from1024 to65535')
                 relative(c.get('share',''))
-                if '/' in c['share'] or c['share'].endswith('$'): raise Refused('Choose a regular NAS share')
+                if '/' in c['share'] or c['share'].upper() in ('IPC$','ADMIN$') or re.fullmatch(r'[A-Za-z]\$',c['share']): raise Refused('Choose a regular NAS share')
                 if type(c.get('require_encryption',True)) is not bool: raise Refused('Choose an encryption setting')
                 if values.get('password') is not None:
                     password=values['password']

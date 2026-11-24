@@ -157,7 +157,7 @@ class SMB:
         from smbprotocol.session import Session
         from smbprotocol.tree import TreeConnect
         relative(config.get('share', ''))
-        if '/' in config['share'] or config['share'].endswith('$'):
+        if '/' in config['share'] or config['share'].upper() in ('IPC$','ADMIN$') or re.fullmatch(r'[A-Za-z]\$',config['share']):
             raise StorageError('Choose a regular backup share, not an administrative share')
         self.directory = relative(config.get('directory', ''), empty=True)
         self.config = config
