@@ -327,3 +327,14 @@ class NASStorage(unittest.TestCase):
         finally:os.umask(previous)
         self.assertEqual((root/'evidence.json').stat().st_mode&0o777,0o644)
         self.assertEqual(json.loads((root/'evidence.json').read_text()),dict(backup_id='f'*32))
+
+    def test_migration_retry_checks_remaining_capacity_without_recopying_existing_files(self):
+        _,first=self.archive();_,second=self.archive('market-second.dump')
+        (self.remote/first).write_bytes((self.local/first).read_bytes())
+        size=(self.local/second).stat().st_size
+        with patch.object(self.remote_store,'capacity',return_value=dict(available_bytes=size+2*1024**3,capacity_bytes=4*1024**3)):
+            plan=self.manager.migration_plan(self.key)
+            self.assertTrue(plan['enough_space']);self.assertEqual(plan['required_bytes'],size);self.assertEqual(plan['reusable_bytes'],size)
+            job=self.manager.migration_queue('admin:1',self.key,plan)
+            result=self.manager.migrate('admin:1',job['id']);self.assertEqual(result['status'],'succeeded',result)
+        self.assertTrue((self.local/first).exists());self.assertTrue((self.local/second).exists())

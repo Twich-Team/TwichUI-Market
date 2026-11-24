@@ -254,10 +254,19 @@ class StorageConfiguration:
             with self.location(key) as destination:
                 self.distinct_folders(self.provider_for(active),destination)
                 capacity=destination.capacity()
+                reusable=0
+                for row in rows:
+                    try:existing=destination.info(row['filename'])
+                    except FileNotFoundError:continue
+                    if existing['bytes']!=row['bytes']:raise Refused('Destination filename conflicts with a different archive; originals retained')
+                    # Metadata is only a space estimate. The background copy job
+                    # must validate the complete checksum before reusing any file.
+                    reusable+=existing['bytes']
             total=sum(r['bytes'] for r in rows)
+            required=max(0,total-reusable)
             return dict(source_id=active,destination_id=key,source_revision=configs[active]['revision'],destination_revision=configs[key]['revision'],
                 count=len(rows),bytes=total,protected_count=sum(r['protected'] for r in rows),reserved_count=sum(bool(r['required_by']) for r in rows),available_bytes=capacity['available_bytes'],
-                enough_space=capacity['available_bytes'] is None or capacity['available_bytes']>=total+2*1024**3,
+                required_bytes=required,reusable_bytes=reusable,enough_space=capacity['available_bytes'] is None or capacity['available_bytes']>=required+2*1024**3,
                 originals_preserved=True,items=[dict(id=r['id'],filename=r['filename'],sha256=r['sha256'],bytes=r['bytes']) for r in rows])
 
     def migration_plan(self,key):
