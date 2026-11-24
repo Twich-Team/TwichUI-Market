@@ -114,7 +114,7 @@ export function CompanionSetup({ user }: { user: User }) {
   const beta = privateBeta.data;
   const betaUrl = beta?.channel === "private-beta" && beta.signed === false && beta.updates === "signed" && beta.updater_signature_verified === true && beta.tray_actions_verified === false
     ? companionDownloadUrl(beta, "private-beta") : null;
-  const showGuide = editingSetup || !connected || (!synced && progress.step >= 2);
+  const showGuide = editingSetup || !synced;
   const betaSelected = Boolean(betaUrl && (channel === "beta" || !url));
   const installer = betaSelected ? beta : release.data;
   const installerUrl = betaSelected ? betaUrl : url;

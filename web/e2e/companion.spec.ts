@@ -243,6 +243,7 @@ test("system-browser approval route survives login, delivers a one-use code and 
         exact: true,
       })
       .click();
+    await page.getByRole("button",{name:"Access history",exact:true}).click();
     await expect(card.getByText("Revoked", { exact: true })).toBeVisible();
     expect(
       (await page.request.get("/api/v1/sync/markets/1", { headers })).status(),
@@ -391,7 +392,7 @@ test("device ownership stays private while administrators can inspect and revoke
       "owner",
       "synthetic browser owner password",
     );
-    await page.getByRole("tab", { name: "Devices", exact: true }).click();
+    await page.getByRole("navigation", {name:"Administration sections"}).getByRole("link", { name: "Devices", exact: true }).click();
     await page.getByRole("button", {name:`Show details for desktop companions ${grant.device.id}`,exact:true}).click();
     const card = page.getByRole("article", {
       name: "Administrator inspection fixture device",
@@ -411,6 +412,9 @@ test("device ownership stays private while administrators can inspect and revoke
         exact: true,
       })
       .click();
+    await page.getByRole("button",{name:"Access history",exact:true}).click();
+    const detailsButton = page.getByRole("button",{name:`Show details for desktop companions ${grant.device.id}`,exact:true});
+    if (await detailsButton.count()) await detailsButton.click();
     await expect(card.getByText("Revoked", { exact: true })).toBeVisible();
     expect(
       (

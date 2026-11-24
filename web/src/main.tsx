@@ -1,3 +1,4 @@
+import { administrationGroups, administrationSection } from "./admin-navigation";
 import { Loading } from "./loading";
 import {parseRoute,useLocation,navigate,restoration} from "./navigation";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -203,6 +204,7 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
   const [markets,setMarkets]=useState<Market[]>([]);
   const [error,setError]=useState("");
   const [readOnly,setReadOnly]=useState(true);
+  const [fixtureReview,setFixtureReview]=useState(false);
   const [environmentReady,setEnvironmentReady]=useState(false);
   const [marketsReady,setMarketsReady]=useState(false);
   const preferences=usePreferences();
@@ -214,8 +216,8 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
   };
   useEffect(()=>{
     loadMarkets().catch(error=>{setError(error.message);setMarketsReady(true);});
-    api<{read_only:boolean}>("/environment").then(result=>{
-      queryClient.setQueryData(["private","environment"],result);setReadOnly(result.read_only);setEnvironmentReady(true);
+    api<{read_only:boolean; review_fixtures?:boolean}>("/environment").then(result=>{
+      queryClient.setQueryData(["private","environment"],result);setFixtureReview(result.review_fixtures === true);setReadOnly(result.read_only);setEnvironmentReady(true);
     }).catch(error=>setError(error.message));
   },[]);
   async function logout() { await preferences.flush(); await signOut(); }
@@ -224,7 +226,7 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
     deals: "Deal Finder",
     admin: "Administration",
     account: "Account & devices",
-    companion: "Get Desktop Companion",
+    companion: "Desktop Companion",
     item:"Item Details",missing:"Page not found",
   };
   return (
@@ -237,11 +239,11 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
         >
           <span className="sigil">T</span>
           <span>
-            TWICHUI<small>MARKET INTELLIGENCE</small>
+            TWICHUI<small>{fixtureReview ? "REVIEW · SYNTHETIC DATA" : "MARKET INTELLIGENCE"}</small>
           </span>
         </a>
         <button ref={menuButton} className="mobile-menu-button secondary" aria-expanded={menuOpen} aria-controls="app-menu" onClick={()=>setMenuOpen(open=>!open)}>{menuOpen ? "Close" : "Menu"}</button>
-        <div className="eyebrow private">PRIVATE GUILD RESEARCH</div>
+
         <div id="app-menu" className="app-menu">
         <nav aria-label="Main navigation">
           {[
@@ -261,6 +263,13 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
             </button>
           ))}
         </nav>
+        {page === "admin" && user.role === "admin" && <nav className="admin-sidebar-sections" aria-label="Administration sections">
+          {administrationGroups.map(group => <div key={group.label}><h2>{group.label}</h2>
+            {group.sections.map(({id,label}) => <a key={id} href={id==="overview" ? "/administration" : `/administration?admin_tab=${id}`}
+              aria-current={administrationSection(url)===id ? "page" : undefined}
+              onClick={event=>{if(event.button===0&&!event.ctrlKey&&!event.metaKey&&!event.shiftKey&&!event.altKey){event.preventDefault();navigate(event.currentTarget.getAttribute("href")!);}}}>{label}</a>)}
+          </div>)}
+        </nav>}
         <div className="account-info">
           <strong>{user.username}</strong>
           <small>{user.role === "admin" ? "Administrator" : "Member"}</small>
@@ -275,7 +284,7 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
           <span>
             THE AUCTIONEER’S LEDGER <i>/</i> {names[page]}
           </span>
-          <span className="badge">PRIVATE</span>
+          <span className="badge">{fixtureReview ? "Review · synthetic data" : "Private"}</span>
         </header>
         <main>
           {environmentReady && readOnly && <p className="notice" role="status">Interactive preview · Your preferences save automatically. Collection and account administration are read-only.</p>}
@@ -286,6 +295,7 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
               {error || authError}
             </div>
           )}
+          <Suspense fallback={<Loading label="Opening page…" skeleton/>}>
           {page === "explorer" && (
             <Explorer
               marketsReady={marketsReady}
@@ -297,6 +307,7 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
           )}{" "}
           {page === "deals" && (
             <Deals
+              marketsReady={marketsReady}
               markets={markets}
               market={market}
               setMarket={setMarket}
@@ -319,9 +330,10 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
           {page === 'companion' && <Companion user={user}/>}
           {route.kind==='item'&&<ItemDetails route={route} markets={markets} marketsReady={marketsReady}/>}
           {(page==='missing'||(page==='admin'&&user.role!=='admin'))&&<section className="empty panel"><h1>{page==='admin'?'Administrator access required':'Page not found'}</h1><p>{route.kind==='missing'?route.error:'This account does not have administration access.'}</p><a href="/" onClick={e=>{e.preventDefault();navigate('/');}}>Back to Explorer</a></section>}
+          </Suspense>
         </main>
         <footer>
-          TWICHUI MARKET <span>Private knowledge. Better decisions.</span>
+          TWICHUI MARKET
           <span>All prices are asking prices, not completed sales.</span>
         </footer>
       </div>
