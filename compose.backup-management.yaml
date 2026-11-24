@@ -14,8 +14,8 @@ services:
   backup-manager:
     profiles: [backup-management]
     build:
-      context: ./deploy/backup
-      dockerfile: Management.Dockerfile
+      context: .
+      dockerfile: deploy/backup/Management.Dockerfile
     image: twichui-market-backup-manager:review
     restart: unless-stopped
     environment:

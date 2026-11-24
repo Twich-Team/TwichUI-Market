@@ -1,0 +1,82 @@
+# Disposable market_test administration preview. No collector or provider worker.
+name: twichui-market-nas-browser
+services:
+  db:
+    image: postgres:17-alpine
+    environment: {POSTGRES_DB: market_test, POSTGRES_USER: market, POSTGRES_PASSWORD: synthetic-browser-only}
+    command: [postgres, -c, max_wal_size=64MB, -c, min_wal_size=32MB]
+    volumes: [browser-database:/var/lib/postgresql/data]
+    mem_limit: 512m
+    cpus: 0.5
+    healthcheck: {test: [CMD, pg_isready, -U, market, -d, market_test], interval: 2s, timeout: 2s, retries: 30}
+    logging: {driver: json-file, options: {max-size: "1m", max-file: "1"}}
+  api:
+    image: twichui-market-backend:nas-candidate
+    environment:
+      DATABASE_URL: postgresql+psycopg://market:synthetic-browser-only@db:5432/market_test
+      APP_ORIGIN: ${NAS_PREVIEW_ORIGIN:-http://proxy}
+      SESSION_COOKIE_NAME: market_nas_preview
+      COOKIE_SECURE: "false"
+      SYNC_CURSOR_SECRET: synthetic-browser-signing-key-not-for-deployment
+      DATABASE_FILESYSTEM_PATH: /tmp
+      MAX_DATABASE_BYTES: "268435456"
+      METADATA_KEYRING_FILE: /tmp/metadata-browser-keyring.json
+      BACKUP_MANAGEMENT_ENABLED: "true"
+      BACKUP_MANAGER_TOKEN_FILE: /run/secrets/backup-manager-token
+      PYTHONPATH: /app
+      COMPANION_PRIVATE_BETA_DIRECTORY: /tmp/companion-private-beta-fixtures/incoming-2.0.0-beta.1
+      COMPANION_PRIVATE_BETA_USER_IDS: "10001"
+      COMPANION_UPDATER_PUBLIC_KEY: synthetic-only-updater-public-key
+    volumes: [./backend/market:/app/market:ro, ./artifacts/backup-nas/browser-token:/run/secrets/backup-manager-token:ro]
+    tmpfs: [/tmp:size=32m]
+    read_only: true
+    mem_limit: 384m
+    cpus: 0.5
+    pids_limit: 128
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    depends_on: {db: {condition: service_healthy}}
+    healthcheck: {test: [CMD, python, -c, "import urllib.request;urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health',timeout=3)"], interval: 3s, timeout: 4s, retries: 30}
+    logging: {driver: json-file, options: {max-size: "1m", max-file: "1"}}
+  proxy:
+    image: twichui-market-web:nas-candidate
+    ports: ["127.0.0.1:18444:80"]
+    depends_on: {api: {condition: service_healthy}}
+    mem_limit: 128m
+    cpus: 0.25
+    logging: {driver: json-file, options: {max-size: "1m", max-file: "1"}}
+  backup-manager:
+    image: twichui-market-backup-manager:nas-test
+    environment:
+      PGHOST: db
+      PGUSER: market
+      PGDATABASE: market_test
+      PGPASSWORD: synthetic-browser-only
+      PGCONNECT_TIMEOUT: 5
+      METADATA_KEYRING_FILE: /state/keyring.json
+      BACKUP_RESTORE_TEST_ENABLED: "true"
+    entrypoint: [python3, /checks/start-nas-fixture.py]
+    volumes: [browser-backups:/backups, browser-state:/state, ./deploy/backup:/app:ro, ./backend/market/provider_secrets.py:/secrets-code/provider_secrets.py:ro, ./scripts:/checks:ro, ./artifacts/backup-nas/browser-token:/run/secrets/backup-manager-token:ro]
+    read_only: true
+    tmpfs: [/tmp:size=16m]
+    mem_limit: 256m
+    cpus: 0.5
+    pids_limit: 64
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    depends_on: {db: {condition: service_healthy}}
+    logging: {driver: json-file, options: {max-size: "1m", max-file: "1"}}
+  smb:
+    image: twichui-market-smb:nas-test
+    volumes: [browser-nas:/share]
+    mem_limit: 256m
+    cpus: 0.5
+    pids_limit: 64
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    logging: {driver: json-file, options: {max-size: "1m", max-file: "1"}}
+volumes:
+  browser-database:
+  browser-backups:
+  browser-state:
+  browser-nas:

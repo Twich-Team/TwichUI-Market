@@ -13,6 +13,7 @@ import uuid
 from urllib.parse import urlsplit, parse_qs
 
 from management import Manager, Refused, date, stamp
+from providers import StorageError, mapped
 
 
 class Server(ThreadingHTTPServer):
@@ -85,6 +86,32 @@ class Handler(BaseHTTPRequestHandler):
                 if not 0 <= offset <= 100000 or not 1 <= limit <= 100:
                     raise Refused('Invalid pagination')
                 self.reply(200, manager.overview(offset, limit))
+            elif url.path == '/storage' and self.command == 'GET':
+                self.reply(200,manager.storage_status())
+            elif url.path == '/storage/save' and self.command == 'POST':
+                self.reply(200,manager.storage_save(actor,body))
+            elif url.path == '/storage/test' and self.command == 'POST':
+                self.reply(200,manager.storage_test(actor,body['id']))
+            elif url.path == '/storage/browse' and self.command == 'POST':
+                self.reply(200,manager.storage_browse(actor,body['id'],body.get('directory',''),body.get('offset',0)))
+            elif url.path == '/storage/mkdir' and self.command == 'POST':
+                self.reply(200,manager.storage_mkdir(actor,body['id'],body['directory']))
+            elif url.path == '/storage/migration-preview' and self.command == 'POST':
+                self.reply(200,manager.migration_plan(body['id']))
+            elif url.path == '/storage/migrate' and self.command == 'POST':
+                job=manager.migration_queue(actor,body['id'],body['preview'])
+                threading.Thread(target=run_background,args=(manager,actor,job['id'],'migration'),daemon=True).start()
+                self.reply(202,job)
+            elif url.path == '/storage/remove-originals' and self.command == 'POST':
+                self.reply(200,manager.migration_remove_originals(actor,body['id'],body['confirmation']))
+            elif url.path == '/delete-selected' and self.command == 'POST':
+                job=manager.deletion_queue(actor,body['items'])
+                threading.Thread(target=run_background,args=(manager,actor,job['id'],'deletion'),daemon=True).start()
+                self.reply(202,job)
+            elif url.path == '/restore-test' and self.command == 'POST':
+                job=manager.restore_queue(actor,body['id'])
+                threading.Thread(target=run_background,args=(manager,actor,job['id'],'restore'),daemon=True).start()
+                self.reply(202,job)
             elif url.path == '/policy' and self.command == 'POST':
                 self.reply(200, manager.policy(actor, body['revision'], body['values']))
             elif url.path == '/create' and self.command == 'POST':
@@ -94,7 +121,15 @@ class Handler(BaseHTTPRequestHandler):
             elif match := re.fullmatch(r'/backups/([a-f0-9]{32})/(delete|protect|download|manifest)', url.path):
                 key, action = match.groups()
                 if action == 'delete' and self.command == 'POST':
-                    self.reply(200, manager.delete(actor, key, body['confirmation']))
+                    # Large archives need checksum work outside the bounded API request.
+                    with manager.lock(),manager.db() as db:
+                        row=manager.find(db,key)
+                        large=(row['bytes'] or 0)>64*1024**2 or manager.store.kind=='smb'
+                    if large:
+                        job=manager.deletion_queue(actor,[dict(body,id=key)])
+                        threading.Thread(target=run_background,args=(manager,actor,job['id'],'deletion'),daemon=True).start()
+                        self.reply(202,job)
+                    else:self.reply(200,manager.delete(actor,key,body['confirmation'],confirm_protected=body.get('confirm_protected') is True,confirm_recovery_loss=body.get('confirm_recovery_loss') is True))
                 elif action == 'protect' and self.command == 'POST' and type(body.get('protected')) is bool:
                     self.reply(200, manager.protect(actor, key, body['protected']))
                 elif action in ('download', 'manifest') and self.command == 'GET':
@@ -115,7 +150,7 @@ class Handler(BaseHTTPRequestHandler):
                     self.reply(405, {'detail': 'Unsupported operation'})
             else:
                 self.reply(404, {'detail': 'Unknown management operation'})
-        except Refused as exc:
+        except (Refused, StorageError) as exc:
             self.reply(409, {'detail': str(exc)})
         except (KeyError, ValueError, TypeError):
             self.reply(422, {'detail': 'Invalid management input'})
@@ -145,6 +180,24 @@ def run_job(manager, actor, key):
         pass
 
 
+def run_background(manager,actor,key,kind):
+    callback={'migration':manager.migrate,'restore':manager.restore_test,'deletion':manager.deletion_run}[kind]
+    setting={'migration':'migration','restore':'restore','deletion':'job'}[kind]
+    for _ in range(30):
+        try:
+            callback(actor,key)
+            return
+        except Refused:
+            time.sleep(1)
+        except Exception:
+            break
+    with manager.db() as db:
+        job=manager.get(db,setting,{})
+        if job.get('id')==key and job.get('status') in ('queued','running'):
+            job.update(status='failed',finished_at=stamp(),error='Operation interrupted or coordination stayed busy; inspect the retained audit receipts before retrying')
+            manager.set(db,setting,job);manager.receipt(db,actor,kind+'.interrupted',dict(id=key))
+
+
 def tick(manager):
     with manager.lock(), manager.db() as db:
         policy = manager.get(db, 'policy')
@@ -153,7 +206,7 @@ def tick(manager):
         due = manager.get(db, 'next_at')
         if not due or date(due) > datetime.now(timezone.utc):
             return False
-        if manager.get(db, 'job', {}).get('status') in ('queued', 'running'):
+        if any(manager.get(db,k,{}).get('status') in ('queued','running') for k in ('job','migration','restore')):
             return False
         manager.set(db, 'next_at', (datetime.now(timezone.utc)+timedelta(seconds=policy['interval_seconds'])).isoformat())
         job = dict(id=uuid.uuid4().hex, status='queued', actor='scheduler', requested_at=stamp())
@@ -181,6 +234,8 @@ def main():
         while not stopped.wait(15):
             try:
                 tick(manager)
+            except Refused:
+                pass
             except Exception:
                 print('Backup scheduler paused; inspect management status', flush=True)
     threading.Thread(target=schedule, daemon=True).start()

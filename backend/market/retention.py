@@ -220,6 +220,9 @@ def execute_selected(db, policy, first, at, actor_id):
     predicate=tuple_(*keys).in_([tuple(row) for row in ids])
     if model in (Listing,SnapshotStatistic):
         snapshot_ids=list(db.scalars(select(model.snapshot_id).where(predicate).distinct()))
+        if model is Listing:
+            from .compaction_safety import verify_statistics
+            verify_statistics(db,snapshot_ids)
         flag=Snapshot.raw_retained if model is Listing else Snapshot.statistics_retained
         db.execute(update(Snapshot).where(Snapshot.id.in_(snapshot_ids)).values({flag:False}))
     removed = (db.execute(update(FeedCapture).where(predicate).values(compressed_payload=None)).rowcount

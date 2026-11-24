@@ -40,6 +40,8 @@ class Policy(Strict):
 
 class Deletion(Strict):
     confirmation: str = Field(min_length=1, max_length=190)
+    confirm_protected: bool = False
+    confirm_recovery_loss: bool = False
 
 
 class Protection(Strict):
@@ -113,7 +115,7 @@ def create_backup(user: User = Depends(admin), db: Session = Depends(session)):
 
 @router.post('/{backup_id}/delete')
 def delete_backup(backup_id: BackupId, body: Deletion, user: User = Depends(admin), db: Session = Depends(session)):
-    return mutation(db, user, 'delete', f'/backups/{backup_id}/delete', body.model_dump())
+    return mutation(db, user, 'delete', f'/backups/{backup_id}/delete', body.model_dump(exclude_defaults=True))
 
 
 @router.post('/{backup_id}/protect')
@@ -146,3 +148,94 @@ def download(backup_id: BackupId, user: User = Depends(admin), db: Session = Dep
             response.close()
     return StreamingResponse(chunks(), media_type='application/octet-stream', headers={
         'Content-Disposition': disposition, 'Content-Length': length, 'Cache-Control': 'no-store'})
+
+
+class StorageInput(Strict):
+    id: str | None = Field(default=None, pattern=r'^(local|[a-f0-9]{32})$')
+    revision: int | None = Field(default=None, ge=1)
+    type: str = Field(pattern=r'^(local|smb|mounted)$')
+    name: str = Field(min_length=1, max_length=80)
+    host: str | None = Field(default=None, max_length=253)
+    port: int = Field(default=445, ge=445, le=445)
+    username: str | None = Field(default=None, max_length=160)
+    password: str | None = Field(default=None, min_length=1, max_length=1024)
+    domain: str = Field(default='', max_length=100)
+    share: str = Field(default='', max_length=180)
+    directory: str = Field(default='', max_length=1024)
+    require_encryption: bool = True
+
+
+class Destination(Strict):
+    id: str = Field(pattern=r'^(local|[a-f0-9]{32})$')
+
+
+class Browse(Destination):
+    directory: str = Field(default='', max_length=1024)
+    offset: int = Field(default=0, ge=0, le=2000)
+
+
+class Migration(Destination):
+    preview: dict
+
+
+class RemoveOriginals(Destination):
+    confirmation: str = Field(max_length=80)
+
+
+class SelectedDeletion(Deletion):
+    id: str = Field(pattern=r'^[a-f0-9]{32}$')
+
+
+class BulkDeletion(Strict):
+    items: list[SelectedDeletion] = Field(min_length=1, max_length=50)
+
+
+@router.get('/storage')
+def storage(user: User = Depends(admin)):
+    return connect(user.id, '/storage')
+
+
+@router.post('/storage/save')
+def save_storage(body: StorageInput, user: User = Depends(admin), db: Session = Depends(session)):
+    # Audit only the fixed action path, never the credential-bearing request.
+    return mutation(db,user,'storage.save','/storage/save',body.model_dump(exclude_none=True))
+
+
+@router.post('/storage/test')
+def test_storage(body: Destination, user: User = Depends(admin), db: Session = Depends(session)):
+    return mutation(db,user,'storage.test','/storage/test',body.model_dump())
+
+
+@router.post('/storage/browse')
+def browse_storage(body: Browse, user: User = Depends(admin)):
+    return connect(user.id,'/storage/browse',body.model_dump())
+
+
+@router.post('/storage/mkdir')
+def mkdir_storage(body: Browse, user: User = Depends(admin), db: Session = Depends(session)):
+    return mutation(db,user,'storage.mkdir','/storage/mkdir',body.model_dump())
+
+
+@router.post('/storage/migration-preview')
+def preview_migration(body: Destination, user: User = Depends(admin)):
+    return connect(user.id,'/storage/migration-preview',body.model_dump())
+
+
+@router.post('/storage/migrate',status_code=202)
+def migrate_storage(body: Migration, user: User = Depends(admin), db: Session = Depends(session)):
+    return mutation(db,user,'storage.migrate','/storage/migrate',body.model_dump())
+
+
+@router.post('/storage/remove-originals')
+def remove_originals(body: RemoveOriginals, user: User = Depends(admin), db: Session = Depends(session)):
+    return mutation(db,user,'storage.remove-originals','/storage/remove-originals',body.model_dump())
+
+
+@router.post('/delete-selected')
+def delete_selected(body: BulkDeletion, user: User = Depends(admin), db: Session = Depends(session)):
+    return mutation(db,user,'delete-selected','/delete-selected',body.model_dump())
+
+
+@router.post('/restore-test',status_code=202)
+def test_restore(body: Destination, user: User = Depends(admin), db: Session = Depends(session)):
+    return mutation(db,user,'restore-test','/restore-test',body.model_dump())

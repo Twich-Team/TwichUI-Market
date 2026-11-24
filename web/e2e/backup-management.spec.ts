@@ -14,6 +14,7 @@ async function setup(page:Page){
   await page.route('**/api/v1/admin/backups**',async route=>{
     const request=route.request(),url=new URL(request.url());
     if(request.method()==='GET'){
+      if(url.pathname.endsWith('/storage'))return route.fulfill({json:{active_id:'local',destinations:[{id:'local',revision:1,type:'local',name:'Local backups',directory:''}],health:{},migration:{},share_notice:'Enter a known share',mounted_notice:'Existing persistent backup root'}});
       if(url.pathname.endsWith('/download'))return route.fulfill({contentType:'application/octet-stream',headers:{'Content-Disposition':'attachment; filename="synthetic.dump"'},body:'PGDMP synthetic'});
       const offset=Number(url.searchParams.get('offset')||0),limit=Number(url.searchParams.get('limit')||10);
       return route.fulfill({json:{...data,items:data.items.slice(offset,offset+limit)}});
@@ -51,8 +52,9 @@ test('backup management: inventory, details, pagination, exact-name deletion and
   const dialog=page.getByRole('dialog');await expect(dialog.getByRole('button',{name:'Confirm archive deletion'})).toBeDisabled();
   const name='market-scheduled-20261117T010000Z.dump';await dialog.getByLabel(`Type ${name} to confirm`,{exact:true}).fill(name);
   await page.screenshot({path:`${output}/delete-confirmation.png`});await axe(page);
+  await dialog.getByLabel('I acknowledge the risk of removing the newest or last known-good backup.',{exact:true}).check();
   await dialog.getByRole('button',{name:'Confirm archive deletion'}).click();await expect(dialog).toHaveCount(0);
-  expect(deletions).toEqual([{confirmation:name}]);await expect(page.getByRole('status').filter({hasText:'unlinked'})).toBeVisible();
+  expect(deletions).toEqual([{confirmation:name,confirm_recovery_loss:true}]);await expect(page.getByRole('status').filter({hasText:'unlinked'})).toBeVisible();
   await page.getByRole('button',{name:'Next backups',exact:true}).click();await expect(table.getByRole('row')).toHaveCount(3);
   await page.getByRole('button',{name:'Previous backups',exact:true}).click();
   await page.getByLabel('Daily backups to keep',{exact:true}).fill('3');await page.getByLabel('Enable scheduled backups',{exact:true}).check();
@@ -107,6 +109,7 @@ test('backup management real boundary: create protect download and delete throug
   await page.getByRole('button',{name:'Storage & backups ↗',exact:true}).click();
   const row=page.getByRole('row').filter({hasText:older.filename});await row.getByRole('button',{name:'Delete',exact:true}).click();
   await page.getByRole('dialog').getByLabel(`Type ${older.filename} to confirm`,{exact:true}).fill(older.filename);
+  await page.getByRole('dialog').getByLabel('I acknowledge the risk of removing the newest or last known-good backup.',{exact:true}).check();
   await mkdir(output,{recursive:true});await page.screenshot({path:`${output}/actual-service-deletion.png`});
   await page.getByRole('dialog').getByRole('button',{name:'Confirm archive deletion'}).click();await expect(row).toHaveCount(0);
   const sourceAfter=await (await page.request.get('/api/v1/admin/storage')).json();

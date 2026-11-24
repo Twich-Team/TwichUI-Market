@@ -40,7 +40,7 @@ jobs:
       - run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml exec -T api python - < web/e2e/seed-admin.py
       - run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml exec -T api python - < web/e2e/seed-quality.py
       - run: docker compose -p twichui-market-browser -f compose.yaml -f compose.browser.yaml exec -T api python - < web/e2e/seed-private-beta.py
-      - run: docker run --rm --network twichui-market-browser_default -v "$PWD:/work" -w /work/web mcr.microsoft.com/playwright:v1.65.1-noble npm run test:e2e -- --grep-invert 'backup management|unified commodities|Recovery Tracker:|provider rate limits:|ForeverDB metadata:|usability M[1-4]:'
+      - run: docker run --rm --network twichui-market-browser_default -v "$PWD:/work" -w /work/web mcr.microsoft.com/playwright:v1.65.1-noble npm run test:e2e -- --grep-invert 'native NAS administration|backup management|unified commodities|Recovery Tracker:|provider rate limits:|ForeverDB metadata:|usability M[1-4]:'
       - name: Verify mobile geometry and navigation in WebKit
         run: docker run --rm --network twichui-market-browser_default -e MOBILE_SCREENSHOT_DIR=../artifacts/mobile-webkit -v "$PWD:/work" -w /work/web mcr.microsoft.com/playwright:v1.65.1-noble npm run test:e2e -- --config playwright.webkit.config.ts
       - uses: actions/upload-artifact@v4

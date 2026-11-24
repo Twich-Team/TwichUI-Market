@@ -223,7 +223,7 @@ class Backups(unittest.TestCase):
             original=subprocess.Popen
             def process(*args,**kwargs):
                 return original([sys.executable,'-c',"import sys;sys.stdout.write('PGDMP fixture');sys.exit("+('0' if fail_verification else '1')+")"],**kwargs)
-            with patch('management.subprocess.check_output',side_effect=output),patch('management.subprocess.Popen',side_effect=process),patch('management.subprocess.run',side_effect=subprocess.CalledProcessError(1,['pg_restore'])):
+            with patch('management.subprocess.check_output',side_effect=output),patch('management.subprocess.Popen',side_effect=process),patch.object(self.manager,'decode',side_effect=subprocess.CalledProcessError(1,['pg_restore'])):
                 result=self.manager.create('scheduler',origin='scheduled')
             self.assertEqual(result['status'],'failed')
             self.assertTrue((self.root/protected[1]).exists())

@@ -1950,3 +1950,12 @@ a.secondary { display:inline-block; padding:10px 14px; border:1px solid var(--bo
 .backup-management button:disabled {opacity:.45;cursor:default;}
 .backup-management .backup-row-actions button {padding:5px 8px;font-size:.75rem;}
 .backup-management .backup-actions a {color:#e3bf84;}
+
+.backup-storage select,.backup-storage input:not([type=checkbox]){width:100%;min-width:0}
+.backup-storage nav{display:flex;flex-wrap:wrap;gap:.5rem;margin-block:1rem}
+.nas-folders{list-style:none;display:flex;flex-wrap:wrap;gap:.5rem;padding:0;max-height:20rem;overflow:auto}
+.backup-storage dl>div{display:contents}
+.backup-storage .backup-cards strong{overflow-wrap:anywhere}
+.backup-check{display:flex;align-items:flex-start;gap:.6rem;margin-block:.8rem}
+.backup-check input{flex:none;margin-top:.2rem}
+@media(max-width:600px){.backup-storage .backup-actions{align-items:stretch}.backup-storage .backup-actions>*{width:100%}.backup-storage .backup-policy-grid{grid-template-columns:1fr}}

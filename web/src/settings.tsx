@@ -2,6 +2,8 @@ import { StorageOperationsPanel, type StorageOperations } from "./storage-operat
 import { Loading } from "./loading";
 import { AdministrationOverview } from "./admin-overview";
 import type { MetadataOverview } from "./metadata-admin";
+import { MaintenanceHealth } from './maintenance-health';
+import { BackupStorage } from './backup-storage';
 import { BackupManagement } from "./backup-management";
 import { DatabaseGrowth } from "./storage-growth";
 import { formatBytes as bytes } from "./size";
@@ -598,8 +600,10 @@ export function Administration({
           {tab === "storage" && (
             <>
               <BackupManagement readOnly={readOnly}/>
+              <BackupStorage readOnly={readOnly}/>
               <DatabaseGrowth samples={state.storage.growth.samples} current={state.storage.database_bytes}/>
               <StorageOperationsPanel value={state.storage.operations} />
+              <MaintenanceHealth/>
               <RetentionControls readOnly={readOnly} />
               <section className="panel padded">
                 <h3>Database & historical retention</h3>

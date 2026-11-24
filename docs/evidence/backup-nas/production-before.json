@@ -1,0 +1,1438 @@
+{
+  "observed_at": "2026-11-24T12:55:58.066083+00:00",
+  "provenance": "read-only live production",
+  "containers": [
+    {
+      "name": "/twichui-market-local-api-1",
+      "image": "sha256:cae89b4d481ef017b1376b276e4792412172c38022103948df2a430c9c863cb9",
+      "started": "2026-11-23T17:01:35.209842057Z",
+      "status": "running",
+      "oom": false,
+      "restarts": 0,
+      "revision": "fe92999cc969a23684f3023638673c656efb3bce",
+      "memory": 268435456,
+      "cpus": 0.25,
+      "volumes": [
+        {
+          "name": null,
+          "destination": "/backup-status",
+          "writable": false
+        },
+        {
+          "name": "twichui-market_market-data",
+          "destination": "/database-filesystem",
+          "writable": false
+        },
+        {
+          "name": "twichui-market_companion-private-beta",
+          "destination": "/private-beta",
+          "writable": false
+        },
+        {
+          "name": null,
+          "destination": "/retention-recovery",
+          "writable": false
+        },
+        {
+          "name": null,
+          "destination": "/run/metadata/keyring.json",
+          "writable": false
+        },
+        {
+          "name": null,
+          "destination": "/run/secrets/backup-manager-token",
+          "writable": false
+        }
+      ]
+    },
+    {
+      "name": "/twichui-market-api-1",
+      "image": "sha256:cae89b4d481ef017b1376b276e4792412172c38022103948df2a430c9c863cb9",
+      "started": "2026-11-23T17:01:35.439626341Z",
+      "status": "running",
+      "oom": false,
+      "restarts": 0,
+      "revision": "fe92999cc969a23684f3023638673c656efb3bce",
+      "memory": 402653184,
+      "cpus": 0.5,
+      "volumes": [
+        {
+          "name": null,
+          "destination": "/backup-status",
+          "writable": false
+        },
+        {
+          "name": "twichui-market_market-data",
+          "destination": "/database-filesystem",
+          "writable": false
+        },
+        {
+          "name": "twichui-market_companion-private-beta",
+          "destination": "/private-beta",
+          "writable": false
+        },
+        {
+          "name": null,
+          "destination": "/retention-recovery",
+          "writable": false
+        },
+        {
+          "name": null,
+          "destination": "/run/metadata/keyring.json",
+          "writable": false
+        },
+        {
+          "name": null,
+          "destination": "/run/secrets/backup-manager-token",
+          "writable": false
+        }
+      ]
+    },
+    {
+      "name": "/twichui-market-worker-1",
+      "image": "sha256:ec94420d36baf501d312f3cbc85e38b77222e5b5bff92b76aae82dd8df95575d",
+      "started": "2026-11-23T05:49:35.318458271Z",
+      "status": "running",
+      "oom": false,
+      "restarts": 0,
+      "revision": "fe92999cc969a23684f3023638673c656efb3bce",
+      "memory": 402653184,
+      "cpus": 0.5,
+      "volumes": [
+        {
+          "name": "twichui-market_market-data",
+          "destination": "/database-filesystem",
+          "writable": false
+        }
+      ]
+    },
+    {
+      "name": "/twichui-market-retention-1",
+      "image": "sha256:9712cd35a1f669343d20d42598717d0fcb370a4c358d3edb4c35f807b0d9295c",
+      "started": "2026-11-22T14:25:14.739805384Z",
+      "status": "running",
+      "oom": false,
+      "restarts": 0,
+      "revision": "fe92999cc969a23684f3023638673c656efb3bce",
+      "memory": 201326592,
+      "cpus": 0.25,
+      "volumes": [
+        {
+          "name": null,
+          "destination": "/backup-status",
+          "writable": false
+        },
+        {
+          "name": "twichui-market_market-data",
+          "destination": "/database-filesystem",
+          "writable": false
+        },
+        {
+          "name": null,
+          "destination": "/retention-recovery",
+          "writable": false
+        },
+        {
+          "name": null,
+          "destination": "/run/secrets/backup-manager-token",
+          "writable": false
+        }
+      ]
+    },
+    {
+      "name": "/twichui-market-monitor-1",
+      "image": "sha256:9712cd35a1f669343d20d42598717d0fcb370a4c358d3edb4c35f807b0d9295c",
+      "started": "2026-11-22T14:25:14.680769774Z",
+      "status": "running",
+      "oom": false,
+      "restarts": 0,
+      "revision": "fe92999cc969a23684f3023638673c656efb3bce",
+      "memory": 134217728,
+      "cpus": 0.25,
+      "volumes": [
+        {
+          "name": "twichui-market_market-data",
+          "destination": "/database-filesystem",
+          "writable": false
+        },
+        {
+          "name": null,
+          "destination": "/retention-recovery",
+          "writable": false
+        }
+      ]
+    },
+    {
+      "name": "/twichui-market-proxy-1",
+      "image": "sha256:f48f8f1a7e5a030432abde0792ee0be1aae0326950404e83036bc9c0172a6814",
+      "started": "2026-11-22T14:25:14.624136218Z",
+      "status": "running",
+      "oom": false,
+      "restarts": 0,
+      "revision": "fe92999cc969a23684f3023638673c656efb3bce",
+      "memory": 134217728,
+      "cpus": 0.25,
+      "volumes": [
+        {
+          "name": "twichui-market_caddy-data",
+          "destination": "/data",
+          "writable": true
+        },
+        {
+          "name": null,
+          "destination": "/etc/caddy/Caddyfile",
+          "writable": false
+        },
+        {
+          "name": null,
+          "destination": "/etc/caddy/routes.local.caddy",
+          "writable": false
+        },
+        {
+          "name": null,
+          "destination": "/etc/caddy/routes.production.caddy",
+          "writable": false
+        }
+      ]
+    },
+    {
+      "name": "/twichui-market-backup-manager-1",
+      "image": "sha256:79cea119910ad3353f8a35ce21d079fafbcab0a757c0734bfe3bce6055c68565",
+      "started": "2026-11-22T14:25:14.718813461Z",
+      "status": "running",
+      "oom": false,
+      "restarts": 0,
+      "revision": null,
+      "memory": 268435456,
+      "cpus": 0.25,
+      "volumes": [
+        {
+          "name": null,
+          "destination": "/backups",
+          "writable": true
+        },
+        {
+          "name": "twichui-market_backup-management-state",
+          "destination": "/state",
+          "writable": true
+        },
+        {
+          "name": null,
+          "destination": "/run/secrets/backup-manager-token",
+          "writable": false
+        },
+        {
+          "name": "89b31260a39f7faef1ff871012dfdeabe98c483f13ccfd9a372f986ee4a0b8db",
+          "destination": "/var/lib/postgresql/data",
+          "writable": true
+        }
+      ]
+    },
+    {
+      "name": "/twichui-market-enrichment-1",
+      "image": "sha256:3ef6f57964546a425f4c2ebe2bc44be2d9a516340325074dfb0fb2f32d7c3667",
+      "started": "2026-11-22T14:25:14.640992375Z",
+      "status": "running",
+      "oom": false,
+      "restarts": 0,
+      "revision": "bf8a04a0539fb4c3e2468c70a2e5155ba1150f95",
+      "memory": 201326592,
+      "cpus": 0.25,
+      "volumes": [
+        {
+          "name": null,
+          "destination": "/run/metadata/keyring.json",
+          "writable": false
+        }
+      ]
+    },
+    {
+      "name": "/twichui-market-backup-1",
+      "image": "sha256:2669ec98d745fbb77942ed6696162436862334ebaebc71e884853226504b260b",
+      "started": "2026-11-15T03:11:29.671470444Z",
+      "status": "exited",
+      "oom": false,
+      "restarts": 0,
+      "revision": null,
+      "memory": 268435456,
+      "cpus": 0.25,
+      "volumes": [
+        {
+          "name": null,
+          "destination": "/backups",
+          "writable": true
+        },
+        {
+          "name": null,
+          "destination": "/status",
+          "writable": true
+        },
+        {
+          "name": "f0357311d282d678539ad27e670eda8d698b15e2c93af14392d1a99755b31a2a",
+          "destination": "/var/lib/postgresql/data",
+          "writable": true
+        }
+      ]
+    },
+    {
+      "name": "/twichui-market-migrate-1",
+      "image": "sha256:4255007bdcf12a9b29e93a6be0e4be4a66480ce8139725ef3ba5e9fadae81550",
+      "started": "2026-11-17T21:31:26.775517163Z",
+      "status": "exited",
+      "oom": false,
+      "restarts": 0,
+      "revision": null,
+      "memory": 268435456,
+      "cpus": 0.5,
+      "volumes": []
+    },
+    {
+      "name": "/twichui-market-db-1",
+      "image": "sha256:d3244e8ce3f165ee3c93d9c4a4b1d0fe48b3a89e2287b717fdcbbde92d405065",
+      "started": "2026-11-22T14:25:14.726106577Z",
+      "status": "running",
+      "oom": false,
+      "restarts": 0,
+      "revision": null,
+      "memory": 805306368,
+      "cpus": 1.0,
+      "volumes": [
+        {
+          "name": "twichui-market_market-data",
+          "destination": "/var/lib/postgresql/data",
+          "writable": true
+        }
+      ]
+    }
+  ],
+  "database": {
+    "bytes": 15309657779,
+    "schema": "retention_20261118"
+  },
+  "tables": [
+    {
+      "relname": "listings",
+      "n_live_tup": 36445620,
+      "n_dead_tup": 0,
+      "last_autovacuum": "2026-11-24T05:32:06.23006+00:00",
+      "last_autoanalyze": "2026-11-24T02:28:55.141511+00:00",
+      "autovacuum_count": 1,
+      "table_bytes": 6505086976,
+      "index_bytes": 3193397248,
+      "total_bytes": 9698484224
+    },
+    {
+      "relname": "bridge_derived_records",
+      "n_live_tup": 2582480,
+      "n_dead_tup": 42200,
+      "last_autovacuum": "2026-11-24T07:51:42.978155+00:00",
+      "last_autoanalyze": "2026-11-24T02:45:55.291758+00:00",
+      "autovacuum_count": 3,
+      "table_bytes": 2757746688,
+      "index_bytes": 381337600,
+      "total_bytes": 3139084288
+    },
+    {
+      "relname": "snapshot_statistics",
+      "n_live_tup": 5853671,
+      "n_dead_tup": 0,
+      "last_autovacuum": "2026-11-24T09:29:25.535228+00:00",
+      "last_autoanalyze": "2026-11-24T06:27:05.264594+00:00",
+      "autovacuum_count": 1,
+      "table_bytes": 1007034368,
+      "index_bytes": 868597760,
+      "total_bytes": 1875632128
+    },
+    {
+      "relname": "feed_captures",
+      "n_live_tup": 268,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": "2026-11-24T05:32:01.379954+00:00",
+      "autovacuum_count": 0,
+      "table_bytes": 286892032,
+      "index_bytes": 90112,
+      "total_bytes": 286982144
+    },
+    {
+      "relname": "metadata_tasks",
+      "n_live_tup": 31830,
+      "n_dead_tup": 3853,
+      "last_autovacuum": "2026-11-22T22:05:37.68422+00:00",
+      "last_autoanalyze": "2026-11-23T12:00:14.756167+00:00",
+      "autovacuum_count": 2,
+      "table_bytes": 48455680,
+      "index_bytes": 8847360,
+      "total_bytes": 57303040
+    },
+    {
+      "relname": "metadata_versions",
+      "n_live_tup": 29528,
+      "n_dead_tup": 4,
+      "last_autovacuum": null,
+      "last_autoanalyze": "2026-11-22T22:06:37.616951+00:00",
+      "autovacuum_count": 0,
+      "table_bytes": 44744704,
+      "index_bytes": 2654208,
+      "total_bytes": 47398912
+    },
+    {
+      "relname": "bridge_records",
+      "n_live_tup": 543,
+      "n_dead_tup": 0,
+      "last_autovacuum": "2026-11-24T12:50:20.485597+00:00",
+      "last_autoanalyze": "2026-11-24T12:50:20.493686+00:00",
+      "autovacuum_count": 66,
+      "table_bytes": 44056576,
+      "index_bytes": 204800,
+      "total_bytes": 44261376
+    },
+    {
+      "relname": "metadata_sources",
+      "n_live_tup": 19210,
+      "n_dead_tup": 3833,
+      "last_autovacuum": "2026-11-22T17:18:24.193199+00:00",
+      "last_autoanalyze": "2026-11-23T13:31:18.533504+00:00",
+      "autovacuum_count": 1,
+      "table_bytes": 31432704,
+      "index_bytes": 5447680,
+      "total_bytes": 36880384
+    },
+    {
+      "relname": "item_metadata",
+      "n_live_tup": 7539,
+      "n_dead_tup": 1335,
+      "last_autovacuum": "2026-11-22T16:52:23.23452+00:00",
+      "last_autoanalyze": "2026-11-24T04:16:57.980921+00:00",
+      "autovacuum_count": 1,
+      "table_bytes": 27115520,
+      "index_bytes": 1531904,
+      "total_bytes": 28647424
+    },
+    {
+      "relname": "item_media",
+      "n_live_tup": 72,
+      "n_dead_tup": 49,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "autovacuum_count": 0,
+      "table_bytes": 22880256,
+      "index_bytes": 253952,
+      "total_bytes": 23134208
+    },
+    {
+      "relname": "metadata_attempts",
+      "n_live_tup": 17561,
+      "n_dead_tup": 382,
+      "last_autovacuum": "2026-11-22T22:59:39.343478+00:00",
+      "last_autoanalyze": "2026-11-24T10:30:14.685227+00:00",
+      "autovacuum_count": 1,
+      "table_bytes": 16932864,
+      "index_bytes": 1998848,
+      "total_bytes": 18931712
+    },
+    {
+      "relname": "metadata_recovery_items",
+      "n_live_tup": 7425,
+      "n_dead_tup": 1097,
+      "last_autovacuum": "2026-11-24T11:54:18.231229+00:00",
+      "last_autoanalyze": "2026-11-24T12:54:20.67221+00:00",
+      "autovacuum_count": 56,
+      "table_bytes": 13008896,
+      "index_bytes": 409600,
+      "total_bytes": 13418496
+    },
+    {
+      "relname": "security_events",
+      "n_live_tup": 82112,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": "2026-11-22T21:27:35.138883+00:00",
+      "autovacuum_count": 0,
+      "table_bytes": 8847360,
+      "index_bytes": 3719168,
+      "total_bytes": 12566528
+    },
+    {
+      "relname": "metadata_jobs",
+      "n_live_tup": 31512,
+      "n_dead_tup": 2270,
+      "last_autovacuum": "2026-11-22T22:24:37.673104+00:00",
+      "last_autoanalyze": "2026-11-22T23:02:39.111946+00:00",
+      "autovacuum_count": 1,
+      "table_bytes": 5799936,
+      "index_bytes": 3915776,
+      "total_bytes": 9715712
+    },
+    {
+      "relname": "observations",
+      "n_live_tup": 2351,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": "2026-11-24T01:06:49.188584+00:00",
+      "autovacuum_count": 0,
+      "table_bytes": 1761280,
+      "index_bytes": 425984,
+      "total_bytes": 2187264
+    },
+    {
+      "relname": "feed_checks",
+      "n_live_tup": 3674,
+      "n_dead_tup": 16,
+      "last_autovacuum": null,
+      "last_autoanalyze": "2026-11-24T05:51:02.167485+00:00",
+      "autovacuum_count": 0,
+      "table_bytes": 516096,
+      "index_bytes": 229376,
+      "total_bytes": 745472
+    },
+    {
+      "relname": "retention_executions",
+      "n_live_tup": 1665,
+      "n_dead_tup": 42,
+      "last_autovacuum": null,
+      "last_autoanalyze": "2026-11-24T12:22:19.210593+00:00",
+      "autovacuum_count": 0,
+      "table_bytes": 385024,
+      "index_bytes": 114688,
+      "total_bytes": 499712
+    },
+    {
+      "relname": "collection_runs",
+      "n_live_tup": 2921,
+      "n_dead_tup": 12,
+      "last_autovacuum": null,
+      "last_autoanalyze": "2026-11-24T02:07:51.758134+00:00",
+      "autovacuum_count": 0,
+      "table_bytes": 278528,
+      "index_bytes": 212992,
+      "total_bytes": 491520
+    },
+    {
+      "relname": "bridge_generations",
+      "n_live_tup": 7,
+      "n_dead_tup": 34,
+      "last_autovacuum": "2026-11-24T09:32:12.134674+00:00",
+      "last_autoanalyze": "2026-11-24T12:49:20.45737+00:00",
+      "autovacuum_count": 12,
+      "table_bytes": 344064,
+      "index_bytes": 65536,
+      "total_bytes": 409600
+    },
+    {
+      "relname": "item_source_coverage",
+      "n_live_tup": 18,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "autovacuum_count": 0,
+      "table_bytes": 212992,
+      "index_bytes": 188416,
+      "total_bytes": 401408
+    },
+    {
+      "relname": "credentials",
+      "n_live_tup": 495,
+      "n_dead_tup": 50,
+      "last_autovacuum": "2026-11-24T02:11:51.940363+00:00",
+      "last_autoanalyze": "2026-11-24T12:11:18.654455+00:00",
+      "autovacuum_count": 16,
+      "table_bytes": 180224,
+      "index_bytes": 147456,
+      "total_bytes": 327680
+    },
+    {
+      "relname": "metadata_quota_buckets",
+      "n_live_tup": 114,
+      "n_dead_tup": 1,
+      "last_autovacuum": "2026-11-24T12:30:19.619234+00:00",
+      "last_autoanalyze": "2026-11-24T12:30:19.631681+00:00",
+      "autovacuum_count": 39,
+      "table_bytes": 81920,
+      "index_bytes": 163840,
+      "total_bytes": 245760
+    },
+    {
+      "relname": "market_feeds",
+      "n_live_tup": 2,
+      "n_dead_tup": 27,
+      "last_autovacuum": "2026-11-24T05:10:00.378831+00:00",
+      "last_autoanalyze": "2026-11-24T10:59:15.804972+00:00",
+      "autovacuum_count": 2,
+      "table_bytes": 212992,
+      "index_bytes": 16384,
+      "total_bytes": 229376
+    },
+    {
+      "relname": "companion_devices",
+      "n_live_tup": 8,
+      "n_dead_tup": 39,
+      "last_autovacuum": "2026-11-24T09:29:12.05582+00:00",
+      "last_autoanalyze": "2026-11-24T12:48:20.430302+00:00",
+      "autovacuum_count": 45,
+      "table_bytes": 163840,
+      "index_bytes": 65536,
+      "total_bytes": 229376
+    },
+    {
+      "relname": "companion_refresh_history",
+      "n_live_tup": 216,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": "2026-11-23T18:14:30.711965+00:00",
+      "autovacuum_count": 0,
+      "table_bytes": 90112,
+      "index_bytes": 65536,
+      "total_bytes": 155648
+    },
+    {
+      "relname": "metadata_providers",
+      "n_live_tup": 4,
+      "n_dead_tup": 19,
+      "last_autovacuum": "2026-11-24T10:29:19.492619+00:00",
+      "last_autoanalyze": "2026-11-24T10:29:19.545608+00:00",
+      "autovacuum_count": 5,
+      "table_bytes": 122880,
+      "index_bytes": 16384,
+      "total_bytes": 139264
+    },
+    {
+      "relname": "login_attempts",
+      "n_live_tup": 21,
+      "n_dead_tup": 54,
+      "last_autovacuum": "2026-11-23T10:48:11.040908+00:00",
+      "last_autoanalyze": "2026-11-24T04:47:59.302885+00:00",
+      "autovacuum_count": 1,
+      "table_bytes": 65536,
+      "index_bytes": 65536,
+      "total_bytes": 131072
+    },
+    {
+      "relname": "snapshots",
+      "n_live_tup": 35,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "autovacuum_count": 0,
+      "table_bytes": 57344,
+      "index_bytes": 73728,
+      "total_bytes": 131072
+    },
+    {
+      "relname": "companion_authorizations",
+      "n_live_tup": 0,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "autovacuum_count": 0,
+      "table_bytes": 16384,
+      "index_bytes": 81920,
+      "total_bytes": 98304
+    },
+    {
+      "relname": "users",
+      "n_live_tup": 0,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "autovacuum_count": 0,
+      "table_bytes": 57344,
+      "index_bytes": 32768,
+      "total_bytes": 90112
+    },
+    {
+      "relname": "metadata_resources",
+      "n_live_tup": 0,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "autovacuum_count": 0,
+      "table_bytes": 73728,
+      "index_bytes": 16384,
+      "total_bytes": 90112
+    },
+    {
+      "relname": "player_market_mappings",
+      "n_live_tup": 0,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "autovacuum_count": 0,
+      "table_bytes": 32768,
+      "index_bytes": 49152,
+      "total_bytes": 81920
+    },
+    {
+      "relname": "daily_observations",
+      "n_live_tup": 12,
+      "n_dead_tup": 11,
+      "last_autovacuum": "2026-11-24T11:59:18.162107+00:00",
+      "last_autoanalyze": "2026-11-24T11:24:16.736045+00:00",
+      "autovacuum_count": 7,
+      "table_bytes": 40960,
+      "index_bytes": 32768,
+      "total_bytes": 73728
+    },
+    {
+      "relname": "user_preferences",
+      "n_live_tup": 0,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "autovacuum_count": 0,
+      "table_bytes": 49152,
+      "index_bytes": 16384,
+      "total_bytes": 65536
+    },
+    {
+      "relname": "storage_measurements",
+      "n_live_tup": 47,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "autovacuum_count": 0,
+      "table_bytes": 40960,
+      "index_bytes": 16384,
+      "total_bytes": 57344
+    },
+    {
+      "relname": "metadata_recovery_state",
+      "n_live_tup": 1,
+      "n_dead_tup": 35,
+      "last_autovacuum": "2026-11-24T12:21:19.196971+00:00",
+      "last_autoanalyze": "2026-11-24T12:21:19.197363+00:00",
+      "autovacuum_count": 118,
+      "table_bytes": 40960,
+      "index_bytes": 16384,
+      "total_bytes": 57344
+    },
+    {
+      "relname": "markets",
+      "n_live_tup": 2,
+      "n_dead_tup": 22,
+      "last_autovacuum": null,
+      "last_autoanalyze": "2026-11-24T11:59:18.15942+00:00",
+      "autovacuum_count": 0,
+      "table_bytes": 16384,
+      "index_bytes": 32768,
+      "total_bytes": 49152
+    },
+    {
+      "relname": "market_verifications",
+      "n_live_tup": 0,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "autovacuum_count": 0,
+      "table_bytes": 16384,
+      "index_bytes": 32768,
+      "total_bytes": 49152
+    },
+    {
+      "relname": "invitations",
+      "n_live_tup": 0,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "autovacuum_count": 0,
+      "table_bytes": 8192,
+      "index_bytes": 32768,
+      "total_bytes": 40960
+    },
+    {
+      "relname": "archive_checkpoints",
+      "n_live_tup": 0,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "autovacuum_count": 0,
+      "table_bytes": 8192,
+      "index_bytes": 32768,
+      "total_bytes": 40960
+    },
+    {
+      "relname": "retention_automation",
+      "n_live_tup": 1,
+      "n_dead_tup": 1,
+      "last_autovacuum": null,
+      "last_autoanalyze": "2026-11-24T09:10:11.155073+00:00",
+      "autovacuum_count": 0,
+      "table_bytes": 16384,
+      "index_bytes": 16384,
+      "total_bytes": 32768
+    },
+    {
+      "relname": "retention_policy_changes",
+      "n_live_tup": 0,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "autovacuum_count": 0,
+      "table_bytes": 16384,
+      "index_bytes": 16384,
+      "total_bytes": 32768
+    },
+    {
+      "relname": "retention_policy",
+      "n_live_tup": 0,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "autovacuum_count": 0,
+      "table_bytes": 8192,
+      "index_bytes": 16384,
+      "total_bytes": 24576
+    },
+    {
+      "relname": "bridge_derivations",
+      "n_live_tup": 29,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "autovacuum_count": 0,
+      "table_bytes": 8192,
+      "index_bytes": 16384,
+      "total_bytes": 24576
+    },
+    {
+      "relname": "alembic_version",
+      "n_live_tup": 0,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "autovacuum_count": 0,
+      "table_bytes": 8192,
+      "index_bytes": 16384,
+      "total_bytes": 24576
+    },
+    {
+      "relname": "archive_digests",
+      "n_live_tup": 0,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "autovacuum_count": 0,
+      "table_bytes": 8192,
+      "index_bytes": 16384,
+      "total_bytes": 24576
+    },
+    {
+      "relname": "retention_batches",
+      "n_live_tup": 0,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "autovacuum_count": 0,
+      "table_bytes": 0,
+      "index_bytes": 16384,
+      "total_bytes": 16384
+    },
+    {
+      "relname": "archive_members",
+      "n_live_tup": 0,
+      "n_dead_tup": 0,
+      "last_autovacuum": null,
+      "last_autoanalyze": null,
+      "autovacuum_count": 0,
+      "table_bytes": 8192,
+      "index_bytes": 8192,
+      "total_bytes": 16384
+    }
+  ],
+  "policies": [
+    {
+      "id": 1,
+      "revision": 3,
+      "raw_days": 7,
+      "intraday_days": 90,
+      "daily_days": 365,
+      "operational_days": 90,
+      "security_days": 365,
+      "approved_hash": "9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7",
+      "approved_at": "2026-11-18T16:23:36.909809+00:00",
+      "updated_at": "2026-11-18T15:18:01.531022+00:00"
+    }
+  ],
+  "automation": [
+    {
+      "enabled": true,
+      "authorized_at": "2026-11-18T16:23:36.917998+00:00",
+      "next_run_at": "2026-11-24T12:57:38.450742+00:00",
+      "execution_hash": "85251cddad6b62cb332efeffd3133c844dbff40033d889e487cb39bddfece886"
+    }
+  ],
+  "executions": [
+    {
+      "status": "failed",
+      "reason": "Maintenance transaction failed or timed out; batch rolled back",
+      "count": 1,
+      "latest": "2026-11-18T16:09:16.637883+00:00"
+    },
+    {
+      "status": "paused",
+      "reason": "Protected backup/restore or reviewed recovery verification unavailable",
+      "count": 1396,
+      "latest": "2026-11-24T12:52:42.364661+00:00"
+    },
+    {
+      "status": "complete",
+      "reason": null,
+      "count": 268,
+      "latest": "2026-11-19T14:52:38.322107+00:00"
+    }
+  ],
+  "recent_executions": [
+    {
+      "id": 1697,
+      "started_at": "2026-11-24T12:52:38.455851+00:00",
+      "finished_at": "2026-11-24T12:52:42.364661+00:00",
+      "policy_hash": "9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7",
+      "status": "paused",
+      "reason": "Protected backup/restore or reviewed recovery verification unavailable",
+      "batches": 0,
+      "rows_processed": 0,
+      "progress": "{}"
+    },
+    {
+      "id": 1696,
+      "started_at": "2026-11-24T12:47:34.081806+00:00",
+      "finished_at": "2026-11-24T12:47:38.279252+00:00",
+      "policy_hash": "9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7",
+      "status": "paused",
+      "reason": "Protected backup/restore or reviewed recovery verification unavailable",
+      "batches": 0,
+      "rows_processed": 0,
+      "progress": "{}"
+    },
+    {
+      "id": 1695,
+      "started_at": "2026-11-24T12:42:29.89725+00:00",
+      "finished_at": "2026-11-24T12:42:33.868069+00:00",
+      "policy_hash": "9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7",
+      "status": "paused",
+      "reason": "Protected backup/restore or reviewed recovery verification unavailable",
+      "batches": 0,
+      "rows_processed": 0,
+      "progress": "{}"
+    },
+    {
+      "id": 1694,
+      "started_at": "2026-11-24T12:37:25.888501+00:00",
+      "finished_at": "2026-11-24T12:37:29.762069+00:00",
+      "policy_hash": "9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7",
+      "status": "paused",
+      "reason": "Protected backup/restore or reviewed recovery verification unavailable",
+      "batches": 0,
+      "rows_processed": 0,
+      "progress": "{}"
+    },
+    {
+      "id": 1693,
+      "started_at": "2026-11-24T12:32:21.768922+00:00",
+      "finished_at": "2026-11-24T12:32:25.757093+00:00",
+      "policy_hash": "9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7",
+      "status": "paused",
+      "reason": "Protected backup/restore or reviewed recovery verification unavailable",
+      "batches": 0,
+      "rows_processed": 0,
+      "progress": "{}"
+    },
+    {
+      "id": 1692,
+      "started_at": "2026-11-24T12:27:17.53924+00:00",
+      "finished_at": "2026-11-24T12:27:21.559449+00:00",
+      "policy_hash": "9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7",
+      "status": "paused",
+      "reason": "Protected backup/restore or reviewed recovery verification unavailable",
+      "batches": 0,
+      "rows_processed": 0,
+      "progress": "{}"
+    },
+    {
+      "id": 1691,
+      "started_at": "2026-11-24T12:22:13.412995+00:00",
+      "finished_at": "2026-11-24T12:22:17.360567+00:00",
+      "policy_hash": "9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7",
+      "status": "paused",
+      "reason": "Protected backup/restore or reviewed recovery verification unavailable",
+      "batches": 0,
+      "rows_processed": 0,
+      "progress": "{}"
+    },
+    {
+      "id": 1690,
+      "started_at": "2026-11-24T12:17:09.355756+00:00",
+      "finished_at": "2026-11-24T12:17:13.280201+00:00",
+      "policy_hash": "9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7",
+      "status": "paused",
+      "reason": "Protected backup/restore or reviewed recovery verification unavailable",
+      "batches": 0,
+      "rows_processed": 0,
+      "progress": "{}"
+    },
+    {
+      "id": 1689,
+      "started_at": "2026-11-24T12:12:05.293166+00:00",
+      "finished_at": "2026-11-24T12:12:09.165208+00:00",
+      "policy_hash": "9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7",
+      "status": "paused",
+      "reason": "Protected backup/restore or reviewed recovery verification unavailable",
+      "batches": 0,
+      "rows_processed": 0,
+      "progress": "{}"
+    },
+    {
+      "id": 1688,
+      "started_at": "2026-11-24T12:07:01.202897+00:00",
+      "finished_at": "2026-11-24T12:07:05.156816+00:00",
+      "policy_hash": "9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7",
+      "status": "paused",
+      "reason": "Protected backup/restore or reviewed recovery verification unavailable",
+      "batches": 0,
+      "rows_processed": 0,
+      "progress": "{}"
+    },
+    {
+      "id": 1687,
+      "started_at": "2026-11-24T12:01:56.980235+00:00",
+      "finished_at": "2026-11-24T12:02:01.07052+00:00",
+      "policy_hash": "9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7",
+      "status": "paused",
+      "reason": "Protected backup/restore or reviewed recovery verification unavailable",
+      "batches": 0,
+      "rows_processed": 0,
+      "progress": "{}"
+    },
+    {
+      "id": 1686,
+      "started_at": "2026-11-24T11:56:52.896084+00:00",
+      "finished_at": "2026-11-24T11:56:56.761548+00:00",
+      "policy_hash": "9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7",
+      "status": "paused",
+      "reason": "Protected backup/restore or reviewed recovery verification unavailable",
+      "batches": 0,
+      "rows_processed": 0,
+      "progress": "{}"
+    },
+    {
+      "id": 1685,
+      "started_at": "2026-11-24T11:51:48.89714+00:00",
+      "finished_at": "2026-11-24T11:51:52.7625+00:00",
+      "policy_hash": "9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7",
+      "status": "paused",
+      "reason": "Protected backup/restore or reviewed recovery verification unavailable",
+      "batches": 0,
+      "rows_processed": 0,
+      "progress": "{}"
+    },
+    {
+      "id": 1684,
+      "started_at": "2026-11-24T11:46:44.76799+00:00",
+      "finished_at": "2026-11-24T11:46:48.765517+00:00",
+      "policy_hash": "9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7",
+      "status": "paused",
+      "reason": "Protected backup/restore or reviewed recovery verification unavailable",
+      "batches": 0,
+      "rows_processed": 0,
+      "progress": "{}"
+    },
+    {
+      "id": 1683,
+      "started_at": "2026-11-24T11:41:40.336811+00:00",
+      "finished_at": "2026-11-24T11:41:44.569069+00:00",
+      "policy_hash": "9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7",
+      "status": "paused",
+      "reason": "Protected backup/restore or reviewed recovery verification unavailable",
+      "batches": 0,
+      "rows_processed": 0,
+      "progress": "{}"
+    },
+    {
+      "id": 1682,
+      "started_at": "2026-11-24T11:36:36.305542+00:00",
+      "finished_at": "2026-11-24T11:36:40.16933+00:00",
+      "policy_hash": "9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7",
+      "status": "paused",
+      "reason": "Protected backup/restore or reviewed recovery verification unavailable",
+      "batches": 0,
+      "rows_processed": 0,
+      "progress": "{}"
+    },
+    {
+      "id": 1681,
+      "started_at": "2026-11-24T11:31:32.265427+00:00",
+      "finished_at": "2026-11-24T11:31:36.172792+00:00",
+      "policy_hash": "9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7",
+      "status": "paused",
+      "reason": "Protected backup/restore or reviewed recovery verification unavailable",
+      "batches": 0,
+      "rows_processed": 0,
+      "progress": "{}"
+    },
+    {
+      "id": 1680,
+      "started_at": "2026-11-24T11:26:28.190476+00:00",
+      "finished_at": "2026-11-24T11:26:32.073574+00:00",
+      "policy_hash": "9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7",
+      "status": "paused",
+      "reason": "Protected backup/restore or reviewed recovery verification unavailable",
+      "batches": 0,
+      "rows_processed": 0,
+      "progress": "{}"
+    },
+    {
+      "id": 1679,
+      "started_at": "2026-11-24T11:21:24.100179+00:00",
+      "finished_at": "2026-11-24T11:21:28.058224+00:00",
+      "policy_hash": "9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7",
+      "status": "paused",
+      "reason": "Protected backup/restore or reviewed recovery verification unavailable",
+      "batches": 0,
+      "rows_processed": 0,
+      "progress": "{}"
+    },
+    {
+      "id": 1678,
+      "started_at": "2026-11-24T11:16:20.066131+00:00",
+      "finished_at": "2026-11-24T11:16:23.96889+00:00",
+      "policy_hash": "9be787ac64d47f47ae20fda925dc720cb353591cd3588d39f5502a425185aef7",
+      "status": "paused",
+      "reason": "Protected backup/restore or reviewed recovery verification unavailable",
+      "batches": 0,
+      "rows_processed": 0,
+      "progress": "{}"
+    }
+  ],
+  "removed": [],
+  "markets": [
+    {
+      "id": 2,
+      "house_id": 114,
+      "enabled": true,
+      "interval_seconds": 300,
+      "last_success": "2026-11-24T12:54:42.088388+00:00",
+      "failures": 0,
+      "last_error": null
+    },
+    {
+      "id": 1,
+      "house_id": 110,
+      "enabled": false,
+      "interval_seconds": 300,
+      "last_success": "2026-11-14T15:14:21.190053+00:00",
+      "failures": 0,
+      "last_error": null
+    }
+  ],
+  "tiers": {
+    "observations": {
+      "count": 2351,
+      "oldest": "2026-11-14T02:45:34.522262+00:00",
+      "newest": "2026-11-24T12:54:42.088388+00:00"
+    },
+    "snapshots": {
+      "count": 209,
+      "oldest": "2026-11-14T02:45:36.952369+00:00",
+      "newest": "2026-11-24T12:29:36.934685+00:00",
+      "reported_listings": 36581107,
+      "raw_snapshots": 209,
+      "statistic_snapshots": 209
+    },
+    "daily": {
+      "count": 12,
+      "oldest": "2026-11-14",
+      "newest": "2026-11-24"
+    },
+    "captures": {
+      "count": 268,
+      "retained": 268,
+      "compressed_bytes": 276236991
+    }
+  },
+  "ingestion": [
+    {
+      "day": "2026-11-17T00:00:00+00:00",
+      "count": 122,
+      "payload_bytes": 99574973
+    },
+    {
+      "day": "2026-11-18T00:00:00+00:00",
+      "count": 222,
+      "payload_bytes": 364277434
+    },
+    {
+      "day": "2026-11-19T00:00:00+00:00",
+      "count": 207,
+      "payload_bytes": 325876765
+    },
+    {
+      "day": "2026-11-20T00:00:00+00:00",
+      "count": 222,
+      "payload_bytes": 369572030
+    },
+    {
+      "day": "2026-11-21T00:00:00+00:00",
+      "count": 222,
+      "payload_bytes": 397099642
+    },
+    {
+      "day": "2026-11-22T00:00:00+00:00",
+      "count": 109,
+      "payload_bytes": 198304549
+    },
+    {
+      "day": "2026-11-23T00:00:00+00:00",
+      "count": 156,
+      "payload_bytes": 337414525
+    },
+    {
+      "day": "2026-11-24T00:00:00+00:00",
+      "count": 154,
+      "payload_bytes": 344510740
+    }
+  ],
+  "backup_state": {
+    "job": {
+      "id": "16a3dde50a554991b1f13fda9f9336c9",
+      "status": "succeeded",
+      "actor": "scheduler",
+      "started_at": "2026-11-24T04:30:38.804467+00:00",
+      "finished_at": "2026-11-24T04:44:06.676252+00:00",
+      "backup_id": "ef67a969e9172e7b3d04121fda7297ee"
+    },
+    "next_at": "2026-11-25T04:30:38.787973+00:00",
+    "policy": {
+      "revision": 2,
+      "enabled": true,
+      "interval_seconds": 86400,
+      "daily": 2,
+      "weekly": 0,
+      "monthly": 0,
+      "max_bytes": null,
+      "minimum_recovery_points": 1,
+      "warning_free_bytes": 3221225472
+    }
+  },
+  "local_backups": [
+    {
+      "name": "market-release-20261123T152456556825Z-1c1734c7fc7d.dump",
+      "bytes": 1922461549,
+      "symlink": false
+    },
+    {
+      "name": "market-development-20261115T031130139561Z.json",
+      "bytes": 299,
+      "symlink": false
+    },
+    {
+      "name": "market-development-20261114T160815982254Z.json",
+      "bytes": 622,
+      "symlink": false
+    },
+    {
+      "name": "market-development-20261115T022538566306Z.json",
+      "bytes": 650,
+      "symlink": false
+    },
+    {
+      "name": "market-scheduled-20261124T043038812228Z-054f39211d71.json",
+      "bytes": 517,
+      "symlink": false
+    },
+    {
+      "name": "market-recovery-20261113T233953939295Z.json",
+      "bytes": 509,
+      "symlink": false
+    },
+    {
+      "name": "market-recovery-20261114T141243667398Z.json",
+      "bytes": 591,
+      "symlink": false
+    },
+    {
+      "name": "market-development-20261114T044255979749Z.json",
+      "bytes": 618,
+      "symlink": false
+    },
+    {
+      "name": "market-development-20261115T010501853878Z.json",
+      "bytes": 650,
+      "symlink": false
+    },
+    {
+      "name": "market-development-20261114T041234852184Z.json",
+      "bytes": 298,
+      "symlink": false
+    },
+    {
+      "name": "market-test-20261113T233847732467Z.json",
+      "bytes": 501,
+      "symlink": false
+    },
+    {
+      "name": "market-release-20261123T152456556825Z-1c1734c7fc7d.json",
+      "bytes": 961,
+      "symlink": false
+    },
+    {
+      "name": "market-release-20261118T133835118331Z-a0d03457794e.dump",
+      "bytes": 713963067,
+      "symlink": false
+    },
+    {
+      "name": "market-development-20261114T143748051831Z.json",
+      "bytes": 622,
+      "symlink": false
+    },
+    {
+      "name": "market-release-20261118T144809003060Z-df8c8cd2a368.json",
+      "bytes": 1018,
+      "symlink": false
+    },
+    {
+      "name": "market-release-20261118T144809003060Z-df8c8cd2a368.dump",
+      "bytes": 723098027,
+      "symlink": false
+    },
+    {
+      "name": "market-development-20261115T052439755689Z.json",
+      "bytes": 660,
+      "symlink": false
+    },
+    {
+      "name": "market-development-20261116T033956666546Z.json",
+      "bytes": 663,
+      "symlink": false
+    },
+    {
+      "name": "market-test-20261113T233410595426Z.json",
+      "bytes": 501,
+      "symlink": false
+    },
+    {
+      "name": "market-scheduled-20261124T043038812228Z-054f39211d71.dump",
+      "bytes": 2132230877,
+      "symlink": false
+    },
+    {
+      "name": ".backup.lock",
+      "bytes": 0,
+      "symlink": false
+    },
+    {
+      "name": "market-development-20261115T024914842493Z.json",
+      "bytes": 659,
+      "symlink": false
+    },
+    {
+      "name": "market-release-20261118T133835118331Z-a0d03457794e.json",
+      "bytes": 1018,
+      "symlink": false
+    },
+    {
+      "name": "market-development-20261114T123543922718Z.json",
+      "bytes": 298,
+      "symlink": false
+    },
+    {
+      "name": "market-release-20261122T132338795686Z-6e2bb3d9483d.json",
+      "bytes": 999,
+      "symlink": false
+    },
+    {
+      "name": "market-development-20261114T142845676029Z.json",
+      "bytes": 622,
+      "symlink": false
+    },
+    {
+      "name": "market-development-20261114T141320585884Z.json",
+      "bytes": 622,
+      "symlink": false
+    },
+    {
+      "name": "market-development-20261115T093350867055Z.json",
+      "bytes": 660,
+      "symlink": false
+    },
+    {
+      "name": "market-development-20261115T144140952029Z.json",
+      "bytes": 660,
+      "symlink": false
+    },
+    {
+      "name": "status.json",
+      "bytes": 157,
+      "symlink": false
+    },
+    {
+      "name": "market-development-20261114T161622641394Z.json",
+      "bytes": 649,
+      "symlink": false
+    },
+    {
+      "name": "market-recovery-20261114T003722062298Z.json",
+      "bytes": 568,
+      "symlink": false
+    },
+    {
+      "name": "market-development-20261114T151409719774Z.json",
+      "bytes": 622,
+      "symlink": false
+    },
+    {
+      "name": "market-development-20261116T024547046843Z.json",
+      "bytes": 661,
+      "symlink": false
+    },
+    {
+      "name": "market-development-20261116T053407650838Z.json",
+      "bytes": 662,
+      "symlink": false
+    },
+    {
+      "name": "market-development-20261114T032256003545Z.json",
+      "bytes": 617,
+      "symlink": false
+    },
+    {
+      "name": "market-release-20261122T132338795686Z-6e2bb3d9483d.dump",
+      "bytes": 1662789332,
+      "symlink": false
+    },
+    {
+      "name": "market-development-20261114T165413439364Z.json",
+      "bytes": 649,
+      "symlink": false
+    },
+    {
+      "name": "market-development-20261115T022523797350Z.json",
+      "bytes": 299,
+      "symlink": false
+    },
+    {
+      "name": "market-recovery-20261114T013607846546Z.json",
+      "bytes": 560,
+      "symlink": false
+    },
+    {
+      "name": "market-development-20261115T031227463979Z.json",
+      "bytes": 660,
+      "symlink": false
+    }
+  ],
+  "disk": "Filesystem                           1B-blocks         Used    Available Use% Mounted on\n/dev/mapper/ubuntu--vg-ubuntu--lv 266736099328 134014926848 120745422848  53% /\n",
+  "volumes": [
+    "twichui-market_market-data",
+    "twichui-market_companion-private-beta",
+    "twichui-market_market-data",
+    "twichui-market_companion-private-beta",
+    "twichui-market_market-data",
+    "twichui-market_market-data",
+    "twichui-market_market-data",
+    "twichui-market_caddy-data",
+    "twichui-market_backup-management-state",
+    "89b31260a39f7faef1ff871012dfdeabe98c483f13ccfd9a372f986ee4a0b8db",
+    "f0357311d282d678539ad27e670eda8d698b15e2c93af14392d1a99755b31a2a",
+    "twichui-market_market-data"
+  ]
+}

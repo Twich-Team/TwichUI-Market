@@ -185,3 +185,17 @@ def test_manual_batch_also_requires_protected_off_vm_recovery(owner,database,mon
     report=owner.get('/api/v1/admin/retention/preview').json()
     assert owner.post('/api/v1/admin/retention/apply',json={'confirmation':report['confirmation'],'confirm':True}).status_code==409
     with database() as db:assert db.scalar(select(func.count()).select_from(Observation))==16
+
+
+def test_raw_deletion_refuses_missing_or_incomplete_aggregation(database):
+    from market.compaction_safety import verify_statistics
+    from fastapi import HTTPException
+    import pytest
+    seed(database)
+    with database.begin() as db:
+        row=db.scalar(select(SnapshotStatistic))
+        snapshot=row.snapshot_id
+        verify_statistics(db,[snapshot])
+        row.listing_count=0;db.flush()
+        with pytest.raises(HTTPException):verify_statistics(db,[snapshot])
+        assert db.scalar(select(func.count()).select_from(Listing).where(Listing.snapshot_id==snapshot))==1
