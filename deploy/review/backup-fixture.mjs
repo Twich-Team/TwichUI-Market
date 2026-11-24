@@ -16,10 +16,20 @@ delete storage.health.nas;
 backups.inventory_by_storage[vault] = backups.inventory_by_storage.nas;
 delete backups.inventory_by_storage.nas;
 for (const row of rows) {
+  row.keep_flag = row.protected;
+  row.recovery_pin = false;
   if (row.storage_id === 'nas') {row.storage_id = vault; row.storage_name = 'Simulated network vault';}
 }
+rows[0].keep_flag = false;
+rows[0].recovery_pin = true;
 rows[0].active_use = true;
 rows[0].required_by = ['simulated recovery'];
+// An explicitly kept manual copy lets reviewers inspect its distinct rotation rules.
+rows[3].protected = rows[3].keep_flag = true;
+rows[3].eligible = false;
+rows[3].reason = 'Explicit administrator protection';
+backups.protected_count = rows.filter(row => row.protected).length;
+backups.protected_bytes = rows.filter(row => row.protected).reduce((total, row) => total + row.bytes, 0);
 backups.policy.enabled = false;
 backups.next_scheduled_at = null;
 backups.service_status = 'scheduled_backups_disabled';
