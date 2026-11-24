@@ -10,7 +10,27 @@ test('native NAS administration: real configuration, folders, migration, protect
  await expect(page.getByRole('heading',{name:'Market Explorer',exact:true})).toBeVisible();
  const session=await (await page.request.get('/api/v1/auth/session')).json();const headers={'X-CSRF-Token':session.csrf_token};
  const inventory=async()=>await (await page.request.get('/api/v1/admin/backups')).json();
- const create=async()=>{const response=await page.request.post('/api/v1/admin/backups/create',{headers,data:{}});expect(response.status(),await response.text()).toBe(202);const job=await response.json();await expect.poll(async()=>{const d=await inventory();return d.job?.id===job.id&&!d.inventory_stale&&d.items.some((r:{id:string})=>r.id===d.job.backup_id)?d.job.status:'waiting';},{timeout:60000}).toBe('succeeded');};
+ const create=async()=>{
+  const submit=()=>page.request.post('/api/v1/admin/backups/create',{headers,data:{}});
+  const lockBusy=async (response: Awaited<ReturnType<typeof submit>>) =>
+    response.status()===409 &&
+    (await response.json().catch(()=>null))?.detail==='Backup, download, deletion or restore operation is busy';
+  let response=await submit();
+  // Inventory reads can briefly hold the same lock. This specific refusal occurs before queueing.
+  if(await lockBusy(response)) {
+   await expect.poll(async()=>{
+    response=await submit();
+    return await lockBusy(response);
+   },{timeout:12000,message:'Wait for the backup manager inventory lock before creating a backup'}).toBe(false);
+  }
+  expect(response.status(),await response.text()).toBe(202);
+  const job=await response.json();
+  await expect.poll(async()=>{
+   const data=await inventory();
+   return data.job?.id===job.id&&!data.inventory_stale&&data.items.some((row:{id:string})=>row.id===data.job.backup_id)
+     ?data.job.status:'waiting';
+  },{timeout:60000}).toBe('succeeded');
+ };
  await create();
  await page.goto('/administration');await page.getByRole('link',{name:'Storage & Backups',exact:true}).click();
  await page.getByRole('navigation',{name:'Storage & Backups pages'}).getByRole('link',{name:'Storage',exact:true}).click();
