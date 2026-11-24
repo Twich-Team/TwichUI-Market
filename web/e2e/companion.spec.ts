@@ -428,3 +428,36 @@ test("device ownership stays private while administrators can inspect and revoke
     await member.dispose();
   }
 });
+
+test("abandoning additional PC setup preserves the existing delivered sync", async ({ page }) => {
+  const now = Date.now();
+  const date = (offset: number) => new Date(now + offset).toISOString();
+  await page.route("**/api/v1/companion/devices?*", route => route.fulfill({ json: { devices: [{
+    id: 417, user_id: 2, name: "Existing guild PC", platform: "Windows", app_version: "2.0.0",
+    authorized_at: date(-86400000), expires_at: date(86400000), revoked: false,
+    last_connection_at: null, last_sync_at: date(-3600000), selected_market_id: 1,
+    selected_market_name: "Guild auctions",
+  }] } }));
+  await login(page);
+  const recent = page.locator(".companion-recent");
+  await expect(recent).toContainText("Existing guild PC");
+  await expect(recent).toContainText("Last sync delivered");
+  await expect(page.locator(".companion-steps")).toHaveCount(0);
+
+  await recent.getByRole("button", { name: "Set up another PC" }).click();
+  await page.getByRole("button", { name: /4 First sync/ }).click();
+  await expect(page.getByRole("heading", { name: "Waiting for first sync" })).toBeVisible();
+  await expect(page.locator(".companion-status-grid")).toContainText("Not yet");
+  await expect(recent).toContainText("Last sync delivered");
+  await page.reload();
+  await expect(recent).toContainText("Last sync delivered");
+  await expect(page.locator(".companion-steps")).toHaveCount(0);
+
+  await page.goto("/companion?setup=1");
+  await expect(page.getByRole("heading", {name: "Install on Windows"})).toBeVisible();
+  await recent.getByRole("button", {name: "Close setup"}).click();
+  await expect(page.locator(".companion-steps")).toHaveCount(0);
+  await page.reload();
+  await expect(recent).toContainText("Existing guild PC");
+  await expect(page.locator(".companion-steps")).toHaveCount(0);
+});

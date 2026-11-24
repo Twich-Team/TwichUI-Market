@@ -1,6 +1,7 @@
 import { Loading } from "./loading";
 import { formatBytes } from "./size";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { navigate } from "./navigation";
 import { useQuery } from "@tanstack/react-query";
 import { api, ApiError, User, when } from "./api";
 import { companionDownloadUrl } from "./companion-downloads";
@@ -94,17 +95,15 @@ export function CompanionSetup({ user }: { user: User }) {
     false,
     Date.now() < pollUntil && document.visibilityState === "visible",
   );
-  const current = (devices.data?.devices || []).filter(
-    (device) =>
-      !device.revoked &&
-      new Date(device.expires_at).getTime() > Date.now() &&
-      (!device.renewal_expires_at ||
-        new Date(device.renewal_expires_at).getTime() > Date.now()) &&
-      new Date(device.authorized_at).getTime() >= progress.since,
+  const authorized = (devices.data?.devices || []).filter(device =>
+    !device.archived_at && !device.revoked && Date.parse(device.expires_at) > Date.now() &&
+    (!device.renewal_expires_at || Date.parse(device.renewal_expires_at) > Date.now()),
+  ).sort((a,b) =>
+    (b.last_sync_at ? Date.parse(b.last_sync_at) : 0) - (a.last_sync_at ? Date.parse(a.last_sync_at) : 0) ||
+    Date.parse(b.authorized_at) - Date.parse(a.authorized_at),
   );
-  const connected = current[0];
-  const synced = current.filter(device => device.last_sync_at)
-    .sort((a,b) => Date.parse(b.last_sync_at!) - Date.parse(a.last_sync_at!))[0];
+  const recentDevice = authorized[0];
+  const setupDevice = authorized.find(device => Date.parse(device.authorized_at) >= progress.since);
   const [editingSetup,setEditingSetup] = useState(requestedSetup);
   const [channel,setChannel] = useState<"stable"|"beta">("stable");
   const [copied,setCopied] = useState(false);
@@ -115,7 +114,7 @@ export function CompanionSetup({ user }: { user: User }) {
   const beta = privateBeta.data;
   const betaUrl = beta?.channel === "private-beta" && beta.signed === false && beta.updates === "signed" && beta.updater_signature_verified === true && beta.tray_actions_verified === false
     ? companionDownloadUrl(beta, "private-beta") : null;
-  const showGuide = editingSetup || !synced;
+  const showGuide = editingSetup || !recentDevice?.last_sync_at;
   const betaSelected = Boolean(betaUrl && (channel === "beta" || !url));
   const installer = betaSelected ? beta : release.data;
   const installerUrl = betaSelected ? betaUrl : url;
@@ -133,18 +132,25 @@ export function CompanionSetup({ user }: { user: User }) {
     }
     if (value >= 2) setPollUntil(Date.now() + 5 * 60_000);
   }
+  useEffect(() => {
+    if (requestedSetup) {
+      step(0, progress.since);
+      navigate("/companion", true);
+    }
+  }, [requestedSetup]);
   const labels = ["Download", "Install & open", "Approve device", "First sync"];
   return (
     <div className="companion-page">
       <h1>Desktop Companion</h1>
-      {devices.isPending ? <Loading label="Loading your devices…" skeleton/> : connected && (
+      {devices.isPending ? <Loading label="Loading your devices…" skeleton/> : recentDevice && (
         <section className="panel padded companion-recent" role="status">
-          <div><h2>{(synced ?? connected).name}</h2>
+          <div><h2>{recentDevice.name}</h2>
           <p>Authorized for this account</p>
-          <p>{synced ? <>Last sync delivered {when(synced.last_sync_at)}{synced.selected_market_name && ` · ${synced.selected_market_name}`}</> : "Waiting for first sync"}</p></div>
-          <button className="secondary" onClick={() => {setEditingSetup(true); step(0, Date.now());}}>
+          <p>{recentDevice.last_sync_at ? <>Last sync delivered {when(recentDevice.last_sync_at)}{recentDevice.selected_market_name && ` · ${recentDevice.selected_market_name}`}</> : "Waiting for first sync"}</p></div>
+          {!editingSetup && <button className="secondary" onClick={() => {setEditingSetup(true); step(0, Date.now());}}>
             Set up another PC
-          </button>
+          </button>}
+          {editingSetup && recentDevice.last_sync_at && <button className="secondary" onClick={() => setEditingSetup(false)}>Close setup</button>}
         </section>
       )}
       {devices.error && <p role="alert" className="notice error">Your devices could not be loaded. <button onClick={() => devices.refetch()}>Try again</button></p>}
@@ -252,9 +258,9 @@ export function CompanionSetup({ user }: { user: User }) {
                 token or sign in to Blizzard.
               </p>
               <div className="notice" role="status">
-                {connected ? (
+                {setupDevice ? (
                   <>
-                    <strong>{connected.name} is authorized.</strong>
+                    <strong>{setupDevice.name} is authorized.</strong>
                     <p>
                       Return to the companion to check its market and first
                       sync.
@@ -291,24 +297,24 @@ export function CompanionSetup({ user }: { user: User }) {
             <div className="companion-step">
               <span className="eyebrow">04 / FIRST SYNC</span>
               <h2>
-                {synced
+                {setupDevice?.last_sync_at
                   ? "Market prices delivered"
-                  : "Your first prices are on their way."}
+                  : "Waiting for first sync"}
               </h2>
               <p>
-                {synced
+                {setupDevice?.last_sync_at
                   ? "The server delivered a complete market sync. The companion shows when its local cache is ready."
                   : "In the companion, choose an available market and select Sync now. This page confirms when the server has delivered the complete download."}
               </p>
               <div className="companion-status-grid">
                 <div>
                   <span>Device authorization</span>
-                  <strong>{connected ? "Confirmed" : "Waiting"}</strong>
+                  <strong>{setupDevice ? "Confirmed" : "Waiting"}</strong>
                 </div>
                 <div>
                   <span>Last sync delivered</span>
                   <strong>
-                    {synced ? when(synced.last_sync_at) : "Not yet"}
+                    {setupDevice?.last_sync_at ? when(setupDevice.last_sync_at) : "Not yet"}
                   </strong>
                 </div>
                 <div>
