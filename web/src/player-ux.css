@@ -88,6 +88,10 @@
   color: #e2bd8d;
 }
 
+.mobile-catalogue:empty {
+  min-height: 0;
+}
+
 .catalogue-panel .catalogue-scroll {
   min-height: 0;
   overscroll-behavior-x: contain;
