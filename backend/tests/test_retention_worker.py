@@ -319,3 +319,22 @@ def test_recovery_health_respects_archive_expiry_even_when_restore_is_recent(tmp
     assert recovery_evidence_view()['required_evidence_recent'] is False
     evidence['expires_at']=(now()+timedelta(hours=1)).isoformat();path.write_text(json.dumps(evidence))
     assert recovery_evidence_view()['required_evidence_recent'] is True
+
+
+def test_cycle_leaves_transaction_headroom_instead_of_starting_near_deadline(database,automation):
+    moments=iter([0,18.1])
+    result=work_once(database,clock=lambda:next(moments))
+    assert result['status']=='budget_exhausted' and result['batches']==0 and result['rows_processed']==0
+
+
+def test_aggregation_integrity_failure_disables_cleanup_until_review(database,automation,monkeypatch):
+    from market.retention_worker import state_view
+    def mismatch(*args):raise HTTPException(409,'Synthetic aggregate mismatch')
+    monkeypatch.setattr('market.compaction_safety.verify_statistics',mismatch)
+    with database() as db:before=db.scalar(select(func.count()).select_from(Listing))
+    result=work_once(database)
+    assert result['status']=='paused' and result['rows_processed']==0
+    with database() as db:
+        assert db.get(RetentionAutomation,1).enabled is False
+        assert db.scalar(select(func.count()).select_from(Listing))==before
+        assert 'Synthetic aggregate mismatch' in state_view(db)['paused_reason']

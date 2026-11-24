@@ -99,8 +99,11 @@ class NASStorage(unittest.TestCase):
 
     def test_conflicting_destination_never_overwritten(self):
         _,name=self.archive();(self.remote/name).write_bytes(b'different')
-        result=self.migrate()
-        self.assertEqual(result['status'],'failed');self.assertEqual((self.remote/name).read_bytes(),b'different')
+        with self.assertRaises(Refused):self.manager.migration_plan(self.key)
+        self.assertEqual((self.remote/name).read_bytes(),b'different')
+        same_size=b'X'*(self.local/name).stat().st_size;(self.remote/name).write_bytes(same_size)
+        result=self.migrate();self.assertEqual(result['status'],'failed')
+        self.assertEqual((self.remote/name).read_bytes(),same_size)
         self.assertEqual(self.manager.storage_status()['active_id'],'local')
         self.assertTrue((self.local/name).exists())
 
@@ -318,3 +321,23 @@ class NASStorage(unittest.TestCase):
         with patch.object(self.manager,'create',side_effect=Refused('Competing download')):
             self.assertTrue(tick(self.manager))
         with self.manager.db() as db:self.assertEqual(self.manager.get(db,'job')['status'],'failed')
+
+    def test_shared_recovery_receipt_remains_readable_under_service_umask(self):
+        from recovery import atomic_json
+        root=Path(self.temp.name)/'shared';root.mkdir()
+        previous=os.umask(0o077)
+        try:atomic_json(root,'evidence.json',dict(backup_id='f'*32))
+        finally:os.umask(previous)
+        self.assertEqual((root/'evidence.json').stat().st_mode&0o777,0o644)
+        self.assertEqual(json.loads((root/'evidence.json').read_text()),dict(backup_id='f'*32))
+
+    def test_migration_retry_checks_remaining_capacity_without_recopying_existing_files(self):
+        _,first=self.archive();_,second=self.archive('market-second.dump')
+        (self.remote/first).write_bytes((self.local/first).read_bytes())
+        size=(self.local/second).stat().st_size
+        with patch.object(self.remote_store,'capacity',return_value=dict(available_bytes=size+2*1024**3,capacity_bytes=4*1024**3)):
+            plan=self.manager.migration_plan(self.key)
+            self.assertTrue(plan['enough_space']);self.assertEqual(plan['required_bytes'],size);self.assertEqual(plan['reusable_bytes'],size)
+            job=self.manager.migration_queue('admin:1',self.key,plan)
+            result=self.manager.migrate('admin:1',job['id']);self.assertEqual(result['status'],'succeeded',result)
+        self.assertTrue((self.local/first).exists());self.assertTrue((self.local/second).exists())

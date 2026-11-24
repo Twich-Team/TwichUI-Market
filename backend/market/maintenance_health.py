@@ -16,7 +16,8 @@ def health(user=Depends(admin),db=Depends(session)):
     automation=state_view(db)
     runs=list(db.scalars(select(RetentionExecution).order_by(RetentionExecution.id.desc()).limit(20)))
     last=runs[0] if runs else None
-    status=('disabled' if not automation['enabled'] else 'unauthorized' if not automation['authorized'] else
+    integrity_paused=bool(last and last.status=='paused' and (last.reason or '').startswith('Integrity verification failed'))
+    status=('paused' if integrity_paused else 'disabled' if not automation['enabled'] else 'unauthorized' if not automation['authorized'] else
             last.status if last and last.status in ('running','failed','paused','interrupted') else 'enabled')
     absent=db.scalar(select(func.count()).select_from(Snapshot).where(Snapshot.statistics_retained.is_(True),
         ~select(SnapshotStatistic.snapshot_id).where(SnapshotStatistic.snapshot_id==Snapshot.id).exists()))

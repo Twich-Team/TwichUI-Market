@@ -149,7 +149,7 @@ def state_view(db):
     success = db.scalar(select(func.max(RetentionExecution.finished_at)).where(RetentionExecution.status.in_(['complete','budget_exhausted'])))
     stages = dict(db.execute(select(RetentionBatch.stage,func.sum(RetentionBatch.rows_removed)).group_by(RetentionBatch.stage)).all())
     reason = ('Policy is not authorized for automatic maintenance' if not document else
-              'Automatic maintenance is disabled' if not row.enabled else last.reason if last else 'Awaiting first execution')
+              ('Automatic maintenance is disabled. Last result: '+last.reason if last and last.reason else 'Automatic maintenance is disabled') if not row.enabled else last.reason if last else 'Awaiting first execution')
     return {'installed':os.environ.get('RETENTION_SCHEDULER_INSTALLED')=='true',
         'enabled':bool(row and row.enabled), 'authorized':bool(document),
         'authorization':document, 'proposal':authorization_document(db, Limits()),
@@ -232,7 +232,7 @@ def _work(factory, at, clock):
         row.next_run_at=at+timedelta(seconds=limits.interval_seconds)
         receipt=RetentionExecution(policy_hash=document['policy_hash'],status='running')
         db.add(receipt);db.flush(); receipt_id=receipt.id; actor_id=row.actor_id
-    outcome='budget_exhausted'; reason=None
+    outcome='budget_exhausted'; reason=None; integrity_failure=False
     try:
         if not recovery_ready(actor_id):
             outcome='paused'; reason='Protected backup/restore or reviewed recovery verification unavailable'
@@ -262,7 +262,9 @@ def _work(factory, at, clock):
                 return {'status':'budget_exhausted','reason':'Canonical daily aggregation progressed','batches':0,'rows_processed':0}
             for _ in range(limits.max_batches):
                 remaining=limits.max_seconds-(clock()-started)
-                if remaining <= 0: break
+                # Leave room for a full bounded transaction rather than expiring
+                # the cycle in the middle of its final aggregate/deletion batch.
+                if remaining < min(3,limits.max_seconds*.9): break
                 with factory.begin() as db:
                     # Recheck authorization and pause between every committed batch.
                     row=db.get(RetentionAutomation,1)
@@ -297,12 +299,20 @@ def _work(factory, at, clock):
                     receipt.progress=canonical(progress)
                 # Give a waiting collector/sync an opportunity between transactions.
                 time.sleep(0.05)
+    except HTTPException as exc:
+        outcome='paused';integrity_failure=True
+        reason='Integrity verification failed; source preserved: '+str(exc.detail)[:350]
+        logging.error('Retention integrity verification failed; cleanup paused and batch rolled back')
     except Exception:
         outcome='failed'; reason='Maintenance transaction failed or timed out; batch rolled back'
         logging.error('Automatic retention batch failed; transaction rolled back')
     with factory.begin() as db:
         receipt=db.get(RetentionExecution,receipt_id)
         receipt.status=outcome;receipt.reason=reason;receipt.finished_at=now()
+        if integrity_failure:
+            row=db.get(RetentionAutomation,1)
+            if row:row.enabled=False;row.next_run_at=None
+            audit(db,actor_id,'retention.automatic.integrity_paused',reason[:190])
         # Retrying an empty contention attempt earlier prevents permanent phase
         # alignment with the five-minute collector. A cycle that committed any
         # rows retains its full authorized interval and cannot spend two budgets.

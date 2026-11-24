@@ -12,6 +12,7 @@ sys.path[:0]=['/app','/secrets-code']
 from management import Manager, Refused
 from providers import SMB, StorageError, digest, endpoint, relative, CHUNK
 
+os.umask(0o077) # same hardening as the actual management service
 assert os.environ['PGDATABASE']=='market_test'
 Path('/backups').chmod(0o700)
 Path('/state/keyring.json').write_text(json.dumps(dict(active='fixture',keys={'fixture':base64.b64encode(os.urandom(32)).decode()})))
