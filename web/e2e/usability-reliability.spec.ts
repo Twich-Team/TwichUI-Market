@@ -43,7 +43,7 @@ test('usability M1: reversible account and device archives and honest status',as
 test('usability M1: local deal icons load without hover through delays filters scrolling cache and mobile',async({page})=>{
   const external:string[]=[];
   page.on('request',req=>{if(new URL(req.url()).hostname!=='proxy')external.push(req.url());});
-  await login(page); await page.goto('/deals');
+  await login(page); await page.goto('/deals?mode=listings&coverage=3&change=15&confidence=limited');
   const markets=await (await page.request.get('/api/v1/markets')).json();
   const market=markets.markets.find((m:{label:string})=>m.label==='Synthetic usability review');
   await page.getByRole('combobox',{name:'Market',exact:true}).selectOption(String(market.id));
@@ -147,13 +147,22 @@ test('usability M3: delayed loading keeps table rows, uses shared indicators and
  await shot(page,'loading-catalogue',false);
  await page.goto('/administration');await page.getByRole("link",{name:'Item Metadata',exact:true}).click();
  await page.getByRole('button',{name:'Provider evidence',exact:true}).click();
- const table=page.getByRole('table',{name:'provider attempts',exact:true});await expect(table.locator('tbody tr').first()).toBeVisible();
- const before=await table.locator('tbody tr').count();
+ await page.getByRole('combobox',{name:'Market',exact:true}).selectOption({label:'Synthetic Alliance'});
+ const table=page.getByRole('table',{name:'provider attempts',exact:true});
+ const details=table.getByRole('button',{name:/^Show details for provider attempts /});
+ await expect(details.first()).toBeVisible();
+ const rowIds=()=>details.evaluateAll(buttons=>buttons.map(button=>button.getAttribute('aria-label')));
+ const before=await rowIds();
  let release=()=>{};const gate=new Promise<void>(resolve=>{release=resolve;});
  await page.route('**/api/v1/admin/records/metadata-attempts?*',async route=>{await gate;await route.continue();});
- await page.getByLabel('Item name or ID',{exact:true}).fill('290000');
- await expect(page.getByRole('status').filter({hasText:'Loading provider attempts'})).toBeVisible();
- expect(await table.locator('tbody tr').count()).toBe(before);
- try {await page.screenshot({path:`${output}/loading-administration.png`,fullPage:true});await expect(page.getByRole('status').filter({hasText:'Loading provider attempts'})).toBeVisible();}finally{release();}
+ const refreshing=page.getByRole('status').filter({hasText:'Refreshing provider attempts'});
+ try {
+  await page.getByLabel('Item name or ID',{exact:true}).fill('290000');
+  await expect(refreshing).toBeVisible();
+  expect(await rowIds()).toEqual(before);
+  await page.screenshot({path:`${output}/loading-administration.png`,fullPage:true});
+  await expect(refreshing).toBeVisible();
+ } finally {release();}
+ await expect(refreshing).toHaveCount(0);
  await axe(page);
 });
