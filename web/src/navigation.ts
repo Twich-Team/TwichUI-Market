@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, type MouseEvent } from 'react';
+import { useEffect, useRef, useSyncExternalStore, type MouseEvent } from 'react';
 import { onPrivateCacheClear } from './query';
 import type { ItemSort, Preferences } from './preferences-store';
 export const MAX_ID = 2147483647;
@@ -47,7 +47,17 @@ export function safeBrowseUrl(value:unknown):string|null {
 }
 const event='market-location-change';
 export function currentLocation(){return location.pathname+location.search;}
-export function useLocation(){const [url,setUrl]=useState(currentLocation);useEffect(()=>{const read=()=>setUrl(currentLocation());window.addEventListener('popstate',read);window.addEventListener(event,read);return()=>{window.removeEventListener('popstate',read);window.removeEventListener(event,read);};},[]);return url;}
+function subscribeLocation(read: () => void) {
+  window.addEventListener('popstate', read);
+  window.addEventListener(event, read);
+  return () => {
+    window.removeEventListener('popstate', read);
+    window.removeEventListener(event, read);
+  };
+}
+export function useLocation() {
+  return useSyncExternalStore(subscribeLocation, currentLocation);
+}
 interface VariantComparison {
   pageIndex: number;
   pageSize: number;
