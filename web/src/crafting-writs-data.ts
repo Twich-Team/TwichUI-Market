@@ -77,6 +77,8 @@ export interface WritRow {
   item: WritItem;
   tier: string | null;
   profession: string | null;
+  professions?: string[];
+  allowed_sides?: string[];
   quest_id: number | null;
   faction: { id: number | null; name: string } | null;
   objectives: WritDelivery[];
@@ -103,6 +105,7 @@ export interface WritRow {
 export interface WritCatalogue {
   source_url: string;
   source_label?: string | null;
+  faction_source_url?: string | null;
   source_observed_at?: string | null;
   build: string | null;
   refreshed_at: string | null;
@@ -129,6 +132,7 @@ export interface WritView {
   maxSkill: number | null;
   confirmedRecipes: number[];
   query: string;
+  page: number;
   sort: WritSort;
   direction: "asc" | "desc";
 }
@@ -149,6 +153,7 @@ export function writView(search: string, market: number): WritView {
     maxSkill: maxSkill && maxSkill <= maxRecipeSkill ? maxSkill : null,
     confirmedRecipes: [...new Set(recipeIds.filter(id => id !== null))].sort((a, b) => a - b).slice(0, maxConfirmedRecipes),
     query: (params.get("q") ?? "").slice(0, 64).trim(),
+    page: Math.min(supportedId(params.get("page")) ?? 1, 200),
     sort: sort && Object.hasOwn(writColumns, sort) ? sort as WritSort : "rate",
     direction: params.get("direction") === "desc" ? "desc" : "asc",
   };
@@ -163,6 +168,7 @@ export function writUrl(view: WritView) {
   if (view.maxSkill !== null) params.set("max_skill", String(view.maxSkill));
   if (view.confirmedRecipes.length) params.set("recipes", view.confirmedRecipes.join(","));
   if (view.query) params.set("q", view.query);
+  if (view.page > 1) params.set("page", String(view.page));
   return "/crafting-writs?" + params;
 }
 
@@ -186,6 +192,10 @@ export function writSortValue(row: WritRow, sort: WritSort): ExactCopper | null 
     };
     case "rate": return row.eligible ? row.cost_per_reputation : null;
   }
+}
+
+export function producingProfessions(row: WritRow) {
+  return row.professions ?? (row.profession ? [row.profession] : []);
 }
 
 export function compareWrits(left: WritRow, right: WritRow, sort: WritSort, descending = false) {

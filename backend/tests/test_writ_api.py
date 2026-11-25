@@ -99,7 +99,6 @@ def test_reward_precedence_persists_and_recalculates(owner, database, writ_marke
     assert (other['reputation'], other['reward_source']) == (75, 'tier_setting')
     admin_row = owner.get(ADMIN).json()['writs'][0]
     assert (admin_row['reputation'], admin_row['provider_reputation'], admin_row['effective_reputation']) == (100, 60, 100)
-    monkeypatch.setattr(writ_api, 'enqueue_crafting_writ_refresh', lambda *args, **kwargs: None)
     assert owner.post(ADMIN + '/refresh').status_code == 202
     with database() as db:
         assert db.get(CraftingWritReward, ('writ', '264018')).reputation == 100

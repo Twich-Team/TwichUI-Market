@@ -9,15 +9,14 @@ from sqlalchemy import select, text
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm import Session
 
-from .crafting_writs import RESOURCE, read_catalogue, refresh_seconds
+from .crafting_writs import producing_professions, queue_catalogue_refresh, read_catalogue
 from .db import now, session
 from .market_api import require_market
 from .market_configuration import mapping_for
-from .metadata_recovery import enqueue_crafting_writ_refresh
 from .models import MetadataJob, MetadataProvider, MetadataTask, User
 from .preferences import browser_member
 from .security import admin, aware
-from .waylaid_api import item_views, refresh_view
+from .waylaid_api import item_views
 from .waylaid_pricing import Basis, load_quotes
 from .writ_pricing import Method, price_writ
 from .writ_rewards import RewardConflict, effective_reward, reward_settings, reward_view, save_reward
@@ -58,10 +57,11 @@ def catalogue_view(resource, data):
     return {
         'source_url': source.get('catalogue_url') or data.get('source_url') or 'https://foreverdb.net',
         'source_label': data.get('source_label'),
+        'faction_source_url': data.get('faction_source_url'),
         'source_observed_at': data.get('source_observed_at'),
         'build': source.get('build') or data.get('build'),
         'refreshed_at': refreshed_at,
-        'stale': parsed is not None and now() - parsed > timedelta(seconds=2 * (refresh_seconds() or 86400)),
+        'stale': parsed is not None and now() - parsed > timedelta(days=2),
         'writ_count': len(writs),
         'supported_count': supported,
         'incomplete_count': len(writs) - supported,
@@ -144,9 +144,9 @@ def compare_writs(
     mapping = mapping_for(db, market)
     resource, data = read_catalogue(db)
     writs = data['writs'] if data else []
-    professions = sorted({writ['profession'] for writ in writs if writ.get('profession')})
+    professions = sorted({slug for writ in writs for slug in producing_professions(writ)})
     if profession:
-        writs = [writ for writ in writs if writ.get('profession') == profession]
+        writs = [writ for writ in writs if profession in producing_professions(writ)]
     names = item_names(writs)
     items = item_views(db, market.region, names)
     quotes = load_quotes(db, market, names, basis)
@@ -163,10 +163,7 @@ def compare_writs(
     }
 
 
-def writ_refresh_view(db, resource):
-    if refresh_seconds():
-        return {**refresh_view(db, resource, resource_name=RESOURCE), 'operation': 'catalogue'}
-
+def writ_item_refresh_view(db):
     job = db.scalar(select(MetadataJob).where(MetadataJob.dedupe_key == 'crafting-writ-items')
                     .order_by(MetadataJob.id.desc()).limit(1))
     tasks = list(db.scalars(select(MetadataTask).where(MetadataTask.job_id == job.id))) if job else []
@@ -191,9 +188,20 @@ def writ_refresh_view(db, resource):
     elif error and job:
         state = 'failed'
     return {
-        'operation': 'metadata_backfill', 'state': state, 'error': error,
+        'state': state, 'error': error,
         'next_attempt_at': min((task.available_at for task in queued), default=None),
         'last_finished_at': job.updated_at if job and job.state == 'completed' else None,
+    }
+
+
+def writ_refresh_view(db, resource):
+    status = resource.status if resource else None
+    state = {'error': 'retry', 'queued': 'queued', 'running': 'running'}.get(status, 'idle')
+    return {
+        'operation': 'catalogue', 'state': state,
+        'error': 'The writ sources could not be refreshed. The last successful catalogue is still available if one was imported.' if status == 'error' else None,
+        'next_attempt_at': resource.retry_at if resource and status in ('error', 'queued') else None,
+        'item_metadata': writ_item_refresh_view(db),
     }
 
 
@@ -251,10 +259,7 @@ def edit_reward(
 
 @router.post('/admin/crafting-writs/refresh', status_code=202)
 def refresh_writs(user: User = Depends(admin), db: Session = Depends(session)):
-    try:
-        enqueue_crafting_writ_refresh(db, actor_id=user.id)
-    except ValueError as error:
-        raise HTTPException(409, str(error)) from None
+    queue_catalogue_refresh(db, user.id)
     db.commit()
     resource, _ = read_catalogue(db)
     return writ_refresh_view(db, resource)
