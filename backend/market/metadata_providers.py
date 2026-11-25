@@ -174,9 +174,16 @@ def fetch(provider, item_id, *, credential=None, etag=None, offset=None, validat
         if not credential: raise ValueError('Provider key required')
         if resource is not None:
             from .foreverdb import RELATED
-            if validate or not RELATED.fullmatch(resource): raise ValueError('Invalid ForeverDB resource')
-            if type(offset) is not int or not 0 <= offset <= 100000: raise ValueError('Invalid resource offset')
-            url = 'https://foreverdb.net/api/v1/' + resource + '?' + urlencode({'limit':20,'offset':offset})
+            from .merchants_favor import RESOURCE
+            if validate or (resource != RESOURCE and not RELATED.fullmatch(resource)):
+                raise ValueError('Invalid ForeverDB resource')
+            if type(offset) is not int or not 0 <= offset <= 100000:
+                raise ValueError('Invalid resource offset')
+            url = 'https://foreverdb.net/api/v1/' + resource
+            if resource == RESOURCE:
+                if offset != 0: raise ValueError('Merchant’s Favor catalogue is unpaginated')
+            else:
+                url += '?' + urlencode({'limit':20,'offset':offset})
         else:
             url = 'https://foreverdb.net/api/v1/meta' if validate else f'https://foreverdb.net/api/v1/items/{item_id}'
     else:

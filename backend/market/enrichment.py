@@ -51,9 +51,9 @@ def tick(factory=Session,client=None):
     # must not consume every eligible request slot before artwork gets a turn.
     if prefer_media:
         media=resolve_media_once(factory,client,budget_guard=budget)
-        recovery=recover(factory,provider_client=client)
+        recovery=recover(factory,provider_client=client,merchant_favor=True)
     else:
-        recovery=recover(factory,provider_client=client)
+        recovery=recover(factory,provider_client=client,merchant_favor=True)
         media=resolve_media_once(factory,client,budget_guard=budget)
     return {'recovery':recovery,'media':media}
 

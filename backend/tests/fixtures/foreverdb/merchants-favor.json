@@ -1,0 +1,267 @@
+{
+  "data": {
+    "currency": {
+      "id": 3402,
+      "name": "Merchant's Favor"
+    },
+    "url": "https://foreverdb.net/merchants-favor",
+    "counts": {
+      "crates": 5
+    },
+    "howToEarn": [
+      "Fill it with any one bundle from its list: it becomes a Sealed Crate."
+    ],
+    "favorPerCrate": null,
+    "favorPerCrateNote": "How much Favor each crate gives isn't in ForeverDB's data yet.",
+    "crates": [
+      {
+        "itemId": 248682,
+        "name": "Waylaid Crate: Apprentice Herbs",
+        "icon": "https://foreverdb.net/icons/236994.webp",
+        "quality": "Common",
+        "url": "https://foreverdb.net/item/248682",
+        "levelToUse": 10,
+        "creaturesSeenDropping": 70,
+        "bundles": [
+          {
+            "itemId": 2447,
+            "name": "Peacebloom",
+            "icon": "https://foreverdb.net/icons/133939.webp",
+            "quality": "Common",
+            "url": "https://foreverdb.net/item/2447",
+            "count": 20
+          },
+          {
+            "itemId": 765,
+            "name": "Silverleaf",
+            "icon": "https://foreverdb.net/icons/134190.webp",
+            "quality": "Common",
+            "url": "https://foreverdb.net/item/765",
+            "count": 20
+          },
+          {
+            "itemId": 2449,
+            "name": "Earthroot",
+            "icon": "https://foreverdb.net/icons/134187.webp",
+            "quality": "Common",
+            "url": "https://foreverdb.net/item/2449",
+            "count": 10
+          },
+          {
+            "itemId": 785,
+            "name": "Mageroyal",
+            "icon": "https://foreverdb.net/icons/133436.webp",
+            "quality": "Common",
+            "url": "https://foreverdb.net/item/785",
+            "count": 10
+          },
+          {
+            "itemId": 2450,
+            "name": "Briarthorn",
+            "icon": "https://foreverdb.net/icons/134412.webp",
+            "quality": "Common",
+            "url": "https://foreverdb.net/item/2450",
+            "count": 10
+          }
+        ]
+      },
+      {
+        "itemId": 248686,
+        "name": "Waylaid Crate: Journeyman Herbs",
+        "icon": "https://foreverdb.net/icons/236994.webp",
+        "quality": "Common",
+        "url": "https://foreverdb.net/item/248686",
+        "levelToUse": 10,
+        "creaturesSeenDropping": 54,
+        "bundles": [
+          {
+            "itemId": 3820,
+            "name": "Stranglekelp",
+            "icon": "https://foreverdb.net/icons/134191.webp",
+            "quality": "Common",
+            "url": "https://foreverdb.net/item/3820",
+            "count": 10
+          },
+          {
+            "itemId": 2453,
+            "name": "Bruiseweed",
+            "icon": "https://foreverdb.net/icons/134181.webp",
+            "quality": "Common",
+            "url": "https://foreverdb.net/item/2453",
+            "count": 10
+          },
+          {
+            "itemId": 3355,
+            "name": "Wild Steelbloom",
+            "icon": "https://foreverdb.net/icons/133938.webp",
+            "quality": "Common",
+            "url": "https://foreverdb.net/item/3355",
+            "count": 10
+          },
+          {
+            "itemId": 3369,
+            "name": "Grave Moss",
+            "icon": "https://foreverdb.net/icons/133849.webp",
+            "quality": "Common",
+            "url": "https://foreverdb.net/item/3369",
+            "count": 10
+          },
+          {
+            "itemId": 3356,
+            "name": "Kingsblood",
+            "icon": "https://foreverdb.net/icons/134183.webp",
+            "quality": "Common",
+            "url": "https://foreverdb.net/item/3356",
+            "count": 10
+          }
+        ]
+      },
+      {
+        "itemId": 248702,
+        "name": "Waylaid Crate: Apprentice Fabrics",
+        "icon": "https://foreverdb.net/icons/236994.webp",
+        "quality": "Uncommon",
+        "url": "https://foreverdb.net/item/248702",
+        "levelToUse": 10,
+        "creaturesSeenDropping": 45,
+        "bundles": [
+          {
+            "itemId": 4231,
+            "name": "Cured Light Hide",
+            "icon": "https://foreverdb.net/icons/134366.webp",
+            "quality": "Common",
+            "url": "https://foreverdb.net/item/4231",
+            "count": 2
+          },
+          {
+            "itemId": 2996,
+            "name": "Bolt of Linen Cloth",
+            "icon": "https://foreverdb.net/icons/132890.webp",
+            "quality": "Common",
+            "url": "https://foreverdb.net/item/2996",
+            "count": 20
+          }
+        ]
+      },
+      {
+        "itemId": 248693,
+        "name": "Waylaid Crate: Expert Textiles",
+        "icon": "https://foreverdb.net/icons/236994.webp",
+        "quality": "Common",
+        "url": "https://foreverdb.net/item/248693",
+        "levelToUse": 20,
+        "creaturesSeenDropping": 50,
+        "bundles": [
+          {
+            "itemId": 4338,
+            "name": "Mageweave Cloth",
+            "icon": "https://foreverdb.net/icons/132892.webp",
+            "quality": "Common",
+            "url": "https://foreverdb.net/item/4338",
+            "count": 40
+          },
+          {
+            "itemId": 4234,
+            "name": "Heavy Leather",
+            "icon": "https://foreverdb.net/icons/134256.webp",
+            "quality": "Common",
+            "url": "https://foreverdb.net/item/4234",
+            "count": 20
+          }
+        ]
+      },
+      {
+        "itemId": 248699,
+        "name": "Waylaid Crate: Artisan Curiosities",
+        "icon": "https://foreverdb.net/icons/236994.webp",
+        "quality": "Common",
+        "url": "https://foreverdb.net/item/248699",
+        "levelToUse": 35,
+        "creaturesSeenDropping": 26,
+        "bundles": [
+          {
+            "itemId": 11176,
+            "name": "Dream Dust",
+            "icon": "https://foreverdb.net/icons/132855.webp",
+            "quality": "Common",
+            "url": "https://foreverdb.net/item/11176",
+            "count": 20
+          },
+          {
+            "itemId": 11175,
+            "name": "Greater Nether Essence",
+            "icon": "https://foreverdb.net/icons/132870.webp",
+            "quality": "Uncommon",
+            "url": "https://foreverdb.net/item/11175",
+            "count": 4
+          },
+          {
+            "itemId": 14343,
+            "name": "Small Brilliant Shard",
+            "icon": "https://foreverdb.net/icons/132874.webp",
+            "quality": "Rare",
+            "url": "https://foreverdb.net/item/14343",
+            "count": 6
+          },
+          {
+            "itemId": 14344,
+            "name": "Large Brilliant Shard",
+            "icon": "https://foreverdb.net/icons/132873.webp",
+            "quality": "Rare",
+            "url": "https://foreverdb.net/item/14344",
+            "count": 2
+          }
+        ]
+      }
+    ],
+    "sealedCrates": [
+      {
+        "itemId": 248765,
+        "name": "Sealed Apprentice Crate",
+        "icon": "https://foreverdb.net/icons/236995.webp",
+        "quality": "Common",
+        "url": "https://foreverdb.net/item/248765"
+      },
+      {
+        "itemId": 248766,
+        "name": "Sealed Journeyman Crate",
+        "icon": "https://foreverdb.net/icons/236995.webp",
+        "quality": "Common",
+        "url": "https://foreverdb.net/item/248766"
+      },
+      {
+        "itemId": 248767,
+        "name": "Sealed Expert Crate",
+        "icon": "https://foreverdb.net/icons/236995.webp",
+        "quality": "Common",
+        "url": "https://foreverdb.net/item/248767"
+      },
+      {
+        "itemId": 248768,
+        "name": "Sealed Artisan Crate",
+        "icon": "https://foreverdb.net/icons/236995.webp",
+        "quality": "Common",
+        "url": "https://foreverdb.net/item/248768"
+      },
+      {
+        "itemId": 248770,
+        "name": "Sealed Apprentice Crate",
+        "icon": "https://foreverdb.net/icons/236996.webp",
+        "quality": "Uncommon",
+        "url": "https://foreverdb.net/item/248770"
+      },
+      {
+        "itemId": 248775,
+        "name": "Sealed Apprentice Crate",
+        "icon": "https://foreverdb.net/icons/132763.webp",
+        "quality": "Rare",
+        "url": "https://foreverdb.net/item/248775"
+      }
+    ]
+  },
+  "meta": {
+    "build": "1.60.1.71091",
+    "attribution": "Data from ForeverDB.net (https://foreverdb.net). You must credit ForeverDB.net, with a visible link to https://foreverdb.net, wherever you show this data.",
+    "attributionRequired": true
+  }
+}
