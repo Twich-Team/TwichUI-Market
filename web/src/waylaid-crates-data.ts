@@ -149,7 +149,7 @@ export function tierLabel(tier: string) {
   return tier.replace(/[-_]/g, " ").replace(/^./, character => character.toUpperCase());
 }
 
-function sortValue(row: CrateRow, field: Exclude<CrateSort, "tier">): ExactCopper | null {
+export function crateSortValue(row: CrateRow, field: Exclude<CrateSort, "tier">): ExactCopper | null {
   return {
     favor: row.favor === null ? null : { numerator_copper: String(row.favor), denominator: 1 },
     purchase: row.purchase_cost_exact,
@@ -172,8 +172,8 @@ export function compareCrates(left: CrateRow, right: CrateRow, field: CrateSort,
       (left.tier ?? "").localeCompare(right.tier ?? "");
     return (descending ? -order : order) || left.item.item_id - right.item.item_id;
   }
-  const a = sortValue(left, field);
-  const b = sortValue(right, field);
+  const a = crateSortValue(left, field);
+  const b = crateSortValue(right, field);
   if (!a || !b) {
     if (!a && b) return 1;
     if (a && !b) return -1;

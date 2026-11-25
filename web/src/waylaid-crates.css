@@ -105,23 +105,47 @@
 .waylaid-results .waylaid-filters {
   padding-top: 0;
 }
-.waylaid-table {
+.waylaid-results .managed-table table {
   width: 100%;
-  min-width: 850px;
+  min-width: 980px;
   font-variant-numeric: tabular-nums;
 }
-.waylaid-table thead {
+.waylaid-results .managed-table thead {
   background: #241b15;
 }
-.waylaid-table .numeric {
+.waylaid-results .managed-table .numeric {
   text-align: right;
   white-space: nowrap;
 }
-.waylaid-table tbody th {
+.waylaid-results .managed-table tbody th {
   text-align: left;
   text-transform: none;
   letter-spacing: normal;
   font-weight: 500;
+}
+.waylaid-results .managed-table-controls:empty {
+  display: none;
+}
+.waylaid-results .managed-table td[data-label="Details"] button {
+  min-height: 44px;
+}
+.waylaid-selected-materials {
+  list-style: none;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+}
+.waylaid-selected-materials > li {
+  padding-block: 4px;
+  overflow-wrap: anywhere;
+}
+.waylaid-material-quantity {
+  color: var(--crate-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.waylaid-selected-materials a {
+  text-underline-offset: 3px;
 }
 .waylaid-item {
   display: inline-flex;
@@ -148,9 +172,6 @@
 .waylaid-details-toggle {
   min-height: 44px;
   white-space: nowrap;
-}
-.waylaid-detail-row td {
-  padding: 0;
 }
 .waylaid-details {
   padding: 16px;
@@ -315,7 +336,7 @@
     padding: 12px;
     overflow-wrap: anywhere;
   }
-  .waylaid-card > dl {
+  .waylaid-card-prices {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px 12px;
@@ -324,6 +345,13 @@
   .waylaid-card dd {
     margin: 2px 0 0;
     font-variant-numeric: tabular-nums;
+  }
+  .waylaid-card-materials {
+    grid-column: 1/-1;
+  }
+  .waylaid-card-materials a {
+    display: inline-block;
+    padding: 6px 0;
   }
   .waylaid-card .waylaid-details {
     margin: 10px -4px 0;

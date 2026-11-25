@@ -10,6 +10,7 @@ const item = (item_id: number, name: string, quality = "COMMON"): CrateItem => (
 const linen = item(601, "Fixture Linen");
 const leather = item(602, "Fixture Leather");
 const copper = item(603, "Fixture Copper");
+const mithril = item(604, "Fixture Mithril Bar");
 const exact = (copper: number) => ({ numerator_copper: String(copper), denominator: 1 });
 function quote(item: CrateItem, quantity: number, unit: number): CrateQuote {
   return {
@@ -29,7 +30,7 @@ function crate(item: CrateItem, fill: number, favor: number | null, owned: boole
     unavailable_reason: null, reward_unavailable_reason: favor === null ? "unverified_reward_quality" : null,
     eligible: favor !== null, reasons: favor === null ? ["unknown_favor"] : [],
     bundles: [
-      { bundle_id: 1, materials: [quote(linen, 5, fill / 5)], fill_cost_copper: String(fill), fill_cost_exact: exact(fill), eligible: true },
+      { bundle_id: 1, materials: [quote(favor === 10 ? mithril : linen, 5, fill / 5)], fill_cost_copper: String(fill), fill_cost_exact: exact(fill), eligible: true },
       { bundle_id: 2, materials: [quote(leather, 10, 100), quote(copper, 1, 50)], fill_cost_copper: "1050", fill_cost_exact: exact(1050), eligible: true },
     ],
     selected_bundle_id: 1, purchase_quote: quote(item, 1, 200),
@@ -106,6 +107,9 @@ test.describe("Waylaid Crates desktop workflows", () => {
     await page.goto("/waylaid-crates?market=9");
     const table = page.getByRole("table", { name: "Waylaid Crates estimates" });
     await expect(table.getByRole("rowheader").first()).toContainText("Fixture Large");
+    const selected = table.getByRole("cell").filter({ hasText: "Fixture Mithril Bar" });
+    await expect(selected).toContainText("5 ×");
+    await expect(selected.getByRole("link", { name: "Fixture Mithril Bar" })).toHaveAttribute("href", "/markets/9/items/604");
     await expect(table.getByRole("columnheader", { name: "Cost / Favor" })).toHaveAttribute("aria-sort", "ascending");
     await expect(page.getByRole("button", { name: "Waylaid Crates", exact: true })).toHaveAttribute("aria-current", "page");
     await expect(page.getByRole("link", { name: "ForeverDB" })).toHaveAttribute("href", source);
@@ -216,11 +220,16 @@ test.describe("Waylaid Crates touch layout", () => {
     const sort = page.getByLabel("Sort crates");
     await expect(sort).toBeVisible();
     await expect(sort).toHaveValue("rate");
+    const firstCard = page.locator(".waylaid-card").first();
+    await expect(firstCard.getByRole("link", { name: "Fixture Mithril Bar" })).toHaveAttribute("href", "/markets/8/items/604");
+    await expect(firstCard.locator(".waylaid-selected-materials")).toContainText("5 ×");
     await page.getByRole("button", { name: "Show materials for Waylaid Crate: Fixture Large" }).tap();
     await expect(page.getByRole("heading", { name: "Choose one" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Fixture Leather" })).toBeVisible();
     await expect(page.getByRole("table", { name: "Waylaid Crates estimates" })).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
+    await page.setViewportSize({ width: 320, height: 700 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
     const accessibility = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
     expect(accessibility.violations).toEqual([]);
   });

@@ -1,8 +1,10 @@
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import type { ColumnDef } from "@tanstack/react-table";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "./api";
 import { LocalTime, Status } from "./admin-table";
 import { Coin, Currency } from "./currency";
+import { DataTable } from "./data-table";
 import { ItemAttribution, ItemIcon } from "./item-components";
 import { ItemName } from "./item-name";
 import { Loading } from "./loading";
@@ -12,7 +14,7 @@ import { CrateAttribution } from "./waylaid-attribution";
 import { useCompactLayout } from "./responsive";
 import type { Market } from "./types";
 import {
-  bases, basisDescriptions, compareCrates, crateColumns, crateUrl, crateView, tierLabel,
+  bases, basisDescriptions, compareCrates, crateColumns, crateSortValue, crateUrl, crateView, tierLabel,
   type CrateItem, type CrateQuote, type CrateResults, type CrateRow, type CrateView, type ExactCopper,
 } from "./waylaid-crates-data";
 import "./waylaid-crates.css";
@@ -69,6 +71,24 @@ function CrateItemLink({ item, market, id }: { item: CrateItem; market: number; 
     </a>
     <ItemAttribution item={item}/>
   </div>;
+}
+
+function SelectedMaterials({ row, market }: { row: CrateRow; market: number }) {
+  const chosen = row.bundles.find(bundle => bundle.bundle_id === row.selected_bundle_id);
+  if (!chosen) return <span className="muted">No priced choice</span>;
+  return <ul className="waylaid-selected-materials">
+    {chosen.materials.map(quote => <li key={quote.item_id}>
+      <span className="waylaid-material-quantity">{quote.quantity.toLocaleString()} × </span>
+      <a href={itemUrl(market, quote.item_id)} id={`waylaid-${row.item.item_id}-chosen-${quote.item_id}`} onClick={followItem}>
+        <ItemName name={quote.item.name} quality={quote.item.quality}/>
+      </a>
+      <ItemAttribution item={quote.item}/>
+    </li>)}
+  </ul>;
+}
+
+function detailsLabel(row: CrateRow, open: boolean) {
+  return `${open ? "Hide" : "Show"} materials for ${row.item.name}`;
 }
 
 function CrateValue({ row, field }: { row: CrateRow; field: Column }) {
@@ -237,6 +257,17 @@ export function WaylaidCrates({ markets, market, setMarket, marketStatus, search
     if (view.sort === "rate" && left.eligible !== right.eligible) return left.eligible ? -1 : 1;
     return compareCrates(left, right, view.sort, view.direction === "desc");
   });
+  const tableColumns = useMemo<ColumnDef<CrateRow>[]>(() => [
+    { id: "crate", header: "Crate", enableSorting: false, meta: { rowHeader: true },
+      cell: ({ row: { original } }) => <CrateItemLink item={original.item} market={view.market} id={`waylaid-item-${original.item.item_id}`}/> },
+    { id: "materials", header: "Materials", enableSorting: false,
+      cell: ({ row: { original } }) => <SelectedMaterials row={original} market={view.market}/> },
+    ...columns.map<ColumnDef<CrateRow>>(field => ({
+      id: field, header: crateColumns[field], sortDescFirst: false,
+      accessorFn: row => field === "tier" ? row.tier : crateSortValue(row, field),
+      meta: { numeric: true }, cell: ({ row: { original } }) => <CrateValue row={original} field={field}/>,
+    })),
+  ], [view.market]);
   return <div className="waylaid-page">
     <div className="waylaid-heading">
       <div><h1>Waylaid Crates</h1><p>Compare the cost of filling crates and earning Merchant’s Favor.</p></div>
@@ -297,36 +328,36 @@ export function WaylaidCrates({ markets, market, setMarket, marketStatus, search
               const id = row.item.item_id;
               return <article className="waylaid-card" key={id}>
                 <CrateItemLink item={row.item} market={view.market} id={`waylaid-item-${id}`}/>
-                <dl>{columns.map(column => <div key={column}><dt>{crateColumns[column]}</dt><dd><CrateValue row={row} field={column}/></dd></div>)}</dl>
+                <dl className="waylaid-card-prices">{columns.map(column => <div key={column}><dt>{crateColumns[column]}</dt><dd><CrateValue row={row} field={column}/></dd></div>)}
+                  <div className="waylaid-card-materials"><dt>Materials</dt><dd><SelectedMaterials row={row} market={view.market}/></dd></div>
+                </dl>
                 <DetailsButton row={row} open={!!expanded[id]} toggle={toggle}/>
                 <div id={`waylaid-details-${id}`} hidden={!expanded[id]}>{expanded[id] && <CrateDetails row={row} market={view.market} owned={view.owned}/>}</div>
               </article>;
             })}
           </div>
-        </> : <div className="table-scroll" role="region" aria-label="Scrollable crate comparison" tabIndex={0}>
-          <table className="waylaid-table" aria-label="Waylaid Crates estimates">
-            <thead><tr><th scope="col">Crate</th>
-              {columns.map(column => <th key={column} scope="col" className="numeric"
-                aria-sort={view.sort === column ? (view.direction === "asc" ? "ascending" : "descending") : undefined}>
-                <button className="table-sort" onClick={() => sort(column)}>{crateColumns[column]} <span aria-hidden="true">{view.sort === column ? (view.direction === "asc" ? "↑" : "↓") : "↕"}</span></button>
-              </th>)}
-              <th scope="col">Materials</th>
-            </tr></thead>
-            <tbody>{filtered.map(row => {
-              const id = row.item.item_id;
-              return <Fragment key={id}>
-                <tr>
-                  <th scope="row"><CrateItemLink item={row.item} market={view.market} id={`waylaid-item-${id}`}/></th>
-                  {columns.map(column => <td key={column} className="numeric"><CrateValue row={row} field={column}/></td>)}
-                  <td><DetailsButton row={row} open={!!expanded[id]} toggle={toggle}/></td>
-                </tr>
-                <tr className="waylaid-detail-row" hidden={!expanded[id]}>
-                  <td colSpan={columns.length + 2} id={`waylaid-details-${id}`}>{expanded[id] && <CrateDetails row={row} market={view.market} owned={view.owned}/>}</td>
-                </tr>
-              </Fragment>;
-            })}</tbody>
-          </table>
-        </div>)}
+        </> : <DataTable<CrateRow>
+          label="Waylaid Crates estimates" data={filtered} columns={tableColumns} compact
+          getRowId={row => String(row.item.item_id)}
+          renderDetails={row => <CrateDetails row={row} market={view.market} owned={view.owned}/>}
+          detailsControl={{
+            isExpanded: row => !!expanded[row.item.item_id],
+            toggle: row => toggle(row.item.item_id),
+            label: detailsLabel,
+          }}
+          server={{
+            rowCount: filtered.length,
+            pagination: { pageIndex: 0, pageSize: filtered.length },
+            onPaginationChange: () => {},
+            sorting: [{ id: view.sort, desc: view.direction === "desc" }],
+            onSortingChange: change => {
+              const before = [{ id: view.sort, desc: view.direction === "desc" }];
+              const next = (typeof change === "function" ? change(before) : change).at(-1);
+              if (next) update({ sort: next.id as Column, direction: next.desc ? "desc" : "asc" });
+              else sort(view.sort);
+            },
+          }}
+        />)}
       </section>
       <CrateAttribution catalogue={data.catalogue}/>
     </>}
@@ -336,7 +367,7 @@ export function WaylaidCrates({ markets, market, setMarket, marketStatus, search
 function DetailsButton({ row, open, toggle }: { row: CrateRow; open: boolean; toggle: (id: number) => void }) {
   return <button className="secondary waylaid-details-toggle" aria-expanded={open}
     aria-controls={`waylaid-details-${row.item.item_id}`}
-    aria-label={`${open ? "Hide" : "Show"} materials for ${row.item.name}`}
+    aria-label={detailsLabel(row, open)}
     onClick={() => toggle(row.item.item_id)}>
     {open ? "Hide details" : "Details"} <span aria-hidden="true">{open ? "−" : "+"}</span>
   </button>;
