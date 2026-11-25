@@ -80,6 +80,7 @@ function SelectedMaterials({ row, market }: { row: CrateRow; market: number }) {
     {chosen.materials.map(quote => <li key={quote.item_id}>
       <span className="waylaid-material-quantity">{quote.quantity.toLocaleString()} × </span>
       <a href={itemUrl(market, quote.item_id)} id={`waylaid-${row.item.item_id}-chosen-${quote.item_id}`} onClick={followItem}>
+        <ItemIcon item={quote.item}/>
         <ItemName name={quote.item.name} quality={quote.item.quality}/>
       </a>
       <ItemAttribution item={quote.item}/>
