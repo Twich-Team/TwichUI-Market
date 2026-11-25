@@ -28,3 +28,5 @@ The fill cost adds the required quantities times their unit prices for **one** a
 | `GET /api/v1/admin/waylaid-crates` | Administrator | Reward revisions, catalogue status and last refresh result |
 | `PUT /api/v1/admin/waylaid-crates/rewards/{tier}` | Administrator + CSRF | Save `{"favor":5,"revision":1}`, or set `favor` to null. A stale revision returns HTTP 409. |
 | `POST /api/v1/admin/waylaid-crates/refresh` | Administrator + CSRF | Queue or reuse the active bounded refresh job |
+
+[Desktop and iPhone review with captured auction observations](evidence/waylaid-crates/README.md).
