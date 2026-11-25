@@ -698,6 +698,8 @@ def enqueue_crafting_writ_refresh(db, *, actor_id=None, at=None):
         for recipe in writ['recipes']:
             ids.update(ingredient['item_id'] for ingredient in recipe['ingredients'])
     identities = sorted(ids)
+    if len(identities) > 100:
+        raise ValueError('Writ item backfill exceeds 100 exact IDs')
     job = MetadataJob(actor_id=actor_id, market_id=market.id, mode='single', state='queued',
         providers_json='["foreverdb"]', dedupe_key='crafting-writ-items', total=len(identities),
         request_budget=min(len(identities) * 2, MAX_TASKS), created_at=at, updated_at=at)

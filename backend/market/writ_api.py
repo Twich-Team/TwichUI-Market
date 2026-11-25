@@ -36,9 +36,12 @@ class RewardEdit(BaseModel):
 
 def catalogue_view(resource, data):
     data = data or {}
-    source = json.loads(resource.source_json) if resource and resource.source_json else {}
-    refreshed_at = source.get('confirmed_at') or source.get('retrieved_at')
-    parsed = aware(datetime.fromisoformat(refreshed_at)) if refreshed_at else None
+    try:
+        source = json.loads(resource.source_json) if resource and resource.source_json else {}
+        refreshed_at = source.get('confirmed_at') or source.get('retrieved_at')
+        parsed = aware(datetime.fromisoformat(refreshed_at)) if refreshed_at else None
+    except (ValueError, TypeError, AttributeError):
+        source, refreshed_at, parsed = {}, None, None
     writs = data.get('writs', [])
     supported = sum(
         writ.get('hand_in_allowed') is True and bool(writ['objectives']) and (

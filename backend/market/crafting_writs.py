@@ -6,6 +6,7 @@ refresh or as evidence of complete coverage.
 """
 from copy import deepcopy
 import json
+import hashlib
 
 from .models import MetadataResource
 
@@ -16,13 +17,15 @@ CACHE_KEY = ('us', RESOURCE, 0)
 # trainer skill is addon-observed; the player's learned recipes remain unknown.
 _SEED = {
     'schema_version': 1,
+    'generation': 1,
     'source': 'wowhead_forever_quests_and_forever_client_70532',
     'source_label': 'Curated WoW Forever quest and client evidence',
     'source_url': 'https://www.wowhead.com/forever/quest=94218/craftsmans-writ-elixir-of-defense',
     'source_observed_at': None,
     'build': None,
     'source_build': '1.60.1.70532 (recipe); quest pages current as of 2026-11-25',
-    'reputation_factions': {'alliance': 'Azeroth Commerce Authority', 'horde': 'Durotar Supply and Logistics'},
+    'reputation_factions': {'alliance': {'id': None, 'name': 'Azeroth Commerce Authority'},
+                            'horde': {'id': None, 'name': 'Durotar Supply and Logistics'}},
     'writs': [{
         'item_id': 264018,
         'name': "Craftsman's Writ: Elixir of Defense",
@@ -74,6 +77,8 @@ for item_id, quest_id, delivery_id, name, profession, quantity, tier in (
 # profession produces the requested item.
 for _writ in _SEED['writs']:
     _writ['factions'] = dict(_SEED['reputation_factions'])
+    _writ['required_level'] = 10
+    _writ['restrictions'].append('Writ use requires level 10')
 
 # ForeverDB confirms the batch/reagents; GoldCap reports trainer skill seen in Forever.
 for _writ in _SEED['writs']:
@@ -137,6 +142,7 @@ def validate_catalogue(data):
         for obj in objectives:
             if not isinstance(obj, dict): raise ValueError('Invalid objective')
             positive(obj.get('item_id')); positive(obj.get('quantity'))
+            if obj['quantity'] > 10000: raise ValueError('Objective quantity limit')
             if obj['item_id'] in objective_ids or obj['item_id'] == writ['item_id']:
                 raise ValueError('Duplicate or cyclic objective')
             if obj.get('buy_allowed') is not None and type(obj['buy_allowed']) is not bool: raise ValueError('Invalid buy eligibility')
@@ -165,6 +171,7 @@ def validate_catalogue(data):
             for ingredient in ingredients:
                 if not isinstance(ingredient, dict): raise ValueError('Invalid ingredient')
                 positive(ingredient.get('item_id')); positive(ingredient.get('quantity'))
+                if ingredient['quantity'] > 10000: raise ValueError('Ingredient quantity limit')
                 if ingredient['item_id'] in ingredient_ids:
                     raise ValueError('Duplicate ingredient')
                 ingredient_ids.add(ingredient['item_id'])
@@ -191,14 +198,38 @@ def read_catalogue(db):
     return row, deepcopy(validate_catalogue(_SEED))
 
 
-def persist_seed(db):
-    """Insert the seed once, never replace an existing last-good cache."""
-    row = db.get(MetadataResource, CACHE_KEY)
-    if row is None:
-        row = MetadataResource(region='us', resource=RESOURCE, offset=0,
-            status='curated_seed', fields_json=json.dumps(validate_catalogue(_SEED), sort_keys=True),
-            source_json=json.dumps({'kind': 'curated_seed', 'url': _SEED['source_url']}))
+def persist_seed(db, candidate=None):
+    """Atomically install a newer curated generation, preserving provider data.
+
+    Validation and serialization happen before mutation. The caller owns the
+    transaction; a failure leaves the prior generation and rewards untouched.
+    """
+    candidate = deepcopy(_SEED if candidate is None else candidate)
+    validate_catalogue(candidate)
+    generation = candidate.get('generation')
+    if type(generation) is not int or not 1 <= generation <= 2**31 - 1:
+        raise ValueError('Invalid curated generation')
+    serialised = json.dumps(candidate, sort_keys=True, separators=(',', ':'))
+    digest = hashlib.sha256(serialised.encode()).hexdigest()
+    source = {'kind': 'curated_seed', 'generation': generation,
+              'url': candidate.get('source_url'), 'build': candidate.get('build'),
+              'sha256': digest}
+    row = db.get(MetadataResource, CACHE_KEY, with_for_update=True)
+    if row is not None:
+        try:
+            previous = json.loads(row.source_json or '{}')
+        except (ValueError, TypeError):
+            return row
+        if previous.get('kind') != 'curated_seed' or type(previous.get('generation')) is not int:
+            return row
+        if previous['generation'] >= generation:
+            return row
+    else:
+        row = MetadataResource(region='us', resource=RESOURCE, offset=0)
         db.add(row)
+    row.status = 'curated_seed'
+    row.fields_json = serialised
+    row.source_json = json.dumps(source, sort_keys=True)
     return row
 
 
