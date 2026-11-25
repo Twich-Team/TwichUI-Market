@@ -28,8 +28,7 @@ async function setup(page:Page){
   await page.goto('/');await page.getByLabel('Username',{exact:true}).fill('owner');await page.getByLabel('Password',{exact:true}).fill('synthetic browser owner password');await page.getByRole('button',{name:'Sign in',exact:true}).click();
   await expect(page.getByRole('heading',{name:'Market Explorer',exact:true})).toBeVisible();
   await page.goto('/administration');
-  await page.getByRole('button',{name:'Storage & backups',exact:true}).click();
-  await page.getByRole('navigation',{name:'Storage & Backups pages'}).getByRole('link',{name:'Backups',exact:true}).click();
+  await page.getByRole('article',{name:'Backups',exact:true}).getByRole('link',{name:'Review backups',exact:true}).click();
   await expect(page.getByRole('heading',{name:'Recovery points',exact:true})).toBeVisible();
   await mkdir(output,{recursive:true});return {data,deletions,policies};
 }
@@ -112,8 +111,7 @@ test('backup management real boundary: create protect download and delete throug
   const download=await page.request.get(`/api/v1/admin/backups/${older.id}/download`);expect(download.status()).toBe(200);expect((await download.body()).subarray(0,5).toString()).toBe('PGDMP');
   expect((await page.request.post(`/api/v1/admin/backups/${older.id}/protect`,{headers,data:{protected:false}})).status()).toBe(200);
   await page.goto('/administration');
-  await page.getByRole('button',{name:'Storage & backups',exact:true}).click();
-  await page.getByRole('navigation',{name:'Storage & Backups pages'}).getByRole('link',{name:'Backups',exact:true}).click();
+  await page.getByRole('article',{name:'Backups',exact:true}).getByRole('link',{name:'Review backups',exact:true}).click();
   const row=page.getByRole('row').filter({hasText:older.filename});await row.getByRole('button',{name:'Delete',exact:true}).click();
   await page.getByRole('dialog').getByLabel(`Type ${older.filename} to confirm`,{exact:true}).fill(older.filename);
   await page.getByRole('dialog').getByLabel('I acknowledge the risk of removing the newest or last known-good backup.',{exact:true}).check();
