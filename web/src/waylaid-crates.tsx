@@ -21,6 +21,7 @@ import "./waylaid-crates.css";
 
 type Column = CrateView["sort"];
 const columns = Object.keys(crateColumns) as Column[];
+const tablePriceColumns: Column[] = ["total", "rate", "tier", "favor", "purchase", "fill"];
 
 const quoteStatuses: Record<string, string> = {
   available: "Price observed",
@@ -63,13 +64,20 @@ function Cost({ copper, exact }: { copper?: string | null; exact?: ExactCopper |
   </span>;
 }
 
+function SupplementalItemCredit({ item }: { item: CrateItem }) {
+  const supplied = [...(item.metadata_attributions ?? []), item.metadata_attribution, item.icon_attribution];
+  const credits = supplied.flatMap(credit => credit && !["https://foreverdb.net", "https://foreverdb.net/"].includes(credit.url) ? [credit] : []);
+  const specificCredits = [...new Map(credits.map(credit => [credit.url, credit])).values()];
+  return <ItemAttribution item={{ ...item, metadata_attributions: specificCredits, metadata_attribution: null, icon_attribution: null }}/>;
+}
+
 function CrateItemLink({ item, market, id }: { item: CrateItem; market: number; id: string }) {
   return <div>
     <a className="waylaid-item" href={itemUrl(market, item.item_id)} id={id} onClick={followItem}>
       <ItemIcon item={item}/>
       <ItemName name={item.name} quality={item.quality}/>
     </a>
-    <ItemAttribution item={item}/>
+    <SupplementalItemCredit item={item}/>
   </div>;
 }
 
@@ -83,7 +91,7 @@ function SelectedMaterials({ row, market }: { row: CrateRow; market: number }) {
         <ItemIcon item={quote.item}/>
         <ItemName name={quote.item.name} quality={quote.item.quality}/>
       </a>
-      <ItemAttribution item={quote.item}/>
+      <SupplementalItemCredit item={quote.item}/>
     </li>)}
   </ul>;
 }
@@ -263,7 +271,7 @@ export function WaylaidCrates({ markets, market, setMarket, marketStatus, search
       cell: ({ row: { original } }) => <CrateItemLink item={original.item} market={view.market} id={`waylaid-item-${original.item.item_id}`}/> },
     { id: "materials", header: "Materials", enableSorting: false,
       cell: ({ row: { original } }) => <SelectedMaterials row={original} market={view.market}/> },
-    ...columns.map<ColumnDef<CrateRow>>(field => ({
+    ...tablePriceColumns.map<ColumnDef<CrateRow>>(field => ({
       id: field, header: crateColumns[field], sortDescFirst: false,
       accessorFn: row => field === "tier" ? row.tier : crateSortValue(row, field),
       meta: { numeric: true }, cell: ({ row: { original } }) => <CrateValue row={original} field={field}/>,
@@ -296,6 +304,10 @@ export function WaylaidCrates({ markets, market, setMarket, marketStatus, search
       {data.pricing.synthetic && <p className="notice warning">Synthetic fixture data · illustrative prices and availability.</p>}
       {data.catalogue.stale && data.catalogue.refreshed_at && <p className="notice warning">Catalogue data is stale. Showing the last verified catalogue.</p>}
       {data.pricing.freshness === "stale" && <p className="notice warning">Market observations are stale. Prices and stock may have changed.</p>}
+      <div className="waylaid-source-line">
+        <CrateAttribution catalogue={data.catalogue}/>
+        {data.catalogue.refreshed_at && <small>Catalogue checked <LocalTime value={data.catalogue.refreshed_at}/></small>}
+      </div>
       <CrateSummary data={data} rows={filtered}/>
       <section className="panel waylaid-results" aria-label="Crate comparison" aria-busy={response.isFetching}>
         <div className="panel-heading">
@@ -360,7 +372,6 @@ export function WaylaidCrates({ markets, market, setMarket, marketStatus, search
           }}
         />)}
       </section>
-      <CrateAttribution catalogue={data.catalogue}/>
     </>}
   </div>;
 }

@@ -13,7 +13,7 @@ from .db import now, session
 from .market_api import metadata_name, require_market
 from .merchants_favor import RESOURCE, read_catalogue, refresh_seconds
 from .metadata_recovery import enqueue_merchant_favor_refresh
-from .models import ItemMedia, ItemMetadata, MetadataJob, MetadataProvider, MetadataTask, User
+from .models import ItemMedia, ItemMetadata, MetadataJob, MetadataProvider, MetadataSource, MetadataTask, User
 from .preferences import browser_member
 from .security import admin, aware
 from .waylaid_pricing import Basis, load_quotes, price_crate
@@ -82,9 +82,18 @@ def item_views(db, region, names):
     metadata = {row.item_id: row for row in db.scalars(select(ItemMetadata).where(
         ItemMetadata.region == region, ItemMetadata.item_id.in_(names),
     ))}
-    assets = dict(db.execute(select(ItemMedia.item_id, ItemMedia.asset_hash).where(
+    assets = {row.item_id: row for row in db.execute(select(ItemMedia.item_id, ItemMedia.asset_hash, ItemMedia.source).where(
         ItemMedia.region == region, ItemMedia.item_id.in_(names), ItemMedia.asset_hash.is_not(None),
-    )).all())
+    ))}
+    community_icons = [item_id for item_id, asset in assets.items() if asset.source == 'thewowdb']
+    icon_credits = {}
+    if community_icons:
+        for source in db.scalars(select(MetadataSource).where(
+            MetadataSource.region == region, MetadataSource.item_id.in_(community_icons),
+            MetadataSource.locale == 'en_US', MetadataSource.provider == 'thewowdb',
+            MetadataSource.source_json.is_not(None),
+        )):
+            icon_credits[source.item_id] = json.loads(source.source_json).get('attribution')
     result = {}
     for item_id, source_name in names.items():
         item = metadata_name(metadata.get(item_id), item_id)
@@ -94,7 +103,8 @@ def item_views(db, region, names):
             'quality': item['quality'],
             'metadata_attribution': item['metadata_attribution'],
             'metadata_attributions': item['metadata_attributions'],
-            'icon_url': f'/api/v1/items/{region}/{item_id}/icon?v={assets[item_id]}' if item_id in assets else None,
+            'icon_attribution': icon_credits.get(item_id),
+            'icon_url': f'/api/v1/items/{region}/{item_id}/icon?v={assets[item_id].asset_hash}' if item_id in assets else None,
         }
     return result
 

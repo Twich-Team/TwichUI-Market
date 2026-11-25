@@ -108,7 +108,34 @@
 .waylaid-results .managed-table table {
   width: 100%;
   min-width: 980px;
+  table-layout: fixed;
   font-variant-numeric: tabular-nums;
+}
+.waylaid-results .managed-table table :is(th, td) {
+  padding-inline: 10px;
+}
+.waylaid-results .managed-table thead th:nth-child(1) { width: 75px; }
+.waylaid-results .managed-table thead th:nth-child(2) { width: 24%; }
+.waylaid-results .managed-table thead th:nth-child(3) { width: 17%; }
+.waylaid-results .managed-table thead th:nth-child(4) { width: 100px; }
+.waylaid-results .managed-table thead th:nth-child(5) { width: 107px; }
+.waylaid-results .managed-table thead th:nth-child(6) { width: 94px; }
+.waylaid-results .managed-table thead th:nth-child(7) { width: 63px; }
+.waylaid-results .managed-table thead th:nth-child(8) { width: 112px; }
+.waylaid-results .managed-table thead th:nth-child(9) { width: 92px; }
+.waylaid-results .managed-table .table-cell-value {
+  overflow-wrap: break-word;
+}
+.waylaid-source-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 16px;
+  margin-block: -6px 12px;
+  color: var(--crate-muted);
+}
+.waylaid-source-line .waylaid-attribution {
+  margin: 0;
 }
 .waylaid-results .managed-table thead {
   background: #241b15;

@@ -12,6 +12,7 @@ export interface CrateItem {
   quality: string | null;
   icon_url: string | null;
   metadata_attribution?: { text: string; url: string } | null;
+  icon_attribution?: { text: string; url: string } | null;
   metadata_attributions?: { text: string; url: string; notice?: string }[];
 }
 
@@ -85,9 +86,9 @@ export interface CrateResults {
 }
 
 export const bases = {
-  current: "Current minimum",
-  regional: "Regional reference",
-  "14d": "14-day reference",
+  current: "Current minimum buyout",
+  regional: "Regional price",
+  "14d": "14-day price",
 } as const;
 
 export const basisDescriptions: Record<keyof typeof bases, string> = {
