@@ -57,6 +57,15 @@
   background: linear-gradient(115deg, #392b21, #2a211a 78%);
 }
 
+.overview-summary > a {
+  margin-inline-start: auto;
+  padding: 12px 0;
+  color: var(--overview-gold);
+  font-size: .875rem;
+  text-underline-offset: 3px;
+}
+.overview-summary { flex-wrap: wrap; }
+
 .overview-summary strong {
   color: var(--overview-ink);
   font-size: 1.05rem;

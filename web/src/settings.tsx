@@ -10,7 +10,7 @@ import { AdministrationOverview } from "./admin-overview";
 import { MemberArchive } from "./member-archive";
 import { CollectionHistory, SecurityHistory } from "./admin-histories";
 import { LocalTime, Status } from "./admin-table";
-import { DataSources, ItemMetadataAdmin, defaultMetadataMarket, useMetadataCoverage, useMetadataSourceSummary } from "./metadata-admin";
+import { DataSources, ItemMetadataAdmin, useMetadataSourceSummary, type MetadataOverview } from "./metadata-admin";
 import { MyPreferences } from "./user-preferences";
 import { MarketConfiguration } from "./market-configuration";
 import { CompanionDevices } from "./companion-devices";
@@ -298,8 +298,7 @@ export function Administration({
     recent_window_minutes?: number;
     as_of?: string;
   }>("/companion/admin/device-summary", overview, 60_000);
-  const coverageMarket = defaultMetadataMarket(markets);
-  const coverage = useMetadataCoverage(coverageMarket?.id ?? 0, overview && marketStatus === "available", 120_000);
+  const coverage = useAdminSection<MetadataOverview>("/admin/item-metadata", overview, 120_000);
   const providerSummary = useMetadataSourceSummary(overview);
   const [message, setMessage] = useState(""), [error, setError] = useState(""),
     [invitation, setInvitation] = useState(""), [working, setBusy] = useState(false);
@@ -349,7 +348,6 @@ export function Administration({
         storage={storageQuery.data}
         backups={backupQuery.data}
         coverage={coverage.data}
-        coverageMarket={coverageMarket}
         devices={deviceSummary.data}
         sources={providerSummary.sources}
         markets={markets}
@@ -358,7 +356,7 @@ export function Administration({
           access: access.isPending,
           storage: storageQuery.isPending,
           backups: backupQuery.isPending,
-          coverage: marketStatus === "loading" || (marketStatus === "available" && !!coverageMarket && coverage.isPending),
+          coverage: coverage.isPending,
           devices: deviceSummary.isPending,
           sources: providerSummary.isPending,
         }}
@@ -366,7 +364,7 @@ export function Administration({
           access: access.isError,
           storage: storageQuery.isError,
           backups: backupQuery.isError,
-          coverage: marketStatus === "unavailable" || coverage.isError,
+          coverage: coverage.isError,
           devices: deviceSummary.isError,
           sources: providerSummary.isError,
         }}

@@ -27,7 +27,6 @@ interface OverviewProps {
   storage?: Storage;
   backups?: BackupOverview;
   coverage?: MetadataOverview;
-  coverageMarket?: Market;
   devices?: DeviceSummary;
   markets: Market[];
   marketStatus?: 'loading' | 'unavailable' | 'available';
@@ -160,8 +159,8 @@ function backupStatus(backups: BackupOverview, now: number): Status {
   return status('success', 'Inventory checks passed', detail, restore);
 }
 
-function coverageStatus(coverage: MetadataOverview, market?: Market): Status {
-  const scope = market?.label;
+function coverageStatus(coverage: MetadataOverview): Status {
+  const scope = `${count(coverage.observed, 'observed item')} across all markets.`;
   if (!coverage.observed) {
     return status('neutral', 'No items observed', 'Item coverage is based on observed catalogue items.', scope);
   }
@@ -178,7 +177,7 @@ function coverageStatus(coverage: MetadataOverview, market?: Market): Status {
     const blocked = coverage.failed_or_blocked ? `${count(coverage.failed_or_blocked, 'item')} still unnamed after a provider error or access restriction.` : undefined;
     return status('warning', 'Coverage gaps', missing || blocked, [scope, missing && blocked].filter(Boolean).join(' · '));
   }
-  return status('success', 'Core coverage available', `Names, icons, and attributes are stored for all ${count(coverage.observed, 'observed item')}.`, scope);
+  return status('success', 'Core coverage available', `A name, icon, and at least one attribute are stored for all ${count(coverage.observed, 'observed item')}.`, scope);
 }
 
 function sourceStatus(sources: MetadataSourceSummary[]): Status {
@@ -188,7 +187,7 @@ function sourceStatus(sources: MetadataSourceSummary[]): Status {
     const detail = needsReview.length === 1 ? undefined : `${count(needsReview.length, 'source')} awaiting review.`;
     const blocked = needsReview.length === enabled.length && needsReview.every(source => source.label === 'Recovery blocked');
     return status(blocked ? 'error' : 'warning', blocked ? 'Recovery blocked' : 'Source needs review',
-      `${needsReview[0].name} · ${needsReview[0].label}.`, detail);
+      `${needsReview[0].name} · ${needsReview[0].reason ?? needsReview[0].label + '.'}`, detail);
   }
   const automatic = enabled.filter(source => source.automatic);
   if (!automatic.length) {
@@ -234,45 +233,43 @@ function ModuleCard({ module }: { module: Module }) {
 }
 
 function StatusSummary({ modules }: { modules: Module[] }) {
-  const total = (tone: Tone) => modules.filter(module => module.tone === tone).length;
-  const problems = total('error'), warnings = total('warning'), unavailable = total('unavailable'), loading = total('loading');
-  const issueCount = problems + warnings;
-  const parts = [
-    problems && count(problems, 'problem'),
-    warnings && `${warnings} to review`,
+  const byTone = (tone: Tone) => modules.filter(module => module.tone === tone);
+  const problems = byTone('error'), warnings = byTone('warning');
+  const unavailable = byTone('unavailable').length, loading = byTone('loading').length, passing = byTone('success').length;
+  const issueCount = problems.length + warnings.length;
+  const firstIssue = problems[0] ?? warnings[0];
+  const parts = (issueCount ? [
+    problems.length && count(problems.length, 'problem'),
+    warnings.length && count(warnings.length, 'warning'),
+  ] : [
     unavailable && `${unavailable} unavailable`,
-    loading && `${loading} checking`,
-    total('success') > 0 && `${total('success')} passing`,
-  ].filter(Boolean).join(' · ');
-  const tone = problems ? 'error' : warnings ? 'warning' : unavailable ? 'unavailable' : loading ? 'loading' : 'neutral';
+    loading && `${loading} in progress`,
+    passing && `${passing} passing`,
+  ]).filter(Boolean).join(' · ');
+  const tone = problems.length ? 'error' : warnings.length ? 'warning' : unavailable ? 'unavailable' : loading ? 'loading' : passing ? 'success' : 'neutral';
   const summary = issueCount ? `${count(issueCount, 'module')} need${issueCount === 1 ? 's' : ''} attention`
     : unavailable ? 'Some checks are unavailable' : loading ? 'Checks in progress' : 'No problems reported by available checks';
-  return <div className="overview-summary" data-tone={tone} role="status">
+  return <div className="overview-summary" data-tone={tone}>
     <span className="overview-signal" aria-hidden="true">{signals[tone]}</span>
-    <div><strong>{summary}</strong>{parts && <p>{parts}</p>}</div>
+    <div role="status"><strong>{summary}</strong>{parts && <p>{parts}</p>}</div>
+    {firstIssue && <a href={firstIssue.links[0].href} onClick={followItem}>{firstIssue.links[0].label} <span aria-hidden="true">→</span></a>}
   </div>;
 }
 
 export function AdministrationOverview({
-  access, storage, backups, coverage, coverageMarket, devices, markets, marketStatus, sources, pending, errors,
+  access, storage, backups, coverage, devices, markets, marketStatus, sources, pending, errors,
 }: OverviewProps) {
   const now = Date.now();
   const checks = marketStatusCards(markets, marketStatus, now);
   const result = <T,>(key: Check, data: T | undefined, subject: string, render: (data: T) => Status) =>
     data !== undefined && !errors?.[key] ? render(data) : waiting(!errors?.[key] && Boolean(pending?.[key]), subject);
-  const coverageCheck = marketStatus && marketStatus !== 'available'
-    ? waiting(marketStatus === 'loading', 'the market for item coverage')
-    : !coverageMarket && !coverage && !markets.length
-      ? status('neutral', 'No market configured', 'Item coverage needs a market with observed catalogue items.')
-      : result('coverage', coverage, 'item coverage', value => coverageStatus(value, coverageMarket));
-  const metadataLink = sectionLink('metadata', 'Review item coverage');
-  if (coverageMarket) metadataLink.href += `&market_id=${coverageMarket.id}`;
+  const coverageCheck = result('coverage', coverage, 'item coverage across all markets', coverageStatus);
   const marketModules: Module[] = [
     { id: 'collection', title: 'Collection', ...checks.collection, links: [sectionLink('collection', 'Review collection checks')] },
     { id: 'markets', title: 'Markets & schedules', ...checks.schedules, links: [sectionLink('markets', 'Manage market schedules')] },
-    { id: 'metadata', title: 'Item Metadata', ...coverageCheck, links: [metadataLink] },
+    { id: 'metadata', title: 'Item Metadata', ...coverageCheck, links: [sectionLink('metadata', 'Review coverage by market')] },
     { id: 'sources', title: 'Data Sources', ...result('sources', sources, 'metadata sources', sourceStatus), links: [sectionLink('sources', 'Review data sources')] },
-    { id: 'storage', title: 'Storage capacity', ...result('storage', storage, 'database storage measurements', capacityStatus), links: [{ href: storageUrl('maintenance'), label: 'Review storage safeguards' }] },
+    { id: 'storage', title: 'Storage capacity', ...result('storage', storage, 'database storage measurements', capacityStatus), links: [{ href: storageUrl('maintenance') + '#storage-safeguards', label: 'Review storage safeguards' }] },
     { id: 'backups', title: 'Backups', ...result('backups', backups, 'the backup inventory', value => backupStatus(value, now)), links: [{ href: storageUrl('backups'), label: 'Review backups' }] },
   ];
   const accessModules: Module[] = [
@@ -284,8 +281,9 @@ export function AdministrationOverview({
       links: [sectionLink('members', 'Manage members'), sectionLink('invitations', 'View invitations')] },
     { id: 'devices', title: 'Devices', ...result('devices', devices, 'device activity', deviceStatus), links: [sectionLink('devices', 'Manage devices')] },
     { id: 'security', title: 'Security events',
-      ...result('access', access, 'security activity', value => status('neutral', 'Activity log',
-        value.latest_security_event ? <>Last recorded event <LocalTime value={value.latest_security_event}/></> : 'No security events recorded.')),
+      ...result('access', access, 'security activity', value => value.latest_security_event
+        ? status('success', 'Audit log available', <>Last recorded event <LocalTime value={value.latest_security_event}/></>)
+        : status('neutral', 'No events recorded', 'The audit log has no entries yet.')),
       links: [sectionLink('security', 'Review security events')] },
   ];
 
