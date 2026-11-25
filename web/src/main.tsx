@@ -1,4 +1,4 @@
-import { administrationGroups, administrationSection } from "./admin-navigation";
+import { administrationGroups, administrationSection, administrationUrl } from "./admin-navigation";
 import { Loading } from "./loading";
 import {parseRoute,useLocation,navigate,restoration} from "./navigation";
 import { QueryClientProvider, useQuery } from "@tanstack/react-query";
@@ -10,6 +10,7 @@ import { api, ApiError, BrowserSession, setCsrf, User } from "./api";
 const Explorer = lazy(() =>
   import("./research").then((m) => ({ default: m.Explorer })),
 );
+const WaylaidCrates = lazy(() => import("./waylaid-crates").then((m) => ({ default: m.WaylaidCrates })));
 const Deals = lazy(() => import("./deals").then((m) => ({ default: m.Deals })));
 const Administration = lazy(() =>
   import("./settings").then((m) => ({ default: m.Administration })),
@@ -194,7 +195,7 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
   const url=useLocation();
   useEffect(()=>setMenuOpen(false),[url]);
   const route=parseRoute(location.pathname,location.search);const page=route.kind;
-  const setPage=(page:string)=>navigate(({explorer:'/',deals:'/deals',admin:'/administration',account:'/account',companion:'/companion'} as Record<string,string>)[page]||'/');
+  const setPage=(page:string)=>navigate(({explorer:'/',deals:'/deals','waylaid-crates':'/waylaid-crates',admin:'/administration',account:'/account',companion:'/companion'} as Record<string,string>)[page]||'/');
   useEffect(()=>{
     if(restoration()?.focus)return;
     const focus=()=>{const h=document.querySelector<HTMLElement>('main h1');if(!h)return false;h.tabIndex=-1;h.focus({preventScroll:true});return true;};
@@ -214,9 +215,10 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
   const marketsReady = Boolean(marketList.data);
   const marketStatus = marketList.isError ? "unavailable" : marketsReady ? "available" : "loading";
   const environmentReady = Boolean(environment.data);
-  const administrationOverview = page === "admin" && administrationSection(url) === "overview";
-  const administrationReady = environmentReady && (administrationOverview || marketsReady);
-  const administrationPending = !administrationReady && !environment.error && (administrationOverview || !marketList.error);
+  const adminSection = administrationSection(url);
+  const needsMarkets = adminSection !== "overview" && adminSection !== "waylaid-crates";
+  const administrationReady = environmentReady && (!needsMarkets || marketsReady);
+  const administrationPending = !administrationReady && !environment.error && (!needsMarkets || !marketList.error);
   const readOnly = environment.data?.read_only ?? true;
   const fixtureReview = environment.data?.review_fixtures;
   const preferences=usePreferences();
@@ -227,6 +229,7 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
   const names: Record<string, string> = {
     explorer: "Market Explorer",
     deals: "Deal Finder",
+    "waylaid-crates": "Waylaid Crates",
     admin: "Administration",
     account: "Account & devices",
     companion: "Desktop Companion",
@@ -252,6 +255,7 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
           {[
             "explorer",
             "deals",
+            "waylaid-crates",
             ...(user.role === "admin" ? ["admin"] : []),
             "account",
             "companion",
@@ -268,8 +272,8 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
         </nav>
         {page === "admin" && user.role === "admin" && <nav className="admin-sidebar-sections" aria-label="Administration sections">
           {administrationGroups.map(group => <div key={group.label}><h2>{group.label}</h2>
-            {group.sections.map(({id,label}) => <a key={id} href={id==="overview" ? "/administration" : `/administration?admin_tab=${id}`}
-              aria-current={administrationSection(url)===id ? "page" : undefined}
+            {group.sections.map(({id,label}) => <a key={id} href={administrationUrl(id)}
+              aria-current={adminSection===id ? "page" : undefined}
               onClick={event=>{if(event.button===0&&!event.ctrlKey&&!event.metaKey&&!event.shiftKey&&!event.altKey){event.preventDefault();navigate(event.currentTarget.getAttribute("href")!);}}}>{label}</a>)}
           </div>)}
         </nav>}
@@ -315,6 +319,10 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
               searchParams={new URL(url,location.origin).search}
             />
           )}{" "}
+          {page === "waylaid-crates" && (
+            <WaylaidCrates markets={markets} market={market} setMarket={setMarket}
+              marketStatus={marketStatus} searchParams={new URL(url,location.origin).search}/>
+          )}
           {page === "admin" && user.role === "admin" && administrationPending && <Loading label="Loading administration…" skeleton/>}
           {page === "admin" && user.role === "admin" && administrationReady && (
             <Administration

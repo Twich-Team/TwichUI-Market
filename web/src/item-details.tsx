@@ -74,6 +74,7 @@ function Research({ route, market }: { route: ItemRoute; market: Market }) {
   const identity = profile.data ?? group ?? detail.data ?? { item_id: item, name: `Item #${item}`, quality: null };
   const value = variant ? detail.data?.valuation : undefined;
   const back = backDestination(marketId);
+  const browseLabel = back.startsWith("/waylaid-crates") ? "Waylaid Crates" : back.startsWith("/deals") ? "Deal Finder" : "Explorer";
   const refreshing = overview.isFetching || profile.isFetching || (variant && detail.isFetching);
   useEffect(() => {
     document.title = `${identity.name} · ${market.label} | TwichUI Market`;
@@ -104,7 +105,7 @@ function Research({ route, market }: { route: ItemRoute; market: Market }) {
 
   return <div className="item-research">
     <div className="research-breadcrumb">
-      <a href={back} onClick={returnToBrowse}>{back.startsWith("/deals") ? "← Back to Deal Finder" : "← Back to Explorer"}</a>
+      <a href={back} onClick={returnToBrowse}>← Back to {browseLabel}</a>
       <button className="text-button" onClick={refresh} disabled={!!refreshing}>{refreshing ? "Refreshing…" : "Refresh item"}</button>
     </div>
 
