@@ -1,4 +1,5 @@
 import { money } from "./api";
+import type { ExactCopper } from "./waylaid-crates-data";
 
 // Original inline SVG artwork, authored for TwichUI Market. No external assets.
 export function Coin({ metal }: { metal: "gold" | "silver" | "copper" }) {
@@ -69,4 +70,21 @@ export function StackUnitPrice({ total, quantity }: { total: string; quantity: n
   return <><Currency value={String(copper / denominator)}/>
     {remainder > 0n && <span> + {String(remainder)}/{quantity} copper</span>}
   </>;
+}
+
+export function ExactCurrency({ copper, exact }: { copper?: string | null; exact?: ExactCopper | null }) {
+  if (!exact) return copper == null ? <span className="muted">Unknown</span> : <Currency value={copper}/>;
+  const numerator = BigInt(exact.numerator_copper);
+  const denominator = BigInt(exact.denominator);
+  const rounded = (numerator + denominator / 2n) / denominator;
+  if (numerator > 0n && rounded === 0n) {
+    return <span className="currency" role="img" aria-label="Less than 1 copper">
+      <span className="currency-part" aria-hidden="true">&lt;1<Coin metal="copper"/></span>
+    </span>;
+  }
+  const approximate = numerator % denominator !== 0n;
+  return <span title={approximate ? "Rounded to the nearest copper. Sorting uses the exact value." : undefined}>
+    {approximate && <><span aria-hidden="true">≈ </span><span className="sr-only">Approximately </span></>}
+    <Currency value={String(rounded)}/>
+  </span>;
 }

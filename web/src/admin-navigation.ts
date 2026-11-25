@@ -6,6 +6,7 @@ export const administrationGroups = [
     { id: 'metadata', label: 'Item Metadata' },
     { id: 'sources', label: 'Data Sources' },
     { id: 'waylaid-crates', label: 'Waylaid Crates' },
+    { id: 'crafting-writs', label: 'Crafting Writs' },
     { id: 'storage', label: 'Storage & Backups' },
   ] },
   { label: 'Account access', sections: [
@@ -18,6 +19,7 @@ export const administrationGroups = [
 
 export function administrationSection(url: string) {
   const [path, search] = url.split('?');
+  if (path === '/admin/crafting-writs') return 'crafting-writs';
   if (path === '/admin/waylaid-crates') return 'waylaid-crates';
   const params = new URLSearchParams(search);
   const section = params.get('admin_tab');
@@ -28,6 +30,7 @@ export function administrationSection(url: string) {
 
 export function administrationUrl(section: string) {
   if (section === 'overview') return '/administration';
+  if (section === 'crafting-writs') return '/admin/crafting-writs';
   if (section === 'waylaid-crates') return '/admin/waylaid-crates';
   return `/administration?admin_tab=${section}`;
 }

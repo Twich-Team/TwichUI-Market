@@ -3,7 +3,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "./api";
 import { LocalTime, Status } from "./admin-table";
-import { Coin, Currency } from "./currency";
+import { ExactCurrency as Cost } from "./currency";
 import { DataTable } from "./data-table";
 import { ItemAttribution, ItemIcon } from "./item-components";
 import { ItemName } from "./item-name";
@@ -15,7 +15,7 @@ import { useCompactLayout } from "./responsive";
 import type { Market } from "./types";
 import {
   bases, basisDescriptions, compareCrates, crateColumns, crateSortValue, crateUrl, crateView, tierLabel,
-  type CrateItem, type CrateQuote, type CrateResults, type CrateRow, type CrateView, type ExactCopper,
+  type CrateItem, type CrateQuote, type CrateResults, type CrateRow, type CrateView,
 } from "./waylaid-crates-data";
 import "./waylaid-crates.css";
 
@@ -46,23 +46,6 @@ const quoteStatuses: Record<string, string> = {
   unverified_reward_quality: "Favor is unverified for this crate quality",
   whole_stack_overshoot: "Exact quantity unavailable in whole stacks at the minimum",
 };
-
-function Cost({ copper, exact }: { copper?: string | null; exact?: ExactCopper | null }) {
-  if (!exact) return copper == null ? <span className="muted">Unknown</span> : <Currency value={copper}/>;
-  const numerator = BigInt(exact.numerator_copper);
-  const denominator = BigInt(exact.denominator);
-  const rounded = (numerator + denominator / 2n) / denominator;
-  if (numerator > 0n && rounded === 0n) {
-    return <span className="currency" role="img" aria-label="Less than 1 copper">
-      <span className="currency-part" aria-hidden="true">&lt;1<Coin metal="copper"/></span>
-    </span>;
-  }
-  const approximate = numerator % denominator !== 0n;
-  return <span title={approximate ? "Rounded to the nearest copper. Sorting uses the exact value." : undefined}>
-    {approximate && <><span aria-hidden="true">≈ </span><span className="sr-only">Approximately </span></>}
-    <Currency value={String(rounded)}/>
-  </span>;
-}
 
 function SupplementalItemCredit({ item }: { item: CrateItem }) {
   const supplied = [...(item.metadata_attributions ?? []), item.metadata_attribution, item.icon_attribution];
