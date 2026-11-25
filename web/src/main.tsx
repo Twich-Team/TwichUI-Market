@@ -212,7 +212,11 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
   });
   const markets = marketList.data?.markets ?? [];
   const marketsReady = Boolean(marketList.data);
+  const marketStatus = marketList.isError ? "unavailable" : marketsReady ? "available" : "loading";
   const environmentReady = Boolean(environment.data);
+  const administrationOverview = page === "admin" && administrationSection(url) === "overview";
+  const administrationReady = environmentReady && (administrationOverview || marketsReady);
+  const administrationPending = !administrationReady && !environment.error && (administrationOverview || !marketList.error);
   const readOnly = environment.data?.read_only ?? true;
   const fixtureReview = environment.data?.review_fixtures;
   const preferences=usePreferences();
@@ -311,11 +315,12 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
               searchParams={new URL(url,location.origin).search}
             />
           )}{" "}
-          {page === "admin" && user.role === "admin" && (!environmentReady || !marketsReady) && !environment.error && !marketList.error && <Loading label="Loading administration…" skeleton/>}
-          {page === "admin" && user.role === "admin" && environmentReady && marketsReady && (
+          {page === "admin" && user.role === "admin" && administrationPending && <Loading label="Loading administration…" skeleton/>}
+          {page === "admin" && user.role === "admin" && administrationReady && (
             <Administration
               user={user}
               markets={markets}
+              marketStatus={marketStatus}
               readOnly={readOnly}
               refreshMarkets={loadMarkets}
             />

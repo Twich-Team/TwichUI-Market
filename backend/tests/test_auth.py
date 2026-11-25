@@ -1,11 +1,12 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 from sqlalchemy import select
 from market.db import now
-from market.models import Credential, Invitation, User
+from market.models import Credential, Invitation, SecurityEvent, User
 
 
 def test_private_and_health(client):
     assert client.get('/api/v1/health').json()['status'] == 'ok'
+    assert client.get('/api/v1/admin/access-summary').status_code == 401
     for path in ('/api/v1/auth/me', '/api/v1/admin/users', '/api/v1/devices'):
         assert client.get(path).status_code == 401
 
@@ -19,6 +20,7 @@ def test_invitation_lifecycle_and_permissions(owner):
     owner.headers['x-csrf-token'] = result.json()['csrf_token']
     assert owner.get('/api/v1/auth/me').json()['role'] == 'member'
     assert owner.get('/api/v1/admin/users').status_code == 403
+    assert owner.get('/api/v1/admin/access-summary').status_code == 403
     assert owner.post('/api/v1/admin/invitations').status_code == 403
 
 
@@ -95,3 +97,25 @@ def test_invitation_revocation_and_admin_device_listing(owner):
     assert owner.post('/api/v1/auth/register',json={'username':'friend','password':'friend password long','invitation':invitation['token']}).status_code==400
     owner.post('/api/v1/devices',json={'name':'fixture'})
     assert owner.get('/api/v1/admin/devices').json()[0]['name']=='fixture'
+
+
+def test_admin_access_summary_counts_current_access_and_reports_only_event_time(owner, database):
+    with database.begin() as db:
+        db.query(SecurityEvent).delete()
+        db.add_all([
+            User(username="member", password_hash="unused", role="member"),
+            User(username="disabled", password_hash="unused", role="admin", active=False),
+            User(username="archived", password_hash="unused", role="member", archived_at=now()),
+        ])
+        owner_id = db.scalar(select(User.id).where(User.username == "owner"))
+        for token, days, used in [("valid", 1, False), ("expired", -1, False), ("used", 1, True)]:
+            db.add(Invitation(token_hash=token, created_by=owner_id, expires_at=now() + timedelta(days=days), used=used))
+    expected = {"active_members": 2, "active_admins": 1, "pending_invitations": 1, "latest_security_event": None}
+    assert owner.get("/api/v1/admin/access-summary").json() == expected
+    latest = now().replace(microsecond=0)
+    with database.begin() as db:
+        db.add_all(SecurityEvent(action="test", detail="private detail", created_at=at)
+                   for at in (latest, latest - timedelta(days=1)))
+    response = owner.get("/api/v1/admin/access-summary").json()
+    assert datetime.fromisoformat(response.pop("latest_security_event")) == latest
+    assert response == {key: value for key, value in expected.items() if key != "latest_security_event"}

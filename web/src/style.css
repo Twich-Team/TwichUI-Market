@@ -1703,7 +1703,6 @@ a.secondary { display:inline-block; padding:10px 14px; border:1px solid var(--bo
 .provider-coverage details {margin-top:1rem;}
 .provider-coverage .managed-table {min-width:0;}
 .database-growth .metadata-stats strong {font-size:1.3rem;}
-.overview-link {display:block;margin-top:.6rem;}
 @media(max-width:1100px){.coverage-grid{grid-template-columns:1fr;}}
 
 .metadata-provider-grid {align-items:start;}

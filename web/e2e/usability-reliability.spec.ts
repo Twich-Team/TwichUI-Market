@@ -14,8 +14,9 @@ async function shot(page:Page,name:string,fullPage=true){await page.screenshot({
 async function axe(page:Page){expect((await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa']).analyze()).violations).toEqual([]);}
 test('usability M1: reversible account and device archives and honest status',async({page})=>{
   await login(page); await page.goto('/administration');
-  await expect(page.getByText(/authorized devices/)).toBeVisible();
-  await expect(page.getByText(/contacted Market in the last 15 minutes/)).toBeVisible();
+  const deviceCard=page.getByRole('article',{name:'Devices',exact:true});
+  await expect(deviceCard).toContainText(/authorized device/i);
+  await expect(deviceCard).toContainText(/contacted Market in the last 15 minutes|no Companion or legacy devices with current access/i);
   await shot(page,'m1-overview');
   await page.getByRole("link",{name:'Members',exact:true}).click();
   await page.getByRole('button',{name:'Disabled & archived',exact:true}).click();
@@ -70,10 +71,15 @@ test('usability M1: local deal icons load without hover through delays filters s
 test('usability M2: operational overview, measured coverage tables and allocation history',async({page})=>{
   test.setTimeout(60000);
   await login(page);await page.goto('/administration');
-  await expect(page.getByRole('region',{name:'Operational overview',exact:true})).toBeVisible();
-  await expect(page.getByRole('heading',{name:'Needs attention',exact:true})).toBeVisible();
-  await page.getByRole('region',{name:'Operational overview',exact:true}).screenshot({path:`${output}/administration-overview.png`});await axe(page);
-  await page.getByRole('link',{name:'Item Metadata',exact:true}).click();
+  const overview=page.getByRole('region',{name:'Operational overview',exact:true});
+  await expect(overview.getByRole('heading',{name:'System status',exact:true})).toBeVisible();
+  for(const title of ['Collection','Item Metadata','Data Sources','Backups','Devices','Security events']){
+    const module=overview.getByRole('article',{name:title,exact:true});
+    await expect(module.getByRole('heading',{name:title,level:4})).toBeVisible();
+    await expect(module.getByRole('link').first()).toBeVisible();
+  }
+  await overview.screenshot({path:`${output}/administration-overview.png`});await axe(page);
+  await overview.getByRole('article',{name:'Item Metadata',exact:true}).getByRole('link').first().click();
   await expect(page.getByRole('region',{name:'Item metadata summary',exact:true})).toBeVisible();
   await expect(page.getByRole('heading',{name:'Item attributes',exact:true})).toBeVisible();
   await page.getByText('Coverage charts and measurement details',{exact:true}).click();
@@ -165,4 +171,27 @@ test('usability M3: delayed loading keeps table rows, uses shared indicators and
  } finally {release();}
  await expect(refreshing).toHaveCount(0);
  await axe(page);
+});
+
+
+test('usability M2: overview distinguishes a failed collection check from unreadable measurements',async({page})=>{
+  await login(page);
+  await page.route('**/api/v1/markets',async route=>{
+    const response=await route.fetch();
+    const {markets}=await response.json();
+    await route.fulfill({json:{markets:[{...markets[0],enabled:true,verified:true,failures:2,last_error:'Upstream connection timed out'}]}});
+  });
+  await page.route('**/api/v1/admin/storage',route=>route.fulfill({status:503,json:{detail:'Measurement unavailable'}}));
+  await page.goto('/administration');
+  const overview=page.getByRole('region',{name:'Operational overview',exact:true});
+  const card=(name:string)=>overview.getByRole('article',{name,exact:true});
+  await expect(card('Collection')).toHaveAttribute('data-tone','error');
+  await expect(card('Storage capacity')).toHaveAttribute('data-tone','unavailable');
+  await expect(card('Markets & schedules')).toHaveAttribute('data-tone','success');
+  await expect(card('Members & invitations')).toContainText(/active (account|member)/i);
+  await page.unroute('**/api/v1/markets');
+  await page.route('**/api/v1/markets',route=>route.fulfill({status:503,json:{detail:'Market list unavailable'}}));
+  await page.reload();
+  await expect(card('Collection')).toHaveAttribute('data-tone','unavailable',{timeout:15000});
+  await expect(card('Members & invitations')).toContainText(/active (account|member)/i);
 });

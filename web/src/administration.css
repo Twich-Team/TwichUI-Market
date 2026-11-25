@@ -1,14 +1,3 @@
-.admin-health-list { list-style: none; margin: 0; padding: 0; }
-.admin-health-list > li {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding-block: 12px;
-  border-bottom: 1px solid var(--line);
-}
-.admin-health-list > li:last-child { border-bottom: 0; }
-.admin-health-list p { margin: 4px 0 0; color: var(--muted); overflow-wrap: anywhere; }
 .admin-view-switch, .account-task-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; }
 .admin-view-switch [aria-pressed=true] { border-color: var(--gold); }
 .admin-view-switch button, .account-task-nav a { min-height: 44px; }
@@ -25,8 +14,6 @@
 .admin-log-filters { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit,minmax(min(100%,170px),1fr)); margin-block: 12px; }
 .admin-log-filters select, .admin-log-filters input { width: 100%; min-width: 0; }
 @media (max-width: 650px) {
-  .admin-health-list > li { display: block; }
-  .admin-health-list .overview-link { min-height: 44px; }
   .admin-status-details textarea, .admin-status-details select, .admin-status-details input,
   .admin-log-filters select, .admin-log-filters input,
   .provider-edit select, .provider-edit input,

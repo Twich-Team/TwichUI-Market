@@ -11,7 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "./api";
 import { Market } from "./types";
 import { MarketSelect } from "./research";
-import { navigate, useLocation } from "./navigation";
+import { navigate, supportedId, useLocation } from "./navigation";
 
 export interface MetadataProvider {
   rate_limits?: RateStatus;
@@ -49,8 +49,13 @@ const labels: Record<string, string> = {
 };
 export const metadataStatus = (value: string | null | undefined) => value ? labels[value] || value.replaceAll("_", " ") : "None";
 
-function useProviders(enabled = true) {
-  return useQuery({ enabled, queryKey: ["private", "metadata-providers"], queryFn: ({ signal }) => api<Providers>("/admin/metadata-providers", "GET", undefined, signal), refetchInterval: 5000 });
+function useProviders(enabled = true, refetchInterval = 5_000) {
+  return useQuery({
+    enabled,
+    queryKey: ["private", "metadata-providers"],
+    queryFn: ({ signal }) => api<Providers>("/admin/metadata-providers", "GET", undefined, signal),
+    refetchInterval,
+  });
 }
 function ErrorNotice({ error }: { error: string }) { return error ? <p className="notice error" role="alert">{error}</p> : null; }
 
@@ -69,6 +74,40 @@ function sourceRecovery(provider: MetadataProvider) {
   return provider.automatic
     ? { group: 'Automatic on', label: 'Automatic recovery on', tone: 'success' } as const
     : { group: 'Automatic off', label: 'Automatic recovery off', tone: 'neutral' } as const;
+}
+
+export type MetadataSourceSummary = ReturnType<typeof sourceRecovery> & {
+  id: string;
+  name: string;
+  enabled: boolean;
+  automatic: boolean;
+  lastSuccess: string | null;
+};
+
+export function useMetadataSourceSummary(enabled: boolean) {
+  const query = useProviders(enabled, 60_000);
+  const sources: MetadataSourceSummary[] | undefined = query.data?.providers.map(provider => ({
+    id: provider.provider,
+    name: provider.name,
+    enabled: provider.enabled,
+    automatic: provider.automatic,
+    lastSuccess: provider.last_success,
+    ...sourceRecovery(provider),
+  }));
+  return { sources, isPending: query.isPending, isError: query.isError };
+}
+
+export function defaultMetadataMarket(markets: Market[]): Market | undefined {
+  return markets.find(market => market.enabled) ?? markets[0];
+}
+
+export function useMetadataCoverage(market: number, enabled = true, refetchInterval = 60_000) {
+  return useQuery({
+    enabled: enabled && !!market,
+    queryKey: ["private", "metadata-overview", market],
+    queryFn: ({ signal }) => api<MetadataOverview>(`/admin/item-metadata?market_id=${market}`, "GET", undefined, signal),
+    refetchInterval,
+  });
 }
 
 export function DataSources({ readOnly = false }: { readOnly?: boolean }) {
@@ -163,12 +202,16 @@ export function ItemMetadataAdmin({ markets, readOnly = false }: { markets: Mark
     if (next==="overview") params.delete("metadata_view"); else params.set("metadata_view",next);
     navigate("/administration?"+params);
   }
-  const [market, setMarket] = useState(markets.find(m=>m.enabled)?.id || markets[0]?.id || 0), [mode, setMode] = useState("single"), [selected, setSelected] = useState(["blizzard", "everloot"]), [preview, setPreview] = useState<{ item_count: number; estimated_requests: number; request_budget: number; note: string } | null>(null);
+  const requestedMarket = supportedId(params.get("market_id"));
+  const [market, setMarket] = useState(() => markets.find(row => row.id === requestedMarket)?.id ?? defaultMetadataMarket(markets)?.id ?? 0);
+  const [mode, setMode] = useState("single"), [selected, setSelected] = useState(["blizzard", "everloot"]), [preview, setPreview] = useState<{ item_count: number; estimated_requests: number; request_budget: number; note: string } | null>(null);
   const [error, setError] = useState(""), [message, setMessage] = useState(""), [busy, setBusy] = useState(false), [jobId, setJobId] = useState<number | null>(null), [resultAfter, setResultAfter] = useState(0);
-  useEffect(()=>{if(!market&&markets.length)setMarket(markets.find(m=>m.enabled)?.id||markets[0].id);},[market,markets]);
+  useEffect(() => {
+    if (!market && markets.length) setMarket(defaultMetadataMarket(markets)?.id ?? 0);
+  }, [market, markets]);
   const [input, setInput] = useState({ item_id: "", limit: 100, request_budget: 100 });
   const providers = useProviders(view === "jobs");
-  const stats = useQuery({ queryKey: ["private", "metadata-overview", market], enabled: !!market, queryFn: ({ signal }) => api<MetadataOverview>(`/admin/item-metadata?market_id=${market}`, "GET", undefined, signal), refetchInterval: 60_000 });
+  const stats = useMetadataCoverage(market);
   const [relatedResource,setRelatedResource] = useState("professions/alchemy"), [relatedPages,setRelatedPages] = useState(1);
   const [jobState, setJobState] = useState(""), [jobSearch,setJobSearch]=useState("");
   const jobPage = useRecordPage<Job>("jobs", { q:jobSearch, market_id: String(market), ...(jobState ? {state:jobState}: {}) }, "id", true, view === "jobs" && !!market);
@@ -176,10 +219,16 @@ export function ItemMetadataAdmin({ markets, readOnly = false }: { markets: Mark
   const detail = useQuery({ queryKey: ["private", "metadata-job", jobId, resultAfter], enabled: view === "jobs" && !!jobId, queryFn: ({ signal }) => api<Job>(`/admin/item-metadata/jobs/${jobId}?after=${resultAfter}`, "GET", undefined, signal), refetchInterval: 3000 });
   const body = { market_id: market, mode, providers: selected, limit: input.limit, request_budget: input.request_budget, item_id: mode === "single" ? Number(input.item_id) || null : null };
   function resetPreview() { setPreview(null); setMessage(""); }
+  function selectMarket(value: number) {
+    setMarket(value);
+    jobPage.reset();
+    setJobId(null);
+    resetPreview();
+  }
   async function action(work: () => Promise<void>) { setBusy(true); setError(""); try { await work(); await jobs.refetch(); await stats.refetch(); } catch (e) { setError((e as Error).message); } finally { setBusy(false); } }
   const state = stats.data;
   return <section aria-labelledby="metadata-heading" className="metadata-admin">
-    <div className="title-row"><h1 id="metadata-heading">Item Metadata</h1><MarketSelect markets={markets} market={market} setMarket={value => { setMarket(value); jobPage.reset(); setJobId(null); resetPreview(); }} /></div>
+    <div className="title-row"><h1 id="metadata-heading">Item Metadata</h1><MarketSelect markets={markets} market={market} setMarket={selectMarket} /></div>
     <nav className="admin-view-switch" aria-label="Item metadata views">
       {views.map(([id,label])=><button key={id} aria-current={view===id?"page":undefined} aria-pressed={view===id} onClick={()=>setView(id)}>{label}</button>)}
     </nav>

@@ -7,11 +7,10 @@ import { useBackupOverview } from "./backup-management";
 import "./administration.css";
 import { Loading } from "./loading";
 import { AdministrationOverview } from "./admin-overview";
-import type { MetadataOverview } from "./metadata-admin";
 import { MemberArchive } from "./member-archive";
 import { CollectionHistory, SecurityHistory } from "./admin-histories";
 import { LocalTime, Status } from "./admin-table";
-import { DataSources, ItemMetadataAdmin } from "./metadata-admin";
+import { DataSources, ItemMetadataAdmin, defaultMetadataMarket, useMetadataCoverage, useMetadataSourceSummary } from "./metadata-admin";
 import { MyPreferences } from "./user-preferences";
 import { MarketConfiguration } from "./market-configuration";
 import { CompanionDevices } from "./companion-devices";
@@ -33,6 +32,13 @@ interface Invitation {
   expires_at: string;
   used: boolean;
 }
+export interface AdminAccessSummary {
+  active_members: number;
+  active_admins: number;
+  pending_invitations: number;
+  latest_security_event: string | null;
+}
+
 export interface Storage {
   operations?: StorageOperations;
   growth: {
@@ -264,11 +270,13 @@ export function Account({
 export function Administration({
   user,
   markets,
+  marketStatus,
   refreshMarkets,
   readOnly = false,
 }: {
   user: User;
   markets: Market[];
+  marketStatus: "loading" | "unavailable" | "available";
   refreshMarkets: () => Promise<void>;
   readOnly?: boolean;
 }) {
@@ -277,13 +285,22 @@ export function Administration({
   const tab = administrationSection(url);
   const title = administrationGroups.flatMap(group => group.sections).find(section => section.id === tab)?.label;
   function setTab(value: string) { navigate(value === "overview" ? "/administration" : `/administration?admin_tab=${value}`); }
-  const storageQuery = useStorageSummary(tab === "overview");
-  const backupQuery = useBackupOverview(0, undefined, 100, tab === "overview");
+  const overview = tab === "overview";
+  const storageQuery = useStorageSummary(overview);
+  const backupQuery = useBackupOverview(0, undefined, 1, overview);
   const users = useAdminSection<User[]>(`/admin/users?include_archived=${memberHistory}`, tab === "members" || tab === "devices");
   const invitations = useAdminSection<Invitation[]>("/admin/invitations", tab === "invitations");
   const devices = useAdminSection<Device[]>("/admin/devices", tab === "devices");
-  const deviceSummary = useAdminSection<{authorized:number;revoked:number;expired:number;recently_connected:number;authorized_names:string[];live_status:string}>("/companion/admin/device-summary", tab === "overview");
-  const coverage = useAdminSection<MetadataOverview>("/admin/item-metadata", tab === "overview");
+  const access = useAdminSection<AdminAccessSummary>("/admin/access-summary", overview, 60_000);
+  const deviceSummary = useAdminSection<{
+    authorized: number;
+    recently_connected: number;
+    recent_window_minutes?: number;
+    as_of?: string;
+  }>("/companion/admin/device-summary", overview, 60_000);
+  const coverageMarket = defaultMetadataMarket(markets);
+  const coverage = useMetadataCoverage(coverageMarket?.id ?? 0, overview && marketStatus === "available", 120_000);
+  const providerSummary = useMetadataSourceSummary(overview);
   const [message, setMessage] = useState(""), [error, setError] = useState(""),
     [invitation, setInvitation] = useState(""), [working, setBusy] = useState(false);
   const busy = working || readOnly;
@@ -327,10 +344,33 @@ export function Administration({
       {tab === "metadata" && <ItemMetadataAdmin markets={markets} readOnly={readOnly} />}
       {tab === "sources" && <DataSources readOnly={readOnly} />}
       {tab === "storage" && <StorageDashboard readOnly={readOnly}/>}
-      {tab === "overview" &&
-        <AdministrationOverview storage={storageQuery.data} backups={backupQuery.data} coverage={coverage.data} devices={deviceSummary.data} markets={markets} open={setTab}
-          loading={[storageQuery, backupQuery, coverage, deviceSummary].some(query=>query.isPending)}
-          errors={[storageQuery, backupQuery, coverage, deviceSummary].some(query=>Boolean(query.error))}/>}
+      {overview && <AdministrationOverview
+        access={access.data}
+        storage={storageQuery.data}
+        backups={backupQuery.data}
+        coverage={coverage.data}
+        coverageMarket={coverageMarket}
+        devices={deviceSummary.data}
+        sources={providerSummary.sources}
+        markets={markets}
+        marketStatus={marketStatus}
+        pending={{
+          access: access.isPending,
+          storage: storageQuery.isPending,
+          backups: backupQuery.isPending,
+          coverage: marketStatus === "loading" || (marketStatus === "available" && !!coverageMarket && coverage.isPending),
+          devices: deviceSummary.isPending,
+          sources: providerSummary.isPending,
+        }}
+        errors={{
+          access: access.isError,
+          storage: storageQuery.isError,
+          backups: backupQuery.isError,
+          coverage: marketStatus === "unavailable" || coverage.isError,
+          devices: deviceSummary.isError,
+          sources: providerSummary.isError,
+        }}
+      />}
           {tab === "members" && (
               <section className="panel padded">
                 <div className="admin-view-switch" aria-label="Member views">
@@ -576,7 +616,7 @@ export function Administration({
   );
 }
 
-function useAdminSection<T>(path: string, enabled: boolean) {
-  return useQuery({ queryKey: ["private", "administration", path], enabled, retry: false,
+function useAdminSection<T>(path: string, enabled: boolean, refetchInterval?: number) {
+  return useQuery({ queryKey: ["private", "administration", path], enabled, retry: false, refetchInterval,
     queryFn: ({signal}) => api<T>(path, "GET", undefined, signal) });
 }
