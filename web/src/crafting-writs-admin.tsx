@@ -36,6 +36,7 @@ interface CatalogueRefresh {
   next_attempt_at: string | null;
   last_finished_at?: string | null;
   operation: "catalogue" | "metadata_backfill";
+  item_metadata?: Pick<CatalogueRefresh, "state" | "error" | "last_finished_at">;
 }
 
 interface WritAdminData {
@@ -58,7 +59,10 @@ export function CraftingWritsAdmin({ readOnly }: { readOnly: boolean }) {
   const result = useQuery({
     queryKey: adminKey,
     queryFn: ({ signal }) => api<WritAdminData>(adminPath, "GET", undefined, signal),
-    refetchInterval: query => activeRefresh.includes(query.state.data?.refresh.state ?? "") ? 5_000 : 60_000,
+    refetchInterval: query => {
+      const refresh = query.state.data?.refresh;
+      return [refresh?.state, refresh?.item_metadata?.state].some(state => state && activeRefresh.includes(state)) ? 5_000 : 60_000;
+    },
     retry: false,
   });
   useEffect(() => {
@@ -140,10 +144,16 @@ export function CraftingWritsAdmin({ readOnly }: { readOnly: boolean }) {
           <div><dt>{backfill ? "Item metadata refresh state" : "Catalogue refresh state"}</dt><dd>
             <Status tone={data.refresh.error ? "warning" : "neutral"}>{tierLabel(data.refresh.state || "unknown")}</Status>
           </dd></div>
-          {backfill && data.refresh.last_finished_at && <div><dt>Last item metadata refresh</dt><dd><LocalTime value={data.refresh.last_finished_at}/></dd></div>}
+          {data.refresh.item_metadata && <div><dt>Item metadata refresh state</dt><dd>
+            <Status tone={data.refresh.item_metadata.error ? "warning" : "neutral"}>{tierLabel(data.refresh.item_metadata.state)}</Status>
+          </dd></div>}
+          {(data.refresh.item_metadata?.last_finished_at || data.refresh.last_finished_at) && <div>
+            <dt>Last item metadata refresh</dt><dd><LocalTime value={data.refresh.item_metadata?.last_finished_at ?? data.refresh.last_finished_at}/></dd>
+          </div>}
           {data.refresh.next_attempt_at && <div><dt>Next refresh attempt</dt><dd><LocalTime value={data.refresh.next_attempt_at}/></dd></div>}
         </dl>
         {data.refresh.error && <p className="notice warning" role="status">{data.refresh.error}</p>}
+        {data.refresh.item_metadata?.error && <p className="notice warning" role="status">{data.refresh.item_metadata.error}</p>}
         {refreshError && <p className="notice error" role="alert">{refreshError}</p>}
         {refreshMessage && <p className="notice success" role="status">{refreshMessage}</p>}
       </section>

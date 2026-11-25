@@ -5,11 +5,11 @@ import { compareWrits, writRequest, writUrl, writView, type WritRow } from "./cr
 
 describe("Crafting Writ scenarios", () => {
   it("round-trips pricing and filters through the URL and sends only pricing inputs", () => {
-    const search = "?market=8&basis=14d&owned=true&method=craft&profession=blacksmithing&max_skill=285&recipes=6,8,6&q=hammer&sort=total&direction=desc";
+    const search = "?market=8&basis=14d&owned=true&method=craft&profession=blacksmithing&max_skill=285&recipes=6,8,6&q=hammer&page=3&sort=total&direction=desc";
     const view = writView(search, 2);
     expect(view).toEqual({
       market: 8, basis: "14d", owned: true, method: "craft", profession: "blacksmithing", maxSkill: 285,
-      confirmedRecipes: [6, 8], query: "hammer", sort: "total", direction: "desc",
+      confirmedRecipes: [6, 8], query: "hammer", page: 3, sort: "total", direction: "desc",
     });
     expect(writView(writUrl(view).split("?")[1], 2)).toEqual(view);
     expect(writRequest(view)).toBe("/crafting-writs?market_id=8&basis=14d&owned=true&method=craft&profession=blacksmithing&max_skill=285&confirmed_recipes=6&confirmed_recipes=8");
@@ -30,8 +30,8 @@ describe("Crafting Writ scenarios", () => {
   });
 
   it("rejects malformed scenario inputs and keeps bounded item return state", () => {
-    const safe = safeBrowseUrl("/crafting-writs?market=8&method=craft&max_skill=375&recipes=123%2C456&token=private");
-    expect(safe).toBe("/crafting-writs?market=8&method=craft&max_skill=375&recipes=123%2C456");
+    const safe = safeBrowseUrl("/crafting-writs?market=8&method=craft&max_skill=375&recipes=123%2C456&page=3&token=private");
+    expect(safe).toBe("/crafting-writs?market=8&method=craft&max_skill=375&recipes=123%2C456&page=3");
     expect(writView("?market=0&basis=unknown&method=anything&profession=bad_slug&max_skill=1001&recipes=0,-1,2147483648&sort=wrong", 2))
       .toMatchObject({ market: 2, method: "cheapest", basis: "current", profession: null, maxSkill: null, confirmedRecipes: [], sort: "rate" });
     expect(parseRoute("/crafting-writs").kind).toBe("crafting-writs");

@@ -34,7 +34,7 @@ def next_delay(factory=Session, *, at=None, worked=True):
     return min(15, min(delays, default=15))
 
 
-def tick(factory=Session,client=None):
+def tick(factory=Session,client=None, *, writ_catalogue_fetcher=None):
     from .metadata_recovery import tick as recover
     from .item_media import resolve_media_once
     client=client or BlizzardClient()
@@ -51,14 +51,16 @@ def tick(factory=Session,client=None):
     # must not consume every eligible request slot before artwork gets a turn.
     if prefer_media:
         media=resolve_media_once(factory,client,budget_guard=budget)
-        recovery=recover(factory,provider_client=client,merchant_favor=True)
+        recovery=recover(factory,provider_client=client,merchant_favor=True,writ_catalogue_fetcher=writ_catalogue_fetcher)
     else:
-        recovery=recover(factory,provider_client=client,merchant_favor=True)
+        recovery=recover(factory,provider_client=client,merchant_favor=True,writ_catalogue_fetcher=writ_catalogue_fetcher)
         media=resolve_media_once(factory,client,budget_guard=budget)
     return {'recovery':recovery,'media':media}
 
 
 def main():
+    from .writ_catalogue_source import fetch_writ_export
+
     logging.basicConfig(level=logging.INFO)
     stopping=False
     def stop(*_):
@@ -69,7 +71,7 @@ def main():
     while not stopping:
         delay = 15
         try:
-            result=tick(client=client)
+            result=tick(client=client, writ_catalogue_fetcher=fetch_writ_export)
             delay=next_delay(worked=any(result.values()))
         except Exception:logging.error('Metadata tick failed; collection is independent; retry remains bounded')
         deadline=time.monotonic()+delay

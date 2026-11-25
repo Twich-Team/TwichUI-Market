@@ -68,7 +68,7 @@ async function setup(page: Page, role: "member" | "admin") {
   const user = { id: 1, role, active: true, username: "fixture-user" };
   const prefs = { schema_version: 1, user_id: 1, revision: 0, values: { ...defaultPreferences(), market_id: 8 } };
   const writes: { path: string; body: unknown; csrf: string | undefined }[] = [];
-  const options = { conflict: false, offline: false };
+  const options = { conflict: false, offline: false, fullCatalogue: false };
   let tier = { key: "expert", reputation: 90 as number | null, revision: 1, updated_at: at, updated_by: "fixture-user" };
   let override = { key: "101", reputation: null as number | null, revision: 0, updated_at: null as string | null, updated_by: null as string | null };
   let refresh = { state: "idle", error: null, next_attempt_at: null as string | null, operation: "metadata_backfill" };
@@ -90,9 +90,16 @@ async function setup(page: Page, role: "member" | "admin") {
         writ(tailoringWrit, "tailoring", thread, 25, url.searchParams),
         writ(unknownWrit, "tailoring", thread, null, url.searchParams),
       ];
+      if (options.fullCatalogue) {
+        for (let index = 1; index <= 147; index++) {
+          const fixture = item(1000 + index, `Crafting Writ: Delivery ${index}`);
+          rows.push({ ...writ(fixture, "tailoring", thread, null, url.searchParams),
+            allowed_sides: index === 147 ? ["alliance"] : [] });
+        }
+      }
       const profession = url.searchParams.get("profession");
       return route.fulfill({ json: {
-        catalogue, professions, pricing: { snapshot_id: "1", observed_at: at, freshness: "current", synthetic: true },
+        catalogue: { ...catalogue, writ_count: rows.length }, professions, pricing: { snapshot_id: "1", observed_at: at, freshness: "current", synthetic: true },
         rows: profession ? rows.filter(row => row.profession === profession) : rows,
       } });
     }
@@ -188,6 +195,24 @@ test.describe("Crafting Writs desktop", () => {
     await expect(page.getByRole("heading", { name: "Administrator access required" })).toBeVisible();
   });
 
+  test("shows the complete catalogue through paging and preserves the return URL", async ({ page }) => {
+    const { options } = await setup(page, "member");
+    options.fullCatalogue = true;
+    await page.goto("/crafting-writs?page=6");
+    const table = page.getByRole("table", { name: "Crafting Writs estimates" });
+    await expect(table.getByRole("rowheader")).toHaveCount(25);
+    await expect(page.getByText("150 records · Page 6 of 6")).toBeVisible();
+    const lastWrit = table.getByRole("rowheader").last();
+    await expect(lastWrit).toContainText("Alliance only");
+    await lastWrit.getByRole("link", { name: "Crafting Writ: Delivery 147" }).click();
+    await page.getByRole("link", { name: /Back to Crafting Writs/ }).click();
+    await expect(page).toHaveURL(/page=6/);
+    await expect(lastWrit.getByRole("link")).toBeFocused();
+    await page.getByLabel("Profession", { exact: true }).selectOption("alchemy");
+    await expect(table.getByRole("rowheader")).toHaveCount(1);
+    await expect(page).not.toHaveURL(/page=6/);
+  });
+
   test("administrator sets and resets overrides, resolves conflicts, and queues bounded metadata refresh", async ({ page }) => {
     const { writes, options } = await setup(page, "admin");
     await page.goto("/administration");
@@ -230,6 +255,17 @@ test.describe("Crafting Writs desktop", () => {
 
 test.describe("Crafting Writs phone", () => {
   test.use({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+
+  test("keeps the full catalogue navigable on phone", async ({ page }) => {
+    const { options } = await setup(page, "member");
+    options.fullCatalogue = true;
+    await page.goto("/crafting-writs?page=5");
+    await expect(page.locator(".waylaid-card")).toHaveCount(25);
+    await page.getByRole("button", { name: "Next writs" }).tap();
+    await expect(page.getByText("Page 6 of 6")).toBeVisible();
+    await expect(page.locator(".waylaid-card").last()).toContainText("Delivery 147");
+    await expect(page.getByRole("button", { name: "Next writs" })).toBeDisabled();
+  });
 
   test("profession, primary prices, keyboard-accessible details, and retry fit narrow screens", async ({ page }) => {
     const { options } = await setup(page, "member");

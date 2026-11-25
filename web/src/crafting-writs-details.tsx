@@ -23,6 +23,7 @@ export function WritAttribution({ catalogue, items }: { catalogue: WritCatalogue
   const includesForeverDb = items.some(item => itemCredits(item).some(credit => isForeverDb(credit.url)));
   return <small className="waylaid-attribution">
     <a href={catalogue.source_url} target="_blank" rel="noreferrer">{catalogue.source_label ?? "ForeverDB"}</a>
+    {catalogue.faction_source_url && <> · Faction data from <a href={catalogue.faction_source_url} target="_blank" rel="noreferrer">ForeverChanges</a></>}
     {catalogue.build && <> · Build {catalogue.build}</>}
     {catalogue.source_observed_at && <> · Source observed <LocalTime value={catalogue.source_observed_at}/></>}
     {includesForeverDb && <> · Item data from <a href={foreverDb} target="_blank" rel="noreferrer">ForeverDB.net</a></>}

@@ -41,7 +41,7 @@ export function safeBrowseUrl(value:unknown):string|null {
     '/': ['market','q','sort','direction','page','page_size'],
     '/deals': ['market','mode','change','spend','coverage','confidence','direction','page'],
     '/waylaid-crates': ['market','basis','owned','sort','direction','q','tier','known'],
-    '/crafting-writs': ['market','basis','owned','method','profession','max_skill','recipes','sort','direction','q'],
+    '/crafting-writs': ['market','basis','owned','method','profession','max_skill','recipes','sort','direction','q','page'],
   }[u.pathname]!;
   const p=new URLSearchParams();for(const k of allowed){const v=u.searchParams.get(k);if(v!==null)p.set(k,v.slice(0,k==='recipes'?440:64));}
   return u.pathname+(p.size?'?'+p:'');

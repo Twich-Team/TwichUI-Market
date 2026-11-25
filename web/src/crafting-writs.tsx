@@ -12,13 +12,14 @@ import { useCompactLayout } from "./responsive";
 import type { Market } from "./types";
 import { bases, basisDescriptions, tierLabel } from "./waylaid-crates-data";
 import {
-  compareWrits, maxConfirmedRecipes, maxRecipeSkill, methods, rewardSourceLabel, writColumns, writQueryKey, writRequest, writSortValue,
+  compareWrits, maxConfirmedRecipes, maxRecipeSkill, methods, producingProfessions, rewardSourceLabel, writColumns, writQueryKey, writRequest, writSortValue,
   writStatus, writUrl, writView, type Profession, type WritResults, type WritRow, type WritSort, type WritView,
 } from "./crafting-writs-data";
 import { DeliveryItems, WritAttribution, WritDetails, WritItemLink } from "./crafting-writs-details";
 import "./waylaid-crates.css";
 import "./crafting-writs.css";
 
+const pageSize = 25;
 const priceColumns = Object.keys(writColumns) as WritSort[];
 const noProfessions: Profession[] = [];
 const currentBasisDescription = "Uses the latest observed buyouts. Ranked costs require enough stock at the minimum, with whole auction stacks charged in full.";
@@ -31,17 +32,20 @@ function WritIdentity({ row, market }: { row: WritRow; market: number }) {
   return <div>
     <WritItemLink item={row.item} market={market} id={`writ-item-${row.item.item_id}`}
       displayName={suffix === row.item.name ? undefined : suffix}/>
-    {row.tier && <small className="muted writ-row-note">{tierLabel(row.tier)}</small>}
+    {row.tier && <small className="muted writ-row-note">
+      {tierLabel(row.tier)}{row.allowed_sides?.length === 1 && ` · ${tierLabel(row.allowed_sides[0])} only`}
+    </small>}
   </div>;
 }
 
 function WritProfession({ row, professions }: { row: WritRow; professions: Profession[] }) {
   const recipes = row.craft.recipes.length ? row.craft.recipes : row.craft.recipe_options;
   const skills = [...new Set(recipes.flatMap(recipe => recipe.skill === null ? [] : [recipe.skill]))].sort((a, b) => a - b);
+  const labels = producingProfessions(row).map(slug => professions.find(profession => profession.slug === slug)?.label ?? tierLabel(slug));
   return <div>
-    {professions.find(profession => profession.slug === row.profession)?.label ?? (row.profession ? tierLabel(row.profession) : "Unknown")}
+    {labels.join(", ") || "Unknown"}
     {skills.length > 0 && <small className="muted writ-row-note">Recipe skill {skills.join(", ")}</small>}
-    {!skills.length && row.profession && <small className="muted writ-row-note">Recipe skill unknown</small>}
+    {!skills.length && labels.length > 0 && <small className="muted writ-row-note">Recipe skill unknown</small>}
   </div>;
 }
 
@@ -130,7 +134,7 @@ export function CraftingWrits({ markets, market, setMarket, marketStatus, search
   }, [active, searchParams, market]);
 
   function update(changes: Partial<WritView>) {
-    navigate(writUrl({ ...view, ...changes }), true);
+    navigate(writUrl({ ...view, page: 1, ...changes }), true);
   }
   function toggle(row: WritRow) {
     const id = row.item.item_id;
@@ -152,9 +156,13 @@ export function CraftingWrits({ markets, market, setMarket, marketStatus, search
   const professions = data?.professions ?? noProfessions;
   const filtered = rows.filter(row => {
     const items = [row.item, ...row.objectives.map(objective => objective.item)];
-    return (!view.profession || view.profession === row.profession) &&
+    return (!view.profession || producingProfessions(row).includes(view.profession)) &&
       (!query || items.some(item => item.name.toLowerCase().includes(query) || String(item.item_id) === query));
   }).sort((a, b) => compareWrits(a, b, view.sort, view.direction === "desc"));
+
+  const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const page = Math.min(view.page, pageCount);
+  const visibleRows = filtered.slice((page - 1) * pageSize, page * pageSize);
 
   const columns = useMemo<ColumnDef<WritRow>[]>(() => [
     { id: "writ", header: "Writ", enableSorting: false, meta: { rowHeader: true },
@@ -210,6 +218,7 @@ export function CraftingWrits({ markets, market, setMarket, marketStatus, search
     {data && <>
       {view.basis === "regional" && <p className="notice">This market has no regional reference. Choose another price basis to see available estimates.</p>}
       {data.pricing.synthetic && <p className="notice warning">Synthetic fixture data · illustrative prices and availability.</p>}
+      {data.catalogue.writ_count === 0 && <p className="notice">The first writ catalogue import is pending.</p>}
       {data.catalogue.stale && <p className="notice warning">Catalogue data is stale. Showing the last verified catalogue.</p>}
       {data.pricing.freshness === "stale" && <p className="notice warning">Market observations are stale. Prices and stock may have changed.</p>}
       <div className="waylaid-source-line">
@@ -255,7 +264,7 @@ export function CraftingWrits({ markets, market, setMarket, marketStatus, search
               onClick={() => sort(view.sort)}>{view.direction === "asc" ? "Ascending ↑" : "Descending ↓"}</button>
           </div>
           <div className="waylaid-cards">
-            {filtered.map(row => {
+            {visibleRows.map(row => {
               const id = row.item.item_id;
               const open = !!expanded[id];
               return <article className="waylaid-card" key={id}>
@@ -273,14 +282,23 @@ export function CraftingWrits({ markets, market, setMarket, marketStatus, search
               </article>;
             })}
           </div>
+          {pageCount > 1 && <div className="table-pagination">
+            <span aria-live="polite">Page {page} of {pageCount}</span>
+            <button type="button" disabled={page === 1} onClick={() => update({ page: page - 1 })}>Previous writs</button>
+            <button type="button" disabled={page === pageCount} onClick={() => update({ page: page + 1 })}>Next writs</button>
+          </div>}
         </> : <DataTable<WritRow>
-          label="Crafting Writs estimates" data={filtered} columns={columns} compact
+          label="Crafting Writs estimates" data={visibleRows} columns={columns} compact
           getRowId={row => String(row.item.item_id)} renderDetails={renderDetails}
           detailsControl={{ isExpanded: row => !!expanded[row.item.item_id], toggle, label: detailsLabel }}
           server={{
             rowCount: filtered.length,
-            pagination: { pageIndex: 0, pageSize: filtered.length },
-            onPaginationChange: () => {},
+            pagination: { pageIndex: page - 1, pageSize },
+            onPaginationChange: change => {
+              const before = { pageIndex: page - 1, pageSize };
+              const next = typeof change === "function" ? change(before) : change;
+              update({ page: next.pageIndex + 1 });
+            },
             sorting: [{ id: view.sort, desc: view.direction === "desc" }],
             onSortingChange: change => {
               const before = [{ id: view.sort, desc: view.direction === "desc" }];
