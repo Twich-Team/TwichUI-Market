@@ -163,6 +163,7 @@ jobs:
           # Failed attempts can leave partial artifacts with the same name.
           artifact-ids: ${{ needs.windows.outputs.acceptance-artifact-id }}
           path: acceptance
+          merge-multiple: true
       - name: Checkout exact split-projection consumer
         uses: actions/checkout@v4
         with:
