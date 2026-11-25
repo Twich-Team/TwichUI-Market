@@ -24,8 +24,8 @@ async function setup(page:Page,change?:(fixture:ReturnType<typeof dashboardFixtu
    if(url.searchParams.get('protection'))rows=rows.filter(i=>i.protected===(url.searchParams.get('protection')==='protected'));
    if(url.searchParams.get('storage_id'))rows=rows.filter(i=>i.storage_id===url.searchParams.get('storage_id'));
    if(url.searchParams.get('verification'))rows=rows.filter(i=>url.searchParams.get('verification')==='restored'?i.restoration_verified_at:url.searchParams.get('verification')==='integrity'?i.verification==='archive_integrity_verified':i.verification!=='archive_integrity_verified');
-   if(url.searchParams.get('sort')==='size_asc')rows.sort((a,b)=>a.bytes-b.bytes);
-   return route.fulfill({json:{...fixture.backups,matched_total:rows.length,items:rows.slice(Number(url.searchParams.get('offset')||0),Number(url.searchParams.get('offset')||0)+100)}});
+   if(url.searchParams.get('sort')==='bytes_asc')rows.sort((a,b)=>a.bytes-b.bytes);
+   return route.fulfill({json:{...fixture.backups,matched_total:rows.length,items:rows.slice(Number(url.searchParams.get('offset')||0),Number(url.searchParams.get('offset')||0)+Number(url.searchParams.get('limit')||100))}});
   }
   return route.fulfill({json:body});
  });
@@ -39,7 +39,8 @@ test('storage dashboard: overview, routes/history, dialogs, filters, safeguards 
  await expect(page.getByText('System health',{exact:true})).toBeVisible();await expect(page.locator('.storage-metric').filter({hasText:'Restore verification'})).toContainText('Verified');await expect(page.getByRole('region',{name:'Attention and activity'})).toHaveCount(0);
  await expect(page.locator('.database-growth canvas')).toBeVisible();await shot(page,'overview-1920');
  const nav=page.getByRole('navigation',{name:'Storage & Backups pages'});await nav.getByRole('link',{name:'Backups',exact:true}).click();await expect(page).toHaveURL(/storage_view=backups/);await expect(page.getByRole('heading',{name:'Recovery points',exact:true})).toBeVisible();await shot(page,'backups');
- await page.getByLabel('Search recovery points').fill('preview-1.dump');await expect(page.locator('.backup-table tbody tr')).toHaveCount(1);await page.getByLabel('Search recovery points').fill('');await expect(page.locator('.backup-table tbody tr')).toHaveCount(10);
+ const search=page.getByLabel('Search recovery points'), inventory=page.getByRole('table',{name:'Managed backup archives'});
+ await search.fill('preview-1.dump');await search.press('Enter');await expect(inventory.locator('tbody tr')).toHaveCount(1);await page.getByRole('button',{name:'Clear search',exact:true}).click();await expect(inventory.locator('tbody tr')).toHaveCount(10);
  await page.getByRole('button',{name:'Details',exact:true}).first().click();await expect(page.getByRole('dialog',{name:'Backup details'})).toContainText('SHA-256');await shot(page,'backup-details');await page.keyboard.press('Escape');await expect(page.getByRole('dialog')).toHaveCount(0);
  await page.getByRole('button',{name:'Delete',exact:true}).first().click();const deletion=page.getByRole('dialog',{name:'Delete backup archive'});await expect(deletion.getByRole('button',{name:'Confirm archive deletion'})).toBeDisabled();await shot(page,'protected-delete');await page.keyboard.press('Escape');
  await page.getByRole('checkbox',{name:/Select market-/}).first().check();await page.getByRole('checkbox',{name:/Select market-/}).nth(1).check();await page.getByRole('button',{name:'Delete selected (2)'}).click();await expect(page.getByRole('dialog',{name:'Delete selected backups'}).getByRole('button',{name:'Confirm selected backup deletion'})).toBeDisabled();await page.keyboard.press('Escape');

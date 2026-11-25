@@ -12,7 +12,7 @@ from fastapi import Depends, FastAPI, HTTPException, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.exception_handlers import request_validation_exception_handler
 from pydantic import BaseModel, Field
-from sqlalchemy import select, text, update
+from sqlalchemy import func, select, text, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from .db import now, session
@@ -217,7 +217,10 @@ def login(body: Login, request: Request, response: Response, db: Session = Depen
 
 @app.get('/api/v1/environment')
 def environment(user: User=Depends(identity)):
-    return {'read_only':settings.READ_ONLY,'origin':ORIGIN}
+    result = {'read_only':settings.READ_ONLY,'origin':ORIGIN}
+    if os.environ.get('MARKET_UX_REVIEW') == 'true':
+        result['review_fixtures'] = True
+    return result
 
 
 @app.get("/api/v1/auth/me")
@@ -311,6 +314,20 @@ def invite(user: User = Depends(admin), db: Session = Depends(session)):
     audit(db, user.id, "invitation.created")
     db.commit()
     return {"token": token, "expires_at": invitation.expires_at}
+
+
+@app.get("/api/v1/admin/access-summary")
+def access_summary(user: User = Depends(admin), db: Session = Depends(session)):
+    pending = select(func.count(Invitation.id)).where(
+        Invitation.used.is_(False), Invitation.expires_at > now()
+    ).scalar_subquery()
+    last_event = select(func.max(SecurityEvent.created_at)).scalar_subquery()
+    accounts, admins, invitations, latest = db.execute(
+        select(func.count(User.id), func.count(User.id).filter(User.role == "admin"), pending, last_event)
+        .where(User.active.is_(True), User.archived_at.is_(None))
+    ).one()
+    return {"active_members": accounts, "active_admins": admins, "pending_invitations": invitations,
+            "latest_security_event": aware(latest) if latest else None}
 
 
 @app.get("/api/v1/admin/users")

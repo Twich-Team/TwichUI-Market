@@ -1,12 +1,12 @@
 """Bounded administration record queries; never contact external providers."""
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 import json
 from typing import Literal
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import JSON, String, case, cast, func, or_, select, tuple_
 from sqlalchemy.orm import Session
 from .db import now, session
-from .models import CollectionRun, ItemMedia, ItemMetadata, Market, MetadataJob, MetadataProvider, MetadataSource, MetadataTask, SecurityEvent, User
+from .models import CollectionRun, ItemMedia, ItemMetadata, Market, MetadataJob, MetadataProvider, MetadataSource, MetadataTask, SecurityEvent, Snapshot, User
 from .metadata_admin import job_view
 from .market_api import metadata_name
 from .metadata_catalog import FIELDS
@@ -153,18 +153,82 @@ def jobs(offset: int = Query(0,ge=0,le=1000000), limit: int = Query(25,ge=1,le=1
 
 @router.get('/security')
 def security(q: str = Query('',max_length=64), category: str = Query('',max_length=64),
+             outcome: Literal['','rejected','completed','recorded'] = '',
              since: datetime | None = None, until: datetime | None = None,
              offset: int = Query(0,ge=0,le=1000000),limit: int = Query(25,ge=1,le=100),
              sort: Literal['created_at','action','actor_id'] = 'created_at',desc: bool = True,
              user: User = Depends(admin), db: Session = Depends(session)):
     query=select(SecurityEvent,User.username).outerjoin(User,User.id==SecurityEvent.actor_id)
     if q: query=query.where(or_(User.username.icontains(q,autoescape=True),SecurityEvent.action.icontains(q,autoescape=True)))
-    if category: query=query.where(SecurityEvent.action.startswith(category,autoescape=True))
+    action=SecurityEvent.action
+    if category=='access':
+        query=query.where(or_(*(action.startswith(prefix,autoescape=True) for prefix in
+            ('user.','password.','invitation.','device.','companion.device.','companion.authorization.'))))
+    elif category:
+        query=query.where(action.startswith(category,autoescape=True))
+    rejected=or_(*(action.endswith(suffix,autoescape=True) for suffix in
+        ('.failed','.rejected','.denied','.refused')))
+    completed=or_(*(action.endswith(suffix,autoescape=True) for suffix in
+        ('.succeeded','.completed','.validated','.approved')))
+    if outcome=='rejected':
+        query=query.where(rejected)
+    elif outcome=='completed':
+        query=query.where(completed)
+    elif outcome=='recorded':
+        query=query.where(~rejected,~completed)
     query=dates(query,SecurityEvent.created_at,since,until)
     column=getattr(SecurityEvent,sort)
     count,rows=page(db,query,((column.desc() if desc else column.asc()),SecurityEvent.id.desc()),offset,limit)
     return {'total':count,'rows':[{'id':r.id,'actor_id':r.actor_id,'account':name,'action':r.action,'at':r.created_at,
         'detail':r.detail} for r,name in rows]}
+
+
+@router.get('/collection-activity')
+def collection_activity(
+    market_id: int | None = Query(None, ge=1),
+    days: int = Query(14, ge=7, le=90),
+    user: User = Depends(admin),
+    db: Session = Depends(session),
+):
+    """Count retained checks and newly saved snapshot records in each UTC day."""
+    at = now().astimezone(timezone.utc)
+    today = at.replace(hour=0, minute=0, second=0, microsecond=0)
+    start = today - timedelta(days=days - 1)
+    outcomes = ('collected', 'unchanged', 'partial', 'failed', 'other')
+    checked_at = CollectionRun.checked_at
+    # PostgreSQL stores timestamptz. Do not let the DB session timezone move a run to another day.
+    postgres = db.get_bind().dialect.name == 'postgresql'
+    def utc_day(column):
+        return func.date(func.timezone('UTC', column)) if postgres else func.date(column)
+
+    check_day = utc_day(checked_at)
+    snapshot_day = utc_day(Snapshot.created_at)
+    outcome = case(
+        (CollectionRun.status == 'partial', 'partial'),
+        (or_(CollectionRun.status == 'failed', CollectionRun.error.is_not(None)), 'failed'),
+        (CollectionRun.status == 'collected', 'collected'),
+        (CollectionRun.status == 'unchanged', 'unchanged'),
+        else_='other',
+    )
+    checks = select(check_day, outcome, func.count()).where(checked_at >= start, checked_at <= at)
+    snapshots = select(snapshot_day, func.count()).where(Snapshot.created_at >= start, Snapshot.created_at <= at)
+    latest_snapshot = select(func.max(Snapshot.created_at)).where(Snapshot.created_at <= at)
+    if market_id is not None:
+        checks = checks.where(CollectionRun.market_id == market_id)
+        snapshots = snapshots.where(Snapshot.market_id == market_id)
+        latest_snapshot = latest_snapshot.where(Snapshot.market_id == market_id)
+
+    buckets = {}
+    for offset in range(days):
+        date = (start + timedelta(days=offset)).date().isoformat()
+        buckets[date] = {'date': date, 'checks': 0, 'snapshots': 0, **dict.fromkeys(outcomes, 0)}
+    for date, result, count in db.execute(checks.group_by(check_day, outcome)):
+        bucket = buckets[str(date)]
+        bucket[result] = count
+        bucket['checks'] += count
+    for date, count in db.execute(snapshots.group_by(snapshot_day)):
+        buckets[str(date)]['snapshots'] = count
+    return {'days': list(buckets.values()), 'latest_snapshot_at': db.scalar(latest_snapshot)}
 
 
 @router.get('/collection')
@@ -174,11 +238,14 @@ def collection(market_id: int | None = Query(None,ge=1),status: str = Query('',m
                user: User = Depends(admin),db: Session = Depends(session)):
     query=select(CollectionRun)
     if market_id: query=query.where(CollectionRun.market_id==market_id)
+    snapshots=select(Snapshot.created_at).order_by(Snapshot.id.desc()).limit(1)
+    if market_id: snapshots=snapshots.where(Snapshot.market_id==market_id)
+    latest_snapshot=db.scalar(snapshots)
     if status=='failures': query=query.where(or_(CollectionRun.status=='failed',CollectionRun.error.is_not(None)))
     elif status: query=query.where(CollectionRun.status==status)
     column=getattr(CollectionRun,sort)
     count,rows=page(db,query,((column.desc() if desc else column.asc()),CollectionRun.id.desc()),offset,limit)
-    return {'total':count,'rows':[{k:getattr(r[0],k) for k in ('id','market_id','checked_at','status','http_status','duration_seconds','payload_bytes','error')} for r in rows]}
+    return {'total':count,'latest_snapshot_at':latest_snapshot,'rows':[{k:getattr(r[0],k) for k in ('id','market_id','checked_at','status','http_status','duration_seconds','payload_bytes','error')} for r in rows]}
 
 
 @router.get('/unresolved')

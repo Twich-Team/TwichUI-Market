@@ -6,8 +6,31 @@ body:has(.storage-dashboard) main{max-width:2200px;padding-top:24px}body:has(.st
 @media(max-width:450px){.storage-metric>strong{font-size:20px}.storage-metric>strong time{font-size:15px}.storage-metric>div{font-size:12px}.storage-title .backup-actions{gap:8px}.storage-subnav a{font-size:13px;gap:6px}.maintenance-facts{grid-template-columns:1fr}.capacity-values{flex-wrap:wrap}.cleanup-history summary{gap:10px}}
 /* Keep ordinary monitoring inside the working viewport without reducing text. */
 body:has(.storage-dashboard) main>.title-row{margin:0;min-height:0}body:has(.storage-dashboard) main>.title-row h1{font-size:22px;margin:0}body:has(.storage-dashboard) main>.title-row .intro,body:has(.storage-dashboard) main>.title-row>button{display:none}body:has(.storage-dashboard) .admin-tabs{margin:12px 0 16px}.storage-dashboard{margin-top:12px}.storage-title{margin-bottom:14px}.storage-title .eyebrow{display:none}.storage-title h2{font-size:28px}.storage-title p{font-size:13px}.storage-subnav{margin-bottom:10px}.storage-subnav a{padding:10px 18px}.storage-metrics{gap:14px;margin-bottom:16px}.storage-metric{padding:16px 20px}.storage-metric>strong{margin:10px 0 6px;font-size:27px}.storage-overview-grid .database-growth .interactive-chart{height:190px}.storage-overview-grid .database-growth .chart-viewport{min-height:190px}.storage-overview-grid .padded{padding:18px}.storage-overview-grid .system-health .panel-heading{margin-bottom:10px}.storage-health-row{padding:10px 0}.storage-dashboard .overview-capacity{padding:18px}.overview-capacity .panel-heading{margin-bottom:16px}.storage-attention .storage-migration-stages,.storage-attention .storage-migration-progress>p{display:none}.storage-attention .storage-migration-progress{margin:8px 0}.storage-attention .storage-migration-progress .backup-heading{margin-bottom:8px}.storage-attention .storage-migration-progress progress{margin:5px 0}
-.storage-dashboard button:not(.primary):not(.text-button):not(.storage-health-row){background-color:#372a1f;border:1px solid #795d3a;color:#e6d6ba;border-radius:4px;padding:9px 13px}.storage-dashboard .storage-attention>button{background:transparent;border:0;padding:5px 0}.storage-dashboard button:focus-visible{outline:2px solid #cfb176;outline-offset:3px}
+.storage-dashboard button:not(.primary):not(.text-button):not(.storage-health-row):not(.rdp-day_button){background-color:#372a1f;border:1px solid #795d3a;color:#e6d6ba;border-radius:4px;padding:9px 13px}.storage-dashboard .storage-attention>button{background:transparent;border:0;padding:5px 0}.storage-dashboard button:focus-visible{outline:2px solid #cfb176;outline-offset:3px}
 .storage-title h1{font:28px/1.3 Georgia,serif;color:#f0e4cc;margin:0 0 6px}.storage-title{margin-bottom:12px}.storage-overview-grid .database-growth .metadata-stats{margin-top:8px}.storage-overview-grid .database-growth .interactive-chart{height:175px}.storage-overview-grid .database-growth .chart-viewport{min-height:175px}.storage-overview-grid .database-growth .growth-measurement-note{margin-top:6px}.storage-overview-grid .database-growth .growth-measurement-note summary{font-size:12px}.storage-dashboard .overview-capacity{padding:16px 18px}.overview-capacity .panel-heading{margin-bottom:12px}.overview-capacity .capacity-stack{margin:10px 0 8px}.overview-capacity .capacity-row>.small{font-size:12px;margin-top:7px}.storage-metric>strong time{font-size:25px}.storage-health-row{min-height:40px;padding:9px 0}
 body:has(.storage-dashboard) main{padding-top:16px}.storage-overview-grid .database-growth{margin-bottom:16px}.storage-dashboard .overview-capacity>.panel-heading{margin-bottom:8px}.storage-dashboard .overview-capacity .capacity-row>p{margin-bottom:0}.storage-dashboard .growth-measurement-note p{margin:8px 0}
 @media(max-width:450px){.storage-subnav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));overflow:visible}.storage-subnav a{min-width:0;padding:10px 12px}}
 @media(max-width:374px){.storage-metrics{grid-template-columns:minmax(0,1fr)}}
+
+.storage-dashboard { container: storage / inline-size; }
+.storage-subnav { flex-wrap: wrap; }
+.storage-subnav a { min-height: 44px; max-width: 100%; white-space: normal; }
+.storage-metric > div { overflow-wrap: anywhere; }
+.storage-metric-icon { flex: none; }
+.storage-metric > strong, .storage-health-row > span, .capacity-heading > strong { overflow-wrap: anywhere; }
+.storage-dashboard .panel-heading > *, .storage-title > *, .storage-section-heading > * { min-width: 0; }
+@container storage (max-width: 850px) {
+  .storage-metrics { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .storage-overview-grid, .storage-capacity-grid, .maintenance-charts, .recovery-visuals { grid-template-columns: minmax(0,1fr); }
+}
+@container storage (max-width: 540px) {
+  .storage-title, .storage-section-heading { align-items: flex-start; flex-direction: column; gap: 8px; }
+  .storage-subnav { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); overflow: visible; }
+  .storage-subnav a { padding: 10px 12px; }
+  .storage-metric-icon { display: none; }
+  .maintenance-facts, .lifecycle-tiers { grid-template-columns: minmax(0,1fr); }
+  .lifecycle-arrow { display: none; }
+}
+@container storage (max-width: 330px) {
+  .storage-metrics { grid-template-columns: minmax(0,1fr); }
+}

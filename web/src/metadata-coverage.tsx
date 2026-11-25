@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { DeferredChart } from './deferred-chart';
 import { DataTable } from './data-table';
 import { ProviderEmblem, providerNames, LocalTime } from './admin-table';
+import { MetadataMeter } from './metadata-meter';
 import type { MetadataOverview } from './metadata-admin';
 function CoverageBars({label,rows,series}:{label:string;rows:string[];series:{name:string;values:number[];color:string}[]}) {
   const option=useMemo(()=>({animation:false,grid:{left:125,right:25,top:45,bottom:35},legend:{top:0,textStyle:{color:'#c1b296'}},
@@ -11,11 +12,53 @@ function CoverageBars({label,rows,series}:{label:string;rows:string[];series:{na
   }),[rows,series]);
   return <div className="coverage-chart"><DeferredChart label={label} option={option}/></div>;
 }
-export function MetadataSummary({state}:{state:MetadataOverview}) {
-  const cards=[['Observed item IDs',state.observed],['Items with names',state.resolved_names],['Missing names',state.missing_names],['Name coverage',state.name_percent===null?'No observations':`${state.name_percent}%`],['Icons available',state.icons_available],['Icons missing',state.icons_missing],['Useful attributes',state.attributes_available],['Missing attributes',state.observed-state.attributes_available],['Pending recovery items',state.scoped_pending_items]];
-  return <section aria-label="Item metadata summary">
-    <div className="metadata-stats">{cards.map(([label,value])=><div className="panel padded" key={label}><span className="small muted">{label}</span><strong>{typeof value==='number'?value.toLocaleString():value}</strong></div>)}</div>
-    <p className="small muted">Measured <LocalTime value={state.measured_at}/>. {state.coverage_identity} {state.attributes_definition}</p>
+const percentage = new Intl.NumberFormat(undefined, { style: 'percent', maximumFractionDigits: 1 });
+
+function coveragePercent(value: number, total: number) {
+  if (value > 0 && value / total < .001) return '<' + percentage.format(.001);
+  if (value < total && value / total > .999) return '>' + percentage.format(.999);
+  return percentage.format(value / total);
+}
+
+export function MetadataSummary({state, openRecovery}: {state: MetadataOverview; openRecovery: () => void}) {
+  const fields = [
+    { label: 'Item names', count: state.resolved_names },
+    { label: 'Local icons', count: state.icons_available },
+    { label: 'Item attributes', count: state.attributes_available, description: 'At least one field beyond name and icon' },
+  ];
+  const observed = state.observed;
+  return <section className="metadata-coverage-summary" aria-label="Item metadata summary">
+    <div className="coverage-summary-heading">
+      <div>
+        <h2>Coverage in the selected market</h2>
+        <p>{observed > 0 ? `${observed.toLocaleString()} distinct items in the latest snapshot` : 'No item observations in this market yet'}</p>
+      </div>
+      <p>Measured <LocalTime value={state.measured_at}/></p>
+    </div>
+    <div className="coverage-summary-grid">
+      {fields.map(({label, count, description})=>{
+        const measured = observed > 0 && Number.isFinite(count) && count >= 0 && count <= observed;
+        const tally = measured ? `${count.toLocaleString()} of ${observed.toLocaleString()} items` : null;
+        return <article key={label} className="coverage-summary-card">
+          <div className="coverage-card-heading"><h3>{label}</h3><strong>{measured ? coveragePercent(count, observed) : 'Unavailable'}</strong></div>
+          {measured && <MetadataMeter label={label} value={count} total={observed} valueText={tally!}/>}
+          <p>{tally || (observed === 0 ? 'Awaiting an item snapshot' : 'Coverage measurement unavailable')}</p>
+          {description && <p className="coverage-summary-definition">{description}</p>}
+        </article>;
+      })}
+    </div>
+    <section className="panel padded coverage-recovery-summary" aria-label="Metadata recovery">
+      <div>
+        <h3>Recovery</h3>
+        <p>{state.scoped_pending_items > 0
+          ? `${state.scoped_pending_items.toLocaleString()} items queued or in progress`
+          : 'No items queued or in progress'}</p>
+        {state.failed_or_blocked > 0 && <p>{state.failed_or_blocked.toLocaleString()} items remain unnamed after a provider error or access restriction.</p>}
+      </div>
+      {(state.scoped_pending_items > 0 || state.failed_or_blocked > 0) && <button onClick={openRecovery}>Open Recovery Tracker</button>}
+    </section>
+    <details className="panel padded"><summary>Coverage charts and measurement details</summary>
+    <p className="muted">Measured <LocalTime value={state.measured_at}/> · {state.coverage_identity} {state.attributes_definition}</p>
     <div className="coverage-grid">
       <section className="panel padded"><h3>Stored field coverage</h3><p className="small muted">Each bar uses the same {state.observed.toLocaleString()} observed IDs. Available plus missing equals that denominator.</p><CoverageBars label="Stored names, icons and attributes; available versus missing" rows={['Names','Icons','Attributes']} series={[
         {name:'Available',values:[state.resolved_names,state.icons_available,state.attributes_available],color:'#d9b365'},
@@ -33,6 +76,7 @@ export function MetadataSummary({state}:{state:MetadataOverview}) {
       <p className="small muted">{state.recovery_notice} Unavailable means an observed 404 without a recorded error; errors include blocked access and rate limits.</p>
       <p className="small">{state.scoped_pending_items} observed items with queued/running tasks · {state.pending_queue} tasks queued across all markets · {state.active_jobs} active jobs · Last enrichment <LocalTime value={state.last_enrichment}/></p>
     </section>
+    </details>
   </section>;
 }
 export function ProviderCoverage({state}:{state:MetadataOverview}) {
@@ -43,7 +87,7 @@ export function ProviderCoverage({state}:{state:MetadataOverview}) {
       return <article className="provider-coverage" key={provider} aria-label={`${providerNames[provider]} coverage`}>
         <h4><ProviderEmblem provider={provider}/></h4>
         <dl className="coverage-facts"><div><dt>Retained names</dt><dd>{record?.names_available||0}</dd></div><div><dt>Attribute records</dt><dd>{record?.detailed_records||0}</dd></div><div><dt>Name only</dt><dd>{record?.name_only||0}</dd></div><div><dt>Overlapping names</dt><dd>{record?.overlapping_names||0}</dd></div><div><dt>Conflicting names</dt><dd>{record?.conflicting_names||0}</dd></div></dl>
-        <details><summary>Field breakdown</summary><DataTable label={`${providerNames[provider]} field coverage`} getRowId={row=>row.field} data={Object.entries(record?.fields_available||{}).map(([field,count])=>({field,available:count,missing:state.observed-count}))} columns={[
+        <details><summary>Field breakdown</summary><DataTable compact label={`${providerNames[provider]} field coverage`} getRowId={row=>row.field} data={Object.entries(record?.fields_available||{}).map(([field,count])=>({field,available:count,missing:state.observed-count}))} columns={[
           {accessorKey:'field',header:'Field',enableHiding:false,cell:({row})=>row.original.field.replaceAll('_',' ')},
           {accessorKey:'available',header:'Available',meta:{numeric:true}},{accessorKey:'missing',header:'Missing / unknown',meta:{numeric:true}},
         ]}/></details>

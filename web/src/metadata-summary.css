@@ -1,0 +1,156 @@
+.metadata-meter {
+  height: .42rem;
+  overflow: hidden;
+  border: 1px solid #6f5539;
+  border-radius: 5px;
+  background: #18120d;
+}
+.metadata-meter > span {
+  display: block;
+  width: var(--measurement);
+  height: 100%;
+  background: linear-gradient(90deg, #ad824e, #ddb87a);
+}
+.metadata-meter.at-limit > span { background: #d49b78; }
+
+.coverage-summary-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: .5rem 1rem;
+  margin: 1.15rem 0 .7rem;
+}
+.coverage-summary-heading h2, .coverage-summary-heading p { margin: 0; }
+.coverage-summary-heading p {
+  color: #c8b79c;
+  font-size: .86rem;
+  margin-top: .28rem;
+}
+.coverage-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .75rem;
+  align-items: stretch;
+}
+.coverage-summary-card {
+  min-width: 0;
+  padding: .95rem 1rem;
+  border: 1px solid #654c33;
+  border-radius: 7px;
+  background: linear-gradient(140deg, #35291e, #2c221a);
+}
+.coverage-card-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: .32rem .8rem;
+  margin-bottom: .5rem;
+}
+.coverage-summary-card h3 { margin: 0; font-size: 1rem; }
+.coverage-summary-card strong {
+  color: #ead09a;
+  font-size: clamp(1.25rem, 2.2vw, 1.9rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+.coverage-summary-card p { margin: .38rem 0 0; font-size: .9rem; }
+.coverage-summary-card .coverage-summary-definition { color: #c8b79c; }
+.coverage-recovery-summary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: .75rem;
+  margin-top: .75rem;
+}
+.coverage-recovery-summary h3, .coverage-recovery-summary p { margin: 0; }
+.coverage-recovery-summary p { margin-top: .32rem; }
+
+.source-configuration-note {
+  color: #c8b79c;
+  font-size: .9rem;
+  margin: .25rem 0 .85rem;
+}
+.source-provider-grid { gap: .75rem; }
+.source-provider-grid .source-provider {
+  margin: 0;
+  padding: .9rem 1rem;
+}
+.source-provider-heading {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: .35rem .65rem;
+}
+.source-provider-heading h2 { margin: 0; font-size: 1.15rem; }
+.source-provider-heading .record-status { white-space: normal; }
+.source-provider .source-authentication, .source-provider .source-action-note {
+  margin: .35rem 0;
+  font-size: .88rem;
+}
+.source-provider .source-authentication { color: #c8b79c; }
+.source-provider .source-action-note, .source-window-hold { color: #ebc893; }
+.source-usage {
+  border-block-start: 1px solid #624a35;
+  margin-top: .55rem;
+  padding-top: .55rem;
+}
+.source-usage h3 { margin: 0 0 .33rem; font-size: .9rem; }
+.source-usage-windows {
+  display: grid;
+  gap: .4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.source-window-label {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: .1rem .55rem;
+  font-size: .86rem;
+}
+.source-window-label > span:last-child {
+  margin: 0;
+  color: #f0d9b2;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.source-usage-windows .metadata-meter { margin-top: .24rem; }
+.source-usage .source-window-hold, .source-usage .source-quota-note {
+  margin: .48rem 0 0;
+  font-size: .86rem;
+  overflow-wrap: anywhere;
+}
+.source-quota-note { color: #c8b79c; }
+.source-provider .provider-edit { margin-top: .3rem; }
+.source-provider .provider-edit > summary {
+  display: list-item;
+  min-height: 44px;
+  align-content: center;
+}
+.source-provider > .provider-edit:last-child > summary {
+  margin-bottom: 0;
+}
+.source-configuration-note { margin-top: .8rem; }
+
+@media (max-width: 700px) {
+  .coverage-summary-grid { grid-template-columns: minmax(0, 1fr); gap: .5rem; }
+  .coverage-summary-card { padding: .65rem .8rem; }
+  .coverage-card-heading { margin-bottom: .37rem; }
+  .coverage-summary-card p { margin-top: .2rem; }
+  .source-provider-grid .source-provider { padding: .65rem .8rem; }
+  .source-provider > .provider-edit:not([open]) { margin: 0; }
+}
+
+
+.source-recovery-summary { margin: .45rem 0 .85rem; }
+.source-recovery-summary h2 { margin: 0 0 .35rem; font-size: 1rem; }
+.source-recovery-summary ul { display: flex; flex-wrap: wrap; gap: .35rem 1rem; list-style: none; padding: 0; margin: 0; }
+.source-recovery-summary li, .source-window-unit { color: #c8b79c; font-size: .86rem; font-weight: normal; }
+.source-recovery-summary strong { color: #ecd39f; font-size: 1rem; font-variant-numeric: tabular-nums; }

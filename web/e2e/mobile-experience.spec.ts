@@ -29,8 +29,8 @@ test('page and administration geometry review',async({page})=>{
  for(const width of [320,390,768,1440]){
  await page.setViewportSize({width,height:900});
  for(const route of ['/deals','/account','/companion','/administration']){await page.goto(route);await expect(page.getByRole('heading',{level:1})).toBeVisible();await page.waitForTimeout(350);await overflow(page);await shot(page,`after-${route.slice(1)}-${width}`);}
- const tabs=page.getByRole('tab');const section=page.getByRole('combobox',{name:'Administration section',exact:true});const count=width<=700 ? await section.locator('option').count() : await tabs.count();
- for(let i=0;i<count;i++){if(width<=700)await section.selectOption({index:i});else await tabs.nth(i).click();await page.waitForTimeout(150);await overflow(page);await shot(page,`after-admin-${i}-${width}`);}
+ const links=page.getByRole('navigation',{name:'Administration sections'}).getByRole('link');const section=page.getByRole('combobox',{name:'Administration section',exact:true});const mobile=await section.isVisible();const count=mobile ? await section.locator('option').count() : await links.count();expect(count).toBeGreaterThanOrEqual(9);
+ for(let i=0;i<count;i++){if(mobile)await section.selectOption({index:i});else await links.nth(i).click();await page.waitForTimeout(150);await overflow(page);await shot(page,`after-admin-${i}-${width}`);}
  }
  await page.setViewportSize({width:390,height:844});await page.goto('/account');expect((await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa']).analyze()).violations).toEqual([]);
 });

@@ -13,6 +13,7 @@ from .pricing import ALGORITHM
 
 router=APIRouter(prefix='/api/v1')
 Sort=Literal['item_id','name','recent_price','market_value','historical_value','supply','listing_count']
+VariantSort=Literal['variant_key','lowest_buyout','recent_price','market_value','supply','listing_count']
 
 
 def bounded_search(db:Session=Depends(session)):
@@ -26,7 +27,7 @@ def bounded_search(db:Session=Depends(session)):
         raise HTTPException(503,'Catalogue search took too long. Try an item ID or a narrower search, then retry.') from None
 
 
-def references(market_id,at):
+def references(market_id,at,item_id=None):
     stat=SnapshotStatistic
     bad=func.sum(case((stat.algorithm!=ALGORITHM,1),else_=0))
     query=select(stat.item_id,stat.variant_key,
@@ -37,6 +38,8 @@ def references(market_id,at):
         Observation,Observation.snapshot_id==stat.snapshot_id).join(DailyObservation,DailyObservation.observation_id==Observation.id).where(
         DailyObservation.market_id==market_id,Observation.retrieved_at>=at-timedelta(days=60),Observation.retrieved_at<=at
         ).group_by(stat.item_id,stat.variant_key)
+    if item_id is not None:
+        query=query.where(stat.item_id==item_id)
     return query.cte('catalogue_references').prefix_with('MATERIALIZED',dialect='postgresql')
 
 
@@ -80,20 +83,21 @@ def catalogue(market_id: MarketId,q: str=Query('',max_length=64),sort: Sort='ite
     # than joining two large relations whose newest-snapshot estimates may be
     # stale. Each input is evaluated once; vanished variants are excluded below.
     current=select(stat.item_id,stat.variant_key,literal(1).label('present'),
-        stat.supply,stat.listing_count,stat.recent_price,
+        stat.supply,stat.listing_count,stat.recent_price,stat.lowest_buyout,
         null().label('market_value'),null().label('historical_value'),null().label('historical_synthetic'),
         func.coalesce(ItemMetadata.name,ItemMetadata.fallback_name).label('name')
         ).outerjoin(ItemMetadata,(ItemMetadata.region==market.region)&(ItemMetadata.item_id==stat.item_id)).where(*filters)
-    history=select(refs.c.item_id,refs.c.variant_key,literal(0),null(),null(),null(),
+    history=select(refs.c.item_id,refs.c.variant_key,literal(0),null(),null(),null(),null(),
         refs.c.market_value,refs.c.historical_value,refs.c.synthetic,null())
     combined=union_all(current,history).subquery('current_and_history')
     variant=select(combined.c.item_id,combined.c.variant_key,
         *[func.max(combined.c[key]).label(key) for key in
-          ('supply','listing_count','recent_price','market_value','historical_value','historical_synthetic','name')]
+          ('supply','listing_count','recent_price','lowest_buyout','market_value','historical_value','historical_synthetic','name')]
         ).group_by(combined.c.item_id,combined.c.variant_key).having(func.max(combined.c.present)==1).subquery('current_variants')
     grouped=select(variant.c.item_id,func.count().label('variant_count'),
         case((func.count()==1,func.min(variant.c.variant_key)),else_=None).label('sole_variant_key'),
         func.sum(variant.c.supply).label('supply'),func.sum(variant.c.listing_count).label('listing_count'),
+        func.min(variant.c.lowest_buyout).label('lowest_min'),func.max(variant.c.lowest_buyout).label('lowest_max'),
         func.min(variant.c.recent_price).label('recent_min'),func.max(variant.c.recent_price).label('recent_max'),
         func.min(variant.c.market_value).label('market_min'),func.max(variant.c.market_value).label('market_max'),
         func.min(variant.c.historical_value).label('historical_min'),func.max(variant.c.historical_value).label('historical_max'),
@@ -112,7 +116,7 @@ def catalogue(market_id: MarketId,q: str=Query('',max_length=64),sort: Sort='ite
             'variant_count':row['variant_count'],'sole_variant_key':row['sole_variant_key'],'priced_variant_count':row['priced_variants'],
             'supply':row['supply'],'listing_count':row['listing_count'],
             'price_ranges':{key:{'minimum':cash(row[prefix+'_min']),'maximum':cash(row[prefix+'_max'])} for key,prefix in
-                            [('recent_price','recent'),('market_value','market'),('historical_value','historical')]},
+                            [('lowest_buyout','lowest'),('recent_price','recent'),('market_value','market'),('historical_value','historical')]},
             'synthetic':bool(latest.synthetic or row['historical_synthetic'])})
     envelope['synthetic']=envelope['synthetic'] or any(r['synthetic'] for r in envelope['items'])
     return envelope
@@ -120,18 +124,24 @@ def catalogue(market_id: MarketId,q: str=Query('',max_length=64),sort: Sort='ite
 
 @router.get('/markets/{market_id}/catalogue/{item_id}/variants')
 def variants(market_id: MarketId,item_id: MarketId,page: int=Query(0,ge=0,le=100000),page_size: int=Query(50,ge=1,le=100),
-             expected_snapshot: str | None=Query(None,max_length=64),user: User=Depends(identity),db: Session=Depends(session)):
+             expected_snapshot: str | None=Query(None,max_length=64),sort: VariantSort='variant_key',
+             direction: Literal['asc','desc']='asc',priced_only: bool=False,
+             user: User=Depends(identity),db: Session=Depends(bounded_search)):
     market,latest=context(db,market_id,expected_snapshot)
     result={'contract_version':1,'market_id':market_id,'item_id':item_id,'snapshot_id':str(latest.snapshot_id) if latest else None,
             'page':page,'page_size':page_size,'total_variants':0,'variants':[],'algorithm':ALGORITHM,'synthetic':bool(latest and latest.synthetic)}
     if not latest:return result
     stat=SnapshotStatistic
     predicate=(stat.snapshot_id==latest.snapshot_id)&(stat.item_id==item_id)
+    if priced_only:
+        predicate=predicate & stat.lowest_buyout.is_not(None)
     result['total_variants']=db.scalar(select(func.count()).select_from(stat).where(predicate))
-    refs=references(market_id,now())
+    refs=references(market_id,now(),item_id)
+    sort_column=refs.c.market_value if sort=='market_value' else getattr(stat,sort)
+    ordering=(sort_column.desc() if direction=='desc' else sort_column.asc()).nulls_last()
     rows=list(db.execute(select(stat,refs.c.market_value,refs.c.historical_value,refs.c.coverage_days,refs.c.synthetic).outerjoin(
         refs,(refs.c.item_id==stat.item_id)&(refs.c.variant_key==stat.variant_key)).where(predicate)
-        .order_by(stat.variant_key).offset(page*page_size).limit(page_size)))
+        .order_by(ordering,stat.variant_key).offset(page*page_size).limit(page_size)))
     descriptors=dict(db.execute(select(Listing.variant_key,Listing.variant).where(Listing.snapshot_id==latest.snapshot_id,
         Listing.item_id==item_id,Listing.variant_key.in_([r[0].variant_key for r in rows])).distinct()).all()) if rows else {}
     metadata=db.get(ItemMetadata,(market.region,item_id))

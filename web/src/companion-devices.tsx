@@ -56,6 +56,14 @@ export function useCompanionDevices(
     staleTime: 10_000,
   });
 }
+function deviceAccess(device: CompanionDevice) {
+  if (device.archived_at) return "Archived";
+  if (device.revoked) return "Revoked";
+  if (Date.parse(device.expires_at) <= Date.now() ||
+      (device.renewal_expires_at && Date.parse(device.renewal_expires_at) <= Date.now())) return "Expired";
+  return "Authorized";
+}
+
 function DeviceCard({
   device,
   userId,
@@ -132,7 +140,7 @@ function DeviceCard({
         <span
           className={`badge ${device.revoked ? "muted" : expired ? "warning" : "success"}`}
         >
-          {device.revoked
+          {device.archived_at ? "Archived" : device.revoked
             ? "Revoked"
             : expired
               ? "Sign-in expired"
@@ -141,23 +149,23 @@ function DeviceCard({
       </div>
       <dl className="companion-device-facts">
         <div>
-          <dt>Authorized</dt>
-          <dd>{when(device.authorized_at)}</dd>
-        </div>
-        <div>
-          <dt>Last connection</dt>
-          <dd>
-            {device.last_connection_at
-              ? when(device.last_connection_at)
-              : "Not yet"}
-          </dd>
-        </div>
-        <div>
           <dt>Last sync delivered</dt>
           <dd>
             {device.last_sync_at
               ? when(device.last_sync_at)
               : "Waiting for first sync"}
+          </dd>
+        </div>
+        <div>
+          <dt>Authorized</dt>
+          <dd>{when(device.authorized_at)}</dd>
+        </div>
+        <div>
+          <dt>Last contact</dt>
+          <dd>
+            {device.last_connection_at
+              ? when(device.last_connection_at)
+              : "Not yet"}
           </dd>
         </div>
         <div>
@@ -278,73 +286,51 @@ export function CompanionDevices({
   admin = false,
   readOnly = false,
   owners,
+  openCompanion,
 }: {
   userId: number;
   admin?: boolean;
   readOnly?: boolean;
   owners?: Record<number, string>;
+  openCompanion?: () => void;
 }) {
-  const [includeArchived, setIncludeArchived] = useState(false);
-  const devices = useCompanionDevices(userId, admin, admin, includeArchived),
-    [shown, setShown] = useState(10);
+  const [history, setHistory] = useState(false);
+  const devices = useCompanionDevices(userId, admin, admin, history);
+  const [shown, setShown] = useState(10);
+  const authorized = (devices.data?.devices || []).filter(device => deviceAccess(device) === "Authorized");
+  const rows = history ? (devices.data?.devices||[]).filter(device=>deviceAccess(device)!=="Authorized") : authorized;
   return (
-    <section
-      className="panel padded companion-devices"
-      aria-label={
-        admin ? "Registered desktop companions" : "My desktop companions"
-      }
-    >
+    <section className="panel padded companion-devices" aria-label={admin ? "Registered desktop companions" : "My desktop companions"}>
       <div className="panel-heading">
-        <div>
-          <h2>{admin ? "Desktop companions" : "Your desktop companions"}</h2>
-          <p className="muted">
-            Browser-approved connections. Revoking access keeps existing market
-            history and the PC’s offline cache. Authorized does not mean online. Last connection records an authenticated request. Archive revoked entries to hide them while retaining security evidence.
-          </p>
-        </div>
-        <button
-          className="secondary"
-          onClick={() => devices.refetch()}
-          disabled={devices.isFetching}
-        >
-          Refresh devices
-        </button>
+        <h2>{admin ? "Desktop companions" : "Your desktop companions"}</h2>
+        {openCompanion && devices.data && <button className="secondary" onClick={openCompanion}>{authorized.length ? "Set up another PC" : "Set up Companion"}</button>}
+        {admin && <button onClick={() => devices.refetch()} disabled={devices.isFetching}>Refresh devices</button>}
       </div>
-      <label className="checkbox"><input type="checkbox" checked={includeArchived} onChange={e => setIncludeArchived(e.target.checked)}/>Include archived entries</label>
-      {devices.isPending && <Loading label="Loading your connections…" />}
-      {devices.error && (
-        <p className="notice error" role="alert">
-          {devices.error.message}{" "}
-          <button className="text-button" onClick={() => devices.refetch()}>
-            Try again
-          </button>
-        </p>
-      )}
-      {devices.data?.devices.length === 0 && (
-        <p className="empty">
-          No companion registrations to display. Open Get Desktop Companion to set up this
-          PC.
-        </p>
-      )}
-      {admin ? <DataTable<CompanionDevice> label="desktop companions" filters={[{id:"status",label:"Filter desktop connection",options:[{value:"Authorized",label:"Authorized"},{value:"Expired",label:"Expired"},{value:"Revoked",label:"Revoked"}]}]} data={devices.data?.devices || []} getRowId={row=>String(row.id)} loading={devices.isPending} error={devices.error?.message} columns={[
-        {accessorKey:"name",header:"Device",enableHiding:false},
-        {id:"owner",header:"Account",accessorFn:row=>owners?.[row.user_id]||`#${row.user_id}`},
-        {accessorKey:"app_version",header:"Version / platform",cell:({row})=>`${row.original.app_version} · ${row.original.platform}`},
-        {accessorKey:"selected_market_name",header:"Selected market",cell:({row})=>row.original.selected_market_name||"Not selected"},
-        {accessorKey:"last_connection_at",header:"Last seen",cell:({row})=><LocalTime value={row.original.last_connection_at}/>},
-        {accessorKey:"last_sync_at",header:"Last successful sync",cell:({row})=><LocalTime value={row.original.last_sync_at}/>},
-        {id:"status",header:"Connection",accessorFn:row=>row.revoked?"Revoked":new Date(row.expires_at).getTime()<=Date.now()||Boolean(row.renewal_expires_at&&new Date(row.renewal_expires_at).getTime()<=Date.now())?"Expired":"Authorized",cell:({getValue})=><Status>{String(getValue())}</Status>},
-      ]} renderDetails={device=><DeviceCard device={device} userId={userId} admin readOnly={readOnly} owner={owners?.[device.user_id]}/>}/> : devices.data?.devices.slice(0, shown).map((device) => (
-        <DeviceCard key={device.id} device={device} userId={userId} admin={false} readOnly={readOnly} />
-      ))}
-      {!admin && (devices.data?.devices.length || 0) > shown && (
-        <button
-          className="secondary"
-          onClick={() => setShown((value) => value + 10)}
-        >
-          Show more devices
-        </button>
-      )}
+      <div className="admin-view-switch" aria-label="Device views">
+        <button aria-pressed={!history} onClick={()=>{setHistory(false);setShown(10);}}>Authorized</button>
+        <button aria-pressed={history} onClick={()=>{setHistory(true);setShown(10);}}>Access history</button>
+      </div>
+      {admin ? <DataTable<CompanionDevice>
+        compact label="desktop companions" data={rows} getRowId={row=>String(row.id)}
+        emptyMessage={history ? "No expired, revoked or archived devices." : "No authorized Companion devices."}
+        loading={devices.isFetching} error={devices.error?.message}
+        filters={history?[{id:"status",label:"Filter device history",options:[{value:"Expired",label:"Expired"},{value:"Revoked",label:"Revoked"},{value:"Archived",label:"Archived"}]}]:[]}
+        columns={[
+          {accessorKey:"name",header:"Device",enableHiding:false},
+          {id:"owner",header:"Account",accessorFn:row=>owners?.[row.user_id]||`#${row.user_id}`},
+          {id:"status",header:"Authorization",accessorFn:deviceAccess,cell:({getValue})=><Status tone={getValue()==="Authorized"?"success":"neutral"}>{String(getValue())}</Status>},
+          {accessorKey:"last_sync_at",header:"Last sync delivered",cell:({row})=><LocalTime value={row.original.last_sync_at}/>},
+          {accessorKey:"last_connection_at",header:"Last contact",cell:({row})=><LocalTime value={row.original.last_connection_at}/>},
+        ]}
+        renderDetails={device=><DeviceCard device={device} userId={userId} admin readOnly={readOnly} owner={owners?.[device.user_id]}/>}
+      /> : <>
+        {devices.isPending && <Loading label="Loading your Companion devices…" />}
+        {devices.error && <p className="notice error" role="alert">{devices.error.message} <button onClick={() => devices.refetch()}>Try again</button></p>}
+        {devices.data && !rows.length && <p className="muted">{history ? "No expired, revoked or archived devices." : "Set up Companion on Windows to sync this account."}</p>}
+        {rows.slice(0, shown).map(device => <DeviceCard key={device.id} device={device} userId={userId} admin={false} readOnly={readOnly}/>)}
+        {rows.length > shown && <button className="secondary" onClick={() => setShown(value=>value+10)}>Show more devices</button>}
+      </>}
+      {!!rows.length && <p className="muted">Last contact records an authenticated request. Live online status is unavailable.</p>}
     </section>
   );
 }

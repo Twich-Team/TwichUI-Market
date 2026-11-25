@@ -98,3 +98,126 @@ def test_opportunity_icons_are_delivered_without_tooltip_requests(owner, databas
     with database.begin() as db:
         db.get(ItemMedia, ('eu',12363)).asset_hash = None
     assert owner.get(f'/api/v1/markets/{market}/deals').json()['deals'][0]['icon_url'] is None
+
+
+def test_reported_scale_is_reproducible_and_neutral_even_with_strong_source_evidence(owner, database):
+    from email.utils import format_datetime
+    stamp = now()
+    with database.begin() as db:
+        market = Market(region='eu', ruleset_id=2, house_id=113, source_kind='auctions',
+                        verified=True, label='Local arithmetic reconstruction')
+        db.add(market)
+        db.flush()
+        # First two values are from the reported history. Remaining daily asks
+        # are invented for this test; they are not a reconstruction of raw listings.
+        prices = [1836361542, 775738042, 501, 501, 501, 402, 3]
+        for index, unit in enumerate(prices):
+            when = stamp - timedelta(days=6-index)
+            rows = [{'id': aid, 'quantity': size, 'item': {'id': 117}, 'buyout': unit*size}
+                    for aid, size in [(1, 2), (2, 3)]]
+            ingest(db, market.id, json.dumps({'auctions': rows}).encode(), request_key=f'jerky-{index}',
+                   retrieved_at=when, modified=format_datetime(when, usegmt=True))
+        market_id = market.id
+        market.last_modified = format_datetime(stamp, usegmt=True)
+    path = f'/api/v1/markets/{market_id}'
+    data = owner.get(path+'/deals?grouped=true&minimum_confidence=strong').json()
+    assert data['market']['freshness'] == 'current'
+    assert len(data['deals']) == 1
+    deal = data['deals'][0]
+    assert deal['market_value'] == '373157356' and deal['confidence'] == 'strong'
+    assert deal['coverage_days'] == 7 and deal['matching_listings'] == 2 and deal['current_supply'] == 5
+    assert deal['reference_quality']['state'] == 'needs_review' and '%' not in deal['reason']
+    assert deal['discount_percent'] < 100
+    rows = owner.get(path + '/deals', params={'item_id':117, 'variant_key':deal['variant_key'], 'limit':1, 'offset':1}).json()
+    assert rows['deals'][0]['quantity'] == 3 and rows['deals'][0]['total_buyout'] == '9'
+    item = owner.get(f"{path}/items/117/{deal['variant_key']}").json()['valuation']
+    assert item['reference_quality'] == deal['reference_quality']
+    assert [int(day['recent_price']) for day in item['history']] == prices
+    signal = owner.get(path+'/signals?kind=price').json()['signals'][0]
+    assert signal['reference_quality']['state'] == 'needs_review' and signal['change_percent'] > -100
+    assert owner.get(path+'/signals?kind=supply').json()['signals'] == []
+
+
+def test_group_paging_keeps_variants_and_matching_stacks_separate(owner, database):
+    with database.begin() as db:
+        market = Market(region='eu', ruleset_id=2, house_id=113, source_kind='auctions', label='Grouped stacks')
+        db.add(market)
+        db.flush()
+        for day in [3, 2, 1, 0]:
+            rows = [
+                {'id': i+1, 'item': {'id': 117, 'bonus_lists': [i//2]}, 'quantity': 3,
+                 'buyout': (10+i if not day else 600)} for i in range(6)
+            ]
+            rows.append({'id':7, 'item': {'id':117, 'bonus_lists':[0]}, 'quantity':24, 'buyout':24000})
+            ingest(db,market.id,json.dumps({'auctions':rows}).encode(),request_key=f'group-{day}',
+                   retrieved_at=now()-timedelta(days=day),synthetic=True)
+        path = f'/api/v1/markets/{market.id}'
+    params = {'grouped':'true', 'limit':2, 'maximum_spend':20}
+    first = owner.get(path+'/deals', params=params).json()
+    second = owner.get(path+'/deals', params={**params,'offset':2}).json()
+    assert first['candidates_truncated'] and not second['candidates_truncated']
+    groups = first['deals'] + second['deals']
+    assert len({row['variant_key'] for row in groups}) == 3
+    group = next(row for row in groups if row['variant']['bonus_lists'] == [0])
+    assert group['matching_listings'] == 2 and group['current_supply'] == 30
+    assert group['total_buyout'] == '10' and group['quantity'] == 3
+    drill = {'item_id':117, 'variant_key':group['variant_key'], 'maximum_spend':20, 'limit':1}
+    assert owner.get(path+'/deals', params={**drill,'offset':1}).json()['deals'][0]['total_buyout'] == '11'
+    assert owner.get(path+'/deals', params={**drill,'expected_snapshot':999999}).status_code == 409
+    assert owner.get(path+'/deals?item_id=117').status_code == 422
+    first = owner.get(path+'/signals?kind=price&limit=1').json()
+    second = owner.get(path+'/signals?kind=price&limit=1&offset=1').json()
+    assert first['candidates_truncated'] and first['signals'][0]['variant_key'] != second['signals'][0]['variant_key']
+
+
+def test_reference_checks_use_only_days_in_the_same_window():
+    from market.reference_quality import qualify_valuation, reference_quality
+    prices = [100000, 30, 30, 30]
+    valuation = {'history':[{'recent_price':v} for v in prices], 'market_coverage_days':3, 'coverage_days':4,
+                 'recent_price':30,'market_value':30,'historical_value':25023}
+    qualify_valuation(valuation)
+    assert valuation['reference_quality']['state'] == 'available'
+    assert valuation['historical_reference_quality']['state'] == 'needs_review'
+    assert reference_quality(100,10,90,110,8)['state'] == 'needs_review'
+    assert reference_quality(100,90,90,110,2)['state'] == 'limited'
+    assert reference_quality(None,None,None,None,0)['state'] == 'unavailable'
+
+
+def test_single_cheap_stack_does_not_disqualify_a_consistent_unit_reference(owner, database):
+    with database.begin() as db:
+        market = Market(region='us', ruleset_id=2, house_id=114, source_kind='auctions', label='Stable reference')
+        db.add(market)
+        db.flush()
+        for day in [3, 2, 1, 0]:
+            rows = [{'id':1, 'item':{'id':117}, 'quantity':100, 'buyout':100_000_000}]
+            if day == 0:
+                rows.append({'id':2, 'item':{'id':117}, 'quantity':1, 'buyout':1})
+            ingest(db, market.id, json.dumps({'auctions': rows}).encode(), request_key=f'stable-{day}',
+                   retrieved_at=now()-timedelta(days=day), synthetic=True)
+        path = f'/api/v1/markets/{market.id}/deals?grouped=true'
+    deal = owner.get(path).json()['deals'][0]
+    assert deal['total_buyout'] == '1' and deal['reference_quality']['state'] == 'available'
+    assert deal['discount_percent'] == 99.99 and '100%' not in deal['reason']
+
+
+def test_group_representative_uses_exact_stack_unit_prices(owner, database):
+    with database.begin() as db:
+        if db.get_bind().dialect.name != 'postgresql':
+            import pytest
+            pytest.skip('PostgreSQL numeric-division precision regression')
+        market = Market(region='eu', ruleset_id=2, house_id=113, source_kind='auctions', label='Close unit asks')
+        db.add(market)
+        db.flush()
+        for day in (3, 2, 1, 0):
+            rows = [{'id': 1, 'item': {'id': 117}, 'quantity': 1, 'buyout': 10}]
+            if day == 0:
+                # Default numeric division rounds these distinct ratios to a tie.
+                rows = [
+                    {'id': 1, 'item': {'id': 117}, 'quantity': 1999999999, 'buyout': 2000000000},
+                    {'id': 2, 'item': {'id': 117}, 'quantity': 2000000000, 'buyout': 2000000001},
+                ]
+            ingest(db, market.id, json.dumps({'auctions': rows}).encode(), request_key=f'close-stack-{day}',
+                   retrieved_at=now()-timedelta(days=day), synthetic=True)
+        path = f'/api/v1/markets/{market.id}/deals'
+    result = owner.get(path, params={'grouped': 'true', 'maximum_spend': 2000000001}).json()['deals']
+    assert len(result) == 1 and result[0]['auction_id'] == '2' and result[0]['matching_listings'] == 2

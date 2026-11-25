@@ -13,6 +13,7 @@ from sqlalchemy.orm import Session
 from .db import now, session
 from .models import CollectionRun, ItemMetadata, Listing, Market, Observation, Snapshot, SnapshotStatistic, User
 from .pricing import daily_history, values
+from .reference_quality import qualify_valuation, reference_quality
 from .opportunities import below_reference,change_signals,evidence,daily_window
 from .security import admin, audit, aware, identity
 
@@ -174,11 +175,13 @@ def item_detail(market_id: MarketId, item_id: Annotated[int,Path(ge=1,le=2**31-1
     listings = list(db.scalars(select(Listing).where(Listing.snapshot_id == latest.snapshot_id,
         Listing.item_id == item_id,Listing.variant_key == variant_key).order_by(Listing.auction_id).limit(201))) if latest else []
     result = values(db,market_id,item_id,variant_key)
+    qualify_valuation(result)
     last_seen=db.scalar(select(Observation.retrieved_at).join(SnapshotStatistic,SnapshotStatistic.snapshot_id==Observation.snapshot_id).where(
         Observation.market_id==market_id,SnapshotStatistic.item_id==item_id,SnapshotStatistic.variant_key==variant_key,
         SnapshotStatistic.listing_count>0).order_by(Observation.retrieved_at.desc(),Observation.id.desc()).limit(1))
     return money_contract({'contract_version':1,'market':market_view(market),'item_id':item_id,'variant_key':variant_key,
         **item_name(db,market.region,item_id),'valuation':result,'last_seen_at':last_seen,
+        'variant':json.loads(listings[0].variant) if listings and listings[0].variant else None,
         'listings':[{'auction_id':str(row.auction_id),'quantity':row.quantity,'buyout':row.buyout,
                      'unit_price':row.unit_price,'bid':row.bid,'time_left':row.time_left,'source_kind':row.source_kind} for row in listings[:200]],
         'listings_truncated':len(listings)>200,'provenance':'asking_listings_only'})
@@ -205,57 +208,78 @@ def coverage_status(db,market_id,required,*,prior=False):
 @router.get('/markets/{market_id}/deals')
 def deals(market_id: MarketId, minimum_discount: int = Query(15,ge=1,le=99),
           maximum_spend: int = Query(5000000,ge=1,le=2**53-1), minimum_coverage: int = Query(3,ge=1,le=60),
-          minimum_confidence: Literal['limited','moderate','strong'] = 'limited',
+          minimum_confidence: Literal['limited','moderate','strong'] = 'limited', grouped: bool = False,
+          offset: int = Query(0,ge=0,le=2**31-1), limit: int = Query(100,ge=1,le=100),
+          item_id: int | None = Query(None,gt=0,le=2**31-1), variant_key: str | None = Query(None,pattern='^[0-9a-f]{64}$'),
+          expected_snapshot: int | None = Query(None,gt=0),
           user: User = Depends(identity), db: Session = Depends(session)):
     market = require_market(db,market_id)
     latest = latest_observation(db,market_id)
     view=market_view(market)
     history_coverage=coverage_status(db,market_id,minimum_coverage)
+    if (item_id is None) != (variant_key is None):
+        raise HTTPException(422,'Filtering listings requires an item and its exact variant.')
+    if expected_snapshot is not None and (not latest or latest.snapshot_id != expected_snapshot):
+        raise HTTPException(409,'Market listings have changed. Refresh the results to see the current stacks.')
     if not latest:
         return {'history_coverage':history_coverage,'deals':[],'candidates_truncated':False,'synthetic':False,'market':view}
     rows,truncated=below_reference(db,market,latest,minimum_discount=minimum_discount,
         maximum_spend=maximum_spend,minimum_coverage=minimum_coverage,minimum_confidence=minimum_confidence,
-        freshness=view['freshness'])
+        freshness=view['freshness'], grouped=grouped, offset=offset, limit=limit, item_id=item_id, variant_key=variant_key)
     result=[]
-    for listing,reference,coverage,synthetic,metadata,discount,total in rows:
-        result.append({'auction_id':str(listing.auction_id),'item_id':listing.item_id,'variant_key':listing.variant_key,
-            **metadata_name(metadata,listing.item_id),'quantity':listing.quantity,'total_buyout':total,'market_value':int(reference),
-            'discount_percent':round(float(discount),2),'coverage_days':coverage,
-            'confidence':evidence(coverage,view['freshness'],market.verified,latest.synthetic or synthetic),
-            'reason':f'{discount:.1f}% below provisional 14-day asking-price reference; {coverage} observed days.',
-            'cautions':['Asking prices do not establish completed sales or resale profit.',
-                        'Workshop algorithm compatibility is not verified.']})
+    for record in rows:
+        row = record._mapping
+        listing = row['Listing']
+        coverage = row['coverage']
+        quality = reference_quality(row['reference_price'], row['current_price'], row['daily_low'], row['daily_high'], coverage)
+        discount = min(99.99, round(float(row['discount']), 2))
+        result.append({'auction_id': str(listing.auction_id), 'item_id': listing.item_id, 'variant_key': listing.variant_key,
+            'variant': json.loads(listing.variant), **metadata_name(row['ItemMetadata'], listing.item_id),
+            'quantity': listing.quantity, 'total_buyout': row['total'], 'market_value': int(row['reference_price']),
+            'discount_percent': discount, 'coverage_days': coverage, 'reference_quality': quality,
+            'matching_listings': row['matching_listings'], 'current_supply': row['current_supply'],
+            'confidence': evidence(coverage,view['freshness'],market.verified,latest.synthetic or row['synthetic']),
+            'reason': quality['reason'] if quality['state'] == 'needs_review' else f'{discount}% below the provisional 14-day unit asking-price reference.',
+            'cautions':['Asking prices do not establish completed sales or resale profit.']})
     return money_contract({'contract_version':1,'history_coverage':history_coverage,'deals':add_local_icons(db,market.region,result),'candidates_truncated':truncated,
-        'synthetic':latest.synthetic or any(bool(row[3]) for row in rows),
+        'snapshot_id':str(latest.snapshot_id),'synthetic':latest.synthetic or any(bool(row._mapping['synthetic']) for row in rows),
         'market':view,'algorithm':'asking-v1-provisional'})
 
 
 @router.get('/markets/{market_id}/signals')
 def signals(market_id: MarketId,kind: Literal['supply','price'],minimum_change: int = Query(20,ge=1,le=1000),
             minimum_coverage: int = Query(3,ge=1,le=60),minimum_confidence: Literal['limited','moderate','strong']='limited',
-            direction: Literal['any','increase','decrease']='any',user: User = Depends(identity),db: Session = Depends(session)):
+            direction: Literal['any','increase','decrease']='any',offset: int=Query(0,ge=0,le=2**31-1),
+            limit: int=Query(100,ge=1,le=100),user: User = Depends(identity),db: Session = Depends(session)):
     market=require_market(db,market_id)
     latest=latest_observation(db,market_id)
     view=market_view(market)
     history_coverage=coverage_status(db,market_id,minimum_coverage,prior=True)
     if not latest:return {'history_coverage':history_coverage,'signals':[],'candidates_truncated':False,'synthetic':False,'market':view}
     rows,truncated=change_signals(db,market,latest,kind=kind,minimum_change=minimum_change,
-        minimum_coverage=minimum_coverage,minimum_confidence=minimum_confidence,direction=direction,freshness=view['freshness'])
+        minimum_coverage=minimum_coverage,minimum_confidence=minimum_confidence,direction=direction,freshness=view['freshness'],offset=offset,limit=limit)
     result=[]
+    descriptors = dict(db.execute(select(Listing.variant_key, Listing.variant).where(
+        Listing.snapshot_id == latest.snapshot_id, Listing.item_id.in_({row.item_id for row in rows}),
+        Listing.variant_key.in_({row.variant_key for row in rows})).distinct()).all()) if rows else {}
     for record in rows:
         row=record._mapping
         coverage=row['price_days'] if kind=='price' else row['supply_days']
         change=round(float(row['change']),2)
+        if row['change'] < 0 and (row['current_price'] if kind == 'price' else row['current_supply']):
+            change = max(-99.99, change)
+        quality = reference_quality(row['reference_price'], row['current_price'], row['daily_low'], row['daily_high'], row['price_days'])
         if kind=='price':
-            reason=f'Quantity-weighted asking price changed {change:+.1f}% against {coverage} priced UTC days before today (within 14 days).'
+            reason=quality['reason'] if quality['state']=='needs_review' else f'Quantity-weighted asking price changed {change:+}% against {coverage} priced UTC days before today (within 14 days).'
         else:
-            reason=f'Listed supply changed {change:+.1f}% against an average {row["reference_supply"]:.2f} units across {row["market_days"]} prior market days; {coverage} days had this variant listed.'
+            reason=f'Listed supply changed {change:+}% against an average {row["reference_supply"]:.2f} units across {row["market_days"]} prior market days; {coverage} days had this variant listed.'
         result.append({'kind':kind,'item_id':row['item_id'],'variant_key':row['variant_key'],
+            'variant':json.loads(descriptors[row['variant_key']]) if row['variant_key'] in descriptors else None,
             **metadata_name(row['ItemMetadata'],row['item_id']),
             'current_price':int(row['current_price']) if row['current_price'] is not None else None,
             'reference_price':int(row['reference_price']) if row['reference_price'] is not None else None,
             'current_supply':int(row['current_supply']),'reference_supply':round(float(row['reference_supply']),2),
-            'change_percent':change,'coverage_days':coverage,'observed_market_days':row['market_days'],
+            'reference_quality':quality if kind=='price' else None,'change_percent':change,'coverage_days':coverage,'observed_market_days':row['market_days'],
             'confidence':evidence(coverage,view['freshness'],market.verified,latest.synthetic or row['synthetic']),
             'reason':reason,'cautions':['Supply and price changes describe listings, not completed sales.',
                 'A shortage or price rise does not guarantee a profitable resale.']})

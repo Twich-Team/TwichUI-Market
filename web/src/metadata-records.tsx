@@ -4,7 +4,7 @@ import { LocalTime, ProviderEmblem, Status, useRecordPage } from "./admin-table"
 import { MetadataProvider, metadataStatus } from "./metadata-admin";
 
 export function ProviderHealth({ providers }: { providers: MetadataProvider[] }) {
-  return <DataTable<MetadataProvider> label="provider health" data={providers} getRowId={row=>row.provider} columns={[
+  return <DataTable<MetadataProvider> compact label="provider health" data={providers} getRowId={row=>row.provider} columns={[
     {accessorKey:"provider",header:"Source",enableHiding:false,cell:({row})=><ProviderEmblem provider={row.original.provider}/>},
     {id:"enabled",accessorFn:row=>row.enabled ? "Enabled":"Disabled",header:"Recovery",cell:({row})=><Status tone={row.original.enabled?"success":"neutral"}>{row.original.enabled?"Enabled":"Disabled"}</Status>},
     {accessorKey:"credential_status",header:"Connection",cell:({row})=><>{metadataStatus(row.original.credential_status)}{row.original.validation_pending && " · validation queued"}</>},

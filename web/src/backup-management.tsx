@@ -1,7 +1,10 @@
-import { useEffect, useMemo, useState } from 'react';
+import { lazy, Suspense, useMemo, useRef, useState } from 'react';
 import { DeferredChart } from './deferred-chart';
 import './backup-redesign.css';
-import {backupQueryParams,reliabilityFromInventory,recordedReliabilityDays,type ReliabilityDay,type BackupFilters} from './backup-data';
+import { backupKeepFlag, backupQueryParams, type BackupFilters } from './backup-data';
+import { type PaginationState, type RowSelectionState, type SortingState, functionalUpdate } from '@tanstack/react-table';
+import { DataTable } from './data-table';
+import { Loading } from './loading';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from './api';
 import { LocalTime, Status } from './admin-table';
@@ -16,7 +19,7 @@ interface Policy extends PolicyValues {revision:number}
 export interface Backup {
   id:string; filename:string; type:string; origin:string; created_at:string|null; bytes:number|null;
   sha256:string|null; verification:string; restoration_verified_at:string|null; protected:boolean;
-  active_use?:boolean;reserved?:boolean;current_recovery?:boolean;required_by:string[]; eligible:boolean; reason:string;storage_id?:string;storage_name?:string;
+  keep_flag?:boolean;recovery_pin?:boolean;active_use?:boolean;reserved?:boolean;current_recovery?:boolean;required_by:string[]; eligible:boolean; reason:string;storage_id?:string;storage_name?:string;
 }
 export interface BackupOverview {
   protected_count?:number;protected_bytes?:number;storage_error?:string;storage?:{restore_available?:boolean};
@@ -30,53 +33,95 @@ export interface BackupOverview {
   preview:{candidates:{id:string;filename:string;bytes:number}[];reclaimable_bytes:number;budget_exceeded:boolean;scope:string};
   receipts:{id:string;at:string;actor:string;action:string;detail:unknown}[];
 }
+const BackupCalendar = lazy(() => import('./backup-calendar').then(module=>({default:module.BackupCalendar})));
 const GIB=1024**3;
 const verification=(row:Backup)=>row.restoration_verified_at?'Restore rehearsal recorded':row.verification==='archive_integrity_verified'?'Archive integrity checked':row.verification==='legacy_metadata_only'?'Legacy metadata only':'Verification unavailable';
 
-export function useBackupOverview(offset=0,filters?:BackupFilters) {
-  const params=backupQueryParams(offset,filters);
-  const filtered=params.size>2;
-  return useQuery({queryKey:filtered?['private','backup-management',offset,params.toString()]:['private','backup-management',offset],queryFn:({signal})=>api<BackupOverview>(`/admin/backups?${params}`,'GET',undefined,signal),staleTime:30000,refetchInterval:q=>filtered?false:(['queued','running'].includes(q.state.data?.job.status||'')||(q.state.data?.inventory_stale&&q.state.data.service_status==='operation_busy'))?5000:60000,retry:false});
+// Summary and paged inventory share a nonblocking lock in the backup service.
+// Sequence this tab's measurements so one refresh cannot make the other stale.
+let previousInventoryRead = Promise.resolve();
+function readBackupInventory(params: URLSearchParams, signal: AbortSignal) {
+  const result = previousInventoryRead.then(() => {
+    signal.throwIfAborted();
+    return api<BackupOverview>(`/admin/backups?${params}`, 'GET', undefined, signal);
+  });
+  previousInventoryRead = result.then(() => {}, () => {});
+  return result;
 }
 
-export function BackupCreateButton({readOnly=false}:{readOnly?:boolean}) {
+export function useBackupOverview(offset=0,filters?:BackupFilters,limit=100,enabled=true) {
+  const params=backupQueryParams(offset,filters,limit);
+  const filtered=params.size>2;
+  return useQuery({
+    enabled,
+    queryKey:filtered ? ['private','backup-management',offset,params.toString()] : ['private','backup-management',offset,limit],
+    queryFn:({signal})=>readBackupInventory(params,signal),
+    staleTime:30000,
+    refetchInterval:query=>{
+      const data=query.state.data;
+      if(data?.inventory_stale && data.service_status==='operation_busy') return 5000;
+      if(filtered) return false;
+      return ['queued','running'].includes(data?.job.status||'') ? 5000 : 60000;
+    },
+    retry:false,
+  });
+}
+
+export function BackupCreateButton({readOnly=false,label='Create Backup'}:{readOnly?:boolean;label?:string}) {
   const client=useQueryClient();
   const query=useBackupOverview(), [open,setOpen]=useState(false),[busy,setBusy]=useState(false),[error,setError]=useState('');
   const data=query.data;
   async function create(){setBusy(true);setError('');try{await api('/admin/backups/create','POST',{});setOpen(false);await client.invalidateQueries({queryKey:['private','backup-management']});}catch(e){setError((e as Error).message);}finally{setBusy(false);}}
-  return <><button className="primary" disabled={readOnly||busy||!data||['queued','running'].includes(data.job.status||'')} onClick={()=>setOpen(true)}>Create Backup</button>{open&&data&&<ConfirmationDialog title="Create manual backup" onClose={()=>{if(!busy)setOpen(false);}}><p>Create a consistent, protected PostgreSQL recovery point with a SHA-256 manifest. It is excluded from scheduled rotation.</p><p>Required allowance: {formatBytes(data.estimate_bytes)} plus {formatBytes(data.filesystem.reserve_bytes)} safety reserve.</p>{error&&<p role="alert" className="notice error">{error}</p>}<button disabled={busy} onClick={()=>setOpen(false)}>Cancel</button><button className="primary" disabled={busy||readOnly} onClick={()=>void create()}>Queue protected backup</button></ConfirmationDialog>}</>;
+  return <><button className="primary" disabled={readOnly||busy||!data||['queued','running'].includes(data.job.status||'')} onClick={()=>setOpen(true)}>{label}</button>{open&&data&&<ConfirmationDialog title="Create manual backup" onClose={()=>{if(!busy)setOpen(false);}}><p>Create a consistent, protected PostgreSQL recovery point with a SHA-256 manifest. It is excluded from scheduled rotation.</p><p>Required allowance: {formatBytes(data.estimate_bytes)} plus {formatBytes(data.filesystem.reserve_bytes)} safety reserve.</p>{error&&<p role="alert" className="notice error">{error}</p>}<button disabled={busy} onClick={()=>setOpen(false)}>Cancel</button><button className="primary" disabled={busy||readOnly} onClick={()=>void create()}>Queue protected backup</button></ConfirmationDialog>}</>;
 }
 
-export function BackupManagement({readOnly=false}:{readOnly?:boolean}) {
-  const [offset,setOffset]=useState(0), [error,setError]=useState(''), [notice,setNotice]=useState(''), [busy,setBusy]=useState(false);
+export function BackupManagement({readOnly=false,destinations=[]}:{readOnly?:boolean;destinations?:{id:string;name:string}[]}) {
+  const [error,setError]=useState(''), [notice,setNotice]=useState(''), [busy,setBusy]=useState(false);
   const [selected,setSelected]=useState<Backup|null>(null), [intent,setIntent]=useState<'delete'|'details'|'protect'|null>(null), [confirmation,setConfirmation]=useState('');
-  const [manual,setManual]=useState(false), [policyOpen,setPolicyOpen]=useState(false),[page,setPage]=useState(0);
-  const [search,setSearch]=useState(''),[storage,setStorage]=useState('all'),[protection,setProtection]=useState('all'),[verified,setVerified]=useState('all'),[backupType,setBackupType]=useState('all'),[sort,setSort]=useState('created_desc');
+  const [policyOpen,setPolicyOpen]=useState(false);
+  const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 });
+  const [sorting,setSorting] = useState<SortingState>([{ id: 'created', desc: true }]);
+  const [search,setSearch]=useState(''),[storage,setStorage]=useState('all'),[protection,setProtection]=useState('all'),[verified,setVerified]=useState('all'),[backupType,setBackupType]=useState('all');
   const [searchTerm,setSearchTerm]=useState('');
-  useEffect(()=>{const timeout=setTimeout(()=>setSearchTerm(search.trim()),250);return ()=>clearTimeout(timeout);},[search]);
   const [protectedAck,setProtectedAck]=useState(false),[recoveryAck,setRecoveryAck]=useState(false),[bulk,setBulk]=useState<Backup[]>([]),[bulkReview,setBulkReview]=useState(false);
   const client=useQueryClient();
   const overview=useBackupOverview();
-  const query=useBackupOverview(offset,{search:searchTerm,storage,protection,verified,backupType,sort});
-  const data=query.data?{...query.data,job:overview.data?.job||query.data.job}:undefined;
+  const sort = `${sorting[0]?.id === 'bytes' ? 'bytes' : 'created'}_${(sorting[0]?.desc ?? true) ? 'desc' : 'asc'}`;
+  const query=useBackupOverview(pagination.pageIndex * pagination.pageSize,{search:searchTerm,storage,protection,verified,backupType,sort},pagination.pageSize);
+  const data=overview.data||query.data;
+  const destinationChoices = new Map([
+    ...(data?.items||[]).map(row=>[row.storage_id||'local',row.storage_name||'Local backups'] as const),
+    ...destinations.map(row=>[row.id,row.name] as const),
+  ]);
+  const selectedRows: RowSelectionState = Object.fromEntries(bulk.map(row => [row.id, true]));
+  const canSelect = (row: Backup) => row.verification === 'archive_integrity_verified' && !(row.active_use ?? Boolean(row.required_by.length));
+  function resetPage() { setPagination(previous => ({ ...previous, pageIndex: 0 })); }
+  function showInventory(date: string) {
+    setSearch(date); setSearchTerm(date); setStorage('all'); setProtection('all'); setVerified('all'); setBackupType('all');
+    resetPage();
+    document.getElementById('backup-inventory')?.focus({ preventScroll: true });
+    document.getElementById('backup-inventory')?.scrollIntoView({ block: 'start' });
+  }
   async function act(path:string,body:unknown) {
     setBusy(true);setError('');setNotice('');
     try {
       const result=await api<{status?:string;unlinked_bytes?:number;archive_removed?:boolean;manifest_removed?:boolean;results?:{id:string;status:string;error?:string}[]}>(`/admin/backups${path}`,'POST',body);
-      setNotice(result.status==='queued'&&path.includes('delete')?'Deletion queued. Each backup is verified before removal; progress and results appear below.':result.results?result.results.map(r=>`${bulk.find(b=>b.id===r.id)?.filename||r.id}: ${r.status}${r.error?` — ${r.error}`:''}`).join('; '):result.status==='partial_failure'?`Partial deletion: archive ${result.archive_removed?'removed':'retained'}, manifest ${result.manifest_removed?'removed':'retained'}. Receipt saved; review operations before retrying.`:result.unlinked_bytes!==undefined?`Archive and manifest removed. ${formatBytes(result.unlinked_bytes)} unlinked; filesystem availability may differ.`:path==='/create'?'Manual backup queued. Progress is shown below.':'Backup settings updated.');
-      setIntent(null);setSelected(null);setManual(false);setBulkReview(false);if(path==='/policy')setPolicyOpen(false);setBulk([]);setOffset(0);setPage(0);await client.invalidateQueries({queryKey:['private','backup-management']});
+      setNotice(result.status==='queued'&&path.includes('delete')?'Deletion queued. Each backup is verified before removal; progress and results appear below.':result.results?result.results.map(r=>`${bulk.find(b=>b.id===r.id)?.filename||r.id}: ${r.status}${r.error?` — ${r.error}`:''}`).join('; '):result.status==='partial_failure'?`Partial deletion: archive ${result.archive_removed?'removed':'retained'}, manifest ${result.manifest_removed?'removed':'retained'}. Receipt saved; review operations before retrying.`:result.unlinked_bytes!==undefined?`Archive and manifest removed. ${formatBytes(result.unlinked_bytes)} unlinked; filesystem availability may differ.`:path.endsWith('/protect')?(selectedFlag?.set?'Keep flag removed.':'Keep flag set.'):path==='/create'?'Manual backup queued. Progress is shown below.':'Backup settings updated.');
+      setIntent(null);setSelected(null);setBulkReview(false);if(path==='/policy')setPolicyOpen(false);setBulk([]);resetPage();await client.invalidateQueries({queryKey:['private','backup-management']});
     } catch(e) {setError((e as Error).message);} finally {setBusy(false);}
   }
-  function choose(row:Backup,action:typeof intent){setSelected(row);setIntent(action);setConfirmation('');setProtectedAck(false);setRecoveryAck(false);setError('');}
+  const selectedFlag = selected ? backupKeepFlag(selected) : null;
+  const detailsTrigger = useRef<string>(undefined);
+  function choose(row: Backup, action: typeof intent, trigger?: HTMLElement) {
+    if (!intent) detailsTrigger.current = trigger?.id;
+    setSelected(row); setIntent(action); setConfirmation(''); setProtectedAck(false); setRecoveryAck(false); setError('');
+  }
   const fs=data?.filesystem;
-  const filtered=data?.items||[];
-  const allData=overview.data||data;
-  const visible=filtered.slice(page*10,page*10+10);
-  function filterChange(setter:(s:string)=>void,value:string){setter(value);setPage(0);setOffset(0);}
+  function filterChange(setter:(s:string)=>void,value:string) { setter(value); resetPage(); }
   return <section className="backup-management recovery-page" aria-label="Backup Management">
-    <div className="backup-heading"><div><h2>Recovery points</h2><p className="muted">Find, verify and protect the copies you can recover from.</p></div><div className="backup-actions"><button onClick={()=>void client.invalidateQueries({queryKey:['private','backup-management']})} disabled={busy}>Refresh backups</button><button onClick={()=>setPolicyOpen(true)} disabled={!data}>Backup Policy</button><button className="primary" disabled={readOnly||busy||!data||['queued','running'].includes(data.job.status||'')} onClick={()=>{setManual(true);setError('');}}>Create manual backup</button></div></div>
-    {query.isPending&&<p role="status">Checking backup service…</p>}
-    {query.error&&<p className="notice" role="alert">{query.error.message}. Storage measurements and archive eligibility are unavailable until the operations service responds.</p>}
+    <div className="backup-heading"><div><h2>Recovery points</h2><p className="muted">Find, verify and protect backup archives.</p></div><div className="backup-actions"><button onClick={()=>void client.invalidateQueries({queryKey:['private','backup-management']})} disabled={busy}>Refresh backups</button><button onClick={()=>setPolicyOpen(true)} disabled={!data}>Backup Policy</button><BackupCreateButton readOnly={readOnly||busy} label="Create manual backup"/></div></div>
+    {!data&&overview.isPending&&<Loading label="Loading backup inventory and recorded outcomes…"/>}
+    {!data&&overview.error&&<p className="notice" role="alert">{overview.error.message}. Storage measurements and backup history are unavailable. Use Refresh backups to retry.</p>}
     {data?.storage_error&&<p role="alert" className="notice error">{data.storage_error}</p>}
     {error&&<p className="notice error" role="alert">{error}</p>}{notice&&<p className="notice" role="status">{notice}</p>}
     {data&&fs&&<>
@@ -86,51 +131,88 @@ export function BackupManagement({readOnly=false}:{readOnly?:boolean}) {
         <article><span>Latest successful backup</span><strong><LocalTime value={data.last_success}/></strong><small>{data.inventory_stale?'Inventory is stale':'Recorded backup outcome'}</small></article>
         <article><span>Latest restore verification</span><strong><LocalTime value={data.last_restoration_verified_at}/></strong><small>Successful isolated restoration</small></article>
       </div>
-      <div className="recovery-visuals"><BackupHistory items={allData?.items||data.items} attempts={allData?.reliability?.attempts||[]} stale={Boolean(data.inventory_stale)} onSelect={row=>choose(row,'details')}/><BackupReliability data={allData||data}/></div>
-      <div className="recovery-policy-summary"><div><strong>{data.policy.enabled?`Automatic backups every ${data.policy.interval_seconds/3600} hours`:'Automatic backups disabled'}</strong><span>{data.policy.daily} daily · {data.policy.weekly} weekly · {data.policy.monthly} monthly · minimum {data.policy.minimum_recovery_points} recovery points</span></div><button onClick={()=>setPolicyOpen(true)}>Edit backup policy</button></div>
+      <div className="recovery-visuals">
+        <BackupHistory items={data.items} attempts={data.reliability?.attempts||[]} stale={Boolean(data.inventory_stale)} onSelect={(row,trigger)=>choose(row,'details',trigger)}/>
+        <Suspense fallback={<Loading label="Loading backup calendar…"/>}>
+          <BackupCalendar data={data} refreshing={overview.isFetching} error={overview.error?.message} onSelect={(row,trigger)=>choose(row,'details',trigger)} onShowInventory={showInventory}/>
+        </Suspense>
+      </div>
+      <div className="recovery-policy-summary"><div><strong>{data.policy.enabled?`Automatic backups every ${data.policy.interval_seconds/3600} hours`:'Automatic backups disabled'}</strong><span>{data.policy.daily} daily · {data.policy.weekly} weekly · {data.policy.monthly} monthly · minimum {data.policy.minimum_recovery_points} recovery points</span></div></div>
       {(data.storage_pressure||data.preview.budget_exceeded)&&<p className="notice" role="status"><strong>Storage pressure.</strong> New backups pause if the full replacement and reserve cannot fit. No recovery point is deleted to make room automatically. Estimated replacement allowance: {formatBytes(data.estimate_bytes)}.</p>}
       {data.inventory_stale&&<p className="notice" role="status">{data.service_status==='storage_unavailable'?'Backup storage is unavailable. The last successful inventory is preserved; reconnect through Backup Storage and refresh.':'A backup operation is in progress. Inventory and storage show the last completed measurement; actions recheck availability after completion.'}</p>}
       {['queued','running','failed','interrupted'].includes(data.job.status||'')&&<section className="notice recovery-job" aria-label="Latest backup operation"><strong>{data.job.kind||'Backup'} operation · {data.job.status}</strong>{['queued','running'].includes(data.job.status||'')&&<><progress aria-label="Backup operation progress"/><span className="small muted">The backup manager continues this operation when you leave the page.</span></>}{data.job.error&&<p role="alert">{data.job.error}</p>}</section>}{data.job.kind==='deletion'&&<p role="status">Backup deletion: {data.job.status}. {data.job.result?.results.map(r=>`${r.status}${r.error?`: ${r.error}`:''}`).join('; ')}</p>}
-      <div className="panel padded recovery-inventory">
-      <div className="backup-inventory-heading"><h3>Backup inventory</h3><button disabled={readOnly||busy||!bulk.length} onClick={()=>{setBulkReview(true);setConfirmation('');setProtectedAck(false);setRecoveryAck(false);}}>Delete selected ({bulk.length})</button><span className="small muted">Times in your local timezone · {data.inventory_stale?'stale inventory':'latest measured inventory'}</span></div>
-      <div className="recovery-filters">
-        <label>Search recovery points<input type="search" placeholder="Date, filename or destination" value={search} onChange={e=>filterChange(setSearch,e.target.value)}/></label>
-        <label>Destination<select value={storage} onChange={e=>filterChange(setStorage,e.target.value)}><option value="all">All destinations</option>{Array.from(new Map((allData?.items||data.items).map(r=>[r.storage_id||'local',r.storage_name||'Local backups'])).entries()).map(([id,name])=><option key={id} value={id}>{name}</option>)}</select></label>
-        <label>Protection<select value={protection} onChange={e=>filterChange(setProtection,e.target.value)}><option value="all">All protection</option><option value="protected">Protected</option><option value="unprotected">Unprotected</option></select></label>
-        <label>Verification<select value={verified} onChange={e=>filterChange(setVerified,e.target.value)}><option value="all">All verification</option><option value="restored">Restore verified</option><option value="integrity">Integrity checked</option><option value="unknown">Unverified / legacy</option></select></label>
-        <label>Backup type<select value={backupType} onChange={e=>filterChange(setBackupType,e.target.value)}><option value="all">All types</option>{Array.from(new Set((allData?.items||data.items).map(r=>r.type))).map(type=><option key={type} value={type}>{type.replaceAll('-',' ')}</option>)}</select></label>
-        <label>Sort recovery points<select value={sort} onChange={e=>filterChange(setSort,e.target.value)}><option value="created_desc">Newest first</option><option value="created_asc">Oldest first</option><option value="bytes_desc">Largest first</option><option value="bytes_asc">Smallest first</option></select></label>
-      </div>
-      {(data.matched_total??data.total)>data.items.length&&<p className="small muted">Showing a batch of {data.items.length} matching recovery points. Filters and sorting apply across the complete inventory. Refresh to update a filtered batch.</p>}
-      {data.total===0?<p className="backup-empty">No managed archives are available. A previous restore receipt does not mean its archive still exists.</p>:<>
-        <div className="table-scroll" tabIndex={0} role="region" aria-label="Backup inventory scroll area"><table className="backup-table recovery-table" aria-label="Managed backup archives"><thead><tr><th scope="col"><input type="checkbox" aria-label="Select eligible backups on this page" disabled={readOnly||busy||!visible.some(row=>row.verification==='archive_integrity_verified'&&!(row.active_use??Boolean(row.required_by.length)))} checked={visible.filter(row=>row.verification==='archive_integrity_verified'&&!(row.active_use??Boolean(row.required_by.length))).length>0&&visible.filter(row=>row.verification==='archive_integrity_verified'&&!(row.active_use??Boolean(row.required_by.length))).every(row=>bulk.some(b=>b.id===row.id))} onChange={e=>{const checked=e.currentTarget.checked;const eligible=visible.filter(row=>row.verification==='archive_integrity_verified'&&!(row.active_use??Boolean(row.required_by.length)));setBulk(previous=>checked?[...previous,...eligible.filter(row=>!previous.some(b=>b.id===row.id))].slice(0,50):previous.filter(row=>!eligible.some(b=>b.id===row.id)));}}/></th><th scope="col">Backup date and time</th><th scope="col">Type</th><th scope="col">Size</th><th scope="col">Destination</th><th scope="col">Verification</th><th scope="col">Protection</th><th scope="col">Actions</th></tr></thead><tbody>{visible.map(row=><tr key={row.id} onClick={event=>{if(!(event.target as HTMLElement).closest('button,input,a'))choose(row,'details');}}>
-          <td><input type="checkbox" aria-label={`Select ${row.filename}`} disabled={readOnly||busy||row.verification!=='archive_integrity_verified'||(row.active_use??Boolean(row.required_by.length))||(!bulk.some(b=>b.id===row.id)&&bulk.length>=50)} checked={bulk.some(b=>b.id===row.id)} onChange={e=>{const checked=e.currentTarget.checked;setBulk(previous=>checked?[...previous.filter(b=>b.id!==row.id),row]:previous.filter(b=>b.id!==row.id));}}/></td>
-          <td><button className="recovery-date" onClick={()=>choose(row,'details')}><LocalTime value={row.created_at}/></button><span className="backup-filename recovery-file" title={row.filename}>{row.filename}</span></td>
-          <td>{row.type.replaceAll('-',' ')}</td><td>{formatBytes(row.bytes)}</td><td><span aria-hidden="true">{row.storage_id&&row.storage_id!=='local'?'▰':'▣'} </span>{row.storage_name||'Local backups'}</td>
-          <td><Status tone={row.restoration_verified_at?'success':row.verification==='archive_integrity_verified'?'neutral':'warning'}>{row.restoration_verified_at?'✓ Restore verified':row.verification==='archive_integrity_verified'?'✓ Integrity checked':'? Unverified'}</Status></td>
-          <td><Status tone={row.protected?'success':'neutral'}>{row.protected?'◆ Protected':'Unprotected'}</Status>{row.active_use&&<span className="small muted">In active use</span>}</td>
-          <td><div className="backup-row-actions"><button onClick={()=>choose(row,'details')}>Details</button><button disabled={readOnly||busy||row.type==='legacy'||row.verification!=='archive_integrity_verified'||Boolean(row.required_by.length)} onClick={()=>choose(row,'protect')}>{row.protected?'Unprotect':'Protect'}</button><button disabled={readOnly||busy||row.verification!=='archive_integrity_verified'||(row.active_use??Boolean(row.required_by.length))} onClick={()=>choose(row,'delete')}>Delete</button></div></td>
-        </tr>)}</tbody></table>{filtered.length===0&&<p className="backup-empty">No recovery points match these filters.</p>}</div>
-        <div className="backup-pagination"><span className="small">{filtered.length?Math.min(page*10+1,filtered.length):0}–{Math.min((page+1)*10,filtered.length)} of {filtered.length} matching</span><button disabled={page===0} onClick={()=>setPage(Math.max(0,page-1))}>Previous backups</button><button disabled={(page+1)*10>=filtered.length} onClick={()=>setPage(page+1)}>Next backups</button>{(data.matched_total??data.total)>100&&<><button disabled={offset===0} onClick={()=>{setOffset(Math.max(0,offset-100));setPage(0);}}>Newer batch</button><button disabled={offset+100>=(data.matched_total??data.total)} onClick={()=>{setOffset(offset+100);setPage(0);}}>Older batch</button></>}</div>
-      </>}
-      </div>
+      <section className="panel padded recovery-inventory" aria-labelledby="backup-inventory">
+        <div className="backup-inventory-heading"><h3 id="backup-inventory" tabIndex={-1}>Backup inventory</h3>
+          <button disabled={readOnly||busy||!bulk.length} onClick={()=>{setBulkReview(true);setConfirmation('');setProtectedAck(false);setRecoveryAck(false);}}>Delete selected ({bulk.length})</button>
+          {bulk.length > 0 && <button disabled={busy} onClick={() => setBulk([])}>Clear selection</button>}
+          <p className="muted">Times in your local timezone. Select up to 50 archives for review.</p>
+        </div>
+        <form className="recovery-search" onSubmit={event=>{event.preventDefault();filterChange(setSearchTerm,search.trim());}}>
+          <label>Search recovery points<input type="search" placeholder="Date, filename or destination" value={search} maxLength={190} onChange={e=>{setSearch(e.target.value);if(!e.target.value)filterChange(setSearchTerm,'');}}/></label>
+          <button type="submit">Search</button>
+          {searchTerm && <button type="button" onClick={()=>{setSearch('');filterChange(setSearchTerm,'');}}>Clear search</button>}
+        </form>
+        <details className="recovery-filter-menu"><summary>Inventory filters</summary>
+          <div className="recovery-filters">
+            <label>Destination<select value={storage} onChange={e=>filterChange(setStorage,e.target.value)}><option value="all">All destinations</option>{Array.from(destinationChoices).map(([id,name])=><option key={id} value={id}>{name}</option>)}</select></label>
+            <label>Protection<select value={protection} onChange={e=>filterChange(setProtection,e.target.value)}><option value="all">All protection</option><option value="protected">Protected</option><option value="unprotected">Unprotected</option></select></label>
+            <label>Verification<select value={verified} onChange={e=>filterChange(setVerified,e.target.value)}><option value="all">All verification</option><option value="restored">Restore verified</option><option value="integrity">Integrity checked</option><option value="unknown">Unverified / legacy</option></select></label>
+            <label>Backup type<select value={backupType} onChange={e=>filterChange(setBackupType,e.target.value)}><option value="all">All types</option>{['manual','scheduled','release','restore-verification','legacy','unknown'].map(type=><option key={type} value={type}>{type.replaceAll('-',' ')}</option>)}</select></label>
+          </div>
+        </details>
+        {query.data?.inventory_stale && !data.inventory_stale && <p role="status" className="notice">{query.data.service_status==='operation_busy'
+          ? 'Showing the last measured inventory while another backup operation runs. This list refreshes automatically.'
+          : 'Showing the last measured inventory. Reconnect backup storage, then refresh the list.'}</p>}
+        <DataTable<Backup> compact label="Managed backup archives" data={query.data?.items||[]}
+          getRowId={row=>row.id}
+          loading={query.isFetching} error={query.error ? `${query.error.message}. Storage measurements and archive eligibility are unavailable until the operations service responds.` : undefined}
+          emptyMessage={data.total===0?'No managed archives are available.':'No recovery points match these filters.'}
+          server={{
+            rowCount: query.data?.matched_total ?? query.data?.total ?? 0, pagination, sorting,
+            onPaginationChange: setPagination,
+            onSortingChange: updater => { setSorting(previous => functionalUpdate(updater, previous)); resetPage(); },
+          }}
+          selection={{
+            state: selectedRows, canSelect: row => canSelect(row) && (bulk.length < 50 || Boolean(selectedRows[row.id])), label: row => `Select ${row.filename}`,
+            selectPageLabel: 'Select eligible backups on this page', disabled: readOnly||busy||query.isFetching||Boolean(query.error),
+            onChange: updater => setBulk(previous => {
+              const next = functionalUpdate(updater, Object.fromEntries(previous.map(row => [row.id,true])));
+              const records = new Map(previous.map(row=>[row.id,row]));
+              for (const row of query.data?.items ?? []) if (canSelect(row)) records.set(row.id,row);
+              return [...records.values()].filter(row=>next[row.id]).slice(0,50);
+            }),
+          }}
+          columns={[
+            {id:'created', accessorKey:'created_at', header:'Backup date and time', enableHiding:false, cell:({row})=><><LocalTime value={row.original.created_at}/><span className="backup-file-label">{row.original.filename}</span></>},
+            {accessorKey:'type', header:'Type', enableSorting:false, cell:({row})=>row.original.type.replaceAll('-',' ')},
+            {accessorKey:'bytes', header:'Size', meta:{numeric:true}, cell:({row})=>formatBytes(row.original.bytes)},
+            {accessorKey:'storage_name', header:'Destination', enableSorting:false, cell:({row})=>row.original.storage_name||'Local backups'},
+            {accessorKey:'verification', header:'Verification', enableSorting:false, cell:({row:{original:row}})=><Status tone={row.restoration_verified_at?'success':row.verification==='archive_integrity_verified'?'neutral':'warning'}>{verification(row)}</Status>},
+            {accessorKey:'protected', header:'Protection', enableSorting:false, cell:({row:{original:row}})=><><Status tone={row.protected?'success':'neutral'}>{row.protected?'Protected':'Unprotected'}</Status>{row.active_use&&<span className="backup-file-label">In active use</span>}{backupKeepFlag(row).blocked&&<span className="backup-file-label">{backupKeepFlag(row).blocked}</span>}</>},
+            {id:'actions', header:'Actions', enableHiding:false, enableSorting:false, cell:({row:{original:row}})=><div className="backup-row-actions">
+              <button id={`backup-details-${row.id}`} onClick={event=>choose(row,'details',event.currentTarget)}>Details</button>
+              <button disabled={readOnly||busy||Boolean(backupKeepFlag(row).blocked)} id={`backup-protect-${row.id}`} onClick={event=>choose(row,'protect',event.currentTarget)}>{backupKeepFlag(row).label}</button>
+              <button disabled={readOnly||busy||!canSelect(row)} id={`backup-delete-${row.id}`} onClick={event=>choose(row,'delete',event.currentTarget)}>Delete</button>
+            </div>},
+          ]}
+        />
+      </section>
       {policyOpen&&<ConfirmationDialog title="Backup Policy" onClose={()=>{if(!busy)setPolicyOpen(false);}}>{error&&<p className="notice error" role="alert">{error}</p>}<PolicyEditor key={data.policy.revision} policy={data.policy} disabled={busy||readOnly} save={body=>void act('/policy',body)}/><button onClick={()=>setPolicyOpen(false)}>Close backup policy</button></ConfirmationDialog>}
       <details className="backup-disclosure"><summary>Retention preview & emergency cleanup</summary><p>{data.preview.scope}</p><p><strong>{data.preview.candidates.length} scheduled archives</strong> outside the current tiers · {formatBytes(data.preview.reclaimable_bytes)} estimated reclaimable.</p>{data.preview.candidates.length>0&&<ul>{data.preview.candidates.map(row=><li key={row.id}>{row.filename} · {formatBytes(row.bytes)}</li>)}</ul>}<p className="small muted">This is a dry run. Automatic removal follows a successfully completed, integrity-checked scheduled replacement. For emergency cleanup, explicitly select an eligible archive’s Delete action and confirm its name. Each request rechecks recovery safeguards. Legacy archives require a separate operator procedure.</p></details>
       <details className="backup-disclosure"><summary>Service details & audit receipts</summary><dl><dt>Latest backup operation</dt><dd>{data.job.kind||'Backup'} · {data.job.status||'Unknown'}</dd><dt>Inventory measured</dt><dd><LocalTime value={data.measured_at}/></dd><dt>Next scheduled backup</dt><dd><LocalTime value={data.next_scheduled_at}/></dd><dt>Replacement allowance</dt><dd>{formatBytes(data.estimate_bytes)} · measured archives plus margin; first backup uses 1 GiB</dd><dt>Filesystem measurement</dt><dd>{fs.measurement} · device {fs.filesystem_id}</dd><dt>Unmanaged artifacts</dt><dd>{data.artifact_count} incomplete files or orphan manifests; excluded from automatic deletion</dd></dl>{data.artifacts.length>0&&<ul>{data.artifacts.map((artifact,i)=><li key={i}>{artifact.name} · {artifact.type.replaceAll('_',' ')}</li>)}</ul>}<ol className="backup-receipts">{data.receipts.map(row=><li key={row.id}><LocalTime value={row.at}/> · {row.action} · {row.actor}</li>)}</ol><p className="small muted">Local archives contain private account data. Use an owner-managed encrypted off-host copy for disaster recovery.</p></details>
     </>}
-    {selected&&intent&&<div className={intent==='details'?'recovery-drawer':undefined}><ConfirmationDialog title={intent==='delete'?'Delete backup archive':intent==='protect'?(selected.protected?'Unprotect recovery archive':'Protect recovery archive'):'Backup details'} onClose={()=>{if(!busy){setSelected(null);setIntent(null);}}}>
+    {selected&&selectedFlag&&intent&&<div className={intent==='details'?'recovery-drawer':undefined}><ConfirmationDialog returnFocus={()=>document.getElementById(detailsTrigger.current||"")} closeLabel={intent==='details'?'Close details':'Close'} title={intent==='delete'?'Delete backup archive':intent==='protect'?selectedFlag.label:'Backup details'} onClose={()=>{if(!busy){setSelected(null);setIntent(null);}}}>
       <p className="backup-filename"><strong>{selected.filename}</strong></p>
-      {intent==='details'?<><dl><dt>Backup identifier</dt><dd className="backup-hash">{selected.id}</dd><dt>Storage destination</dt><dd>{selected.storage_name||'Local backups'}</dd><dt>Backup type</dt><dd>{selected.type}</dd><dt>Created</dt><dd><LocalTime value={selected.created_at}/></dd><dt>Origin</dt><dd>{selected.origin}</dd><dt>Compressed size</dt><dd>{formatBytes(selected.bytes)}</dd><dt>Verification</dt><dd>{verification(selected)}</dd><dt>Restore rehearsal</dt><dd><LocalTime value={selected.restoration_verified_at}/></dd><dt>SHA-256</dt><dd className="backup-hash">{selected.sha256||'Unavailable'}</dd><dt>Protection and deletion</dt><dd>{selected.protected?'Protected. ':'Unprotected. '}{selected.reason}</dd><dt>Recovery dependencies</dt><dd>{selected.required_by.length?selected.required_by.join(', '):'None recorded'}</dd></dl><p className="small">Archive integrity checks decode the dump and record SHA-256. Only a successful isolated restoration records a restore rehearsal.</p>{selected.verification==='archive_integrity_verified'&&<div className="backup-actions"><a className="button" href={`/api/v1/admin/backups/${selected.id}/download`}>Download archive</a>{data?.storage?.restore_available&&<button disabled={readOnly||busy} onClick={()=>void act('/restore-test',{id:selected.id})}>Verify isolated restore</button>}<a className="button" href={`/api/v1/admin/backups/${selected.id}/manifest`} target="_blank" rel="noreferrer">Open restore manifest</a></div>}<div className="backup-actions"><button disabled={readOnly||busy||selected.type==='legacy'||selected.verification!=='archive_integrity_verified'||Boolean(selected.required_by.length)} onClick={()=>choose(selected,'protect')}>{selected.protected?'Unprotect':'Protect'}</button><button disabled={readOnly||busy||selected.verification!=='archive_integrity_verified'||(selected.active_use??Boolean(selected.required_by.length))} onClick={()=>choose(selected,'delete')}>{selected.protected?'Delete protected backup':'Delete backup'}</button></div><button onClick={()=>{setSelected(null);setIntent(null);}}>Close details</button></>:<>
-        <p>{intent==='delete'?`Removes this archive and its matching manifest. Up to ${formatBytes(selected.bytes)} may be reclaimed. The deletion receipt is retained.`:selected.protected?'Allows this archive to become eligible for deletion if recovery safeguards permit. Manual and release archives are excluded from automatic rotation.':'Excludes this archive from automatic rotation. Explicitly acknowledged administrator deletion remains available.'}</p>
-        <p className="notice">Live PostgreSQL data and auction history stay intact.</p>
+      {intent==='details'?<><dl><dt>Backup identifier</dt><dd className="backup-hash">{selected.id}</dd><dt>Storage destination</dt><dd>{selected.storage_name||'Local backups'}</dd><dt>Backup type</dt><dd>{selected.type}</dd><dt>Created</dt><dd><LocalTime value={selected.created_at}/></dd><dt>Origin</dt><dd>{selected.origin}</dd><dt>Compressed size</dt><dd>{formatBytes(selected.bytes)}</dd><dt>Verification</dt><dd>{verification(selected)}</dd><dt>Restore rehearsal</dt><dd><LocalTime value={selected.restoration_verified_at}/></dd><dt>SHA-256</dt><dd className="backup-hash">{selected.sha256||'Unavailable'}</dd><dt>Protection and deletion</dt><dd>{selected.protected?'Protected. ':'Unprotected. '}{selected.reason}. {selectedFlag.blocked || selectedFlag.restrictions}</dd><dt>Recovery dependencies</dt><dd>{selected.required_by.length?selected.required_by.join(', '):'None recorded'}</dd></dl><p className="small">Archive integrity checks decode the dump and record SHA-256. Only a successful isolated restoration records a restore rehearsal.</p>{selected.verification==='archive_integrity_verified'&&<div className="backup-actions"><a className="button" href={`/api/v1/admin/backups/${selected.id}/download`}>Download archive</a>{data?.storage?.restore_available&&<button disabled={readOnly||busy} onClick={()=>void act('/restore-test',{id:selected.id})}>Verify isolated restore</button>}<a className="button" href={`/api/v1/admin/backups/${selected.id}/manifest`} target="_blank" rel="noreferrer">Open restore manifest</a></div>}<div className="backup-actions"><button disabled={readOnly||busy||Boolean(selectedFlag.blocked)} onClick={()=>choose(selected,'protect')}>{selectedFlag.label}</button><button disabled={readOnly||busy||selected.verification!=='archive_integrity_verified'||(selected.active_use??Boolean(selected.required_by.length))} onClick={()=>choose(selected,'delete')}>{selected.protected?'Delete protected backup':'Delete backup'}</button></div></>:<>
+        <p>{intent==='delete'?`Removes this archive and its matching manifest. Up to ${formatBytes(selected.bytes)} may be reclaimed. The deletion receipt is retained.`:selectedFlag.set?'This removes the keep flag. The archive and its manifest stay in storage.':'This sets the keep flag and protects the archive from automatic rotation. Explicit administrator deletion still requires confirmation.'}</p>
+        {intent==='protect' ? <p>{selectedFlag.restrictions}</p> : <p className="notice">Live PostgreSQL data and auction history stay intact.</p>}
         {intent==='delete'&&<><p className="notice">Deletion can remove the newest or last known-good backup. Check another recovery copy before proceeding. Protected backups require a separate acknowledgement; Backups in active use cannot be deleted. Deleting the current recovery copy after its lease expires pauses cleanup until another copy is verified.</p>{(selected.protected||selected.reserved)&&<label className="backup-check"><input type="checkbox" checked={protectedAck} onChange={e=>setProtectedAck(e.target.checked)}/>I explicitly authorize deleting this protected backup{selected.reserved?' and its inactive recovery reservations':''}.</label>}<label className="backup-check"><input type="checkbox" checked={recoveryAck} onChange={e=>setRecoveryAck(e.target.checked)}/>I acknowledge the risk of removing the newest or last known-good backup.</label></>}
         <label>Type {selected.filename} to confirm<input value={confirmation} onChange={e=>setConfirmation(e.target.value)} autoComplete="off"/></label>
         {error&&<p className="notice error" role="alert">{error}</p>}
-        <button disabled={busy} onClick={()=>{setSelected(null);setIntent(null);}}>Cancel</button><button className="primary" disabled={readOnly||busy||confirmation!==selected.filename||(intent==='delete'&&(!recoveryAck||((selected.protected||selected.reserved)&&!protectedAck)))} onClick={()=>void act(`/${selected.id}/${intent}`,intent==='delete'?{confirmation,...(protectedAck?{confirm_protected:true}:{}),...(protectedAck&&selected.reserved?{confirm_reserved:true}:{}),...(recoveryAck?{confirm_recovery_loss:true}:{})}:{protected:!selected.protected})}>{intent==='delete'?'Confirm archive deletion':selected.protected?'Confirm unprotect':'Confirm protection'}</button>
+        <button disabled={busy} onClick={()=>{setSelected(null);setIntent(null);}}>Cancel</button><button className="primary" disabled={readOnly||busy||confirmation!==selected.filename||(intent==='delete'&&(!recoveryAck||((selected.protected||selected.reserved)&&!protectedAck)))} onClick={()=>void act(`/${selected.id}/${intent}`,intent==='delete'?{confirmation,...(protectedAck?{confirm_protected:true}:{}),...(protectedAck&&selected.reserved?{confirm_reserved:true}:{}),...(recoveryAck?{confirm_recovery_loss:true}:{})}:{protected:!selectedFlag.set})}>{intent==='delete'?'Confirm archive deletion':selectedFlag.label}</button>
       </>}
     </ConfirmationDialog></div>}
     {bulkReview&&<ConfirmationDialog title="Delete selected backups" onClose={()=>{if(!busy)setBulkReview(false);}}><p>Permanently delete these {bulk.length} recovery copies and their manifests. The result is reported separately for each backup. Active recovery references remain protected.</p><ul>{bulk.map(row=><li key={row.id}>{row.filename} · {formatBytes(row.bytes)} · {row.protected?'Protected':'Unprotected'} · {row.storage_name||'Local backups'}</li>)}</ul>{bulk.some(r=>r.protected||r.reserved)&&<label className="backup-check"><input type="checkbox" checked={protectedAck} onChange={e=>setProtectedAck(e.target.checked)}/>I explicitly authorize deleting the selected protected backups{bulk.some(r=>r.reserved)?' and their inactive recovery reservations':''}.</label>}<label className="backup-check"><input type="checkbox" checked={recoveryAck} onChange={e=>setRecoveryAck(e.target.checked)}/>I acknowledge this may remove the newest or last known-good backup.</label><label>Type DELETE SELECTED BACKUPS<input value={confirmation} onChange={e=>setConfirmation(e.target.value)}/></label><button disabled={busy} onClick={()=>setBulkReview(false)}>Cancel</button><button className="primary" disabled={readOnly||busy||confirmation!=='DELETE SELECTED BACKUPS'||!recoveryAck||(bulk.some(r=>r.protected||r.reserved)&&!protectedAck)} onClick={()=>void act('/delete-selected',{items:bulk.map(row=>({id:row.id,confirmation:row.filename,confirm_protected:protectedAck,confirm_reserved:protectedAck&&Boolean(row.reserved),confirm_recovery_loss:recoveryAck}))})}>Confirm selected backup deletion</button></ConfirmationDialog>}
-    {manual&&data&&<ConfirmationDialog title="Create manual backup" onClose={()=>{if(!busy)setManual(false);}}><p>A consistent PostgreSQL archive will be created, fully decoded for integrity, and published with its SHA-256 manifest. It starts protected and is excluded from scheduled rotation.</p><p>Allow {formatBytes(data.estimate_bytes)} for the replacement plus {formatBytes(data.filesystem.reserve_bytes)} safe reserve. The operation pauses if capacity is insufficient. Restore verification is recorded only after a successful isolated restoration.</p>{error&&<p className="notice error" role="alert">{error}</p>}<button disabled={busy} onClick={()=>setManual(false)}>Cancel</button><button className="primary" disabled={busy||readOnly} onClick={()=>void act('/create',{})}>Queue protected backup</button></ConfirmationDialog>}
   </section>;
 }
 
@@ -151,12 +233,8 @@ function PolicyEditor({policy,disabled,save}:{policy:Policy;disabled:boolean;sav
   </section>;
 }
 
-function BackupHistory({items,attempts,stale,onSelect}:{items:Backup[];attempts:NonNullable<BackupOverview['reliability']>['attempts'];stale:boolean;onSelect:(row:Backup)=>void}) {
+function BackupHistory({items,attempts,stale,onSelect}:{items:Backup[];attempts:NonNullable<BackupOverview['reliability']>['attempts'];stale:boolean;onSelect:(row:Backup,trigger?:HTMLElement)=>void}) {
  const points=useMemo(()=>items.filter(r=>r.created_at&&r.bytes!==null).sort((a,b)=>Date.parse(a.created_at!)-Date.parse(b.created_at!)),[items]);
  const option=useMemo(()=>({animation:false,grid:{left:65,right:12,top:18,bottom:45},textStyle:{color:'#c8b99f'},tooltip:{trigger:'item',renderMode:'richText',formatter:(params:unknown)=>{const p=params as {dataIndex:number};const row=points[p.dataIndex];return row?`${new Date(row.created_at!).toLocaleString()}\n${formatBytes(row.bytes)} · ${row.type}\n${row.storage_name||'Local backups'}\nSelect to view recovery point`:'';}},xAxis:{type:'category',data:points.map(r=>r.id),axisLabel:{hideOverlap:true,formatter:(_:string,index:number)=>new Date(points[index].created_at!).toLocaleDateString(undefined,{month:'short',day:'numeric'})},axisLine:{lineStyle:{color:'#695036'}}},yAxis:{type:'value',axisLabel:{formatter:(v:number)=>formatBytes(v,1)},splitLine:{lineStyle:{color:'#4d3c2a'}}},series:[{type:'bar',name:'Backup size',barMaxWidth:28,data:points.map(r=>({value:r.bytes,itemStyle:{color:r.storage_id&&r.storage_id!=='local'?'#779a8c':'#c5a263',borderRadius:[3,3,0,0],borderColor:r.origin==='scheduled'?'transparent':'#f2dfb7',borderWidth:r.origin==='scheduled'?0:1}}))}]}),[points]);
- return <section className="panel padded recovery-history" aria-label="Backup size history"><div className="panel-heading"><h3>Backup size history</h3><span className="small muted">{stale?'Stale inventory':'Recorded recovery points'}</span></div>{points.length?<><DeferredChart option={option} label="Individual backup sizes over time; gold local and teal network storage" onSelect={index=>{if(points[index])onSelect(points[index]);}}/><div className="recovery-calendar-legend"><span><i style={{background:'#c5a263'}}/>Local</span><span><i style={{background:'#779a8c'}}/>Network</span></div><details><summary className="small">Select a recovery point without the chart</summary><div className="recovery-chart-points">{points.map(row=><button key={row.id} onClick={()=>onSelect(row)}>{new Date(row.created_at!).toLocaleString()} · {formatBytes(row.bytes)}</button>)}</div></details></>:<p className="backup-empty">No timestamped backup size measurements are available.</p>}{attempts.some(r=>r.status==='failed')&&<details><summary className="small">{attempts.filter(r=>r.status==='failed').length} failed attempts in retained execution history</summary><ul className="small">{attempts.filter(r=>r.status==='failed').map((r,index)=><li key={`${r.at}-${index}`}><LocalTime value={r.at}/> · {r.origin||'Unknown trigger'} · Failed (no recovery point)</li>)}</ul></details>}<p className="small muted">Up to 100 latest recovery points, one bar per archive. Outlined bars are manual or release copies. Removed archives and attempts without size measurements are not shown.</p></section>;
-}
-function BackupReliability({data}:{data:BackupOverview}) {
- const days:ReliabilityDay[]=data.reliability?recordedReliabilityDays(data.reliability.days):reliabilityFromInventory(data.items,data.receipts);
- return <section className="panel padded recovery-calendar" aria-label="Backup reliability calendar"><div className="panel-heading"><h3>Backup reliability</h3><span className="small muted">42 days · UTC</span></div><div className="recovery-calendar-grid" role="list" aria-label="Recorded backup outcomes by day">{days.map(day=><div role="listitem" className={`recovery-calendar-day ${day.status}`} key={day.date} title={`${day.date}: ${day.status}; ${day.successes} successful backups, ${day.failures} failures. ${day.reason||''}`} aria-label={`${day.date}: ${day.status}; ${day.successes} successful backups, ${day.failures} failures`}>{Number(day.date.slice(-2))}</div>)}</div><div className="recovery-calendar-legend"><span><i className="success"/>Successful</span><span><i className="failed"/>Failed</span><span>◐ Mixed</span><span><i/>Unknown</span></div><p className="small muted">{data.reliability?.truncated?'Partial history: more executions exist than the bounded receipt window can show. ':''}Unknown days have no complete execution or schedule evidence. An absent backup is never treated as a missed schedule.{data.reliability?.truncated?' Execution records are bounded and this period may be incomplete.':''}</p></section>;
+ return <section className="panel padded recovery-history" aria-label="Backup size history"><div className="panel-heading"><h3 id="backup-size-history" tabIndex={-1}>Backup size history</h3><span className="small muted">{stale?'Stale inventory':'Recorded recovery points'}</span></div>{points.length?<><DeferredChart option={option} label="Individual backup sizes over time; gold local and teal network storage" onSelect={index=>{if(points[index])onSelect(points[index],document.getElementById("backup-size-history")??undefined);}}/><div className="recovery-calendar-legend"><span><i style={{background:'#c5a263'}}/>Local</span><span><i style={{background:'#779a8c'}}/>Network</span></div><details><summary className="small">Select a recovery point without the chart</summary><div className="recovery-chart-points">{points.map(row=><button key={row.id} id={`backup-chart-point-${row.id}`} onClick={event=>onSelect(row,event.currentTarget)}>{new Date(row.created_at!).toLocaleString()} · {formatBytes(row.bytes)}</button>)}</div></details></>:<p className="backup-empty">No timestamped backup size measurements are available.</p>}{attempts.some(r=>r.status==='failed')&&<details><summary className="small">{attempts.filter(r=>r.status==='failed').length} failed attempts in retained execution history</summary><ul className="small">{attempts.filter(r=>r.status==='failed').map((r,index)=><li key={`${r.at}-${index}`}><LocalTime value={r.at}/> · {r.origin||'Unknown trigger'} · Failed (no recovery point)</li>)}</ul></details>}<p className="small muted">Up to 100 latest recovery points, one bar per archive. Outlined bars are manual or release copies. Removed archives and attempts without size measurements are not shown.</p></section>;
 }

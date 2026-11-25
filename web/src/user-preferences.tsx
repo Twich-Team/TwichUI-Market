@@ -11,7 +11,7 @@ export function MyPreferences() {
   const missing=values.market_id!==null&&markets.data&&!markets.data.markets.some(m=>m.id===values.market_id);
   return <section className="panel padded" aria-label="My Preferences">
     <h2>My Preferences</h2>
-    <p>Your choices save automatically to your account and follow you across devices.</p>
+    <p className="muted">Changes save automatically.</p>
     <div className="toolbar preferences-fields">
       <label>Preferred market
         <select value={values.market_id??''} onChange={event=>update({market_id:event.target.value?Number(event.target.value):null})} disabled={!markets.data}>
@@ -31,7 +31,6 @@ export function MyPreferences() {
         </select>
       </label>
     </div>
-    <p className="small muted">Item columns and sorting save from Market Explorer. Your Deal Finder mode and filter choices save as you change them. These choices never change collection schedules.</p>
     {markets.error&&<p role="alert">Market choices could not be loaded.</p>}
     <PreferenceStatus />
     <p><button className="secondary" onClick={reset}>Reset my preferences</button></p>

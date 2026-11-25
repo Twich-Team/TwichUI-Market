@@ -26,8 +26,8 @@ async function verifyCompanion(page){
   expect((await api.get(metadata.download_url)).status()).toBe(401);
   const download=await page.request.get(publicOrigin+metadata.download_url,{maxRedirects:0});expect(download.status()).toBe(200);
   const bytes=await download.body();expect(bytes.length).toBe(expected.installer_bytes);expect(bytes.length).toBeLessThanOrEqual(64*1024*1024);expect(createHash('sha256').update(bytes).digest('hex')).toBe(expected.installer_sha256);
-  await page.goto(publicOrigin+'/companion');await expect(page.getByRole('link',{name:'Download private beta',exact:true})).toBeVisible();
-  await page.getByText('Download integrity and Windows warnings',{exact:true}).click();await expect(page.getByText(/Keep Windows security protections enabled/)).toBeVisible();
+  await page.goto(publicOrigin+'/companion');await expect(page.getByRole('link',{name:'Download for Windows',exact:true})).toBeVisible();
+  await page.getByText('Download integrity and Windows warnings',{exact:true}).click();await expect(page.getByText(/If Windows blocks the installer/)).toBeVisible();
   await page.screenshot({path:root+'/production-companion-download.png',fullPage:true});
   const state=randomBytes(32).toString('base64url'),verifier=randomBytes(48).toString('base64url');let received;
   const returned=new Promise(resolve=>{received=resolve});

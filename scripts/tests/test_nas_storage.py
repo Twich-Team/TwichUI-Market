@@ -52,6 +52,20 @@ class NASStorage(unittest.TestCase):
         job=self.manager.migration_queue('admin:1',self.key,plan)
         return self.manager.migrate('admin:1',job['id'])
 
+    def test_keep_flag_removal_preserves_recovery_pin_and_manual_origin(self):
+        key, name = self.archive()
+        manifest = self.manager.read_json(name[:-5] + '.json')
+        manifest['recovery_pin'] = True
+        self.manager.write_json(name[:-5] + '.json', manifest)
+        self.manager.protect('admin:1', key, False)
+        overview = self.manager.overview()
+        row = next(item for item in overview['items'] if item['id'] == key)
+        self.assertFalse(row['keep_flag'])
+        self.assertTrue(row['recovery_pin'])
+        self.assertTrue(row['protected'])
+        self.assertEqual(row['origin'], 'manual')
+        self.assertEqual(overview['preview']['candidates'], [])
+
     def test_protected_deletion_requires_both_acknowledgements_without_unprotect(self):
         key,name=self.archive()
         with self.assertRaises(Refused):self.manager.delete('admin:1',key,name,confirm_protected=True)

@@ -49,7 +49,7 @@ def fixture_beta(tmp_path,monkeypatch,version='2.0.0-beta.1',source='b'*40):
     for name,value in documents.items():
         path=directory/name;path.write_text(json.dumps(value));manifest['evidence_sha256'][name]=hashlib.sha256(path.read_bytes()).hexdigest()
     (directory/'manifest.json').write_text(json.dumps(manifest));(root/'current.json').write_text(json.dumps({'schema_version':1,'version':version}))
-    monkeypatch.setenv('COMPANION_PRIVATE_BETA_DIRECTORY',str(root));monkeypatch.setenv('COMPANION_PRIVATE_BETA_USER_IDS','1')
+    monkeypatch.setenv('COMPANION_PRIVATE_BETA_DIRECTORY',str(root))
     return root,directory,manifest,payload
 
 
@@ -58,7 +58,7 @@ def change_evidence(directory,manifest,name,changes):
     manifest['evidence_sha256'][name]=hashlib.sha256(path.read_bytes()).hexdigest();(directory/'manifest.json').write_text(json.dumps(manifest))
 
 
-def test_private_beta_needs_active_allowlisted_browser_session_and_never_becomes_public_update(client,owner,tmp_path,monkeypatch,database):
+def test_private_beta_needs_active_browser_session_and_never_becomes_public_update(client,owner,tmp_path,monkeypatch,database):
     _,_,manifest,payload=fixture_beta(tmp_path,monkeypatch)
     current=owner.get('/api/v1/companion/private-beta/current');assert current.status_code==200
     value=current.json();assert value['ready'] and value['channel']=='private-beta' and not value['signed']
@@ -76,23 +76,37 @@ def test_private_beta_needs_active_allowlisted_browser_session_and_never_becomes
     assert owner.get('/api/v1/companion/private-beta/current').status_code==401
 
 
-@pytest.mark.parametrize('allowlist',['','2','0','1,2,3,4','1,1','1, 2','1,invalid','1,'+'2'*130])
-def test_missing_malformed_or_other_account_allowlist_denies_even_administrator(owner,tmp_path,monkeypatch,allowlist):
-    fixture_beta(tmp_path,monkeypatch);monkeypatch.setenv('COMPANION_PRIVATE_BETA_USER_IDS',allowlist)
-    assert owner.get('/api/v1/companion/private-beta/current').status_code==404
-
-
-def test_individual_member_allowlist_and_revocation_are_checked_on_each_download(owner,tmp_path,monkeypatch,database):
-    fixture_beta(tmp_path,monkeypatch)
+@pytest.mark.parametrize('legacy_pilot', [None, '1'])
+def test_member_beta_access_stops_immediately_on_account_disable(owner,tmp_path,monkeypatch,database,legacy_pilot):
+    _,_,manifest,payload = fixture_beta(tmp_path,monkeypatch)
+    if legacy_pilot is None:
+        monkeypatch.delenv('COMPANION_PRIVATE_BETA_USER_IDS',raising=False)
+    else:
+        monkeypatch.setenv('COMPANION_PRIVATE_BETA_USER_IDS',legacy_pilot)
     with database.begin() as db:
-        user=User(username='pilot_member',role='member',password_hash=hasher.hash('synthetic pilot password'));db.add(user);db.flush();member_id=user.id
-    owner.cookies.clear();assert owner.post('/api/v1/auth/login',json={'username':'pilot_member','password':'synthetic pilot password'}).status_code==200
-    assert owner.get('/api/v1/companion/private-beta/current').status_code==404
-    monkeypatch.setenv('COMPANION_PRIVATE_BETA_USER_IDS',str(member_id))
-    url=owner.get('/api/v1/companion/private-beta/current').json()['download_url'];assert owner.get(url).status_code==200
+        member = User(username='beta_member',role='member',password_hash=hasher.hash('synthetic member password'))
+        db.add(member)
+        db.flush()
+        member_id = member.id
+    owner.cookies.clear()
+    session = owner.post('/api/v1/auth/login',json={'username':'beta_member','password':'synthetic member password'})
+    assert session.status_code == 200
+    owner.headers['x-csrf-token'] = session.json()['csrf_token']
+    prefix = '/api/v1/companion/private-beta'
+    current = owner.get(prefix+'/current').json()
+    assert current['ready'] and current['sha256'] == manifest['sha256']
+    asset = current['download_url']
+    assert owner.get(asset).content == payload
+    token = owner.post('/api/v1/devices',json={'name':'Review update client'}).json()['token']
+    bearer = {'Authorization':'Bearer '+token}
+    feed = prefix+'/update/windows-x86_64/0.1.0'
+    assert owner.get(feed,headers=bearer).json()['signature'] == manifest['updater_signature']
+    assert owner.get(asset,headers=bearer).content == payload
+    assert owner.get(prefix+'/current',headers=bearer).status_code == 403
     with database.begin() as db:
-        for row in db.query(Credential).filter(Credential.user_id==member_id):row.revoked=True
-    assert owner.get(url).status_code==401
+        db.get(User,member_id).active = False
+    for path,headers in [(prefix+'/current',{}),(asset,{}),(asset,bearer),(feed,bearer)]:
+        assert owner.get(path,headers=headers).status_code == 401
 
 
 @pytest.mark.parametrize('field,value',[
@@ -190,8 +204,7 @@ def test_private_update_feed_is_owned_signed_and_never_downgrades(owner,tmp_path
     if status==200:
         assert response.json()['signature']==manifest['updater_signature']
         assert response.json()['url']=='https://market.twich.gg/api/v1/companion/private-beta/2.0.0-beta.1/windows-x64'
-    monkeypatch.setenv('COMPANION_PRIVATE_BETA_USER_IDS','2')
-    assert owner.get(endpoint,headers={'Authorization':'Bearer '+token}).status_code==404
+
 
 
 @pytest.mark.parametrize('proof,changes',[

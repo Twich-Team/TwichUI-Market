@@ -3,8 +3,8 @@ import { currentLocation, explorerState, explorerUrl, navigate, restoration, sav
 import { usePreferences } from "./preferences";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState, DependencyList } from "react";
-import { api, when } from "./api";
-import { ItemCatalogue } from "./catalogue";
+import { localTimestamp } from "./local-time";
+import { ItemCatalogue, type CatalogueSummary } from "./catalogue";
 import { Market } from "./types";
 
 export function useLoad<T>(
@@ -56,21 +56,62 @@ export function MarketSelect({
     </label>
   );
 }
-export function Freshness({ market }: { market: Market }) {
+function sourceAge(timestamp: number, now: number): string {
+  const minutes = Math.max(0, Math.floor((now - timestamp) / 60_000));
+  if (minutes === 0) return "less than a minute ago";
+  const [amount, unit] = minutes < 60 ? [minutes, "minute"] : minutes < 1440
+    ? [Math.floor(minutes / 60), "hour"] : [Math.floor(minutes / 1440), "day"];
+  return `${amount} ${unit}${amount === 1 ? "" : "s"} ago`;
+}
+
+function sourceTiming(market: Market) {
+  const modified = Date.parse(market.last_modified ?? "");
+  const now = Date.now();
+  return Number.isFinite(modified) && modified <= now + 5 * 60_000
+    ? {iso: new Date(modified).toISOString(), age: sourceAge(modified, now)}
+    : undefined;
+}
+
+function collectionIssue(market: Market) {
+  if (!market.verified) return "Collection waits for an administrator to verify this market.";
+  if (!market.enabled) return "Collection is paused. Prices come from the last available snapshot.";
+  if (market.coverage_status === "partial") return "Some auction data could not be checked. Prices and supply may be incomplete.";
+}
+
+export function MarketPageHeading({title, market}: {title: string; market?: Market}) {
+  const source = market && sourceTiming(market);
+  const issue = market && collectionIssue(market);
+  return <>
+    <div className="market-page-heading">
+      <h1>{title}</h1>
+      {market && <span className="small muted">{source
+        ? <time dateTime={source.iso} title={localTimestamp(source.iso)}>Source updated {source.age}</time>
+        : "Source update time unavailable"}</span>}
+    </div>
+    {issue && <p className="notice">{issue}</p>}
+  </>;
+}
+
+export function Freshness({ market, refreshedAt }: { market: Market; refreshedAt?: number }) {
+  const source = sourceTiming(market);
+  const issue = collectionIssue(market) ?? (market.freshness === "stale"
+    ? "Prices may have changed since the last source update. Market checks run automatically."
+    : !source ? "The source has supplied no usable update time." : undefined);
   return (
-    <div className="freshness">
-      <span className={`dot ${market.freshness}`} />
-      <strong>
-        {market.freshness === "unknown"
-          ? "Source freshness unknown"
-          : market.freshness === "stale"
-            ? "Source data is stale"
-            : "Source data current"}
-      </strong>
-      <span>Last successful check: {when(market.last_success)}</span>
-      {!market.verified && (
-        <span>Mapping not live-verified · collection disabled</span>
-      )}
+    <div className="player-freshness">
+      <div className="player-freshness-line">
+        <span className={`dot ${market.freshness}`} aria-hidden="true"/>
+        <span>{source ? `Source updated ${source.age}` : "Source update time unavailable"}</span>
+        <details className="player-freshness-details">
+          <summary>Timing</summary>
+          <dl>
+            <dt>Source updated</dt><dd>{source ? localTimestamp(market.last_modified) : "Unrecorded"}</dd>
+            <dt>Last checked</dt><dd>{localTimestamp(market.last_success)}</dd>
+            <dt>View refreshed</dt><dd>{localTimestamp(refreshedAt ? new Date(refreshedAt).toISOString() : undefined)}</dd>
+          </dl>
+        </details>
+      </div>
+      {issue && <p className="player-freshness-issue">{issue}</p>}
     </div>
   );
 }
@@ -80,24 +121,31 @@ export function Explorer({markets,market,setMarket,searchParams,marketsReady}: {
   const preferences=usePreferences();
   const state=explorerState(searchParams,{market,query:'',sort:preferences.values.item_sort,pageIndex:0,pageSize:preferences.values.item_page_size});
   const [search,setSearch]=useState(()=>restoration()?.draft??state.query);
-  const [summary,setSummary]=useState({synthetic:false,empty:false});
+  const [summary,setSummary]=useState<CatalogueSummary>({synthetic:false});
   const current=markets.find(row=>row.id===state.market);
   useEffect(()=>{setSearch(restoration()?.draft??state.query);},[state.query,state.market]);
   useEffect(()=>{if(markets.length&&current&&currentLocation()!==explorerUrl(state))navigate(explorerUrl(state),true);},[markets.length,state.market,state.query,state.sort.id,state.sort.desc,state.pageIndex,state.pageSize]);
   function change(next:ExplorerState){navigate(explorerUrl(next),true);}
-  return <div className="explorer-page">
-    <h1>Market Explorer</h1>
-
-    <form className="toolbar" onSubmit={event=>{event.preventDefault();saveRestoration({draft:search,expanded:{}});change({...state,query:search,pageIndex:0});}}>
-      <label className="grow">Search items<input value={search} onChange={e=>{setSearch(e.target.value);saveRestoration({draft:e.target.value});}} placeholder="Item name or ID, e.g. Arcane Crystal" maxLength={64}/></label>
-      <MarketSelect markets={markets} market={state.market} setMarket={id=>{setMarket(id);saveRestoration({draft:'',expanded:{}});change({...state,market:id,query:'',pageIndex:0});}}/>
+  const marketDetails = summary.market?.id === state.market ? summary.market : current;
+  const searchForm = <form className="toolbar explorer-search" onSubmit={event=>{event.preventDefault();saveRestoration({draft:search,expanded:{},variantComparison:{},catalogueScrollLeft:0});change({...state,query:search.trim(),pageIndex:0});}}>
+      <MarketSelect markets={markets} market={state.market} setMarket={id=>{setMarket(id);setSummary({synthetic:false});saveRestoration({draft:'',expanded:{},variantComparison:{},catalogueScrollLeft:0});change({...state,market:id,query:'',pageIndex:0});}}/>
+      <div className="explorer-search-field">
+        <label>Search items<input type="search" enterKeyHint="search" value={search} onChange={e=>{setSearch(e.target.value);saveRestoration({draft:e.target.value});}} placeholder="Item name or ID" maxLength={64}/></label>
+        {(search || state.query) && <button type="button" className="secondary" onClick={() => {
+          setSearch("");
+          saveRestoration({draft:"",expanded:{},variantComparison:{},catalogueScrollLeft:0});
+          change({...state,query:"",pageIndex:0});
+        }}>Clear</button>}
+      </div>
       <button className="primary" disabled={!current}>Search</button>
-    </form>
-    {current&&(current.freshness!=="current"||!current.verified)&&<p className="small muted explorer-freshness" title={`Last collection check: ${when(current.last_success)}`}>{current.freshness==="stale"?"Source data is stale":current.freshness==="unknown"?"Source freshness unknown":""}{!current.verified&&" · Mapping not live-verified; collection disabled"}</p>}
+    </form>;
+  return <div className="explorer-page">
+    <MarketPageHeading title="Market Explorer" market={marketDetails}/>
+    {!current && searchForm}
     {!marketsReady&&<Loading label="Loading available markets…" />}
     {marketsReady&&!markets.length&&<p className="empty panel">No market mappings are configured. An administrator can add a mapping under Administration.</p>}
     {markets.length>0&&!current&&<p className="notice" role="alert">This market is unavailable. Choose an available market to browse; your link has not been moved to another market.</p>}
     {summary.synthetic&&<p className="notice warning">Synthetic fixture data · not live Auction House observations.</p>}
-    {current&&<ItemCatalogue key={`${state.market}:${state.query}`} market={state.market} query={state.query} state={state} onChange={change} onSummary={setSummary}/>}
+    {current&&<ItemCatalogue key={`${state.market}:${state.query}`} market={state.market} query={state.query} state={state} onChange={change} onSummary={setSummary} searchForm={searchForm}/>}
   </div>;
 }

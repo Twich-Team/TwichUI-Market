@@ -54,7 +54,7 @@ const {createHash}=require('node:crypto');const fs=require('node:fs');const path
     const initialSyncMs=performance.now()-firstSyncStart;
     await page.evaluate(()=>window.scrollTo(0,0));await page.screenshot({path:path.join(shots,'native-dashboard.png'),fullPage:true});
     await website.goto(process.env.MARKET_TEST_SERVER+'/companion');
-    await expect(website.getByText('Installed Windows fixture is connected.',{exact:true})).toBeVisible();
+    await expect(website.locator('.companion-recent').getByRole('heading',{name:'Installed Windows fixture',exact:true})).toBeVisible();
     await website.screenshot({path:path.join(shots,'website-wizard.png'),fullPage:true});
     await website.goto(process.env.MARKET_TEST_SERVER+'/account');
     await expect(website.getByRole('heading',{name:'Installed Windows fixture',exact:true})).toBeVisible();

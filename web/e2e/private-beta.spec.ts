@@ -3,18 +3,17 @@ import AxeBuilder from "@axe-core/playwright";
 import { readFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 
-test("private pilot receives an honest unsigned beta download and loses it after account change", async ({page}) => {
+test("active members can download the verified beta across isolated sessions", async ({page}) => {
   expect(new URL(process.env.BASE_URL || "http://proxy").hostname).toBe("proxy");
   await page.goto("/companion");
   await page.getByLabel("Username",{exact:true}).fill("private_pilot");
   await page.getByLabel("Password",{exact:true}).fill("synthetic private pilot password");
   await page.getByRole("button",{name:"Sign in",exact:true}).click();
-  await expect(page.getByText("Private Windows beta",{exact:true})).toBeVisible();
-  await expect(page.getByText("Updates are checked automatically and verified before installation. You choose when to install. Tray actions still need checking on your PC.",{exact:true})).toBeVisible();
-  await expect(page.getByText(/The installer is unsigned/)).toBeVisible();
+  await expect(page.getByText("Beta",{exact:true})).toBeVisible();
+  await expect(page.getByText("Windows may show an unknown-publisher warning. Updates are signed and require your consent.",{exact:true})).toBeVisible();
   await expect(page.getByText(/The installer is signed and this release/)).toHaveCount(0);
   const metadata=await (await page.request.get("/api/v1/companion/private-beta/current")).json();
-  const link=page.getByRole("link",{name:"Download private beta"});
+  const link=page.getByRole("link",{name:"Download for Windows"});
   await expect(link).toHaveAttribute("href",metadata.download_url);
   const pending=page.waitForEvent("download");await link.click();const download=await pending;
   const file=await download.path();expect(file).toBeTruthy();
@@ -29,16 +28,16 @@ test("private pilot receives an honest unsigned beta download and loses it after
   await page.screenshot({path:"../artifacts/companion-v2/private-beta-wizard-mobile.png",fullPage:true});
   await page.setViewportSize({width:1240,height:900});
   await page.screenshot({path:"../artifacts/companion-v2/private-beta-wizard.png",fullPage:true});
-  await page.reload();await expect(page.getByRole("link",{name:"Download private beta"})).toBeVisible();
+  await page.reload();await expect(page.getByRole("link",{name:"Download for Windows"})).toBeVisible();
   await page.getByRole("button",{name:"Sign out",exact:true}).click();
   await expect(page.getByLabel("Username",{exact:true})).toBeVisible();
   expect((await page.request.get(metadata.download_url)).status()).toBe(401);
   await page.getByLabel("Username",{exact:true}).fill("member_fixture");
   await page.getByLabel("Password",{exact:true}).fill("synthetic browser member password");
   await page.getByRole("button",{name:"Sign in",exact:true}).click();
-  await expect(page.getByRole("heading",{name:"Your market, ready on your PC.",exact:true})).toBeVisible();
-  await expect(page.getByRole("link",{name:"Download private beta"})).toHaveCount(0);
-  expect((await page.request.get(metadata.download_url)).status()).toBe(404);
+  await expect(page.getByRole("heading",{name:"Desktop Companion",exact:true})).toBeVisible();
+  await expect(page.getByRole("link",{name:"Download for Windows"})).toBeVisible();
+  expect((await page.request.get(metadata.download_url)).status()).toBe(200);
 });
 
 test("private download metadata failure can be retried without claiming a release", async ({page}) => {
@@ -47,9 +46,9 @@ test("private download metadata failure can be retried without claiming a releas
   await page.getByLabel("Username",{exact:true}).fill("private_pilot");
   await page.getByLabel("Password",{exact:true}).fill("synthetic private pilot password");
   await page.getByRole("button",{name:"Sign in",exact:true}).click();
-  await expect(page.getByText("Private download information is unavailable. Please try again.",{exact:true})).toBeVisible();
-  await expect(page.getByRole("link",{name:"Download private beta"})).toHaveCount(0);
+  await expect(page.getByText("Download information could not be loaded.",{exact:true})).toBeVisible();
+  await expect(page.getByRole("link",{name:"Download for Windows"})).toHaveCount(0);
   await page.unroute("**/api/v1/companion/private-beta/current");
-  await page.getByRole("button",{name:"Check private download again",exact:true}).click();
-  await expect(page.getByRole("link",{name:"Download private beta"})).toBeVisible();
+  await page.getByRole("button",{name:"Check downloads again",exact:true}).click();
+  await expect(page.getByRole("link",{name:"Download for Windows"})).toBeVisible();
 });

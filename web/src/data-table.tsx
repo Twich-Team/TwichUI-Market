@@ -5,6 +5,8 @@ import {
   type Table,
   OnChangeFn,
   PaginationState,
+  RowSelectionState,
+  type Column,
   SortingState,
   VisibilityState,
   ColumnFiltersState,
@@ -16,6 +18,24 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { Menu } from "@base-ui/react/menu";
+export function SortIndicator({direction}: {direction: false | "asc" | "desc"}) {
+  return <span aria-hidden="true">{direction === "asc" ? " ↑" : direction === "desc" ? " ↓" : " ↕"}</span>;
+}
+
+function columnLabel<T>(column: Column<T, unknown>) {
+  const meta = column.columnDef.meta as {columnLabel?: string} | undefined;
+  return meta?.columnLabel ?? (typeof column.columnDef.header === "string" ? column.columnDef.header : column.id);
+}
+
+interface TableSelection<T> {
+  state: RowSelectionState;
+  onChange: OnChangeFn<RowSelectionState>;
+  canSelect: (row: T) => boolean;
+  label: (row: T) => string;
+  selectPageLabel?: string;
+  disabled?: boolean;
+}
+
 export function ColumnMenu<T>({table,closeAfterChange=false}:{table:Table<T>;closeAfterChange?:boolean}) {
   const [open,setOpen]=useState(false);
   return <Menu.Root open={open} onOpenChange={setOpen}>
@@ -30,6 +50,7 @@ export function ColumnMenu<T>({table,closeAfterChange=false}:{table:Table<T>;clo
                     <Menu.CheckboxItem
                       key={column.id}
                       checked={column.getIsVisible()}
+                      disabled={column.getIsVisible() && table.getVisibleLeafColumns().length === 1}
                       onCheckedChange={(value) => {column.toggleVisibility(value);if(closeAfterChange)setOpen(false);}}
                     >
                       {typeof column.columnDef.header === "string"
@@ -59,6 +80,8 @@ export function DataTable<T>({
   renderDetails,
   filters = [],
   toolbar,
+  compact = false,
+  selection,
 }: {
   data: T[];
   columns: ColumnDef<T>[];
@@ -66,13 +89,16 @@ export function DataTable<T>({
   initialSorting?: SortingState;
   getRowId?: (row: T) => string;
   loading?: boolean;
-  error?: string;
+  error?: ReactNode;
   emptyMessage?: string;
   renderDetails?: (row: T) => ReactNode;
   filters?: { id: string; label: string; options: { value: string; label: string }[] }[];
   toolbar?: ReactNode;
+  compact?: boolean;
+  selection?: TableSelection<T>;
   server?: {
     rowCount: number;
+    pageSizeOptions?: number[];
     pagination: PaginationState;
     sorting: SortingState;
     onPaginationChange: OnChangeFn<PaginationState>;
@@ -91,6 +117,7 @@ export function DataTable<T>({
     getRowId,
     columns,
     state: {
+      rowSelection: selection?.state ?? {},
       globalFilter: filter,
       sorting: server?.sorting ?? sorting,
       columnVisibility: visibility,
@@ -100,7 +127,9 @@ export function DataTable<T>({
     onGlobalFilterChange: value => { setFilter(value); table.setPageIndex(0); },
     onColumnFiltersChange: value => { setColumnFilters(value); table.setPageIndex(0); },
     onSortingChange: server?.onSortingChange ?? setSorting,
-    onPaginationChange: server?.onPaginationChange,
+    ...(server ? {onPaginationChange: server.onPaginationChange} : {}),
+    enableRowSelection: row => Boolean(selection && !selection.disabled && selection.canSelect(row.original)),
+    onRowSelectionChange: selection?.onChange,
     autoResetPageIndex: false,
     manualPagination: !!server,
     manualSorting: !!server,
@@ -120,11 +149,19 @@ export function DataTable<T>({
       table.setPageIndex(Math.max(0, pageCount - 1));
     }
   }, [loading, pageIndex, pageCount, table]);
+  const selectableRows = selection ? table.getRowModel().rows.filter(row => row.getCanSelect()) : [];
+  const pageSelection = selection && <label className="table-select-target"><input type="checkbox"
+    aria-label={selection.selectPageLabel ?? "Select eligible rows on this page"}
+    ref={node => {if (node) node.indeterminate = table.getIsSomePageRowsSelected();}}
+    checked={selectableRows.length > 0 && selectableRows.every(row => row.getIsSelected())}
+    disabled={!selectableRows.length} onChange={table.getToggleAllPageRowsSelectedHandler()} /></label>;
+  const sortBy = table.getState().sorting[0];
+  const mobileSort = table.getVisibleLeafColumns().filter(column => column.getCanSort());
   return (
     <div className="managed-table" aria-busy={loading}>
       <div className="managed-table-controls">
         {toolbar}
-        {!server && (
+        {!server && !compact && (
           <label>
             Search {label}
             <input
@@ -139,9 +176,21 @@ export function DataTable<T>({
             <option value="">All</option>{options.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
           </select>
         </label>)}
-        <ColumnMenu table={table}/>
+        {!compact && <ColumnMenu table={table}/>}
       </div>
-      <p className="table-scroll-hint">Scroll the table sideways to see all columns and actions.</p>
+      {mobileSort.length > 0 && data.length > 1 && <label className="table-phone-sort">Sort {label}
+        <select value={sortBy ? JSON.stringify([sortBy.id,sortBy.desc]) : ""}
+          onChange={event => {
+            if (!event.target.value) { table.setSorting([]); return; }
+            const [id, desc] = JSON.parse(event.target.value) as [string, boolean];
+            table.setSorting([{id, desc}]);
+          }}>
+          <option value="">Default order</option>
+          {mobileSort.flatMap(column => [false,true].map(desc => <option key={column.id+desc} value={JSON.stringify([column.id,desc])}>
+            {columnLabel(column)} · {desc ? "descending" : "ascending"}</option>))}
+        </select>
+      </label>}
+      {selection && <div className="table-phone-selection">{pageSelection} Select this page</div>}
       <div
         className="table-scroll"
         role="region"
@@ -152,6 +201,7 @@ export function DataTable<T>({
           <thead>
             {table.getHeaderGroups().map((group) => (
               <tr key={group.id}>
+                {selection && <th scope="col">{pageSelection}</th>}
                 {renderDetails && <th scope="col">Details</th>}
                 {group.headers.map((header) => (
                   <th
@@ -180,11 +230,7 @@ export function DataTable<T>({
                           header.column.columnDef.header,
                           header.getContext(),
                         )}
-                        {header.column.getIsSorted() === "asc"
-                          ? " ↑"
-                          : header.column.getIsSorted() === "desc"
-                            ? " ↓"
-                            : " ↕"}
+                        <SortIndicator direction={header.column.getIsSorted()}/>
                       </button>
                     ) : (
                       flexRender(
@@ -198,13 +244,17 @@ export function DataTable<T>({
             ))}
           </thead>
           <tbody>
-            {loading && !data.length && <tr aria-hidden="true"><td colSpan={table.getVisibleLeafColumns().length+(renderDetails?1:0)}><div className="loading-skeleton"><span/><span/><span/></div></td></tr>}
+            {loading && !data.length && <tr aria-hidden="true"><td colSpan={table.getVisibleLeafColumns().length+(renderDetails?1:0)+(selection?1:0)}><div className="loading-skeleton"><span/><span/><span/></div></td></tr>}
             {table.getRowModel().rows.map((row) => (
               <Fragment key={row.id}><tr>
-                {renderDetails && <td><button aria-label={`${expanded[row.id] ? "Hide" : "Show"} details for ${label} ${row.id}`} aria-expanded={!!expanded[row.id]} aria-controls={`${tableId}-${row.id}`} onClick={() => setExpanded(value => ({ ...value, [row.id]: !value[row.id] }))}>{expanded[row.id] ? "−" : "+"}</button></td>}
+                {selection && <td data-label="Select"><span className="table-cell-label">Select</span><label className="table-select-target"><input type="checkbox"
+                  checked={row.getIsSelected()} disabled={!row.getCanSelect()} aria-label={selection.label(row.original)}
+                  onChange={row.getToggleSelectedHandler()} /></label></td>}
+                {renderDetails && <td data-label="Details"><button aria-label={`${expanded[row.id] ? "Hide" : "Show"} details for ${label} ${row.id}`} aria-expanded={!!expanded[row.id]} aria-controls={`${tableId}-${row.id}`} onClick={() => setExpanded(value => ({ ...value, [row.id]: !value[row.id] }))}>{expanded[row.id] ? "Hide" : "Details"}</button></td>}
                 {row.getVisibleCells().map((cell) => (
                   <td
                     key={cell.id}
+                    data-label={columnLabel(cell.column)}
                     className={
                       (cell.column.columnDef.meta as { numeric?: boolean })
                         ?.numeric
@@ -212,21 +262,22 @@ export function DataTable<T>({
                         : undefined
                     }
                   >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    <span className="table-cell-label">{columnLabel(cell.column)}</span>
+                    <div className="table-cell-value">{flexRender(cell.column.columnDef.cell, cell.getContext())}</div>
                   </td>
                 ))}
               </tr>
-              {renderDetails && expanded[row.id] && <tr><td id={`${tableId}-${row.id}`} colSpan={row.getVisibleCells().length + 1} className="table-row-details">{renderDetails(row.original)}</td></tr>}</Fragment>
+              {renderDetails && expanded[row.id] && <tr><td id={`${tableId}-${row.id}`} colSpan={row.getVisibleCells().length + 1 + (selection ? 1 : 0)} className="table-row-details">{renderDetails(row.original)}</td></tr>}</Fragment>
             ))}
           </tbody>
         </table>
       </div>
-      {loading && <Loading label={`Loading ${label}…`} inline/>}
+      {loading && <Loading label={`${data.length ? "Refreshing" : "Loading"} ${label}…`} inline/>}
       {error && <p className="notice error" role="alert">{error}</p>}
       {!loading && !error && !table.getRowModel().rows.length && (
         <p className="empty">{emptyMessage}</p>
       )}
-      <div className="table-pagination">
+      {(!compact || pageCount > 1) && !(loading && !data.length) && <div className="table-pagination">
         <span aria-live="polite">
           {server?.rowCount ?? table.getFilteredRowModel().rows.length} records
           · Page {table.getState().pagination.pageIndex + 1} of{" "}
@@ -244,8 +295,8 @@ export function DataTable<T>({
         >
           Next {label}
         </button>
-        <label>Rows per page<select value={table.getState().pagination.pageSize} onChange={e => table.setPageSize(Number(e.target.value))}>{[10, 25, 50, 100].map(size => <option key={size} value={size}>{size}</option>)}</select></label>
-      </div>
+        {!compact && <label>Rows per page<select value={table.getState().pagination.pageSize} onChange={e => table.setPageSize(Number(e.target.value))}>{(server?.pageSizeOptions ?? [10, 25, 50, 100]).map(size => <option key={size} value={size}>{size}</option>)}</select></label>}
+      </div>}
     </div>
   );
 }

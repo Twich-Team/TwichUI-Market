@@ -14,38 +14,37 @@ async function shot(page:Page,name:string,fullPage=true){await page.screenshot({
 async function axe(page:Page){expect((await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa']).analyze()).violations).toEqual([]);}
 test('usability M1: reversible account and device archives and honest status',async({page})=>{
   await login(page); await page.goto('/administration');
-  await expect(page.getByText(/authorized devices/)).toBeVisible();
-  await expect(page.getByText('Online status unavailable',{exact:true})).toBeVisible();
+  const deviceCard=page.getByRole('article',{name:'Devices',exact:true});
+  await expect(deviceCard).toContainText(/authorized device/i);
+  await expect(deviceCard).toContainText(/contacted Market in the last 15 minutes|no Companion or legacy devices with current access/i);
   await shot(page,'m1-overview');
-  await page.getByRole('tab',{name:'Members & invitations',exact:true}).click();
+  await page.getByRole("link",{name:'Members',exact:true}).click();
+  await page.getByRole('button',{name:'Disabled & archived',exact:true}).click();
   const row=page.getByRole('row').filter({hasText:'obsolete_fixture'});
   await row.getByRole('button',{name:'Archive account',exact:true}).click();
   await expect(page.getByRole('dialog').getByRole('button',{name:'Confirm archive',exact:true})).toBeDisabled();
   await page.getByRole('dialog').getByLabel('Type obsolete_fixture to confirm').fill('obsolete_fixture');
   await shot(page,'member-archive-confirmation',false); await axe(page);
   await page.getByRole('dialog').getByRole('button',{name:'Confirm archive',exact:true}).click();
-  await expect(row).toHaveCount(0);
-  await page.getByLabel('Include archived accounts').check();
   await expect(row).toContainText('Archived');
   await row.getByRole('button',{name:'Restore listing',exact:true}).click();
   await expect(row).toContainText('Disabled');
   await page.goto('/account');
   const devices=page.getByRole('region',{name:'My desktop companions',exact:true});
+  await devices.getByRole('button',{name:'Access history',exact:true}).click();
   const old=page.getByRole('article',{name:'Obsolete synthetic PC device',exact:true});
   await old.getByRole('button',{name:'Archive entry',exact:true}).click();
   await page.getByRole('dialog').getByLabel('Type Obsolete synthetic PC to confirm').fill('Obsolete synthetic PC');
   await shot(page,'device-archive-confirmation',false); await axe(page);
   await page.getByRole('dialog').getByRole('button',{name:'Confirm archive',exact:true}).click();
-  await expect(old).toHaveCount(0);
-  await devices.getByLabel('Include archived entries').check();
-  await expect(old).toBeVisible();
+  await expect(old).toContainText('Archived');
   await old.getByRole('button',{name:'Restore listing',exact:true}).click();
   await expect(old).toContainText('Revoked');
 });
 test('usability M1: local deal icons load without hover through delays filters scrolling cache and mobile',async({page})=>{
   const external:string[]=[];
   page.on('request',req=>{if(new URL(req.url()).hostname!=='proxy')external.push(req.url());});
-  await login(page); await page.goto('/deals');
+  await login(page); await page.goto('/deals?mode=listings&coverage=3&change=15&confidence=limited');
   const markets=await (await page.request.get('/api/v1/markets')).json();
   const market=markets.markets.find((m:{label:string})=>m.label==='Synthetic usability review');
   await page.getByRole('combobox',{name:'Market',exact:true}).selectOption(String(market.id));
@@ -72,22 +71,29 @@ test('usability M1: local deal icons load without hover through delays filters s
 test('usability M2: operational overview, measured coverage tables and allocation history',async({page})=>{
   test.setTimeout(60000);
   await login(page);await page.goto('/administration');
-  await expect(page.getByRole('region',{name:'Operational overview',exact:true})).toBeVisible();
-  await expect(page.getByText('ITEM NAMES',{exact:true})).toBeVisible();
-  await page.getByRole('region',{name:'Operational overview',exact:true}).screenshot({path:`${output}/administration-overview.png`});await axe(page);
-  await page.getByRole('button',{name:'Metadata coverage ↗',exact:true}).click();
+  const overview=page.getByRole('region',{name:'Operational overview',exact:true});
+  await expect(overview.getByRole('heading',{name:'System status',exact:true})).toBeVisible();
+  for(const title of ['Collection','Item Metadata','Data Sources','Backups','Devices','Security events']){
+    const module=overview.getByRole('article',{name:title,exact:true});
+    await expect(module.getByRole('heading',{name:title,level:4})).toBeVisible();
+    await expect(module.getByRole('link').first()).toBeVisible();
+  }
+  await overview.screenshot({path:`${output}/administration-overview.png`});await axe(page);
+  await overview.getByRole('article',{name:'Item Metadata',exact:true}).getByRole('link').first().click();
   await expect(page.getByRole('region',{name:'Item metadata summary',exact:true})).toBeVisible();
-  await expect(page.getByText('Useful attributes',{exact:true})).toBeVisible();
+  await expect(page.getByRole('heading',{name:'Item attributes',exact:true})).toBeVisible();
+  await page.getByText('Coverage charts and measurement details',{exact:true}).click();
   await page.getByRole('heading',{name:'Stored field coverage',exact:true}).scrollIntoViewIfNeeded();
   await expect(page.getByRole('img',{name:'Stored names, icons and attributes; available versus missing',exact:true})).toBeVisible();
   await page.getByRole('region',{name:'Item metadata summary',exact:true}).screenshot({path:`${output}/metadata-summary.png`});await axe(page);
+  await page.getByRole('button',{name:'Provider evidence',exact:true}).click();
   await page.getByRole('heading',{name:'Provider metadata coverage',exact:true}).scrollIntoViewIfNeeded();
   const provider=page.getByRole('article',{name:'Everloot coverage',exact:true});
   await provider.getByText('Field breakdown',{exact:true}).click();
   await expect(page.getByRole('table',{name:'Everloot field coverage',exact:true})).toBeVisible();
   await provider.getByText('Build & source qualifications',{exact:true}).click();
   await page.getByRole('region',{name:'Provider metadata coverage',exact:true}).screenshot({path:`${output}/provider-coverage.png`});await axe(page);
-  await page.getByRole('tab',{name:'Storage & backups',exact:true}).click();
+  await page.getByRole("link",{name:'Storage & Backups',exact:true}).click();
   await page.getByRole('heading',{name:'Database Growth',exact:true}).scrollIntoViewIfNeeded();
   await expect(page.getByRole('img',{name:'Database allocated size over time; gaps have no measurements',exact:true})).toBeVisible();
   await expect(page.getByText(/1 measurement gaps/)).toBeVisible();
@@ -109,10 +115,10 @@ test('usability M3: compact Explorer, precise metric help, actual intraday views
  const variant=variants.variants[0].variant_key;
  await page.goto(`/markets/${market.id}/items/31000?variant=${variant}`);
  await expect(page.getByLabel('Exact variant current market',{exact:true})).toBeVisible();
- const help=page.getByRole('button',{name:'About Lowest Buyout / Unit',exact:true});
- await help.focus();await page.keyboard.press('Enter');
- await expect(page.getByRole('tooltip')).toContainText('not completed sales');
- await shot(page,'item-summary-tooltip',false);await page.keyboard.press('Escape');
+ const technical=page.getByText('Market technical details',{exact:true});
+ await technical.focus();await page.keyboard.press('Enter');
+ await expect(page.getByText('Asking prices do not establish completed sales.',{exact:false})).toBeVisible();
+ await shot(page,'item-price-basis',false);await technical.click();
  await page.getByRole('button',{name:'24H',exact:true}).click();
  const price=page.getByRole('region',{name:'Price history',exact:true});
  await price.scrollIntoViewIfNeeded();
@@ -145,14 +151,47 @@ test('usability M3: delayed loading keeps table rows, uses shared indicators and
  expect(await spinner.evaluate(e=>getComputedStyle(e).animationName)).toBe('none');
  await expect(page.getByRole('table',{name:/Select an item to inspect/}).locator('tbody tr').first()).toBeVisible();
  await shot(page,'loading-catalogue',false);
- await page.goto('/administration');await page.getByRole('tab',{name:'Item Metadata',exact:true}).click();
- const table=page.getByRole('table',{name:'provider attempts',exact:true});await expect(table.locator('tbody tr').first()).toBeVisible();
- const before=await table.locator('tbody tr').count();
+ await page.goto('/administration');await page.getByRole("link",{name:'Item Metadata',exact:true}).click();
+ await page.getByRole('button',{name:'Provider evidence',exact:true}).click();
+ await page.getByRole('combobox',{name:'Market',exact:true}).selectOption({label:'Synthetic Alliance'});
+ const table=page.getByRole('table',{name:'provider attempts',exact:true});
+ const details=table.getByRole('button',{name:/^Show details for provider attempts /});
+ await expect(details.first()).toBeVisible();
+ const rowIds=()=>details.evaluateAll(buttons=>buttons.map(button=>button.getAttribute('aria-label')));
+ const before=await rowIds();
  let release=()=>{};const gate=new Promise<void>(resolve=>{release=resolve;});
  await page.route('**/api/v1/admin/records/metadata-attempts?*',async route=>{await gate;await route.continue();});
- await page.getByLabel('Item name or ID',{exact:true}).fill('290000');
- await expect(page.getByRole('status').filter({hasText:'Loading provider attempts'})).toBeVisible();
- expect(await table.locator('tbody tr').count()).toBe(before);
- try {await page.screenshot({path:`${output}/loading-administration.png`,fullPage:true});await expect(page.getByRole('status').filter({hasText:'Loading provider attempts'})).toBeVisible();}finally{release();}
+ const refreshing=page.getByRole('status').filter({hasText:'Refreshing provider attempts'});
+ try {
+  await page.getByLabel('Item name or ID',{exact:true}).fill('290000');
+  await expect(refreshing).toBeVisible();
+  expect(await rowIds()).toEqual(before);
+  await page.screenshot({path:`${output}/loading-administration.png`,fullPage:true});
+  await expect(refreshing).toBeVisible();
+ } finally {release();}
+ await expect(refreshing).toHaveCount(0);
  await axe(page);
+});
+
+
+test('usability M2: overview distinguishes a failed collection check from unreadable measurements',async({page})=>{
+  await login(page);
+  await page.route('**/api/v1/markets',async route=>{
+    const response=await route.fetch();
+    const {markets}=await response.json();
+    await route.fulfill({json:{markets:[{...markets[0],enabled:true,verified:true,failures:2,last_error:'Upstream connection timed out'}]}});
+  });
+  await page.route('**/api/v1/admin/storage',route=>route.fulfill({status:503,json:{detail:'Measurement unavailable'}}));
+  await page.goto('/administration');
+  const overview=page.getByRole('region',{name:'Operational overview',exact:true});
+  const card=(name:string)=>overview.getByRole('article',{name,exact:true});
+  await expect(card('Collection')).toHaveAttribute('data-tone','error');
+  await expect(card('Storage capacity')).toHaveAttribute('data-tone','unavailable');
+  await expect(card('Markets & schedules')).toHaveAttribute('data-tone','success');
+  await expect(card('Members & invitations')).toContainText(/active (account|member)/i);
+  await page.unroute('**/api/v1/markets');
+  await page.route('**/api/v1/markets',route=>route.fulfill({status:503,json:{detail:'Market list unavailable'}}));
+  await page.reload();
+  await expect(card('Collection')).toHaveAttribute('data-tone','unavailable',{timeout:15000});
+  await expect(card('Members & invitations')).toContainText(/active (account|member)/i);
 });

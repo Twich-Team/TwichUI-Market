@@ -28,8 +28,7 @@ async function setup(page:Page){
   await page.goto('/');await page.getByLabel('Username',{exact:true}).fill('owner');await page.getByLabel('Password',{exact:true}).fill('synthetic browser owner password');await page.getByRole('button',{name:'Sign in',exact:true}).click();
   await expect(page.getByRole('heading',{name:'Market Explorer',exact:true})).toBeVisible();
   await page.goto('/administration');
-  await page.getByRole('button',{name:'Storage & backups ↗',exact:true}).click();
-  await page.getByRole('navigation',{name:'Storage & Backups pages'}).getByRole('link',{name:'Backups',exact:true}).click();
+  await page.getByRole('article',{name:'Backups',exact:true}).getByRole('link',{name:'Review backups',exact:true}).click();
   await expect(page.getByRole('heading',{name:'Recovery points',exact:true})).toBeVisible();
   await mkdir(output,{recursive:true});return {data,deletions,policies};
 }
@@ -48,7 +47,11 @@ test('backup management: inventory, details, pagination, exact-name deletion and
   await table.getByRole('row').nth(2).getByRole('button',{name:'Details',exact:true}).click();
   await expect(page.getByRole('dialog')).toContainText('SHA-256');await axe(page);
   await page.screenshot({path:`${output}/backup-details.png`});
+  const trigger = table.getByRole('row').nth(2).getByRole('button',{name:'Details',exact:true});
+  await expect(page.getByRole('heading',{name:'Backup details',exact:true})).toBeFocused();
   await page.getByRole('button',{name:'Close details',exact:true}).click();
+  await expect(trigger).toBeFocused();
+  await expect(table.getByRole('row').nth(1).getByRole('checkbox')).toBeDisabled();
   await table.getByRole('row').nth(2).getByRole('button',{name:'Delete',exact:true}).click();
   const dialog=page.getByRole('dialog');await expect(dialog.getByRole('button',{name:'Confirm archive deletion'})).toBeDisabled();
   const name='market-scheduled-20261117T010000Z.dump';await dialog.getByLabel(`Type ${name} to confirm`,{exact:true}).fill(name);
@@ -56,8 +59,8 @@ test('backup management: inventory, details, pagination, exact-name deletion and
   await dialog.getByLabel('I acknowledge the risk of removing the newest or last known-good backup.',{exact:true}).check();
   await dialog.getByRole('button',{name:'Confirm archive deletion'}).click();await expect(dialog).toHaveCount(0);
   expect(deletions).toEqual([{confirmation:name,confirm_recovery_loss:true}]);await expect(page.getByRole('status').filter({hasText:'unlinked'})).toBeVisible();
-  await page.getByRole('button',{name:'Next backups',exact:true}).click();await expect(table.getByRole('row')).toHaveCount(3);
-  await page.getByRole('button',{name:'Previous backups',exact:true}).click();
+  await page.getByRole('button',{name:'Next Managed backup archives',exact:true}).click();await expect(table.getByRole('row')).toHaveCount(3);
+  await page.getByRole('button',{name:'Previous Managed backup archives',exact:true}).click();
   await page.getByRole('button',{name:'Backup Policy',exact:true}).click();
   await page.getByLabel('Daily backups to keep',{exact:true}).fill('3');await page.getByLabel('Enable scheduled backups',{exact:true}).check();
   await page.getByRole('button',{name:'Review backup policy',exact:true}).click();await expect(page.getByRole('dialog',{name:'Save backup retention policy',exact:true})).toContainText('Enable scheduled backups every 24 hours');
@@ -108,8 +111,7 @@ test('backup management real boundary: create protect download and delete throug
   const download=await page.request.get(`/api/v1/admin/backups/${older.id}/download`);expect(download.status()).toBe(200);expect((await download.body()).subarray(0,5).toString()).toBe('PGDMP');
   expect((await page.request.post(`/api/v1/admin/backups/${older.id}/protect`,{headers,data:{protected:false}})).status()).toBe(200);
   await page.goto('/administration');
-  await page.getByRole('button',{name:'Storage & backups ↗',exact:true}).click();
-  await page.getByRole('navigation',{name:'Storage & Backups pages'}).getByRole('link',{name:'Backups',exact:true}).click();
+  await page.getByRole('article',{name:'Backups',exact:true}).getByRole('link',{name:'Review backups',exact:true}).click();
   const row=page.getByRole('row').filter({hasText:older.filename});await row.getByRole('button',{name:'Delete',exact:true}).click();
   await page.getByRole('dialog').getByLabel(`Type ${older.filename} to confirm`,{exact:true}).fill(older.filename);
   await page.getByRole('dialog').getByLabel('I acknowledge the risk of removing the newest or last known-good backup.',{exact:true}).check();
@@ -118,4 +120,69 @@ test('backup management real boundary: create protect download and delete throug
   const sourceAfter=await (await page.request.get('/api/v1/admin/storage')).json();
   expect(sourceAfter.snapshots).toBe(sourceBefore.snapshots);expect(sourceAfter.observations).toBe(sourceBefore.observations);
   const after=await read();expect(after.policy.enabled).toBe(false);expect(after.total).toBe(before.total+1);expect(after.receipts.some((receipt:{action:string})=>receipt.action==='deletion.result')).toBe(true);
+});
+
+test('backup management calendar preserves UTC dates and accessible month navigation',async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  await page.clock.setFixedTime(new Date('2024-03-01T01:00:00Z'));
+  await setup(page);
+  const data=fixture();
+  await page.route('**/api/v1/admin/backups?**',route=>route.fulfill({json:{...data,items:[],total:0,reliability:{
+    since:'2024-02-01T00:00:00+00:00',attempts:[],truncated:false,schedule_history_available:false,notice:'',
+    days:[{day:'2024-02-29',succeeded:1,failed:1},{day:'2024-03-02',succeeded:0,failed:1}],
+  }}}));
+  await page.getByRole('button',{name:'Refresh backups',exact:true}).click();
+  const calendar=page.getByRole('region',{name:'Backup reliability calendar'});
+  await expect(calendar.getByRole('grid',{name:'March 2024'})).toBeVisible();
+  await expect(calendar.getByRole('columnheader')).toHaveCount(7);
+  await expect(calendar.getByRole('columnheader').first()).toHaveAccessibleName('Sunday');
+  const today=calendar.getByRole('button',{name:/Friday, March 1, 2024 UTC, Unknown, today/});
+  expect((await today.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+  await today.focus();
+  await page.keyboard.press('ArrowLeft');
+  const leapDay=calendar.getByRole('button',{name:/Thursday, February 29, 2024 UTC, Mixed/});
+  await expect(leapDay).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(calendar.getByRole('grid',{name:'February 2024'})).toBeVisible();
+  await expect(calendar.getByText('1 successful · 1 failed',{exact:true})).toBeVisible();
+  await calendar.getByRole('button',{name:/next month/i}).click();
+  await calendar.getByRole('button',{name:/Saturday, March 2, 2024 UTC, Unknown/}).click();
+  await expect(calendar.getByText('Future date. No outcomes expected yet.')).toBeVisible();
+  await calendar.getByRole('button',{name:'Current month',exact:true}).click();
+  await expect(calendar.getByRole('heading',{name:'Friday, March 1, 2024 UTC'})).toBeVisible();
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  await axe(page);
+});
+
+test('backup management serializes summary and page reads and rechecks a busy filtered inventory', async ({page}) => {
+  const {data}=await setup(page);
+  const measuredLimits = new Set<string>();
+  let active = 0, peak = 0, filteredReads = 0;
+  await page.route('**/api/v1/admin/backups?*', async route => {
+    const params = new URL(route.request().url()).searchParams;
+    const limit = Number(params.get('limit'));
+    measuredLimits.add(String(limit));
+    const filtered = params.get('protection')==='protected';
+    if(filtered) filteredReads++;
+    const busy = filtered && filteredReads===1;
+    const rows = filtered ? data.items.filter(row=>row.protected) : data.items;
+    active++;
+    peak=Math.max(peak,active);
+    try {
+      await new Promise(resolve=>setTimeout(resolve,120));
+      await route.fulfill({json:{...data,matched_total:rows.length,items:rows.slice(0,limit),
+        inventory_stale:busy,service_status:busy?'operation_busy':data.service_status}});
+    } finally { active--; }
+  });
+  await page.getByRole('button',{name:'Refresh backups',exact:true}).click();
+  await expect.poll(()=>[...measuredLimits].sort()).toEqual(['10','100']);
+  await expect.poll(()=>active).toBe(0);
+  expect(peak).toBe(1);
+  await page.getByText('Inventory filters',{exact:true}).click();
+  await page.getByRole('combobox',{name:'Protection',exact:true}).selectOption('protected');
+  const busy=page.getByText('Showing the last measured inventory while another backup operation runs. This list refreshes automatically.');
+  await expect(busy).toBeVisible();
+  await expect.poll(()=>filteredReads,{timeout:10000}).toBeGreaterThan(1);
+  await expect(busy).toHaveCount(0);
+  await expect(page.getByRole('table',{name:'Managed backup archives'})).toContainText(data.items[0].filename);
 });

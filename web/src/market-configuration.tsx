@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { api, when } from "./api";
+import { SourceAge } from "./admin-histories";
+import { Status } from "./admin-table";
+import { Loading } from "./loading";
 import { DataTable } from "./data-table";
 import { useLoad } from "./research";
 import { Market } from "./types";
@@ -28,9 +31,9 @@ function Diagnostics({ market }: { market: Market }) {
     [open],
   );
   return (
-    <div>
-      {market.feeds?.filter(feed => feed.enabled).map(feed => <p key={feed.source_kind}>
-        <strong>{feed.source_kind === 'commodities' ? 'Commodities' : 'Regular auctions'}: {feed.status}</strong><br/>
+    <div className="admin-status-details">
+      {market.feeds?.map(feed => <p key={feed.source_kind}>
+        <strong>{feed.source_kind === 'commodities' ? 'Commodities' : 'Regular auctions'}: {feed.enabled ? feed.status.replaceAll("_"," ") : "Disabled"}</strong><br/>
         Last successful check: {when(feed.last_success)} · Listings: {feed.listing_count?.toLocaleString() ?? 'Unknown'} · Items: {feed.item_count?.toLocaleString() ?? 'Unknown'}<br/>
         Source updated: {feed.upstream_modified ?? 'Unknown'} · Failures: {feed.failures}
         {feed.last_error && <><br/>{feed.last_error}</>}
@@ -42,9 +45,10 @@ function Diagnostics({ market }: { market: Market }) {
         {market.ruleset_id} · upstream house {market.house_id} ·{" "}
         {market.source_kind}
       </p>
-      {data.error && <p role="alert">{data.error}</p>}
+      {open && data.loading && <Loading label="Loading feed diagnostics…"/>}
+      {open && data.error && <p role="alert">{data.error} <button onClick={data.refresh}>Retry</button></p>}
       <pre className="diagnostic-json">
-        {JSON.stringify(data.data, null, 2)}
+        {open && data.data && JSON.stringify(data.data, null, 2)}
       </pre>
     </details>
     </div>
@@ -76,11 +80,102 @@ export function MarketConfiguration({
   return (
     <>
       <section className="panel padded">
-        <h3>Configure a market</h3>
-        <p>
-          Choose the market you play. Numeric IDs are resolved from verified
-          evidence.
-        </p>
+        <h2>Configured markets</h2>
+        <p className="muted">{markets.filter(market=>market.enabled).length} of {markets.length} collecting.</p>
+        <DataTable<Market>
+          label="market schedules"
+          compact
+          emptyMessage="No markets are configured. Open Add a market to begin."
+          data={markets}
+          getRowId={(m) => String(m.id)}
+          columns={[
+            {
+              accessorKey: "label",
+              header: "Market",
+              enableHiding: false,
+            },
+            {
+              id: "status",
+              header: "Collection",
+              accessorFn: market => !market.enabled ? "Disabled" : market.failures || market.last_error ? "Check failed" : "Collecting",
+              cell: ({getValue}) => <Status tone={getValue()==="Check failed"?"error":getValue()==="Collecting"?"success":"neutral"}>{String(getValue())}</Status>,
+            },
+            {
+              accessorKey: "last_modified",
+              header: "Source updated",
+              cell: ({row}) => <SourceAge market={row.original}/>,
+            },
+            {
+              accessorKey: "last_success",
+              header: "Last successful check",
+              cell: ({ row }) => when(row.original.last_success),
+            },
+            {
+              accessorKey: "failures",
+              header: "Failures",
+              meta: { numeric: true },
+            },
+            {
+              accessorKey: "interval_seconds",
+              header: "Interval",
+              cell: ({row}) => `${row.original.interval_seconds / 60} min`,
+            },
+          ]}
+          renderDetails={market=><div className="admin-status-details">
+            {market.last_error && <p role="status">{market.last_error}</p>}
+            <Diagnostics market={market}/>
+            <details><summary>Edit collection schedule</summary>
+              {!market.player_identity_verified && !market.enabled && <p>This market must pass live identity verification before you can enable collection.</p>}
+                <form
+                  className="schedule"
+                  key={`${market.id}:${market.enabled}:${market.interval_seconds}`}
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    const form = new FormData(event.currentTarget);
+                    action(async () => {
+                      await api(
+                        `/admin/markets/${market.id}/schedule`,
+                        "PATCH",
+                        {
+                          enabled: form.get("enabled") === "on",
+                          interval_seconds: Number(form.get("minutes")) * 60,
+                        },
+                      );
+                      await refreshMarkets();
+                    });
+                  }}
+                >
+                  <label>
+                    Interval (minutes)
+                    <input
+                      name="minutes"
+                      type="number"
+                      min="5"
+                      max="1440"
+                      defaultValue={market.interval_seconds / 60}
+                      required
+                    />
+                  </label>
+                  <label className="checkbox">
+                    <input
+                      name="enabled"
+                      type="checkbox"
+                      defaultChecked={market.enabled}
+                      disabled={
+                        readOnly ||
+                        (!market.enabled &&
+                          !market.player_identity_verified)
+                      }
+                    />
+                    Enabled
+                  </label>
+                  <button disabled={readOnly}>Save schedule</button>
+                </form>
+            </details>
+          </div>}
+        />
+      </section>
+      <details className="panel padded admin-status-details"><summary>Add a market</summary>
         <form
           className="form-grid"
           onSubmit={(event) => {
@@ -155,122 +250,15 @@ export function MarketConfiguration({
               <option value="86400">1 day</option>
             </select>
           </label>
-          <label>
-            Collection status
-            <select disabled value="disabled">
-              <option value="disabled">Disabled until live verification</option>
-            </select>
-          </label>
+          <p className="muted">New schedules stay disabled until live verification.</p>
           <button className="primary" disabled={readOnly || !available}>
             Add disabled market
           </button>
         </form>
-        {!available && (
-          <p className="notice" role="status">
-            {region.toUpperCase()} — {ruleset} — {faction}: identity
-            verification is pending. Collection cannot be started for this
-            choice. The existing feed continues unchanged.
-          </p>
-        )}
-        {options.error && <p role="alert">{options.error}</p>}
-        <p className="small muted">{options.data?.notice}</p>
-      </section>
-      <section className="panel padded">
-        <h3>Collection schedules</h3>
-        <p>
-          {markets.filter((m) => m.enabled).length} active market(s) consuming
-          API requests and storage. Disabled schedules retain their existing
-          history.
-        </p>
-        <DataTable<Market>
-          label="market schedules"
-          filters={[{id:"status",label:"Filter market collection",options:[{value:"Actively collecting",label:"Actively collecting"},{value:"Disabled",label:"Disabled · history retained"}]}]}
-          data={markets}
-          getRowId={(m) => String(m.id)}
-          columns={[
-            {
-              accessorKey: "label",
-              header: "Market",
-              enableHiding: false,
-              cell: ({ row }) => (
-                <>
-                  <strong>{row.original.label}</strong>
-                  <Diagnostics market={row.original} />
-                </>
-              ),
-            },
-            {
-              id: "status",
-              header: "Resources",
-              accessorFn: (m) =>
-                m.enabled
-                  ? "Actively collecting"
-                  : "Disabled · history retained",
-            },
-            {
-              accessorKey: "last_success",
-              header: "Last successful check",
-              cell: ({ row }) => when(row.original.last_success),
-            },
-            {
-              accessorKey: "failures",
-              header: "Failures",
-              meta: { numeric: true },
-            },
-            {
-              accessorKey: "interval_seconds",
-              header: "Schedule",
-              cell: ({ row }) => (
-                <form
-                  className="schedule"
-                  key={`${row.original.id}:${row.original.enabled}:${row.original.interval_seconds}`}
-                  onSubmit={(event) => {
-                    event.preventDefault();
-                    const form = new FormData(event.currentTarget);
-                    action(async () => {
-                      await api(
-                        `/admin/markets/${row.original.id}/schedule`,
-                        "PATCH",
-                        {
-                          enabled: form.get("enabled") === "on",
-                          interval_seconds: Number(form.get("minutes")) * 60,
-                        },
-                      );
-                      await refreshMarkets();
-                    });
-                  }}
-                >
-                  <label>
-                    Interval (minutes)
-                    <input
-                      name="minutes"
-                      type="number"
-                      min="5"
-                      max="1440"
-                      defaultValue={row.original.interval_seconds / 60}
-                      required
-                    />
-                  </label>
-                  <label className="checkbox">
-                    <input
-                      name="enabled"
-                      type="checkbox"
-                      defaultChecked={row.original.enabled}
-                      disabled={
-                        readOnly ||
-                        (!row.original.enabled &&
-                          !row.original.player_identity_verified)
-                      }
-                    />
-                    Enabled
-                  </label>
-                  <button disabled={readOnly}>Save schedule</button>
-                </form>
-              ),
-            },
-          ]}
-        />
-      </section>
+        {options.loading && <Loading label="Checking available markets…" inline/>}
+        {options.data && !available && <p className="notice" role="status">This market still needs identity verification before it can be added.</p>}
+        {options.error && <p role="alert">{options.error} <button onClick={options.refresh}>Retry market choices</button></p>}
+      </details>
     </>
   );
 }

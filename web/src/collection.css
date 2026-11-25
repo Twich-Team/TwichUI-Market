@@ -1,0 +1,343 @@
+.collection-page {
+  min-width: 0;
+  display: grid;
+  gap: 16px;
+  --collection-secondary: #c8b69b;
+}
+
+.collection-page > * {
+  min-width: 0;
+}
+
+.collection-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-bottom: 12px;
+}
+
+.collection-section-header p {
+  color: var(--collection-secondary);
+  font-size: .92rem;
+  margin-top: 3px;
+}
+
+.collection-section-header > label {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.collection-section-header select {
+  width: 100%;
+  min-width: 0;
+  max-width: 280px;
+}
+
+.collection-scope {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.collection-scope select {
+  width: auto;
+  min-width: 0;
+  max-width: min(300px, 82%);
+}
+
+.collection-health-cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.collection-health-card {
+  min-width: 0;
+  background: linear-gradient(155deg, #302319, #211913);
+  border: 1px solid var(--edge);
+  border-top-color: #725b3d;
+  border-radius: 4px;
+  padding: 12px 14px;
+  overflow-wrap: anywhere;
+}
+
+.collection-health-card h3 {
+  color: var(--collection-secondary);
+  font: 600 .89rem/1.4 system-ui, sans-serif;
+  margin-bottom: 7px;
+}
+
+.collection-health-card > strong {
+  display: block;
+  color: #efe0c2;
+  font: normal clamp(1.36rem, 2vw, 1.8rem)/1.12 Georgia, serif;
+  margin-bottom: 5px;
+}
+
+.collection-health-card[data-tone="warning"] {
+  border-top: 2px solid #c58b5b;
+}
+
+.collection-health-card[data-tone="warning"] > strong {
+  color: #f4bf8a;
+}
+
+.collection-health-card[data-tone="success"] {
+  border-top: 2px solid #98b37d;
+}
+
+.collection-health-card[data-tone="success"] > strong {
+  color: #cbdba8;
+}
+
+.collection-health-card p,
+.collection-paused {
+  color: var(--collection-secondary);
+  font-size: .87rem;
+}
+
+.collection-attention,
+.collection-paused {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px 16px;
+  flex-wrap: wrap;
+  padding: 9px 12px;
+  margin-top: 10px;
+  border: 1px solid #655035;
+  border-radius: 4px;
+  background: #2b2017;
+}
+
+.collection-attention {
+  border-inline-start: 3px solid #ac8053;
+}
+
+.collection-attention > div {
+  flex: 1 1 158px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.collection-alert-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+}
+
+.collection-alert-summary > strong {
+  font-size: .94rem;
+}
+
+.collection-attention p {
+  color: var(--collection-secondary);
+  font-size: .88rem;
+  margin-top: 3px;
+}
+
+.collection-paused a {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.collection-activity {
+  padding: 15px 16px;
+}
+
+.collection-activity .chart-viewport,
+.collection-activity .interactive-chart {
+  min-height: 245px;
+  height: 245px;
+  overflow: hidden;
+  overflow: clip;
+}
+
+.collection-activity .interactive-chart,
+.collection-activity .interactive-chart canvas {
+  touch-action: pan-y;
+}
+
+.collection-problem-count {
+  margin: 0 0 8px;
+}
+
+.collection-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--collection-secondary);
+  font-size: .88rem;
+}
+
+.collection-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.collection-legend li > span {
+  inline-size: 9px;
+  block-size: 9px;
+  border-radius: 2px;
+}
+
+.collection-legend .collection-legend-gap {
+  border: 1px solid var(--collection-secondary);
+  border-radius: 50%;
+}
+
+.collection-legend .collection-legend-snapshots {
+  border-radius: 0;
+  background-color: #8fc8bc;
+  transform: rotate(45deg);
+}
+
+.collection-day-snapshots {
+  color: #a7d9cc;
+  margin-top: 3px;
+}
+
+.collection-day {
+  padding-top: 10px;
+  border-top: 1px solid var(--edge);
+  display: grid;
+  grid-template-columns: minmax(0, 228px) minmax(0, 1fr);
+  gap: 15px;
+  align-items: end;
+}
+
+.collection-day label,
+.collection-day select {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.collection-day ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 12px;
+  list-style: none;
+  padding: 0;
+  margin: 2px 0 0;
+  color: var(--collection-secondary);
+}
+
+.collection-exact-data {
+  margin-top: 8px;
+}
+
+.collection-exact-data > summary,
+.collection-market-details > summary {
+  color: #e1bc7e;
+  cursor: pointer;
+  padding-block: 8px;
+}
+
+.collection-market-details {
+  padding: 5px 16px;
+}
+
+.collection-market-details article {
+  padding-block: 10px;
+  border-top: 1px solid var(--edge);
+}
+
+.collection-market-details article > div {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+}
+
+.collection-market-details article h3 {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.collection-market-details dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr));
+  gap: 7px 14px;
+  margin: 9px 0 0;
+}
+
+.collection-market-details dt {
+  color: var(--collection-secondary);
+}
+
+.collection-market-details dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 1030px) {
+  .collection-health-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .collection-page {
+    gap: 12px;
+  }
+
+  .collection-section-header select,
+  .collection-scope select,
+  .collection-page button,
+  .collection-page summary,
+  .collection-paused a {
+    min-height: 44px;
+  }
+
+  .collection-health-card {
+    padding: 8px 9px;
+  }
+
+  .collection-attention {
+    padding: 7px 9px;
+    gap: 7px 9px;
+  }
+
+  .collection-attention button {
+    max-width: 146px;
+    line-height: 1.2;
+  }
+
+  .collection-activity .collection-section-header {
+    gap: 6px 8px;
+    margin-bottom: 7px;
+  }
+
+  .collection-activity .collection-section-header h2 {
+    font-size: 1.55rem;
+  }
+
+  .collection-health-card h3 {
+    margin-bottom: 4px;
+  }
+
+  .collection-activity,
+  .collection-market-details {
+    padding-inline: 12px;
+  }
+
+  .collection-activity .chart-viewport,
+  .collection-activity .interactive-chart {
+    min-height: 215px;
+    height: 215px;
+  }
+
+  .collection-day {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 7px;
+  }
+}

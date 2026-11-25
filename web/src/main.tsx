@@ -1,6 +1,7 @@
+import { administrationGroups, administrationSection } from "./admin-navigation";
 import { Loading } from "./loading";
 import {parseRoute,useLocation,navigate,restoration} from "./navigation";
-import { QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { queryClient, clearPrivateCache, setQueryIdentity } from "./query";
 import { announceSessionChange, onSessionChange } from "./auth-channel";
 import React, { lazy, Suspense, useEffect, useRef, useState } from "react";
@@ -200,31 +201,35 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
     if(focus())return;
     const observer=new MutationObserver(()=>{if(focus())observer.disconnect();});observer.observe(document.body,{childList:true,subtree:true});return()=>observer.disconnect();
   },[location.pathname]);
-  const [markets,setMarkets]=useState<Market[]>([]);
-  const [error,setError]=useState("");
-  const [readOnly,setReadOnly]=useState(true);
-  const [environmentReady,setEnvironmentReady]=useState(false);
-  const [marketsReady,setMarketsReady]=useState(false);
+  const marketList = useQuery({
+    queryKey:["private","workspace-markets",user.id],
+    queryFn:({signal})=>api<{markets:Market[]}>("/markets","GET",undefined,signal),
+    refetchInterval:60_000,
+  });
+  const environment = useQuery({
+    queryKey:["private","environment"],
+    queryFn:({signal})=>api<{read_only:boolean;review_fixtures?:boolean}>("/environment","GET",undefined,signal),
+  });
+  const markets = marketList.data?.markets ?? [];
+  const marketsReady = Boolean(marketList.data);
+  const marketStatus = marketList.isError ? "unavailable" : marketsReady ? "available" : "loading";
+  const environmentReady = Boolean(environment.data);
+  const administrationOverview = page === "admin" && administrationSection(url) === "overview";
+  const administrationReady = environmentReady && (administrationOverview || marketsReady);
+  const administrationPending = !administrationReady && !environment.error && (administrationOverview || !marketList.error);
+  const readOnly = environment.data?.read_only ?? true;
+  const fixtureReview = environment.data?.review_fixtures;
   const preferences=usePreferences();
   const market=preferredMarket(markets,preferences.values.market_id);
   const setMarket=(id:number)=>preferences.update({market_id:id});
-  const loadMarkets=async()=>{
-    const result=await api<{markets:Market[]}>("/markets");
-    setMarkets(result.markets);setMarketsReady(true);
-  };
-  useEffect(()=>{
-    loadMarkets().catch(error=>{setError(error.message);setMarketsReady(true);});
-    api<{read_only:boolean}>("/environment").then(result=>{
-      queryClient.setQueryData(["private","environment"],result);setReadOnly(result.read_only);setEnvironmentReady(true);
-    }).catch(error=>setError(error.message));
-  },[]);
+  const loadMarkets=async()=>{await marketList.refetch({throwOnError:true});};
   async function logout() { await preferences.flush(); await signOut(); }
   const names: Record<string, string> = {
     explorer: "Market Explorer",
     deals: "Deal Finder",
     admin: "Administration",
     account: "Account & devices",
-    companion: "Get Desktop Companion",
+    companion: "Desktop Companion",
     item:"Item Details",missing:"Page not found",
   };
   return (
@@ -237,11 +242,11 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
         >
           <span className="sigil">T</span>
           <span>
-            TWICHUI<small>MARKET INTELLIGENCE</small>
+            TWICHUI<small>{fixtureReview ? "REVIEW · SYNTHETIC DATA" : "MARKET INTELLIGENCE"}</small>
           </span>
         </a>
         <button ref={menuButton} className="mobile-menu-button secondary" aria-expanded={menuOpen} aria-controls="app-menu" onClick={()=>setMenuOpen(open=>!open)}>{menuOpen ? "Close" : "Menu"}</button>
-        <div className="eyebrow private">PRIVATE GUILD RESEARCH</div>
+
         <div id="app-menu" className="app-menu">
         <nav aria-label="Main navigation">
           {[
@@ -261,6 +266,13 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
             </button>
           ))}
         </nav>
+        {page === "admin" && user.role === "admin" && <nav className="admin-sidebar-sections" aria-label="Administration sections">
+          {administrationGroups.map(group => <div key={group.label}><h2>{group.label}</h2>
+            {group.sections.map(({id,label}) => <a key={id} href={id==="overview" ? "/administration" : `/administration?admin_tab=${id}`}
+              aria-current={administrationSection(url)===id ? "page" : undefined}
+              onClick={event=>{if(event.button===0&&!event.ctrlKey&&!event.metaKey&&!event.shiftKey&&!event.altKey){event.preventDefault();navigate(event.currentTarget.getAttribute("href")!);}}}>{label}</a>)}
+          </div>)}
+        </nav>}
         <div className="account-info">
           <strong>{user.username}</strong>
           <small>{user.role === "admin" ? "Administrator" : "Member"}</small>
@@ -275,18 +287,17 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
           <span>
             THE AUCTIONEER’S LEDGER <i>/</i> {names[page]}
           </span>
-          <span className="badge">PRIVATE</span>
+          <span className="badge">{fixtureReview ? "Review · synthetic data" : "Private"}</span>
         </header>
         <main>
           {environmentReady && readOnly && <p className="notice" role="status">Interactive preview · Your preferences save automatically. Collection and account administration are read-only.</p>}
           <PreferenceStatus />
           {page!=="item" && preferences.values.market_id !== null && !markets.some(m => m.id === preferences.values.market_id) && markets.length > 0 && <p className="notice">Your preferred market is unavailable. Your saved choice is retained.</p>}
-          {(error || authError) && (
-            <div className="notice error" role="alert">
-              {error || authError}
-            </div>
-          )}
-          {page === "explorer" && (
+          {authError && <p className="notice error" role="alert">{authError}</p>}
+          {marketList.error && <p className="notice error" role="alert">The list of markets could not be refreshed. <button onClick={()=>marketList.refetch()}>Retry markets</button></p>}
+          {environment.error && <p className="notice error" role="alert">The website could not check which actions are available. <button onClick={()=>environment.refetch()}>Retry access check</button></p>}
+          <Suspense fallback={<Loading label="Opening page…" skeleton/>}>
+          {page === "explorer" && (marketsReady || !marketList.error) && (
             <Explorer
               marketsReady={marketsReady}
               markets={markets}
@@ -295,33 +306,38 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
               searchParams={new URL(url,location.origin).search}
             />
           )}{" "}
-          {page === "deals" && (
+          {page === "deals" && (marketsReady || !marketList.error) && (
             <Deals
+              marketsReady={marketsReady}
               markets={markets}
               market={market}
               setMarket={setMarket}
               searchParams={new URL(url,location.origin).search}
             />
           )}{" "}
-          {page === "admin" && user.role === "admin" && (
+          {page === "admin" && user.role === "admin" && administrationPending && <Loading label="Loading administration…" skeleton/>}
+          {page === "admin" && user.role === "admin" && administrationReady && (
             <Administration
               user={user}
               markets={markets}
+              marketStatus={marketStatus}
               readOnly={readOnly}
               refreshMarkets={loadMarkets}
             />
           )}{" "}
-          {page === "account" && (
-            <Account readOnly={readOnly} userId={user.id} openCompanion={()=>setPage('companion')}
+          {page === "account" && !environmentReady && !environment.error && <Loading label="Loading account settings…" skeleton/>}
+          {page === "account" && environmentReady && (
+            <Account readOnly={readOnly} userId={user.id} openCompanion={()=>navigate('/companion?setup=1')}
               signedOut={signedOut}
             />
           )}
-          {page === 'companion' && <Companion user={user}/>}
+          {page === 'companion' && <Companion user={user} fixtureReview={fixtureReview}/>}
           {route.kind==='item'&&<ItemDetails route={route} markets={markets} marketsReady={marketsReady}/>}
           {(page==='missing'||(page==='admin'&&user.role!=='admin'))&&<section className="empty panel"><h1>{page==='admin'?'Administrator access required':'Page not found'}</h1><p>{route.kind==='missing'?route.error:'This account does not have administration access.'}</p><a href="/" onClick={e=>{e.preventDefault();navigate('/');}}>Back to Explorer</a></section>}
+          </Suspense>
         </main>
         <footer>
-          TWICHUI MARKET <span>Private knowledge. Better decisions.</span>
+          TWICHUI MARKET
           <span>All prices are asking prices, not completed sales.</span>
         </footer>
       </div>

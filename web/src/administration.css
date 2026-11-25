@@ -1,0 +1,41 @@
+.admin-view-switch, .account-task-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; }
+.admin-view-switch [aria-pressed=true] { border-color: var(--gold); }
+.admin-view-switch button, .account-task-nav a { min-height: 44px; }
+.account-task-nav a { display: inline-flex; align-items: center; padding-inline: 12px; }
+.account-security summary { min-height: 44px; }
+.account-banner { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; }
+.admin-status-details dd, .provider-summary dd { margin: 3px 0 12px; overflow-wrap: anywhere; }
+.admin-status-details p { overflow-wrap: anywhere; }
+.admin-status-details h3 { margin-top: 0; }
+.provider-summary { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,8rem),1fr)); gap: 4px 12px; }
+.provider-summary dt { color: var(--muted); }
+.provider-edit { margin-top: 12px; }
+.provider-edit summary, .metadata-section-menu summary { min-height: 44px; align-content: center; }
+.admin-log-filters { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit,minmax(min(100%,170px),1fr)); margin-block: 12px; }
+.admin-log-filters select, .admin-log-filters input { width: 100%; min-width: 0; }
+@media (max-width: 650px) {
+  .admin-status-details textarea, .admin-status-details select, .admin-status-details input,
+  .admin-log-filters select, .admin-log-filters input,
+  .provider-edit select, .provider-edit input,
+  .mobile-admin-section select { font-size: 16px; }
+  .admin-log-filters { grid-template-columns: minmax(0,1fr); }
+}
+
+main:has(.mobile-admin-section) button:where(:not([class])),
+main:has(.account-task-nav) button:where(:not([class])) {
+  -webkit-appearance: none;
+  appearance: none;
+  border: 1px solid #826747;
+  border-radius: 4px;
+  background: #392b20;
+  color: #f0dfc2;
+  padding: .5rem .75rem;
+}
+main .admin-view-switch button[aria-pressed=true]:not(.primary) {
+  border-color: #c8a35e;
+  background: #4d3825;
+}
+@media (max-width: 760px) {
+  main:has(.mobile-admin-section) button:where(:not([class])),
+  main:has(.account-task-nav) button:where(:not([class])) { min-height: 44px; }
+}

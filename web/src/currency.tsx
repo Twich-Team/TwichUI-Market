@@ -61,3 +61,12 @@ export function Currency({ value }: { value: string | null | undefined }) {
     </span>
   );
 }
+
+export function StackUnitPrice({ total, quantity }: { total: string; quantity: number }) {
+  const denominator = BigInt(quantity);
+  const copper = BigInt(total);
+  const remainder = copper % denominator;
+  return <><Currency value={String(copper / denominator)}/>
+    {remainder > 0n && <span> + {String(remainder)}/{quantity} copper</span>}
+  </>;
+}

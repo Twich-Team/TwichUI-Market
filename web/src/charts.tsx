@@ -1,516 +1,274 @@
-import { Loading } from "./loading";
-import { Currency } from "./currency";
-import {
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useVirtualizer } from "@tanstack/react-virtual";
+import type { ColumnDef } from "@tanstack/react-table";
 import { api, money } from "./api";
-import { HistoryPoint, withMissingDays, exactPriceTooltip, observationLabel } from "./chart-data";
+import { HistoryPoint, withMissingDays, exactPriceTooltip, observationLabel, currencyAxis, priceDetailWindow, chartTooltipText } from "./chart-data";
 import { DeferredChart } from "./deferred-chart";
+import { Currency, StackUnitPrice } from "./currency";
+import { compareCopper } from "./listing-prices";
+import { DataTable } from "./data-table";
+import { Loading } from "./loading";
+import { useMarketTouchLayout } from "./responsive";
+
 const palette = {
-  price: "#d9b365",
-  reference: "#83aca1",
-  historical: "#b694c3",
-  supply: "#9a8565",
-  text: "#c1b296",
-  grid: "#4a3926",
+  price: "#dab567",
+  reference: "#98baae",
+  historical: "#c2a3d1",
+  supply: "#b29a73",
+  text: "#cfbea0",
+  grid: "#54422e",
 };
-export function PriceHistory({
-  market,
-  item,
-  variant,
-  days,
-}: {
-  market: number;
-  item: number;
-  variant: string;
-  days: number;
-}) {
+
+const historySeries = [
+  { name: "Recent asking price", key: "recent_price", color: palette.price },
+  { name: "14-day reference", key: "market_value", color: palette.reference },
+  { name: "60-day reference", key: "historical_value", color: palette.historical },
+  { name: "Listed supply", key: "supply", color: palette.supply },
+] as const;
+
+export function PriceHistory({ market, item, variant, days }: { market: number; item: number; variant: string; days: number }) {
+  const compact = useMarketTouchLayout();
   const history = useQuery({
     queryKey: ["private", "chart-history", market, item, variant, days],
     refetchInterval: 60_000,
-    queryFn: ({ signal }) =>
-      api<{ points: HistoryPoint[]; synthetic: boolean }>(
-        `/markets/${market}/items/${item}/${variant}/history?days=${days}&view=chart`,
-        "GET",
-        undefined,
-        signal,
-      ),
+    queryFn: ({ signal }) => api<{ points: HistoryPoint[]; synthetic: boolean }>(
+      `/markets/${market}/items/${item}/${variant}/history?days=${days}&view=chart`, "GET", undefined, signal,
+    ),
   });
-  const rows = useMemo(
-    () => withMissingDays(history.data?.points || []),
-    [history.data],
-  );
-  const [overlays, setOverlays] = useState({
-    market: true,
-    historical: false,
-    supply: false,
-  });
+  const points = history.data?.points;
+  const rows = useMemo(() => withMissingDays(points ?? []), [points]);
+  const window = useMemo(() => priceDetailWindow(rows.map((row) => row.recent_price)), [rows]);
+  const [overlays, setOverlays] = useState({ market_value: false, historical_value: false, supply: false });
+  const [detailMode, setDetailMode] = useState(false);
   const [zoom, setZoom] = useState<[number, number]>([0, 100]);
+  const detail = detailMode ? window.detail : null;
   const option = useMemo(() => {
-    const series = [
-      {
-        name: "Recent asking price",
-        key: "recent_price",
-        color: palette.price,
-        enabled: true,
-      },
-      {
-        name: "14-day reference",
-        key: "market_value",
-        color: palette.reference,
-        enabled: overlays.market,
-      },
-      {
-        name: "60-day reference",
-        key: "historical_value",
-        color: palette.historical,
-        enabled: overlays.historical,
-      },
-      {
-        name: "Listed supply",
-        key: "supply",
-        color: palette.supply,
-        enabled: overlays.supply,
-      },
-    ].filter((row) => row.enabled);
+    const series = historySeries.filter(({ key }) => key === "recent_price" || (!detail && overlays[key]));
+    const ceiling = detail?.cap ?? Math.max(window.maximum, ...series
+      .filter(({ key }) => key !== "supply")
+      .flatMap(({ key }) => rows.map((row) => Number(row[key]))));
+    const unit = currencyAxis(ceiling);
+    const supply = !detail && overlays.supply;
+    const navigator = !compact && rows.length > 14;
     return {
       animation: false,
-      aria: {
-        enabled: true,
-        description:
-          "Observed asking prices and listed supply. Missing days are gaps; exact copper values are available in the data table.",
-      },
-      legend: { top: 0, textStyle: { color: palette.text, fontSize: 13 } },
-      grid: { left: 75, right: overlays.supply ? 60 : 20, top: 55, bottom: 80 },
+      grid: { left: compact ? 48 : 64, right: supply ? 55 : 13, top: 29, bottom: navigator ? 69 : 37 },
       textStyle: { color: palette.text, fontFamily: "inherit" },
       tooltip: {
-        trigger: "axis",
-        renderMode: "richText",
-        backgroundColor: "#17130f",
-        borderColor: "#8a7044",
-        textStyle: { color: "#eee0c5" },
+        trigger: "axis", triggerOn: "mousemove|click", confine: true, renderMode: "html", className: "research-chart-tooltip",
+        backgroundColor: "#211911", borderColor: "#8a7044",
+        textStyle: { color: "#f1e2c7", fontSize: compact ? 11 : 13 },
         formatter: (params: unknown) => {
           const records = params as { dataIndex: number }[];
           const row = rows[records[0]?.dataIndex];
-          return row ? exactPriceTooltip(row) : "";
+          return row ? chartTooltipText(exactPriceTooltip(row)) : "";
         },
       },
       xAxis: {
         type: "category",
         data: rows.map(observationLabel),
-        axisLabel: { color: palette.text, hideOverlap: true },
+        axisLabel: {
+          color: palette.text, hideOverlap: true,
+          formatter: (_: string, index: number) => {
+            const row = rows[index];
+            if (!row) return "";
+            const local = row.observed_at ? new Date(row.observed_at) : new Date(`${row.date}T12:00:00Z`);
+            return local.toLocaleDateString(undefined, { month: "short", day: "numeric", ...(row.observed_at ? {} : { timeZone: "UTC" }) });
+          },
+        },
         axisLine: { lineStyle: { color: palette.grid } },
       },
-      yAxis: [
-        {
-          type: "value",
-          name: "Gold / unit",
-          splitLine: { lineStyle: { color: palette.grid, type: "dashed" } },
-          axisLabel: {
-            color: palette.text,
-            formatter: (value: number) =>
-              (value / 10000).toLocaleString(undefined, {
-                maximumFractionDigits: 4,
-              }),
-          },
-          nameTextStyle: { color: palette.text },
-        },
-        {
-          type: "value",
-          name: "Units",
-          show: overlays.supply,
-          splitLine: { show: false },
-          axisLabel: { color: palette.text },
-          nameTextStyle: { color: palette.text },
-        },
-      ],
-      dataZoom: [
-        { type: "inside", start: zoom[0], end: zoom[1], filterMode: "none" },
-        {
-          type: "slider",
-          start: zoom[0],
-          end: zoom[1],
-          bottom: 10,
-          height: 22,
-          borderColor: palette.grid,
-          fillerColor: "#b0925133",
-          textStyle: { color: palette.text },
-        },
-      ],
-      series: series.map((series) => ({
-        name: series.name,
+      yAxis: [{
+        type: "value",
+        name: unit.label,
+        nameTextStyle: { color: palette.text },
+        min: 0,
+        max: detail?.cap,
+        splitNumber: 4,
+        axisLabel: { color: palette.text, formatter: unit.format },
+        splitLine: { lineStyle: { color: palette.grid, type: "dashed" } },
+      }, {
+        type: "value",
+        name: "Units",
+        show: supply,
+        splitLine: { show: false },
+        axisLabel: { color: palette.text },
+        nameTextStyle: { color: palette.text },
+      }],
+      dataZoom: [{
+        type: "slider", show: navigator, filterMode: "none",
+        start: zoom[0], end: zoom[1], bottom: 9, height: 28,
+        borderColor: palette.grid, fillerColor: "#b0925133", textStyle: { color: palette.text },
+      }],
+      series: series.map(({ name, key, color }) => ({
+        name,
         type: "line",
-        yAxisIndex: series.key === "supply" ? 1 : 0,
+        yAxisIndex: key === "supply" ? 1 : 0,
         connectNulls: false,
-        showSymbol: rows.filter((row) => row.recent_price != null).length < 90,
-        symbolSize: 6,
-        lineStyle: {
-          width: series.key === "recent_price" ? 2 : 1.4,
-          type: series.key === "market_value" ? "dashed" : "solid",
-        },
-        itemStyle: { color: series.color },
-        areaStyle: series.key === "supply" ? { opacity: 0.06 } : undefined,
+        showSymbol: rows.length < 90 || rows.filter((row) => row.recent_price !== null).length < 50,
+        symbolSize: compact ? 7 : 6,
+        lineStyle: { width: key === "recent_price" ? 2.2 : 1.5, type: key === "market_value" ? "dashed" : "solid" },
+        itemStyle: { color },
+        areaStyle: key === "recent_price" ? { color, opacity: 0.075 } : undefined,
         data: rows.map((row) => {
-          const value = row[series.key as keyof HistoryPoint];
-          return value === null || value === undefined ? null : Number(value);
+          const value = row[key];
+          if (value == null) return null;
+          return detail && key === "recent_price" && Number(value) > detail.cap ? null : Number(value);
         }),
       })),
     };
-  }, [rows, overlays, zoom]);
+  }, [compact, detail, overlays, rows, window.maximum, zoom]);
+
   if (history.isPending) return <div className="chart-placeholder"><Loading label="Loading observed history…" skeleton/></div>;
-  if (history.error)
-    return (
-      <p role="alert" className="notice error">
-        {history.error.message} <button onClick={()=>history.refetch()}>Retry price history</button>
-      </p>
-    );
-  if (!rows.length)
-    return (
-      <p className="empty">
-        No observations were collected for this range. Try a longer range or
-        allow collection to build history.
-      </p>
-    );
-  return (
-    <>
-      <p className="small muted">
-        Recent price is quantity-weighted asking price. The dashed 14-day
-        reference averages observed daily prices; the 60-day reference uses the
-        longer observed window.
-      </p>
-      {(history.data?.points.length || 0) < 3 && (
-        <p className="notice">
-          Only {history.data?.points.length} observed day(s). Points are actual
-          observations; a trend needs more history.
-        </p>
-      )}
-      <details>
-        <summary>Advanced chart controls</summary>
-        <div className="chart-controls" aria-label="Chart overlays">
-          {(
-            [
-              ["market", "14-day reference"],
-              ["historical", "60-day reference"],
-              ["supply", "Listed supply"],
-            ] as const
-          ).map(([key, label]) => (
-            <label key={key}>
-              <input
-                type="checkbox"
-                checked={overlays[key]}
-                onChange={(event) =>
-                  setOverlays((p) => ({ ...p, [key]: event.target.checked }))
-                }
-              />
-              {label}
-            </label>
-          ))}
-          <button onClick={() => setZoom([0, 100])}>Reset zoom</button>
-        </div>
-        <div className="chart-controls" aria-label="Keyboard chart zoom">
-          <label>
-            Zoom start (%)
-            <input
-              type="range"
-              min={0}
-              max={Math.max(0, zoom[1] - 1)}
-              value={zoom[0]}
-              onChange={(e) => setZoom([Number(e.target.value), zoom[1]])}
-            />
-          </label>
-          <label>
-            Zoom end (%)
-            <input
-              type="range"
-              min={Math.min(100, zoom[0] + 1)}
-              max={100}
-              value={zoom[1]}
-              onChange={(e) => setZoom([zoom[0], Number(e.target.value)])}
-            />
-          </label>
-        </div>
-      </details>
-      {history.data?.synthetic && (
-        <p className="notice warning">
-          This chart includes synthetic fixture observations or references.
-        </p>
-      )}
-      <DeferredChart
-        option={option}
-        label="Observed asking-price history"
-        onZoom={(a, b) => setZoom([a, b])}
-      />
-      <p className="small muted">
-        Local observation times · {Intl.DateTimeFormat().resolvedOptions().timeZone}. {history.data?.points.length} UTC-day buckets · gaps remain
-        unobserved. Chart scales are approximate; tooltips and data retain exact
-        copper values.
-      </p>
-      <details>
-        <summary>Read exact chart data</summary>
-        <HistoryData rows={rows} />
-      </details>
-    </>
-  );
-}
-function HistoryData({ rows }: { rows: HistoryPoint[] }) {
-  const [page, setPage] = useState(0),
-    [virtual, setVirtual] = useState(false);
-  return (
-    <div>
-      <div className="table-pagination">
-        <span>{rows.length.toLocaleString()} calendar days</span>
-        {rows.length > 200 && (
-          <label>
-            <input
-              type="checkbox"
-              checked={virtual}
-              onChange={(e) => setVirtual(e.target.checked)}
-            />
-            Virtual scrolling (paginated alternative below)
-          </label>
-        )}
+  if (history.error && !history.data) return <p role="alert" className="notice error">
+    Price history could not be loaded. <button onClick={() => history.refetch()}>Retry price history</button>
+  </p>;
+  if (!points?.length) return <p className="empty">No observations in this period. Try a longer range.</p>;
+
+  const priced = points.filter((row) => row.recent_price != null).length;
+  return <div className="research-chart-body">
+    {history.error && <p role="alert" className="notice error">History could not refresh. Showing the last loaded observations. <button onClick={() => history.refetch()}>Retry price history</button></p>}
+    <div className="chart-summary-line">
+      <span><strong>{points.length} observed {points.length === 1 ? "day" : "days"}</strong> · {priced} with prices</span>
+      {history.data?.synthetic && <span className="research-fixture">Fixture data</span>}
+      {history.isFetching && <span className="muted">Refreshing…</span>}
+    </div>
+    {window.detail && <div className="chart-scale-choice">
+      <span>{detail ? `${detail.omitted} high ${detail.omitted === 1 ? "price is" : "prices are"} outside this view.` : "High prices widen the chart scale."}</span>
+      <button className="secondary" onClick={() => setDetailMode(!detail)}>{detail ? "Show full scale" : "Zoom in on lower prices"}</button>
+    </div>}
+    {!!priced ? <>
+      <div className="research-chart-legend" aria-label="Chart legend">
+        {historySeries.filter(({ key }) => key === "recent_price" || (!detail && overlays[key])).map(({ key, name, color }) =>
+          <span key={name}><i style={{ borderColor: color, borderTopStyle: key === "market_value" ? "dashed" : "solid" }} aria-hidden="true"/>{name}</span>)}
       </div>
-      {virtual ? (
-        <VirtualHistory rows={rows} />
-      ) : (
-        <>
-          <HistoryTable rows={rows.slice(page * 50, (page + 1) * 50)} />
-          <div className="table-pagination">
-            <button disabled={page === 0} onClick={() => setPage((p) => p - 1)}>
-              Previous history rows
-            </button>
-            <span>
-              Data page {page + 1} of {Math.max(1, Math.ceil(rows.length / 50))}
-            </span>
-            <button
-              disabled={(page + 1) * 50 >= rows.length}
-              onClick={() => setPage((p) => p + 1)}
-            >
-              Next history rows
-            </button>
-          </div>
-        </>
-      )}
-    </div>
-  );
+      <DeferredChart touchInspect option={option} label="Observed asking-price history" onZoom={(start, end) => setZoom([start, end])}/>
+    </> : <p className="empty">No asking prices were recorded for this variant in this period.</p>}
+    <p className="chart-footnote">Local observation times · {Intl.DateTimeFormat().resolvedOptions().timeZone}. Missing days are gaps.</p>
+    <details className="chart-data-disclosure">
+      <summary>Read exact chart data</summary>
+      <HistoryData rows={rows}/>
+    </details>
+    {!!priced && <details className="chart-data-disclosure">
+      <summary>Chart options</summary>
+      {!detail && <div className="chart-controls" aria-label="Chart overlays">
+        {historySeries.slice(1).map(({ key, name }) => key !== "recent_price" && <label key={key}>
+          <input type="checkbox" checked={overlays[key]} onChange={(event) => setOverlays((current) => ({ ...current, [key]: event.target.checked }))}/>{name}
+        </label>)}
+      </div>}
+      {rows.length > 1 && <div className="chart-controls" aria-label="Date zoom">
+        <label>Start <input type="range" min={0} max={Math.max(0, zoom[1] - 1)} value={zoom[0]}
+          aria-valuetext={observationLabel(rows[Math.round(zoom[0] / 100 * (rows.length - 1))])}
+          onChange={(event) => setZoom([Number(event.target.value), zoom[1]])}/></label>
+        <label>End <input type="range" min={Math.min(100, zoom[0] + 1)} max={100} value={zoom[1]}
+          aria-valuetext={observationLabel(rows[Math.round(zoom[1] / 100 * (rows.length - 1))])}
+          onChange={(event) => setZoom([zoom[0], Number(event.target.value)])}/></label>
+        <button className="secondary" onClick={() => setZoom([0, 100])}>Reset dates</button>
+      </div>}
+    </details>}
+  </div>;
 }
-function HistoryTable({ rows }: { rows: HistoryPoint[] }) {
-  return (
-    <div
-      className="table-scroll"
-      tabIndex={0}
-      role="region"
-      aria-label="Scrollable exact historical observations"
-    >
-      <table aria-label="Exact historical observations">
-        <thead>
-          <tr>
-            <th scope="col">Local observation / UTC bucket</th>
-            <th scope="col">Recent price</th>
-            <th scope="col">14-day</th>
-            <th scope="col">60-day</th>
-            <th scope="col">Supply</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => (
-            <HistoryRow key={row.date} row={row} />
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
+
+function HistoryData({ rows }: { rows: HistoryPoint[] }) {
+  const columns: ColumnDef<HistoryPoint>[] = [
+    { id: "date", accessorKey: "date", header: "Observation", cell: ({ row }) => <>{observationLabel(row.original)}<small>UTC bucket {row.original.date}</small></> },
+    ...([["lowest_buyout", "Lowest / unit"], ["recent_price", "Recent / unit"], ["market_value", "14-day reference"], ["historical_value", "60-day reference"]] as const).map(([key, header]): ColumnDef<HistoryPoint> => {
+      return {
+        accessorKey: key, header,
+        meta: { numeric: true },
+        sortingFn: (a, b) => compareCopper(a.original[key] ?? null, b.original[key] ?? null),
+        cell: ({ row }) => <Currency value={row.original[key]}/>,
+      };
+    }),
+    { accessorKey: "supply", header: "Supply", meta: { numeric: true }, cell: ({ row }) => row.original.supply?.toLocaleString() ?? "Unobserved" },
+  ];
+  return <DataTable compact={rows.length <= 100} label="Exact historical observations" data={rows} columns={columns} getRowId={(row) => row.date}/>;
 }
-function HistoryRow({ row, index }: { row: HistoryPoint; index?: number }) {
-  return (
-    <tr aria-rowindex={index === undefined ? undefined : index + 2}>
-      <th scope="row" title={row.observed_at ? new Date(row.observed_at).toLocaleString(undefined,{timeZoneName:"long"}) : "No observation instant recorded"}>{observationLabel(row)}<small>UTC bucket {row.date}</small></th>
-      <td>
-        <Currency value={row.recent_price} />
-      </td>
-      <td>
-        <Currency value={row.market_value} />
-      </td>
-      <td>
-        <Currency value={row.historical_value} />
-      </td>
-      <td>{row.supply?.toLocaleString() ?? "Unobserved"}</td>
-    </tr>
-  );
+
+interface Band {
+  bucket?: number;
+  minimum: string;
+  maximum: string;
+  supply: number;
+  listing_count: number;
 }
-function VirtualHistory({ rows }: { rows: HistoryPoint[] }) {
-  const scroll = useRef<HTMLDivElement>(null);
-  const virtual = useVirtualizer({
-    count: rows.length,
-    getScrollElement: () => scroll.current,
-    estimateSize: () => 43,
-    overscan: 6,
-  });
-  const items = virtual.getVirtualItems();
-  return (
-    <div
-      ref={scroll}
-      className="history-virtual"
-      role="region"
-      aria-label="Virtual historical data; use arrow keys to scroll or switch to paginated data"
-      tabIndex={0}
-    >
-      <table
-        aria-label="Virtual historical observations"
-        aria-rowcount={rows.length + 1}
-      >
-        <thead>
-          <tr>
-            <th scope="col">Local observation / UTC bucket</th>
-            <th scope="col">Recent price</th>
-            <th scope="col">14-day</th>
-            <th scope="col">60-day</th>
-            <th scope="col">Supply</th>
-          </tr>
-        </thead>
-        <tbody>
-          {items.length > 0 && (
-            <tr aria-hidden="true">
-              <td colSpan={5} style={{ height: items[0].start, padding: 0 }} />
-            </tr>
-          )}
-          {items.map((item) => (
-            <HistoryRow
-              key={rows[item.index].date}
-              row={rows[item.index]}
-              index={item.index}
-            />
-          ))}
-          {items.length > 0 && (
-            <tr aria-hidden="true">
-              <td
-                colSpan={5}
-                style={{
-                  height: virtual.getTotalSize() - items.at(-1)!.end,
-                  padding: 0,
-                }}
-              />
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
-  );
+interface Cheapest {
+  numerator: string;
+  denominator: number;
+  supply: number;
+  listing_count: number;
 }
-export function SupplyDistribution({
-  market,
-  item,
-  variant,
-}: {
-  market: number;
-  item: number;
-  variant: string;
-}) {
+interface Distribution {
+  bands: Band[];
+  cheapest?: Cheapest | null;
+  priced_supply: number;
+  unpriced_supply: number;
+  priced_listing_count: number;
+  synthetic: boolean;
+}
+
+export function SupplyDistribution({ market, item, variant }: { market: number; item: number; variant: string }) {
   const result = useQuery({
     queryKey: ["private", "distribution", market, item, variant],
     refetchInterval: 60_000,
-    queryFn: ({ signal }) =>
-      api<{
-        bands: {
-          minimum: string;
-          maximum: string;
-          supply: number;
-          listing_count: number;
-        }[];
-        priced_supply: number;
-        unpriced_supply: number;
-        priced_listing_count: number;
-        synthetic: boolean;
-      }>(
-        `/markets/${market}/distribution/${item}/${variant}`,
-        "GET",
-        undefined,
-        signal,
-      ),
+    queryFn: ({ signal }) => api<Distribution>(`/markets/${market}/distribution/${item}/${variant}`, "GET", undefined, signal),
   });
-  const option = useMemo(
-    () => ({
+  const data = result.data;
+  const option = useMemo(() => {
+    const unit = currencyAxis(Math.max(0, ...(data?.bands.map((band) => Number(band.maximum)) ?? [])));
+    return {
       animation: false,
-      aria: { enabled: true },
-      grid: { left: 60, right: 15, top: 20, bottom: 70 },
+      grid: { left: 48, right: 12, top: 25, bottom: 44 },
       textStyle: { color: palette.text },
       xAxis: {
         type: "category",
-        data: result.data?.bands.map((b) => money(b.minimum)),
-        axisLabel: { color: palette.text, rotate: 25, fontSize: 13 },
+        data: data?.bands.map((band) => unit.format(Number(band.minimum))),
+        axisLabel: { color: palette.text, hideOverlap: true },
+        name: unit.label, nameLocation: "middle", nameGap: 27,
       },
       yAxis: {
-        type: "value",
-        name: "Units",
-        splitLine: { lineStyle: { color: palette.grid } },
+        type: "value", name: "Units", nameTextStyle: { color: palette.text },
+        splitNumber: 4, splitLine: { lineStyle: { color: palette.grid, type: "dashed" } },
         axisLabel: { color: palette.text },
-        nameTextStyle: { color: palette.text },
       },
       tooltip: {
-        trigger: "axis",
-        renderMode: "richText",
+        trigger: "axis", triggerOn: "mousemove|click", confine: true, renderMode: "html", className: "research-chart-tooltip",
+        backgroundColor: "#211911", borderColor: "#8a7044", textStyle: { color: "#f1e2c7", fontSize: 11 },
         formatter: (params: unknown) => {
-          const record = (params as { dataIndex: number }[])[0];
-          const band = result.data?.bands[record?.dataIndex];
-          return band
-            ? `$<Currency value={band.minimum} /> – $<Currency value={band.maximum} />\n${band.supply.toLocaleString()} units · ${band.listing_count} priced listings`
-            : "";
+          const band = data?.bands[(params as { dataIndex: number }[])[0]?.dataIndex];
+          return band ? chartTooltipText(`${band.minimum === band.maximum ? money(band.minimum) : `${money(band.minimum)} – ${money(band.maximum)}`} / unit\n${band.supply.toLocaleString()} units · ${band.listing_count} listings`) : "";
         },
       },
-      series: [
-        {
-          type: "bar",
-          data: result.data?.bands.map((b) => b.supply),
-          itemStyle: { color: palette.supply },
-        },
-      ],
-    }),
-    [result.data],
-  );
-  if (result.isPending)
-    return <Loading label="Loading complete distribution…" />;
-  if (result.error) return <p role="alert">{result.error.message} <button onClick={()=>result.refetch()}>Retry supply distribution</button></p>;
-  if (!result.data?.bands.length)
-    return (
-      <p className="empty">
-        No buyout prices are observed. Bid-only listings cannot establish a
-        buyout distribution.
-      </p>
-    );
-  return (
-    <>
-      <DeferredChart option={option} label="Current listed supply by price" />
-      <p className="small muted">
-        All {result.data.priced_listing_count.toLocaleString()} priced listings
-        · {result.data.priced_supply.toLocaleString()} units.{" "}
-        {result.data.unpriced_supply.toLocaleString()} bid-only units excluded.
-      </p>
-      <details>
-        <summary>Read distribution data</summary>
-        <table>
-          <thead>
-            <tr>
-              <th scope="col">Asking price range</th>
-              <th scope="col">Supply</th>
-            </tr>
-          </thead>
-          <tbody>
-            {result.data.bands.map((b, i) => (
-              <tr key={i}>
-                <td>
-                  <Currency value={b.minimum} /> –{" "}
-                  <Currency value={b.maximum} />
-                </td>
-                <td>{b.supply.toLocaleString()}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </details>
-    </>
-  );
+      series: [{ type: "bar", data: data?.bands.map((band) => band.supply), itemStyle: { color: palette.supply }, barMaxWidth: 36 }],
+    };
+  }, [data]);
+
+  if (result.isPending) return <Loading label="Loading supply by price…" skeleton/>;
+  if (result.error && !data) return <p role="alert" className="notice error">Supply by price could not be loaded. <button onClick={() => result.refetch()}>Retry supply distribution</button></p>;
+  if (!data?.bands.length) return <p className="empty">No current buyouts for this variant.</p>;
+
+  const cheapest = data.cheapest;
+  const onePrice = cheapest?.supply === data.priced_supply;
+  const ratio = cheapest ? cheapest.supply / data.priced_supply : null;
+  const concentration = ratio !== null && ratio < 1 && ratio >= 0.995 ? "Over 99%"
+    : ratio !== null && ratio > 0 && ratio < 0.005 ? "Under 1%"
+    : ratio === null ? null : ratio.toLocaleString(undefined, { style: "percent", maximumFractionDigits: 1 });
+  return <div className="research-chart-body">
+    {result.error && <p role="alert" className="notice error">Supply could not refresh. Showing the last loaded snapshot. <button onClick={() => result.refetch()}>Retry supply distribution</button></p>}
+    {cheapest && (onePrice
+      ? <p className="supply-fact"><strong>{data.priced_supply.toLocaleString()} units</strong> at <StackUnitPrice total={cheapest.numerator} quantity={cheapest.denominator}/> per unit.</p>
+      : <p className="supply-fact"><strong>{concentration}</strong> of priced supply is at the cheapest price. <span>{cheapest.supply.toLocaleString()} units at <StackUnitPrice total={cheapest.numerator} quantity={cheapest.denominator}/> per unit.</span></p>)}
+    {!onePrice && <DeferredChart touchInspect option={option} label="Current listed supply by price"/>}
+    <p className="chart-footnote">{data.priced_listing_count.toLocaleString()} priced listings · {data.priced_supply.toLocaleString()} units{data.unpriced_supply > 0 ? ` · ${data.unpriced_supply.toLocaleString()} bid-only units excluded` : ""}.</p>
+    <details className="chart-data-disclosure"><summary>Read distribution data</summary>
+      <p className="chart-footnote">Band prices are rounded to copper. Current listings show exact fractional unit costs.</p>
+      <DataTable<Band> compact label="Supply by price data" data={data.bands} getRowId={(row) => String(row.bucket ?? data.bands.indexOf(row))}
+        columns={[
+          { id: "range", header: "Asking price / unit", accessorKey: "minimum", sortingFn: (a, b) => compareCopper(a.original.minimum, b.original.minimum), cell: ({ row }) => row.original.minimum === row.original.maximum
+            ? <Currency value={row.original.minimum}/> : <><Currency value={row.original.minimum}/> – <Currency value={row.original.maximum}/></> },
+          { accessorKey: "supply", header: "Units", meta: { numeric: true }, cell: ({ row }) => row.original.supply.toLocaleString() },
+          { accessorKey: "listing_count", header: "Listings", meta: { numeric: true }, cell: ({ row }) => row.original.listing_count.toLocaleString() },
+        ]}/>
+    </details>
+  </div>;
 }

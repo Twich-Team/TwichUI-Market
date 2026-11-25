@@ -90,15 +90,16 @@ test.beforeAll(() => {
 test("setup resumes after refresh and sign-in without claiming installation from a download", async ({
   page,
 }) => {
+  await page.route("**/api/v1/companion/private-beta/current", route => route.fulfill({json:{ready:false}}));
   await login(page);
   await expect(
     page.getByRole("heading", {
-      name: "Your market, ready on your PC.",
+      name: "Desktop Companion",
       exact: true,
     }),
   ).toBeVisible();
   await expect(
-    page.getByText("Release verification is in progress.", { exact: true }),
+    page.getByText("A verified Windows installer is not available yet.", { exact: true }),
   ).toBeVisible();
   await expect(
     page.getByRole("link", { name: "Download for Windows" }),
@@ -181,7 +182,7 @@ test("system-browser approval route survives login, delivers a one-use code and 
     await page.goto("/companion");
     await page.locator(".companion-steps button").nth(3).click();
     await expect(
-      page.getByText("Waiting for first sync", { exact: true }),
+      page.locator(".companion-recent").getByText("Waiting for first sync", { exact: true }),
     ).toBeVisible();
     const headers = { Authorization: `Bearer ${grant.access_token}` };
     const first = await (
@@ -205,7 +206,7 @@ test("system-browser approval route survives login, delivers a one-use code and 
       .getByRole("button", { name: "Check sync status", exact: true })
       .click();
     await expect(
-      page.getByText("Browser protocol Windows fixture is connected.", {
+      page.locator(".companion-recent").getByRole("heading", {name:"Browser protocol Windows fixture",
         exact: true,
       }),
     ).toBeVisible();
@@ -242,6 +243,7 @@ test("system-browser approval route survives login, delivers a one-use code and 
         exact: true,
       })
       .click();
+    await page.getByRole("button",{name:"Access history",exact:true}).click();
     await expect(card.getByText("Revoked", { exact: true })).toBeVisible();
     expect(
       (await page.request.get("/api/v1/sync/markets/1", { headers })).status(),
@@ -390,7 +392,7 @@ test("device ownership stays private while administrators can inspect and revoke
       "owner",
       "synthetic browser owner password",
     );
-    await page.getByRole("tab", { name: "Devices", exact: true }).click();
+    await page.getByRole("navigation", {name:"Administration sections"}).getByRole("link", { name: "Devices", exact: true }).click();
     await page.getByRole("button", {name:`Show details for desktop companions ${grant.device.id}`,exact:true}).click();
     const card = page.getByRole("article", {
       name: "Administrator inspection fixture device",
@@ -410,6 +412,9 @@ test("device ownership stays private while administrators can inspect and revoke
         exact: true,
       })
       .click();
+    await page.getByRole("button",{name:"Access history",exact:true}).click();
+    const detailsButton = page.getByRole("button",{name:`Show details for desktop companions ${grant.device.id}`,exact:true});
+    if (await detailsButton.count()) await detailsButton.click();
     await expect(card.getByText("Revoked", { exact: true })).toBeVisible();
     expect(
       (
@@ -422,4 +427,37 @@ test("device ownership stays private while administrators can inspect and revoke
     await close(connection.listener);
     await member.dispose();
   }
+});
+
+test("abandoning additional PC setup preserves the existing delivered sync", async ({ page }) => {
+  const now = Date.now();
+  const date = (offset: number) => new Date(now + offset).toISOString();
+  await page.route("**/api/v1/companion/devices?*", route => route.fulfill({ json: { devices: [{
+    id: 417, user_id: 2, name: "Existing guild PC", platform: "Windows", app_version: "2.0.0",
+    authorized_at: date(-86400000), expires_at: date(86400000), revoked: false,
+    last_connection_at: null, last_sync_at: date(-3600000), selected_market_id: 1,
+    selected_market_name: "Guild auctions",
+  }] } }));
+  await login(page);
+  const recent = page.locator(".companion-recent");
+  await expect(recent).toContainText("Existing guild PC");
+  await expect(recent).toContainText("Last sync delivered");
+  await expect(page.locator(".companion-steps")).toHaveCount(0);
+
+  await recent.getByRole("button", { name: "Set up another PC" }).click();
+  await page.getByRole("button", { name: /4 First sync/ }).click();
+  await expect(page.getByRole("heading", { name: "Waiting for first sync" })).toBeVisible();
+  await expect(page.locator(".companion-status-grid")).toContainText("Not yet");
+  await expect(recent).toContainText("Last sync delivered");
+  await page.reload();
+  await expect(recent).toContainText("Last sync delivered");
+  await expect(page.locator(".companion-steps")).toHaveCount(0);
+
+  await page.goto("/companion?setup=1");
+  await expect(page.getByRole("heading", {name: "Install on Windows"})).toBeVisible();
+  await recent.getByRole("button", {name: "Close setup"}).click();
+  await expect(page.locator(".companion-steps")).toHaveCount(0);
+  await page.reload();
+  await expect(recent).toContainText("Existing guild PC");
+  await expect(page.locator(".companion-steps")).toHaveCount(0);
 });
