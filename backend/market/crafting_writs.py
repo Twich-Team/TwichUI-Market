@@ -114,7 +114,7 @@ def read_catalogue(db):
 
 def _locked_resource(db):
     if db.get_bind().dialect.name == 'postgresql':
-        db.execute(text('SELECT pg_advisory_xact_lock(7140242)'))
+        db.execute(text('SELECT pg_advisory_xact_lock(7140243)'))
     row = db.get(MetadataResource, CACHE_KEY, with_for_update=True)
     if row is None:
         row = MetadataResource(region=CACHE_KEY[0], resource=RESOURCE, offset=CACHE_KEY[2])
