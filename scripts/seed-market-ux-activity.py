@@ -25,11 +25,13 @@ def seed():
         if db.scalar(select(CollectionRun.id).where(CollectionRun.market_id == market.id,
                                                      CollectionRun.error == failure).limit(1)):
             return
+        # Synthetic historical checks precede the market’s recorded successful check.
+        history_end = min(at, market.last_success) if market.last_success else at
         for age in range(14):
             if age in (4, 9):
                 continue
             for index in range(3 + age % 5):
-                stamp = at - timedelta(days=age, minutes=index * 25)
+                stamp = history_end - timedelta(days=age, minutes=index * 25)
                 status, code, error = 'unchanged', 304, None
                 if index == 1 and age in (2, 3, 7):
                     status, code, error = 'failed', 503, failure
