@@ -147,6 +147,7 @@
 .waylaid-results .managed-table tbody th {
   text-align: left;
   text-transform: none;
+  white-space: normal;
   letter-spacing: normal;
   font-weight: 500;
 }
@@ -195,6 +196,7 @@
   display: inline-flex;
   align-items: center;
   gap: 9px;
+  max-width: 100%;
   min-height: 44px;
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
