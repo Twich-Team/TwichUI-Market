@@ -25,7 +25,6 @@ export function useLoad<T>(
     error: query.error?.message || "",
     loading: query.isPending || query.isPlaceholderData,
     refreshing:query.isFetching&&!query.isPending,
-    refreshedAt: query.dataUpdatedAt,
     refresh: () => query.refetch(),
   };
 }
@@ -79,6 +78,20 @@ function collectionIssue(market: Market) {
   if (market.coverage_status === "partial") return "Some auction data could not be checked. Prices and supply may be incomplete.";
 }
 
+export function MarketPageHeading({title, market}: {title: string; market?: Market}) {
+  const source = market && sourceTiming(market);
+  const issue = market && collectionIssue(market);
+  return <>
+    <div className="market-page-heading">
+      <h1>{title}</h1>
+      {market && <span className="small muted">{source
+        ? <time dateTime={source.iso} title={localTimestamp(source.iso)}>Source updated {source.age}</time>
+        : "Source update time unavailable"}</span>}
+    </div>
+    {issue && <p className="notice">{issue}</p>}
+  </>;
+}
+
 export function Freshness({ market, refreshedAt }: { market: Market; refreshedAt?: number }) {
   const source = sourceTiming(market);
   const issue = collectionIssue(market) ?? (market.freshness === "stale"
@@ -114,8 +127,6 @@ export function Explorer({markets,market,setMarket,searchParams,marketsReady}: {
   useEffect(()=>{if(markets.length&&current&&currentLocation()!==explorerUrl(state))navigate(explorerUrl(state),true);},[markets.length,state.market,state.query,state.sort.id,state.sort.desc,state.pageIndex,state.pageSize]);
   function change(next:ExplorerState){navigate(explorerUrl(next),true);}
   const marketDetails = summary.market?.id === state.market ? summary.market : current;
-  const source = marketDetails && sourceTiming(marketDetails);
-  const issue = marketDetails && collectionIssue(marketDetails);
   const searchForm = <form className="toolbar explorer-search" onSubmit={event=>{event.preventDefault();saveRestoration({draft:search,expanded:{},variantComparison:{},catalogueScrollLeft:0});change({...state,query:search.trim(),pageIndex:0});}}>
       <MarketSelect markets={markets} market={state.market} setMarket={id=>{setMarket(id);setSummary({synthetic:false});saveRestoration({draft:'',expanded:{},variantComparison:{},catalogueScrollLeft:0});change({...state,market:id,query:'',pageIndex:0});}}/>
       <div className="explorer-search-field">
@@ -129,13 +140,7 @@ export function Explorer({markets,market,setMarket,searchParams,marketsReady}: {
       <button className="primary" disabled={!current}>Search</button>
     </form>;
   return <div className="explorer-page">
-    <div className="explorer-heading">
-      <h1>Market Explorer</h1>
-      {marketDetails && <span className="small muted">{source
-        ? <time dateTime={source.iso} title={localTimestamp(source.iso)}>Source updated {source.age}</time>
-        : "Source update time unavailable"}</span>}
-    </div>
-    {issue && <p className="notice">{issue}</p>}
+    <MarketPageHeading title="Market Explorer" market={marketDetails}/>
     {!current && searchForm}
     {!marketsReady&&<Loading label="Loading available markets…" />}
     {marketsReady&&!markets.length&&<p className="empty panel">No market mappings are configured. An administrator can add a mapping under Administration.</p>}

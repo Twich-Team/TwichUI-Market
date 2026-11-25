@@ -1,5 +1,7 @@
 .deals-view { max-width: 76rem; }
-.deals-view h1 { margin-bottom: .65rem; }
+.deals-view .market-page-heading { margin-bottom: .65rem; }
+.deals-view .market-page-heading h1 { margin-bottom: 0; }
+.deals-view .market-page-heading .muted { color: var(--muted); font-size: .8rem; }
 .deal-modes { display: inline-grid; grid-template-columns: repeat(3, minmax(0, 1fr)); padding: .18rem; border: 1px solid var(--border, #655039); border-radius: .55rem; background: #211b16; }
 .deal-modes button { border: 0; background: transparent; min-height: 44px; padding: .45rem 1rem; border-radius: .36rem; color: #decfba; }
 .deal-modes button[aria-selected=true] { color: #fff0d3; background: #4a3828; box-shadow: inset 0 0 0 1px #927044; }

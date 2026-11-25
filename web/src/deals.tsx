@@ -8,7 +8,7 @@ import { Currency, StackUnitPrice } from "./currency";
 import { useEffect, useRef, useState } from "react";
 import { ItemInfo } from "./item-components";
 import { api } from "./api";
-import { Freshness, MarketSelect, useLoad } from "./research";
+import { MarketPageHeading, MarketSelect, useLoad } from "./research";
 import { Deal, Market, Signal } from "./types";
 
 import { usePreferences } from "./preferences";
@@ -127,10 +127,11 @@ export function Deals({
     saveRestoration({ dealDraft: filters });
     followItem(event);
   };
-  const marketName = markets.find(row => row.id === market)?.label;
+  const selectedMarket = markets.find(row => row.id === market);
+  const marketName = selectedMarket?.label;
   if (!marketsReady) return <section className="deals-view"><h1>Deal Finder</h1><Loading label="Loading markets…" skeleton/></section>;
   return <section className="deals-view">
-    <h1>Deal Finder</h1>
+    <MarketPageHeading title="Deal Finder" market={result.data?.market ?? selectedMarket}/>
     <div className="deal-modes" role="tablist" aria-label="Opportunity type">
       {modes.map(([key, title], index) => <button key={key} id={`deal-mode-${key}`}
         role="tab" aria-selected={mode === key} tabIndex={mode === key ? 0 : -1}
@@ -187,7 +188,6 @@ export function Deals({
             <span className="muted">{mode === "listings" ? "Matching listings by exact variant" : "Compared with prior observed UTC days"}{marketName && ` · ${marketName}`}</span></div>
           {result.data.synthetic && <span className="fixture-label">Test data</span>}
         </div>
-        <Freshness market={result.data.market} refreshedAt={result.refreshedAt}/>
         {result.data.history_coverage?.status === "insufficient" &&
           <p className="notice">{result.data.history_coverage.observed_days} of {result.data.history_coverage.required_days} required {mode === "listings" ? "" : "prior "}UTC days observed. Lower the day filter or check again after more collection.</p>}
         <div className="deal-list">

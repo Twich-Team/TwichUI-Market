@@ -4,7 +4,7 @@ import { defaultPreferences } from "../src/preferences-store";
 const variant = "a".repeat(64);
 const reference = { state: "needs_review", reason: "Daily unit asks vary by at least 100×. Check the price history before using this average." };
 const market = { id: 1, label: "Fixture market", region: "us", ruleset_id: 2, house_id: 114, source_kind: "auctions",
-  enabled: true, verified: true, freshness: "current", last_modified: new Date().toUTCString(),
+  enabled: true, verified: true, freshness: "stale", last_modified: new Date(Date.now() - 6 * 3_600_000).toUTCString(),
   last_success: new Date().toISOString(), interval_seconds: 300, failures: 0, last_error: null };
 const deal = { item_id: 117, name: "Tough Jerky", variant: {id:117}, variant_key: variant, name_verified: true,
   auction_id:"101", quantity: 3, total_buyout: "10", current_supply: 57, market_value: "373157356",
@@ -51,6 +51,9 @@ test("phone groups exact variant stacks, qualifies extreme references, saves all
   await page.goto("/deals");
   const card=page.locator("article.deal");
   await expect(card).toHaveCount(1);
+  await expect(page.locator(".market-page-heading time")).toHaveAttribute("datetime",new Date(market.last_modified).toISOString());
+  await expect(page.getByText("Timing",{exact:true})).toHaveCount(0);
+  await expect(page.getByText(/Prices may have changed since the last source update/)).toHaveCount(0);
   await expect(card).toContainText("Reference needs review");
   await expect(card).not.toContainText("%");
   await expect(card).toContainText("57 units");

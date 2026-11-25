@@ -143,7 +143,7 @@ test('Explorer keeps source age in the heading and search directly above results
   await route.fulfill({json: {...data, market: {...data.market, last_modified: index === 2 ? newSource : staleSource, last_success: checks[index]}}});
  });
  await signIn(page);
- const source = page.locator(".explorer-heading time");
+ const source = page.locator(".market-page-heading time");
  await expect(source).toHaveText("Source updated 6 hours ago");
  await expect(source).toHaveAttribute("datetime", new Date(staleSource).toISOString());
  await expect(page.getByText("Timing", {exact:true})).toHaveCount(0);
