@@ -43,3 +43,11 @@ scripts/market-ux-review.sh start
 Stop closes the review proxy and API, dumps the test DB privately and removes only the review project containers and networks. Start restores that dump or seeds a new review if the database is empty. The private credentials, copied release bundle and CA volume persist. An unexpected host restart can lose changes made after the most recent review dump. The environment has no scheduled teardown. Simulated backup records reset when their fixture process restarts.
 
 To rebuild, check out the intended reviewed source in this isolated worktree and run `scripts/build-market-ux-review.sh` followed by `scripts/market-ux-review.sh start`. The build archives Git’s committed backend, frontend, contracts and deployment files, and pins the three review images to the full SHA. To roll back just the preview, select an already built SHA for `REVIEW_TAG` in the private review environment file, then run the start command. Stopping this review also withdraws access immediately.
+
+## Administration visual review
+
+Collection, Item Metadata → Coverage, and Data Sources use the same private admin login as Storage & Backups. The [matched desktop and phone screenshots](evidence/market-ux/admin-comparison/README.md) compare the previous candidate with the revised pages and Storage at each size.
+
+The review fixture stores 54 simulated collection check receipts on the synthetic recovery market across a 14-day span. It also stores rolling request counts in the same quota buckets that the app reads. These writes send no provider requests and start no workers. Source usage ages out of its measured windows. Snapshot dates come from retained snapshots; a successful check can leave the snapshot unchanged.
+
+In Backups, use **Remove keep flag** to inspect which protections remain on a particular archive. Manual, release and restore-verification archives stay outside scheduled rotation. Independent recovery protection and the minimum recovery-point safeguard can also keep a scheduled copy.

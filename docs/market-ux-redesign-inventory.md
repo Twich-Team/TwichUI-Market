@@ -11,9 +11,9 @@ The route and table maps below identify implementation and behavioral checks. Se
 | `/deals` Below Reference, Supply Changes, Price Changes | `deals.tsx`; shared `DataTable` for listing rows, shared Query/preferences, grouped opportunities and expandable stacks. | opportunities/preferences/listing-prices tests; `.local/review/exact-stack-review.log` (11 passed), `pricing-shadow.log` (2 passed), screenshots/matrix |
 | `/administration` Overview | `settings.tsx`; grouped admin navigation and shared status/table primitives. | admin focused checks and phone matrix |
 | `/administration?admin_tab=markets` | market configuration/schedules; `DataTable` markets. | market-configuration tests, admin screenshots/matrix |
-| `?admin_tab=collection` | collection health and check history; `DataTable` run history. | admin-histories tests, admin screenshots/matrix |
+| `?admin_tab=collection` | Health cards and a UTC activity timeline. A bounded server aggregate counts retained checks and snapshots independently. The paged run history uses `DataTable`. | admin-histories tests, admin screenshots/matrix |
 | `?admin_tab=metadata` and `?metadata_view=tracker` | metadata coverage/records, recovery jobs and tracker; shared tables, Query, filters and server pagination. | metadata-coverage, metadata-attempts, recovery-tracker tests; admin/recovery matrices |
-| `?admin_tab=sources` | provider/source records and attempts; shared tables and status primitives. | provider-rate and metadata tests; admin screenshots/matrix |
+| `?admin_tab=sources` | Provider recovery summaries, rolling request meters, and provider-reported quota on the default cards. Source records and attempts use the shared tables. | provider-rate and metadata tests; admin screenshots/matrix |
 | `?admin_tab=members`, `invitations`, `devices`, `security` | Account access views in `settings.tsx`; `DataTable` members/invites/devices and security history. | settings/admin-history tests; all four phone views in both browser matrices |
 | `?admin_tab=storage` + `storage_view=overview\|backups\|storage\|maintenance` | `storage-dashboard.tsx`; shared shell/status, `DataTable` backup inventory, maintenance diagnostics and retention policy stages; `react-day-picker`-backed calendar in `backup-calendar.tsx`. | storage/backup/retention tests; phone screenshots; UTC calendar test log |
 | `/account` | preferences, authorized devices and security; shared tables/Query. | preferences, account/cache tests and phone matrix |
@@ -71,3 +71,5 @@ Device testing used Chromium and Playwright WebKit. The [review guide](market-ux
 | Fresh GPT-6.2-Astra, high | Independent review of active-member authorization, stack ordering, setup state, fresh-session isolation and regressions |
 
 The coordinator integrated the shared UI, active-member beta access, isolated deployment and final checks. Independent review caught closely spaced fractional stack prices ranking incorrectly in PostgreSQL and an abandoned additional-PC setup hiding the last delivered sync. Both received regressions.
+
+The [Administration visual comparison](evidence/market-ux/admin-comparison/README.md) records the later owner requirements, independent review and paired screenshots.
