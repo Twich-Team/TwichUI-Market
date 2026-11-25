@@ -24,6 +24,7 @@ from .writ_rewards import RewardConflict, effective_reward, reward_settings, rew
 
 router = APIRouter(prefix='/api/v1')
 RewardScope = Literal['tier', 'writ']
+TIER_ORDER = ('apprentice', 'journeyman', 'expert', 'artisan', 'elite')
 RecipeId = Annotated[int, Field(ge=1, le=2**31 - 1)]
 
 
@@ -217,11 +218,12 @@ def admin_writs(user: User = Depends(admin), db: Session = Depends(session)):
     settings = reward_settings(db)
     tiers = reward_keys(writs, 'tier')
     tiers.update(key for scope, key in settings if scope == 'tier')
+    ordered_tiers = [tier for tier in TIER_ORDER if tier in tiers] + sorted(tiers.difference(TIER_ORDER))
     items = item_views(db, 'us', {writ['item_id']: writ.get('name') for writ in writs})
     return {
         'catalogue': catalogue_view(resource, data),
         'refresh': writ_refresh_view(db, resource),
-        'tiers': [settings.get(('tier', tier), reward_view(tier)) for tier in sorted(tiers)],
+        'tiers': [settings.get(('tier', tier), reward_view(tier)) for tier in ordered_tiers],
         'writs': [admin_writ_view(writ, settings, items) for writ in writs if writ.get('quest_id')],
     }
 

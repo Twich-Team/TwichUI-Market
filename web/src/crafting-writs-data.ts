@@ -54,6 +54,8 @@ export interface WritRecipe {
   skill: number | null;
   craft_count: number | null;
   output_quantity: number | null;
+  output_min?: number | null;
+  output_max?: number | null;
   restrictions: string[];
   reasons?: string[];
 }

@@ -8,10 +8,11 @@ const catalogue = { source_url: "https://foreverdb.net", build: "fixture-build",
   stale: false, writ_count: 3, supported_count: 3, incomplete_count: 0, partial_count: 1 };
 const professions = [{ slug: "alchemy", label: "Alchemy" }, { slug: "tailoring", label: "Tailoring" }];
 const item = (item_id: number, name: string): WritItem => ({ item_id, name, quality: "COMMON", icon_url: null });
-const elixir = item(310, "Fixture Elixir");
+const elixir = { ...item(310, "Fixture Elixir"),
+  metadata_attribution: { text: "Data from ForeverDB.net", url: "https://foreverdb.net" } };
 const thread = item(311, "Fixture Thread");
 const reagent = item(312, "Fixture Reagent");
-const alchemyWrit = item(101, "Crafting Writ: Fixture Elixir");
+const alchemyWrit = { ...item(101, "Crafting Writ: Fixture Elixir"), quality: "RARE" };
 const tailoringWrit = item(102, "Crafting Writ: Fixture Cloth");
 const unknownWrit = item(103, "Crafting Writ: Fixture Unknown");
 const exact = (amount: number, denominator = 1) => ({ numerator_copper: String(amount), denominator });
@@ -133,7 +134,11 @@ test.describe("Crafting Writs desktop", () => {
     await setup(page, "member");
     await page.goto("/crafting-writs?market=9");
     const table = page.getByRole("table", { name: "Crafting Writs estimates" });
-    await expect(table.getByRole("rowheader").first()).toContainText("Fixture Elixir");
+    const firstWrit = table.getByRole("rowheader").first().getByRole("link", { name: "Crafting Writ: Fixture Elixir" });
+    await expect(firstWrit.locator(".item-name")).toHaveText("Fixture Elixir");
+    await expect(firstWrit).toHaveAttribute("title", "Crafting Writ: Fixture Elixir");
+    await expect(page.getByRole("link", { name: "ForeverDB.net", exact: true })).toHaveCount(1);
+    await expect(table.getByRole("link", { name: "Data from ForeverDB.net" })).toHaveCount(0);
     await expect(table.getByRole("columnheader", { name: "Cost / reputation" })).toHaveAttribute("aria-sort", "ascending");
     await expect(table.getByRole("row").filter({ hasText: "Fixture Unknown" })).toContainText("Unconfigured");
     const filter = page.getByLabel("Profession", { exact: true });

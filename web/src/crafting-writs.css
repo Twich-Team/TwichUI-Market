@@ -16,9 +16,20 @@
 .writ-filters button {
   min-height: 44px;
 }
+.writ-item-attribution {
+  display: block;
+  margin-block: 2px 4px;
+}
+.writ-item-attribution .item-credit {
+  display: block;
+}
 .writ-row-note {
   display: block;
   line-height: 1.35;
+}
+.writ-results .waylaid-item .item-name {
+  font-size: .95rem;
+  line-height: 1.32;
 }
 .writ-results .managed-table table {
   min-width: 1110px;

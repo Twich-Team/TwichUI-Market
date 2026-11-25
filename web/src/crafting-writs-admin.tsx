@@ -2,14 +2,14 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiError, api } from "./api";
 import { LocalTime, Status } from "./admin-table";
-import { ItemAttribution, ItemIcon } from "./item-components";
+import { ItemIcon } from "./item-components";
 import { ItemName } from "./item-name";
 import { Loading } from "./loading";
 import { supportedId } from "./navigation";
 import { onPrivateCacheClear } from "./query";
 import { tierLabel } from "./waylaid-crates-data";
 import { rewardSourceLabel, writQueryKey, type RewardSource, type WritCatalogue, type WritItem } from "./crafting-writs-data";
-import { WritAttribution } from "./crafting-writs-details";
+import { WritAttribution, WritItemAttribution } from "./crafting-writs-details";
 import "./waylaid-crates.css";
 import "./crafting-writs.css";
 
@@ -123,7 +123,7 @@ export function CraftingWritsAdmin({ readOnly }: { readOnly: boolean }) {
     {data && <>
       <section className="panel waylaid-admin-panel" aria-labelledby="writ-catalogue-title">
         <div className="panel-heading">
-          <div><h2 id="writ-catalogue-title">Writ catalogue</h2><WritAttribution catalogue={data.catalogue}/></div>
+          <div><h2 id="writ-catalogue-title">Writ catalogue</h2><WritAttribution catalogue={data.catalogue} items={data.writs.map(row => row.item)}/></div>
           <button className="primary" disabled={!enabled || pendingRefresh || refreshing} onClick={() => void queueRefresh()}>
             {refreshing ? "Queueing refresh…" : backfill ? "Refresh item metadata" : "Queue catalogue refresh"}
           </button>
@@ -163,8 +163,8 @@ export function CraftingWritsAdmin({ readOnly }: { readOnly: boolean }) {
         </div></div>
         {data.writs.map(reward => <RewardEditor key={reward.key} setting={reward} title={reward.item.name} disabled={!enabled} override
           save={(value, revision) => saveReward("writ", reward.key, value, revision)} reload={reload}
-          heading={<span className="writ-admin-identity"><ItemIcon item={reward.item}/><ItemName name={reward.item.name} quality={reward.item.quality}/></span>}>
-          <ItemAttribution item={reward.item}/>
+          heading={<span className="writ-admin-identity"><ItemIcon item={reward.item}/><ItemName name={reward.item.name} quality={reward.item.quality} highContrast/></span>}>
+          <WritItemAttribution item={reward.item}/>
           <p className="small muted">{reward.tier && <>{tierLabel(reward.tier)} · </>}Quest #{reward.quest_id}</p>
           <p className="small muted">Effective reward {reward.effective_reputation?.toLocaleString() ?? "unknown"} · {rewardSourceLabel(reward.reward_source)}</p>
           <p className={reward.provider_reputation != null && reward.provider_reputation !== reward.effective_reputation ? "waylaid-estimate small" : "small muted"}>

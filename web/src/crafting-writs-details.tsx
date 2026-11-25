@@ -8,22 +8,43 @@ import {
   type WritRecipe, type WritRoute, type WritRow,
 } from "./crafting-writs-data";
 
-export function WritAttribution({ catalogue }: { catalogue: WritCatalogue }) {
+const foreverDb = "https://foreverdb.net";
+
+function itemCredits(item: WritItem) {
+  const credits = [...(item.metadata_attributions ?? []), item.metadata_attribution, item.icon_attribution];
+  return [...new Map(credits.flatMap(credit => credit ? [[credit.url, credit] as const] : [])).values()];
+}
+
+function isForeverDb(url: string) {
+  return url === foreverDb || url === foreverDb + "/";
+}
+
+export function WritAttribution({ catalogue, items }: { catalogue: WritCatalogue; items: WritItem[] }) {
+  const includesForeverDb = items.some(item => itemCredits(item).some(credit => isForeverDb(credit.url)));
   return <small className="waylaid-attribution">
     <a href={catalogue.source_url} target="_blank" rel="noreferrer">{catalogue.source_label ?? "ForeverDB"}</a>
     {catalogue.build && <> · Build {catalogue.build}</>}
     {catalogue.source_observed_at && <> · Source observed <LocalTime value={catalogue.source_observed_at}/></>}
+    {includesForeverDb && <> · Item data from <a href={foreverDb} target="_blank" rel="noreferrer">ForeverDB.net</a></>}
   </small>;
 }
 
-export function WritItemLink({ item, market, id }: { item: WritItem; market: number; id: string }) {
+export function WritItemAttribution({ item }: { item: WritItem }) {
+  const credits = itemCredits(item).filter(credit => !isForeverDb(credit.url));
+  if (!credits.length) return null;
+  return <span className="writ-item-attribution">
+    <ItemAttribution item={{ ...item, metadata_attributions: credits }}/>
+  </span>;
+}
+
+export function WritItemLink({ item, market, id, displayName }: { item: WritItem; market: number; id: string; displayName?: string }) {
   return <div>
     <a className="waylaid-item" href={itemUrl(market, item.item_id, item.variant_key ?? undefined)}
-      id={id} onClick={event => { event.stopPropagation(); followItem(event); }}>
+      id={id} aria-label={displayName ? item.name : undefined} title={displayName ? item.name : undefined} onClick={event => { event.stopPropagation(); followItem(event); }}>
       <ItemIcon item={item}/>
-      <ItemName name={item.name} quality={item.quality}/>
+      <ItemName name={displayName ?? item.name} quality={item.quality} highContrast/>
     </a>
-    <ItemAttribution item={item}/>
+    <WritItemAttribution item={item}/>
   </div>;
 }
 
@@ -79,9 +100,11 @@ function quoteStatus(quote: WritQuote) {
 }
 
 function RecipeFacts({ recipe }: { recipe: WritRecipe }) {
+  const output = recipe.output_quantity ?? (recipe.output_min != null && recipe.output_max != null
+    ? `${recipe.output_min}–${recipe.output_max}` : "unknown");
   return <>
     <p className="small muted">
-      Skill {recipe.skill ?? "unknown"} · Output {recipe.output_quantity ?? "unknown"} per craft
+      Skill {recipe.skill ?? "unknown"} · Output {output} per craft
       {recipe.craft_count != null && <> · {recipe.craft_count.toLocaleString()} {recipe.craft_count === 1 ? "craft" : "crafts"}</>}
     </p>
     {!!recipe.restrictions.length && <ul className="small muted">

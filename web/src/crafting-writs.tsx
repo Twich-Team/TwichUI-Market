@@ -27,8 +27,10 @@ function detailsLabel(row: WritRow, expanded: boolean) {
 }
 
 function WritIdentity({ row, market }: { row: WritRow; market: number }) {
+  const suffix = row.item.name.replace(/^(?:Craftsman[’']s|Crafting) Writ:\s+/, "");
   return <div>
-    <WritItemLink item={row.item} market={market} id={`writ-item-${row.item.item_id}`}/>
+    <WritItemLink item={row.item} market={market} id={`writ-item-${row.item.item_id}`}
+      displayName={suffix === row.item.name ? undefined : suffix}/>
     {row.tier && <small className="muted writ-row-note">{tierLabel(row.tier)}</small>}
   </div>;
 }
@@ -80,7 +82,7 @@ function WritSummary({ data, rows }: { data: WritResults; rows: WritRow[] }) {
       <small>{best?.item.name ?? "No eligible writ with a priced reward"}</small>
     </article>
     <article>
-      <span>Writs with comparable costs</span>
+      <span>Writs ranked by cost / reputation</span>
       <strong>{ranked.length.toLocaleString()} <small>of {rows.length.toLocaleString()}</small></strong>
       <small>In the current view</small>
     </article>
@@ -177,7 +179,7 @@ export function CraftingWrits({ markets, market, setMarket, marketStatus, search
       <button className="secondary" disabled={!active || result.isFetching} onClick={() => void result.refetch()}>Refresh prices</button>
     </div>
     <section className="panel waylaid-controls writ-controls" aria-label="Pricing options">
-      <label><span id="writ-profession-label">Profession</span><select aria-labelledby="writ-profession-label" value={view.profession ?? ""} onChange={event => update({ profession: event.target.value || null })}>
+      <label>Profession<select aria-label="Profession" value={view.profession ?? ""} onChange={event => update({ profession: event.target.value || null })}>
         <option value="">All professions</option>
         {view.profession && !professions.some(profession => profession.slug === view.profession) &&
           <option value={view.profession}>{tierLabel(view.profession)}</option>}
@@ -211,7 +213,10 @@ export function CraftingWrits({ markets, market, setMarket, marketStatus, search
       {data.catalogue.stale && <p className="notice warning">Catalogue data is stale. Showing the last verified catalogue.</p>}
       {data.pricing.freshness === "stale" && <p className="notice warning">Market observations are stale. Prices and stock may have changed.</p>}
       <div className="waylaid-source-line">
-        <WritAttribution catalogue={data.catalogue}/>
+        <WritAttribution catalogue={data.catalogue} items={rows.flatMap(row => [
+          row.item, ...row.objectives.map(objective => objective.item),
+          ...[...row.craft.materials, ...row.buy.materials, ...row.craft.basket, ...row.buy.basket].map(quote => quote.item),
+        ])}/>
         {data.catalogue.writ_count > 0 && <small>
           {data.catalogue.writ_count.toLocaleString()} catalogued
           {data.catalogue.incomplete_count > 0 && <> · {data.catalogue.incomplete_count.toLocaleString()} with no verified route</>}
