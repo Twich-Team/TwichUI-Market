@@ -499,3 +499,19 @@ class WaylaidReward(Base):
     revision: Mapped[int] = mapped_column(BigInteger)
     updated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     updated_by: Mapped[int | None] = mapped_column(ForeignKey('users.id'))
+
+
+class CraftingWritReward(Base):
+    __tablename__ = 'crafting_writ_rewards'
+    __table_args__ = (
+        CheckConstraint("scope IN ('tier', 'writ')", name='ck_crafting_writ_reward_scope'),
+        CheckConstraint('reputation IS NULL OR reputation > 0', name='ck_crafting_writ_reward_positive'),
+        CheckConstraint('revision > 0', name='ck_crafting_writ_reward_revision'),
+    )
+
+    scope: Mapped[str] = mapped_column(String(4), primary_key=True)
+    key: Mapped[str] = mapped_column(String(48), primary_key=True)
+    reputation: Mapped[int | None] = mapped_column(Integer)
+    revision: Mapped[int] = mapped_column(BigInteger)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    updated_by: Mapped[int] = mapped_column(ForeignKey('users.id'))
