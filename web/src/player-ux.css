@@ -4,9 +4,23 @@
   min-width: 0;
 }
 
-.explorer-page > .toolbar.explorer-search {
+.explorer-heading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 2px 1rem;
+}
+
+.explorer-page .toolbar.explorer-search {
+  display: grid;
+  grid-template-columns: minmax(10rem, 1fr) minmax(12rem, 2fr) auto;
   align-items: end;
-  margin-block: 12px 6px;
+  gap: 10px;
+  margin: 0;
+  padding: 10px 12px;
+  border-inline: 0;
+  border-radius: 0;
 }
 
 .explorer-search-field {
@@ -544,8 +558,7 @@
     min-height: 44px;
   }
 
-  .item-research .player-freshness,
-  .explorer-page .player-freshness {
+  .item-research .player-freshness {
     margin-block: 0 4px;
   }
 
@@ -557,7 +570,16 @@
     padding: 7px 9px;
   }
 
-  .explorer-page > .toolbar.explorer-search .explorer-search-field {
+  .explorer-page .toolbar.explorer-search {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .explorer-page .explorer-search > * {
+    grid-column: auto;
+    min-width: 0;
+  }
+
+  .explorer-page .explorer-search > .market-select {
     grid-column: 1 / -1;
   }
 

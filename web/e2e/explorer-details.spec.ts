@@ -130,7 +130,7 @@ test('a disappeared exact variant keeps its URL and retained historical chart wi
  await page.locator('.chart-viewport').first().scrollIntoViewIfNeeded();await expect(page.getByRole('img',{name:'Observed asking-price history',exact:true})).toBeVisible();await expect(page.getByLabel('Exact variant current market')).toContainText('0 units');
 });
 
-test('refreshing Explorer updates check and view time independently of source age', async ({page}) => {
+test('Explorer keeps source age in the heading and search directly above results', async ({page}) => {
  const staleSource = new Date(Date.now() - 6 * 3_600_000).toUTCString();
  const newSource = new Date(Date.now() - 60_000).toUTCString();
  const checks = ["2026-11-22T10:00:00Z", "2026-11-22T11:00:00Z", "2026-11-22T12:00:00Z"];
@@ -143,17 +143,22 @@ test('refreshing Explorer updates check and view time independently of source ag
   await route.fulfill({json: {...data, market: {...data.market, last_modified: index === 2 ? newSource : staleSource, last_success: checks[index]}}});
  });
  await signIn(page);
- const freshness = page.locator(".player-freshness");
- await expect(freshness).toContainText("Source updated 6 hours ago");
- await freshness.getByText("Timing", {exact:true}).click();
- const times = freshness.locator("dd");
- await expect(times).toHaveCount(3);
- const initial = await times.allTextContents();
- await page.getByRole("button", {name:"Refresh catalogue"}).click();
- await expect(times.nth(1)).not.toHaveText(initial[1]);
- await expect(times.nth(0)).toHaveText(initial[0]);
- await expect(times.nth(2)).not.toHaveText("Not recorded");
- await page.getByRole("button", {name:"Refresh catalogue"}).click();
- await expect(times.nth(0)).not.toHaveText(initial[0]);
- await expect(freshness).toContainText("Source updated 1 minute ago");
+ const source = page.locator(".explorer-heading time");
+ await expect(source).toHaveText("Source updated 6 hours ago");
+ await expect(source).toHaveAttribute("datetime", new Date(staleSource).toISOString());
+ await expect(page.getByText("Timing", {exact:true})).toHaveCount(0);
+ await expect(page.getByText(/Prices may have changed since the last source update/)).toHaveCount(0);
+ for (const width of [1280, 390]) {
+  await page.setViewportSize({width, height:900});
+  const results = width === 390 ? ".mobile-catalogue" : ".catalogue-scroll";
+  await expect(page.locator(`.explorer-search + ${results}`)).toBeVisible();
+ }
+ const refresh = page.getByRole("button", {name:"Refresh catalogue"});
+ await refresh.click();
+ await expect.poll(() => refreshed).toBe(2);
+ await expect(refresh).toBeEnabled();
+ await expect(source).toHaveAttribute("datetime", new Date(staleSource).toISOString());
+ await refresh.click();
+ await expect(source).toHaveText("Source updated 1 minute ago");
+ await expect(source).toHaveAttribute("datetime", new Date(newSource).toISOString());
 });

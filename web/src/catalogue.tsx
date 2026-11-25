@@ -6,7 +6,7 @@ import { usePreferences } from "./preferences";
 import type { ItemSort } from "./preferences-store";
 import { Currency } from "./currency";
 import { variantLabel } from "./variant-label";
-import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   ColumnDef,
@@ -54,7 +54,6 @@ export interface Variant extends ItemIdentity {
 }
 export interface CatalogueSummary {
   synthetic: boolean;
-  refreshedAt?: number;
   market?: Market;
 }
 
@@ -82,10 +81,11 @@ export function range(value: Range) {
     </>
   );
 }
-export function ItemCatalogue({market,query,state,onChange,onSummary}: {
+export function ItemCatalogue({market,query,state,onChange,onSummary,searchForm}: {
   market:number; query:string; state:ExplorerState;
   onChange:(state:ExplorerState)=>void;
   onSummary:(summary:CatalogueSummary)=>void;
+  searchForm: ReactNode;
 }) {
   const compact=useCompactLayout();
   const preferences=usePreferences();
@@ -140,7 +140,6 @@ export function ItemCatalogue({market,query,state,onChange,onSummary}: {
     if (!data || response.isPlaceholderData) return;
     summaryRef.current({
       synthetic: data.synthetic,
-      refreshedAt: response.dataUpdatedAt,
       market: data.market,
     });
   }, [response.data, response.dataUpdatedAt, response.isPlaceholderData]);
@@ -264,13 +263,14 @@ export function ItemCatalogue({market,query,state,onChange,onSummary}: {
       <p role="status" aria-live="polite" className="sr-only">{response.isFetching ? "Loading item catalogue…" : response.error ? "Catalogue update failed." : `Catalogue page ${data?.page != null ? data!.page+1 : 1} loaded.`}</p>
       {clamped && <p role="status" className="notice">The live results changed. Your saved page was moved to the last available page.</p>}
       {response.error && <p role="alert" className="notice error">Items could not be refreshed. {data ? "Showing the last loaded results." : response.error.message} <button onClick={()=>response.refetch()}>Retry catalogue</button></p>}
-      {compact ? <>
-        {data?.total_items !== 0 && <div className="mobile-sort">
+      {compact && data?.total_items !== 0 && <div className="mobile-sort">
           <label>Sort items<select value={sort.id} onChange={e=>table.setSorting([{id:e.target.value,desc:sort.desc}])}>
             {columns.filter(column=>column.id!=="expand").map(column=><option key={column.id} value={column.id}>{String(column.header)}</option>)}
           </select></label>
           <button className="secondary" aria-label={`Sort direction: ${sort.desc ? "descending" : "ascending"}`} onClick={()=>table.setSorting([{id:sort.id,desc:!sort.desc}])}>{sort.desc ? "Descending ↓" : "Ascending ↑"}</button>
         </div>}
+      {searchForm}
+      {compact ? <>
         <div className={`mobile-catalogue ${response.isFetching ? "catalogue-loading" : ""}`}>
           {response.isFetching && !data?.items.length && <Loading label="Loading item catalogue…" skeleton/>}
           {table.getRowModel().rows.map(({original:item})=><article className="mobile-item" key={item.item_id}>
