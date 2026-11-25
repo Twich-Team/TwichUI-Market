@@ -216,7 +216,7 @@ def _can_buy_exact(lots, quantity):
     return False
 
 
-def _exact(value):
+def exact_price(value):
     if value is None:
         return None
     denominator = value.denominator
@@ -229,11 +229,11 @@ def _rounded_copper(value):
     return (2 * value.numerator + value.denominator) // (2 * value.denominator)
 
 
-def _display(value):
+def display_price(value):
     return str(_rounded_copper(value)) if value is not None else None
 
 
-def _line(item_id, quantity, book):
+def quote_line(item_id, quantity, book, *, check_exact_stack=True):
     quote = book.items.get(item_id) or ItemQuote()
     subtotal = quantity * quote.unit if quote.unit is not None else None
     available = sum(size * count for size, count in quote.lots.items()) if quote.depth_known else None
@@ -243,6 +243,8 @@ def _line(item_id, quantity, book):
         stock = 'insufficient_at_minimum'
     elif quote.source_kind == 'commodities':
         stock = 'sufficient_at_minimum'
+    elif not check_exact_stack:
+        stock = 'unknown'
     else:
         exact = _can_buy_exact(quote.lots, quantity)
         stock = 'unknown' if exact is None else 'sufficient_at_minimum' if exact else 'whole_stack_overshoot'
@@ -253,8 +255,8 @@ def _line(item_id, quantity, book):
     return subtotal, {
         'item_id': item_id, 'quantity': quantity, 'minimum_purchase_copper': (
             str(observed_cost) if observed_cost is not None else None),
-        'unit_price_exact': _exact(quote.unit), 'unit_price_copper': _display(quote.unit),
-        'subtotal_exact': _exact(subtotal), 'subtotal_copper': _display(subtotal),
+        'unit_price_exact': exact_price(quote.unit), 'unit_price_copper': display_price(quote.unit),
+        'subtotal_exact': exact_price(subtotal), 'subtotal_copper': display_price(subtotal),
         'minimum_unit_copper': str(quote.minimum) if quote.minimum is not None else None,
         'available_at_minimum': available, 'current_priced_quantity': quote.priced_quantity,
         'stock_status': stock, 'quote_status': quote.status, 'quality_reason': quote.quality_reason,
@@ -263,7 +265,7 @@ def _line(item_id, quantity, book):
     }
 
 
-def _reasons(book, lines):
+def quote_reasons(book, lines, *, accepted_stock=('sufficient_at_minimum',)):
     reasons = []
     if book.freshness != 'current':
         reasons.append(book.freshness + '_freshness')
@@ -274,7 +276,7 @@ def _reasons(book, lines):
     for line in lines:
         if line['quote_status'] != 'available':
             reasons.append(line['quote_status'])
-        if book.basis == 'current' and line['stock_status'] != 'sufficient_at_minimum':
+        if book.basis == 'current' and line['stock_status'] not in accepted_stock:
             reasons.append(line['stock_status'])
     return list(dict.fromkeys(reasons))
 
@@ -285,20 +287,20 @@ def price_crate(crate_item_id, favor, bundles, quotes, owned=False):
     for bundle_id, quantities in bundles.items():
         if not quantities or any(type(q) is not int or q < 1 for q in quantities.values()):
             raise ValueError('A bundle requires positive material quantities')
-        lines = [_line(i, q, quotes) for i, q in quantities.items()]
+        lines = [quote_line(i, q, quotes) for i, q in quantities.items()]
         materials = [line for _, line in lines]
         costs = [cost for cost, _ in lines]
         fill = sum(costs, Fraction()) if all(c is not None for c in costs) else None
-        reasons = _reasons(quotes, materials)
+        reasons = quote_reasons(quotes, materials)
         option = {'bundle_id': bundle_id, 'materials': materials,
-                  'fill_cost_copper': _display(fill), 'fill_cost_exact': _exact(fill),
+                  'fill_cost_copper': display_price(fill), 'fill_cost_exact': exact_price(fill),
                   'eligible': not reasons, 'reasons': reasons}
         options.append(option)
         if fill is not None:
             priced.append((fill, option))
     fill, chosen = min(priced, key=lambda entry: (
         entry[0], not entry[1]['eligible'], entry[1]['bundle_id']), default=(None, None))
-    purchase, purchase_quote = _line(crate_item_id, 1, quotes)
+    purchase, purchase_quote = quote_line(crate_item_id, 1, quotes)
     if owned:
         purchase = Fraction(0)
     total = fill + purchase if fill is not None and purchase is not None else None
@@ -309,20 +311,20 @@ def price_crate(crate_item_id, favor, bundles, quotes, owned=False):
             shared = [m for m in lines if m['item_id'] == crate_item_id]
             if shared:
                 lines.remove(shared[0])
-                lines.append(_line(crate_item_id, shared[0]['quantity'] + 1, quotes)[1])
+                lines.append(quote_line(crate_item_id, shared[0]['quantity'] + 1, quotes)[1])
             else:
                 lines.append(purchase_quote)
-        reasons = _reasons(quotes, lines)
+        reasons = quote_reasons(quotes, lines)
     else:
         reasons = ['no_fully_priced_bundle']
-        reasons.extend(_reasons(quotes, [] if owned else [purchase_quote]))
+        reasons.extend(quote_reasons(quotes, [] if owned else [purchase_quote]))
     ratio = None
     if type(favor) is not int or favor <= 0:
         reasons.append('unknown_favor')
     elif total is not None:
-        ratio = _exact(Fraction(total) / favor)
+        ratio = exact_price(Fraction(total) / favor)
     return {'bundles': options, 'selected_bundle_id': chosen['bundle_id'] if chosen else None,
-            'fill_cost_copper': _display(fill), 'fill_cost_exact': _exact(fill),
-            'purchase_cost_copper': _display(purchase), 'purchase_cost_exact': _exact(purchase),
-            'purchase_quote': purchase_quote, 'total_cost_copper': _display(total),
-            'total_cost_exact': _exact(total), 'cost_per_favor': ratio, 'eligible': not reasons, 'reasons': reasons}
+            'fill_cost_copper': display_price(fill), 'fill_cost_exact': exact_price(fill),
+            'purchase_cost_copper': display_price(purchase), 'purchase_cost_exact': exact_price(purchase),
+            'purchase_quote': purchase_quote, 'total_cost_copper': display_price(total),
+            'total_cost_exact': exact_price(total), 'cost_per_favor': ratio, 'eligible': not reasons, 'reasons': reasons}
