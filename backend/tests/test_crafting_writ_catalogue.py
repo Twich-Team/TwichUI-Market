@@ -123,7 +123,11 @@ def test_backfill_success_preserves_reward(database, monkeypatch, tmp_path):
         db.get(Market, market_id).verified = True
         db.add(CraftingWritReward(scope='tier', key='journeyman', reputation=91, revision=1, updated_at=at, updated_by=1))
         enqueue_crafting_writ_refresh(db, at=at)
+    requested = []
+
     def fetcher(provider, item_id, **kwargs):
+        assert provider == 'foreverdb'
+        requested.append(item_id)
         body = {'data': {'id': item_id, 'name': 'Fixture'},
                 'meta': {'edition': 'forever', 'build': '1.60.1.71091'}}
         return {'status': 200, 'headers': {}}, json.dumps(body).encode()
@@ -131,7 +135,8 @@ def test_backfill_success_preserves_reward(database, monkeypatch, tmp_path):
     with database() as db:
         assert db.get(CraftingWritReward, ('tier', 'journeyman')).reputation == 91
         assert len(read_catalogue(db)[1]['writs']) == 9
-        assert db.get(MetadataSource, ('us', 818, 'en_US', 'foreverdb')).status == 'available'
+        item_id, = requested
+        assert db.get(MetadataSource, ('us', item_id, 'en_US', 'foreverdb')).status == 'available'
 
 
 def test_curated_generation_replacement_is_atomic_and_preserves_provider(database):
