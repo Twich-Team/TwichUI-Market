@@ -7,6 +7,7 @@ from sqlalchemy import select
 from market.db import now
 from market.foreverdb import item, related, needs_detail
 from market.metadata_catalog import store_source, import_foreverdb_resource
+from market.metadata_providers import IdentityMismatch
 from market.metadata_recovery import enqueue, enqueue_related, ensure_providers, tick
 from market.models import ItemMetadata, MetadataProvider, MetadataSource, MetadataTask, MetadataJob, MetadataResource, Market
 from market.provider_secrets import encrypt
@@ -47,6 +48,68 @@ def test_synthetic_old_build_and_beta_qualifiers_are_not_current_verification():
     assert origin['confidence']=='retained_earlier_build' and fields['availability']['betaEvent']
     value['meta']['build']='12.1.0.12345'
     with pytest.raises(ValueError):item(json.dumps(value).encode(),8188)
+
+
+@pytest.mark.parametrize(('upstream_build', 'display_build'), [
+    ('71037', '71037'),
+    (71037, '71037'),
+    (' 71037 ', '71037'),
+    (' 1.60.1.71037 ', '1.60.1.71037'),
+])
+def test_retained_build_formats_preserve_earlier_provenance(upstream_build, display_build):
+    value = json.loads(body('items-8188.json'))
+    value['meta']['build'] = '1.60.1.71091'
+    value['data']['dataFromBuild'] = upstream_build
+
+    fields, origin = item(json.dumps(value).encode(), 8188)
+
+    assert fields['availability']['dataFromBuild'] == display_build
+    assert origin['qualifiers']['dataFromBuild'] == origin['build'] == display_build
+    assert origin['item_build'] == origin['current_build'] == '1.60.1.71091'
+    assert origin['confidence'] == 'retained_earlier_build'
+    assert origin['record']['dataFromBuild'] == upstream_build
+
+
+@pytest.mark.parametrize(('data', 'meta'), [
+    ({'id': 8189}, {}),
+    ({}, {'build': '71091'}),
+    ({}, {'edition': 'retail'}),
+    ({'dataFromBuild': '12.0.1.71037'}, {}),
+    ({'dataFromBuild': True}, {}),
+    ({'dataFromBuild': 71037.0}, {}),
+    ({'dataFromBuild': '７１０３７'}, {}),
+])
+def test_retained_build_format_does_not_relax_item_or_edition_checks(data, meta):
+    value = json.loads(body('items-8188.json'))
+    value['data'].update({'dataFromBuild': '71037', **data})
+    value['meta'].update({'build': '1.60.1.71091', **meta})
+
+    with pytest.raises(IdentityMismatch):
+        item(json.dumps(value).encode(), 8188)
+
+
+def test_recovery_stores_short_retained_build_in_item_profile(database, owner):
+    at = now()
+    with database.begin() as db:
+        market_id = setup_provider(db)
+        enqueue(db, market_id, 'single', ['foreverdb'], item_id=8188, budget=1, at=at)
+    value = json.loads(body('items-8188.json'))
+    value['meta']['build'] = '1.60.1.71091'
+    value['data']['dataFromBuild'] = '71037'
+
+    assert tick(database, at=at, automatic=False, fetcher=lambda *args, **kwargs: (
+        {'status': 200, 'headers': {}}, json.dumps(value).encode()))
+
+    response = owner.get(f'/api/v1/markets/{market_id}/item-profiles/8188')
+    assert response.status_code == 200
+    profile = response.json()
+    assert profile['attributes']['availability']['dataFromBuild'] == '71037'
+    source = profile['catalog']['provenance']['name']
+    assert source['confidence'] == 'retained_earlier_build'
+    assert source['build'] == '71037'
+    assert source['current_build'] == '1.60.1.71091'
+    with database() as db:
+        assert db.get(MetadataSource, ('us', 8188, 'en_US', 'foreverdb')).status == 'available'
 
 
 def test_related_real_contracts_preserve_source_and_quantities():
