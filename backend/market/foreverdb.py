@@ -60,6 +60,18 @@ def envelope(body, *, at=None, resource):
     return row,meta,origin
 
 
+def retained_item_build(value):
+    """Normalize the earlier build cited by an already verified item envelope."""
+    if type(value) is int:
+        value = str(value)
+    if isinstance(value, str):
+        value = value.strip()
+        if re.fullmatch(r'[1-9][0-9]{4,8}', value):
+            # The build number is known. Its full version need not match the current patch.
+            return value
+    return build_identity(value)
+
+
 def item(body,item_id,*,at=None):
     row,meta,origin=envelope(body,at=at,resource=f'items/{item_id}')
     if not isinstance(row,dict) or type(row.get('id')) is not int or row['id']!=item_id:raise IdentityMismatch('ForeverDB item identity mismatch')
@@ -111,13 +123,13 @@ def item(body,item_id,*,at=None):
     qualifiers={k:safe_json(row[k]) for k in ('betaEvent','speculation','speculationReasons','dataFromBuild','liveClient') if k in row}
     for key in ('betaEvent','speculation'):
         if key in qualifiers and type(qualifiers[key]) is not bool:raise ValueError('Invalid availability flag')
-    if qualifiers:
-        fields['availability']=qualifiers;origin['qualifiers']=qualifiers
     if row.get('dataFromBuild') is not None:
-        origin['build']=build_identity(row['dataFromBuild'])
+        qualifiers['dataFromBuild']=origin['build']=retained_item_build(row['dataFromBuild'])
         origin['confidence']='retained_earlier_build'
     elif row.get('betaEvent') or row.get('speculation'):
         origin['confidence']='availability_unconfirmed'
+    if qualifiers:
+        fields['availability']=qualifiers;origin['qualifiers']=qualifiers
     return fields,origin
 
 
