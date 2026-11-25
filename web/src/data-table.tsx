@@ -27,6 +27,12 @@ function columnLabel<T>(column: Column<T, unknown>) {
   return meta?.columnLabel ?? (typeof column.columnDef.header === "string" ? column.columnDef.header : column.id);
 }
 
+interface TableDetails<T> {
+  isExpanded: (row: T) => boolean;
+  toggle: (row: T) => void;
+  label: (row: T, expanded: boolean) => string;
+}
+
 interface TableSelection<T> {
   state: RowSelectionState;
   onChange: OnChangeFn<RowSelectionState>;
@@ -78,6 +84,7 @@ export function DataTable<T>({
   error,
   emptyMessage = "No matching records.",
   renderDetails,
+  detailsControl,
   filters = [],
   toolbar,
   compact = false,
@@ -92,6 +99,7 @@ export function DataTable<T>({
   error?: ReactNode;
   emptyMessage?: string;
   renderDetails?: (row: T) => ReactNode;
+  detailsControl?: TableDetails<T>;
   filters?: { id: string; label: string; options: { value: string; label: string }[] }[];
   toolbar?: ReactNode;
   compact?: boolean;
@@ -157,6 +165,7 @@ export function DataTable<T>({
     disabled={!selectableRows.length} onChange={table.getToggleAllPageRowsSelectedHandler()} /></label>;
   const sortBy = table.getState().sorting[0];
   const mobileSort = table.getVisibleLeafColumns().filter(column => column.getCanSort());
+  const isExpanded = (row: T, id: string) => detailsControl?.isExpanded(row) ?? Boolean(expanded[id]);
   return (
     <div className="managed-table" aria-busy={loading}>
       <div className="managed-table-controls">
@@ -250,24 +259,25 @@ export function DataTable<T>({
                 {selection && <td data-label="Select"><span className="table-cell-label">Select</span><label className="table-select-target"><input type="checkbox"
                   checked={row.getIsSelected()} disabled={!row.getCanSelect()} aria-label={selection.label(row.original)}
                   onChange={row.getToggleSelectedHandler()} /></label></td>}
-                {renderDetails && <td data-label="Details"><button aria-label={`${expanded[row.id] ? "Hide" : "Show"} details for ${label} ${row.id}`} aria-expanded={!!expanded[row.id]} aria-controls={`${tableId}-${row.id}`} onClick={() => setExpanded(value => ({ ...value, [row.id]: !value[row.id] }))}>{expanded[row.id] ? "Hide" : "Details"}</button></td>}
-                {row.getVisibleCells().map((cell) => (
-                  <td
-                    key={cell.id}
-                    data-label={columnLabel(cell.column)}
-                    className={
-                      (cell.column.columnDef.meta as { numeric?: boolean })
-                        ?.numeric
-                        ? "numeric"
-                        : undefined
-                    }
-                  >
+                {renderDetails && <td data-label="Details"><button
+                  aria-label={detailsControl?.label(row.original, isExpanded(row.original, row.id)) ??
+                    `${expanded[row.id] ? "Hide" : "Show"} details for ${label} ${row.id}`}
+                  aria-expanded={isExpanded(row.original, row.id)}
+                  aria-controls={!detailsControl || isExpanded(row.original, row.id) ? `${tableId}-${row.id}` : undefined}
+                  onClick={() => detailsControl ? detailsControl.toggle(row.original) : setExpanded(value => ({ ...value, [row.id]: !value[row.id] }))}>
+                  {isExpanded(row.original, row.id) ? "Hide" : "Details"}
+                </button></td>}
+                {row.getVisibleCells().map((cell) => {
+                  const meta = cell.column.columnDef.meta as { numeric?: boolean; rowHeader?: boolean } | undefined;
+                  const Cell = meta?.rowHeader ? "th" : "td";
+                  return <Cell key={cell.id} data-label={columnLabel(cell.column)}
+                    scope={meta?.rowHeader ? "row" : undefined} className={meta?.numeric ? "numeric" : undefined}>
                     <span className="table-cell-label">{columnLabel(cell.column)}</span>
                     <div className="table-cell-value">{flexRender(cell.column.columnDef.cell, cell.getContext())}</div>
-                  </td>
-                ))}
+                  </Cell>;
+                })}
               </tr>
-              {renderDetails && expanded[row.id] && <tr><td id={`${tableId}-${row.id}`} colSpan={row.getVisibleCells().length + 1 + (selection ? 1 : 0)} className="table-row-details">{renderDetails(row.original)}</td></tr>}</Fragment>
+              {renderDetails && isExpanded(row.original, row.id) && <tr><td id={`${tableId}-${row.id}`} colSpan={row.getVisibleCells().length + 1 + (selection ? 1 : 0)} className="table-row-details">{renderDetails(row.original)}</td></tr>}</Fragment>
             ))}
           </tbody>
         </table>

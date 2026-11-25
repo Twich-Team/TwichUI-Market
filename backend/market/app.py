@@ -28,6 +28,8 @@ from .backup_management import router as backup_management_router
 app.include_router(backup_management_router)
 from .catalogue import router as catalogue_router
 app.include_router(catalogue_router)
+from .waylaid_api import router as waylaid_router
+app.include_router(waylaid_router)
 from .item_profiles import router as profile_router
 app.include_router(profile_router)
 from .metadata_admin import router as metadata_admin_router
@@ -107,7 +109,8 @@ async def security_headers(request, call_next):
         if not length.isdigit() or int(length) > 16384:
             return Response(status_code=413)
         native_body = request.url.path.startswith('/api/v1/companion/')
-        if personal_preference or native_body or request.url.path.startswith('/api/v1/admin/metadata-providers'):
+        if personal_preference or native_body or request.url.path.startswith(
+                ('/api/v1/admin/metadata-providers', '/api/v1/admin/waylaid-crates')):
             chunks=[]
             size=0
             async for chunk in request.stream():

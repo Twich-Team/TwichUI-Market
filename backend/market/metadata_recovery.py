@@ -15,6 +15,7 @@ from .db import Session, now
 from .provider_rates import reserve_budget, retry_delay, cooldown, observe, effective
 from .models import ItemMetadata, Market, MetadataJob, MetadataProvider, MetadataSource, MetadataTask, MetadataResource, MetadataAttempt, MetadataRecoveryState, MetadataRecoveryItem, ItemMedia, Observation, SnapshotStatistic
 from .metadata_catalog import get_source, import_everloot_page, store_source
+from .merchants_favor import CACHE_KEY as FAVOR_CACHE_KEY, DEFAULT_REFRESH_SECONDS, RESOURCE as FAVOR_RESOURCE, refresh_seconds
 from .metadata_providers import IdentityMismatch, PARSERS, PROVIDERS, decode, fetch
 from .provider_secrets import SecretUnavailable, decrypt
 from .security import audit, aware
@@ -112,6 +113,88 @@ def enqueue_related(db, market_id, resource, *, actor_id=None, pages=1, offset=0
         db.add(MetadataTask(job_id=job.id,provider='foreverdb',region=market.region,item_id=offset+20*page+1,resource=resource,available_at=at))
     audit(db,actor_id,'metadata.related.created',f'job={job.id}; resource={resource}; pages={pages}')
     return job,True
+
+
+def enqueue_merchant_favor_refresh(db, *, actor_id=None, at=None):
+    """Deduplicate admin and scheduled refreshes into the same quota-accounted queue."""
+    at = at or now()
+    if db.bind.dialect.name == 'postgresql':
+        db.execute(text('SELECT pg_advisory_xact_lock(7140241)'))
+    existing = db.scalar(select(MetadataJob).where(
+        MetadataJob.dedupe_key == FAVOR_RESOURCE, MetadataJob.state.in_(ACTIVE)
+    ).order_by(MetadataJob.id).limit(1))
+    if existing:
+        return existing, False
+    job = MetadataJob(actor_id=actor_id, mode='related', state='queued',
+        providers_json='["foreverdb"]', dedupe_key=FAVOR_RESOURCE, total=1, request_budget=3,
+        created_at=at, updated_at=at)
+    db.add(job)
+    db.flush()
+    db.add(MetadataTask(job_id=job.id, provider='foreverdb', region=FAVOR_CACHE_KEY[0],
+        item_id=1, resource=FAVOR_RESOURCE, available_at=at, updated_at=at,
+        force_refresh=actor_id is not None))
+    audit(db, actor_id, 'metadata.merchant_favor.queued', f'job={job.id}')
+    return job, True
+
+
+def schedule_merchant_favor(db, at):
+    if not refresh_seconds():
+        return
+    provider = db.get(MetadataProvider, 'foreverdb')
+    if not provider or not provider.enabled or not provider.credential or not provider.validated_at:
+        return
+    if provider.expires_at and aware(provider.expires_at) <= at:
+        return
+    row = db.get(MetadataResource, FAVOR_CACHE_KEY)
+    if row and any(stamp and aware(stamp) > at for stamp in (row.refresh_at, row.retry_at)):
+        return
+    enqueue_merchant_favor_refresh(db, at=at)
+
+
+def enqueue_merchant_favor_backfill(db, catalogue, *, at):
+    """Resolve only exact, currently unknown item IDs under a shared per-refresh cap."""
+    from .merchants_favor import metadata_item_ids
+    from .recovery_planner import load_items
+
+    item_ids = metadata_item_ids(catalogue)
+    markets = {}
+    for market in db.scalars(select(Market).where(Market.enabled.is_(True), Market.verified.is_(True))
+                            .order_by(Market.region != FAVOR_CACHE_KEY[0], Market.id)):
+        markets.setdefault(market.region, market)
+    if not markets:
+        return
+    existing = db.scalar(select(MetadataJob.id).where(MetadataJob.dedupe_key == 'merchants-favor-items',
+        MetadataJob.state.in_(ACTIVE)).limit(1))
+    if existing:
+        return
+    identities = [(region, ident) for region in markets for ident in item_ids]
+    metadata, _, sources = load_items(db, identities)
+    pending = set(db.execute(select(MetadataTask.region, MetadataTask.item_id).join(MetadataJob).where(
+        MetadataJob.state.in_(ACTIVE), MetadataTask.state.in_(('queued','running')),
+        MetadataTask.provider == 'foreverdb', MetadataTask.resource.is_(None),
+        MetadataTask.region.in_(markets), MetadataTask.item_id.in_(item_ids))).tuples().all())
+    selected = []
+    for identity in identities:
+        row = metadata.get(identity)
+        source = sources.get(identity, {}).get('foreverdb')
+        if identity in pending or (row and (row.name or row.fallback_name)):
+            continue
+        if source and (source.fields_json or source.retry_at and aware(source.retry_at) > at):
+            continue
+        selected.append(identity)
+        if len(selected) == 12:
+            break
+    if not selected:
+        return
+    job = MetadataJob(mode='single', state='queued', providers_json='["foreverdb"]',
+        dedupe_key='merchants-favor-items', total=len(selected), request_budget=len(selected),
+        created_at=at, updated_at=at)
+    db.add(job)
+    db.flush()
+    for region, ident in selected:
+        db.add(MetadataTask(job_id=job.id, provider='foreverdb', region=region, item_id=ident,
+            available_at=at, updated_at=at))
+    audit(db, None, 'metadata.merchant_favor.backfill_queued', f'job={job.id}; tasks={job.total}')
 
 
 def task_source(db,task,job):
@@ -318,7 +401,7 @@ def schedule_automatic(db, at, *, allow_mock=False):
 
 
 
-def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_client=None):
+def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_client=None, merchant_favor=False):
     at = at or now()
     with worker_lock(factory) as locked:
         if not locked: return False
@@ -336,10 +419,14 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_cl
                 task.lease_token = task.lease_until = None
                 task.result_json = json.dumps({'status': 'lease_expired', 'provider': task.provider})
                 finalize(db, job, at)
-            if automatic: schedule_automatic(db, at, allow_mock=fetcher is not fetch)
+            if automatic:
+                if merchant_favor:
+                    schedule_merchant_favor(db, at)
+                schedule_automatic(db, at, allow_mock=fetcher is not fetch)
             # Limit local skips per tick as well as outbound work.
             tasks = list(db.scalars(select(MetadataTask).join(MetadataJob).where(MetadataJob.state.in_(('queued','running')),
-                MetadataTask.state == 'queued', MetadataTask.available_at <= at).order_by(MetadataJob.actor_id.is_(None), MetadataTask.id).limit(30)))
+                MetadataTask.state == 'queued', MetadataTask.available_at <= at).order_by(MetadataJob.actor_id.is_(None),
+                    case((MetadataTask.resource == FAVOR_RESOURCE, 0), else_=1), MetadataTask.id).limit(30)))
             chosen = None
             from .recovery_planner import provider_context, load_items, plan_item, remember_decision
             context=provider_context(db,at,execution=True,allow_mock=fetcher is not fetch) if tasks else {}
@@ -347,6 +434,7 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_cl
             build=latest_foreverdb_build(db) if tasks else None
             for task in tasks:
                 job, provider = db.get(MetadataJob, task.job_id), db.get(MetadataProvider, task.provider, with_for_update=True)
+                is_favor = task.resource == FAVOR_RESOURCE
                 if not provider.enabled:
                     task.state, task.result_json = 'skipped', json.dumps({'status':'provider_disabled','provider':task.provider})
                     finalize(db, job, at); continue
@@ -383,7 +471,7 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_cl
                 from .foreverdb import needs_detail
                 upgrade_detail = job.mode!='related' and needs_detail(src,latest_foreverdb_build(db) if task.provider=='foreverdb' else None)
                 if job.mode != 'bulk' and src.retry_at and aware(src.retry_at) > at and not upgrade_detail and not (task.force_refresh and src.status=='available'):
-                    if src.status in ('rate_limited', 'upstream_error', 'transport_or_schema'):
+                    if (is_favor and src.status != 'available') or src.status in ('rate_limited', 'upstream_error', 'transport_or_schema'):
                         task.available_at = src.retry_at
                     else:
                         task.state, task.result_json = 'skipped', json.dumps({'status':'cached','provider':task.provider,'retry_at':src.retry_at.isoformat()})
@@ -400,7 +488,8 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_cl
                     continue
                 try:
                     key = credential_value(db, provider, at=at)
-                    if task.provider == 'foreverdb' and not key: raise SecretUnavailable('Key required')
+                    if task.provider == 'foreverdb' and (not key or is_favor and not provider.validated_at):
+                        raise SecretUnavailable('Validated key required for catalogue')
                     if task.provider == 'blizzard' and not (os.environ.get('BLIZZARD_CLIENT_ID') and os.environ.get('BLIZZARD_CLIENT_SECRET')) and fetcher is fetch:
                         raise SecretUnavailable('OAuth required')
                 except SecretUnavailable:
@@ -423,6 +512,7 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_cl
                 break
         if chosen is None: return bool(tasks or expired)
         task_id, token, ident, region, item_id, mode, key, etag, page_size, resource = chosen
+        is_favor = resource == FAVOR_RESOURCE
         parsed, raw, status, headers, category = None, None, None, {}, None
         started = monotonic()
         try:
@@ -433,7 +523,13 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_cl
                 if ident=='blizzard':kwargs['client']=provider_client
             meta, raw = fetcher(ident, item_id, **kwargs)
             status, headers = meta['status'], meta.get('headers', {})
-            if status == 200 and ident != 'blizzard' and mode not in ('bulk','related'): parsed = PARSERS[ident](raw, item_id, at=at)
+            if status == 200 and is_favor:
+                from .merchants_favor import parse_catalogue
+                if key.encode() in raw:
+                    raise ValueError('Unexpected credential in provider response')
+                parsed = parse_catalogue(raw, at=at)
+            elif status == 200 and ident != 'blizzard' and mode not in ('bulk','related'):
+                parsed = PARSERS[ident](raw, item_id, at=at)
             if status not in (200, 304): category = error_category(status)
         except IdentityMismatch: category = 'wrong_identity'
         except Exception: category = 'transport_or_schema'
@@ -454,7 +550,19 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_cl
             try:
                 if category is None and status == 200:
                     with db.begin_nested():
-                        if mode == 'related':
+                        if is_favor:
+                            catalogue, origin = parsed
+                            serialised = json.dumps(catalogue, sort_keys=True)
+                            origin['confirmed_at'] = received.isoformat()
+                            changes = ['merchant_favor'] if src.fields_json != serialised else []
+                            src.fields_json, src.source_json = serialised, json.dumps(origin)
+                            etag_value = headers.get('ETag')
+                            src.status = 'available'
+                            src.etag = etag_value if isinstance(etag_value, str) and 1 <= len(etag_value) <= 255 else None
+                            src.refresh_at = src.retry_at = at + timedelta(seconds=refresh_seconds() or DEFAULT_REFRESH_SECONDS)
+                            result.update(recovered_fields=['merchant_favor'], source=origin)
+                            enqueue_merchant_favor_backfill(db, catalogue, at=at)
+                        elif mode == 'related':
                             from .metadata_catalog import import_foreverdb_resource
                             payload=decode(raw);metadata=payload.get('meta',{})
                             if resource.startswith('professions/') and metadata.get('offset')!=item_id-1:raise ValueError('Resource page offset mismatch')
@@ -490,9 +598,20 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_cl
                         provider.last_success, provider.last_error = at, None
                         if result.get('new_fields') or result.get('updated_fields'): provider.last_recovery = at
                         task.state = 'completed'
-                        audit(db, job.actor_id, 'metadata.item.recovered', f'job={job.id}; provider={ident}; item={item_id}')
-                elif category is None and status == 304 and src.fields_json:
-                    src.status = 'available'; src.retry_at = src.refresh_at = at + timedelta(seconds=PROVIDERS[ident].refresh_seconds)
+                        if is_favor:
+                            audit(db, job.actor_id, 'metadata.merchant_favor.refreshed', f'job={job.id}')
+                        else:
+                            audit(db, job.actor_id, 'metadata.item.recovered', f'job={job.id}; provider={ident}; item={item_id}')
+                elif category is None and status == 304 and src.fields_json and (not is_favor or etag):
+                    interval = PROVIDERS[ident].refresh_seconds
+                    if is_favor:
+                        interval = refresh_seconds() or DEFAULT_REFRESH_SECONDS
+                        enqueue_merchant_favor_backfill(db, json.loads(src.fields_json), at=at)
+                        origin = json.loads(src.source_json)
+                        origin['confirmed_at'] = received.isoformat()
+                        src.source_json = json.dumps(origin)
+                    src.status = 'available'
+                    src.retry_at = src.refresh_at = at + timedelta(seconds=interval)
                     task.state = 'completed'; result['status'] = 'not_modified'
                     result['outcome'] = 'already_known'
                     provider.last_success, provider.last_error = at, None
@@ -524,7 +643,10 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_cl
                 result['status'] = category
                 result['outcome'] = {'wrong_identity':'wrong_identity','transport_or_schema':'invalid_response','metadata_unavailable':'missing','forbidden':'access_blocked','authorization':'credentials_invalid','rate_limited':'rate_limited'}.get(category,'unavailable')
                 # Missing is a completed provider result, never a nonexistent item.
-                if status == 404: task.state = 'completed'
+                if is_favor and task.attempts >= 3:
+                    src.retry_at = max(aware(src.retry_at), at + timedelta(seconds=refresh_seconds() or DEFAULT_REFRESH_SECONDS))
+                    task.state = 'failed'
+                elif status == 404: task.state = 'completed'
                 elif status == 429 or (status is None or status >= 500) and task.attempts < 3:
                     task.state, task.available_at = 'queued', src.retry_at
                 else: task.state = 'failed'

@@ -1,11 +1,12 @@
 import type { StorageOperations } from "./storage-operations";
 import { StorageDashboard, useStorageSummary } from "./storage-dashboard";
 import { navigate, useLocation } from "./navigation";
-import { administrationGroups, administrationSection } from "./admin-navigation";
+import { administrationGroups, administrationSection, administrationUrl } from "./admin-navigation";
 import { useQuery } from "@tanstack/react-query";
 import { useBackupOverview } from "./backup-management";
 import "./administration.css";
 import { Loading } from "./loading";
+import { WaylaidCratesAdmin } from "./waylaid-crates-admin";
 import { AdministrationOverview } from "./admin-overview";
 import { MemberArchive } from "./member-archive";
 import { CollectionHistory, SecurityHistory } from "./admin-histories";
@@ -284,7 +285,7 @@ export function Administration({
   const url = useLocation();
   const tab = administrationSection(url);
   const title = administrationGroups.flatMap(group => group.sections).find(section => section.id === tab)?.label;
-  function setTab(value: string) { navigate(value === "overview" ? "/administration" : `/administration?admin_tab=${value}`); }
+  function setTab(value: string) { navigate(administrationUrl(value)); }
   const overview = tab === "overview";
   const storageQuery = useStorageSummary(overview);
   const backupQuery = useBackupOverview(0, undefined, 1, overview);
@@ -336,12 +337,13 @@ export function Administration({
           </optgroup>)}
         </select>
       </label>
-      {!["storage","metadata","sources"].includes(tab) && <h1>{tab === "overview" ? "Administration" : title}</h1>}
+      {!["storage","metadata","sources","waylaid-crates"].includes(tab) && <h1>{tab === "overview" ? "Administration" : title}</h1>}
       {error && <p className="notice error" role="alert">{error}</p>}
       {message && <p className="notice success" role="status">{message}</p>}
       {working && <Loading inline label="Updating administration…"/>}
       {tab === "metadata" && <ItemMetadataAdmin markets={markets} readOnly={readOnly} />}
       {tab === "sources" && <DataSources readOnly={readOnly} />}
+      {tab === "waylaid-crates" && <WaylaidCratesAdmin readOnly={readOnly}/>}
       {tab === "storage" && <StorageDashboard readOnly={readOnly}/>}
       {overview && <AdministrationOverview
         access={access.data}

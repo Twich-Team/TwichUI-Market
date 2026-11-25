@@ -1,16 +1,16 @@
-import { useEffect, useState, useRef, type MouseEvent } from 'react';
+import { useEffect, useRef, useSyncExternalStore, type MouseEvent } from 'react';
 import { onPrivateCacheClear } from './query';
 import type { ItemSort, Preferences } from './preferences-store';
 export const MAX_ID = 2147483647;
 export const VARIANT = /^[0-9a-f]{64}$/;
 const sorts = ['item_id','name','recent_price','market_value','supply','listing_count'];
 export type ItemRoute = {kind:'item'; market:number; item:number; variant?:string; days?:Preferences['explorer_days']; hours?:24|48};
-export type Route = ItemRoute | {kind:'explorer'|'deals'|'admin'|'account'|'companion'|'approval'|'missing'; error?:string};
+export type Route = ItemRoute | {kind:'explorer'|'deals'|'waylaid-crates'|'admin'|'account'|'companion'|'approval'|'missing'; error?:string};
 export function supportedId(text: string | null): number | null {
   return text && /^[1-9]\d{0,9}$/.test(text) && Number(text)<=MAX_ID ? Number(text) : null;
 }
 export function parseRoute(path: string, search=''): Route {
-  const fixed:Record<string,Route['kind']>={'/':'explorer','/deals':'deals','/administration':'admin','/account':'account','/companion':'companion','/companion/authorize':'approval'};
+  const fixed:Record<string,Route['kind']>={'/':'explorer','/deals':'deals','/waylaid-crates':'waylaid-crates','/administration':'admin','/admin/waylaid-crates':'admin','/account':'account','/companion':'companion','/companion/authorize':'approval'};
   if(fixed[path])return {kind:fixed[path]} as Route;
   const match=/^\/markets\/([^/]+)\/items\/([^/]+)$/.exec(path);
   if(!match)return {kind:'missing',error:'This page could not be found.'};
@@ -36,14 +36,28 @@ export function explorerUrl(state:ExplorerState):string {
 export function safeBrowseUrl(value:unknown):string|null {
   if(typeof value!=='string'||value.length>2048||!value.startsWith('/')||value.startsWith('//')||/[\\\r\n]/.test(value))return null;
   const u=new URL(value,'https://market.invalid');
-  if(u.origin!=='https://market.invalid'||!['/','/deals'].includes(u.pathname))return null;
-  const allowed=u.pathname==='/'?['market','q','sort','direction','page','page_size']:['market','mode','change','spend','coverage','confidence','direction','page'];
+  if(u.origin!=='https://market.invalid'||!['/','/deals','/waylaid-crates'].includes(u.pathname))return null;
+  const allowed = {
+    '/': ['market','q','sort','direction','page','page_size'],
+    '/deals': ['market','mode','change','spend','coverage','confidence','direction','page'],
+    '/waylaid-crates': ['market','basis','owned','sort','direction','q','tier','known'],
+  }[u.pathname]!;
   const p=new URLSearchParams();for(const k of allowed){const v=u.searchParams.get(k);if(v!==null)p.set(k,v.slice(0,64));}
   return u.pathname+(p.size?'?'+p:'');
 }
 const event='market-location-change';
 export function currentLocation(){return location.pathname+location.search;}
-export function useLocation(){const [url,setUrl]=useState(currentLocation);useEffect(()=>{const read=()=>setUrl(currentLocation());window.addEventListener('popstate',read);window.addEventListener(event,read);return()=>{window.removeEventListener('popstate',read);window.removeEventListener(event,read);};},[]);return url;}
+function subscribeLocation(read: () => void) {
+  window.addEventListener('popstate', read);
+  window.addEventListener(event, read);
+  return () => {
+    window.removeEventListener('popstate', read);
+    window.removeEventListener(event, read);
+  };
+}
+export function useLocation() {
+  return useSyncExternalStore(subscribeLocation, currentLocation);
+}
 interface VariantComparison {
   pageIndex: number;
   pageSize: number;

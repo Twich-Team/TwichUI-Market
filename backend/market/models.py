@@ -485,3 +485,17 @@ class RetentionExecution(Base):
     batches: Mapped[int] = mapped_column(Integer, default=0)
     rows_processed: Mapped[int] = mapped_column(Integer, default=0)
     progress: Mapped[str] = mapped_column(Text, default='{}')
+
+
+class WaylaidReward(Base):
+    __tablename__ = 'waylaid_rewards'
+    __table_args__ = (
+        CheckConstraint('favor IS NULL OR favor > 0', name='ck_waylaid_rewards_favor_positive'),
+        CheckConstraint('revision > 0', name='ck_waylaid_rewards_revision_positive'),
+    )
+
+    tier: Mapped[str] = mapped_column(String(48), primary_key=True)
+    favor: Mapped[int | None] = mapped_column(Integer)
+    revision: Mapped[int] = mapped_column(BigInteger)
+    updated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    updated_by: Mapped[int | None] = mapped_column(ForeignKey('users.id'))
