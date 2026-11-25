@@ -12,6 +12,8 @@ permissions:
 jobs:
   windows:
     runs-on: windows-latest
+    outputs:
+      acceptance-artifact-id: ${{ steps.acceptance_artifact.outputs.artifact-id }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -87,6 +89,7 @@ jobs:
         shell: pwsh
         run: ./scripts/windows/record-private-beta-candidate.ps1
       - uses: actions/upload-artifact@v4
+        id: acceptance_artifact
         if: always()
         with:
           name: companion-v2-acceptance
@@ -151,10 +154,16 @@ jobs:
           repository: Twich-Team/TwichUI
           ref: 074435e41521e97ad125e3094c45a9eb767f90e1
           persist-credentials: false
+      - name: Require the Windows acceptance artifact ID
+        env:
+          ACCEPTANCE_ARTIFACT_ID: ${{ needs.windows.outputs.acceptance-artifact-id }}
+        run: '[[ "$ACCEPTANCE_ARTIFACT_ID" =~ ^[0-9]+$ ]]'
       - uses: actions/download-artifact@v4
         with:
-          name: companion-v2-acceptance
+          # Failed attempts can leave partial artifacts with the same name.
+          artifact-ids: ${{ needs.windows.outputs.acceptance-artifact-id }}
           path: acceptance
+          merge-multiple: true
       - name: Checkout exact split-projection consumer
         uses: actions/checkout@v4
         with:

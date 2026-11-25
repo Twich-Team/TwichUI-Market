@@ -1,0 +1,135 @@
+.writ-controls select {
+  max-width: 100%;
+}
+.writ-controls > label:first-child {
+  min-width: min(100%, 165px);
+}
+.writ-controls > label:first-child select {
+  border-color: #947653;
+}
+.writ-filters > label:nth-of-type(2) {
+  max-width: 160px;
+}
+.writ-filters > label:nth-of-type(2) input {
+  width: 100%;
+}
+.writ-filters button {
+  min-height: 44px;
+}
+.writ-item-attribution {
+  display: block;
+  margin-block: 2px 4px;
+}
+.writ-item-attribution .item-credit {
+  display: block;
+}
+.writ-row-note {
+  display: block;
+  line-height: 1.35;
+}
+.writ-results .waylaid-item .item-name {
+  font-size: .95rem;
+  line-height: 1.32;
+}
+.writ-results .managed-table table {
+  min-width: 1110px;
+}
+.writ-results .managed-table thead th:nth-child(1) { width: 69px; }
+.writ-results .managed-table thead th:nth-child(2) { width: 16%; }
+.writ-results .managed-table thead th:nth-child(3) { width: 10%; }
+.writ-results .managed-table thead th:nth-child(4) { width: 18%; }
+.writ-results .managed-table thead th:nth-child(5) { width: 11%; }
+.writ-results .managed-table thead th:nth-child(n+6) { width: auto; }
+.writ-results .managed-table thead th:nth-child(10) { width: 112px; }
+.writ-results .managed-table td.numeric {
+  white-space: normal;
+}
+.writ-results .managed-table thead button {
+  white-space: normal;
+  line-height: 1.25;
+  text-align: right;
+}
+.writ-delivery {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.writ-delivery li {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+}
+.writ-delivery .wow-icon,
+.writ-admin-identity .wow-icon {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+}
+.writ-admin-identity {
+  display: inline-flex;
+  gap: 7px;
+  align-items: center;
+}
+.writ-admin-identity .wow-icon img {
+  width: 100%;
+  height: 100%;
+}
+.writ-rule-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  margin: 10px 0;
+}
+.writ-rule-facts dt {
+  color: var(--crate-muted);
+  font-size: .8rem;
+}
+.writ-rule-facts dd {
+  margin: 3px 0 0;
+}
+.writ-recipe {
+  padding-block: 8px;
+  border-block-start: 1px solid var(--crate-edge);
+}
+.writ-recipe p {
+  margin: 3px 0 0;
+}
+.writ-recipe ul {
+  margin: 4px 0;
+  padding-inline-start: 18px;
+}
+.writ-basket > summary {
+  min-height: 44px;
+  padding-block: 12px;
+  cursor: pointer;
+}
+
+@media (max-width: 700px) {
+  .writ-controls {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+    padding: 12px;
+  }
+  .writ-controls > .checkbox,
+  .writ-controls > .waylaid-basis-note {
+    grid-column: 1 / -1;
+  }
+  .writ-controls select {
+    padding-inline-start: 7px;
+  }
+  .writ-results .writ-filters {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .writ-results .writ-filters > label {
+    grid-column: auto;
+    max-width: none;
+  }
+  .writ-filters button:last-child {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+  .writ-quote .waylaid-item {
+    line-height: 1.25;
+  }
+}

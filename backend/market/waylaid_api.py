@@ -43,11 +43,11 @@ def catalogue_view(resource, crates):
     }
 
 
-def refresh_view(db, resource):
+def refresh_view(db, resource, *, resource_name=RESOURCE):
     job_status = db.execute(
         select(MetadataTask.state, MetadataTask.available_at, MetadataTask.attempts)
         .select_from(MetadataJob).join(MetadataTask, MetadataTask.job_id == MetadataJob.id)
-        .where(MetadataJob.dedupe_key == RESOURCE).order_by(MetadataJob.id.desc()).limit(1)
+        .where(MetadataJob.dedupe_key == resource_name).order_by(MetadataJob.id.desc()).limit(1)
     ).first()
     provider = db.get(MetadataProvider, 'foreverdb')
     state = job_status.state if job_status else 'idle'

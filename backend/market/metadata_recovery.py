@@ -422,6 +422,7 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_cl
             if automatic:
                 if merchant_favor:
                     schedule_merchant_favor(db, at)
+                    schedule_crafting_writ_items(db, at)
                 schedule_automatic(db, at, allow_mock=fetcher is not fetch)
             # Limit local skips per tick as well as outbound work.
             tasks = list(db.scalars(select(MetadataTask).join(MetadataJob).where(MetadataJob.state.in_(('queued','running')),
@@ -666,3 +667,64 @@ def tick(factory=Session, *, at=None, fetcher=fetch, automatic=True, provider_cl
                     'last_useful_at':at.isoformat() if result.get('new_fields') or result.get('updated_fields') else previous_evidence.get('last_useful_at')})
             finalize(db, job, at)
         return True
+
+
+def enqueue_crafting_writ_refresh(db, *, actor_id=None, at=None):
+    """Queue a finite item-metadata backfill, not a quest-catalogue refresh.
+
+    ForeverDB currently documents no objective feed. Existing item metadata
+    runner controls govern these exact IDs; the pinned quest seed is untouched.
+    """
+    from .crafting_writs import persist_seed, read_catalogue
+    at = at or now()
+    if db.bind.dialect.name == 'postgresql':
+        db.execute(text('SELECT pg_advisory_xact_lock(7140241)'))
+    existing = db.scalar(select(MetadataJob).where(
+        MetadataJob.dedupe_key == 'crafting-writ-items', MetadataJob.state.in_(ACTIVE)
+    ).order_by(MetadataJob.id).limit(1))
+    if existing:
+        return existing, False
+    market = db.scalar(select(Market).where(Market.enabled.is_(True), Market.verified.is_(True))
+                       .order_by(Market.id).limit(1))
+    if market is None:
+        raise ValueError('A verified market is required for item metadata backfill')
+    persist_seed(db)
+    db.flush()
+    _, catalogue = read_catalogue(db)
+    ids = set()
+    for writ in catalogue['writs']:
+        ids.add(writ['item_id'])
+        ids.update(objective['item_id'] for objective in writ['objectives'])
+        for recipe in writ['recipes']:
+            ids.update(ingredient['item_id'] for ingredient in recipe['ingredients'])
+    identities = sorted(ids)
+    if len(identities) > 100:
+        raise ValueError('Writ item backfill exceeds 100 exact IDs')
+    job = MetadataJob(actor_id=actor_id, market_id=market.id, mode='single', state='queued',
+        providers_json='["foreverdb"]', dedupe_key='crafting-writ-items', total=len(identities),
+        request_budget=min(len(identities) * 2, MAX_TASKS), created_at=at, updated_at=at)
+    db.add(job)
+    db.flush()
+    for ident in identities:
+        db.add(MetadataTask(job_id=job.id, provider='foreverdb', region=market.region,
+                            item_id=ident, available_at=at, updated_at=at))
+    audit(db, actor_id, 'metadata.crafting_writ_items.queued', f'job={job.id}')
+    return job, True
+
+
+def schedule_crafting_writ_items(db, at):
+    """At most one daily metadata backfill, subject to normal provider controls."""
+    provider = db.get(MetadataProvider, 'foreverdb')
+    if not provider or not provider.enabled or not provider.credential or not provider.validated_at:
+        return
+    if provider.expires_at and aware(provider.expires_at) <= at:
+        return
+    latest = db.scalar(select(MetadataJob).where(MetadataJob.dedupe_key == 'crafting-writ-items')
+                       .order_by(MetadataJob.id.desc()).limit(1))
+    if latest and (latest.state in ACTIVE or aware(latest.created_at) + timedelta(days=1) > at):
+        return
+    try:
+        enqueue_crafting_writ_refresh(db, at=at)
+    except ValueError:
+        # No verified market yet; retry on a subsequent worker cycle.
+        return

@@ -11,6 +11,7 @@ const Explorer = lazy(() =>
   import("./research").then((m) => ({ default: m.Explorer })),
 );
 const WaylaidCrates = lazy(() => import("./waylaid-crates").then((m) => ({ default: m.WaylaidCrates })));
+const CraftingWrits = lazy(() => import("./crafting-writs").then(m => ({ default: m.CraftingWrits })));
 const Deals = lazy(() => import("./deals").then((m) => ({ default: m.Deals })));
 const Administration = lazy(() =>
   import("./settings").then((m) => ({ default: m.Administration })),
@@ -195,7 +196,7 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
   const url=useLocation();
   useEffect(()=>setMenuOpen(false),[url]);
   const route=parseRoute(location.pathname,location.search);const page=route.kind;
-  const setPage=(page:string)=>navigate(({explorer:'/',deals:'/deals','waylaid-crates':'/waylaid-crates',admin:'/administration',account:'/account',companion:'/companion'} as Record<string,string>)[page]||'/');
+  const setPage=(page:string)=>navigate(({explorer:'/',deals:'/deals','waylaid-crates':'/waylaid-crates','crafting-writs':'/crafting-writs',admin:'/administration',account:'/account',companion:'/companion'} as Record<string,string>)[page]||'/');
   useEffect(()=>{
     if(restoration()?.focus)return;
     const focus=()=>{const h=document.querySelector<HTMLElement>('main h1');if(!h)return false;h.tabIndex=-1;h.focus({preventScroll:true});return true;};
@@ -216,7 +217,7 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
   const marketStatus = marketList.isError ? "unavailable" : marketsReady ? "available" : "loading";
   const environmentReady = Boolean(environment.data);
   const adminSection = administrationSection(url);
-  const needsMarkets = adminSection !== "overview" && adminSection !== "waylaid-crates";
+  const needsMarkets = !["overview", "waylaid-crates", "crafting-writs"].includes(adminSection);
   const administrationReady = environmentReady && (!needsMarkets || marketsReady);
   const administrationPending = !administrationReady && !environment.error && (!needsMarkets || !marketList.error);
   const readOnly = environment.data?.read_only ?? true;
@@ -230,6 +231,7 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
     explorer: "Market Explorer",
     deals: "Deal Finder",
     "waylaid-crates": "Waylaid Crates",
+    "crafting-writs": "Crafting Writs",
     admin: "Administration",
     account: "Account & devices",
     companion: "Desktop Companion",
@@ -256,6 +258,7 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
             "explorer",
             "deals",
             "waylaid-crates",
+            "crafting-writs",
             ...(user.role === "admin" ? ["admin"] : []),
             "account",
             "companion",
@@ -322,6 +325,10 @@ function Workspace({user,logout:signOut,signedOut,authError}:{user:User;logout:(
           {page === "waylaid-crates" && (
             <WaylaidCrates markets={markets} market={market} setMarket={setMarket}
               marketStatus={marketStatus} searchParams={new URL(url,location.origin).search}/>
+          )}
+          {page === "crafting-writs" && (
+            <CraftingWrits markets={markets} market={market} setMarket={setMarket}
+              marketStatus={marketStatus} searchParams={new URL(url, location.origin).search}/>
           )}
           {page === "admin" && user.role === "admin" && administrationPending && <Loading label="Loading administration…" skeleton/>}
           {page === "admin" && user.role === "admin" && administrationReady && (

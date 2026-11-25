@@ -30,6 +30,8 @@ from .catalogue import router as catalogue_router
 app.include_router(catalogue_router)
 from .waylaid_api import router as waylaid_router
 app.include_router(waylaid_router)
+from .writ_api import router as writ_router
+app.include_router(writ_router)
 from .item_profiles import router as profile_router
 app.include_router(profile_router)
 from .metadata_admin import router as metadata_admin_router
