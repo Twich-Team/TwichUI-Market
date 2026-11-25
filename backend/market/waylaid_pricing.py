@@ -6,7 +6,7 @@ from fractions import Fraction
 from hashlib import sha256
 from typing import Literal
 
-from sqlalchemy import func, select, true, tuple_
+from sqlalchemy import Integer, String, and_, column, func, select, true, tuple_, values
 from sqlalchemy.orm import aliased
 
 from .db import now
@@ -153,11 +153,22 @@ def load_quotes(db, market, item_ids, basis: Basis, *, at=None):
                 quote.unit = None
 
     if head['raw_retained']:
-        # Counting equal lots in SQL keeps repeated commodity prices/auction stacks compact.
-        fields = (Listing.item_id, Listing.source_kind, Listing.quantity, Listing.buyout, Listing.unit_price)
-        lots = (select(*fields, func.count().label('count')).where(
-            Listing.snapshot_id == head['snapshot_id'], tuple_(Listing.item_id, Listing.variant_key).in_(exact_keys),
-            Listing.buyout.is_not(None) | Listing.unit_price.is_not(None)).group_by(*fields))
+        # Fence the snapshot scan so the planner cannot probe per-variant indexes across retained history.
+        snapshot_lots = (
+            select(Listing.item_id, Listing.variant_key, Listing.source_kind, Listing.quantity,
+                   Listing.buyout, Listing.unit_price)
+            .where(Listing.snapshot_id == head['snapshot_id'],
+                   Listing.buyout.is_not(None) | Listing.unit_price.is_not(None))
+            .cte('waylaid_snapshot_lots').prefix_with('MATERIALIZED', dialect='postgresql')
+        )
+        variants = values(column('item_id', Integer), column('variant_key', String(64))).data(exact_keys).cte('waylaid_variants')
+        raw = snapshot_lots.c
+        fields = (raw.item_id, raw.source_kind, raw.quantity, raw.buyout, raw.unit_price)
+        lots = (
+            select(*fields, func.count())
+            .join_from(snapshot_lots, variants, and_(raw.item_id == variants.c.item_id, raw.variant_key == variants.c.variant_key))
+            .group_by(*fields)
+        )
         seen = Counter()
         for item, kind, qty, buyout, unit_price, count in db.execute(lots):
             quote = book.items[item]

@@ -5,11 +5,13 @@ from datetime import timedelta
 from email.utils import format_datetime
 from fractions import Fraction
 
+import pytest
+from sqlalchemy import event, select
+
 from market.db import now
 from market.ingest import ingest
 from market.models import ItemSourceCoverage, Listing, Market, Snapshot
 from market.pricing import values
-from sqlalchemy import select
 from market.waylaid_pricing import ItemQuote, QuoteBook, load_quotes, price_crate
 
 
@@ -54,6 +56,46 @@ def test_minimum_depth_exact_stack_sizes_bids_variants_and_market_isolation(data
         assert overshoot['stock_status'] == 'whole_stack_overshoot'
         assert too_few['stock_status'] == 'insufficient_at_minimum'
         assert all('synthetic_observations' in b['reasons'] for b in options)
+
+
+def test_postgres_crate_depth_scopes_listings_before_matching_variants(database):
+    with database.begin() as db:
+        connection = db.connection()
+        if connection.dialect.name != 'postgresql':
+            pytest.skip('PostgreSQL query plan')
+        at = now() - timedelta(seconds=1)
+        scope = market(db)
+        snapshot(db, scope, at - timedelta(hours=1), [auction(10, 900, 900)], 'historical-lots')
+        head = snapshot(db, scope, at, [auction(10, 4, 20), auction(20, 5, 45)], 'current-lots')
+        queries = []
+
+        def capture(conn, cursor, statement, parameters, context, executemany):
+            if 'FROM listings' in statement:
+                queries.append((statement, parameters))
+
+        event.listen(connection, 'before_cursor_execute', capture)
+        try:
+            result = load_quotes(db, scope, [10, 20, 30], 'current', at=at)
+        finally:
+            event.remove(connection, 'before_cursor_execute', capture)
+
+        assert result.snapshot_id == str(head.snapshot_id)
+        assert result.items[10].lots == Counter({4: 1})
+        assert len(queries) == 1
+        sql, parameters = queries[0]
+        plan = connection.exec_driver_sql('EXPLAIN (FORMAT JSON) ' + sql, parameters).scalar()[0]['Plan']
+
+        def nodes(node):
+            yield node
+            for child in node.get('Plans', []):
+                yield from nodes(child)
+
+        assert any(node.get('CTE Name') == 'waylaid_snapshot_lots' for node in nodes(plan))
+        listing_reads = [node for node in nodes(plan) if node.get('Relation Name') == 'listings']
+        assert len(listing_reads) == 1
+        conditions = (' '.join(node.get(key, '') for key in ('Index Cond', 'Filter', 'Recheck Cond'))
+                      for node in nodes(listing_reads[0]))
+        assert 'snapshot_id' in ' '.join(conditions)
 
 
 def test_exact_minimum_uses_unrounded_asks_and_never_underquotes_stack_spend(database):
